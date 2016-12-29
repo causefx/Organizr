@@ -29,3 +29,5 @@ Login View
 
 Settings View
 ![Desktop screenshot](http://i.imgur.com/qtoZkX6.png)
+
+Theme Distributed with Extended License from Creative Market
