@@ -1,0 +1,129 @@
+div.cs-skin-rotate {
+	background: transparent;
+	font-size: 16px;
+	font-weight: 700;
+	-webkit-perspective: 1000px;
+	perspective: 1000px;
+}
+
+.cs-skin-rotate > span,
+.cs-skin-rotate .cs-options li {
+	background: transparent;
+	-webkit-transform-origin: 50% 50% -200px;
+	transform-origin: 50% 50% -200px;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	-webkit-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+	-webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
+	transition: transform 0.3s, opacity 0.3s;
+}
+
+@media screen and (max-width: 30em) {
+	.cs-skin-rotate > span,
+	.cs-skin-rotate .cs-options li {
+		-webkit-transform-origin: 50% 50% -100px;
+		transform-origin: 50% 50% -100px;
+	}
+}
+
+.cs-skin-rotate > span {
+	border: 3px solid #ffc107;
+    background: #ffc107;
+    color: #fff;
+}
+
+.cs-skin-rotate.cs-active > span {
+	opacity: 0;
+	-webkit-transform: rotate3d(0,1,0,-90deg);
+	transform: rotate3d(0,1,0,-90deg);
+}
+
+.cs-skin-rotate > span::after,
+.cs-skin-rotate .cs-selected span::after {
+	font-family: 'FontAwesome';
+}
+
+.cs-skin-rotate > span::after,
+.cs-skin-rotate.cs-active > span::after {
+	content: '\f054' !important;
+}
+
+.cs-skin-rotate ul span::after {
+	content: '';
+	opacity: 0;
+}
+
+.cs-skin-rotate .cs-selected span::after {
+	content: '\f00c';
+	font-size: 1.5em;
+	opacity: 0.5;
+	-webkit-transition: opacity 0.3s;
+	transition: opacity 0.3s;
+}
+
+.cs-skin-rotate .cs-options {
+	background: transparent;
+	top: 0;
+	overflow: visible;
+	visibility: visible;
+	pointer-events: none;
+	-webkit-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+}
+
+.cs-skin-rotate .cs-options ul {
+	-webkit-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+}
+
+.cs-skin-rotate .cs-options li {
+	opacity: 0;
+	-webkit-transform: rotate3d(0,1,0,90deg);
+	transform: rotate3d(0,1,0,90deg);
+}
+
+.cs-skin-rotate.cs-active .cs-options li {
+    background: #ffc107;
+    color: #fff;
+	opacity: 1;
+	-webkit-transform: rotate3d(0,1,0,0deg);
+	transform: rotate3d(0,1,0,0deg);
+	pointer-events: auto;
+}
+
+.cs-skin-rotate .cs-options li:nth-child(2) {
+	-webkit-transition-delay: 0.05s;
+	transition-delay: 0.05s;
+}
+
+.cs-skin-rotate .cs-options li:nth-child(3) {
+	-webkit-transition-delay: 0.1s;
+	transition-delay: 0.1s;
+}
+
+.cs-skin-rotate .cs-options li:nth-child(4) {
+	-webkit-transition-delay: 0.15s;
+	transition-delay: 0.15s;
+}
+
+.cs-skin-rotate .cs-options li:nth-child(5) {
+	-webkit-transition-delay: 0.2s;
+	transition-delay: 0.2s;
+}
+
+.cs-skin-rotate.cs-active .cs-options ul li {
+	-webkit-transform: translate3d(0,0,0);
+	transform: translate3d(0,0,0);
+}
+
+.cs-skin-rotate .cs-options li span {
+	padding: 1em;
+}
+
+.cs-skin-rotate .cs-options li span:hover,
+.cs-skin-rotate .cs-options li.cs-focus span,
+.cs-skin-rotate .cs-selected span {
+	opacity: 0.8;
+	background: transparent;
+}

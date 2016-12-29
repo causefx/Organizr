@@ -1,0 +1,125 @@
+div.cs-skin-slide {
+	color: #fff;
+	font-size: 16px;
+    font-weight: 700;
+}
+
+div.cs-skin-slide::before {
+	content: '';
+	background: #63A8EB;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	-webkit-transition: -webkit-transform 0.3s;
+	transition: transform 0.3s;
+}
+
+.cs-skin-slide.cs-active::before {
+	-webkit-transform: scale3d(1.1,3.5,1);
+	transform: scale3d(1.1,3.5,1);
+}
+
+.cs-skin-slide > span {
+	line-height: 28px;
+	-webkit-transition: text-indent 0.3s, opacity 0.3s;
+	transition: text-indent 0.3s, opacity 0.3s;
+}
+
+@media screen and (max-width: 30em) {
+	.cs-skin-slide > span { height: 60px; line-height: 28px; }
+}
+
+.cs-skin-slide.cs-active > span {
+	text-indent: -290px;
+	opacity: 0;
+}
+
+.cs-skin-slide > span::after,
+.cs-skin-slide.cs-active > span::after {
+	font-family: 'FontAwesome';
+	content: '\f0c9';
+	color: #fff;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+}
+
+.cs-skin-slide.cs-active > span::after {
+	-webkit-transform: translate3d(0,-50%,0);
+	transform: translate3d(0,-50%,0);
+}
+
+.cs-skin-slide .cs-options {
+	background: transparent;
+	width: 70%;
+	height: 400%;
+	padding: 1em 0;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate3d(-50%,-50%,0);
+	transform: translate3d(-50%,-50%,0);
+}
+
+@media screen and (max-width: 30em) {
+	.cs-skin-slide .cs-options { padding-top: 3em; }
+}
+
+.cs-skin-slide .cs-options li {
+	opacity: 0;
+	-webkit-transform: translate3d(30%,0,0);
+	transform: translate3d(30%,0,0);
+	-webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
+	transition: transform 0.3s, opacity 0.3s;
+}
+
+.cs-skin-slide.cs-active .cs-options li {
+	-webkit-transform: translate3d(0,0,0);
+	transform: translate3d(0,0,0);
+	opacity: 1;
+}
+
+.cs-skin-slide.cs-active .cs-options li:first-child {
+	-webkit-transition-delay: 0.05s;
+	transition-delay: 0.05s;
+}
+
+.cs-skin-slide.cs-active .cs-options li:nth-child(2) {
+	-webkit-transition-delay: 0.1s;
+	transition-delay: 0.1s;
+}
+
+.cs-skin-slide.cs-active .cs-options li:nth-child(3) {
+	-webkit-transition-delay: 0.15s;
+	transition-delay: 0.15s;
+}
+
+.cs-skin-slide.cs-active .cs-options li:nth-child(4) {
+	-webkit-transition-delay: 0.2s;
+	transition-delay: 0.2s;
+}
+
+.cs-skin-slide.cs-active .cs-options li:nth-child(5) {
+	-webkit-transition-delay: 0.25s;
+	transition-delay: 0.25s;
+} /* more options need more delay declaration */
+
+.cs-skin-slide .cs-options li span {
+	text-transform: uppercase;
+	font-weight: 500;
+	letter-spacing: 2px;
+	font-size: 75%;
+}
+
+.cs-skin-slide .cs-options li span:hover,
+.cs-skin-slide .cs-options li.cs-focus span,
+.cs-skin-slide .cs-options li.cs-selected span {
+	color: #ffc107;
+	background: transparent;
+}
+
+.cs-skin-slide .cs-selected span::after {
+	content: '';
+}

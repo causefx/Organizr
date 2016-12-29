@@ -1,0 +1,11 @@
+@font-face {
+  font-family: 'MaterialDesignIcons';
+  src: url('#{$mdi-font-path}/materialdesignicons-webfont.eot?v=#{$mdi-version}');
+  src: url('#{$mdi-font-path}/materialdesignicons-webfont.eot?#iefix&v=#{$mdi-version}') format('embedded-opentype'),
+    url('#{$mdi-font-path}/materialdesignicons-webfont.woff2?v=#{$mdi-version}') format('woff2'),
+    url('#{$mdi-font-path}/materialdesignicons-webfont.woff?v=#{$mdi-version}') format('woff'),
+    url('#{$mdi-font-path}/materialdesignicons-webfont.ttf?v=#{$mdi-version}') format('truetype'),
+    url('#{$mdi-font-path}/materialdesignicons-webfont.svg?v=#{$mdi-version}#materialdesigniconsregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
