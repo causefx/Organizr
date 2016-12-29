@@ -295,8 +295,8 @@ endif;
                         <!-- /gn-scroller -->
                         <div class="bottom-bnts">
                             
-                            <li class="tab-item profile" id="settings.phpx"><i class="mdi mdi-account"></i></li>
-                            <a class="fix-nav" href="#"><i class="mdi mdi-pin"></i></a>
+                            <!--<li class="tab-item profile" id="settings.phpx"><i class="mdi mdi-account"></i></li>
+                            <a class="fix-nav" href="#"><i class="mdi mdi-pin"></i></a>-->
                             <?php if(!$USER->authenticated) : ?>
                             <a class="log-in" href="#"><i class="mdi mdi-login"></i></a>
                             <?php endif ?>
@@ -676,17 +676,24 @@ endif;
            
             if (defaultTab){
            
-            defaultTab = defaultTab.substr(0, defaultTab.length-1);
+                defaultTab = defaultTab.substr(0, defaultTab.length-1);
            
             }else{
            
-            defaultTab = $("li[class^='tab-item']").attr("id");
-            $("li[class^='tab-item']").first().attr("class", "tab-item active");
-            defaultTab = defaultTab.substr(0, defaultTab.length-1);
+                defaultTab = $("li[class^='tab-item']").attr("id");
+            
+            }
+            
+            if (defaultTab){
+                
+                $("li[class^='tab-item']").first().attr("class", "tab-item active");
+                defaultTab = defaultTab.substr(0, defaultTab.length-1);
            
             }
             
-            $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
+            if (defaultTab){
+                $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
+            }
             
             $('#content').css("height", $(window).height() - 56 + "px" );
             
