@@ -703,7 +703,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.91";
+                    var currentVersion = "0.92";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;

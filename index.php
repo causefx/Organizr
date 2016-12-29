@@ -670,8 +670,6 @@ endif;
 
         $(document).ready(function(){
             
-            //defaultTab = $("li[class^='tab-item active']").attr("id").substr(0, $("li[class^='tab-item active']").attr("id").length-1);
-            
             defaultTab = $("li[class^='tab-item active']").attr("id");
            
             if (defaultTab){
@@ -680,16 +678,18 @@ endif;
            
             }else{
            
-                defaultTab = $("li[class^='tab-item']").attr("id");
-            
-            }
-            
-            if (defaultTab){
+                defaultTabNone = $("li[class^='tab-item']").attr("id");
                 
-                $("li[class^='tab-item']").first().attr("class", "tab-item active");
-                defaultTab = defaultTab.substr(0, defaultTab.length-1);
+                if (defaultTabNone){
+                
+                    $("li[class^='tab-item']").first().attr("class", "tab-item active");
+                    defaultTab = defaultTabNone.substr(0, defaultTabNone.length-1);
            
+                }
+            
             }
+            
+            
             
             if (defaultTab){
                 $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
