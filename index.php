@@ -1,6 +1,6 @@
 <?php 
 
-date_default_timezone_set("America/Los Angeles");
+date_default_timezone_set('America/Los_Angeles');
 
 $data = false;
 
@@ -34,10 +34,10 @@ $file_db = new PDO("sqlite:" . $db);
 $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $dbTab = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"');
-$dbColor = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="color"');
+$dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
 
 $tabSetup = "Yes";	
-$hasColors = "No";
+$hasOptions = "No";
 
 foreach($dbTab as $row) :
 
@@ -49,11 +49,11 @@ foreach($dbTab as $row) :
 
 endforeach;
 
-foreach($dbColor as $row) :
+foreach($dbOptions as $row) :
 
-    if (in_array("color", $row)) :
+    if (in_array("options", $row)) :
     
-        $hasColors = "Yes";
+        $hasOptions = "Yes";
     
     endif;
 
@@ -62,11 +62,17 @@ endforeach;
 if($tabSetup == "No") :
 
     if($USER->authenticated && $USER->role == "admin") :
+
         $result = $file_db->query('SELECT * FROM tabs WHERE active = "true"');
+
     elseif($USER->authenticated && $USER->role == "user") :
+
         $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true"');
+
     else :
+
         $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true"');
+
     endif;
     
 endif;
@@ -77,6 +83,42 @@ if($tabSetup == "Yes") :
 
     $settingsActive = "active";
     
+endif;
+
+if($hasOptions == "Yes") :
+
+    $resulto = $file_db->query('SELECT * FROM options');
+
+    foreach($resulto as $row) : 
+                                    
+        $title = $row['title'];
+        $topbartext = $row['topbartext'];
+        $topbar = $row['topbar'];
+        $bottombar = $row['bottombar'];
+        $sidebar = $row['sidebar'];
+        $hoverbg = $row['hoverbg'];
+        $activetabBG = $row['activetabBG'];
+        $activetabicon = $row['activetabicon'];
+        $activetabtext = $row['activetabtext'];
+        $inactiveicon = $row['inactiveicon'];
+        $inactivetext = $row['inactivetext'];
+
+    endforeach;
+
+elseif($hasOptions == "No") :
+
+    $title = "Organizr";
+    $topbar = "#eb6363"; 
+    $topbartext = "#FFFFFF";
+    $bottombar = "#eb6363";
+    $sidebar = "#000000";
+    $hoverbg = "#eb6363";
+    $activetabBG = "#eb6363";
+    $activetabicon = "#FFFFFF";
+    $activetabtext = "#FFFFFF";
+    $inactiveicon = "#FFFFFF";
+    $inactivetext = "#FFFFFF";
+
 endif;
 
 ?>
@@ -92,7 +134,7 @@ endif;
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="msapplication-tap-highlight" content="no" />
 
-        <title>myDashboard</title>
+        <title><?=$title;?> - Organizr</title>
 
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
@@ -126,7 +168,7 @@ endif;
     </head>
 
     <body>
-        <?php $color = "#eb6363"; $color2 = "black"; ?>
+
         <!--Preloader-->
         <div id="preloader" class="preloader table-wrapper">
             
@@ -134,7 +176,7 @@ endif;
                 
                 <div class="table-cell">
                     
-                    <div class="la-ball-scale-multiple la-3x" style="color: <?=$color;?>">
+                    <div class="la-ball-scale-multiple la-3x" style="color: <?=$topbar;?>">
                         
                         <div></div>
                         <div></div>
@@ -153,25 +195,25 @@ endif;
             <style>
                 .bottom-bnts a {
                     
-                    background: <?=$color;?>;
-                    color: white;
+                    background: <?=$bottombar;?>;
+                    color: <?=$topbartext;?>;
                 
                 }.bottom-bnts {
                     
-                    background-color: <?=$color;?>;
+                    background-color: <?=$bottombar;?>;
                 
                 }.gn-menu-main {
                     
                    
-                    background-color: <?=$color;?>;
+                    background-color: <?=$topbar;?>;
                 
                 }.gn-menu-main ul.gn-menu {
                     
-                    background: <?=$color2;?>;
+                    background: <?=$sidebar;?>;
                 
                 }.gn-menu-wrapper {
                 
-                    background: <?=$color2;?>;
+                    background: <?=$sidebar;?>;
                 
                 }.gn-menu i {
                     
@@ -180,11 +222,11 @@ endif;
                 
                 }.la-timer.la-dark {
                     
-                    color: <?=$color;?>
+                    color: <?=$topbar;?>
                 
                 }.refresh-preloader {
                     
-                    background: transparent;
+                    background: red;
                 
                 }.la-timer {
                     
@@ -192,18 +234,18 @@ endif;
                     height: 75px;
                     padding-top: 20px;
                     border-radius: 10px;
-                    background: <?=$color2;?>;
-                    border: 2px solid <?=$color;?>;
+                    background: <?=$sidebar;?>;
+                    border: 2px solid <?=$topbar;?>;
                 
                 }.tab-item:hover a {
                     
-                    color: #fff !important;
-                    background: <?=$color;?>;
+                    color: <?=$sidebar;?> !important;
+                    background: <?=$hoverbg;?>;
                 
                 }.gn-menu li.active > a {
                     
-                    color: #fff !important;
-                    background: <?=$color;?>;
+                    color: <?=$activetabtext;?> !important;
+                    background: <?=$activetabBG;?>;
                 
                 }.active {
                     
@@ -228,6 +270,30 @@ endif;
             	    background-color: transparent;
             	    box-shadow: none;
                 	    
+                }.gn-menu li.active i.fa {
+                    
+                    color: <?=$activetabicon;?>;
+                    
+                }.gn-menu li i.fa {
+                    
+                    color: <?=$inactiveicon;?>;
+                    
+                }.gn-menu-main ul.gn-menu a {
+                    
+                    color: <?=$inactivetext;?>;
+                }li.dropdown.some-btn .mdi {
+                    
+                    color: <?=$topbartext;?>;
+                    
+                }.nav>li>a:focus, .nav>li>a:hover {
+                    
+                    text-decoration: none;
+                    background-color: transparent;
+                    
+                }div#preloader {
+                    
+                    background-color: <?=$topbartext;?>;
+                    
                 }
             </style>
 
@@ -295,8 +361,8 @@ endif;
                         <!-- /gn-scroller -->
                         <div class="bottom-bnts">
                             
-                            <!--<li class="tab-item profile" id="settings.phpx"><i class="mdi mdi-account"></i></li>
-                            <a class="fix-nav" href="#"><i class="mdi mdi-pin"></i></a>-->
+                            <!--<li class="tab-item profile" id="settings.phpx"><i class="mdi mdi-account"></i></li>-->
+                            <a class="fix-nav" href="#"><i class="mdi mdi-pin"></i></a>
                             <?php if(!$USER->authenticated) : ?>
                             <a class="log-in" href="#"><i class="mdi mdi-login"></i></a>
                             <?php endif ?>
@@ -312,7 +378,7 @@ endif;
 
                 <li class="top-clock">
                     
-                    <span><span style="color:black;"><b>Organizr</b></span></span>
+                    <span><span style="color:<?=$topbartext;?>;"><b><?=$title;?></b></span></span>
                 
                 </li>
 
@@ -567,7 +633,7 @@ endif;
         <?php if($USER->authenticated) : ?>
         <div class="logout-modal modal fade">
             
-            <div class="table-wrapper" style="background: <?=$color;?>">
+            <div class="table-wrapper" style="background: <?=$topbar;?>">
             
                 <div class="table-row">
                 
@@ -577,7 +643,7 @@ endif;
                         
                             <div class="content-box">
                             
-                                <div class="light-blue-bg biggest-box">
+                                <div class="gray-bg biggest-box">
                                 
                                     <form name="log out" id="logout" action="index.php" method="POST">
 				                        <input type="hidden" name="op" value="logout">

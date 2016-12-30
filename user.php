@@ -25,7 +25,7 @@
 			// notification emails to work. Also note that password resetting doesn't work
 			// unless mail notification is turned on.
 
-			const use_mail = true;
+			const use_mail = false;
 
 			// This value should point to a directory that is not available to web users.
 			// If your documents are in ./public_html, for instance., then put database

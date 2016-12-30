@@ -5159,7 +5159,7 @@ body .slimScrollDiv {
 }
 
 a, a:hover {
-  color: #63A8EB;
+  /*color: #63A8EB;*/
 }
 
 /*Switcher*/
@@ -5962,7 +5962,7 @@ label {
 }
 
 .gn-menu-main .cs-skin-elastic .cs-options span:hover, .gn-menu-main .cs-skin-elastic .cs-options li.cs-focus span, .gn-menu-main .cs-skin-elastic .cs-options .cs-selected span {
-  color: #63A8EB;
+  /*color: #63A8EB;*/
 }
 
 .gn-menu-main .notifications > a:focus {
@@ -5974,7 +5974,7 @@ label {
 }
 
 #menu-toggle:hover span {
-  background: #fff !important;
+  /*background: #fff !important;*/
 }
 
 #menu-toggle span {

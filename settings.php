@@ -1,9 +1,8 @@
 <?php 
 
-date_default_timezone_set("America/Vancouver");
+date_default_timezone_set('America/Los_Angeles');
 
 $data = false;
-
 
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
@@ -18,15 +17,20 @@ require_once("user.php");
 $USER = new User("registration_callback");
 
 if(!$USER->authenticated) :
+
     die("Why you trying to access this without logging in?!?!");
+
 endif;
+
 $dbfile = constant('User::DATABASE_LOCATION')  . constant('User::DATABASE_NAME') . ".db";
 $file_db = new PDO("sqlite:" . $dbfile);
 $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $dbTab = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"');
+$dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
 
-$tabSetup = "Yes";			
+$tabSetup = "Yes";
+$hasOptions = "No";
 
 foreach($dbTab as $row) :
 
@@ -38,12 +42,45 @@ foreach($dbTab as $row) :
 
 endforeach;
 
+foreach($dbOptions as $row) :
+
+    if (in_array("options", $row)) :
+    
+        $hasOptions = "Yes";
+    
+    endif;
+
+endforeach;
+
+if($hasOptions == "No") :
+
+    $title = "Organizr";
+    $topbar = "#eb6363"; 
+    $topbartext = "#FFFFFF";
+    $bottombar = "#eb6363";
+    $sidebar = "#000000";
+    $hoverbg = "#eb6363";
+    $activetabBG = "#eb6363";
+    $activetabicon = "#FFFFFF";
+    $activetabtext = "#FFFFFF";
+    $inactiveicon = "#FFFFFF";
+    $inactivetext = "#FFFFFF";
+
+endif;
+
 
 if($tabSetup == "No") :
 
     $result = $file_db->query('SELECT * FROM tabs');
     
 endif;
+
+if($hasOptions == "Yes") :
+
+    $resulto = $file_db->query('SELECT * FROM options');
+    
+endif;
+
 
 $action = "";
                 
@@ -56,9 +93,7 @@ endif;
 if($action == "addTabz") :
     
     if($tabSetup == "No") :
-    
-        //$file_db->exec("DROP TABLE tabs");
-        //$file_db->exec("DROP TABLE IF EXISTS tabs");
+
         $file_db->exec("DELETE FROM tabs");
         
     endif;
@@ -198,6 +233,56 @@ if($action == "addTabz") :
     endforeach;
     
 endif;
+
+if($action == "addOptionz") :
+    
+    if($hasOptions == "Yes") :
+    
+        $file_db->exec("DELETE FROM options");
+        
+    endif;
+    
+    if($hasOptions == "No") :
+
+        $file_db->exec("CREATE TABLE options (title TEXT UNIQUE, topbar TEXT, bottombar TEXT, sidebar TEXT, hoverbg TEXT, topbartext TEXT, activetabBG TEXT, activetabicon TEXT, activetabtext TEXT, inactiveicon TEXT, inactivetext TEXT)");
+        
+    endif;
+            
+    $title = $_POST['title'];
+    $topbartext = $_POST['topbartext'];
+    $topbar = $_POST['topbar'];
+    $bottombar = $_POST['bottombar'];
+    $sidebar = $_POST['sidebar'];
+    $hoverbg = $_POST['hoverbg'];
+    $activetabBG = $_POST['activetabBG'];
+    $activetabicon = $_POST['activetabicon'];
+    $activetabtext = $_POST['activetabtext'];
+    $inactiveicon = $_POST['inactiveicon'];
+    $inactivetext = $_POST['inactivetext'];
+
+    $insert = "INSERT INTO options (title, topbartext, topbar, bottombar, sidebar, hoverbg, activetabBG, activetabicon, activetabtext, inactiveicon, inactivetext) 
+                VALUES (:title, :topbartext, :topbar, :bottombar, :sidebar, :hoverbg, :activetabBG, :activetabicon , :activetabtext , :inactiveicon, :inactivetext)";
+                
+    $stmt = $file_db->prepare($insert);
+    
+    $stmt->bindParam(':title', $title);
+    $stmt->bindParam(':topbartext', $topbartext);
+    $stmt->bindParam(':topbar', $topbar);
+    $stmt->bindParam(':bottombar', $bottombar);
+    $stmt->bindParam(':sidebar', $sidebar);
+    $stmt->bindParam(':hoverbg', $hoverbg);
+    $stmt->bindParam(':activetabBG', $activetabBG);
+    $stmt->bindParam(':activetabicon', $activetabicon);
+    $stmt->bindParam(':activetabtext', $activetabtext);
+    $stmt->bindParam(':inactiveicon', $inactiveicon);
+    $stmt->bindParam(':inactivetext', $inactivetext);
+
+    $stmt->execute();
+
+    
+
+    
+endif;
 ?>
 
 <!DOCTYPE html>
@@ -298,7 +383,7 @@ endif;
 
                                         <a class="total-tabs" href="#">Total Tabs <span class="badge green-bg"></span></a>
                                         
-                                        <?php if($action == "addTabz") : ?>
+                                        <?php if($action) : ?>
                                         
                                         <button id="apply" class="btn btn-success waves text-uppercase pull-right waves-effect waves-float" type="submit">Apply Changes</button>
                                         
@@ -318,7 +403,7 @@ endif;
 
                                                 </div>
 
-                                                <input type="text" class="form-control name-of-todo" placeholder="Type In New Tab Name">
+                                                <input type="text" class="form-control name-of-todo" placeholder="Type In New Tab Name And Hit Enter">
 
                                             </div>
 
@@ -328,186 +413,302 @@ endif;
 
                                     <div class="panel">
 
-                                        <div class="panel-body todo">
+                                        <form id="submitTabs" method="post">
+                                        
+                                            <div class="panel-body todo">
 
-                                            <form id="submitTabs" method="post">
+                                                <input type="hidden" name="action" value="addTabz" />
+
+                                                <ul class="list-group ui-sortable">
+
+                                                    <?php if($tabSetup == "No") : $tabNum = 1; 
+
+                                                    foreach($result as $row) : 
+
+                                                    if($row['defaultz'] == "true") : $default = "checked"; else : $default = ""; endif;
+                                                    if($row['active'] == "true") : $activez = "checked"; else : $activez = ""; endif;
+                                                    if($row['guest'] == "true") : $guestz = "checked"; else : $guestz = ""; endif;
+                                                    if($row['user'] == "true") : $userz = "checked"; else : $userz = ""; endif;
+
+                                                    ?>
+                                                    <li id="item-<?=tabNum;?>" class="list-group-item" style="position: relative; left: 0px; top: 0px;">
+
+                                                        <tab class="content-form form-inline">
+
+                                                            <div class="form-group">
+
+                                                                <div class="action-btns" style="width:calc(100%)">
+
+                                                                    <a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="New Tab Name" value="<?=$row['name'];?>">
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="Tab URL" value="<?=$row['url']?>">
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <div class="input-group">
+                                                                    <input data-placement="bottomRight" class="form-control material icp-auto" name="icon-<?=$tabNum;?>" value="<?=$row['icon'];?>" type="text" />
+                                                                    <span class="input-group-addon"></span>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <div class="radio radio-danger">
+
+
+                                                                    <input type="radio" id="default[<?=$tabNum;?>]" value="true" name="default" <?=$default;?>>
+                                                                    <label for="default[<?=$tabNum;?>]">Default</label>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <div class="">
+
+                                                                    <input id="" class="switcher switcher-success" value="false" name="active-<?=$tabNum;?>" type="hidden">
+                                                                    <input id="active[<?=$tabNum;?>]" class="switcher switcher-success" name="active-<?=$tabNum;?>" type="checkbox" <?=$activez;?>>
+
+                                                                    <label for="active[<?=$tabNum;?>]"></label>
+
+                                                                </div>
+                                                                Active
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <div class="">
+
+                                                                    <input id="" class="switcher switcher-primary" value="false" name="user-<?=$tabNum;?>" type="hidden">
+                                                                    <input id="user[<?=$tabNum;?>]" class="switcher switcher-primary" name="user-<?=$tabNum;?>" type="checkbox" <?=$userz;?>>
+                                                                    <label for="user[<?=$tabNum;?>]"></label>
+
+                                                                </div>
+                                                                User
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <div class="">
+
+                                                                    <input id="" class="switcher switcher-primary" value="false" name="guest-<?=$tabNum;?>" type="hidden">
+                                                                    <input id="guest[<?=$tabNum;?>]" class="switcher switcher-warning" name="guest-<?=$tabNum;?>" type="checkbox" <?=$guestz;?>>
+                                                                    <label for="guest[<?=$tabNum;?>]"></label>
+
+                                                                </div>
+                                                                Guest
+                                                            </div>
+
+                                                            <div class="pull-right action-btns" style="padding-top: 8px;">
+
+                                                                <a class="trash"><span class="fa fa-close"></span></a>
+
+                                                            </div>
+
+
+                                                        </tab>
+
+                                                    </li>
+                                                    <?php $tabNum ++; endforeach; endif;?>
+
+                                                </ul>
+
+                                            </div>
+
+                                            <div class="checkbox clear-todo pull-left"></div>
+
+                                            <input class="btn btn-warning waves text-uppercase pull-right waves-effect waves-float" type="submit" value="Save Tabs">
                                             
-                                            <input type="hidden" name="action" value="addTabz" />
-                                            
-                                            <ul class="list-group ui-sortable">
-                                            
-                                                
-
-                                                <?php if($tabSetup == "No") : $tabNum = 1; 
-                                                
-                                                foreach($result as $row) : 
-                                                
-                                                if($row['defaultz'] == "true") : $default = "checked"; else : $default = ""; endif;
-                                                if($row['active'] == "true") : $activez = "checked"; else : $activez = ""; endif;
-                                                if($row['guest'] == "true") : $guestz = "checked"; else : $guestz = ""; endif;
-                                                if($row['user'] == "true") : $userz = "checked"; else : $userz = ""; endif;
-                                                
-                                                ?>
-                                                <li id="item-<?=tabNum;?>" class="list-group-item" style="position: relative; left: 0px; top: 0px;">
-
-                                                    <tab class="content-form form-inline">
-
-                                                        <div class="form-group">
-
-                                                            <div class="action-btns" style="width:calc(100%)">
-
-                                                                <a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a>
-
-                                                            </div>
-
-                                                        </div>
-
-                                                        <div class="form-group">
-
-                                                            <input type="text" class="form-control material" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="New Tab Name" value="<?=$row['name'];?>">
-
-                                                        </div>
-
-                                                        <div class="form-group">
-
-                                                            <input type="text" class="form-control material" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="Tab URL" value="<?=$row['url']?>">
-
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                        
-                                                            <div class="input-group">
-                                                                <input data-placement="bottomRight" class="form-control material icp-auto" name="icon-<?=$tabNum;?>" value="<?=$row['icon'];?>" type="text" />
-                                                                <span class="input-group-addon"></span>
-                                                            </div>
-                                                            
-                                                        </div>
-
-                                                        <div class="form-group">
-
-                                                            <div class="radio radio-danger">
-                                                                
-                                                                
-                                                                <input type="radio" id="default[<?=$tabNum;?>]" value="true" name="default" <?=$default;?>>
-                                                                <label for="default[<?=$tabNum;?>]">Default</label>
-
-                                                            </div>
-
-                                                        </div>
-
-                                                        <div class="form-group">
-
-                                                            <div class="">
-
-                                                                <input id="" class="switcher switcher-success" value="false" name="active-<?=$tabNum;?>" type="hidden">
-                                                                <input id="active[<?=$tabNum;?>]" class="switcher switcher-success" name="active-<?=$tabNum;?>" type="checkbox" <?=$activez;?>>
-
-                                                                <label for="active[<?=$tabNum;?>]"></label>
-
-                                                            </div>
-                                                            Active
-                                                        </div>
-
-                                                        <div class="form-group">
-
-                                                            <div class="">
-
-                                                                <input id="" class="switcher switcher-primary" value="false" name="user-<?=$tabNum;?>" type="hidden">
-                                                                <input id="user[<?=$tabNum;?>]" class="switcher switcher-primary" name="user-<?=$tabNum;?>" type="checkbox" <?=$userz;?>>
-                                                                <label for="user[<?=$tabNum;?>]"></label>
-
-                                                            </div>
-                                                            User
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-
-                                                            <div class="">
-
-                                                                <input id="" class="switcher switcher-primary" value="false" name="guest-<?=$tabNum;?>" type="hidden">
-                                                                <input id="guest[<?=$tabNum;?>]" class="switcher switcher-warning" name="guest-<?=$tabNum;?>" type="checkbox" <?=$guestz;?>>
-                                                                <label for="guest[<?=$tabNum;?>]"></label>
-
-                                                            </div>
-                                                            Guest
-                                                        </div>
-
-                                                        <div class="pull-right action-btns" style="padding-top: 8px;">
-
-                                                            <a class="trash"><span class="fa fa-close"></span></a>
-
-                                                        </div>
-
-
-                                                    </tab>
-
-                                                </li>
-                                                <?php $tabNum ++; endforeach; endif;?>
-
-                                            </ul>
-
-                                        </div>
-
+                                        </form>
+                                        
                                     </div>
-
-                                    <div class="checkbox clear-todo pull-left"></div>
-
-                                    <input class="btn btn-warning waves text-uppercase pull-right waves-effect waves-float" type="submit" value="Save Tabs">
-
+ 
                                 </div>
-                                
-                                </form>
-                                
-                                
-                                
-                                
-                                
+
                                 <div class="tab-pane big-box  fade in" id="about">
                         
-                                    <h4><strong>About myDash</strong></h4>
+                                    <h4><strong>About Organizr</strong></h4>
                         
                                     <p id="version"></p>
                                     
                                     <p id="whatsnew"></p>
+                                    
+                                    <p id="downloadnow"></p>
                       
                                 </div>
                                 
                                 <div class="tab-pane big-box  fade in" id="tab-83">
-                        
-                                    <h4><strong>Home Tab Content</strong></h4>
-                        
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste, aperiam!</p>
-                      
-                                </div>
-                                
-                            
-                            
-                                <div class="tab-pane big-box  fade in" id="tab-84">
                                     
-                                    <h4><strong>Selects</strong></h4>
+                                    <?php if($hasOptions == "Yes") : 
+                                    
+                                        foreach($resulto as $row) : 
 
-                                    <select class="cs-select cs-skin-border">
+                                            $title = $row['title'];
+                                            $topbartext = $row['topbartext'];
+                                            $topbar = $row['topbar'];
+                                            $bottombar = $row['bottombar'];
+                                            $sidebar = $row['sidebar'];
+                                            $hoverbg = $row['hoverbg'];
+                                            $activetabBG = $row['activetabBG'];
+                                            $activetabicon = $row['activetabicon'];
+                                            $activetabtext = $row['activetabtext'];
+                                            $inactiveicon = $row['inactiveicon'];
+                                            $inactivetext = $row['inactivetext'];
 
-                                        <option value="" disabled selected>Border</option>
-                                        <option value="email">E-Mail</option>
-                                        <option value="twitter">Twitter</option>
-                                        <option value="linkedin">LinkedIn</option>
-                                        <option value="bootstrap">Bootstrap</option>
-                                        <option value="facebook">Facebook</option>
+                                        endforeach;
+                                    
+                                    endif;
+                                    
+                                    ?>
+                        
+                                    <form id="add_optionz" method="post">
+                                        
+                                        <input type="hidden" name="action" value="addOptionz" />
+                                        
+                                        <h4><strong>Let's Bidazzle</strong></h4>
 
-                                    </select>
+                                        <p>Change the colors of the following elements:</p>
 
-                                    <select class="cs-select cs-skin-elastic">
+                                        <div class="content-box box-shadow big-box grids">
 
-                                        <option value="" disabled selected>Elastic</option>
-                                        <option value="email">E-Mail</option>
-                                        <option value="twitter">Twitter</option>
-                                        <option value="linkedin">LinkedIn</option>
-                                        <option value="bootstrap">Bootstrap</option>
-                                        <option value="facebook">Facebook</option>
+                                            <div class="row show-grids">
 
-                                    </select>
+                                                <h4><strong>Title</strong></h4>
 
+                                                <div class="col-md-2">
+
+                                                    <center>Title</center>
+
+                                                    <input name="title" class="form-control" value="<?=$title;?>" placeholder="Organizr">
+
+                                                </div>
+
+                                                <div class="col-md-2">
+
+                                                    <center>Title Text</center>
+
+                                                    <input name="topbartext" class="form-control jscolor {hash:true}" value="<?=$topbartext;?>">
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row show-grids">
+
+                                                <h4><strong>Navigation Bars</strong></h4>
+
+                                                <div class="col-md-2">
+
+                                                    <center>Top Bar</center>
+
+                                                    <input name="topbar" class="form-control jscolor {hash:true}" value="<?=$topbar;?>">
+
+                                                </div>
+
+                                                <div class="col-md-2">
+
+                                                    <center>Bottom Bar</center>
+
+                                                    <input name="bottombar" class="form-control jscolor {hash:true}" value="<?=$bottombar;?>">
+
+                                                </div>
+
+                                                <div class="clearfix visible-xs-block"></div>
+
+                                                <div class="col-md-2">
+
+                                                    <center>Side Bar</center>
+
+                                                    <input name="sidebar" class="form-control jscolor {hash:true}" value="<?=$sidebar;?>">
+
+                                                </div>
+
+                                                <div class="col-md-2">
+
+                                                    <center>Hover BG</center>
+
+                                                    <input name="hoverbg" class="form-control jscolor {hash:true}" value="<?=$hoverbg;?>">
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row show-grids">
+
+                                                <h4><strong>Active Tab</strong></h4>
+
+                                                <div class="col-md-2">
+
+                                                    <center>Active Tab BG</center>
+
+                                                    <input name="activetabBG" class="form-control jscolor {hash:true}" value=<?=$activetabBG;?>"">
+
+                                                </div>
+
+                                                <div class="col-md-2">
+
+                                                    <center>Active Tab Icon</center>
+
+                                                    <input name="activetabicon" class="form-control jscolor {hash:true}" value="<?=$activetabicon;?>">
+
+                                                </div>
+
+                                                <div class="col-md-2">
+
+                                                    <center>Active Tab Text</center>
+
+                                                    <input name="activetabtext" class="form-control jscolor {hash:true}" value="<?=$activetabtext;?>">
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row show-grids">
+
+                                                <h4><strong>Inactive Tab</strong></h4>
+
+                                                <div class="col-md-2">
+
+                                                    <center>Inactive Icon</center>
+
+                                                    <input name="inactiveicon" class="form-control jscolor {hash:true}" value="<?=$inactiveicon;?>">
+
+                                                </div>
+
+                                                <div class="col-md-2">
+
+                                                    <center>Inactive Text</center>
+
+                                                    <input name="inactivetext" class="form-control jscolor {hash:true}" value="<?=$inactivetext;?>">
+
+                                                </div>
+
+                                            </div>
+                                            
+                                            <div class="checkbox clear-todo pull-left"></div>
+
+                                        <input class="btn btn-warning waves text-uppercase pull-right waves-effect waves-float" type="submit" value="Save Options">
+
+                                        </div>
+                                        
+                                    </form>
+                      
                                 </div>
                                 
                             </div>
@@ -523,9 +724,6 @@ endif;
 
             <!--Welcome notification-->
             <div id="welcome"></div>
-
-            
-
 
         </div>
         <?php if(!$USER->authenticated) : ?>
@@ -553,6 +751,7 @@ endif;
 
         <!--Selects-->
         <script src="js/selects/selectFx.js"></script>
+        <script src="js/jscolor.js"></script>
         
         <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
 
@@ -565,119 +764,107 @@ endif;
 
         <?php if($action == "addTabz") : ?>
         <script>
-        $(function () {
-/*
-            // show the notification
-            setTimeout(function () {
-                // create the notification
-                var notification = new NotificationFx({
-                    message: '<span>Tabs have been saved, don\'t forget to Apply Changes</span>',
-                    layout: 'attached',
-                    effect: 'bouncyflip',
-                    ttl: 1500,
-                    wrapper: document.getElementById("welcome"),
-                    type: 'success', // notice, warning, success or error
-                });
-                notification.show();
-            }, 1200);*/
 
-        });
-            
             swal("Tabs Saved!", "Apply Changes To Reload The Page!", "success");
+            
         </script>
         <?php endif; ?>
 
-<script>
-    $(function () {
-      $(".todo ul").sortable();
+        <script>
 
-      $("#add_tab").on('submit', function (e) {
-        e.preventDefault();
+            $(function () {
 
-        var $toDo = $(this).find('.name-of-todo');
-          toDo_name = $toDo.val();
+                $(".todo ul").sortable();
 
-        if (toDo_name.length >= 3) {
+                $("#add_tab").on('submit', function (e) {
+                    e.preventDefault();
 
-          var newid = $('.list-group-item').length + 1;
-          // Create Event Entry
-          $(".todo ul").append(
-            '<li id="item-' + newid + '" class="list-group-item" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input type="text" class="form-control material" name="name-' + newid + '" id="name[' + newid + ']" placeholder="New Tab Name" value="' + toDo_name + '"></div> <div class="form-group"><input type="text" class="form-control material" name="url-' + newid + '" id="url[' + newid + ']" placeholder="Tab URL"></div> <div class="form-group"><div class="input-group"><input name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']">Default</label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> Active</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> User</div><div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> Guest</div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
-          );
+                    var $toDo = $(this).find('.name-of-todo');
+                    toDo_name = $toDo.val();
 
-        $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
+                    if (toDo_name.length >= 3) {
 
+                        var newid = $('.list-group-item').length + 1;
 
+                        $(".todo ul").append(
+                        '<li id="item-' + newid + '" class="list-group-item" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input type="text" class="form-control material" name="name-' + newid + '" id="name[' + newid + ']" placeholder="New Tab Name" value="' + toDo_name + '"></div> <div class="form-group"><input type="text" class="form-control material" name="url-' + newid + '" id="url[' + newid + ']" placeholder="Tab URL"></div> <div class="form-group"><div class="input-group"><input name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']">Default</label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> Active</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> User</div><div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> Guest</div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
+                        );
 
-          var eventObject = {
-            title: $.trim($("#" + newid).text()),
-            className: $("#" + newid).attr("data-bg"), // use the element's text as the event title
-            stick: true
-          };
+                        $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
 
-          // store the Event Object in the DOM element so we can get to it later
-          $("#" + newid).data('eventObject', eventObject);
+                        var eventObject = {
 
-          // Reset input
-          $toDo.val('').focus();
-        } else {
-          $toDo.focus();
-        }
-      });
+                            title: $.trim($("#" + newid).text()),
+                            className: $("#" + newid).attr("data-bg"),
+                            stick: true
 
-      count();
+                        };
 
-      $(".list-group-item").addClass("list-item");
+                        $("#" + newid).data('eventObject', eventObject);
 
-      //Remove one completed item
-      $(document).on('click', '.trash', function (e) {
-        var clearedCompItem = $(this).closest(".list-group-item").remove();
-        e.preventDefault();
-        count();
-      });
+                        $toDo.val('').focus();
 
-      //Count items
-      function count() {
-        var active = $('.list-group-item').length;
+                    } else {
 
-        $('.total-tabs span').text(active);
+                        $toDo.focus();
+                    }
 
-      };
-      
-      $("#submitTabs").on('submit', function (e) {
-              console.log("submitted");
-              $("div.radio").each(function(i) {
-                $(this).find('input').attr('name', 'default-' + i);
-                console.log(i);
-              });
-              
-              $('form input[type="radio"]').not(':checked').each(function() {
-                  //$(this).addClass('unchecked');
-                  // or
-                  //$(this).slideUp('slow');
-                  //$('input[name="' + name+ '"][value="' + SelectdValue + '"]').prop('checked', true);
-                  $(this).prop('checked', true);
-                  $(this).prop('value', "false");
-                  console.log("found unchecked");
-                  
-              });
-      
-      });
-      
-       $('#apply').on('click touchstart', function(){
-      
-        window.parent.location.reload();
-      
-      })
-        
-        
- 
+                });
 
-    });
-  </script>
-        
+                count();
 
-        
+                $(".list-group-item").addClass("list-item");
+
+                //Remove one completed item
+                $(document).on('click', '.trash', function (e) {
+
+                    var clearedCompItem = $(this).closest(".list-group-item").remove();
+                    e.preventDefault();
+                    count();
+
+                });
+
+                //Count items
+                function count() {
+
+                    var active = $('.list-group-item').length;
+
+                    $('.total-tabs span').text(active);
+
+                };
+
+                $("#submitTabs").on('submit', function (e) {
+
+                    console.log("submitted");
+
+                    $("div.radio").each(function(i) {
+
+                        $(this).find('input').attr('name', 'default-' + i);
+
+                        console.log(i);
+
+                    });
+
+                    $('form input[type="radio"]').not(':checked').each(function() {
+
+                        $(this).prop('checked', true);
+                        $(this).prop('value', "false");
+                        console.log("found unchecked");
+
+                    });
+
+                });
+
+                $('#apply').on('click touchstart', function(){
+
+                window.parent.location.reload();
+
+                });
+
+            });
+
+        </script>
+
         <script>
             
             $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
@@ -703,12 +890,13 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.92";
+                    var currentVersion = "0.93";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
                     infoTabVersion = $('#about').find('#version');
                     infoTabNew = $('#about').find('#whatsnew');
+                    infoTabDownload = $('#about').find('#downloadnow');
         
         			if(currentVersion < githubVersion){
                     
@@ -719,7 +907,10 @@ endif;
                             type: 'warning',
                             permanent: true
                         });
+                        
                         $(infoTabNew).html("<br/><h4><strong>What's New in " + githubVersion + "</strong></h4><strong>Title: </strong>" + githubName + " <br/><strong>Changes: </strong>" + githubDescription);
+                        
+                        $(infoTabDownload).html("<br/><h4><strong><a href='https://github.com/causefx/Organizr'>Visit Github</a></strong></h4><strong>Download Now: </strong> <br/><strong><a href='https://github.com/causefx/Organizr/archive/master.zip'>Organizr v." + githubVersion + "</a></strong>");
                     
                     }else if(currentVersion === githubVersion){
                     
