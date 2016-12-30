@@ -431,7 +431,7 @@ endif;
                                                     if($row['user'] == "true") : $userz = "checked"; else : $userz = ""; endif;
 
                                                     ?>
-                                                    <li id="item-<?=tabNum;?>" class="list-group-item" style="position: relative; left: 0px; top: 0px;">
+                                                    <li id="item-<?=$tabNum;?>" class="list-group-item" style="position: relative; left: 0px; top: 0px;">
 
                                                         <tab class="content-form form-inline">
 
@@ -890,7 +890,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.93";
+                    var currentVersion = "0.931";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;

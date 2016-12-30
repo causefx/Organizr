@@ -226,7 +226,7 @@ endif;
                 
                 }.refresh-preloader {
                     
-                    background: red;
+                    background: <?=$topbartext;?>;
                 
                 }.la-timer {
                     
@@ -294,7 +294,14 @@ endif;
                     
                     background-color: <?=$topbartext;?>;
                     
+                }.iframe {
+                    
+                    -webkit-overflow-scrolling: touch;
+
+                }.iframe iframe{
+
                 }
+                
             </style>
 
             <ul id="gn-menu" class="gn-menu-main">
@@ -412,7 +419,7 @@ endif;
             </ul>
 
             <!--Content-->
-            <div id="content" class="content" style=" overflow:hidden">
+            <div id="content" class="content" style="">
 
                 <!--Load Framed Content-->
                 
@@ -758,7 +765,7 @@ endif;
             
             
             if (defaultTab){
-                $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
+                $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
             }
             
             $('#content').css("height", $(window).height() - 56 + "px" );
@@ -779,7 +786,7 @@ endif;
                 activeFrame.attr('src', activeFrame.attr('src'));
                 
                 var refreshBox = $('#content').find('.active');
-                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
+                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(10);
 
                 setTimeout(function(){
                     
@@ -792,8 +799,6 @@ endif;
                     });
                 
                 },1000);
-                
-                
 
             })
             
@@ -820,15 +825,10 @@ endif;
                     $("li[class^='tab-item active']").attr("class", "tab-item");
                     $(this).attr("class", "tab-item active");
 
-                    
-                    
-           
-  
-                    
                 }else {
                     console.log(thisid + " make new div");
                     $("div[class^='iframe active']").attr("class", "iframe hidden");
-                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
+                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
                     $('#content').css("height", $(window).height() - 56 + "px" );
                     $("div").find(".iframe").css("height", $(window).height() - 56 + "px" );
                     $("li[class^='tab-item active']").attr("class", "tab-item");
