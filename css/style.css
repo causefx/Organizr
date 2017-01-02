@@ -1593,7 +1593,7 @@ body {
 }
 
 .nav-tabs > li {
-  margin-right: 6px;
+  /*margin-right: 6px;*/
   background: none;
   border: none;
 }
@@ -1608,7 +1608,7 @@ body {
 }
 
 .nav-tabs > li > a {
-  padding: 20px;
+  /*padding: 20px;*/
   font-size: 16px;
   font-weight: 400;
   margin: 0;
@@ -1688,7 +1688,7 @@ body {
 }
 
 .tabs-with-bg {
-  background: #f6f6f6;
+  background: #e7ebec;
 }
 
 .tabs-with-bg .nav-tabs {
@@ -1707,7 +1707,7 @@ body {
 }
 
 .tabs-with-bg i {
-  margin-right: 8px;
+  /*margin-right: 8px;*/
 }
 
 .tabs-with-bg .tab-pane {

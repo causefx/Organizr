@@ -45,14 +45,14 @@
 				/*this.trigger.addEventListener( 'mouseover', function(ev) { self._openIconMenu(); } );*/
 				/*this.trigger.addEventListener( 'onclick', function(ev) { self._closeIconMenu(); } );*/
 			
-				 this.menu.addEventListener( 'mouseover', function(ev) {
+				/* this.menu.addEventListener( 'mouseover', function(ev) {
 					self._openMenu(); 
 					document.addEventListener( self.eventtype, self.bodyClickFn ); 
 				} );
                 this.menu.addEventListener( 'mouseout', function(ev) {
 					self._closeMenu(); 
 					document.addEventListener( self.eventtype, self.bodyClickFn ); 
-				} );
+				} ); */
 			}
 			this.trigger.addEventListener( this.eventtype, function( ev ) {
 				ev.stopPropagation();
@@ -67,6 +67,20 @@
 				}
 			} );
 			this.menu.addEventListener( this.eventtype, function(ev) { ev.stopPropagation(); } );
+            
+            $("li[class^='tab-item']").on('touchstart', function(){
+                
+                if( self.isMenuOpen ) {
+					self._closeMenu();
+					document.removeEventListener( self.eventtype, self.bodyClickFn );
+				}
+				else {
+					self._openMenu();
+					document.addEventListener( self.eventtype, self.bodyClickFn );
+				}
+   
+            });
+            
 		},
 		_openIconMenu : function() {
 			classie.add( this.menu, 'gn-open-part' );

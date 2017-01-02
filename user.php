@@ -70,7 +70,7 @@
 
 			// this is the session timeout. If someone hasn't performed any page requests
 			// in [timeout] seconds, they're considered logged out.
-			const time_out = 3600;
+			const time_out = 7200;
 
 			// You'll probably want to change this to something sensible. If your site is
 			// www.sockmonkey.com, then you want this to be "sockmonkey.com"
@@ -615,7 +615,7 @@ EOT;
 			$delete = "DELETE FROM users WHERE username = '$username'";
 			$this->database->exec($delete);
 			$this->info("removed $username from the system");
-			$this->resetSession();
+			//$this->resetSession();
 			return true;
 		}
 

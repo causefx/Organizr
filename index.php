@@ -64,6 +64,19 @@ if($tabSetup == "No") :
     if($USER->authenticated && $USER->role == "admin") :
 
         $result = $file_db->query('SELECT * FROM tabs WHERE active = "true"');
+        $getsettings = $file_db->query('SELECT * FROM tabs WHERE active = "true"');
+        
+        $settingsicon = "No";
+
+        foreach($getsettings as $row) :
+
+            if($row['iconurl'] && $settingsicon == "No") :
+
+                $settingsicon = "Yes";
+
+            endif;
+
+        endforeach;
 
     elseif($USER->authenticated && $USER->role == "user") :
 
@@ -134,7 +147,7 @@ endif;
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="msapplication-tap-highlight" content="no" />
 
-        <title><?=$title;?> - Organizr</title>
+        <title><?=$title;?><?php if($title !== "Organizr") :  echo "- Organizr"; endif; ?></title>
 
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
@@ -157,8 +170,15 @@ endif;
 
         <link rel="stylesheet" href="css/style.css">
 
-        <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+        
+        <link rel="apple-touch-icon" sizes="180x180" href="icons/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" href="icons/favicon/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="icons/favicon/favicon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="icons/favicon/manifest.json">
+        <link rel="mask-icon" href="icons/favicon/safari-pinned-tab.svg" color="#2d89ef">
+        <link rel="shortcut icon" href="icons/favicon/favicon.ico">
+        <meta name="msapplication-config" content="icons/favicon/browserconfig.xml">
+        <meta name="theme-color" content="#2d89ef">
         
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
@@ -167,7 +187,7 @@ endif;
         
     </head>
 
-    <body>
+    <body style="overflow: hidden">
 
         <!--Preloader-->
         <div id="preloader" class="preloader table-wrapper">
@@ -222,7 +242,7 @@ endif;
                 
                 }.la-timer.la-dark {
                     
-                    color: <?=$topbar;?>
+                    color: <?=$topbartext;?>
                 
                 }.refresh-preloader {
                     
@@ -233,7 +253,7 @@ endif;
                     width: 75px;
                     height: 75px;
                     padding-top: 20px;
-                    border-radius: 10px;
+                    border-radius: 100px;
                     background: <?=$sidebar;?>;
                     border: 2px solid <?=$topbar;?>;
                 
@@ -241,11 +261,13 @@ endif;
                     
                     color: <?=$sidebar;?> !important;
                     background: <?=$hoverbg;?>;
+                    border-radius: 100px 0 0 100px;
                 
                 }.gn-menu li.active > a {
                     
                     color: <?=$activetabtext;?> !important;
                     background: <?=$activetabBG;?>;
+                    border-radius: 100px 0 0 100px;
                 
                 }.active {
                     
@@ -300,6 +322,8 @@ endif;
 
                 }.iframe iframe{
 
+                }#menu-toggle span {
+                    background: <?=$topbartext;?>;
                 }
                 
             </style>
@@ -332,18 +356,32 @@ endif;
                         <div class="gn-scroller">
                             
                             <ul class="gn-menu metismenu">
-                                <?php /*echo str_replace("\n", "<br/>\n\t\t\t", print_r($_POST, true)); 
-                                echo str_replace("\n", "<br/>\n\t\t\t", print_r($USER->info_log, true)); 
-                                echo str_replace("\n", "<br/>\n\t\t\t", print_r($USER->error_log, true)); */?>
+
                                 <!--Start Tab List-->
                                 
                                 <?php if($tabSetup == "No") : foreach($result as $row) : 
                                 
                                 if($row['defaultz'] == "true") : $defaultz = "active"; else : $defaultz = ""; endif;?>
                                 
-                                <li class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x">
+                                <li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x">
                                     
-                                    <a class="tab-link" href="#"><i class="fa <?=$row['icon'];?>"></i><?=$row['name'];?></a>
+                                    <a class="tab-link">
+                                        
+                                        <?php if($row['iconurl']) : ?>
+                                        
+                                            <i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
+                                                <img src="<?=$row['iconurl'];?>" style="height: 30px; margin-top: -2px;">
+                                            </i>
+                                        
+                                        <?php else : ?>
+                                        
+                                            <i class="fa <?=$row['icon'];?>"></i>
+    
+                                        <?php endif; ?>
+                                        
+                                        <?=$row['name'];?>
+                                    
+                                    </a>
 
                                 </li>
                                 
@@ -352,13 +390,26 @@ endif;
                                 <?php if($USER->authenticated && $USER->role == "admin") :?>
                                 <li class="tab-item <?=$settingsActive;?>" id="settings.phpx">
                                                             
-                                    <a class="tab-link" href="#"><i class="fa fa-key"></i>Settings</a>
+                                    <a class="tab-link">
+                                        
+                                        <?php if($settingsicon = "Yes") :
+                                        
+                                            echo '<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
+                                                <img id="settings-icon" src="icons/settings.png" style="height: 30px; margin-top: -2px;"></i>';
+                                        
+                                        else :
+                                        
+                                            echo '<i class="fa fa-key"></i>';
+                                        
+                                        endif; ?>
+                                        
+                                        Settings
+                                    
+                                    </a>
                                 
                                 </li>
                                 <?php endif;?>
-
-                                <?php if(!$USER->authenticated && $tabSetup == "Yes" && $needSetup == "No") : echo "Sign in with the icon at the bottom"; endif; ?>
-
+                                
                                 <!--End Tab List-->
                            
                             </ul>
@@ -369,12 +420,12 @@ endif;
                         <div class="bottom-bnts">
                             
                             <!--<li class="tab-item profile" id="settings.phpx"><i class="mdi mdi-account"></i></li>-->
-                            <a class="fix-nav" href="#"><i class="mdi mdi-pin"></i></a>
+                            <a class="fix-nav"><i class="mdi mdi-pin"></i></a>
                             <?php if(!$USER->authenticated) : ?>
-                            <a class="log-in" href="#"><i class="mdi mdi-login"></i></a>
+                            <a class="log-in"><i class="mdi mdi-login"></i></a>
                             <?php endif ?>
                             <?php if($USER->authenticated) : ?>
-                            <a class="logout" href="#"><i class="mdi mdi-logout"></i></a>
+                            <a class="logout"><i class="mdi mdi-logout"></i></a>
                             <?php endif ?>
                         
                         </div>
@@ -444,7 +495,7 @@ endif;
 								
 								                        <h4 class="text-center">Create an account for Admin Access</h4>
 								
-                        								<form class="controlbox" name="new user registration" id="registration" action="index.php" method="POST">
+                        								<form class="controlbox" name="new user registration" id="registration" action="" method="POST">
                         								    
                         								    <input type="hidden" name="op" value="register"/>
                         								    <input type="hidden" name="sha1" value=""/>
@@ -577,13 +628,13 @@ endif;
         <?php if(!$USER->authenticated) : ?>
         <div class="login-modal modal fade">
             
-            <div class="gray-bg table-wrapper">
+            <div style="background:<?=$topbar;?>;" class="table-wrapper">
                 
                 <div class="table-row">
                     
                     <div class="table-cell text-center">
                         
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button style="color:<?=$topbartext;?>;" type="button" class="close" data-dismiss="modal" aria-label="Close">
                             
                             <span aria-hidden="true">&times;</span>
                         
@@ -593,9 +644,9 @@ endif;
                             
                             <div class="content-box">
                                 
-                                <div class="red-bg biggest-box">
+                                <div style="background:<?=$topbartext;?>;" class="biggest-box">
 
-                                    <h1 class="zero-m text-uppercase">Welcome</h1>
+                                    <h1 style="color:<?=$topbar;?>;" class="zero-m text-uppercase">Welcome</h1>
 
                                 </div>
                                 
@@ -603,7 +654,7 @@ endif;
                                     
                                     <h4 class="text-center">Login</h4>
                                     
-                                    <form name="log in" id="login" action="index.php" method="POST">
+                                    <form name="log in" id="login" action="" method="POST">
                                         
                                         <div class="form-group">
                                             
@@ -619,7 +670,7 @@ endif;
                                         
                                         </div>
 
-                                        <button type="submit" class="red-bg btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()">Login</button>
+                                        <button style="background:<?=$topbartext;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()"><text style="color:<?=$topbar;?>;">Login</text></button>
 
                                     </form>                                   
                                     
@@ -638,7 +689,7 @@ endif;
         </div>
         <?php endif;?>
         <?php if($USER->authenticated) : ?>
-        <div class="logout-modal modal fade">
+        <div style="background:<?=$topbar;?>;" class="logout-modal modal fade">
             
             <div class="table-wrapper" style="background: <?=$topbar;?>">
             
@@ -650,18 +701,21 @@ endif;
                         
                             <div class="content-box">
                             
-                                <div class="gray-bg biggest-box">
+                                <div style="background:<?=$topbartext;?>;" class="biggest-box">
                                 
-                                    <form name="log out" id="logout" action="index.php" method="POST">
+                                    <form name="log out" id="logout" action="" method="POST">
+                                        
 				                        <input type="hidden" name="op" value="logout">
+                                        
                                         <input type="hidden" name="username"value="<?php echo $_SESSION["username"]; ?>" >
 				
 				
 			
-                                    <h3 class="zero-m text-uppercase">Do you want to logout?</h3>
+                                        <h3 style="color:<?=$topbar;?>;" class="zero-m text-uppercase">Do you want to logout?</h3>
                                         
-                                    <a href="#" id="logoutSubmit" class="i-block" data-dismiss="modal">Yes</a>
-                                    <a href="#" class="i-block" data-dismiss="modal">No</a>
+                                        <a style="color:<?=$topbar;?>;" href="#" id="logoutSubmit" class="i-block" data-dismiss="modal">Yes</a>
+                                        
+                                        <a style="color:<?=$topbar;?>;" href="#" class="i-block" data-dismiss="modal">No</a>
                                 
                                     </form>
                                     
@@ -709,37 +763,17 @@ endif;
         <script src="js/common.js"></script>
 
         <script>
-        $(function () {
-
-            // show the notification
-           /* setTimeout(function () {
-                // create the notification
-                var notification = new NotificationFx({
-                    message: '<span><?php if(!empty($USER->info_log)) : 
-                    echo $USER->info_log[0]; 
-                    elseif(empty($USER->info_log)) :
-                    echo "Welcome Guest!";
-                    endif;?>
-                    </span>',
-                    layout: 'attached',
-                    effect: 'bouncyflip',
-                    ttl: 5500,
-                    wrapper: document.getElementById("welcome"),
-                    type: 'warning', // notice, warning, success or error
-                });
-                notification.show();
-            }, 1000);*/
             
-            $.smkAlert({
-                text: '<?php if(!empty($USER->info_log)) : 
-                    echo $USER->info_log[0]; 
-                    elseif(empty($USER->info_log)) :
-                    echo "Welcome Guest!";
-                    endif;?>',
-                type: 'info'
-            });
-
-        });
+        function setHeight() {
+            
+            windowHeight = $(window).innerHeight();
+            
+            $("div").find(".iframe").css('height', windowHeight - 56 + "px");
+            
+            $('#content').css('height', windowHeight - 56 + "px");
+            
+        };
+            
 
         $(document).ready(function(){
             
@@ -761,84 +795,132 @@ endif;
                 }
             
             }
-            
-            
-            
+
             if (defaultTab){
+                
                 $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
             }
             
-            $('#content').css("height", $(window).height() - 56 + "px" );
-            
-            $("div").find(".iframe").css("height", $(window).height() - 56 + "px" );
-
-            $(window).resize(function(){
-
-                $('#content').css("height", $(window).height() - 56 + "px" );
-                $("div").find(".iframe").css("height", $(window).height() - 56 + "px" );
-
-            });
-
-            $('#reload').on('click touchstart', function(){
-
-                $("i[class^='mdi mdi-refresh']").attr("class", "mdi mdi-refresh fa-spin");
-                var activeFrame = $('#content').find('.active').children('iframe');
-                activeFrame.attr('src', activeFrame.attr('src'));
-                
-                var refreshBox = $('#content').find('.active');
-                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(10);
-
-                setTimeout(function(){
-                    
-                    var refreshPreloader = refreshBox.find('.refresh-preloader'),
-                    deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
-                        
-                        refreshPreloader.remove();
-                        $("i[class^='mdi mdi-refresh fa-spin']").attr("class", "mdi mdi-refresh");
-                    
-                    });
-                
-                },1000);
-
-            })
-            
-            $('#logoutSubmit').on('click touchstart', function(){
-
-                $( "#logout" ).submit();
-
-            })
-            
-            $("li[class^='tab-item']").on('click touchstart', function(){
-                
-                var thisidfull = $(this).attr("id");
-                var thisid = thisidfull.substr(0, thisidfull.length-1);
-                var currentframe = $("div[data-content-url^='"+thisid+"']");
-                
-                if (currentframe.attr("class") == "iframe active") {
-                    console.log(thisid + " is active already");
-                }else if (currentframe.attr("class") == "iframe hidden") {
-                    console.log(thisid + " is active already but hidden");
-                    $("div[class^='iframe active']").attr("class", "iframe hidden");
-                    currentframe.attr("class", "iframe active");
-                    $('#content').css("height", $(window).height() - 56 + "px" );
-                    $("div").find(".iframe").css("height", $(window).height() - 56 + "px" );
-                    $("li[class^='tab-item active']").attr("class", "tab-item");
-                    $(this).attr("class", "tab-item active");
-
-                }else {
-                    console.log(thisid + " make new div");
-                    $("div[class^='iframe active']").attr("class", "iframe hidden");
-                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
-                    $('#content').css("height", $(window).height() - 56 + "px" );
-                    $("div").find(".iframe").css("height", $(window).height() - 56 + "px" );
-                    $("li[class^='tab-item active']").attr("class", "tab-item");
-                    $(this).attr("class", "tab-item active");
-
-                }
-                
-            });
+            setHeight();
 
         }); 
+            
+        $(function () {
+            
+            $.smkAlert({
+                text: '<?php if(!empty($USER->info_log)) : 
+                    echo $USER->info_log[0]; 
+                    elseif(empty($USER->info_log)) :
+                    echo "Welcome Guest!";
+                    endif;?>',
+                type: 'info'
+            });
+
+        });
+            
+        $('#reload').on('click touchstart', function(){
+
+            $("i[class^='mdi mdi-refresh']").attr("class", "mdi mdi-refresh fa-spin");
+
+            var activeFrame = $('#content').find('.active').children('iframe');
+
+            activeFrame.attr('src', activeFrame.attr('src'));
+
+            var refreshBox = $('#content').find('.active');
+
+            $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(10);
+
+            setTimeout(function(){
+
+                var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+
+                    refreshPreloader.remove();
+                    $("i[class^='mdi mdi-refresh fa-spin']").attr("class", "mdi mdi-refresh");
+
+                });
+
+            },500);
+
+        });
+            
+        $("li[id^='settings.phpx']").on('click touchstart', function(){
+
+            $("img[id^='settings-icon']").attr("class", "fa-spin");
+
+            setTimeout(function(){
+
+                $("img[id^='settings-icon']").attr("class", "");
+
+            },1000);
+
+        });
+
+        $('#logoutSubmit').on('click touchstart', function(){
+
+            $( "#logout" ).submit();
+
+        });
+            
+        $(window).resize(function(){
+            
+            setHeight();
+
+        });
+            
+        $("li[class^='tab-item']").on('click touchstart', function(){
+                
+            var thisidfull = $(this).attr("id");
+
+            var thisid = thisidfull.substr(0, thisidfull.length-1);
+
+            var currentframe = $("div[data-content-url^='"+thisid+"']");
+
+            if (currentframe.attr("class") == "iframe active") {
+
+                console.log(thisid + " is active already");
+
+            }else if (currentframe.attr("class") == "iframe hidden") {
+
+                console.log(thisid + " is active already but hidden");
+
+                $("div[class^='iframe active']").attr("class", "iframe hidden");
+
+                currentframe.attr("class", "iframe active");
+                
+                setHeight();
+
+                $("li[class^='tab-item active']").attr("class", "tab-item");
+
+                $(this).attr("class", "tab-item active");
+
+            }else {
+
+                
+                
+                if ($(this).attr("window") == "true") {
+                    
+                    window.open(thisid,'_blank');
+                    
+                }else {
+                
+                    console.log(thisid + " make new div");
+
+                    $("div[class^='iframe active']").attr("class", "iframe hidden");
+
+                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
+
+                    setHeight();
+
+                    $("li[class^='tab-item active']").attr("class", "tab-item");
+
+                    $(this).attr("class", "tab-item active");
+                    
+                }
+
+            }
+
+        });
         </script>
 
 

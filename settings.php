@@ -20,11 +20,21 @@ if(!$USER->authenticated) :
 
     die("Why you trying to access this without logging in?!?!");
 
+elseif($USER->authenticated && $USER->role !== "admin") :
+
+    die("C'mon man!  I give you access to my stuff and now you're trying to get in the back door?");
+
 endif;
 
 $dbfile = constant('User::DATABASE_LOCATION')  . constant('User::DATABASE_NAME') . ".db";
+
+$userdirpath = constant('User::USER_HOME');
+$userdirpath = substr_replace($userdirpath, "", -1);
+
 $file_db = new PDO("sqlite:" . $dbfile);
 $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+$getUsers = $file_db->query('SELECT * FROM users');
 
 $dbTab = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"');
 $dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
@@ -88,7 +98,14 @@ if(isset($_POST['action'])) :
 
     $action = $_POST['action'];
     
-endif;    
+endif; 
+
+                
+if(!isset($_POST['op'])) :
+
+    $_POST['op'] = "";
+    
+endif; 
 
 if($action == "addTabz") :
     
@@ -100,17 +117,19 @@ if($action == "addTabz") :
     
     if($tabSetup == "Yes") :
     
-        $file_db->exec("CREATE TABLE tabs (name TEXT UNIQUE, url TEXT, defaultz TEXT, active TEXT, user TEXT, guest TEXT, icon TEXT)");
+        $file_db->exec("CREATE TABLE tabs (name TEXT UNIQUE, url TEXT, defaultz TEXT, active TEXT, user TEXT, guest TEXT, icon TEXT, iconurl TEXT, window TEXT)");
         
     endif;
 
     $addTabName = array();
     $addTabUrl = array();
     $addTabIcon = array();
+    $addTabIconUrl = array();
     $addTabDefault = array();
     $addTabActive = array();
     $addTabUser = array();
     $addTabGuest = array();
+    $addTabWindow = array();
     $buildArray = array();
 
     foreach ($_POST as $key => $value) :
@@ -140,6 +159,12 @@ if($action == "addTabz") :
             array_push($addTabIcon, $value);
             
         endif;
+
+        if($trueKey[0] == "iconurl"):
+            
+            array_push($addTabIconUrl, $value);
+            
+        endif;
         
         if($trueKey[0] == "default"):
             
@@ -163,18 +188,16 @@ if($action == "addTabz") :
             
             array_push($addTabGuest, $value);
             
-        endif;         
+        endif; 
+
+        if($trueKey[0] == "window"):
+            
+            array_push($addTabWindow, $value);
+            
+        endif;  
         
     endforeach;
-    /*
-    echo "NAME: "; print_r($addTabName);
-    echo "<br/><br/>URL: "; print_r($addTabUrl);
-    echo "<br/><br/>ICON: "; print_r($addTabIcon);
-    echo "<br/><br/>DEFAULT: "; print_r($addTabDefault);
-    echo "<br/><br/>ACTIVE: "; print_r($addTabActive);
-    echo "<br/><br/>USER: "; print_r($addTabUser);
-    echo "<br/><br/>GUEST: "; print_r($addTabGuest);
-    */
+
     $tabArray = 0;
     
     if(count($addTabName) > 0) : 
@@ -197,7 +220,9 @@ if($action == "addTabz") :
                   'active' => $addTabActive[$tabArray],
                   'user' => $addTabUser[$tabArray],
                   'guest' => $addTabGuest[$tabArray],
-                  'icon' => $addTabIcon[$tabArray]);
+                  'icon' => $addTabIcon[$tabArray],
+                  'window' => $addTabWindow[$tabArray],
+                  'iconurl' => $addTabIconUrl[$tabArray]);
 
             $tabArray++;
         
@@ -205,8 +230,8 @@ if($action == "addTabz") :
         
     endif; 
     
-    $insert = "INSERT INTO tabs (name, url, defaultz, active, user, guest, icon) 
-                VALUES (:name, :url, :defaultz, :active, :user, :guest, :icon)";
+    $insert = "INSERT INTO tabs (name, url, defaultz, active, user, guest, icon, iconurl, window) 
+                VALUES (:name, :url, :defaultz, :active, :user, :guest, :icon, :iconurl, :window)";
                 
     $stmt = $file_db->prepare($insert);
     
@@ -217,6 +242,8 @@ if($action == "addTabz") :
     $stmt->bindParam(':user', $user);
     $stmt->bindParam(':guest', $guest);
     $stmt->bindParam(':icon', $icon);
+    $stmt->bindParam(':iconurl', $iconurl);
+    $stmt->bindParam(':window', $window);
     
     foreach ($buildArray as $t) :
     
@@ -227,6 +254,8 @@ if($action == "addTabz") :
         $user = $t['user'];
         $guest = $t['guest'];
         $icon = $t['icon'];
+        $iconurl = $t['iconurl'];
+        $window = $t['window'];
 
         $stmt->execute();
         
@@ -308,6 +337,7 @@ endif;
         <link rel="stylesheet" href="js/selects/cs-select.css">
         <link rel="stylesheet" href="js/selects/cs-skin-elastic.css">
         <link href="bower_components/iconpick/dist/css/fontawesome-iconpicker.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="bower_components/google-material-color/dist/palette.css">
         
         <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
         <link rel="stylesheet" href="bower_components/smoke/dist/css/smoke.min.css">
@@ -357,22 +387,28 @@ endif;
                       
                                 <li class="active">
                         
-                                    <a href="#tab-tabs" data-toggle="tab"><i class="fa fa-list gray"></i>Tabs</a>
+                                    <a href="#tab-tabs" data-toggle="tab"><i class="fa fa-list gray"></i></a>
                       
                                 </li>
                       
                                 <li>
                         
-                                    <a href="#tab-83" data-toggle="tab"><i class="fa fa-paint-brush green"></i>Customize</a>
+                                    <a href="#customedit" data-toggle="tab"><i class="fa fa-paint-brush green"></i></a>
                       
                                 </li>
                       
                                 <li>
                         
-                                    <a href="#about" data-toggle="tab"><i class="fa fa-gear blue"></i>Info</a>
+                                    <a href="#useredit" data-toggle="tab"><i class="fa fa-user red"></i></a>
                      
                                 </li>
-                    
+                                
+                                <li>
+                        
+                                    <a href="#about" data-toggle="tab"><i class="fa fa-info indigo"></i></a>
+                     
+                                </li>
+
                             </ul>
                     
                             <div class="tab-content">
@@ -429,6 +465,7 @@ endif;
                                                     if($row['active'] == "true") : $activez = "checked"; else : $activez = ""; endif;
                                                     if($row['guest'] == "true") : $guestz = "checked"; else : $guestz = ""; endif;
                                                     if($row['user'] == "true") : $userz = "checked"; else : $userz = ""; endif;
+                                                    if($row['window'] == "true") : $windowz = "checked"; else : $windowz = ""; endif;
 
                                                     ?>
                                                     <li id="item-<?=$tabNum;?>" class="list-group-item" style="position: relative; left: 0px; top: 0px;">
@@ -447,22 +484,30 @@ endif;
 
                                                             <div class="form-group">
 
-                                                                <input type="text" class="form-control material" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="New Tab Name" value="<?=$row['name'];?>">
+                                                                <input style="width: 110px;" type="text" class="form-control material input-sm" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="New Tab Name" value="<?=$row['name'];?>">
 
                                                             </div>
 
                                                             <div class="form-group">
 
-                                                                <input type="text" class="form-control material" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="Tab URL" value="<?=$row['url']?>">
+                                                                <input style="width: 110px;" type="text" class="form-control material input-sm" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="Tab URL" value="<?=$row['url']?>">
 
                                                             </div>
 
-                                                            <div class="form-group">
+                                                            <div style="margin-right: 5px;" class="form-group">
 
                                                                 <div class="input-group">
                                                                     <input data-placement="bottomRight" class="form-control material icp-auto" name="icon-<?=$tabNum;?>" value="<?=$row['icon'];?>" type="text" />
                                                                     <span class="input-group-addon"></span>
                                                                 </div>
+                                                                
+                                                                - OR -
+
+                                                            </div>
+                                                            
+                                                            <div class="form-group">
+
+                                                                <input style="width: 110px;" type="text" class="form-control material input-sm" id="iconurl-<?=$tabNum;?>" name="iconurl-<?=$tabNum;?>" placeholder="Icon URL" value="<?=$row['iconurl']?>">
 
                                                             </div>
 
@@ -514,6 +559,18 @@ endif;
                                                                 </div>
                                                                 Guest
                                                             </div>
+                                                            
+                                                            <div class="form-group">
+
+                                                                <div class="">
+
+                                                                    <input id="" class="switcher switcher-primary" value="false" name="window-<?=$tabNum;?>" type="hidden">
+                                                                    <input id="window[<?=$tabNum;?>]" class="switcher switcher-warning" name="window-<?=$tabNum;?>" type="checkbox" <?=$windowz;?>>
+                                                                    <label for="window[<?=$tabNum;?>]"></label>
+
+                                                                </div>
+                                                                No iFrame
+                                                            </div>
 
                                                             <div class="pull-right action-btns" style="padding-top: 8px;">
 
@@ -533,7 +590,7 @@ endif;
 
                                             <div class="checkbox clear-todo pull-left"></div>
 
-                                            <input class="btn btn-warning waves text-uppercase pull-right waves-effect waves-float" type="submit" value="Save Tabs">
+                                            <input class="btn btn-success waves text-uppercase pull-right waves-effect waves-float" type="submit" value="Save Tabs">
                                             
                                         </form>
                                         
@@ -541,6 +598,137 @@ endif;
  
                                 </div>
 
+                                <div class="tab-pane big-box  fade in" id="useredit">
+                        
+                                    <div class="row">
+                                        
+                                        <div class="col-lg-12">
+                                          
+                                            <div class="gray-bg content-box big-box box-shadow">
+                                            
+                                                <h4><strong>Change User Info For <?=$_SESSION['username'];?></strong></h4>
+                                            
+                                                <form class="content-form form-inline" name="update" id="update" action="" method="POST">
+                                              
+                                                    <input type="hidden" name="op" value="update"/>
+				                                    <input type="hidden" name="sha1" value=""/>
+                                                    <input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
+                                                    
+                                                    <div class="form-group">
+                                                
+                                                        <input autocomplete="off" type="text" value="<?php echo $USER->email; ?>" class="form-control" name="email" placeholder="E-mail Address">
+                                              
+                                                    </div>
+                                              
+                                                    <div class="form-group">
+                                                
+                                                        <input autocomplete="off" type="password" class="form-control" name="password1" placeholder="Password">
+                                              
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+                                                
+                                                        <input autocomplete="off" type="password" class="form-control" name="password2" placeholder="Password Again">
+                                              
+                                                    </div>
+
+                                                    <input type="button" class="btn btn-success text-uppercase waves waves-effect waves-float" value="Update" onclick="User.processUpdate()"/>
+
+                                                </form>                 
+                                          
+                                            </div>
+                                        
+                                        </div>
+                                      
+                                    </div>
+                                    
+                                    <div class="row">
+                                        
+                                        <div class="col-lg-12">
+                                          
+                                            <div class="gray-bg content-box big-box box-shadow">
+                                            
+                                                <h4><strong>Create User</strong></h4>
+                                            
+                                                <form class="content-form form-inline" name="new user registration" id="registration" action="" method="POST">
+                        								    
+                                                    <input type="hidden" name="op" value="register"/>
+                                                    <input type="hidden" name="sha1" value=""/>
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control" name="username" placeholder="Username" autocorrect="off" autocapitalize="off" value="">
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="email" class="form-control" name="email" placeholder="E-mail">
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="password" class="form-control" name="password1" placeholder="Password">
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="password" class="form-control" name="password2" placeholder="Retype Password">
+
+                                                    </div>
+
+                                                    <input type="button" class="btn btn-success text-uppercase waves waves-effect waves-float" value="Create User" onclick="User.processRegistration()"/>
+
+                                                </form>               
+                                          
+                                            </div>
+                                        
+                                        </div>
+                                      
+                                    </div>
+                                    
+                                    <div class="row">
+                                        
+                                        <div class="col-lg-12">
+                                          
+                                            <div class="gray-bg content-box big-box box-shadow">
+                                            
+                                                <h4><strong>Delete User</strong></h4>
+                                            
+                                                <form class="content-form form-inline" name="unregister" id="unregister" action="" method="POST">
+                                              
+                                                    <input type="hidden" name="op" value="unregister"/>
+				                                    <input type="hidden" name="sha1" value=""/>
+                                                    <input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
+                                                    
+                                                    <div class="form-group">
+                                                        
+                                                        <select class="btn waves btn-default btn-lg waves-effect waves-float" name="username">
+                                                            
+                                                            <?php foreach($getUsers as $row) : ?>
+
+                                                            <option><?=$row['username'];?></option>
+                                                            
+                                                            <?php endforeach; ?>
+                                                            
+                                                        </select>
+                                              
+                                                    </div>
+
+                                                    <input type="submit" class="btn btn-danger text-uppercase waves waves-effect waves-float" value="Delete User"/>
+
+                                                </form>                 
+                                          
+                                            </div>
+                                        
+                                        </div>
+                                      
+                                    </div>
+                      
+                                </div>
+                                
                                 <div class="tab-pane big-box  fade in" id="about">
                         
                                     <h4><strong>About Organizr</strong></h4>
@@ -550,10 +738,36 @@ endif;
                                     <p id="whatsnew"></p>
                                     
                                     <p id="downloadnow"></p>
+                                    
+                                    <div class="panel panel-danger">
+                                        
+                                        <div class="panel-heading">
+                                            
+                                            <h3 class="panel-title">Delete Database</h3>
+                                            
+                                        </div>
+                                        
+                                        <div class="panel-body">
+                                            
+                                            <div class="col-lg-4">
+                                            
+                                                <p>Only do this if an upgrade requires it.  This will delete your database so there is no going back and you will need to set everything back up, including user accouts.</p>
+                                                <form id="deletedb" method="post">
+                                                    
+                                                    <input type="hidden" name="action" value="deleteDB" />
+                                                    <input class="btn btn-danger waves text-uppercase pull-right waves-effect waves-float" type="submit" value="Delete Database">
+                                                    
+                                                </form>
+                                        
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                    </div>
                       
                                 </div>
                                 
-                                <div class="tab-pane big-box  fade in" id="tab-83">
+                                <div class="tab-pane small-box  fade in" id="customedit">
                                     
                                     <?php if($hasOptions == "Yes") : 
                                     
@@ -581,9 +795,12 @@ endif;
                                         
                                         <input type="hidden" name="action" value="addOptionz" />
                                         
-                                        <h4><strong>Let's Bidazzle</strong></h4>
-
-                                        <p>Change the colors of the following elements:</p>
+                                        <button id="plexTheme" style="background: #E49F0C" type="button" class="btn waves btn-dark text-uppercase waves-effect waves-float">Plex</button>
+                                        <button id="embyTheme" style="background: #52B54B" type="button" class="btn waves btn-dark text-uppercase waves-effect waves-float">Emby</button>
+                                        <button id="bookTheme" style="background: #3B5998" type="button" class="btn waves btn-dark text-uppercase waves-effect waves-float">Book</button>
+                                        <button id="spaTheme" style="background: #66BBAE" type="button" class="btn waves btn-dark text-uppercase waves-effect waves-float">Spa</button>
+                                        
+                                        <input class="btn btn-success waves text-uppercase pull-right waves-effect waves-float" type="submit" value="Save Options">
 
                                         <div class="content-box box-shadow big-box grids">
 
@@ -603,7 +820,7 @@ endif;
 
                                                     <center>Title Text</center>
 
-                                                    <input name="topbartext" class="form-control jscolor {hash:true}" value="<?=$topbartext;?>">
+                                                    <input name="topbartext" id="topbartext" class="form-control jscolor {hash:true}" value="<?=$topbartext;?>">
 
                                                 </div>
 
@@ -617,7 +834,7 @@ endif;
 
                                                     <center>Top Bar</center>
 
-                                                    <input name="topbar" class="form-control jscolor {hash:true}" value="<?=$topbar;?>">
+                                                    <input name="topbar" id="topbar" class="form-control jscolor {hash:true}" value="<?=$topbar;?>">
 
                                                 </div>
 
@@ -625,7 +842,7 @@ endif;
 
                                                     <center>Bottom Bar</center>
 
-                                                    <input name="bottombar" class="form-control jscolor {hash:true}" value="<?=$bottombar;?>">
+                                                    <input name="bottombar" id="bottombar" class="form-control jscolor {hash:true}" value="<?=$bottombar;?>">
 
                                                 </div>
 
@@ -635,7 +852,7 @@ endif;
 
                                                     <center>Side Bar</center>
 
-                                                    <input name="sidebar" class="form-control jscolor {hash:true}" value="<?=$sidebar;?>">
+                                                    <input name="sidebar" id="sidebar" class="form-control jscolor {hash:true}" value="<?=$sidebar;?>">
 
                                                 </div>
 
@@ -643,7 +860,7 @@ endif;
 
                                                     <center>Hover BG</center>
 
-                                                    <input name="hoverbg" class="form-control jscolor {hash:true}" value="<?=$hoverbg;?>">
+                                                    <input name="hoverbg" id="hoverbg" class="form-control jscolor {hash:true}" value="<?=$hoverbg;?>">
 
                                                 </div>
 
@@ -657,7 +874,7 @@ endif;
 
                                                     <center>Active Tab BG</center>
 
-                                                    <input name="activetabBG" class="form-control jscolor {hash:true}" value=<?=$activetabBG;?>"">
+                                                    <input name="activetabBG" id="activetabBG" class="form-control jscolor {hash:true}" value=<?=$activetabBG;?>"">
 
                                                 </div>
 
@@ -665,7 +882,7 @@ endif;
 
                                                     <center>Active Tab Icon</center>
 
-                                                    <input name="activetabicon" class="form-control jscolor {hash:true}" value="<?=$activetabicon;?>">
+                                                    <input name="activetabicon" id="activetabicon" class="form-control jscolor {hash:true}" value="<?=$activetabicon;?>">
 
                                                 </div>
 
@@ -673,7 +890,7 @@ endif;
 
                                                     <center>Active Tab Text</center>
 
-                                                    <input name="activetabtext" class="form-control jscolor {hash:true}" value="<?=$activetabtext;?>">
+                                                    <input name="activetabtext" id="activetabtext" class="form-control jscolor {hash:true}" value="<?=$activetabtext;?>">
 
                                                 </div>
 
@@ -687,7 +904,7 @@ endif;
 
                                                     <center>Inactive Icon</center>
 
-                                                    <input name="inactiveicon" class="form-control jscolor {hash:true}" value="<?=$inactiveicon;?>">
+                                                    <input name="inactiveicon" id="inactiveicon" class="form-control jscolor {hash:true}" value="<?=$inactiveicon;?>">
 
                                                 </div>
 
@@ -695,15 +912,11 @@ endif;
 
                                                     <center>Inactive Text</center>
 
-                                                    <input name="inactivetext" class="form-control jscolor {hash:true}" value="<?=$inactivetext;?>">
+                                                    <input name="inactivetext" id="inactivetext" class="form-control jscolor {hash:true}" value="<?=$inactivetext;?>">
 
                                                 </div>
 
                                             </div>
-                                            
-                                            <div class="checkbox clear-todo pull-left"></div>
-
-                                        <input class="btn btn-warning waves text-uppercase pull-right waves-effect waves-float" type="submit" value="Save Options">
 
                                         </div>
                                         
@@ -762,10 +975,83 @@ endif;
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
 
+        <?php if($_POST['op']) : ?>
+        <script>
+
+             $.smkAlert({
+                text: '<?php echo $USER->info_log[0];?>',
+                type: 'info'
+            });
+            
+        </script>
+        <?php endif; ?>
+        
         <?php if($action == "addTabz") : ?>
         <script>
 
             swal("Tabs Saved!", "Apply Changes To Reload The Page!", "success");
+            
+        </script>
+        <?php endif; ?>
+        
+         <?php if($action == "addOptionz") : ?>
+        <script>
+
+            swal("Colors Saved!", "Apply Changes To Reload The Page!", "success");
+            
+        </script>
+        <?php endif; ?>
+        
+         <?php if($action == "deleteDB") : ?>
+        <script>
+
+            swal({
+
+                title: "Are you sure?",
+                text: "You will not be able to undo this!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, No, No!",
+                closeOnConfirm: false,
+                closeOnCancel: false,
+                confirmButtonColor: "#63A8EB"
+
+            },
+
+            function (isConfirm) {
+
+                if (isConfirm) {
+                    swal("Deleted!", "The Database is long gone now.", "success");
+
+                    <?php unlink($dbfile); 
+                    
+                    foreach(glob($userdirpath . '/*') as $file) : 
+
+                        if(is_dir($file)) :
+
+                            rmdir($file); 
+
+                        elseif(!is_dir($file)) :
+                    
+                            unlink($file);
+                        
+                        endif;
+
+                    endforeach; 
+
+                    rmdir($userdirpath);
+                    
+                    ?>
+
+                    window.parent.location.reload();
+
+                } else {
+
+                    swal("Cancelled", "Whoa! That was close", "error");
+                }
+            });
             
         </script>
         <?php endif; ?>
@@ -787,7 +1073,7 @@ endif;
                         var newid = $('.list-group-item').length + 1;
 
                         $(".todo ul").append(
-                        '<li id="item-' + newid + '" class="list-group-item" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input type="text" class="form-control material" name="name-' + newid + '" id="name[' + newid + ']" placeholder="New Tab Name" value="' + toDo_name + '"></div> <div class="form-group"><input type="text" class="form-control material" name="url-' + newid + '" id="url[' + newid + ']" placeholder="Tab URL"></div> <div class="form-group"><div class="input-group"><input name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']">Default</label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> Active</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> User</div><div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> Guest</div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
+                        '<li id="item-' + newid + '" class="list-group-item" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 110px;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="New Tab Name" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 110px;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="Tab URL"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 110px;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - OR -</div>  <div class="form-group"><input style="width: 110px;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="Icon URL" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']">Default</label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> Active</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> User</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> Guest</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-warning" type="checkbox"><label for="window[' + newid + ']"></label></div> No iFrame</div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
                         );
 
                         $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
@@ -880,6 +1166,80 @@ endif;
         </script>
         
         <script>
+            
+            //Custom Themes            
+            function changeColor(elementName, elementColor) {
+                
+                var definedElement = document.getElementById(elementName);
+                
+                definedElement.value = elementColor;
+                definedElement.style.backgroundColor = elementColor;
+                
+            }
+
+            $('#plexTheme').on('click touchstart', function(){
+
+                changeColor("topbartext", "#E49F0C");
+                changeColor("topbar", "#000000");
+                changeColor("bottombar", "#000000");
+                changeColor("sidebar", "#121212");
+                changeColor("hoverbg", "#FFFFFF");
+                changeColor("activetabBG", "#E49F0C");
+                changeColor("activetabicon", "#FFFFFF");
+                changeColor("activetabtext", "#FFFFFF");
+                changeColor("inactiveicon", "#949494");
+                changeColor("inactivetext", "#B8B8B8");
+                
+            });
+            
+            $('#embyTheme').on('click touchstart', function(){
+
+                changeColor("topbartext", "#52B54B");
+                changeColor("topbar", "#212121");
+                changeColor("bottombar", "#212121");
+                changeColor("sidebar", "#121212");
+                changeColor("hoverbg", "#FFFFFF");
+                changeColor("activetabBG", "#52B54B");
+                changeColor("activetabicon", "#FFFFFF");
+                changeColor("activetabtext", "#FFFFFF");
+                changeColor("inactiveicon", "#949494");
+                changeColor("inactivetext", "#B8B8B8");
+                
+            });
+            
+            $('#bookTheme').on('click touchstart', function(){
+
+                changeColor("topbartext", "#FFFFFF");
+                changeColor("topbar", "#3B5998");
+                changeColor("bottombar", "#3B5998");
+                changeColor("sidebar", "#8B9DC3");
+                changeColor("hoverbg", "#FFFFFF");
+                changeColor("activetabBG", "#3B5998");
+                changeColor("activetabicon", "#FFFFFF");
+                changeColor("activetabtext", "#FFFFFF");
+                changeColor("inactiveicon", "#DFE3EE");
+                changeColor("inactivetext", "#DFE3EE");
+                
+            });
+            
+            $('#spaTheme').on('click touchstart', function(){
+
+                changeColor("topbartext", "#5B391E");
+                changeColor("topbar", "#66BBAE");
+                changeColor("bottombar", "#66BBAE");
+                changeColor("sidebar", "#C3EEE7");
+                changeColor("hoverbg", "#5B391E");
+                changeColor("activetabBG", "#C6C386");
+                changeColor("activetabicon", "#FFFFFF");
+                changeColor("activetabtext", "#FFFFFF");
+                changeColor("inactiveicon", "#5B391E");
+                changeColor("inactivetext", "#5B391E");
+                
+            });
+        
+        </script>
+        
+        <script>
         
         $( document ).ready(function() {
         		
@@ -890,7 +1250,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.931";
+                    var currentVersion = "0.932";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
@@ -910,7 +1270,7 @@ endif;
                         
                         $(infoTabNew).html("<br/><h4><strong>What's New in " + githubVersion + "</strong></h4><strong>Title: </strong>" + githubName + " <br/><strong>Changes: </strong>" + githubDescription);
                         
-                        $(infoTabDownload).html("<br/><h4><strong><a href='https://github.com/causefx/Organizr'>Visit Github</a></strong></h4><strong>Download Now: </strong> <br/><strong><a href='https://github.com/causefx/Organizr/archive/master.zip'>Organizr v." + githubVersion + "</a></strong>");
+                        $(infoTabDownload).html("<br/><a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn-lg text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span>View On Github</a> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success btn-lg text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Download Organizr v." + githubVersion + "</a>");
                     
                     }else if(currentVersion === githubVersion){
                     

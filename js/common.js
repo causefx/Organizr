@@ -64,11 +64,11 @@ $(function () {
   }
 
   //Smooth scrolling for body
-  $("body").niceScroll({
+  /*$("body").niceScroll({
     railpadding: {top:56,right:0,left:0,bottom:0},
     scrollspeed: 30,
     mousescrollstep: 60
-  });
+  });*/
 
 
   //Waves effect on buttons
@@ -171,8 +171,8 @@ $(function () {
   });
 
   // Full height of content
-  $('#content').css("height", $(window).height() - 56 + "px" );
-  $("div").find(".iframe").css("height", $(window).height() - 56 + "px" );
+  //$('#content').css("height", $(window).height() - 56 + "px" );
+  //$("div").find(".iframe").css("height", $(window).height() - 56 + "px" );
   //Fixed gn-menu
   $('.fix-nav').click(function(e){
     if($(window).width() > 422) {
