@@ -25,14 +25,23 @@ The Settings page will load automatically so now you can create tabs to whatever
 When creating Tabs, type in the name of the tab and hit ``Enter`` this will drop it down to the list where you can fill out the rest of the data.
 
 Name = The Name of Your Tab
+
 URL = URL of The Tab's Location
+
 Icon = Font Awesone icon
+
 Icon URL = If this is filled out, it will use this icon instead of the Font Awesome one
+
 Default = Checking this option will make this tab load first
+
 Active = Checking this option will enable the tab for your page
+
 User = This option enables this tab for Admins and Users but not Guests
+
 Guest = This option enables the tab for Admin, Users and Guests
+
 No iFrame = This option makes it so when you click the tab it will open in a new window (Used for apps that block iFrames)
+
 
 Once the cookie expires you will need to login again
 
