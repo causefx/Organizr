@@ -24,19 +24,55 @@ The Settings page will load automatically so now you can create tabs to whatever
 
 When creating Tabs, type in the name of the tab and hit ``Enter`` this will drop it down to the list where you can fill out the rest of the data.
 
+Name = The Name of Your Tab
+URL = URL of The Tab's Location
+Icon = Font Awesone icon
+Icon URL = If this is filled out, it will use this icon instead of the Font Awesome one
+Default = Checking this option will make this tab load first
+Active = Checking this option will enable the tab for your page
+User = This option enables this tab for Admins and Users but not Guests
+Guest = This option enables the tab for Admin, Users and Guests
+No iFrame = This option makes it so when you click the tab it will open in a new window (Used for apps that block iFrames)
+
 Once the cookie expires you will need to login again
 
 If you aren't logged in you or any guest will only see your guest enabled tabs
 
-## Images
+## Desktop Images
 
-Main View
-![Desktop screenshot](http://i.imgur.com/sHKNeBM.png)
+Guest View
+![Desktop screenshot](http://i.imgur.com/zFlDHYy.png)
 
 Login View
-![Desktop screenshot](http://i.imgur.com/tq9IgWZ.png)
+![Desktop screenshot](http://i.imgur.com/QzeErt1.png)
+
+Main View
+![Desktop screenshot](http://i.imgur.com/D2vlUtb.png)
 
 Settings View
-![Desktop screenshot](http://i.imgur.com/qtoZkX6.png)
+![Desktop screenshot](http://i.imgur.com/DnDpUSp.png)
+
+Color/Theme View
+![Desktop screenshot](http://i.imgur.com/sxnDa9G.png)
+
+User Management View
+![Desktop screenshot](http://i.imgur.com/MwNC6Zr.png)
+
+About/Help View
+![Desktop screenshot](http://i.imgur.com/HYQPSEu.png)
+
+Side Menu Open View
+![Desktop screenshot](http://i.imgur.com/PLVMr0y.png)
+
+Logout View
+![Desktop screenshot](http://i.imgur.com/6zfq9UG.png)
+
+## Mobile Images
+
+Main View
+<img src="http://i.imgur.com/pfoowtS.png" height="400">
+
+Menu Open View
+<img src="http://i.imgur.com/qQc7XKO.png" height="400">
 
 Theme Distributed with Extended License from Creative Market
