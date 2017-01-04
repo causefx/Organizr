@@ -41,7 +41,7 @@ User = {
 		var username = input.value;
 		if(username.trim()=="") { return this.markInvalid(input, "You forgot your user name."); }
 		if(username.indexOf("'")>-1) { return this.markInvalid(input, "Apostrophes are not allowed in user names."); }
-		if(username.length<4) { return this.markInvalid(input, "Sorry, user names must be more than 3 letters."); }
+		if(username.length<3) { return this.markInvalid(input, "Sorry, user names must be more than 2 letters."); }
 		return this.markValid(input);
 	},
 
@@ -91,7 +91,7 @@ User = {
 		// that just confuses your users. If you want to enforce strong passwords,
 		// calculate how easy it is to guess the password, and report how quickly
 		// you can figure out their password so that they pick a better one.
-		if(password.length<8) { return this.markInvalid(input, "Your password is too easy to guess, please pick something longer. Use an entire sentence. if you like."); }
+		if(password.length<4) { return this.markInvalid(input, "Your password is too easy to guess, please pick something longer. Use an entire sentence. if you like."); }
 		return this.markValid(input);
 	},
 

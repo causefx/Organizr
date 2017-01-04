@@ -53,6 +53,7 @@
 					self._closeMenu(); 
 					document.addEventListener( self.eventtype, self.bodyClickFn ); 
 				} ); */
+
 			}
 			this.trigger.addEventListener( this.eventtype, function( ev ) {
 				ev.stopPropagation();
@@ -68,16 +69,17 @@
 			} );
 			this.menu.addEventListener( this.eventtype, function(ev) { ev.stopPropagation(); } );
             
-            $("li[class^='tab-item']").on('touchstart', function(){
-                
+            $("li[class^='tab-item']").on('click vclick', function(){
+
+
                 if( self.isMenuOpen ) {
 					self._closeMenu();
 					document.removeEventListener( self.eventtype, self.bodyClickFn );
 				}
-				else {
+				/*else {
 					self._openMenu();
 					document.addEventListener( self.eventtype, self.bodyClickFn );
-				}
+				}*/
    
             });
             

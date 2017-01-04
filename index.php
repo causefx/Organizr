@@ -134,6 +134,8 @@ elseif($hasOptions == "No") :
 
 endif;
 
+$userpic = md5( strtolower( trim( $USER->email ) ) );
+
 ?>
 
 <!DOCTYPE html>
@@ -422,10 +424,10 @@ endif;
                             <!--<li class="tab-item profile" id="settings.phpx"><i class="mdi mdi-account"></i></li>-->
                             <a class="fix-nav"><i class="mdi mdi-pin"></i></a>
                             <?php if(!$USER->authenticated) : ?>
-                            <a class="log-in"><i class="mdi mdi-login"></i></a>
+                            <a class="log-in"><i class="fa fa-sign-in"></i></a>
                             <?php endif ?>
                             <?php if($USER->authenticated) : ?>
-                            <a class="logout"><i class="mdi mdi-logout"></i></a>
+                            <a class="logout"><i class="fa fa-sign-out"></i></a>
                             <?php endif ?>
                         
                         </div>
@@ -443,6 +445,16 @@ endif;
                 <li class="pull-right">
                     
                     <ul class="nav navbar-right right-menu">
+                        
+                        <li class="dropdown notifications">
+                            
+                            <a class="show-members">
+                                
+                                <i class="userpic"><img style="border-radius: 50px;" src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=40&d=mm" class="userpic"></i> 
+                                
+                            </a>
+                            
+                        </li>
                         
                         <li class="dropdown some-btn">
                             
@@ -495,14 +507,14 @@ endif;
 								
 								                        <h4 class="text-center">Create an account for Admin Access</h4>
 								
-                        								<form class="controlbox" name="new user registration" id="registration" action="" method="POST">
+                        								<form class="controlbox" name="new user registration" id="registration" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                         								    
                         								    <input type="hidden" name="op" value="register"/>
                         								    <input type="hidden" name="sha1" value=""/>
                         								
                         								    <div class="form-group">
                         								
-                        								        <input type="text" class="form-control material" name="username" placeholder="Username" autocorrect="off" autocapitalize="off" value="" autofocus>
+                        								        <input type="text" class="form-control material" name="username" autofocus placeholder="Username" autocorrect="off" autocapitalize="off" minlength="3" maxlength="16" required>
                         								
                         								    </div>
                         								
@@ -514,7 +526,7 @@ endif;
                         								
                         								    <div class="form-group">
                         								
-                        								        <input type="password" class="form-control material" name="password1" placeholder="Password">
+                        								        <input type="password" class="form-control material" name="password1" placeholder="Password" data-smk-strongPass="weak" required>
                         								
                         								    </div>
                         								
@@ -524,7 +536,7 @@ endif;
                         								
                         								    </div>
                         								
-                        								    <input type="button" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register" onclick="User.processRegistration()"/>
+                        								    <input id="registerSubmit" type="button" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register">
                         								
                         								</form>
 								                    
@@ -622,7 +634,58 @@ endif;
 
             <!--Welcome notification-->
             <div id="welcome"></div>
+            
+            <div id="members-sidebar" class="gray-bg members-sidebar">
+                
+                <h4 class="pull-left zero-m"><?php echo strtoupper($USER->username); ?> Options</h4>
+                
+                <span class="close-members-sidebar"><i class="fa fa-remove pull-right"></i></span>
+                
+                <div class="clearfix"><br/></div>
+                
+                <?php if($USER->authenticated) : ?>
+                         
+                <form class="content-form form-inline" name="update" id="update" action="" method="POST">
 
+                    <input type="hidden" name="op" value="update"/>
+                    <input type="hidden" name="sha1" value=""/>
+                    <input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
+
+                    <div class="form-group">
+
+                        <input autocomplete="off" type="text" value="<?php echo $USER->email; ?>" class="form-control" name="email" placeholder="E-mail Address">
+
+                    </div>
+
+                    <br><br>
+
+                    <div class="form-group">
+
+                        <input autocomplete="off" type="password" class="form-control" name="password1" placeholder="Password">
+
+                    </div>
+
+                    <br><br>
+
+                    <div class="form-group">
+
+                        <input autocomplete="off" type="password" class="form-control" name="password2" placeholder="Password Again">
+
+                    </div>
+
+                    <br><br>
+
+                    <div class="form-group">
+
+                        <input type="button" class="btn btn-success text-uppercase waves-effect waves-float" value="Update" onclick="User.processUpdate()"/>
+
+                    </div>
+
+                </form> 
+
+                <?php endif;?>
+                
+            </div>
 
         </div>
         <?php if(!$USER->authenticated) : ?>
@@ -654,23 +717,23 @@ endif;
                                     
                                     <h4 class="text-center">Login</h4>
                                     
-                                    <form name="log in" id="login" action="" method="POST">
+                                    <form name="log in" id="login" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                         
                                         <div class="form-group">
                                             
                                             <input type="hidden" name="op" value="login">
 				                            <input type="hidden" name="sha1" value="">
-                                            <input type="text" class="form-control material" name="username" placeholder="Username" autocorrect="off" autocapitalize="off" value="" autofocus>
+                                            <input type="text" class="form-control material" name="username" placeholder="Username" autocorrect="off" autocapitalize="off" value="" autofocus required>
                                         
                                         </div>
                                         
                                         <div class="form-group">
                                             
-                                            <input type="password" class="form-control material" name="password1" placeholder="Password">
+                                            <input type="password" class="form-control material" name="password1" placeholder="Password" required>
                                         
                                         </div>
 
-                                        <button style="background:<?=$topbartext;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()"><text style="color:<?=$topbar;?>;">Login</text></button>
+                                        <button id="loginSubmit" style="background:<?=$topbartext;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()"><text style="color:<?=$topbar;?>;">Login</text></button>
 
                                     </form>                                   
                                     
@@ -774,6 +837,31 @@ endif;
             
         };
             
+        $('#loginSubmit').click(function() {
+            
+            if ($('#login').smkValidate()) {
+                
+                console.log("validated");
+                
+            }
+            
+            console.log("didnt validate");
+            
+        });
+            
+        $('#registerSubmit').click(function() {
+            
+            if ($('#registration').smkValidate()) {
+                
+                console.log("validated");
+                
+            }
+            
+            console.log("didnt validate");
+            User.processRegistration();
+            
+        });
+            
 
         $(document).ready(function(){
             
@@ -808,17 +896,19 @@ endif;
         $(function () {
             
             $.smkAlert({
+                position: 'top-left',
                 text: '<?php if(!empty($USER->info_log)) : 
                     echo $USER->info_log[0]; 
                     elseif(empty($USER->info_log)) :
                     echo "Welcome Guest!";
                     endif;?>',
                 type: 'info'
+                
             });
 
         });
             
-        $('#reload').on('click touchstart', function(){
+        $('#reload').on('click tap', function(){
 
             $("i[class^='mdi mdi-refresh']").attr("class", "mdi mdi-refresh fa-spin");
 
@@ -844,7 +934,7 @@ endif;
 
         });
             
-        $("li[id^='settings.phpx']").on('click touchstart', function(){
+        $("li[id^='settings.phpx']").on('click tap', function(){
 
             $("img[id^='settings-icon']").attr("class", "fa-spin");
 
@@ -856,7 +946,7 @@ endif;
 
         });
 
-        $('#logoutSubmit').on('click touchstart', function(){
+        $('#logoutSubmit').on('click tap', function(){
 
             $( "#logout" ).submit();
 
@@ -868,7 +958,7 @@ endif;
 
         });
             
-        $("li[class^='tab-item']").on('click touchstart', function(){
+        $("li[class^='tab-item']").on('click vclick', function(){
                 
             var thisidfull = $(this).attr("id");
 

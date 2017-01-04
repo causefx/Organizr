@@ -78,7 +78,6 @@ if($hasOptions == "No") :
 
 endif;
 
-
 if($tabSetup == "No") :
 
     $result = $file_db->query('SELECT * FROM tabs');
@@ -91,6 +90,25 @@ if($hasOptions == "Yes") :
     
 endif;
 
+if($hasOptions == "Yes") : 
+                                    
+    foreach($resulto as $row) : 
+
+        $title = $row['title'];
+        $topbartext = $row['topbartext'];
+        $topbar = $row['topbar'];
+        $bottombar = $row['bottombar'];
+        $sidebar = $row['sidebar'];
+        $hoverbg = $row['hoverbg'];
+        $activetabBG = $row['activetabBG'];
+        $activetabicon = $row['activetabicon'];
+        $activetabtext = $row['activetabtext'];
+        $inactiveicon = $row['inactiveicon'];
+        $inactivetext = $row['inactivetext'];
+
+    endforeach;
+
+endif;
 
 $action = "";
                 
@@ -260,6 +278,8 @@ if($action == "addTabz") :
         $stmt->execute();
         
     endforeach;
+
+    //echo "<script>window.onload = function() {if(!window.location.hash) {window.location = window.location + '#loaded';window.location.reload();}}</script>";
     
 endif;
 
@@ -358,7 +378,7 @@ endif;
         
     </head>
 
-    <body style="padding: 0;">
+    <body style="padding: 0; background: #273238;">
         
         <style>
         
@@ -383,7 +403,7 @@ endif;
                   
                         <div class="tabbable tabs-with-bg" id="eighth-tabs">
                     
-                            <ul class="nav nav-tabs">
+                            <ul class="nav nav-tabs" style="background: #76828e">
                       
                                 <li class="active">
                         
@@ -705,7 +725,7 @@ endif;
                                                     
                                                     <div class="form-group">
                                                         
-                                                        <select class="btn waves btn-default btn-lg waves-effect waves-float" name="username">
+                                                        <select class="form-control" name="username">
                                                             
                                                             <?php foreach($getUsers as $row) : ?>
 
@@ -734,6 +754,13 @@ endif;
                                     <h4><strong>About Organizr</strong></h4>
                         
                                     <p id="version"></p>
+                                    
+                                    <p id="submitFeedback">
+                                    
+                                        <a href='https://github.com/causefx/Organizr/issues/new' target='_blank' type='button' class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span>Submit Issue or Request</a> 
+                                        <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span>View On Github</a> 
+                                    
+                                    </p>
                                     
                                     <p id="whatsnew"></p>
                                     
@@ -768,29 +795,7 @@ endif;
                                 </div>
                                 
                                 <div class="tab-pane small-box  fade in" id="customedit">
-                                    
-                                    <?php if($hasOptions == "Yes") : 
-                                    
-                                        foreach($resulto as $row) : 
 
-                                            $title = $row['title'];
-                                            $topbartext = $row['topbartext'];
-                                            $topbar = $row['topbar'];
-                                            $bottombar = $row['bottombar'];
-                                            $sidebar = $row['sidebar'];
-                                            $hoverbg = $row['hoverbg'];
-                                            $activetabBG = $row['activetabBG'];
-                                            $activetabicon = $row['activetabicon'];
-                                            $activetabtext = $row['activetabtext'];
-                                            $inactiveicon = $row['inactiveicon'];
-                                            $inactivetext = $row['inactivetext'];
-
-                                        endforeach;
-                                    
-                                    endif;
-                                    
-                                    ?>
-                        
                                     <form id="add_optionz" method="post">
                                         
                                         <input type="hidden" name="action" value="addOptionz" />
@@ -989,7 +994,16 @@ endif;
         <?php if($action == "addTabz") : ?>
         <script>
 
-            swal("Tabs Saved!", "Apply Changes To Reload The Page!", "success");
+            if(!window.location.hash) {
+                
+                window.location = window.location + '#loaded';
+                window.location.reload();
+                
+            }else{
+                
+               swal("Tabs Saved!", "Apply Changes To Reload The Page!", "success"); 
+                
+            }
             
         </script>
         <?php endif; ?>
@@ -1025,7 +1039,11 @@ endif;
                 if (isConfirm) {
                     swal("Deleted!", "The Database is long gone now.", "success");
 
-                    <?php unlink($dbfile); 
+                    <?php 
+                    
+                    $file_db = null;
+                    
+                    unlink($dbfile); 
                     
                     foreach(glob($userdirpath . '/*') as $file) : 
 
@@ -1250,7 +1268,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.932";
+                    var currentVersion = "0.95";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
@@ -1270,7 +1288,7 @@ endif;
                         
                         $(infoTabNew).html("<br/><h4><strong>What's New in " + githubVersion + "</strong></h4><strong>Title: </strong>" + githubName + " <br/><strong>Changes: </strong>" + githubDescription);
                         
-                        $(infoTabDownload).html("<br/><a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn-lg text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span>View On Github</a> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success btn-lg text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Download Organizr v." + githubVersion + "</a>");
+                        $(infoTabDownload).html("<br/><a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success btn-lg text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Download Organizr v." + githubVersion + "</a>");
                     
                     }else if(currentVersion === githubVersion){
                     

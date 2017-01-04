@@ -493,7 +493,7 @@ a.text-info:hover {
 }
 
 .gn-menu-main .navbar-right a {
-  padding: 0 20px !important;
+  padding: 0 10px 0 0 !important;
   font-size: 18px;
 }
 
@@ -797,10 +797,12 @@ input.gn-search:focus {
   line-height: 56px;
   font-size: 24px;
   font-weight: 300;
-  width: 120px;
+  left: 56px;
+  right: 56px;
   position: absolute;
-  left: 50%;
-  margin-left: -60px;
+  /*left: 50%;
+  width: 100%;
+  margin-left: -60px;*/
   top: 0;
 }
 
@@ -1689,10 +1691,12 @@ body {
 
 .tabs-with-bg {
   background: #e7ebec;
+  border-radius: 6px;
 }
 
 .tabs-with-bg .nav-tabs {
   border-bottom: 0;
+  border-radius: 6px 6px 0 0;
   text-align: center;
   -webkit-box-shadow: 1px 0 1px -1px rgba(0, 0, 0, 0.2);
           box-shadow: 1px 0 1px -1px rgba(0, 0, 0, 0.2);
@@ -4380,7 +4384,7 @@ body .ns-effect-loadingcircle {
 }
 
 .ultra-widget.blue-bg .w-used {
-  background-color: #4c9be8;
+  /*background-color: #4c9be8;*/
 }
 
 .ultra-widget.yellow-bg .w-used {
@@ -5966,7 +5970,7 @@ label {
 }
 
 .gn-menu-main .notifications > a:focus {
-  background-color: #4c9be8 !important;
+  /*background-color: #4c9be8 !important;*/
 }
 
 .gn-menu-main .notifications ul {
@@ -5983,7 +5987,7 @@ label {
 
 .no-touch .gn-menu-main a:hover,
 .no-touch .gn-search-item:hover {
-  background: #4c9be8;
+  /*background: #4c9be8;*/
   color: #fff;
 }
 
