@@ -1246,7 +1246,7 @@ endif;
                 changeColor("topbar", "#66BBAE");
                 changeColor("bottombar", "#66BBAE");
                 changeColor("sidebar", "#C3EEE7");
-                changeColor("hoverbg", "#5B391E");
+                changeColor("hoverbg", "#66BBAE");
                 changeColor("activetabBG", "#C6C386");
                 changeColor("activetabicon", "#FFFFFF");
                 changeColor("activetabtext", "#FFFFFF");
