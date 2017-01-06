@@ -26,9 +26,19 @@ elseif($USER->authenticated && $USER->role !== "admin") :
 
 endif;
 
-$dbfile = constant('User::DATABASE_LOCATION')  . constant('User::DATABASE_NAME') . ".db";
+function printArray($arrayName){
+    
+    foreach ( $arrayName as $item ) :
+        
+        echo $item . "<br/>";
+        
+    endforeach;
+    
+}
 
-$userdirpath = constant('User::USER_HOME');
+$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+
+$userdirpath = USER_HOME;
 $userdirpath = substr_replace($userdirpath, "", -1);
 
 $file_db = new PDO("sqlite:" . $dbfile);
@@ -116,7 +126,38 @@ if(isset($_POST['action'])) :
 
     $action = $_POST['action'];
     
-endif; 
+endif;
+
+if($action == "deleteDB") : 
+                     
+    unset($_COOKIE['Organizr']);
+    setcookie('Organizr', '', time() - 3600, '/');
+    unset($_COOKIE['OrganizrU']);
+    setcookie('OrganizrU', '', time() - 3600, '/');
+
+    $file_db = null;
+
+    unlink($dbfile); 
+
+    foreach(glob($userdirpath . '/*') as $file) : 
+
+        if(is_dir($file)) :
+
+            rmdir($file); 
+
+        elseif(!is_dir($file)) :
+
+            unlink($file);
+
+        endif;
+
+    endforeach; 
+
+    rmdir($userdirpath);
+
+   echo "<script>window.parent.location.reload();</script>";
+
+endif;
 
                 
 if(!isset($_POST['op'])) :
@@ -367,10 +408,9 @@ endif;
 		    <script type="text/javascript" src="js/user.js"></script>
 
         <link rel="stylesheet" href="css/style.css">
+        <link href="css/jquery.filer.css" rel="stylesheet">
+	    <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
 
-        <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
-        
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
@@ -439,14 +479,26 @@ endif;
 
                                         <a class="total-tabs" href="#">Total Tabs <span class="badge green-bg"></span></a>
                                         
+                                        <button id="iconHide" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
+                                            
+                                            <span class="btn-label"><i class="fa fa-upload"></i></span>Upload Icons
+                                            
+                                        </button> 
+                                        
                                         <?php if($action) : ?>
                                         
-                                        <button id="apply" class="btn btn-success waves text-uppercase pull-right waves-effect waves-float" type="submit">Apply Changes</button>
+                                        <button id="apply" class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+                                        
+                                            <span class="btn-label"><i class="fa fa-check"></i></span>Apply Changes
+                                        
+                                        </button>
                                         
                                         <?php endif; ?>
 
                                     </div>
 
+                                    <input type="file" name="files[]" id="uploadIcons" multiple="multiple">
+                                    
                                     <form id="add_tab" method="post">
 
                                         <div class="form-group add-tab">
@@ -610,7 +662,11 @@ endif;
 
                                             <div class="checkbox clear-todo pull-left"></div>
 
-                                            <input class="btn btn-success waves text-uppercase pull-right waves-effect waves-float" type="submit" value="Save Tabs">
+                                            <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+                                                
+                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save Tabs
+                                                
+                                            </button>
                                             
                                         </form>
                                         
@@ -619,48 +675,6 @@ endif;
                                 </div>
 
                                 <div class="tab-pane big-box  fade in" id="useredit">
-                        
-                                    <div class="row">
-                                        
-                                        <div class="col-lg-12">
-                                          
-                                            <div class="gray-bg content-box big-box box-shadow">
-                                            
-                                                <h4><strong>Change User Info For <?=$_SESSION['username'];?></strong></h4>
-                                            
-                                                <form class="content-form form-inline" name="update" id="update" action="" method="POST">
-                                              
-                                                    <input type="hidden" name="op" value="update"/>
-				                                    <input type="hidden" name="sha1" value=""/>
-                                                    <input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
-                                                    
-                                                    <div class="form-group">
-                                                
-                                                        <input autocomplete="off" type="text" value="<?php echo $USER->email; ?>" class="form-control" name="email" placeholder="E-mail Address">
-                                              
-                                                    </div>
-                                              
-                                                    <div class="form-group">
-                                                
-                                                        <input autocomplete="off" type="password" class="form-control" name="password1" placeholder="Password">
-                                              
-                                                    </div>
-                                                    
-                                                    <div class="form-group">
-                                                
-                                                        <input autocomplete="off" type="password" class="form-control" name="password2" placeholder="Password Again">
-                                              
-                                                    </div>
-
-                                                    <input type="button" class="btn btn-success text-uppercase waves waves-effect waves-float" value="Update" onclick="User.processUpdate()"/>
-
-                                                </form>                 
-                                          
-                                            </div>
-                                        
-                                        </div>
-                                      
-                                    </div>
                                     
                                     <div class="row">
                                         
@@ -698,8 +712,12 @@ endif;
                                                         <input type="password" class="form-control" name="password2" placeholder="Retype Password">
 
                                                     </div>
-
-                                                    <input type="button" class="btn btn-success text-uppercase waves waves-effect waves-float" value="Create User" onclick="User.processRegistration()"/>
+                                                    
+                                                    <button class="btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float" type="submit" onclick="User.processRegistration()">
+                                                
+                                                        <span class="btn-label"><i class="fa fa-user-plus"></i></span>Create User
+                                                
+                                                    </button>
 
                                                 </form>               
                                           
@@ -737,7 +755,11 @@ endif;
                                               
                                                     </div>
 
-                                                    <input type="submit" class="btn btn-danger text-uppercase waves waves-effect waves-float" value="Delete User"/>
+                                                    <button class="btn waves btn-labeled btn-danger btn text-uppercase waves-effect waves-float" type="submit" onclick="User.processRegistration()">
+                                                
+                                                        <span class="btn-label"><i class="fa fa-user-times"></i></span>Delete User
+                                                
+                                                    </button>
 
                                                 </form>                 
                                           
@@ -782,7 +804,11 @@ endif;
                                                 <form id="deletedb" method="post">
                                                     
                                                     <input type="hidden" name="action" value="deleteDB" />
-                                                    <input class="btn btn-danger waves text-uppercase pull-right waves-effect waves-float" type="submit" value="Delete Database">
+                                                    <button class="btn waves btn-labeled btn-danger pull-right text-uppercase waves-effect waves-float" type="submit">
+                                                
+                                                        <span class="btn-label"><i class="fa fa-trash"></i></span>Delete Databse
+                                                
+                                                    </button>
                                                     
                                                 </form>
                                         
@@ -805,7 +831,11 @@ endif;
                                         <button id="bookTheme" style="background: #3B5998" type="button" class="btn waves btn-dark text-uppercase waves-effect waves-float">Book</button>
                                         <button id="spaTheme" style="background: #66BBAE" type="button" class="btn waves btn-dark text-uppercase waves-effect waves-float">Spa</button>
                                         
-                                        <input class="btn btn-success waves text-uppercase pull-right waves-effect waves-float" type="submit" value="Save Options">
+                                        <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+                                                
+                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save Options
+                                                
+                                        </button>
 
                                         <div class="content-box box-shadow big-box grids">
 
@@ -979,14 +1009,26 @@ endif;
         <script src="js/notifications/notificationFx.js"></script>
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
+        <script src="js/jquery.filer.min.js" type="text/javascript"></script>
+	    <script src="js/custom.js" type="text/javascript"></script>
 
         <?php if($_POST['op']) : ?>
         <script>
 
              $.smkAlert({
-                text: '<?php echo $USER->info_log[0];?>',
+                text: '<?php echo printArray($USER->info_log); ?>',
                 type: 'info'
             });
+            
+            <?php if(!empty($USER->error_log)) : ?>
+            $.smkAlert({
+                position: 'top-left',
+                text: '<?php echo printArray($USER->error_log); ?>',
+                type: 'warning'
+                
+            });
+            
+            <?php endif; ?>
             
         </script>
         <?php endif; ?>
@@ -1012,64 +1054,6 @@ endif;
         <script>
 
             swal("Colors Saved!", "Apply Changes To Reload The Page!", "success");
-            
-        </script>
-        <?php endif; ?>
-        
-         <?php if($action == "deleteDB") : ?>
-        <script>
-
-            swal({
-
-                title: "Are you sure?",
-                text: "You will not be able to undo this!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-                cancelButtonText: "No, No, No!",
-                closeOnConfirm: false,
-                closeOnCancel: false,
-                confirmButtonColor: "#63A8EB"
-
-            },
-
-            function (isConfirm) {
-
-                if (isConfirm) {
-                    swal("Deleted!", "The Database is long gone now.", "success");
-
-                    <?php 
-                    
-                    $file_db = null;
-                    
-                    unlink($dbfile); 
-                    
-                    foreach(glob($userdirpath . '/*') as $file) : 
-
-                        if(is_dir($file)) :
-
-                            rmdir($file); 
-
-                        elseif(!is_dir($file)) :
-                    
-                            unlink($file);
-                        
-                        endif;
-
-                    endforeach; 
-
-                    rmdir($userdirpath);
-                    
-                    ?>
-
-                    window.parent.location.reload();
-
-                } else {
-
-                    swal("Cancelled", "Whoa! That was close", "error");
-                }
-            });
             
         </script>
         <?php endif; ?>
@@ -1171,6 +1155,13 @@ endif;
 
         <script>
             
+            $("#iconHide").click(function(){
+
+                $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).toggle();
+     
+            });
+            
+
             $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
             
             $( "span[class^='fa fa-hand-paper-o']" )
@@ -1260,6 +1251,8 @@ endif;
         <script>
         
         $( document ).ready(function() {
+            
+            $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
         		
         	$.ajax({
         				
@@ -1268,7 +1261,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.95";
+                    var currentVersion = "0.96";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;

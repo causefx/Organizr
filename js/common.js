@@ -100,44 +100,6 @@ $(function () {
     e.preventDefault();
   });
 
-  //Sign in
-  $(".log-in").click(function(e){
-    var e1 = document.querySelector(".log-in"),
-        e2 = document.querySelector(".login-modal");
-    cta(e1, e2, {relativeToWindow: true}, function () {
-        $('.login-modal').modal("show");
-    });
-
-    e.preventDefault();
-  });
-
-  //Logout
-  $(".logout").click(function(e){
-    var el1 = document.querySelector(".logout"),
-        el2 = document.querySelector(".logout-modal");
-    cta(el1, el2, {relativeToWindow: true}, function () {
-        $('.logout-modal').modal("show");
-    });
-
-    e.preventDefault();
-  });
-
-  //Members Sidebar
-  $(".show-members").click(function(e){
-    var e_s1 = document.querySelector(".show-members"),
-        e_s2 = document.querySelector("#members-sidebar");
-
-        cta(e_s1, e_s2, {relativeToWindow: true}, function () {
-          $('#members-sidebar').addClass('members-sidebar-open');
-        });
-
-    e.preventDefault();
-  });
-
-  $('.close-members-sidebar').click(function(){
-    $('#members-sidebar').removeClass('members-sidebar-open');
-  });
-
   //Fullscreen mode
   function toggleFullScreen() {
     if (!document.fullscreenElement &&    // alternative standard method

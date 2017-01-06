@@ -16,7 +16,18 @@ function registration_callback($username, $email, $userdir)
 require_once("user.php");
 $USER = new User("registration_callback");
 
-$dbfile = constant('User::DATABASE_LOCATION')  . constant('User::DATABASE_NAME') . ".db";
+function printArray($arrayName){
+    
+    foreach ( $arrayName as $item ) :
+        
+        echo $item . "<br/>";
+        
+    endforeach;
+    
+}
+    
+$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+
 $database = new PDO("sqlite:" . $dbfile);
 
 $needSetup = "Yes";
@@ -29,7 +40,7 @@ foreach($database->query($query) as $data) {
 
 }
 
-$db = constant('User::DATABASE_LOCATION')  . constant('User::DATABASE_NAME') . ".db";
+$db = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
 $file_db = new PDO("sqlite:" . $db);
 $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -424,7 +435,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                             <!--<li class="tab-item profile" id="settings.phpx"><i class="mdi mdi-account"></i></li>-->
                             <a class="fix-nav"><i class="mdi mdi-pin"></i></a>
                             <?php if(!$USER->authenticated) : ?>
-                            <a class="log-in"><i class="fa fa-sign-in"></i></a>
+                            <!--<a class="log-in"><i class="fa fa-sign-in"></i></a>-->
                             <?php endif ?>
                             <?php if($USER->authenticated) : ?>
                             <a class="logout"><i class="fa fa-sign-out"></i></a>
@@ -448,7 +459,17 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                         
                         <li class="dropdown notifications">
                             
+                            <?php if(!$USER->authenticated) : ?>
+                            
+                            <a class="log-in">
+                            
+                            <?php endif; ?>
+                            
+                            <?php if($USER->authenticated) : ?>
+                            
                             <a class="show-members">
+                                
+                            <?php endif; ?>
                                 
                                 <i class="userpic"><img style="border-radius: 50px;" src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=40&d=mm" class="userpic"></i> 
                                 
@@ -589,8 +610,8 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                 </div>
                 <?php endif; ?>
                 
-                <?php if($USER->authenticated && $USER->role == "admin" && $tabSetup == "Yes" && $needSetup == "No") :?>
-                <div class="table-wrapper">
+                <?php if($tabSetup == "No" && $needSetup == "No") :?>        
+                <div id="tabEmpty" class="table-wrapper" style="display: none">
                 
                     <div class="table-row">
                 
@@ -600,18 +621,17 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                                 
                                 <div class="content-box">
                                     
-                                    <div class="yellow-bg biggest-box">
+                                    <div class="red-bg biggest-box">
                 
-                                        <h1 class="zero-m text-uppercase">Almost Done!</h1>
+                                        <h1 class="zero-m text-uppercase">Hold Up!</h1>
                 
                                     </div>
                 
                                     <div class="big-box text-left registration-form">
                 
-                                        <h2 class="text-center">Looks like this is a fresh install.</h4>
-                                        <h3 class="text-center">Here's a couple hints before you get started.</h4>
-                                        <h5 class="">The new layout now has 3 groups:<br><br>Admins - Have access to everything<br><br>Users - Have access to tabs marked active and for user<br><br>Guests - Have access to tabs marked active and for guest<br><br>You can have the side-bar pinned if you enable that on the bottom of the side-bar itself<br><br>Alright, Click the Hamburger on the top right and goto Settings to start making your tabs!</h4>
-                						                                    
+                                        <br><br><br>
+                                        <h2 class="text-center">Looks like you don't have access.</h2>
+        						                                    
                                     </div>
                                 
                                 </div>
@@ -624,9 +644,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                 
                 </div>
                 <?php endif; ?>
-                
-                
-                
+                                
                 <!--End Load Framed Content-->
 
             </div>
@@ -723,6 +741,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                                             
                                             <input type="hidden" name="op" value="login">
 				                            <input type="hidden" name="sha1" value="">
+                                            <input type="hidden" name="rememberMe" value="false"/>
                                             <input type="text" class="form-control material" name="username" placeholder="Username" autocorrect="off" autocapitalize="off" value="" autofocus required>
                                         
                                         </div>
@@ -731,6 +750,18 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                                             
                                             <input type="password" class="form-control material" name="password1" placeholder="Password" required>
                                         
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            
+                                            <div class="i-block"> <input id="rememberMe" name="rememberMe" class="switcher switcher-success switcher-medium pull-left" value="true" type="checkbox" checked=""> 
+                                                
+                                                <label for="rememberMe" class="pull-left"></label>
+                                            
+                                                <label class="pull-right"> &nbsp; Remember Me</label>
+                                            
+                                            </div>
+
                                         </div>
 
                                         <button id="loginSubmit" style="background:<?=$topbartext;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()"><text style="color:<?=$topbar;?>;">Login</text></button>
@@ -862,6 +893,49 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
             
         });
             
+        //Sign in
+        $(".log-in").click(function(e){
+            
+            var e1 = document.querySelector(".log-in"),
+            
+                e2 = document.querySelector(".login-modal");
+            
+            cta(e1, e2, {relativeToWindow: true}, function () {
+                
+                $('.login-modal').modal("show");
+            
+            });
+
+            e.preventDefault();
+        
+        });
+
+        //Logout
+        $(".logout").click(function(e){
+        var el1 = document.querySelector(".logout"),
+        el2 = document.querySelector(".logout-modal");
+        cta(el1, el2, {relativeToWindow: true}, function () {
+        $('.logout-modal').modal("show");
+        });
+
+        e.preventDefault();
+        });
+
+        //Members Sidebar
+        $(".show-members").click(function(e){
+        var e_s1 = document.querySelector(".show-members"),
+        e_s2 = document.querySelector("#members-sidebar");
+
+        cta(e_s1, e_s2, {relativeToWindow: true}, function () {
+        $('#members-sidebar').addClass('members-sidebar-open');
+        });
+
+        e.preventDefault();
+        });
+
+        $('.close-members-sidebar').click(function(){
+        $('#members-sidebar').removeClass('members-sidebar-open');
+        });
 
         $(document).ready(function(){
             
@@ -889,6 +963,12 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                 $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
             }
             
+            if (defaultTab == null){
+             
+                $( "div[id^='tabEmpty" ).show();
+                
+            }
+            
             setHeight();
 
         }); 
@@ -898,13 +978,23 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
             $.smkAlert({
                 position: 'top-left',
                 text: '<?php if(!empty($USER->info_log)) : 
-                    echo $USER->info_log[0]; 
+                    echo printArray($USER->info_log); 
                     elseif(empty($USER->info_log)) :
                     echo "Welcome Guest!";
                     endif;?>',
                 type: 'info'
                 
             });
+            
+            <?php if(!empty($USER->error_log)) : ?>
+            $.smkAlert({
+                position: 'top-left',
+                text: '<?php echo printArray($USER->error_log); ?>',
+                type: 'warning'
+                
+            });
+            
+            <?php endif; ?>
 
         });
             

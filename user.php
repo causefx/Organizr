@@ -8,6 +8,9 @@
 	 * salting subsequent password checks.
 	 */
 
+    define('USER_HOME', dirname(__DIR__) . '/users/');
+    define('DATABASE_LOCATION', dirname(__DIR__) . '/');
+
 	class User
 	{
 		// =======================================================================
@@ -18,7 +21,7 @@
 			// and you need to use htaccess rules or some such to ensure no one
 			// grabs your user's data.
 
-			const USER_HOME = "../users/";
+			//const USER_HOME = "../users/";
 
 			// In order for users to be notified by email of certain things, set this to true.
 			// Note that the server you run this on should have sendmail in order for
@@ -37,7 +40,7 @@
 			// base dir as your web page. So change it, because people are going to try
 			// to download your database file. And succeed.
 
-			const DATABASE_LOCATION = "../";
+			//const DATABASE_LOCATION = "../";
 
 			// if this is set to "true", registration failure due to known usernames is reported,
 			// and login failures are explained as either the wrong username or the wrong password.
@@ -70,7 +73,7 @@
 
 			// this is the session timeout. If someone hasn't performed any page requests
 			// in [timeout] seconds, they're considered logged out.
-			const time_out = 7200;
+			const time_out = 604800;
 
 			// You'll probably want to change this to something sensible. If your site is
 			// www.sockmonkey.com, then you want this to be "sockmonkey.com"
@@ -140,10 +143,14 @@
 		{
 			// session management comes first. Warnings are repressed with @ because it will warn if something else already called session_start()
 			@session_start();
-			if (empty($_SESSION["username"]) || empty($_SESSION["token"])) $this->resetSession();
+            if(!isset($_COOKIE['Organizr'])) {
+                if (empty($_SESSION["username"]) || empty($_SESSION["token"])) $this->resetSession();
+            }else{
+                $_SESSION["username"] = $_COOKIE['OrganizrU'];
+            }
 
 			// file location for the user database
-			$dbfile = User::DATABASE_LOCATION  . User::DATABASE_NAME . ".db";
+			$dbfile = DATABASE_LOCATION  . User::DATABASE_NAME . ".db";
 
 			// do we need to build a new database?
 			$rebuild = false;
@@ -199,7 +206,7 @@
 
 			// at this point we can make some globals available.
 			$this->username = $_SESSION["username"];
-			$this->userdir = ($this->username !=User::GUEST_USER? User::USER_HOME . $this->username : false);
+			$this->userdir = ($this->username !=User::GUEST_USER? USER_HOME . $this->username : false);
 			$this->email = $this->get_user_email($this->username);
 			$this->role = $this->get_user_role($this->username);
 
@@ -220,6 +227,7 @@
 			// get relevant values
 			$username = $_POST["username"];
 			$sha1 = $_POST["sha1"];
+            $rememberMe = $_POST["rememberMe"];
 			// step 1: someone could have bypassed the javascript validation, so validate again.
 			if(!$this->validate_user_name($username)) {
 				$this->info("log in error: user name did not pass validation");
@@ -228,7 +236,11 @@
 				$this->info("log in error: password did not pass validation");
 				return false; }
 			// step 2: if validation passed, log the user in
-			return $this->login_user($username, $sha1);
+			if($rememberMe == "true") {
+                return $this->login_user($username, $sha1, true);    
+            }else{
+                return $this->login_user($username, $sha1, false);                    
+            }
 		}
 
 		/**
@@ -440,15 +452,33 @@ EOT;
 		{
 			// actually logged in?
 			if($this->is_user_active($username)===false) { return false; }
-
+            
 			// logged in, but do the tokens match?
 			$token = $this->get_user_token($username);
-			if($token != $_SESSION["token"]) {
-				$this->error("token mismatch for $username");
-				return false; }
-
-			// active, using the correct token -> authenticated
-			return true;
+            if(isset($_COOKIE["Organizr"])){
+            
+                if($_COOKIE["Organizr"] == $token){
+                    
+                    return true;
+                    
+                }else{
+                    
+                    $this->error("cookie token mismatch for $username");
+                    return false;
+                    
+                }
+            
+            }else{
+            
+                if($token != $_SESSION["token"]) {
+                    $this->error("token mismatch for $username");
+                    return false; 
+                }
+            
+                // active, using the correct token -> authenticated
+			     return true;
+            }
+            
 		}
 
 		/**
@@ -531,9 +561,9 @@ EOT;
 			$query = "SELECT * FROM users WHERE username = '$username'";
 			foreach($this->database->query($query) as $data) {
 				$this->info("created user account for $username");
-				$this->update_user_token($username, $sha1);
+				$this->update_user_token($username, $sha1, false);
 				// make the user's data directory
-				$dir = User::USER_HOME . $username;
+				$dir = USER_HOME . $username;
 				if(!mkdir($dir, 0760, true)) { $this->error("could not make user directory $dir"); return false; }
 				$this->info("created user directory $dir");
 				// if there is a callback, call it
@@ -546,7 +576,7 @@ EOT;
 		/**
 		 * Log a user in
 		 */
-		function login_user($username, $sha1)
+		function login_user($username, $sha1, $remember)
 		{
 			// transform sha1 into real password
 			$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
@@ -560,8 +590,13 @@ EOT;
 				if($dbpassword==$data["password"]) {
 					// authentication passed - 1) mark active and update token
 					$this->mark_user_active($username);
-					$this->setSession($username, $this->update_user_token($username, $sha1));
+					$this->setSession($username, $this->update_user_token($username, $sha1, false));
 					// authentication passed - 2) signal authenticated
+                    if($remember == "true") {
+                        setcookie("Organizr", $this->update_user_token($username, $sha1, true), time() + (86400 * 7), "/");
+                        setcookie("OrganizrU", $username, time() + (86400 * 7), "/");
+                        
+                    }
 					return true; }
 				// authentication failed
 				$this->info("password mismatch for $username");
@@ -604,6 +639,10 @@ EOT;
 			$this->database->exec($update);
 			$this->resetSession();
 			$this->info("logged $username out");
+            unset($_COOKIE['Organizr']);
+            setcookie('Organizr', '', time() - 3600, '/');
+            unset($_COOKIE['OrganizrU']);
+            setcookie('OrganizrU', '', time() - 3600, '/');
 			return true;
 		}
 
@@ -663,7 +702,7 @@ EOT;
 		/**
 		 * Update the user's token and password upon successful login
 		 */
-		function update_user_token($username, $sha1)
+		function update_user_token($username, $sha1, $noMsg)
 		{
 			// update the user's token
 			$token = $this->random_hex_string(32);
@@ -674,7 +713,9 @@ EOT;
 			$newpassword = $this->token_hash_password($username, $sha1, $token);
 			$update = "UPDATE users SET password = '$newpassword' WHERE username = '$username'";
 			$this->database->exec($update);
-			$this->info("updated token and password for $username");
+			if($noMsg == "false"){
+                $this->info("updated token and password for $username");   
+            }
 
 			return $token;
 		}

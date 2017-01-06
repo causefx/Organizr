@@ -1,5 +1,7 @@
 <?php
 
+require_once("user.php");
+
 function check($extension) {
     
     if (extension_loaded($extension)) : 
@@ -74,8 +76,8 @@ function getFilePermission($file) {
     endif;
 }
 
-$db = dirname(__DIR__, 1) . "/users.db";
-$folder = dirname(__DIR__, 1) . "/users/";
+$db = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+$folder = USER_HOME;
 
 ?>
 
@@ -117,7 +119,7 @@ $folder = dirname(__DIR__, 1) . "/users/";
             <!--Content-->
             <div id="content"  style="margin:0 20px; overflow:hidden">
                 
-                <h1><center>Check Persmissions</center></h1>
+                <h1><center>Check Requirements & Permissions</center></h1>
                 
                 <?php
                 
@@ -127,7 +129,7 @@ $folder = dirname(__DIR__, 1) . "/users/";
                 getFilePermission($db);
                 getFilePermission($folder);
                 getFilePermission((__DIR__));
-                getFilePermission(dirname(__DIR__, 1));
+                getFilePermission(dirname(__DIR__));
 
                 ?>
 
