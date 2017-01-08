@@ -471,7 +471,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                                 
                             <?php endif; ?>
                                 
-                                <i class="userpic"><img style="border-radius: 50px;" src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=40&d=mm" class="userpic"></i> 
+                                <i class="userpic"><img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=40&d=mm" class="img-circle"></i> 
                                 
                             </a>
                             
@@ -631,6 +631,10 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                 
                                         <br><br><br>
                                         <h2 class="text-center">Looks like you don't have access.</h2>
+                                        
+                                        <?php if(!$USER->authenticated) : ?>
+                                        <button style="background:<?=$topbar;?>;" type="submit" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><text style="color:<?=$topbartext;?>;">Login</text></button>
+                                        <?php endif; ?>
         						                                    
                                     </div>
                                 
@@ -653,63 +657,95 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
             <!--Welcome notification-->
             <div id="welcome"></div>
             
-            <div id="members-sidebar" class="gray-bg members-sidebar">
+            <div id="members-sidebar" style="background: <?=$sidebar;?>;" class="members-sidebar">
                 
-                <h4 class="pull-left zero-m"><?php echo strtoupper($USER->username); ?> Options</h4>
+                <h4 class="pull-left zero-m">Options</h4>
                 
                 <span class="close-members-sidebar"><i class="fa fa-remove pull-right"></i></span>
                 
                 <div class="clearfix"><br/></div>
                 
                 <?php if($USER->authenticated) : ?>
+                
+                <div class="content-box profile-sidebar box-shadow">
+                
+                    <img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=100&d=mm" class="img-responsive img-circle center-block" alt="user" https:="" www.gravatar.com="" avatar="">
+                
+                    <div class="profile-usertitle">
+                
+                        <div class="profile-usertitle-name">
+                
+                            <?php echo strtoupper($USER->username); ?>
+                
+                        </div>
+                
+                        <div class="profile-usertitle-job">
+                
+                            <?php echo strtoupper($USER->role); ?>
+                
+                        </div>
+                
+                    </div>
+                
+                    <div id="buttonsDiv" class="profile-userbuttons">
+                
+                        <button id="editInfo" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float">Edit Info</button>
+                
+                        <button type="button" class="logout btn btn-warning waves waves-effect waves-float">Logout</button>
+                
+                    </div>
+                    
+                    <div id="editInfoDiv" style="display: none" class="profile-usertitle">
                          
-                <form class="content-form form-inline" name="update" id="update" action="" method="POST">
+                        <form class="content-form form-inline" name="update" id="update" action="" method="POST">
 
-                    <input type="hidden" name="op" value="update"/>
-                    <input type="hidden" name="sha1" value=""/>
-                    <input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
+                            <input type="hidden" name="op" value="update"/>
+                            <input type="hidden" name="sha1" value=""/>
+                            <input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
 
-                    <div class="form-group">
+                            <div class="form-group">
 
-                        <input autocomplete="off" type="text" value="<?php echo $USER->email; ?>" class="form-control" name="email" placeholder="E-mail Address">
+                                <input autocomplete="off" type="text" value="<?php echo $USER->email; ?>" class="form-control" name="email" placeholder="E-mail Address">
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <input autocomplete="off" type="password" class="form-control" name="password1" placeholder="Password">
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <input autocomplete="off" type="password" class="form-control" name="password2" placeholder="Password Again">
+
+                            </div>
+
+                            <br>
+
+                            <div class="form-group">
+
+                                <input type="button" class="btn btn-success text-uppercase waves-effect waves-float" value="Update" onclick="User.processUpdate()"/>
+                                
+                                <button id="goBackButtons" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float">Go Back</button>
+
+                            </div>
+
+                        </form>
 
                     </div>
-
-                    <br><br>
-
-                    <div class="form-group">
-
-                        <input autocomplete="off" type="password" class="form-control" name="password1" placeholder="Password">
-
-                    </div>
-
-                    <br><br>
-
-                    <div class="form-group">
-
-                        <input autocomplete="off" type="password" class="form-control" name="password2" placeholder="Password Again">
-
-                    </div>
-
-                    <br><br>
-
-                    <div class="form-group">
-
-                        <input type="button" class="btn btn-success text-uppercase waves-effect waves-float" value="Update" onclick="User.processUpdate()"/>
-
-                    </div>
-
-                </form> 
+                    
+                </div>
 
                 <?php endif;?>
-                
+
             </div>
 
         </div>
         <?php if(!$USER->authenticated) : ?>
         <div class="login-modal modal fade">
             
-            <div style="background:<?=$topbar;?>;" class="table-wrapper">
+            <div style="background:<?=$sidebar;?>;" class="table-wrapper">
                 
                 <div class="table-row">
                     
@@ -725,17 +761,21 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                             
                             <div class="content-box">
                                 
-                                <div style="background:<?=$topbartext;?>;" class="biggest-box">
+                                <div style="background:<?=$topbar;?>;" class="biggest-box">
 
-                                    <h1 style="color:<?=$topbar;?>;" class="zero-m text-uppercase">Welcome</h1>
+                                    <h1 style="color:<?=$topbartext;?>;" class="zero-m text-uppercase">Welcome</h1>
 
                                 </div>
                                 
                                 <div class="big-box text-left login-form">
-                                    
-                                    <h4 class="text-center">Login</h4>
+
+                                    <?php if($USER->error!="") : ?>
+                                    <p class="error">Error: <?php echo $USER->error; ?></p>
+                                    <?php endif; ?>
                                     
                                     <form name="log in" id="login" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
+                                        
+                                        <h4 class="text-center">Login</h4>
                                         
                                         <div class="form-group">
                                             
@@ -764,9 +804,26 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
 
                                         </div>
 
-                                        <button id="loginSubmit" style="background:<?=$topbartext;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()"><text style="color:<?=$topbar;?>;">Login</text></button>
+                                        <button id="loginSubmit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()"><text style="color:<?=$topbartext;?>;">Login</text></button>
 
-                                    </form>                                   
+                                    </form> 
+                                    
+                                    <button id="switchForgot" class="btn btn-block btn-info text-uppercase waves">Forgot Password</button>
+                                    
+                                    <form style="display: none;" name="forgotPassword" id="forgotPassword" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
+                                        
+                                        <h4 class="text-center">Forgot Password</h4>
+                                        
+                                        <div class="form-group">
+                                            
+                                            <input type="hidden" name="op" value="reset">
+                                            <input type="text" class="form-control material" name="email" placeholder="E-mail" autocorrect="off" autocapitalize="off" value="" autofocus required>
+                                        
+                                        </div>
+
+                                        <button style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="reset password"><text style="color:<?=$topbartext;?>;">Reset Password</text></button>
+
+                                    </form> 
                                     
                                 </div>
                             
@@ -807,9 +864,9 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
 			
                                         <h3 style="color:<?=$topbar;?>;" class="zero-m text-uppercase">Do you want to logout?</h3>
                                         
-                                        <a style="color:<?=$topbar;?>;" href="#" id="logoutSubmit" class="i-block" data-dismiss="modal">Yes</a>
+                                        <a style="color:<?=$topbar;?>;" id="logoutSubmit" class="i-block" data-dismiss="modal">Yes</a>
                                         
-                                        <a style="color:<?=$topbar;?>;" href="#" class="i-block" data-dismiss="modal">No</a>
+                                        <a style="color:<?=$topbar;?>;" class="i-block" data-dismiss="modal">No</a>
                                 
                                     </form>
                                     
@@ -893,6 +950,28 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
             
         });
             
+        $("#editInfo").click(function(){
+
+            $( "div[id^='editInfoDiv']" ).toggle();
+            $( "div[id^='buttonsDiv']" ).toggle();
+     
+        });
+            
+        $("#goBackButtons").click(function(){
+
+            $( "div[id^='editInfoDiv']" ).toggle();
+            $( "div[id^='buttonsDiv']" ).toggle();
+     
+        });
+            
+        $("#switchForgot").click(function(){
+
+            $( "form[id^='login']" ).toggle();
+            $( "form[id^='forgotPassword']" ).toggle();
+            $("#switchForgot").toggle();
+     
+        });
+            
         //Sign in
         $(".log-in").click(function(e){
             
@@ -965,7 +1044,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
             
             if (defaultTab == null){
              
-                $( "div[id^='tabEmpty" ).show();
+                $("div[id^='tabEmpty']").show();
                 
             }
             
@@ -974,17 +1053,14 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
         }); 
             
         $(function () {
-            
+            <?php if(!empty($USER->info_log)) : ?>
             $.smkAlert({
                 position: 'top-left',
-                text: '<?php if(!empty($USER->info_log)) : 
-                    echo printArray($USER->info_log); 
-                    elseif(empty($USER->info_log)) :
-                    echo "Welcome Guest!";
-                    endif;?>',
+                text: '<?php echo printArray($USER->info_log);?>',
                 type: 'info'
                 
             });
+            <?php endif; ?>
             
             <?php if(!empty($USER->error_log)) : ?>
             $.smkAlert({
@@ -993,7 +1069,6 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                 type: 'warning'
                 
             });
-            
             <?php endif; ?>
 
         });

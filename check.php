@@ -35,6 +35,46 @@ function check($extension) {
     
 }
 
+function checkFunction($function) {
+    
+    if (function_exists($function)) : 
+    
+        echo '<div class="panel panel-success">';
+        echo '<div class="panel-heading">';
+        echo '<h3 class="panel-title">'. $function . '</h3>';
+        echo '</div>';
+        echo '<div style="color: gray" class="panel-body">';
+        echo $function . ' is loaded and ready to rock-n-roll!  Good 2 Go!';
+    
+        if($function == "MAIL") :
+            
+            echo '<br/> **Please make sure you can send email prior to installing as this is needed for password resets**';
+        
+        endif;
+    
+        echo '</div></div>'; 
+    
+    else :
+    
+        echo '<div class="panel panel-danger">';
+        echo '<div class="panel-heading">';
+        echo '<h3 class="panel-title">'. $function . '</h3>';
+        echo '</div>';
+        echo '<div style="color: gray" class="panel-body">';
+        echo $function . ' is NOT loaded!  Please install it before proceeding'; 
+    
+        if($function == "MAIL") :
+            
+            echo '<br/> **If you do not want to use password resets, this is okay not being installed**  EDIT LINE 31 on user.php to "false" [const use_mail = false]';
+        
+        endif;
+    
+        echo '</div></div>'; 
+    
+    endif;  
+    
+}
+
 function getFilePermission($file) {
         
     if (file_exists($file)) :
@@ -125,6 +165,7 @@ $folder = USER_HOME;
                 
                 check("PDO_SQLITE");
                 check("PDO");
+                checkFunction("MAIL");
 
                 getFilePermission($db);
                 getFilePermission($folder);

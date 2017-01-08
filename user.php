@@ -28,7 +28,7 @@
 			// notification emails to work. Also note that password resetting doesn't work
 			// unless mail notification is turned on.
 
-			const use_mail = false;
+			const use_mail = true;
 
 			// This value should point to a directory that is not available to web users.
 			// If your documents are in ./public_html, for instance., then put database
@@ -77,14 +77,14 @@
 
 			// You'll probably want to change this to something sensible. If your site is
 			// www.sockmonkey.com, then you want this to be "sockmonkey.com"
-			const DOMAIN_NAME = "localhost";
+			const DOMAIN_NAME = "Organizr";
 
 			// This is going to be the "from" address
-			const MAILER_NAME = "noreply@localhost";
+			const MAILER_NAME = "noreply@organizr";
 
 			// if you want people to be able to reply to a real address, override
 			// this variable to "yourmail@somedomain.ext" here.
-			const MAILER_REPLYTO = "noreply@localhost";
+			const MAILER_REPLYTO = "noreply@organizr";
 
 		// =======================================================================
 		// 	Don't modify any variables beyond this point =)
@@ -355,7 +355,7 @@ EOT;
 
 			// step 1: someone could have bypassed the javascript validation, so validate again.
 			if(preg_match(User::emailregexp, $email)==0) {
-				$this->info("registration error: email address did not pass validation");
+				$this->info("email address did not pass validation");
 				return false; }
 
 			// step 2: if validation passed, see if there is a matching user, and reset the password if there is
@@ -373,6 +373,7 @@ EOT;
 			$dbpassword = $this->token_hash_password($username, $sha1, $token);
 			$update = "UPDATE users SET password = '$dbpassword' WHERE email= '$email'";
 			$this->database->exec($update);
+            $this->info("Email has been sent with new password");
 
 			// step 3: notify the user of the new password
 			$from = User::MAILER_NAME;
@@ -427,7 +428,7 @@ EOT;
 		{
 			$cleaned = $this->clean_SQLite_string($username);
 			$validated = ($cleaned != "" && $cleaned==$username);
-			if(!$validated) { $this->error = "user name did not pass validation."; }
+			if(!$validated) { $this->error = "user name did not pass validation."; $this->error("user name did not pass validation."); }
 			return $validated;
 		}
 
@@ -464,6 +465,10 @@ EOT;
                 }else{
                     
                     $this->error("cookie token mismatch for $username");
+                    unset($_COOKIE['Organizr']);
+                    setcookie('Organizr', '', time() - 3600, '/');
+                    unset($_COOKIE['OrganizrU']);
+                    setcookie('OrganizrU', '', time() - 3600, '/');
                     return false;
                     
                 }
@@ -538,6 +543,7 @@ EOT;
 				foreach($this->database->query($query) as $data) {
 					$this->info("user account for $username not created.");
 					$this->error = "this user name is already being used by someone else.";
+                    $this->error("this user name is already being used by someone else.");
 					return false; }}
 			else{	$query = "SELECT username FROM users";
 				$usernames = array();
@@ -545,6 +551,7 @@ EOT;
 				if(in_array($this->homogenise_username($username), $usernames)) {
 					$this->info("user account for $username not created.");
 					$this->error = "this user name is not allowed, because it is too similar to other user names.";
+                    $this->error("this user name is not allowed, because it is too similar to other user names.");
 					return false; }}
 
 			// Is email address already in use? (see notes on safe reporting)
@@ -552,11 +559,12 @@ EOT;
 			foreach($this->database->query($query) as $data) {
 				$this->info("user account for $username not created.");
 				$this->error = "this email address is already in use by someone else.";
+                $this->error("this email address is already in use by someone else.");
 				return false; }
 
 			// This user can be registered
 			$insert = "INSERT INTO users (username, email, password, token, role, active, last) ";
-			$insert .= "VALUES ('$username', '$email', '$dbpassword', '', '$newRole', 'true', '" . time() . "') ";
+			$insert .= "VALUES ('$username', '$email', '$dbpassword', '', '$newRole', 'false', '') ";
 			$this->database->exec($insert);
 			$query = "SELECT * FROM users WHERE username = '$username'";
 			foreach($this->database->query($query) as $data) {
@@ -570,6 +578,7 @@ EOT;
 				if($registration_callback !== false) { $registration_callback($username, $email, $dir); }
 				return true; }
 			$this->error = "unknown database error occured.";
+            $this->error("unknown database error occured.");
 			return false;
 		}
 
@@ -593,21 +602,24 @@ EOT;
 					$this->setSession($username, $this->update_user_token($username, $sha1, false));
 					// authentication passed - 2) signal authenticated
                     if($remember == "true") {
-                        setcookie("Organizr", $this->update_user_token($username, $sha1, true), time() + (86400 * 7), "/");
+                        setcookie("Organizr", $this->get_user_token($username), time() + (86400 * 7), "/");
                         setcookie("OrganizrU", $username, time() + (86400 * 7), "/");
                         
                     }
-					return true; }
+					$this->info("Welcome $username");
+                    return true; 
+                    
+                }
 				// authentication failed
 				$this->info("password mismatch for $username");
-				if(User::unsafe_reporting) { $this->error = "incorrect password for $username."; }
-				else { $this->error = "the specified username/password combination is incorrect."; }
+				if(User::unsafe_reporting) { $this->error = "incorrect password for $username."; $this->error("incorrect password for $username."); }
+				else { $this->error = "the specified username/password combination is incorrect."; $this->error("the specified username/password combination is incorrect."); }
 				return false; }
 
 			// authentication could not take place
 			$this->info("there was no user $username in the database");
-			if(User::unsafe_reporting) { $this->error = "user $username is unknown."; }
-			else { $this->error = "you either did not correctly input your username, or password (... or both)."; }
+			if(User::unsafe_reporting) { $this->error = "user $username is unknown."; $this->error("user $username is unknown."); }
+			else { $this->error = "you either did not correctly input your username, or password (... or both)."; $this->error("you either did not correctly input your username, or password (... or both)."); }
 			return false;
 		}
 
@@ -653,8 +665,11 @@ EOT;
 		{
 			$delete = "DELETE FROM users WHERE username = '$username'";
 			$this->database->exec($delete);
-			$this->info("removed $username from the system");
+			$this->info("removed $username from the Organizr");
 			//$this->resetSession();
+            $dir = USER_HOME . $username;
+            if(!rmdir($dir)) { $this->error("could not delete user directory $dir"); }
+            $this->info("deleted user directory $dir");
 			return true;
 		}
 
@@ -727,7 +742,7 @@ EOT;
 		{
 			$update = "UPDATE users SET active = 'true', last = '" . time() . "' WHERE username = '$username'";
 			$this->database->exec($update);
-			$this->info("$username has been marked currently active.");
+			//$this->info("$username has been marked currently active.");
 			return true;
 		}
 
@@ -750,7 +765,7 @@ EOT;
 					$this->logout_user($username);
 					$this->error("$username was active but timed out (timeout set at " . User::time_out . " seconds, difference was $diff seconds)");
 					return false; }
-				$this->info("$username is active");
+				//$this->info("$username is active");
 				return true; }
 
 			$this->error("$username is not active");

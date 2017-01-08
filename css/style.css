@@ -1090,7 +1090,7 @@ body {
   background: #fff;
   -webkit-border-radius: 3px;
           border-radius: 3px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   overflow: hidden;
   -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.05);
           box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.05);
@@ -1110,7 +1110,7 @@ body {
 }
 
 .big-box {
-  padding: 20px;
+  padding: 15px;
 }
 
 .biggest-box {
@@ -1258,7 +1258,7 @@ body {
 
 .member-info {
   font-weight: 400;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .member-info img {
@@ -2400,8 +2400,8 @@ table.dataTable.no-footer, table.dataTable thead th, table.dataTable thead td {
   border-bottom: 0;
   border-top: 0;
   border-right: 0;
-  -webkit-border-radius: 0;
-          border-radius: 0;
+  -webkit-border-radius: 4px;
+          border-radius: 4px;
   margin-bottom: 3px;
   background: #F3F3F3;
 }
@@ -2424,7 +2424,7 @@ table.dataTable.no-footer, table.dataTable thead th, table.dataTable thead td {
 }
 
 .todo .action-btns a span {
-  color: #585050;
+  color: #FFFFFF;
 }
 
 .todo .checked-todo {
@@ -2508,7 +2508,7 @@ a.thumbnail.active, a.thumbnail:focus, a.thumbnail:hover {
 }
 
 .form-inline .form-group {
-  margin-right: 20px;
+  margin-right: 10px;
 }
 
 .form-inline .btn {
@@ -4446,6 +4446,7 @@ body .ns-effect-loadingcircle {
 .grids .row [class^=col-] {
   background: #d3dde0;
   border: 1px solid #cbd3d5;
+  border-radius: 5px;
 }
 
 /*Buttons*/
@@ -5879,13 +5880,13 @@ label {
   position: fixed;
   top: 56px;
   bottom: 0;
-  width: 240px !important;
+  width: 420px !important;
   z-index: 1;
-  right: -245px;
+  right: -425px;
   -webkit-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.13);
           box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.13);
-  -webkit-transition: all, .5s;
-          transition: all, .5s;
+  -webkit-transition: all, 1s;
+          transition: all, 1s;
 }
 
 .members-sidebar .messages {

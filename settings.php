@@ -45,6 +45,7 @@ $file_db = new PDO("sqlite:" . $dbfile);
 $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $getUsers = $file_db->query('SELECT * FROM users');
+$gotUsers = $file_db->query('SELECT * FROM users');
 
 $dbTab = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"');
 $dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
@@ -477,7 +478,7 @@ endif;
 
                                     <div class="sort-todo">
 
-                                        <a class="total-tabs" href="#">Total Tabs <span class="badge green-bg"></span></a>
+                                        <a class="total-tabs">Total Tabs <span class="badge gray-bg"></span></a>
                                         
                                         <button id="iconHide" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
                                             
@@ -507,11 +508,12 @@ endif;
 
                                                 <div class="input-group-addon">
 
-                                                    <i class="fa fa-pencil green"></i>
+                                                    <i class="fa fa-pencil gray"></i>
 
                                                 </div>
 
-                                                <input type="text" class="form-control name-of-todo" placeholder="Type In New Tab Name And Hit Enter">
+                                                <input type="text" class="form-control name-of-todo" placeholder="Type In New Tab Name And Hit Enter" style="border-top-left-radius: 0;
+    border-bottom-left-radius: 0;">
 
                                             </div>
 
@@ -540,7 +542,7 @@ endif;
                                                     if($row['window'] == "true") : $windowz = "checked"; else : $windowz = ""; endif;
 
                                                     ?>
-                                                    <li id="item-<?=$tabNum;?>" class="list-group-item" style="position: relative; left: 0px; top: 0px;">
+                                                    <li id="item-<?=$tabNum;?>" class="list-group-item gray-bg" style="position: relative; left: 0px; top: 0px;">
 
                                                         <tab class="content-form form-inline">
 
@@ -556,13 +558,13 @@ endif;
 
                                                             <div class="form-group">
 
-                                                                <input style="width: 110px;" type="text" class="form-control material input-sm" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="New Tab Name" value="<?=$row['name'];?>">
+                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="New Tab Name" value="<?=$row['name'];?>">
 
                                                             </div>
 
                                                             <div class="form-group">
 
-                                                                <input style="width: 110px;" type="text" class="form-control material input-sm" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="Tab URL" value="<?=$row['url']?>">
+                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="Tab URL" value="<?=$row['url']?>">
 
                                                             </div>
 
@@ -579,7 +581,7 @@ endif;
                                                             
                                                             <div class="form-group">
 
-                                                                <input style="width: 110px;" type="text" class="form-control material input-sm" id="iconurl-<?=$tabNum;?>" name="iconurl-<?=$tabNum;?>" placeholder="Icon URL" value="<?=$row['iconurl']?>">
+                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-<?=$tabNum;?>" name="iconurl-<?=$tabNum;?>" placeholder="Icon URL" value="<?=$row['iconurl']?>">
 
                                                             </div>
 
@@ -682,8 +684,6 @@ endif;
                                           
                                             <div class="gray-bg content-box big-box box-shadow">
                                             
-                                                <h4><strong>Create User</strong></h4>
-                                            
                                                 <form class="content-form form-inline" name="new user registration" id="registration" action="" method="POST">
                         								    
                                                     <input type="hidden" name="op" value="register"/>
@@ -691,33 +691,31 @@ endif;
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control" name="username" placeholder="Username" autocorrect="off" autocapitalize="off" value="">
+                                                        <input type="text" class="form-control gray" name="username" placeholder="Username" autocorrect="off" autocapitalize="off" value="">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="email" class="form-control" name="email" placeholder="E-mail">
+                                                        <input type="email" class="form-control gray" name="email" placeholder="E-mail">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="password" class="form-control" name="password1" placeholder="Password">
+                                                        <input type="password" class="form-control gray" name="password1" placeholder="Password">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="password" class="form-control" name="password2" placeholder="Retype Password">
+                                                        <input type="password" class="form-control gray" name="password2" placeholder="Retype Password">
 
                                                     </div>
                                                     
-                                                    <button class="btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float" type="submit" onclick="User.processRegistration()">
-                                                
-                                                        <span class="btn-label"><i class="fa fa-user-plus"></i></span>Create User
-                                                
-                                                    </button>
+                                                    
+                                                    
+                                                    <button type="submit" onclick="User.processRegistration()" class="btn btn-primary btn-icon waves waves-circle waves-effect waves-float"><i class="fa fa-user-plus"></i></button>
 
                                                 </form>               
                                           
@@ -727,48 +725,104 @@ endif;
                                       
                                     </div>
                                     
-                                    <div class="row">
+                                    <div class="content-box big-box">
                                         
-                                        <div class="col-lg-12">
-                                          
-                                            <div class="gray-bg content-box big-box box-shadow">
-                                            
-                                                <h4><strong>Delete User</strong></h4>
-                                            
-                                                <form class="content-form form-inline" name="unregister" id="unregister" action="" method="POST">
+                                        <form class="content-form form-inline" name="unregister" id="unregister" action="" method="POST">
                                               
-                                                    <input type="hidden" name="op" value="unregister"/>
-				                                    <input type="hidden" name="sha1" value=""/>
-                                                    <input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
-                                                    
-                                                    <div class="form-group">
-                                                        
-                                                        <select class="form-control" name="username">
-                                                            
-                                                            <?php foreach($getUsers as $row) : ?>
+                                            <input type="hidden" name="op" value="unregister"/>
+                                            
+                                            <p id="inputUsername"></p>
 
-                                                            <option><?=$row['username'];?></option>
-                                                            
-                                                            <?php endforeach; ?>
-                                                            
-                                                        </select>
-                                              
-                                                    </div>
+                                            <div class="table-responsive">
 
-                                                    <button class="btn waves btn-labeled btn-danger btn text-uppercase waves-effect waves-float" type="submit" onclick="User.processRegistration()">
-                                                
-                                                        <span class="btn-label"><i class="fa fa-user-times"></i></span>Delete User
-                                                
-                                                    </button>
+                                                <table class="table table-striped">
 
-                                                </form>                 
-                                          
+                                                    <thead>
+
+                                                        <tr>
+
+                                                            <th>#</th>
+
+                                                            <th>Username</th>
+                                                            
+                                                            <th>E-Mail</th>
+
+                                                            <th>Login Status</th>
+
+                                                            <th>Last Seen</th>
+
+                                                            <th>User Group</th>
+
+                                                            <th>User Actions</th>
+
+                                                        </tr>
+
+                                                    </thead>
+
+                                                    <tbody>
+
+                                                        <?php $countUsers = 1; 
+                                                        foreach($gotUsers as $row) : 
+                                                        if($row['role'] == "admin") : 
+                                                            $userColor = "red";
+                                                            $disableAction = "disabled=\"disabled\"";
+                                                        else : 
+                                                            $userColor = "blue";
+                                                            $disableAction = "";
+                                                        endif;
+                                                        if($row['active'] == "true") : 
+                                                            $userActive = "Logged In";
+                                                            $userActiveColor = "primary";
+                                                        else : 
+                                                            $userActive = "Logged Out";
+                                                            $userActiveColor = "danger";
+                                                        endif;
+                                                        $userpic = md5( strtolower( trim( $row['email'] ) ) );
+                                                        if(!empty($row["last"])) : 
+                                                           $lastActive = date("Y-m-d H:i", intval($row["last"]));
+                                                        else :
+                                                            $lastActive = "";
+                                                        endif;
+                                                        ?>
+
+                                                        <tr id="<?=$row['username'];?>">
+
+                                                            <th scope="row"><?=$countUsers;?></th>
+
+                                                            <td><i class="userpic"><img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=25&d=mm" class="img-circle"></i> &nbsp; <?=$row['username'];?></td>
+                                                            
+                                                            <td><?=$row['email'];?></td>
+
+                                                            <td><span class="label label-<?=$userActiveColor;?>"><?=$userActive;?></span></td>
+
+                                                            <td><?=$lastActive;?></td>
+
+                                                            <td><span class="text-uppercase <?=$userColor;?>"><?=$row['role'];?></span></td>
+
+                                                            <td id="<?=$row['username'];?>">
+
+                                                                <button <?=$disableAction;?> class="btn waves btn-labeled btn-danger btn btn-sm text-uppercase waves-effect waves-float deleteUser">
+
+                                                                    <span class="btn-label"><i class="fa fa-user-times"></i></span>Delete
+
+                                                                </button>
+
+                                                            </td>
+
+                                                        </tr>
+
+                                                        <?php $countUsers++; endforeach; ?>
+
+                                                    </tbody>
+
+                                                </table>
+
                                             </div>
+                                            
+                                        </form>
                                         
-                                        </div>
-                                      
                                     </div>
-                      
+
                                 </div>
                                 
                                 <div class="tab-pane big-box  fade in" id="about">
@@ -780,7 +834,8 @@ endif;
                                     <p id="submitFeedback">
                                     
                                         <a href='https://github.com/causefx/Organizr/issues/new' target='_blank' type='button' class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span>Submit Issue or Request</a> 
-                                        <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span>View On Github</a> 
+                                        <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span>View On Github</a>
+                                        <a href='https://riot.im/app/#/room/#iCauseFX:matrix.org' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span>Chat With Us</a>
                                     
                                     </p>
                                     
@@ -826,10 +881,12 @@ endif;
                                         
                                         <input type="hidden" name="action" value="addOptionz" />
                                         
-                                        <button id="plexTheme" style="background: #E49F0C" type="button" class="btn waves btn-dark text-uppercase waves-effect waves-float">Plex</button>
-                                        <button id="embyTheme" style="background: #52B54B" type="button" class="btn waves btn-dark text-uppercase waves-effect waves-float">Emby</button>
-                                        <button id="bookTheme" style="background: #3B5998" type="button" class="btn waves btn-dark text-uppercase waves-effect waves-float">Book</button>
-                                        <button id="spaTheme" style="background: #66BBAE" type="button" class="btn waves btn-dark text-uppercase waves-effect waves-float">Spa</button>
+                                        <button id="plexTheme" style="background: #E49F0C" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Plex</button>
+                                        <button id="embyTheme" style="background: #52B54B" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Emby</button>
+                                        <button id="bookTheme" style="background: #3B5998" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Book</button>
+                                        <button id="spaTheme" style="background: #66BBAE" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Spa</button>
+                                        <button id="darklyTheme" style="background: #375A7F" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Darkly</button>
+                                        <button id="slateTheme" style="background: #272B30" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Slate</button>
                                         
                                         <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
                                                 
@@ -843,15 +900,15 @@ endif;
 
                                                 <h4><strong>Title</strong></h4>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 gray-bg">
 
                                                     <center>Title</center>
 
-                                                    <input name="title" class="form-control" value="<?=$title;?>" placeholder="Organizr">
+                                                    <input name="title" class="form-control gray" value="<?=$title;?>" placeholder="Organizr">
 
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 gray-bg">
 
                                                     <center>Title Text</center>
 
@@ -865,7 +922,7 @@ endif;
 
                                                 <h4><strong>Navigation Bars</strong></h4>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 gray-bg">
 
                                                     <center>Top Bar</center>
 
@@ -873,7 +930,7 @@ endif;
 
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 gray-bg">
 
                                                     <center>Bottom Bar</center>
 
@@ -883,7 +940,7 @@ endif;
 
                                                 <div class="clearfix visible-xs-block"></div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 gray-bg">
 
                                                     <center>Side Bar</center>
 
@@ -891,7 +948,7 @@ endif;
 
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 gray-bg">
 
                                                     <center>Hover BG</center>
 
@@ -905,7 +962,7 @@ endif;
 
                                                 <h4><strong>Active Tab</strong></h4>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 gray-bg">
 
                                                     <center>Active Tab BG</center>
 
@@ -913,7 +970,7 @@ endif;
 
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 gray-bg">
 
                                                     <center>Active Tab Icon</center>
 
@@ -921,7 +978,7 @@ endif;
 
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 gray-bg">
 
                                                     <center>Active Tab Text</center>
 
@@ -935,7 +992,7 @@ endif;
 
                                                 <h4><strong>Inactive Tab</strong></h4>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 gray-bg">
 
                                                     <center>Inactive Icon</center>
 
@@ -943,7 +1000,7 @@ endif;
 
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 gray-bg">
 
                                                     <center>Inactive Text</center>
 
@@ -1075,7 +1132,7 @@ endif;
                         var newid = $('.list-group-item').length + 1;
 
                         $(".todo ul").append(
-                        '<li id="item-' + newid + '" class="list-group-item" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 110px;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="New Tab Name" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 110px;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="Tab URL"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 110px;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - OR -</div>  <div class="form-group"><input style="width: 110px;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="Icon URL" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']">Default</label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> Active</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> User</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> Guest</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-warning" type="checkbox"><label for="window[' + newid + ']"></label></div> No iFrame</div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
+                        '<li id="item-' + newid + '" class="list-group-item gray-bg" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="New Tab Name" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="Tab URL"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - OR -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="Icon URL" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']">Default</label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> Active</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> User</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> Guest</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-warning" type="checkbox"><label for="window[' + newid + ']"></label></div> No iFrame</div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
                         );
 
                         $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
@@ -1158,6 +1215,14 @@ endif;
             $("#iconHide").click(function(){
 
                 $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).toggle();
+     
+            });
+            
+            $(".deleteUser").click(function(){
+
+                var parent_id = $(this).parent().attr('id');
+                editUsername = $('#unregister').find('#inputUsername');
+                $(editUsername).html('<input type="hidden" name="username"value="' + parent_id + '" />');
      
             });
             
@@ -1245,6 +1310,36 @@ endif;
                 changeColor("inactivetext", "#5B391E");
                 
             });
+            
+            $('#darklyTheme').on('click touchstart', function(){
+
+                changeColor("topbartext", "#FFFFFF");
+                changeColor("topbar", "#375A7F");
+                changeColor("bottombar", "#375A7F");
+                changeColor("sidebar", "#222222");
+                changeColor("hoverbg", "#464545");
+                changeColor("activetabBG", "#FFFFFF");
+                changeColor("activetabicon", "#464545");
+                changeColor("activetabtext", "#464545");
+                changeColor("inactiveicon", "#0CE3AC");
+                changeColor("inactivetext", "#0CE3AC");
+                
+            });
+            
+            $('#slateTheme').on('click touchstart', function(){
+
+                changeColor("topbartext", "#C8C8C8");
+                changeColor("topbar", "#272B30");
+                changeColor("bottombar", "#272B30");
+                changeColor("sidebar", "#32383E");
+                changeColor("hoverbg", "#58C0DE");
+                changeColor("activetabBG", "#3E444C");
+                changeColor("activetabicon", "#C8C8C8");
+                changeColor("activetabtext", "#FFFFFF");
+                changeColor("inactiveicon", "#C8C8C8");
+                changeColor("inactivetext", "#C8C8C8");
+                
+            });
         
         </script>
         
@@ -1261,7 +1356,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.96";
+                    var currentVersion = "0.97";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
