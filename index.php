@@ -81,7 +81,7 @@ if($tabSetup == "No") :
 
         foreach($getsettings as $row) :
 
-            if($row['iconurl'] && $settingsicon == "No") :
+            if(!empty($row['iconurl']) && $settingsicon == "No") :
 
                 $settingsicon = "Yes";
 
@@ -388,7 +388,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                                         
                                         <?php else : ?>
                                         
-                                            <i class="fa <?=$row['icon'];?>"></i>
+                                            <i class="fa <?=$row['icon'];?> fa-lg"></i>
     
                                         <?php endif; ?>
                                         
@@ -405,14 +405,14 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                                                             
                                     <a class="tab-link">
                                         
-                                        <?php if($settingsicon = "Yes") :
+                                        <?php if($settingsicon == "Yes") :
                                         
                                             echo '<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
                                                 <img id="settings-icon" src="icons/settings.png" style="height: 30px; margin-top: -2px;"></i>';
                                         
                                         else :
                                         
-                                            echo '<i class="fa fa-key"></i>';
+                                            echo '<i id="settings-icon" class="fa fa-cog"></i>';
                                         
                                         endif; ?>
                                         
@@ -432,13 +432,9 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                         <!-- /gn-scroller -->
                         <div class="bottom-bnts">
                             
-                            <!--<li class="tab-item profile" id="settings.phpx"><i class="mdi mdi-account"></i></li>-->
                             <a class="fix-nav"><i class="mdi mdi-pin"></i></a>
-                            <?php if(!$USER->authenticated) : ?>
-                            <!--<a class="log-in"><i class="fa fa-sign-in"></i></a>-->
-                            <?php endif ?>
                             <?php if($USER->authenticated) : ?>
-                            <a class="logout"><i class="fa fa-sign-out"></i></a>
+                            <a class="logout"><i class="fa fa-sign-out fa-lg"></i></a>
                             <?php endif ?>
                         
                         </div>
@@ -506,74 +502,72 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
             <div id="content" class="content" style="">
 
                 <!--Load Framed Content-->
-                
                 <?php if($needSetup == "Yes") : ?>
-								<div class="table-wrapper">
-								
-								    <div class="table-row">
-								
-								        <div class="table-cell text-center">
-								        
-								            <div class="login i-block">
-								                
-								                <div class="content-box">
-								                    
-								                    <div class="green-bg biggest-box">
-								
-								                        <h1 class="zero-m text-uppercase">Create Admin</h1>
-								
-								                    </div>
-								
-								                    <div class="big-box text-left registration-form">
-								
-								                        <h4 class="text-center">Create an account for Admin Access</h4>
-								
-                        								<form class="controlbox" name="new user registration" id="registration" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
-                        								    
-                        								    <input type="hidden" name="op" value="register"/>
-                        								    <input type="hidden" name="sha1" value=""/>
-                        								
-                        								    <div class="form-group">
-                        								
-                        								        <input type="text" class="form-control material" name="username" autofocus placeholder="Username" autocorrect="off" autocapitalize="off" minlength="3" maxlength="16" required>
-                        								
-                        								    </div>
-                        								
-                        								    <div class="form-group">
-                        								
-                        								        <input type="email" class="form-control material" name="email" placeholder="E-mail">
-                        								
-                        								    </div>
-                        								
-                        								    <div class="form-group">
-                        								
-                        								        <input type="password" class="form-control material" name="password1" placeholder="Password" data-smk-strongPass="weak" required>
-                        								
-                        								    </div>
-                        								
-                        								    <div class="form-group">
-                        								
-                        								        <input type="password" class="form-control material" name="password2" placeholder="Retype Password">
-                        								
-                        								    </div>
-                        								
-                        								    <input id="registerSubmit" type="button" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register">
-                        								
-                        								</form>
-								                    
-								                    </div>
-								                
-								                </div>
-								            
-								            </div>
-								        
-								        </div>
-								    
-								    </div>
-								
-								</div>
+                <div class="table-wrapper">
+
+                    <div class="table-row">
+
+                        <div class="table-cell text-center">
+
+                            <div class="login i-block">
+
+                                <div class="content-box">
+
+                                    <div class="green-bg biggest-box">
+
+                                        <h1 class="zero-m text-uppercase">Create Admin</h1>
+
+                                    </div>
+
+                                    <div class="big-box text-left registration-form">
+
+                                        <h4 class="text-center">Create an account for Admin Access</h4>
+
+                                        <form class="controlbox" name="new user registration" id="registration" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
+
+                                            <input type="hidden" name="op" value="register"/>
+                                            <input type="hidden" name="sha1" value=""/>
+
+                                            <div class="form-group">
+
+                                                <input type="text" class="form-control material" name="username" autofocus placeholder="Username" autocorrect="off" autocapitalize="off" minlength="3" maxlength="16" required>
+
+                                            </div>
+
+                                            <div class="form-group">
+
+                                                <input type="email" class="form-control material" name="email" placeholder="E-mail">
+
+                                            </div>
+
+                                            <div class="form-group">
+
+                                                <input type="password" class="form-control material" name="password1" placeholder="Password" data-smk-strongPass="weak" required>
+
+                                            </div>
+
+                                            <div class="form-group">
+
+                                                <input type="password" class="form-control material" name="password2" placeholder="Retype Password">
+
+                                            </div>
+
+                                            <input id="registerSubmit" type="button" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register">
+
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
                 <?php endif; ?>
-                
                 <?php if(!$USER->authenticated && $tabSetup == "Yes" && $needSetup == "No") :?>
                 <div class="table-wrapper">
                 
@@ -609,7 +603,6 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                 
                 </div>
                 <?php endif; ?>
-                
                 <?php if($tabSetup == "No" && $needSetup == "No") :?>        
                 <div id="tabEmpty" class="table-wrapper" style="display: none">
                 
@@ -647,10 +640,9 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                     </div>
                 
                 </div>
-                <?php endif; ?>
-                                
+                <?php endif;?>
                 <!--End Load Framed Content-->
-
+            
             </div>
             <!--End Content-->
 
@@ -661,7 +653,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                 
                 <h4 class="pull-left zero-m">Options</h4>
                 
-                <span class="close-members-sidebar"><i class="fa fa-remove pull-right"></i></span>
+                <span class="close-members-sidebar"><i class="fa fa-remove fa-lg pull-right"></i></span>
                 
                 <div class="clearfix"><br/></div>
                 
@@ -859,8 +851,6 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
 				                        <input type="hidden" name="op" value="logout">
                                         
                                         <input type="hidden" name="username"value="<?php echo $_SESSION["username"]; ?>" >
-				
-				
 			
                                         <h3 style="color:<?=$topbar;?>;" class="zero-m text-uppercase">Do you want to logout?</h3>
                                         
@@ -1102,10 +1092,12 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
         $("li[id^='settings.phpx']").on('click tap', function(){
 
             $("img[id^='settings-icon']").attr("class", "fa-spin");
+            $("i[id^='settings-icon']").attr("class", "fa fa-cog fa-spin");
 
             setTimeout(function(){
 
                 $("img[id^='settings-icon']").attr("class", "");
+                $("i[id^='settings-icon']").attr("class", "fa fa-cog");
 
             },1000);
 

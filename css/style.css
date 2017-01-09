@@ -691,6 +691,9 @@ a.text-info:hover {
 .gn-menu i {
   padding: 0 15px;
   font-size: 19px;
+  text-align: center;
+  text-align: -webkit-center;
+    
 }
 
 .gn-menu .label {
