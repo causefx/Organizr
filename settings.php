@@ -1116,10 +1116,62 @@ endif;
         <?php endif; ?>
 
         <script>
+            
+            (function($) {
+            
+                function startTrigger(e,data) {
+            
+                    var $elem = $(this);
+            
+                    $elem.data('mouseheld_timeout', setTimeout(function() {
+            
+                        $elem.trigger('mouseheld');
+            
+                    }, e.data));
+                }
+
+                function stopTrigger() {
+                
+                    var $elem = $(this);
+                
+                    clearTimeout($elem.data('mouseheld_timeout'));
+                }
+
+                var mouseheld = $.event.special.mouseheld = {
+                
+                    setup: function(data) {
+                
+                        var $this = $(this);
+                
+                        $this.bind('mousedown', +data || mouseheld.time, startTrigger);
+                
+                        $this.bind('mouseleave mouseup', stopTrigger);
+                
+                    },
+                
+                    teardown: function() {
+                
+                        var $this = $(this);
+                
+                        $this.unbind('mousedown', startTrigger);
+                
+                        $this.unbind('mouseleave mouseup', stopTrigger);
+                
+                    },
+                
+                    time: 200 // default to 750ms
+                
+                };
+                
+            })(jQuery);
 
             $(function () {
 
-                $(".todo ul").sortable();
+                //$(".todo ul").sortable();
+                $(".todo ul").sortable({
+                    'containment': 'parent',
+                    'opacity': 0.9
+                });
 
                 $("#add_tab").on('submit', function (e) {
                     e.preventDefault();
@@ -1229,13 +1281,13 @@ endif;
 
             $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
             
-            $( "span[class^='fa fa-hand-paper-o']" )
-                .mouseup(function() {
-                 $(this).attr("class", "fa fa-hand-paper-o");
-                })
-                .mousedown(function() {
-                    $(this).attr("class", "fa fa-hand-grab-o");
+            $("li[class^='list-group-item']").bind('mouseheld', function(e) {
+
+                $(this).find("span[class^='fa fa-hand-paper-o']").attr("class", "fa fa-hand-grab-o");
+                $(this).mouseup(function() {
+                    $(this).find("span[class^='fa fa-hand-grab-o']").attr("class", "fa fa-hand-paper-o");
                 });
+            })
          
         </script>
         
