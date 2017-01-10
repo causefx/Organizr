@@ -49,6 +49,7 @@ $dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" 
 
 $tabSetup = "Yes";	
 $hasOptions = "No";
+$settingsicon = "No";
 
 foreach($dbTab as $row) :
 
@@ -76,8 +77,6 @@ if($tabSetup == "No") :
 
         $result = $file_db->query('SELECT * FROM tabs WHERE active = "true"');
         $getsettings = $file_db->query('SELECT * FROM tabs WHERE active = "true"');
-        
-        $settingsicon = "No";
 
         foreach($getsettings as $row) :
 

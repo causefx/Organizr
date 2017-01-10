@@ -152,7 +152,7 @@ $folder = USER_HOME;
         
     </head>
 
-    <body class="gray-bg" style="padding: 20px;">
+    <body class="gray-bg" style="padding: 0;">
 
         <div id="main-wrapper" class="main-wrapper">
 
@@ -165,12 +165,25 @@ $folder = USER_HOME;
                 
                 check("PDO_SQLITE");
                 check("PDO");
+                check("curl");
+                check("Zip");
                 checkFunction("MAIL");
+                checkFunction("fopen");
 
                 getFilePermission($db);
                 getFilePermission($folder);
                 getFilePermission((__DIR__));
                 getFilePermission(dirname(__DIR__));
+                
+                //PHPINFO
+                
+                echo '<div class="panel panel-success">';
+                echo '<div class="panel-heading">';
+                echo '<h3 class="panel-title">PHP Info</h3>';
+                echo '</div>';
+                echo '<div style="color: gray" class="panel-body">';
+                echo phpinfo();
+                echo '</div></div>';
 
                 ?>
 

@@ -160,6 +160,124 @@ if($action == "deleteDB") :
 
 endif;
 
+if($action == "upgrade") : 
+                     
+    function downloadFile($url, $path){
+
+        $folderPath = "upgrade/";
+
+        if(!mkdir($folderPath)) : echo "can't make dir"; endif;
+
+        $newfname = $folderPath . $path;
+
+        $file = fopen ($url, 'rb');
+
+        if ($file) {
+
+            $newf = fopen ($newfname, 'wb');
+
+            if ($newf) {
+
+                while(!feof($file)) {
+
+                    fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
+
+                }
+
+            }
+
+        }
+
+        if ($file) {
+
+            fclose($file);
+
+        }
+
+        if ($newf) {
+
+            fclose($newf);
+
+        }
+
+    }
+
+    function unzipFile($zipFile){
+
+        $zip = new ZipArchive;
+
+        $extractPath = "upgrade/";
+
+        if($zip->open($extractPath . $zipFile) != "true"){
+
+            echo "Error :- Unable to open the Zip File";
+        }
+
+        /* Extract Zip File */
+        $zip->extractTo($extractPath);
+        $zip->close();
+
+    }
+
+    // Function to remove folders and files 
+    function rrmdir($dir) {
+
+        if (is_dir($dir)) {
+
+            $files = scandir($dir);
+
+            foreach ($files as $file)
+
+                if ($file != "." && $file != "..") rrmdir("$dir/$file");
+
+            rmdir($dir);
+
+        }
+
+        else if (file_exists($dir)) unlink($dir);
+
+    }
+
+    // Function to Copy folders and files       
+    function rcopy($src, $dst) {
+
+        if (is_dir ( $src )) {
+
+            mkdir ( $dst );
+
+            $files = scandir ( $src );
+
+            foreach ( $files as $file )
+
+                if ($file != "." && $file != "..")
+
+                    rcopy ( "$src/$file", "$dst/$file" );
+
+        } else if (file_exists ( $src ))
+
+            copy ( $src, $dst );
+
+    }
+
+    $url = "https://github.com/causefx/Organizr/archive/master.zip";
+
+    $file = "upgrade.zip";
+
+    $source = __DIR__ . "/upgrade/Organizr-master/";
+
+    $cleanup = __DIR__ . "/upgrade/";
+
+    $destination = __DIR__ . "/";
+
+    downloadFile($url, $file);
+    unzipFile($file);
+
+    rcopy($source, $destination);
+    rrmdir($cleanup);
+
+    echo "<script>window.parent.location.reload(true);</script>";
+
+endif;
                 
 if(!isset($_POST['op'])) :
 
@@ -478,13 +596,19 @@ endif;
 
                                     <div class="sort-todo">
 
-                                        <a class="total-tabs">Total Tabs <span class="badge gray-bg"></span></a>
+                                        <a class="total-tabs">Tabs <span class="badge gray-bg"></span></a>
                                         
                                         <button id="iconHide" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
                                             
                                             <span class="btn-label"><i class="fa fa-upload"></i></span>Upload Icons
                                             
-                                        </button> 
+                                        </button>
+                                        
+                                        <button id="iconAll" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
+                                            
+                                            <span class="btn-label"><i class="fa fa-picture-o"></i></span>View Icons
+                                            
+                                        </button>
                                         
                                         <?php if($action) : ?>
                                         
@@ -499,6 +623,38 @@ endif;
                                     </div>
 
                                     <input type="file" name="files[]" id="uploadIcons" multiple="multiple">
+                                    
+                                    <div id="viewAllIcons" style="display: none;">
+                                        
+                                        <h4><strong>All Icons</strong> [Click icon to copy path to clipboard]</h4>
+                                        
+                                        <div class="row">
+                                            
+                                            <textarea id="copyTarget" class="hideCopy" style="left: -9999px; top: 0; position: absolute;"></textarea>
+                                           <!-- style="height: 1px; width: 0px; display: block;"!-->
+                                            <?php
+                                            $dirname = "icons/";
+                                            $images = scandir($dirname);
+                                            //shuffle($images);
+                                            $ignore = Array(".", "..", "favicon/", "favicon");
+                                            foreach($images as $curimg){
+                                                if(!in_array($curimg, $ignore)) { ?>
+
+                                            <div class="col-xs-6 col-md-1">    
+                                            
+                                                <a class="thumbnail">
+
+                                                    <img src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
+
+                                                </a>
+                                                
+                                            </div>
+
+                                            <?php } } ?>
+
+                                        </div>
+                                        
+                                    </div>
                                     
                                     <form id="add_tab" method="post">
 
@@ -1270,6 +1426,12 @@ endif;
      
             });
             
+            $("#iconAll").click(function(){
+
+                $( "div[id^='viewAllIcons']" ).toggle();
+     
+            });
+            
             $(".deleteUser").click(function(){
 
                 var parent_id = $(this).parent().attr('id');
@@ -1287,7 +1449,73 @@ endif;
                 $(this).mouseup(function() {
                     $(this).find("span[class^='fa fa-hand-grab-o']").attr("class", "fa fa-hand-paper-o");
                 });
-            })
+            });
+            
+            function copyToClipboard(elem) {
+                  // create hidden text element, if it doesn't already exist
+                var targetId = "_hiddenCopyText_";
+                var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
+                var origSelectionStart, origSelectionEnd;
+                if (isInput) {
+                    // can just use the original source element for the selection and copy
+                    target = elem;
+                    origSelectionStart = elem.selectionStart;
+                    origSelectionEnd = elem.selectionEnd;
+                } else {
+                    // must use a temporary form element for the selection and copy
+                    target = document.getElementById(targetId);
+                    if (!target) {
+                        var target = document.createElement("textarea");
+                        target.style.position = "absolute";
+                        target.style.left = "-9999px";
+                        target.style.top = "0";
+                        target.id = targetId;
+                        document.body.appendChild(target);
+                    }
+                    target.textContent = elem.textContent;
+                }
+                // select the content
+                var currentFocus = document.activeElement;
+                target.focus();
+                target.setSelectionRange(0, target.value.length);
+
+                // copy the selection
+                var succeed;
+                try {
+                      succeed = document.execCommand("copy");
+                } catch(e) {
+                    succeed = false;
+                }
+                // restore original focus
+                if (currentFocus && typeof currentFocus.focus === "function") {
+                    //currentFocus.focus();
+                }
+
+                if (isInput) {
+                    // restore prior selection
+                    elem.setSelectionRange(origSelectionStart, origSelectionEnd);
+                } else {
+                    // clear temporary content
+                    target.textContent = "";
+                }
+                return succeed;
+            }
+            
+            $("img[class^='allIcons']").click(function(){
+
+                $("textarea[id^='copyTarget']").val($(this).attr("src"));
+
+                copyToClipboard(document.getElementById("copyTarget"));
+                
+                $.smkAlert({
+                
+                    text: 'Icon Path Copied To Clipboard',
+                
+                    type: 'success'
+                    
+                });
+                
+            });
          
         </script>
         
@@ -1408,7 +1636,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.97";
+                    var currentVersion = "0.98";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
@@ -1428,7 +1656,9 @@ endif;
                         
                         $(infoTabNew).html("<br/><h4><strong>What's New in " + githubVersion + "</strong></h4><strong>Title: </strong>" + githubName + " <br/><strong>Changes: </strong>" + githubDescription);
                         
-                        $(infoTabDownload).html("<br/><a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success btn-lg text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Download Organizr v." + githubVersion + "</a>");
+                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span>Auto Upgrade</button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+                        
+                        $( "p[id^='upgrade']" ).toggle();
                     
                     }else if(currentVersion === githubVersion){
                     
