@@ -243,7 +243,7 @@ if($action == "upgrade") :
 
         if (is_dir ( $src )) {
 
-            mkdir ( $dst );
+            if (!file_exists($dst)) : mkdir ( $dst ); endif;
 
             $files = scandir ( $src );
 
