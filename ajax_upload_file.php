@@ -7,7 +7,7 @@
         'maxSize' => 1, //Maximum Size of files {null, Number(in MB's)}
         'extensions' => array('jpg', 'png'), //Whitelist for file extension. {null, Array(ex: array('jpg', 'png'))}
         'required' => false, //Minimum one file is required for upload {Boolean}
-        'uploadDir' => 'icons/', //Upload directory {String}
+        'uploadDir' => 'images/', //Upload directory {String}
         'title' => array('name'), //New file name {null, String, Array} *please read documentation in README.md
         'removeFiles' => true, //Enable file exclusion {Boolean(extra for jQuery.filer), String($_POST field name containing json data with file names)}
         'replace' => true, //Replace the file if it already exists  {Boolean}

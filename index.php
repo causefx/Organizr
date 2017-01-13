@@ -183,13 +183,13 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
         <link rel="stylesheet" href="css/style.css">
 
         
-        <link rel="apple-touch-icon" sizes="180x180" href="icons/favicon/apple-touch-icon.png">
-        <link rel="icon" type="image/png" href="icons/favicon/favicon-32x32.png" sizes="32x32">
-        <link rel="icon" type="image/png" href="icons/favicon/favicon-16x16.png" sizes="16x16">
-        <link rel="manifest" href="icons/favicon/manifest.json">
-        <link rel="mask-icon" href="icons/favicon/safari-pinned-tab.svg" color="#2d89ef">
-        <link rel="shortcut icon" href="icons/favicon/favicon.ico">
-        <meta name="msapplication-config" content="icons/favicon/browserconfig.xml">
+        <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" href="images/favicon/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="images/favicon/favicon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="images/favicon/manifest.json">
+        <link rel="mask-icon" href="images/favicon/safari-pinned-tab.svg" color="#2d89ef">
+        <link rel="shortcut icon" href="images/favicon/favicon.ico">
+        <meta name="msapplication-config" content="images/favicon/browserconfig.xml">
         <meta name="theme-color" content="#2d89ef">
         
         <!--[if lt IE 9]>
@@ -407,7 +407,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                                         <?php if($settingsicon == "Yes") :
                                         
                                             echo '<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
-                                                <img id="settings-icon" src="icons/settings.png" style="height: 30px; margin-top: -2px;"></i>';
+                                                <img id="settings-icon" src="images/settings.png" style="height: 30px; margin-top: -2px;"></i>';
                                         
                                         else :
                                         
@@ -432,9 +432,6 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                         <div class="bottom-bnts">
                             
                             <a class="fix-nav"><i class="mdi mdi-pin"></i></a>
-                            <?php if($USER->authenticated) : ?>
-                            <a class="logout"><i class="fa fa-sign-out fa-lg"></i></a>
-                            <?php endif ?>
                         
                         </div>
                     

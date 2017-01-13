@@ -18,7 +18,7 @@ $(document).ready(function(){
 									<div class="jFiler-item-thumb-overlay">\
 										<div class="jFiler-item-info">\
 											<div style="display:table-cell;vertical-align: middle;">\
-												<span class="jFiler-item-title"><b title="{{fi-name}}">icons/{{fi-name}}</b></span>\
+												<span class="jFiler-item-title"><b title="{{fi-name}}">images/{{fi-name}}</b></span>\
 												<span class="jFiler-item-others">{{fi-size2}}</span>\
 											</div>\
 										</div>\
@@ -44,7 +44,7 @@ $(document).ready(function(){
 										<div class="jFiler-item-thumb-overlay">\
 											<div class="jFiler-item-info">\
 												<div style="display:table-cell;vertical-align: middle;">\
-													<span class="jFiler-item-title"><b title="{{fi-name}}">icons/{{fi-name}}</b></span>\
+													<span class="jFiler-item-title"><b title="{{fi-name}}">images/{{fi-name}}</b></span>\
 													<span class="jFiler-item-others">{{fi-size2}}</span>\
 												</div>\
 											</div>\

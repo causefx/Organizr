@@ -633,10 +633,10 @@ endif;
                                             <textarea id="copyTarget" class="hideCopy" style="left: -9999px; top: 0; position: absolute;"></textarea>
                                            <!-- style="height: 1px; width: 0px; display: block;"!-->
                                             <?php
-                                            $dirname = "icons/";
+                                            $dirname = "images/";
                                             $images = scandir($dirname);
                                             //shuffle($images);
-                                            $ignore = Array(".", "..", "favicon/", "favicon");
+                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store");
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
 
@@ -1037,12 +1037,40 @@ endif;
                                         
                                         <input type="hidden" name="action" value="addOptionz" />
                                         
-                                        <button id="plexTheme" style="background: #E49F0C" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Plex</button>
+                                        <div class="btn-group">
+                                            
+                                            <button type="button" class="btn btn-dark dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Choose Theme  <span class="caret"></span>
+                                            </button>
+                                            
+                                            <ul class="dropdown-menu gray-bg">
+                                            
+                                                <li id="plexTheme" style="background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex</a></li>
+                                            
+                                                <li id="embyTheme" style="background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby</a></li>
+                                                
+                                                <li id="bookTheme" style="background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook</a></li>
+                                                
+                                                <li id="spaTheme" style="background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa</a></li>
+                                                
+                                                <li id="darklyTheme" style="background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly</a></li>
+                                                
+                                                <li id="slateTheme" style="background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate</a></li>
+                                            
+                                                <li role="separator" class="divider"></li>
+                                            
+                                                <li id="defaultTheme" style="background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Default</a></li>
+                                            
+                                            </ul>
+                                            
+                                        </div>
+                                        
+                                       <!-- <button id="plexTheme" style="background: #E49F0C" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Plex</button>
                                         <button id="embyTheme" style="background: #52B54B" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Emby</button>
                                         <button id="bookTheme" style="background: #3B5998" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Book</button>
                                         <button id="spaTheme" style="background: #66BBAE" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Spa</button>
                                         <button id="darklyTheme" style="background: #375A7F" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Darkly</button>
-                                        <button id="slateTheme" style="background: #272B30" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Slate</button>
+                                        <button id="slateTheme" style="background: #272B30" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Slate</button> -->
                                         
                                         <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
                                                 
@@ -1618,6 +1646,21 @@ endif;
                 changeColor("activetabtext", "#FFFFFF");
                 changeColor("inactiveicon", "#C8C8C8");
                 changeColor("inactivetext", "#C8C8C8");
+                
+            });
+            
+            $('#defaultTheme').on('click touchstart', function(){
+
+                changeColor("topbartext", "#FFFFFF");
+                changeColor("topbar", "#eb6363");
+                changeColor("bottombar", "#eb6363");
+                changeColor("sidebar", "#000000");
+                changeColor("hoverbg", "#eb6363");
+                changeColor("activetabBG", "#eb6363");
+                changeColor("activetabicon", "#FFFFFF");
+                changeColor("activetabtext", "#FFFFFF");
+                changeColor("inactiveicon", "#FFFFFF");
+                changeColor("inactivetext", "#FFFFFF");
                 
             });
         
