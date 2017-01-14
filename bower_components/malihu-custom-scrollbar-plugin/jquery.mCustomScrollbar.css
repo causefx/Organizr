@@ -114,6 +114,7 @@ y-axis
 		margin: 0 auto;
 		-webkit-border-radius: 16px; -moz-border-radius: 16px; border-radius: 16px;
 		text-align: center;
+        margin-left: 13px;
 	}
 	
 	.mCSB_scrollTools_vertical.mCSB_scrollTools_onDrag_expand .mCSB_dragger.mCSB_dragger_onDrag_expanded .mCSB_dragger_bar, 

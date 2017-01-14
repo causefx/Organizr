@@ -7,9 +7,9 @@
 	 *	entry is assigned a new random token,  which is used in
 	 * salting subsequent password checks.
 	 */
-
-    define('USER_HOME', dirname(__DIR__) . '/users/');
-    define('DATABASE_LOCATION', dirname(__DIR__) . '/');
+    $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
+    define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
+    define('DATABASE_LOCATION', $databaseConfig['databaseLocation'] . '/');
 
 	class User
 	{

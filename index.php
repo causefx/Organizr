@@ -1,20 +1,35 @@
 <?php 
-
-date_default_timezone_set('America/Los_Angeles');
-
-$data = false;
-
+//Set some variables
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
+date_default_timezone_set('America/Los_Angeles');
+$data = false;
+$databaseLocation = "databaseLocation.ini.php";
+$needSetup = "Yes";
+$tabSetup = "Yes";	
+$hasOptions = "No";
+$settingsicon = "No";
+$settingsActive = "";
+$action = "";
+$title = "Organizr";
+$topbar = "#eb6363"; 
+$topbartext = "#FFFFFF";
+$bottombar = "#eb6363";
+$sidebar = "#000000";
+$hoverbg = "#eb6363";
+$activetabBG = "#eb6363";
+$activetabicon = "#FFFFFF";
+$activetabtext = "#FFFFFF";
+$inactiveicon = "#FFFFFF";
+$inactivetext = "#FFFFFF";
 
-function registration_callback($username, $email, $userdir)
-{
+function registration_callback($username, $email, $userdir){
+    
     global $data;
+    
     $data = array($username, $email, $userdir);
-}
 
-require_once("user.php");
-$USER = new User("registration_callback");
+}
 
 function printArray($arrayName){
     
@@ -25,126 +40,160 @@ function printArray($arrayName){
     endforeach;
     
 }
+
+function write_ini_file($content, $path) { 
     
-$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
-
-$database = new PDO("sqlite:" . $dbfile);
-
-$needSetup = "Yes";
-
-$query = "SELECT * FROM users";
-			
-foreach($database->query($query) as $data) {
-
-    $needSetup = "No";
+    if (!$handle = fopen($path, 'w')) {
+        
+        return false; 
+    
+    }
+    
+    $success = fwrite($handle, $content);
+    
+    fclose($handle); 
+    
+    return $success; 
 
 }
+                
+if(isset($_POST['action'])) :
 
-$db = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
-$file_db = new PDO("sqlite:" . $db);
-$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-$dbTab = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"');
-$dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
-
-$tabSetup = "Yes";	
-$hasOptions = "No";
-$settingsicon = "No";
-
-foreach($dbTab as $row) :
-
-    if (in_array("tabs", $row)) :
-    
-        $tabSetup = "No";
-    
-    endif;
-
-endforeach;
-
-foreach($dbOptions as $row) :
-
-    if (in_array("options", $row)) :
-    
-        $hasOptions = "Yes";
-    
-    endif;
-
-endforeach;
-
-if($tabSetup == "No") :
-
-    if($USER->authenticated && $USER->role == "admin") :
-
-        $result = $file_db->query('SELECT * FROM tabs WHERE active = "true"');
-        $getsettings = $file_db->query('SELECT * FROM tabs WHERE active = "true"');
-
-        foreach($getsettings as $row) :
-
-            if(!empty($row['iconurl']) && $settingsicon == "No") :
-
-                $settingsicon = "Yes";
-
-            endif;
-
-        endforeach;
-
-    elseif($USER->authenticated && $USER->role == "user") :
-
-        $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true"');
-
-    else :
-
-        $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true"');
-
-    endif;
+    $action = $_POST['action'];
     
 endif;
 
-$settingsActive = "";
+if($action == "createLocation") :
 
-if($tabSetup == "Yes") :
+    $databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
 
-    $settingsActive = "active";
-    
+    foreach ($_POST as $postName => $postValue) {
+            
+        if($postName !== "action") :
+        
+            if(substr($postValue, -1) == "/") : $postValue = rtrim($postValue, "/"); endif;
+        
+            $databaseData .= $postName . " = \"" . $postValue . "\"\r\n";
+        
+        endif;
+        
+    }
+
+    write_ini_file($databaseData, $databaseLocation);
+
 endif;
 
-if($hasOptions == "Yes") :
+if(!file_exists($databaseLocation)) :
 
-    $resulto = $file_db->query('SELECT * FROM options');
+    $configReady = "No";
+    $userpic = "";
 
-    foreach($resulto as $row) : 
-                                    
-        $title = $row['title'];
-        $topbartext = $row['topbartext'];
-        $topbar = $row['topbar'];
-        $bottombar = $row['bottombar'];
-        $sidebar = $row['sidebar'];
-        $hoverbg = $row['hoverbg'];
-        $activetabBG = $row['activetabBG'];
-        $activetabicon = $row['activetabicon'];
-        $activetabtext = $row['activetabtext'];
-        $inactiveicon = $row['inactiveicon'];
-        $inactivetext = $row['inactivetext'];
+else :
+
+    $configReady = "Yes";
+
+    require_once("user.php");
+
+    $USER = new User("registration_callback");
+
+    $dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+
+    $database = new PDO("sqlite:" . $dbfile);
+
+    $query = "SELECT * FROM users";
+
+    foreach($database->query($query) as $data) {
+
+        $needSetup = "No";
+
+    }
+
+    $db = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+    $file_db = new PDO("sqlite:" . $db);
+    $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $dbTab = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"');
+    $dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
+
+    foreach($dbTab as $row) :
+
+        if (in_array("tabs", $row)) :
+
+            $tabSetup = "No";
+
+        endif;
 
     endforeach;
 
-elseif($hasOptions == "No") :
+    if($tabSetup == "Yes") :
 
-    $title = "Organizr";
-    $topbar = "#eb6363"; 
-    $topbartext = "#FFFFFF";
-    $bottombar = "#eb6363";
-    $sidebar = "#000000";
-    $hoverbg = "#eb6363";
-    $activetabBG = "#eb6363";
-    $activetabicon = "#FFFFFF";
-    $activetabtext = "#FFFFFF";
-    $inactiveicon = "#FFFFFF";
-    $inactivetext = "#FFFFFF";
+        $settingsActive = "active";
+    
+    endif;
+
+    foreach($dbOptions as $row) :
+
+        if (in_array("options", $row)) :
+
+            $hasOptions = "Yes";
+
+        endif;
+
+    endforeach;
+
+    if($tabSetup == "No") :
+
+        if($USER->authenticated && $USER->role == "admin") :
+
+            $result = $file_db->query('SELECT * FROM tabs WHERE active = "true"');
+            $getsettings = $file_db->query('SELECT * FROM tabs WHERE active = "true"');
+
+            foreach($getsettings as $row) :
+
+                if(!empty($row['iconurl']) && $settingsicon == "No") :
+
+                    $settingsicon = "Yes";
+
+                endif;
+
+            endforeach;
+
+        elseif($USER->authenticated && $USER->role == "user") :
+
+            $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true"');
+
+        else :
+
+            $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true"');
+
+        endif;
+
+    endif;
+
+    if($hasOptions == "Yes") :
+
+        $resulto = $file_db->query('SELECT * FROM options');
+
+        foreach($resulto as $row) : 
+
+            $title = $row['title'];
+            $topbartext = $row['topbartext'];
+            $topbar = $row['topbar'];
+            $bottombar = $row['bottombar'];
+            $sidebar = $row['sidebar'];
+            $hoverbg = $row['hoverbg'];
+            $activetabBG = $row['activetabBG'];
+            $activetabicon = $row['activetabicon'];
+            $activetabtext = $row['activetabtext'];
+            $inactiveicon = $row['inactiveicon'];
+            $inactivetext = $row['inactivetext'];
+
+        endforeach;
+
+    endif;
+
+    $userpic = md5( strtolower( trim( $USER->email ) ) );
 
 endif;
-
-$userpic = md5( strtolower( trim( $USER->email ) ) );
 
 ?>
 
@@ -183,13 +232,13 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
         <link rel="stylesheet" href="css/style.css">
 
         
-        <link rel="apple-touch-icon" sizes="180x180" href="icons/favicon/apple-touch-icon.png">
-        <link rel="icon" type="image/png" href="icons/favicon/favicon-32x32.png" sizes="32x32">
-        <link rel="icon" type="image/png" href="icons/favicon/favicon-16x16.png" sizes="16x16">
-        <link rel="manifest" href="icons/favicon/manifest.json">
-        <link rel="mask-icon" href="icons/favicon/safari-pinned-tab.svg" color="#2d89ef">
-        <link rel="shortcut icon" href="icons/favicon/favicon.ico">
-        <meta name="msapplication-config" content="icons/favicon/browserconfig.xml">
+        <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" href="images/favicon/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="images/favicon/favicon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="images/favicon/manifest.json">
+        <link rel="mask-icon" href="images/favicon/safari-pinned-tab.svg" color="#2d89ef">
+        <link rel="shortcut icon" href="images/favicon/favicon.ico">
+        <meta name="msapplication-config" content="images/favicon/browserconfig.xml">
         <meta name="theme-color" content="#2d89ef">
         
         <!--[if lt IE 9]>
@@ -399,7 +448,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                                 
                                 <?php endforeach; endif;?>
                                 
-                                <?php if($USER->authenticated && $USER->role == "admin") :?>
+                                <?php if($configReady == "Yes") : if($USER->authenticated && $USER->role == "admin") :?>
                                 <li class="tab-item <?=$settingsActive;?>" id="settings.phpx">
                                                             
                                     <a class="tab-link">
@@ -407,7 +456,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                                         <?php if($settingsicon == "Yes") :
                                         
                                             echo '<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
-                                                <img id="settings-icon" src="icons/settings.png" style="height: 30px; margin-top: -2px;"></i>';
+                                                <img id="settings-icon" src="images/settings.png" style="height: 30px; margin-top: -2px;"></i>';
                                         
                                         else :
                                         
@@ -420,7 +469,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                                     </a>
                                 
                                 </li>
-                                <?php endif;?>
+                                <?php endif; endif;?>
                                 
                                 <!--End Tab List-->
                            
@@ -432,9 +481,6 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                         <div class="bottom-bnts">
                             
                             <a class="fix-nav"><i class="mdi mdi-pin"></i></a>
-                            <?php if($USER->authenticated) : ?>
-                            <a class="logout"><i class="fa fa-sign-out fa-lg"></i></a>
-                            <?php endif ?>
                         
                         </div>
                     
@@ -454,17 +500,17 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                         
                         <li class="dropdown notifications">
                             
-                            <?php if(!$USER->authenticated) : ?>
+                            <?php if($configReady == "Yes") : if(!$USER->authenticated) : ?>
                             
                             <a class="log-in">
                             
-                            <?php endif; ?>
+                            <?php endif; endif;?>
                             
-                            <?php if($USER->authenticated) : ?>
+                            <?php if($configReady == "Yes") : if($USER->authenticated) : ?>
                             
                             <a class="show-members">
                                 
-                            <?php endif; ?>
+                            <?php endif; endif;?>
                                 
                                 <i class="userpic"><img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=40&d=mm" class="img-circle"></i> 
                                 
@@ -501,7 +547,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
             <div id="content" class="content" style="">
 
                 <!--Load Framed Content-->
-                <?php if($needSetup == "Yes") : ?>
+                <?php if($needSetup == "Yes" && $configReady == "Yes") : ?>
                 <div class="table-wrapper">
 
                     <div class="table-row">
@@ -567,7 +613,61 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
 
                 </div>
                 <?php endif; ?>
-                <?php if(!$USER->authenticated && $tabSetup == "Yes" && $needSetup == "No") :?>
+                
+                
+                <?php if($needSetup == "Yes" && $configReady == "No") : ?>
+                <div class="table-wrapper">
+
+                    <div class="table-row">
+
+                        <div class="table-cell text-center">
+
+                            <div class="login i-block">
+
+                                <div class="content-box">
+
+                                    <div class="green-bg biggest-box">
+
+                                        <h1 class="zero-m text-uppercase">Database Path</h1>
+
+                                    </div>
+
+                                    <div class="big-box text-left registration-form">
+
+                                        <h3 class="text-center">Specify the location of which you want to save your database files.</h3>
+                                        <h5 class="text-left"><strong>Current Direcotry: <?php echo __DIR__; ?> <br>Parent Directory: <?php echo dirname(__DIR__); ?></strong></h5>
+                                        
+                                        <form class="controlbox" name="setupDatabase" id="setupDatabase" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
+                                            
+                                            <input type="hidden" name="action" value="createLocation" />
+
+                                            <div class="form-group">
+
+                                                <input type="text" class="form-control material" name="databaseLocation" autofocus value="<?php echo dirname(__DIR__);?>" autocorrect="off" autocapitalize="off" required>
+                                                
+                                                <?php if(file_exists(dirname(__DIR__) . '/users.db') || file_exists(__DIR__ . '/users.db')) : echo '<h5 class="text-center red">Don\'t worry, you\'re database is still there.  Just use the same location you have it in.</h5>'; endif;?>
+
+                                            </div>
+
+                                            <input id="databaseLocationSubmit" type="submit" class="btn green-bg btn-block btn-sm text-uppercase waves waves-effect waves-float" value="Save Location">
+
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+                <?php endif; ?>
+                
+                
+                <?php if($configReady == "Yes") : if(!$USER->authenticated && $tabSetup == "Yes" && $needSetup == "No") :?>
                 <div class="table-wrapper">
                 
                     <div class="table-row">
@@ -601,7 +701,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                     </div>
                 
                 </div>
-                <?php endif; ?>
+                <?php endif; endif; ?>
                 <?php if($tabSetup == "No" && $needSetup == "No") :?>        
                 <div id="tabEmpty" class="table-wrapper" style="display: none">
                 
@@ -656,7 +756,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                 
                 <div class="clearfix"><br/></div>
                 
-                <?php if($USER->authenticated) : ?>
+                <?php if($configReady == "Yes") : if($USER->authenticated) : ?>
                 
                 <div class="content-box profile-sidebar box-shadow">
                 
@@ -728,12 +828,12 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
                     
                 </div>
 
-                <?php endif;?>
+                <?php endif; endif;?>
 
             </div>
 
         </div>
-        <?php if(!$USER->authenticated) : ?>
+        <?php if($configReady == "Yes") : if(!$USER->authenticated && $configReady == "Yes") : ?>
         <div class="login-modal modal fade">
             
             <div style="background:<?=$sidebar;?>;" class="table-wrapper">
@@ -829,8 +929,8 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
             </div>
         
         </div>
-        <?php endif;?>
-        <?php if($USER->authenticated) : ?>
+        <?php endif; endif;?>
+        <?php if($configReady == "Yes") : if($USER->authenticated) : ?>
         <div style="background:<?=$topbar;?>;" class="logout-modal modal fade">
             
             <div class="table-wrapper" style="background: <?=$topbar;?>">
@@ -872,7 +972,7 @@ $userpic = md5( strtolower( trim( $USER->email ) ) );
             </div>
     
         </div>
-        <?php endif;?>
+        <?php endif; endif;?>
 
         <!--Scripts-->
         <script src="bower_components/jquery/dist/jquery.min.js"></script>

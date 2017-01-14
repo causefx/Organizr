@@ -146,9 +146,6 @@ $folder = USER_HOME;
 
 
         <link rel="stylesheet" href="css/style.css">
-
-        <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
         
     </head>
 
