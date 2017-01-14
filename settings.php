@@ -438,8 +438,6 @@ if($action == "addTabz") :
         $stmt->execute();
         
     endforeach;
-
-    //echo "<script>window.onload = function() {if(!window.location.hash) {window.location = window.location + '#loaded';window.location.reload();}}</script>";
     
 endif;
 
@@ -1679,7 +1677,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.98";
+                    var currentVersion = "0.985";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
@@ -1724,7 +1722,7 @@ endif;
                     
                     }
 
-                    $(infoTabVersion).html("<strong>Installed Version: </strong>" + currentVersion + " <strong>Current Version: </strong>" + githubVersion);
+                    $(infoTabVersion).html("<strong>Installed Version: </strong>" + currentVersion + " <strong>Current Version: </strong>" + githubVersion + " <strong>Database Location:  </strong> <?php echo DATABASE_LOCATION;?>");
                     
                 }
                 
