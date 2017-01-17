@@ -22,6 +22,7 @@ $activetabicon = "#FFFFFF";
 $activetabtext = "#FFFFFF";
 $inactiveicon = "#FFFFFF";
 $inactivetext = "#FFFFFF";
+$baseURL = "";
 
 function registration_callback($username, $email, $userdir){
     
@@ -205,41 +206,45 @@ endif;
         
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <meta name="apple-mobile-web-app-capable" content="yes" />   
+        <meta name="mobile-web-app-capable" content="yes" /
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="msapplication-tap-highlight" content="no" />
 
         <title><?=$title;?><?php if($title !== "Organizr") :  echo "- Organizr"; endif; ?></title>
 
-        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
-        <link rel="stylesheet" href="bower_components/metisMenu/dist/metisMenu.min.css">
-        <link rel="stylesheet" href="bower_components/Waves/dist/waves.min.css"> 
-        <link rel="stylesheet" href="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css"> 
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/mdi/css/materialdesignicons.min.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/metisMenu/dist/metisMenu.min.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/Waves/dist/waves.min.css"> 
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css"> 
 
-        <link rel="stylesheet" href="js/selects/cs-select.css">
-        <link rel="stylesheet" href="js/selects/cs-skin-elastic.css">
-        <link rel="stylesheet" href="bower_components/google-material-color/dist/palette.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>js/selects/cs-select.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>js/selects/cs-skin-elastic.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/google-material-color/dist/palette.css">
         
-        <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
-        <link rel="stylesheet" href="bower_components/smoke/dist/css/smoke.min.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/sweetalert/dist/sweetalert.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/smoke/dist/css/smoke.min.css">
 
 
-        <script src="js/menu/modernizr.custom.js"></script>
-        <script type="text/javascript" src="js/sha1.js"></script>
-		<script type="text/javascript" src="js/user.js"></script>
+        <script src="<?=$baseURL;?>js/menu/modernizr.custom.js"></script>
+        <script type="text/javascript" src="<?=$baseURL;?>js/sha1.js"></script>
+		<script type="text/javascript" src="<?=$baseURL;?>js/user.js"></script>
 
-        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>css/style.css">
 
         
-        <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
-        <link rel="icon" type="image/png" href="images/favicon/favicon-32x32.png" sizes="32x32">
-        <link rel="icon" type="image/png" href="images/favicon/favicon-16x16.png" sizes="16x16">
-        <link rel="manifest" href="images/favicon/manifest.json">
-        <link rel="mask-icon" href="images/favicon/safari-pinned-tab.svg" color="#2d89ef">
-        <link rel="shortcut icon" href="images/favicon/favicon.ico">
-        <meta name="msapplication-config" content="images/favicon/browserconfig.xml">
+        <link rel="apple-touch-icon" sizes="180x180" href="<?=$baseURL;?>images/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" href="<?=$baseURL;?>images/favicon/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="<?=$baseURL;?>images/favicon/favicon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="<?=$baseURL;?>images/favicon/manifest.json">
+        <link rel="mask-icon" href="<?=$baseURL;?>images/favicon/safari-pinned-tab.svg" color="#2d89ef">
+        <link rel="shortcut icon" href="<?=$baseURL;?>images/favicon/favicon.ico">
+        <meta name="msapplication-config" content="<?=$baseURL;?>images/favicon/browserconfig.xml">
         <meta name="theme-color" content="#2d89ef">
+        <link rel="stylesheet" type="text/css" href="css/addtohomescreen.css">
+        <script src="js/addtohomescreen.js"></script>
         
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
@@ -262,6 +267,7 @@ endif;
                         <div></div>
                         <div></div>
                         <div></div>
+                        <logo class="logo"><img height="192px" src="images/organizr.png"></logo>
                     
                     </div>
                 
@@ -318,12 +324,16 @@ endif;
                     background: <?=$sidebar;?>;
                     border: 2px solid <?=$topbar;?>;
                 
-                }.tab-item:hover a {
+                }@media screen and (min-width:737px){
                     
-                    color: <?=$sidebar;?> !important;
-                    background: <?=$hoverbg;?>;
-                    border-radius: 100px 0 0 100px;
-                
+                    .tab-item:hover a {
+                    
+                        color: <?=$sidebar;?> !important;
+                        background: <?=$hoverbg;?>;
+                        border-radius: 100px 0 0 100px;
+                    
+                    }
+        
                 }.gn-menu li.active > a {
                     
                     color: <?=$activetabtext;?> !important;
@@ -385,6 +395,11 @@ endif;
 
                 }#menu-toggle span {
                     background: <?=$topbartext;?>;
+                }logo.logo {
+                    
+                    opacity: 0.5;
+                    filter: alpha(opacity=50);
+
                 }
                 
             </style>
@@ -414,7 +429,7 @@ endif;
                     
                     <nav class="gn-menu-wrapper">
                         
-                        <div class="gn-scroller">
+                        <div class="gn-scroller" id="gn-scroller">
                             
                             <ul class="gn-menu metismenu">
 
@@ -424,7 +439,7 @@ endif;
                                 
                                 if($row['defaultz'] == "true") : $defaultz = "active"; else : $defaultz = ""; endif;?>
                                 
-                                <li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x">
+                                <li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" name="<?php echo strtolower($row['name']);?>">
                                     
                                     <a class="tab-link">
                                         
@@ -545,6 +560,7 @@ endif;
 
             <!--Content-->
             <div id="content" class="content" style="">
+                <script>addToHomescreen();</script>
 
                 <!--Load Framed Content-->
                 <?php if($needSetup == "Yes" && $configReady == "Yes") : ?>
@@ -597,7 +613,7 @@ endif;
 
                                             </div>
 
-                                            <input id="registerSubmit" type="button" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register">
+                                            <button id="registerSubmit" type="submit" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register">Register</button>
 
                                         </form>
 
@@ -635,7 +651,7 @@ endif;
                                     <div class="big-box text-left registration-form">
 
                                         <h3 class="text-center">Specify the location of which you want to save your database files.</h3>
-                                        <h5 class="text-left"><strong>Current Direcotry: <?php echo __DIR__; ?> <br>Parent Directory: <?php echo dirname(__DIR__); ?></strong></h5>
+                                        <h5 class="text-left"><strong>Current Directory: <?php echo __DIR__; ?> <br>Parent Directory: <?php echo dirname(__DIR__); ?></strong></h5>
                                         
                                         <form class="controlbox" name="setupDatabase" id="setupDatabase" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                             
@@ -649,7 +665,7 @@ endif;
 
                                             </div>
 
-                                            <input id="databaseLocationSubmit" type="submit" class="btn green-bg btn-block btn-sm text-uppercase waves waves-effect waves-float" value="Save Location">
+                                            <button id="databaseLocationSubmit" type="submit" class="btn green-bg btn-block btn-sm text-uppercase waves waves-effect waves-float" value="Save Location">Save Location</button>
 
                                         </form>
 
@@ -757,6 +773,8 @@ endif;
                 <div class="clearfix"><br/></div>
                 
                 <?php if($configReady == "Yes") : if($USER->authenticated) : ?>
+                
+                <br>
                 
                 <div class="content-box profile-sidebar box-shadow">
                 
@@ -975,34 +993,42 @@ endif;
         <?php endif; endif;?>
 
         <!--Scripts-->
-        <script src="bower_components/jquery/dist/jquery.min.js"></script>
-        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
-        <script src="bower_components/Waves/dist/waves.min.js"></script>
-        <script src="bower_components/moment/min/moment.min.js"></script>
-        <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
-        <script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
-        <script src="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
-        <script src="bower_components/cta/dist/cta.min.js"></script>
+        <script src="<?=$baseURL;?>bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="<?=$baseURL;?>bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="<?=$baseURL;?>bower_components/metisMenu/dist/metisMenu.min.js"></script>
+        <script src="<?=$baseURL;?>bower_components/Waves/dist/waves.min.js"></script>
+        <script src="<?=$baseURL;?>bower_components/moment/min/moment.min.js"></script>
+        <script src="<?=$baseURL;?>bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
+        <script src="<?=$baseURL;?>bower_components/slimScroll/jquery.slimscroll.min.js"></script>
+        <script src="<?=$baseURL;?>bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
+        <script src="<?=$baseURL;?>bower_components/cta/dist/cta.min.js"></script>
 
         <!--Menu-->
-        <script src="js/menu/classie.js"></script>
-        <script src="js/menu/gnmenu.js"></script>
+        <script src="<?=$baseURL;?>js/menu/classie.js"></script>
+        <script src="<?=$baseURL;?>js/menu/gnmenu.js"></script>
 
         <!--Selects-->
-        <script src="js/selects/selectFx.js"></script>
+        <script src="<?=$baseURL;?>js/selects/selectFx.js"></script>
         
-        <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+        <script src="<?=$baseURL;?>bower_components/sweetalert/dist/sweetalert.min.js"></script>
 
-        <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
+        <script src="<?=$baseURL;?>bower_components/smoke/dist/js/smoke.min.js"></script>
 
         <!--Notification-->
-        <script src="js/notifications/notificationFx.js"></script>
+        <script src="<?=$baseURL;?>js/notifications/notificationFx.js"></script>
 
         <!--Custom Scripts-->
-        <script src="js/common.js"></script>
+        <script src="<?=$baseURL;?>js/common.js"></script>
 
         <script>
+
+        var fixed = document.getElementById('gn-scroller');
+            
+        fixed.addEventListener('touchmove', function(e) {
+
+            e.preventDefault();
+
+        }, false);    
             
         function setHeight() {
             
@@ -1137,6 +1163,18 @@ endif;
                 
             }
             
+            if ($(location).attr('hash')){
+            
+                var getHash = $(location).attr('hash').substr(1).replace("%20", " ").replace("_", " ");
+
+                var gotHash = getHash.toLowerCase();
+
+                var getLiTab = $("li[name^='" + gotHash + "']");
+                
+                getLiTab.trigger("click");
+
+            }   
+
             setHeight();
 
         }); 
