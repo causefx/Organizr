@@ -997,7 +997,7 @@ yx-axis
 	.mCSB_outside + .mCS-minimal.mCSB_scrollTools_vertical, 
 	.mCSB_outside + .mCS-minimal-dark.mCSB_scrollTools_vertical{
 		right: 0; 
-		margin: 12px 0; 
+		/*margin: 12px 0; */
 	}
 	
 	.mCustomScrollBox.mCS-minimal + .mCSB_scrollTools.mCSB_scrollTools_horizontal, 

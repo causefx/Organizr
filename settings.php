@@ -638,11 +638,11 @@ endif;
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
 
-                                            <div class="col-xs-6 col-md-1">    
+                                            <div class="col-xs-2" style="width: 125px; height: 125px; padding-right: 0px;">    
                                             
                                                 <a class="thumbnail">
 
-                                                    <img src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
+                                                    <img style="width: 100px; height: 100px;" src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
 
                                                 </a>
                                                 
@@ -675,7 +675,7 @@ endif;
 
                                     </form>
 
-                                    <div class="panel">
+                                    <div class="panel" style="overflow: auto">
 
                                         <form id="submitTabs" method="post">
                                         
@@ -1541,6 +1541,8 @@ endif;
                     
                 });
                 
+                $( "div[id^='viewAllIcons']" ).toggle();
+                
             });
          
         </script>
@@ -1677,7 +1679,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.985";
+                    var currentVersion = "0.99";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
