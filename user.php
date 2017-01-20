@@ -607,11 +607,11 @@ EOT;
 
                     array_push($gotFailLog["auth"], $failLogEntry);
                     
-                    $writeFailLog = json_encode($gotFailLog);
+                    $writeFailLog = str_replace("date", "\r\ndate", json_encode($gotFailLog));
 
                 }else{
 
-                    $writeFailLog = json_encode($failLogEntryFirst);
+                    $writeFailLog = str_replace("date", "\r\ndate", json_encode($failLogEntryFirst));
 
                 }
                 
