@@ -593,7 +593,7 @@ EOT;
                 
                 if(file_exists(FAIL_LOG)) { 
                     
-                    $getFailLog = file_get_contents(FAIL_LOG); 
+                    $getFailLog = str_replace("\r\ndate", "date", file_get_contents(FAIL_LOG));
                     
                     $gotFailLog = json_decode($getFailLog, true);
                 
