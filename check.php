@@ -162,7 +162,6 @@ $folder = USER_HOME;
                 
                 check("PDO_SQLITE");
                 check("PDO");
-                check("curl");
                 check("Zip");
                 checkFunction("MAIL");
                 checkFunction("fopen");

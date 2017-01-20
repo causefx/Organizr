@@ -234,7 +234,7 @@ endif;
 
         <link rel="stylesheet" href="<?=$baseURL;?>css/style.css">
 
-        
+        <link rel="icon" type="image/png" href="<?=$baseURL;?>images/favicon/android-chrome-192x192.png" sizes="192x192">
         <link rel="apple-touch-icon" sizes="180x180" href="<?=$baseURL;?>images/favicon/apple-touch-icon.png">
         <link rel="icon" type="image/png" href="<?=$baseURL;?>images/favicon/favicon-32x32.png" sizes="32x32">
         <link rel="icon" type="image/png" href="<?=$baseURL;?>images/favicon/favicon-16x16.png" sizes="16x16">
@@ -446,7 +446,7 @@ endif;
                                         <?php if($row['iconurl']) : ?>
                                         
                                             <i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
-                                                <img src="<?=$row['iconurl'];?>" style="height: 30px; margin-top: -2px;">
+                                                <img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
                                             </i>
                                         
                                         <?php else : ?>
@@ -719,7 +719,7 @@ endif;
                 </div>
                 <?php endif; endif; ?>
                 <?php if($tabSetup == "No" && $needSetup == "No") :?>        
-                <div id="tabEmpty" class="table-wrapper" style="display: none">
+                <div id="tabEmpty" class="table-wrapper" style="display: none; background:<?=$sidebar;?>;">
                 
                     <div class="table-row">
                 
@@ -729,9 +729,9 @@ endif;
                                 
                                 <div class="content-box">
                                     
-                                    <div class="red-bg biggest-box">
+                                    <div class="biggest-box" style="background:<?=$topbar;?>;">
                 
-                                        <h1 class="zero-m text-uppercase">Hold Up!</h1>
+                                        <h1 class="zero-m text-uppercase" style="color:<?=$topbartext;?>;">Hold Up!</h1>
                 
                                     </div>
                 
@@ -891,13 +891,13 @@ endif;
                                             <input type="hidden" name="op" value="login">
 				                            <input type="hidden" name="sha1" value="">
                                             <input type="hidden" name="rememberMe" value="false"/>
-                                            <input type="text" class="form-control material" name="username" placeholder="Username" autocorrect="off" autocapitalize="off" value="" autofocus required>
+                                            <input type="text" class="form-control material" name="username" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" value="" autofocus required>
                                         
                                         </div>
                                         
                                         <div class="form-group">
                                             
-                                            <input type="password" class="form-control material" name="password1" placeholder="Password" required>
+                                            <input type="password" class="form-control material" name="password1" value="" autocomplete="off" placeholder="Password" required>
                                         
                                         </div>
                                         
@@ -917,7 +917,7 @@ endif;
 
                                     </form> 
                                     
-                                    <button id="switchForgot" class="btn btn-block btn-info text-uppercase waves">Forgot Password</button>
+                                    <button id="switchForgot" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;">Forgot Password</text></button>
                                     
                                     <form style="display: none;" name="forgotPassword" id="forgotPassword" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                         
