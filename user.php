@@ -10,6 +10,7 @@
     $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
     define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
     define('DATABASE_LOCATION', $databaseConfig['databaseLocation'] . '/');
+    define('FAIL_LOG', 'loginLog.json');
 
 	class User
 	{
@@ -587,7 +588,38 @@ EOT;
 		 */
 		function login_user($username, $sha1, $remember)
 		{
-			// transform sha1 into real password
+
+            function buildLog($username, $authType){
+                
+                if(file_exists(FAIL_LOG)) { 
+                    
+                    $getFailLog = file_get_contents(FAIL_LOG); 
+                    
+                    $gotFailLog = json_decode($getFailLog, true);
+                
+                }
+                
+                $failLogEntryFirst = array('logType' => 'login_log', 'auth' => array(array('date' => date("Y-m-d H:i:s"), 'username' => $username, 'ip' => $_SERVER['REMOTE_ADDR'], 'auth_type' => $authType)));
+                
+                $failLogEntry = array('date' => date("Y-m-d H:i:s"), 'username' => $username, 'ip' => $_SERVER['REMOTE_ADDR'], 'auth_type' => $authType);
+                
+                if(isset($gotFailLog)) { 
+
+                    array_push($gotFailLog["auth"], $failLogEntry);
+                    
+                    $writeFailLog = json_encode($gotFailLog);
+
+                }else{
+
+                    $writeFailLog = json_encode($failLogEntryFirst);
+
+                }
+                
+                return $writeFailLog;
+                
+            }
+
+            // transform sha1 into real password
 			$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
 			if($dbpassword==$sha1) {
 				$this->info("password hashing is not implemented.");
@@ -607,17 +639,23 @@ EOT;
                         
                     }
 					$this->info("Welcome $username");
+                    file_put_contents(FAIL_LOG, buildLog($username, "good_auth"));
+                    chmod(FAIL_LOG, 0660);
                     return true; 
                     
                 }
 				// authentication failed
-				$this->info("password mismatch for $username");
+				//$this->info("password mismatch for $username");
+                file_put_contents(FAIL_LOG, buildLog($username, "bad_auth"));
+                chmod(FAIL_LOG, 0660);
 				if(User::unsafe_reporting) { $this->error = "incorrect password for $username."; $this->error("incorrect password for $username."); }
 				else { $this->error = "the specified username/password combination is incorrect."; $this->error("the specified username/password combination is incorrect."); }
 				return false; }
 
 			// authentication could not take place
-			$this->info("there was no user $username in the database");
+			//$this->info("there was no user $username in the database");
+            file_put_contents(FAIL_LOG, buildLog($username, "bad_auth"));
+            chmod(FAIL_LOG, 0660);
 			if(User::unsafe_reporting) { $this->error = "user $username is unknown."; $this->error("user $username is unknown."); }
 			else { $this->error = "you either did not correctly input your username, or password (... or both)."; $this->error("you either did not correctly input your username, or password (... or both)."); }
 			return false;

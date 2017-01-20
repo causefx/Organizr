@@ -160,6 +160,14 @@ if($action == "deleteDB") :
 
 endif;
 
+if($action == "deleteLog") : 
+                     
+    unlink(FAIL_LOG); 
+
+   echo "<script type='text/javascript'>window.location.replace('settings.php');</script>";
+
+endif;
+
 if($action == "upgrade") : 
                      
     function downloadFile($url, $path){
@@ -522,7 +530,8 @@ endif;
 
         <script src="js/menu/modernizr.custom.js"></script>
         <script type="text/javascript" src="js/sha1.js"></script>
-		    <script type="text/javascript" src="js/user.js"></script>
+        <script type="text/javascript" src="js/user.js"></script>
+        <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
 
         <link rel="stylesheet" href="css/style.css">
         <link href="css/jquery.filer.css" rel="stylesheet">
@@ -540,8 +549,10 @@ endif;
         <style>
         
             input.form-control.material.icp-auto.iconpicker-element.iconpicker-input {
-    display: none;
-}
+                display: none;
+            }input.form-control.iconpicker-search {
+                color: black;
+            }
         
         </style>
        
@@ -560,7 +571,7 @@ endif;
                   
                         <div class="tabbable tabs-with-bg" id="eighth-tabs">
                     
-                            <ul class="nav nav-tabs" style="background: #76828e">
+                            <ul class="nav nav-tabs" style="background: #C0C0C0">
                       
                                 <li class="active">
                         
@@ -580,15 +591,21 @@ endif;
                      
                                 </li>
                                 
-                                <li>
+                                 <li>
                         
-                                    <a href="#about" data-toggle="tab"><i class="fa fa-info indigo"></i></a>
+                                    <a href="#loginlog" data-toggle="tab"><i class="fa fa-file-text-o indigo"></i></a>
                      
                                 </li>
-
+                                
+                                <li>
+                        
+                                    <a href="#about" data-toggle="tab"><i class="fa fa-info red-orange"></i></a>
+                     
+                                </li>
+    
                             </ul>
                     
-                            <div class="tab-content">
+                            <div class="tab-content" style="overflow: auto">
                       
                                 <div class="content-box box-shadow big-box todo-list tab-pane big-box  fade in active" id="tab-tabs">
 
@@ -629,11 +646,9 @@ endif;
                                         <div class="row">
                                             
                                             <textarea id="copyTarget" class="hideCopy" style="left: -9999px; top: 0; position: absolute;"></textarea>
-                                           <!-- style="height: 1px; width: 0px; display: block;"!-->
                                             <?php
                                             $dirname = "images/";
                                             $images = scandir($dirname);
-                                            //shuffle($images);
                                             $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store");
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
@@ -675,7 +690,7 @@ endif;
 
                                     </form>
 
-                                    <div class="panel" style="overflow: auto">
+                                    <div class="panel">
 
                                         <form id="submitTabs" method="post">
                                         
@@ -979,6 +994,102 @@ endif;
 
                                 </div>
                                 
+                                <div class="tab-pane big-box  fade in" id="loginlog">
+                                    
+                                    <div class="content-box big-box">
+
+                                        <div class="table-responsive">
+                                            
+                                            <?php if(file_exists(FAIL_LOG)) : ?>
+                                            
+                                            <form id="deletelog" method="post">
+                                                    
+                                                <input type="hidden" name="action" value="deleteLog" />
+                                                <button class="btn waves btn-labeled btn-danger btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+
+                                                    <span class="btn-label"><i class="fa fa-trash"></i></span>Purge Log
+
+                                                </button>
+
+                                            </form>
+
+                                            <table class="table table-striped">
+                                                
+                                                <thead>
+
+                                                    <tr>
+
+                                                        <th>Date</th>
+
+                                                        <th>Username</th>
+
+                                                        <th>IP Address</th>
+
+                                                        <th>Type</th>
+
+                                                    </tr>
+
+                                                </thead>
+
+                                                <tbody>
+                                                    
+                                                    <?php
+                                                    
+                                                        $getFailLog = file_get_contents(FAIL_LOG); 
+                                                        $gotFailLog = json_decode($getFailLog, true);
+
+                                                        function getColor($colorTest){
+
+                                                            if($colorTest == "bad_auth") :
+
+                                                                $gotColorTest = "danger";
+
+                                                            elseif($colorTest == "good_auth") :
+
+                                                                $gotColorTest = "primary";
+
+                                                            endif;
+
+                                                            echo $gotColorTest;
+
+                                                        }
+
+                                                        foreach (array_reverse($gotFailLog["auth"]) as $key => $val) : ?>
+
+                                                    <tr>
+
+                                                        <td><?=$val["date"];?></td>
+
+                                                        <td><?=$val["username"];?></td>
+
+                                                        <td><?=$val["ip"];?></td>
+
+                                                        <td><span class="label label-<?php getColor($val["auth_type"]);?>"><?=$val["auth_type"];?></span></td>
+
+                                                    </tr>
+                                                    
+                                                    <?php endforeach; ?> 
+    
+                                                </tbody>
+
+                                            </table>
+                                            
+                                            <?php endif; 
+                                            
+                                            if(!file_exists(FAIL_LOG)) :
+
+                                                echo "Nothing in log..................";
+
+                                            endif;
+                                            
+                                            ?>
+
+                                        </div>
+                                                    
+                                    </div>
+
+                                </div>
+                                
                                 <div class="tab-pane big-box  fade in" id="about">
                         
                                     <h4><strong>About Organizr</strong></h4>
@@ -1062,13 +1173,6 @@ endif;
                                             </ul>
                                             
                                         </div>
-                                        
-                                       <!-- <button id="plexTheme" style="background: #E49F0C" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Plex</button>
-                                        <button id="embyTheme" style="background: #52B54B" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Emby</button>
-                                        <button id="bookTheme" style="background: #3B5998" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Book</button>
-                                        <button id="spaTheme" style="background: #66BBAE" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Spa</button>
-                                        <button id="darklyTheme" style="background: #375A7F" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Darkly</button>
-                                        <button id="slateTheme" style="background: #272B30" type="button" class="btn waves btn-dark btn-sm text-uppercase waves-effect waves-float">Slate</button> -->
                                         
                                         <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
                                                 
@@ -1397,9 +1501,20 @@ endif;
                 //Remove one completed item
                 $(document).on('click', '.trash', function (e) {
 
-                    var clearedCompItem = $(this).closest(".list-group-item").remove();
-                    e.preventDefault();
-                    count();
+                    var listItemRemove = $(this).closest(".list-group-item");
+                    var animation = "zoomOutRight";
+                    var container = $(this).closest(".list-group-item");
+
+                    //container.attr('class', 'list-group-item gray-bg animation-container');
+                    container.addClass('animated ' + animation);
+
+                    setTimeout(function() {
+                        var clearedCompItem = listItemRemove.remove();
+                        console.log("removed");
+                        e.preventDefault();
+                        count();
+                    }, 800);
+                    
 
                 });
 
@@ -1679,7 +1794,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.99";
+                    var currentVersion = "0.994";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
