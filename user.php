@@ -593,7 +593,7 @@ EOT;
                 
                 if(file_exists(FAIL_LOG)) { 
                     
-                    $getFailLog = file_get_contents(FAIL_LOG); 
+                    $getFailLog = str_replace("\r\ndate", "date", file_get_contents(FAIL_LOG));
                     
                     $gotFailLog = json_decode($getFailLog, true);
                 
@@ -607,11 +607,11 @@ EOT;
 
                     array_push($gotFailLog["auth"], $failLogEntry);
                     
-                    $writeFailLog = json_encode($gotFailLog);
+                    $writeFailLog = str_replace("date", "\r\ndate", json_encode($gotFailLog));
 
                 }else{
 
-                    $writeFailLog = json_encode($failLogEntryFirst);
+                    $writeFailLog = str_replace("date", "\r\ndate", json_encode($failLogEntryFirst));
 
                 }
                 
