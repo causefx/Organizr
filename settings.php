@@ -35,8 +35,24 @@ function printArray($arrayName){
     
 }
 
-$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+function write_ini_file($content, $path) { 
+    
+    if (!$handle = fopen($path, 'w')) {
+        
+        return false; 
+    
+    }
+    
+    $success = fwrite($handle, $content);
+    
+    fclose($handle); 
+    
+    return $success; 
 
+}
+
+$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+$databaseLocation = "databaseLocation.ini.php";
 $userdirpath = USER_HOME;
 $userdirpath = substr_replace($userdirpath, "", -1);
 
@@ -283,6 +299,26 @@ if($action == "upgrade") :
     rrmdir($cleanup);
 
     echo "<script>window.parent.location.reload(true);</script>";
+
+endif;
+
+if($action == "createLocation") :
+
+    $databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
+
+    foreach ($_POST as $postName => $postValue) {
+            
+        if($postName !== "action") :
+        
+            if(substr($postValue, -1) == "/") : $postValue = rtrim($postValue, "/"); endif;
+        
+            $databaseData .= $postName . " = \"" . $postValue . "\"\r\n";
+        
+        endif;
+        
+    }
+
+    write_ini_file($databaseData, $databaseLocation);
 
 endif;
                 
@@ -592,9 +628,15 @@ endif;
                      
                                 </li>
                                 
-                                 <li>
+                                <li>
                         
                                     <a href="#loginlog" data-toggle="tab"><i class="fa fa-file-text-o indigo"></i></a>
+                     
+                                </li>
+                                
+                                <li>
+                        
+                                    <a href="#systemSettings" data-toggle="tab"><i class="fa fa-cog gray"></i></a>
                      
                                 </li>
                                 
@@ -991,6 +1033,56 @@ endif;
                                             
                                         </form>
                                         
+                                    </div>
+
+                                </div>
+                                
+                                <div class="tab-pane big-box  fade in" id="systemSettings">
+                                    
+                                    <div class="row">
+                                        
+                                        <div class="col-lg-12">
+                                          
+                                            <div class="gray-bg content-box big-box box-shadow">
+                                            
+                                                <form class="content-form form-inline" name="systemSettings" id="systemSettings" action="" method="POST">
+                        								    
+                                                    <input type="hidden" name="action" value="createLocation" />
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control gray" name="databaseLocation" placeholder="databaseLocation" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control gray" name="timezone" placeholder="timezone" value="<?php echo TIMEZONE;?>">
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control gray" name="titleLogo" placeholder="Logo URL for title" value="<?php echo TITLELOGO;?>">
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control gray" name="loadingIcon" placeholder="Loading Icon URL" value="<?php echo LOADINGICON;?>">
+
+                                                    </div>
+                                                    
+                                                    
+                                                    
+                                                    <button type="submit" class="btn btn-success btn-icon waves waves-circle waves-effect waves-float"><i class="fa fa-floppy-o"></i></button>
+
+                                                </form>               
+                                          
+                                            </div>
+                                        
+                                        </div>
+                                      
                                     </div>
 
                                 </div>
@@ -1854,7 +1946,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.995";
+                    var currentVersion = "0.997";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;

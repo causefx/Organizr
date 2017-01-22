@@ -21,6 +21,7 @@ $activetabicon = "#FFFFFF";
 $activetabtext = "#FFFFFF";
 $inactiveicon = "#FFFFFF";
 $inactivetext = "#FFFFFF";
+$loadingIcon = "images/organizr.png";
 $baseURL = "";
 
 function registration_callback($username, $email, $userdir){
@@ -55,6 +56,24 @@ function write_ini_file($content, $path) {
     
     return $success; 
 
+}
+
+function getTimezone(){
+    
+    if (ini_get('date.timezone')) :
+    
+        echo ini_get('date.timezone');
+    
+    elseif (date_default_timezone_get()) :
+    
+        echo date_default_timezone_get();
+    
+    else :
+    
+        echo "America/Los_Angeles";
+    
+    endif;    
+    
 }
                 
 if(isset($_POST['action'])) :
@@ -194,6 +213,7 @@ else :
     endif;
 
     $userpic = md5( strtolower( trim( $USER->email ) ) );
+    if(!empty(LOADINGICON)) : $loadingIcon = LOADINGICON; endif;
 
 endif;
 
@@ -212,7 +232,7 @@ endif;
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="msapplication-tap-highlight" content="no" />
 
-        <title><?=$title;?><?php if($title !== "Organizr") :  echo "- Organizr"; endif; ?></title>
+        <title><?=$title;?><?php if($title !== "Organizr") :  echo " - Organizr"; endif; ?></title>
 
         <link rel="stylesheet" href="<?=$baseURL;?>bower_components/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="<?=$baseURL;?>bower_components/font-awesome/css/font-awesome.min.css">
@@ -268,7 +288,7 @@ endif;
                         <div></div>
                         <div></div>
                         <div></div>
-                        <logo class="logo"><img height="192px" src="images/organizr.png"></logo>
+                        <logo class="logo"><img height="192px" src="<?=$loadingIcon;?>"></logo>
                     
                     </div>
                 
@@ -283,12 +303,12 @@ endif;
             <style>
                 .bottom-bnts a {
                     
-                    background: <?=$bottombar;?>;
-                    color: <?=$topbartext;?>;
+                    background: <?=$bottombar;?> !important;
+                    color: <?=$topbartext;?> !important;
                 
                 }.bottom-bnts {
                     
-                    background-color: <?=$bottombar;?>;
+                    background-color: <?=$bottombar;?> !important;
                 
                 }.gn-menu-main {
                     
@@ -506,7 +526,27 @@ endif;
 
                 <li class="top-clock">
                     
-                    <span><span style="color:<?=$topbartext;?>;"><b><?=$title;?></b></span></span>
+                    <?php 
+                    
+                    if($configReady == "Yes") : 
+                    
+                        if(empty(TITLELOGO)) : 
+                    
+                            echo "<span><span style=\"color: topbartext\"><b>$title</b></span></span>"; 
+                    
+                        else : 
+                    
+                            echo "<img height='50px' width='250px' src='" . TITLELOGO . "'>";
+                    
+                        endif;
+                    
+                    else :
+                    
+                        echo "<span><span style=\"color: topbartext\"><b>$title</b></span></span>"; 
+                    
+                    endif;
+                    
+                    ?>
                 
                 </li>
 
@@ -664,7 +704,7 @@ endif;
                                                 
                                                 <h5>Set Database Location</h5>
                                                 
-                                                <input type="text" class="form-control material" name="timezone" autofocus value="<?php echo date_default_timezone_get();?>" autocorrect="off" autocapitalize="off" required>
+                                                <input type="text" class="form-control material" name="timezone" autofocus value="<?php echo getTimezone();?>" autocorrect="off" autocapitalize="off" required>
                                                 
                                                 <h5>Set Timezone</h5>
                                                 
