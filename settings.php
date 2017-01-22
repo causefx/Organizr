@@ -1,7 +1,5 @@
 <?php 
 
-date_default_timezone_set('America/Los_Angeles');
-
 $data = false;
 
 ini_set("display_errors", 1);
@@ -15,6 +13,7 @@ function registration_callback($username, $email, $userdir)
 
 require_once("user.php");
 $USER = new User("registration_callback");
+date_default_timezone_set(TIMEZONE);
 
 if(!$USER->authenticated) :
 
@@ -532,6 +531,8 @@ endif;
         <script type="text/javascript" src="js/sha1.js"></script>
         <script type="text/javascript" src="js/user.js"></script>
         <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
+        <link rel="stylesheet" href="bower_components/DataTables/media/css/jquery.dataTables.css">
+        <link rel="stylesheet" href="bower_components/datatables-tabletools/css/dataTables.tableTools.css">
 
         <link rel="stylesheet" href="css/style.css">
         <link href="css/jquery.filer.css" rel="stylesheet">
@@ -607,7 +608,7 @@ endif;
                     
                             <div class="tab-content" style="overflow: auto">
                       
-                                <div class="content-box box-shadow big-box todo-list tab-pane big-box  fade in active" id="tab-tabs">
+                                <div class="big-box todo-list tab-pane big-box  fade in active" id="tab-tabs">
 
                                     <div class="sort-todo">
 
@@ -649,15 +650,15 @@ endif;
                                             <?php
                                             $dirname = "images/";
                                             $images = scandir($dirname);
-                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store");
+                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "sowwy.png", "sort-btns");
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
 
-                                            <div class="col-xs-2" style="width: 125px; height: 125px; padding-right: 0px;">    
+                                            <div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
                                             
-                                                <a class="thumbnail">
+                                                <a class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
 
-                                                    <img style="width: 100px; height: 100px;" src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
+                                                    <img style="width: 50px; height: 50px;" src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
 
                                                 </a>
                                                 
@@ -808,7 +809,7 @@ endif;
                                                                 <div class="">
 
                                                                     <input id="" class="switcher switcher-primary" value="false" name="window-<?=$tabNum;?>" type="hidden">
-                                                                    <input id="window[<?=$tabNum;?>]" class="switcher switcher-warning" name="window-<?=$tabNum;?>" type="checkbox" <?=$windowz;?>>
+                                                                    <input id="window[<?=$tabNum;?>]" class="switcher switcher-danger" name="window-<?=$tabNum;?>" type="checkbox" <?=$windowz;?>>
                                                                     <label for="window[<?=$tabNum;?>]"></label>
 
                                                                 </div>
@@ -894,7 +895,7 @@ endif;
                                       
                                     </div>
                                     
-                                    <div class="content-box big-box">
+                                    <div class="big-box">
                                         
                                         <form class="content-form form-inline" name="unregister" id="unregister" action="" method="POST">
                                               
@@ -995,97 +996,139 @@ endif;
                                 </div>
                                 
                                 <div class="tab-pane big-box  fade in" id="loginlog">
-                                    
-                                    <div class="content-box big-box">
 
-                                        <div class="table-responsive">
-                                            
-                                            <?php if(file_exists(FAIL_LOG)) : ?>
-                                            
-                                            <form id="deletelog" method="post">
-                                                    
-                                                <input type="hidden" name="action" value="deleteLog" />
-                                                <button class="btn waves btn-labeled btn-danger btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+                                    <div class="table-responsive">
 
-                                                    <span class="btn-label"><i class="fa fa-trash"></i></span>Purge Log
+                                        <?php if(file_exists(FAIL_LOG)) : ?>
 
-                                                </button>
+                                        <div id="loginStats">
 
-                                            </form>
+                                            <div class="content-box ultra-widget">
 
-                                            <table class="table table-striped">
-                                                
-                                                <thead>
+                                                <div class="w-progress">
 
-                                                    <tr>
+                                                    <span id="goodCount" class="w-amount blue"></span>
+                                                    <span id="badCount" class="w-amount red pull-right">3</span>
 
-                                                        <th>Date</th>
+                                                    <br>
 
-                                                        <th>Username</th>
+                                                    <span class="text-uppercase w-name">Good Logins</span>
+                                                    <span class="text-uppercase w-name pull-right">Bad Logins</span>
 
-                                                        <th>IP Address</th>
+                                                </div>
 
-                                                        <th>Type</th>
+                                                <div class="progress progress-bar-sm zero-m">
 
-                                                    </tr>
+                                                    <div id="goodPercent" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%"></div>
 
-                                                </thead>
+                                                    <div id="badPercent" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%"></div>
 
-                                                <tbody>
-                                                    
-                                                    <?php
-                                                    
-                                                        $getFailLog = file_get_contents(FAIL_LOG); 
-                                                        $gotFailLog = json_decode($getFailLog, true);
+                                                </div>
 
-                                                        function getColor($colorTest){
+                                                <div class="w-status clearfix">
 
-                                                            if($colorTest == "bad_auth") :
+                                                    <div id="goodTitle" class="w-status-title pull-left text-uppercase">20%</div>
 
-                                                                $gotColorTest = "danger";
+                                                    <div id="badTitle" class="w-status-number pull-right text-uppercase">80%</div>
 
-                                                            elseif($colorTest == "good_auth") :
+                                                </div>
 
-                                                                $gotColorTest = "primary";
-
-                                                            endif;
-
-                                                            echo $gotColorTest;
-
-                                                        }
-
-                                                        foreach (array_reverse($gotFailLog["auth"]) as $key => $val) : ?>
-
-                                                    <tr>
-
-                                                        <td><?=$val["date"];?></td>
-
-                                                        <td><?=$val["username"];?></td>
-
-                                                        <td><?=$val["ip"];?></td>
-
-                                                        <td><span class="label label-<?php getColor($val["auth_type"]);?>"><?=$val["auth_type"];?></span></td>
-
-                                                    </tr>
-                                                    
-                                                    <?php endforeach; ?> 
-    
-                                                </tbody>
-
-                                            </table>
-                                            
-                                            <?php endif; 
-                                            
-                                            if(!file_exists(FAIL_LOG)) :
-
-                                                echo "Nothing in log..................";
-
-                                            endif;
-                                            
-                                            ?>
+                                            </div>
 
                                         </div>
-                                                    
+
+                                        <form id="deletelog" method="post">
+
+                                            <input type="hidden" name="action" value="deleteLog" />
+                                            <button class="btn waves btn-labeled btn-danger btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+
+                                                <span class="btn-label"><i class="fa fa-trash"></i></span>Purge Log
+
+                                            </button>
+
+                                        </form>
+
+                                        <table id="datatable" class="display">
+
+                                            <thead>
+
+                                                <tr>
+
+                                                    <th>Date</th>
+
+                                                    <th>Username</th>
+
+                                                    <th>IP Address</th>
+
+                                                    <th>Type</th>
+
+                                                </tr>
+
+                                            </thead>
+
+                                            <tbody>
+
+                                                <?php
+
+                                                    $getFailLog = str_replace("\r\ndate", "date", file_get_contents(FAIL_LOG));
+                                                    $gotFailLog = json_decode($getFailLog, true);
+                                                    $goodLogin = 0;
+                                                    $badLogin = 0;
+
+                                                    function getColor($colorTest){
+
+                                                        if($colorTest == "bad_auth") :
+
+                                                            $gotColorTest = "danger";
+
+                                                        elseif($colorTest == "good_auth") :
+
+                                                            $gotColorTest = "primary";
+
+                                                        endif;
+
+                                                        echo $gotColorTest;
+
+                                                    }
+
+                                                    foreach (array_reverse($gotFailLog["auth"]) as $key => $val) : 
+
+                                                    if($val["auth_type"] == "bad_auth") : $badLogin++; elseif($val["auth_type"] == "good_auth") : $goodLogin++; endif;
+                                                ?>
+
+                                                <tr>
+
+                                                    <td><?=$val["date"];?></td>
+
+                                                    <td><?=$val["username"];?></td>
+
+                                                    <td><?=$val["ip"];?></td>
+
+                                                    <td><span class="label label-<?php getColor($val["auth_type"]);?>"><?=$val["auth_type"];?></span></td>
+
+                                                </tr>
+
+                                                <?php endforeach; ?> 
+
+                                            </tbody>
+
+                                        </table>
+
+                                        <?php 
+                                        $totalLogin = $goodLogin + $badLogin;     
+                                        $goodPercent = round(($goodLogin / $totalLogin) * 100);
+                                        $badPercent = round(($badLogin / $totalLogin) * 100);
+
+                                        endif;
+
+                                        if(!file_exists(FAIL_LOG)) :
+
+                                            echo "Nothing in log..................";
+
+                                        endif;
+
+                                        ?>
+
                                     </div>
 
                                 </div>
@@ -1118,7 +1161,7 @@ endif;
                                         
                                         <div class="panel-body">
                                             
-                                            <div class="col-lg-4">
+                                            <div class="">
                                             
                                                 <p>Only do this if an upgrade requires it.  This will delete your database so there is no going back and you will need to set everything back up, including user accouts.</p>
                                                 <form id="deletedb" method="post">
@@ -1180,7 +1223,7 @@ endif;
                                                 
                                         </button>
 
-                                        <div class="content-box box-shadow big-box grids">
+                                        <div class="big-box grids">
 
                                             <div class="row show-grids">
 
@@ -1354,7 +1397,24 @@ endif;
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
         <script src="js/jquery.filer.min.js" type="text/javascript"></script>
 	    <script src="js/custom.js" type="text/javascript"></script>
+        
+        <!--Data Tables-->
+        <script src="bower_components/DataTables/media/js/jquery.dataTables.js"></script>
+        <script src="bower_components/datatables.net-responsive/js/dataTables.responsive.js"></script>
+        <script src="bower_components/datatables-tabletools/js/dataTables.tableTools.js"></script>
 
+          <script>
+            $(function () {
+                //Data Tables
+                $('#datatable').DataTable({
+                    displayLength: 10,
+                    dom: 'T<"clear">lfrtip',
+                responsive: true,
+                    "order": [[ 0, 'desc' ]]
+                });
+            });
+        </script>
+        
         <?php if($_POST['op']) : ?>
         <script>
 
@@ -1470,7 +1530,7 @@ endif;
                         var newid = $('.list-group-item').length + 1;
 
                         $(".todo ul").append(
-                        '<li id="item-' + newid + '" class="list-group-item gray-bg" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="New Tab Name" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="Tab URL"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - OR -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="Icon URL" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']">Default</label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> Active</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> User</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> Guest</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-warning" type="checkbox"><label for="window[' + newid + ']"></label></div> No iFrame</div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
+                        '<li id="item-' + newid + '" class="list-group-item gray-bg" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="New Tab Name" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="Tab URL"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - OR -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="Icon URL" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']">Default</label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> Active</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> User</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> Guest</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-danger" type="checkbox"><label for="window[' + newid + ']"></label></div> No iFrame</div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
                         );
 
                         $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
@@ -1794,7 +1854,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.994";
+                    var currentVersion = "0.995";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
@@ -1844,6 +1904,22 @@ endif;
                 }
                 
             });
+            <?php if(file_exists(FAIL_LOG)) : ?>
+            goodCount = $('#loginStats').find('#goodCount');
+            goodPercent = $('#loginStats').find('#goodPercent');
+            goodTitle = $('#loginStats').find('#goodTitle');
+            badCount = $('#loginStats').find('#badCount');
+            badPercent = $('#loginStats').find('#badPercent');
+            badTitle = $('#loginStats').find('#badTitle');
+            $(goodCount).html("<?php echo $goodLogin;?>");            
+            $(goodTitle).html("<?php echo $goodPercent;?>%");            
+            $(goodPercent).attr('aria-valuenow', "<?php echo $goodPercent;?>");            
+            $(goodPercent).attr('style', "width: <?php echo $goodPercent;?>%");            
+            $(badCount).html("<?php echo $badLogin;?>");
+            $(badTitle).html("<?php echo $badPercent;?>%");            
+            $(badPercent).attr('aria-valuenow', "<?php echo $badPercent;?>");            
+            $(badPercent).attr('style', "width: <?php echo $badPercent;?>%"); 
+            <?php endif; ?>
             
         });
         

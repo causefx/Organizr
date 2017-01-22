@@ -2,7 +2,6 @@
 //Set some variables
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
-date_default_timezone_set('America/Los_Angeles');
 $data = false;
 $databaseLocation = "databaseLocation.ini.php";
 $needSetup = "Yes";
@@ -96,6 +95,8 @@ else :
     require_once("user.php");
 
     $USER = new User("registration_callback");
+
+    date_default_timezone_set(TIMEZONE);
 
     $dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
 
@@ -648,7 +649,7 @@ endif;
 
                                     </div>
 
-                                    <div class="big-box text-left registration-form">
+                                    <div class="big-box text-left">
 
                                         <h3 class="text-center">Specify the location of which you want to save your database files.</h3>
                                         <h5 class="text-left"><strong>Current Directory: <?php echo __DIR__; ?> <br>Parent Directory: <?php echo dirname(__DIR__); ?></strong></h5>
@@ -661,7 +662,13 @@ endif;
 
                                                 <input type="text" class="form-control material" name="databaseLocation" autofocus value="<?php echo dirname(__DIR__);?>" autocorrect="off" autocapitalize="off" required>
                                                 
-                                                <?php if(file_exists(dirname(__DIR__) . '/users.db') || file_exists(__DIR__ . '/users.db')) : echo '<h5 class="text-center red">Don\'t worry, you\'re database is still there.  Just use the same location you have it in.</h5>'; endif;?>
+                                                <h5>Set Database Location</h5>
+                                                
+                                                <input type="text" class="form-control material" name="timezone" autofocus value="<?php echo date_default_timezone_get();?>" autocorrect="off" autocapitalize="off" required>
+                                                
+                                                <h5>Set Timezone</h5>
+                                                
+                                                <?php if(file_exists(dirname(__DIR__) . '/users.db') || file_exists(__DIR__ . '/users.db')) : echo '<h5 class="text-center red">Don\'t worry, your database is still there.  Just use the same location you have it in.</h5>'; endif;?>
 
                                             </div>
 
@@ -735,9 +742,9 @@ endif;
                 
                                     </div>
                 
-                                    <div class="big-box text-left registration-form">
+                                    <div class="big-box text-left">
                 
-                                        <br><br><br>
+                                        <center><img src="images/sowwy.png" style="height: 200px;"></center>
                                         <h2 class="text-center">Looks like you don't have access.</h2>
                                         
                                         <?php if(!$USER->authenticated) : ?>
@@ -1153,13 +1160,16 @@ endif;
             }
 
             if (defaultTab){
-                
-                $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
+
+                $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
             }
             
             if (defaultTab == null){
              
                 $("div[id^='tabEmpty']").show();
+                <?php if($needSetup == "No" && $configReady == "Yes") : if(!$USER->authenticated) : ?>
+                $('.login-modal').modal("show");
+                <?php endif; endif; ?>
                 
             }
             
