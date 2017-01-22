@@ -10,6 +10,7 @@
     $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
     define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
     define('DATABASE_LOCATION', $databaseConfig['databaseLocation'] . '/');
+    if(!empty($databaseConfig['timezone'])) : define('TIMEZONE', $databaseConfig['timezone']); else : define('TIMEZONE', 'America/Los_Angeles'); endif;
     define('FAIL_LOG', 'loginLog.json');
 
 	class User

@@ -1577,7 +1577,7 @@ body {
 
 /*Tabs*/
 .tabbable {
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 .tabbable .cbp_tmtimeline > li .cbp_tmtime {
@@ -1693,7 +1693,7 @@ body {
 }
 
 .tabs-with-bg {
-  background: #e7ebec;
+  /*background: #e7ebec;*/
   border-radius: 6px;
 }
 
@@ -2015,6 +2015,7 @@ table.dataTable > tbody > tr.child span.dtr-title {
 
 .dataTables_wrapper .DTTT_container {
   margin-left: 10px;
+  margin-top: 5px;
 }
 
 .dataTables_wrapper a.DTTT_button {
@@ -2084,15 +2085,15 @@ table.dataTable thead th {
 }
 
 table.dataTable thead .sorting_asc {
-  background-image: url("../img/sort-btns/sort_asc.png");
+  background-image: url("../images/sort-btns/sort_asc.png");
 }
 
 table.dataTable thead .sorting_desc {
-  background-image: url("../img/sort-btns/sort_desc.png");
+  background-image: url("../images/sort-btns/sort_desc.png");
 }
 
 table.dataTable thead .sorting {
-  background-image: url("../img/sort-btns/sort_both.png");
+  background-image: url("../images/sort-btns/sort_both.png");
 }
 
 table.dataTable.stripe tbody tr.odd, table.dataTable.display tbody tr.odd {
@@ -5192,7 +5193,7 @@ input.switcher + label {
   padding: 2px;
   width: 36px;
   height: 14px;
-  background-color: #dddddd;
+  /*background-color: #dddddd;*/
   -webkit-border-radius: 60px;
           border-radius: 60px;
 }
