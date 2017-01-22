@@ -11,6 +11,8 @@
     define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
     define('DATABASE_LOCATION', $databaseConfig['databaseLocation'] . '/');
     if(!empty($databaseConfig['timezone'])) : define('TIMEZONE', $databaseConfig['timezone']); else : define('TIMEZONE', 'America/Los_Angeles'); endif;
+    if(!empty($databaseConfig['titleLogo'])) : define('TITLELOGO', $databaseConfig['titleLogo']); else : define('TITLELOGO', ''); endif;
+    if(!empty($databaseConfig['loadingIcon'])) : define('LOADINGICON', $databaseConfig['loadingIcon']); else : define('LOADINGICON', ''); endif;
     define('FAIL_LOG', 'loginLog.json');
 
 	class User
