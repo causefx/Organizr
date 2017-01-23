@@ -10,7 +10,7 @@ function registration_callback($username, $email, $userdir)
     global $data;
     $data = array($username, $email, $userdir);
 }
-
+require_once("translate.php");
 require_once("user.php");
 $USER = new User("registration_callback");
 date_default_timezone_set(TIMEZONE);
@@ -654,17 +654,17 @@ endif;
 
                                     <div class="sort-todo">
 
-                                        <a class="total-tabs">Tabs <span class="badge gray-bg"></span></a>
+                                        <a class="total-tabs"><?php echo $language->translate("TABS");?> <span class="badge gray-bg"></span></a>
                                         
                                         <button id="iconHide" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
                                             
-                                            <span class="btn-label"><i class="fa fa-upload"></i></span>Upload Icons
+                                            <span class="btn-label"><i class="fa fa-upload"></i></span><?php echo $language->translate("UPLOAD_ICONS");?>
                                             
                                         </button>
                                         
                                         <button id="iconAll" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
                                             
-                                            <span class="btn-label"><i class="fa fa-picture-o"></i></span>View Icons
+                                            <span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo $language->translate("VIEW_ICONS");?>
                                             
                                         </button>
                                         
@@ -672,7 +672,7 @@ endif;
                                         
                                         <button id="apply" class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
                                         
-                                            <span class="btn-label"><i class="fa fa-check"></i></span>Apply Changes
+                                            <span class="btn-label"><i class="fa fa-check"></i></span><?php echo $language->translate("APPLY_CHANGES");?>
                                         
                                         </button>
                                         
@@ -684,7 +684,7 @@ endif;
                                     
                                     <div id="viewAllIcons" style="display: none;">
                                         
-                                        <h4><strong>All Icons</strong> [Click icon to copy path to clipboard]</h4>
+                                        <h4><strong><?php echo $language->translate("ALL_ICONS");?></strong> [<?php echo $language->translate("CLICK_ICON");?>]</h4>
                                         
                                         <div class="row">
                                             
@@ -692,7 +692,7 @@ endif;
                                             <?php
                                             $dirname = "images/";
                                             $images = scandir($dirname);
-                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "sowwy.png", "sort-btns");
+                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "sowwy.png", "sort-btns", "loading.png");
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
 
@@ -724,7 +724,7 @@ endif;
 
                                                 </div>
 
-                                                <input type="text" class="form-control name-of-todo" placeholder="Type In New Tab Name And Hit Enter" style="border-top-left-radius: 0;
+                                                <input type="text" class="form-control name-of-todo" placeholder="<?php echo $language->translate("TYPE_HIT_ENTER");?>" style="border-top-left-radius: 0;
     border-bottom-left-radius: 0;">
 
                                             </div>
@@ -770,13 +770,13 @@ endif;
 
                                                             <div class="form-group">
 
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="New Tab Name" value="<?=$row['name'];?>">
+                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="<?=$row['name'];?>">
 
                                                             </div>
 
                                                             <div class="form-group">
 
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="Tab URL" value="<?=$row['url']?>">
+                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="<?php echo $language->translate("TAB_URL");?>" value="<?=$row['url']?>">
 
                                                             </div>
 
@@ -787,13 +787,13 @@ endif;
                                                                     <span class="input-group-addon"></span>
                                                                 </div>
                                                                 
-                                                                - OR -
+                                                                - <?php echo $language->translate("OR");?> -
 
                                                             </div>
                                                             
                                                             <div class="form-group">
 
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-<?=$tabNum;?>" name="iconurl-<?=$tabNum;?>" placeholder="Icon URL" value="<?=$row['iconurl']?>">
+                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-<?=$tabNum;?>" name="iconurl-<?=$tabNum;?>" placeholder="<?php echo $language->translate("ICON_URL");?>" value="<?=$row['iconurl']?>">
 
                                                             </div>
 
@@ -819,7 +819,7 @@ endif;
                                                                     <label for="active[<?=$tabNum;?>]"></label>
 
                                                                 </div>
-                                                                Active
+                                                                <?php echo $language->translate("ACTIVE");?>
                                                             </div>
 
                                                             <div class="form-group">
@@ -831,7 +831,7 @@ endif;
                                                                     <label for="user[<?=$tabNum;?>]"></label>
 
                                                                 </div>
-                                                                User
+                                                                <?php echo $language->translate("USER");?>
                                                             </div>
 
                                                             <div class="form-group">
@@ -843,7 +843,7 @@ endif;
                                                                     <label for="guest[<?=$tabNum;?>]"></label>
 
                                                                 </div>
-                                                                Guest
+                                                                <?php echo $language->translate("GUEST");?>
                                                             </div>
                                                             
                                                             <div class="form-group">
@@ -855,7 +855,7 @@ endif;
                                                                     <label for="window[<?=$tabNum;?>]"></label>
 
                                                                 </div>
-                                                                No iFrame
+                                                                <?php echo $language->translate("NO_IFRAME");?>
                                                             </div>
 
                                                             <div class="pull-right action-btns" style="padding-top: 8px;">
@@ -878,7 +878,7 @@ endif;
 
                                             <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
                                                 
-                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save Tabs
+                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_TABS");?>
                                                 
                                             </button>
                                             
@@ -903,25 +903,25 @@ endif;
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control gray" name="username" placeholder="Username" autocorrect="off" autocapitalize="off" value="">
+                                                        <input type="text" class="form-control gray" name="username" placeholder="<?php echo $language->translate("USERNAME");?>" autocorrect="off" autocapitalize="off" value="">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="email" class="form-control gray" name="email" placeholder="E-mail">
+                                                        <input type="email" class="form-control gray" name="email" placeholder="<?php echo $language->translate("EMAIL");?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="password" class="form-control gray" name="password1" placeholder="Password">
+                                                        <input type="password" class="form-control gray" name="password1" placeholder="<?php echo $language->translate("PASSWORD");?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="password" class="form-control gray" name="password2" placeholder="Retype Password">
+                                                        <input type="password" class="form-control gray" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
 
                                                     </div>
                                                     
@@ -955,17 +955,17 @@ endif;
 
                                                             <th>#</th>
 
-                                                            <th>Username</th>
+                                                            <th><?php echo $language->translate("USERNAME");?></th>
                                                             
-                                                            <th>E-Mail</th>
+                                                            <th><?php echo $language->translate("EMAIL");?></th>
 
-                                                            <th>Login Status</th>
+                                                            <th><?php echo $language->translate("LOGIN_STATUS");?></th>
 
-                                                            <th>Last Seen</th>
+                                                            <th><?php echo $language->translate("LAST_SEEN");?></th>
 
-                                                            <th>User Group</th>
+                                                            <th><?php echo $language->translate("USER_GROUP");?></th>
 
-                                                            <th>User Actions</th>
+                                                            <th><?php echo $language->translate("USER_ACTIONS");?></th>
 
                                                         </tr>
 
@@ -983,10 +983,10 @@ endif;
                                                             $disableAction = "";
                                                         endif;
                                                         if($row['active'] == "true") : 
-                                                            $userActive = "Logged In";
+                                                            $userActive = $language->translate("LOGGED_IN");
                                                             $userActiveColor = "primary";
                                                         else : 
-                                                            $userActive = "Logged Out";
+                                                            $userActive = $language->translate("LOGGED_OUT");
                                                             $userActiveColor = "danger";
                                                         endif;
                                                         $userpic = md5( strtolower( trim( $row['email'] ) ) );
@@ -1015,7 +1015,7 @@ endif;
 
                                                                 <button <?=$disableAction;?> class="btn waves btn-labeled btn-danger btn btn-sm text-uppercase waves-effect waves-float deleteUser">
 
-                                                                    <span class="btn-label"><i class="fa fa-user-times"></i></span>Delete
+                                                                    <span class="btn-label"><i class="fa fa-user-times"></i></span><?php echo $language->translate("DELETE");?>
 
                                                                 </button>
 
@@ -1051,25 +1051,25 @@ endif;
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control gray" name="databaseLocation" placeholder="databaseLocation" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
+                                                        <input type="text" class="form-control gray" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control gray" name="timezone" placeholder="timezone" value="<?php echo TIMEZONE;?>">
+                                                        <input type="text" class="form-control gray" name="timezone" placeholder="<?php echo $language->translate("SET_TIMEZONE");?>" value="<?php echo TIMEZONE;?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control gray" name="titleLogo" placeholder="Logo URL for title" value="<?php echo TITLELOGO;?>">
+                                                        <input type="text" class="form-control gray" name="titleLogo" placeholder="<?php echo $language->translate("LOGO_URL_TITLE");?>" value="<?php echo TITLELOGO;?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control gray" name="loadingIcon" placeholder="Loading Icon URL" value="<?php echo LOADINGICON;?>">
+                                                        <input type="text" class="form-control gray" name="loadingIcon" placeholder="<?php echo $language->translate("LOADING_ICON_URL");?>" value="<?php echo LOADINGICON;?>">
 
                                                     </div>
                                                     
@@ -1104,8 +1104,8 @@ endif;
 
                                                     <br>
 
-                                                    <span class="text-uppercase w-name">Good Logins</span>
-                                                    <span class="text-uppercase w-name pull-right">Bad Logins</span>
+                                                    <span class="text-uppercase w-name"><?php echo $language->translate("GOOD_LOGINS");?></span>
+                                                    <span class="text-uppercase w-name pull-right"><?php echo $language->translate("BAD_LOGINS");?></span>
 
                                                 </div>
 
@@ -1134,7 +1134,7 @@ endif;
                                             <input type="hidden" name="action" value="deleteLog" />
                                             <button class="btn waves btn-labeled btn-danger btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
 
-                                                <span class="btn-label"><i class="fa fa-trash"></i></span>Purge Log
+                                                <span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?>
 
                                             </button>
 
@@ -1146,13 +1146,13 @@ endif;
 
                                                 <tr>
 
-                                                    <th>Date</th>
+                                                    <th><?php echo $language->translate("DATE");?></th>
 
-                                                    <th>Username</th>
+                                                    <th><?php echo $language->translate("USERNAME");?></th>
 
-                                                    <th>IP Address</th>
+                                                    <th><?php echo $language->translate("IP_ADDRESS");?></th>
 
-                                                    <th>Type</th>
+                                                    <th><?php echo $language->translate("TYPE");?></th>
 
                                                 </tr>
 
@@ -1215,7 +1215,7 @@ endif;
 
                                         if(!file_exists(FAIL_LOG)) :
 
-                                            echo "Nothing in log..................";
+                                            echo $language->translate("NOTHING_LOG");
 
                                         endif;
 
@@ -1227,15 +1227,15 @@ endif;
                                 
                                 <div class="tab-pane big-box  fade in" id="about">
                         
-                                    <h4><strong>About Organizr</strong></h4>
+                                    <h4><strong><?php echo $language->translate("ABOUT");?> Organizr</strong></h4>
                         
                                     <p id="version"></p>
                                     
                                     <p id="submitFeedback">
                                     
-                                        <a href='https://github.com/causefx/Organizr/issues/new' target='_blank' type='button' class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span>Submit Issue or Request</a> 
-                                        <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span>View On Github</a>
-                                        <a href='https://riot.im/app/#/room/#iCauseFX:matrix.org' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span>Chat With Us</a>
+                                        <a href='https://github.com/causefx/Organizr/issues/new' target='_blank' type='button' class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span><?php echo $language->translate("SUBMIT_ISSUE");?></a> 
+                                        <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span><?php echo $language->translate("VIEW_ON_GITHUB");?></a>
+                                        <a href='https://riot.im/app/#/room/#iCauseFX:matrix.org' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span><?php echo $language->translate("CHAT_WITH_US");?></a>
                                     
                                     </p>
                                     
@@ -1247,7 +1247,7 @@ endif;
                                         
                                         <div class="panel-heading">
                                             
-                                            <h3 class="panel-title">Delete Database</h3>
+                                            <h3 class="panel-title"><?php echo $language->translate("DELETE_DATABASE");?></h3>
                                             
                                         </div>
                                         
@@ -1255,13 +1255,13 @@ endif;
                                             
                                             <div class="">
                                             
-                                                <p>Only do this if an upgrade requires it.  This will delete your database so there is no going back and you will need to set everything back up, including user accouts.</p>
+                                                <p><?php echo $language->translate("DELETE_WARNING");?></p>
                                                 <form id="deletedb" method="post">
                                                     
                                                     <input type="hidden" name="action" value="deleteDB" />
                                                     <button class="btn waves btn-labeled btn-danger pull-right text-uppercase waves-effect waves-float" type="submit">
                                                 
-                                                        <span class="btn-label"><i class="fa fa-trash"></i></span>Delete Databse
+                                                        <span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("DELETE_DATABASE");?>
                                                 
                                                     </button>
                                                     
@@ -1284,7 +1284,7 @@ endif;
                                         <div class="btn-group">
                                             
                                             <button type="button" class="btn btn-dark dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Choose Theme  <span class="caret"></span>
+                                            <?php echo $language->translate("CHOOSE_THEME");?>  <span class="caret"></span>
                                             </button>
                                             
                                             <ul class="dropdown-menu gray-bg">
@@ -1303,7 +1303,7 @@ endif;
                                             
                                                 <li role="separator" class="divider"></li>
                                             
-                                                <li id="defaultTheme" style="background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Default</a></li>
+                                                <li id="defaultTheme" style="background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#"><?php echo $language->translate("DEFAULT");?></a></li>
                                             
                                             </ul>
                                             
@@ -1311,7 +1311,7 @@ endif;
                                         
                                         <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
                                                 
-                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save Options
+                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_OPTIONS");?>
                                                 
                                         </button>
 
@@ -1319,11 +1319,11 @@ endif;
 
                                             <div class="row show-grids">
 
-                                                <h4><strong>Title</strong></h4>
+                                                <h4><strong><?php echo $language->translate("TITLE");?></strong></h4>
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Title</center>
+                                                    <center><?php echo $language->translate("TITLE");?></center>
 
                                                     <input name="title" class="form-control gray" value="<?=$title;?>" placeholder="Organizr">
 
@@ -1331,7 +1331,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Title Text</center>
+                                                    <center><?php echo $language->translate("TITLE_TEXT");?></center>
 
                                                     <input name="topbartext" id="topbartext" class="form-control jscolor {hash:true}" value="<?=$topbartext;?>">
 
@@ -1341,11 +1341,11 @@ endif;
 
                                             <div class="row show-grids">
 
-                                                <h4><strong>Navigation Bars</strong></h4>
+                                                <h4><strong><?php echo $language->translate("NAVIGATION_BARS");?></strong></h4>
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Top Bar</center>
+                                                    <center><?php echo $language->translate("TOP_BAR");?></center>
 
                                                     <input name="topbar" id="topbar" class="form-control jscolor {hash:true}" value="<?=$topbar;?>">
 
@@ -1353,7 +1353,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Bottom Bar</center>
+                                                    <center><?php echo $language->translate("BOTTOM_BAR");?></center>
 
                                                     <input name="bottombar" id="bottombar" class="form-control jscolor {hash:true}" value="<?=$bottombar;?>">
 
@@ -1363,7 +1363,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Side Bar</center>
+                                                    <center><?php echo $language->translate("SIDE_BAR");?></center>
 
                                                     <input name="sidebar" id="sidebar" class="form-control jscolor {hash:true}" value="<?=$sidebar;?>">
 
@@ -1371,7 +1371,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Hover BG</center>
+                                                    <center><?php echo $language->translate("HOVER_BG");?></center>
 
                                                     <input name="hoverbg" id="hoverbg" class="form-control jscolor {hash:true}" value="<?=$hoverbg;?>">
 
@@ -1381,11 +1381,11 @@ endif;
 
                                             <div class="row show-grids">
 
-                                                <h4><strong>Active Tab</strong></h4>
+                                                <h4><strong><?php echo $language->translate("ACTIVE_TAB");?></strong></h4>
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Active Tab BG</center>
+                                                    <center><?php echo $language->translate("ACTIVE_TAB_BG");?></center>
 
                                                     <input name="activetabBG" id="activetabBG" class="form-control jscolor {hash:true}" value=<?=$activetabBG;?>"">
 
@@ -1393,7 +1393,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Active Tab Icon</center>
+                                                    <center><?php echo $language->translate("ACTIVE_TAB_ICON");?></center>
 
                                                     <input name="activetabicon" id="activetabicon" class="form-control jscolor {hash:true}" value="<?=$activetabicon;?>">
 
@@ -1401,7 +1401,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Active Tab Text</center>
+                                                    <center><?php echo $language->translate("ACTIVE_TAB_TEXT");?></center>
 
                                                     <input name="activetabtext" id="activetabtext" class="form-control jscolor {hash:true}" value="<?=$activetabtext;?>">
 
@@ -1411,11 +1411,11 @@ endif;
 
                                             <div class="row show-grids">
 
-                                                <h4><strong>Inactive Tab</strong></h4>
+                                                <h4><strong><?php echo $language->translate("INACTIVE_TAB");?></strong></h4>
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Inactive Icon</center>
+                                                    <center><?php echo $language->translate("INACTIVE_ICON");?></center>
 
                                                     <input name="inactiveicon" id="inactiveicon" class="form-control jscolor {hash:true}" value="<?=$inactiveicon;?>">
 
@@ -1423,7 +1423,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Inactive Text</center>
+                                                    <center><?php echo $language->translate("INACTIVE_TEXT");?></center>
 
                                                     <input name="inactivetext" id="inactivetext" class="form-control jscolor {hash:true}" value="<?=$inactivetext;?>">
 
@@ -1946,7 +1946,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.997";
+                    var currentVersion = "0.996";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
@@ -1959,14 +1959,14 @@ endif;
                     	console.log("You Need To Upgrade");
 
                         $.smkAlert({
-                            text: '<strong>New Version Available</strong> Click Info Tab',
+                            text: '<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>',
                             type: 'warning',
                             permanent: true
                         });
                         
-                        $(infoTabNew).html("<br/><h4><strong>What's New in " + githubVersion + "</strong></h4><strong>Title: </strong>" + githubName + " <br/><strong>Changes: </strong>" + githubDescription);
+                        $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
                         
-                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span>Auto Upgrade</button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
                         
                         $( "p[id^='upgrade']" ).toggle();
                     
@@ -1975,7 +1975,7 @@ endif;
                     	console.log("You Are on Current Version");
                         
                         $.smkAlert({
-                            text: 'Software is <strong>Up-To-Date!</strong>',
+                            text: '<?php echo $language->translate("SOFTWARE_IS");?> <strong><?php echo $language->translate("UP_TO_DATE");?></strong>',
                             type: 'success'
                         });
                     
@@ -1991,7 +1991,7 @@ endif;
                     
                     }
 
-                    $(infoTabVersion).html("<strong>Installed Version: </strong>" + currentVersion + " <strong>Current Version: </strong>" + githubVersion + " <strong>Database Location:  </strong> <?php echo DATABASE_LOCATION;?>");
+                    $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo DATABASE_LOCATION;?>");
                     
                 }
                 
