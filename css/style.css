@@ -492,8 +492,13 @@ a.text-info:hover {
   line-height: 56px;
 }
 
+.mini-nav .gn-menu-main .navbar-right a {
+    padding: 0 15px 0 0 !important;
+    font-size: 18px;
+}
+
 .gn-menu-main .navbar-right a {
-  padding: 0 10px 0 0 !important;
+  padding: 0 5px 0 0 !important;
   font-size: 18px;
 }
 

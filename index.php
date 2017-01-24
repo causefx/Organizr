@@ -23,6 +23,7 @@ $inactiveicon = "#FFFFFF";
 $inactivetext = "#FFFFFF";
 $loadingIcon = "images/organizr.png";
 $baseURL = "";
+require_once("translate.php");
 
 function registration_callback($username, $email, $userdir){
     
@@ -213,7 +214,7 @@ else :
     endif;
 
     $userpic = md5( strtolower( trim( $USER->email ) ) );
-    if(!empty(LOADINGICON)) : $loadingIcon = LOADINGICON; endif;
+    if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
 
 endif;
 
@@ -485,7 +486,7 @@ endif;
                                 <?php endforeach; endif;?>
                                 
                                 <?php if($configReady == "Yes") : if($USER->authenticated && $USER->role == "admin") :?>
-                                <li class="tab-item <?=$settingsActive;?>" id="settings.phpx">
+                                <li class="tab-item <?=$settingsActive;?>" id="settings.phpx" name="settings">
                                                             
                                     <a class="tab-link">
                                         
@@ -500,7 +501,7 @@ endif;
                                         
                                         endif; ?>
                                         
-                                        Settings
+                                        <?php echo $language->translate("SETTINGS");?>
                                     
                                     </a>
                                 
@@ -530,9 +531,9 @@ endif;
                     
                     if($configReady == "Yes") : 
                     
-                        if(empty(TITLELOGO)) : 
+                        if(TITLELOGO == "") : 
                     
-                            echo "<span><span style=\"color: topbartext\"><b>$title</b></span></span>"; 
+                            echo "<span><span style=\"color: $topbartext\"><b>$title</b></span></span>"; 
                     
                         else : 
                     
@@ -542,7 +543,7 @@ endif;
                     
                     else :
                     
-                        echo "<span><span style=\"color: topbartext\"><b>$title</b></span></span>"; 
+                        echo "<span><span style=\"color: $topbartext\"><b>$title</b></span></span>"; 
                     
                     endif;
                     
@@ -617,13 +618,13 @@ endif;
 
                                     <div class="green-bg biggest-box">
 
-                                        <h1 class="zero-m text-uppercase">Create Admin</h1>
+                                        <h1 class="zero-m text-uppercase"><?php echo $language->translate("CREATE_ADMIN");?></h1>
 
                                     </div>
 
                                     <div class="big-box text-left registration-form">
 
-                                        <h4 class="text-center">Create an account for Admin Access</h4>
+                                        <h4 class="text-center"><?php echo $language->translate("CREATE_ACCOUNT");?></h4>
 
                                         <form class="controlbox" name="new user registration" id="registration" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
 
@@ -632,29 +633,29 @@ endif;
 
                                             <div class="form-group">
 
-                                                <input type="text" class="form-control material" name="username" autofocus placeholder="Username" autocorrect="off" autocapitalize="off" minlength="3" maxlength="16" required>
+                                                <input type="text" class="form-control material" name="username" autofocus placeholder="<?php echo $language->translate("USERNAME");?>" autocorrect="off" autocapitalize="off" minlength="3" maxlength="16" required>
 
                                             </div>
 
                                             <div class="form-group">
 
-                                                <input type="email" class="form-control material" name="email" placeholder="E-mail">
+                                                <input type="email" class="form-control material" name="email" placeholder="<?php echo $language->translate("EMAIL");?>">
 
                                             </div>
 
                                             <div class="form-group">
 
-                                                <input type="password" class="form-control material" name="password1" placeholder="Password" data-smk-strongPass="weak" required>
+                                                <input type="password" class="form-control material" name="password1" placeholder="<?php echo $language->translate("PASSWORD");?>" data-smk-strongPass="weak" required>
 
                                             </div>
 
                                             <div class="form-group">
 
-                                                <input type="password" class="form-control material" name="password2" placeholder="Retype Password">
+                                                <input type="password" class="form-control material" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
 
                                             </div>
 
-                                            <button id="registerSubmit" type="submit" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register">Register</button>
+                                            <button id="registerSubmit" type="submit" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register"><?php echo $language->translate("REGISTER");?></button>
 
                                         </form>
 
@@ -685,14 +686,14 @@ endif;
 
                                     <div class="green-bg biggest-box">
 
-                                        <h1 class="zero-m text-uppercase">Database Path</h1>
+                                        <h1 class="zero-m text-uppercase"><?php echo $language->translate("DATABASE_PATH");?></h1>
 
                                     </div>
 
                                     <div class="big-box text-left">
 
-                                        <h3 class="text-center">Specify the location of which you want to save your database files.</h3>
-                                        <h5 class="text-left"><strong>Current Directory: <?php echo __DIR__; ?> <br>Parent Directory: <?php echo dirname(__DIR__); ?></strong></h5>
+                                        <h3 class="text-center"><?php echo $language->translate("SPECIFY_LOCATION");?></h3>
+                                        <h5 class="text-left"><strong><?php echo $language->translate("CURRENT_DIRECTORY");?>: <?php echo __DIR__; ?> <br><?php echo $language->translate("PARENT_DIRECTORY");?>: <?php echo dirname(__DIR__); ?></strong></h5>
                                         
                                         <form class="controlbox" name="setupDatabase" id="setupDatabase" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                             
@@ -702,17 +703,25 @@ endif;
 
                                                 <input type="text" class="form-control material" name="databaseLocation" autofocus value="<?php echo dirname(__DIR__);?>" autocorrect="off" autocapitalize="off" required>
                                                 
-                                                <h5>Set Database Location</h5>
+                                                <h5><?php echo $language->translate("SET_DATABASE_LOCATION");?></h5>
                                                 
                                                 <input type="text" class="form-control material" name="timezone" autofocus value="<?php echo getTimezone();?>" autocorrect="off" autocapitalize="off" required>
                                                 
-                                                <h5>Set Timezone</h5>
+                                                <h5><?php echo $language->translate("SET_TIMEZONE");?></h5>
                                                 
-                                                <?php if(file_exists(dirname(__DIR__) . '/users.db') || file_exists(__DIR__ . '/users.db')) : echo '<h5 class="text-center red">Don\'t worry, your database is still there.  Just use the same location you have it in.</h5>'; endif;?>
+                                                <?php 
+                                                
+                                                if(file_exists(dirname(__DIR__) . '/users.db') || file_exists(__DIR__ . '/users.db')) : 
+                                                
+                                                echo '<h5 class="text-center red">';
+                                                echo $language->translate("DONT_WORRY");
+                                                echo '</h5>'; 
+                                                
+                                                endif;?>
 
                                             </div>
 
-                                            <button id="databaseLocationSubmit" type="submit" class="btn green-bg btn-block btn-sm text-uppercase waves waves-effect waves-float" value="Save Location">Save Location</button>
+                                            <button id="databaseLocationSubmit" type="submit" class="btn green-bg btn-block btn-sm text-uppercase waves waves-effect waves-float" value="Save Location"><?php echo $language->translate("SAVE_LOCATION");?></button>
 
                                         </form>
 
@@ -743,15 +752,15 @@ endif;
                                     
                                     <div class="blue-bg biggest-box">
                 
-                                        <h1 class="zero-m text-uppercase">Awesome!</h1>
+                                        <h1 class="zero-m text-uppercase"><?php echo $language->translate("AWESOME");?></h1>
                 
                                     </div>
                 
-                                    <div class="big-box text-left registration-form">
+                                    <div class="big-box text-left">
                 
-                                        <h4 class="text-center">Now that you created an Admin account, time to sign and start making some tabs...</h4>
+                                        <h4 class="text-center"><?php echo $language->translate("TIME_TO_LOGIN");?></h4>
                                         
-                                        <button type="submit" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float">Login</button>
+                                        <button type="submit" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("LOGIN");?></button>
                 						                                    
                                     </div>
                                 
@@ -778,17 +787,17 @@ endif;
                                     
                                     <div class="biggest-box" style="background:<?=$topbar;?>;">
                 
-                                        <h1 class="zero-m text-uppercase" style="color:<?=$topbartext;?>;">Hold Up!</h1>
+                                        <h1 class="zero-m text-uppercase" style="color:<?=$topbartext;?>;"><?php echo $language->translate("HOLD_UP");?></h1>
                 
                                     </div>
                 
                                     <div class="big-box text-left">
                 
                                         <center><img src="images/sowwy.png" style="height: 200px;"></center>
-                                        <h2 class="text-center">Looks like you don't have access.</h2>
+                                        <h2 class="text-center"><?php echo $language->translate("LOOKS_LIKE_YOU_DONT_HAVE_ACCESS");?></h2>
                                         
                                         <?php if(!$USER->authenticated) : ?>
-                                        <button style="background:<?=$topbar;?>;" type="submit" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><text style="color:<?=$topbartext;?>;">Login</text></button>
+                                        <button style="background:<?=$topbar;?>;" type="submit" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("LOGIN");?></text></button>
                                         <?php endif; ?>
         						                                    
                                     </div>
@@ -813,7 +822,7 @@ endif;
             
             <div id="members-sidebar" style="background: <?=$sidebar;?>;" class="members-sidebar">
                 
-                <h4 class="pull-left zero-m">Options</h4>
+                <h4 class="pull-left zero-m"><?php echo $language->translate("OPTIONS");?></h4>
                 
                 <span class="close-members-sidebar"><i class="fa fa-remove fa-lg pull-right"></i></span>
                 
@@ -845,9 +854,9 @@ endif;
                 
                     <div id="buttonsDiv" class="profile-userbuttons">
                 
-                        <button id="editInfo" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float">Edit Info</button>
+                        <button id="editInfo" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("EDIT_INFO");?></button>
                 
-                        <button type="button" class="logout btn btn-warning waves waves-effect waves-float">Logout</button>
+                        <button type="button" class="logout btn btn-warning waves waves-effect waves-float"><?php echo $language->translate("LOGOUT");?></button>
                 
                     </div>
                     
@@ -861,19 +870,19 @@ endif;
 
                             <div class="form-group">
 
-                                <input autocomplete="off" type="text" value="<?php echo $USER->email; ?>" class="form-control" name="email" placeholder="E-mail Address">
+                                <input autocomplete="off" type="text" value="<?php echo $USER->email; ?>" class="form-control" name="email" placeholder="<?php echo $language->translate("EMAIL_ADDRESS");?>">
 
                             </div>
 
                             <div class="form-group">
 
-                                <input autocomplete="off" type="password" class="form-control" name="password1" placeholder="Password">
+                                <input autocomplete="off" type="password" class="form-control" name="password1" placeholder="<?php echo $language->translate("PASSWORD");?>">
 
                             </div>
 
                             <div class="form-group">
 
-                                <input autocomplete="off" type="password" class="form-control" name="password2" placeholder="Password Again">
+                                <input autocomplete="off" type="password" class="form-control" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
 
                             </div>
 
@@ -881,9 +890,9 @@ endif;
 
                             <div class="form-group">
 
-                                <input type="button" class="btn btn-success text-uppercase waves-effect waves-float" value="Update" onclick="User.processUpdate()"/>
+                                <input type="button" class="btn btn-success text-uppercase waves-effect waves-float" value="<?php echo $language->translate("UPDATE");?>" onclick="User.processUpdate()"/>
                                 
-                                <button id="goBackButtons" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float">Go Back</button>
+                                <button id="goBackButtons" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("GO_BACK");?></button>
 
                             </div>
 
@@ -919,7 +928,7 @@ endif;
                                 
                                 <div style="background:<?=$topbar;?>;" class="biggest-box">
 
-                                    <h1 style="color:<?=$topbartext;?>;" class="zero-m text-uppercase">Welcome</h1>
+                                    <h1 style="color:<?=$topbartext;?>;" class="zero-m text-uppercase"><?php echo $language->translate("WELCOME");?></h1>
 
                                 </div>
                                 
@@ -931,20 +940,20 @@ endif;
                                     
                                     <form name="log in" id="login" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                         
-                                        <h4 class="text-center">Login</h4>
+                                        <h4 class="text-center"><?php echo $language->translate("LOGIN");?></h4>
                                         
                                         <div class="form-group">
                                             
                                             <input type="hidden" name="op" value="login">
 				                            <input type="hidden" name="sha1" value="">
                                             <input type="hidden" name="rememberMe" value="false"/>
-                                            <input type="text" class="form-control material" name="username" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" value="" autofocus required>
+                                            <input type="text" class="form-control material" name="username" placeholder="<?php echo $language->translate("USERNAME");?>" autocomplete="off" autocorrect="off" autocapitalize="off" value="" autofocus required>
                                         
                                         </div>
                                         
                                         <div class="form-group">
                                             
-                                            <input type="password" class="form-control material" name="password1" value="" autocomplete="off" placeholder="Password" required>
+                                            <input type="password" class="form-control material" name="password1" value="" autocomplete="off" placeholder="<?php echo $language->translate("PASSWORD");?>" required>
                                         
                                         </div>
                                         
@@ -954,30 +963,30 @@ endif;
                                                 
                                                 <label for="rememberMe" class="pull-left"></label>
                                             
-                                                <label class="pull-right"> &nbsp; Remember Me</label>
+                                                <label class="pull-right"> &nbsp; <?php echo $language->translate("REMEMBER_ME");?></label>
                                             
                                             </div>
 
                                         </div>
 
-                                        <button id="loginSubmit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()"><text style="color:<?=$topbartext;?>;">Login</text></button>
+                                        <button id="loginSubmit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("LOGIN");?></text></button>
 
                                     </form> 
                                     
-                                    <button id="switchForgot" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;">Forgot Password</text></button>
+                                    <button id="switchForgot" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("FORGOT_PASSWORD");?></text></button>
                                     
                                     <form style="display: none;" name="forgotPassword" id="forgotPassword" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                         
-                                        <h4 class="text-center">Forgot Password</h4>
+                                        <h4 class="text-center"><?php echo $language->translate("FORGOT_PASSWORD");?></h4>
                                         
                                         <div class="form-group">
                                             
                                             <input type="hidden" name="op" value="reset">
-                                            <input type="text" class="form-control material" name="email" placeholder="E-mail" autocorrect="off" autocapitalize="off" value="" autofocus required>
+                                            <input type="text" class="form-control material" name="email" placeholder="<?php echo $language->translate("EMAIL");?>" autocorrect="off" autocapitalize="off" value="" autofocus required>
                                         
                                         </div>
 
-                                        <button style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="reset password"><text style="color:<?=$topbartext;?>;">Reset Password</text></button>
+                                        <button style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="reset password"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("RESET_PASSWORD");?></text></button>
 
                                     </form> 
                                     
@@ -1016,11 +1025,11 @@ endif;
                                         
                                         <input type="hidden" name="username"value="<?php echo $_SESSION["username"]; ?>" >
 			
-                                        <h3 style="color:<?=$topbar;?>;" class="zero-m text-uppercase">Do you want to logout?</h3>
+                                        <h3 style="color:<?=$topbar;?>;" class="zero-m text-uppercase"><?php echo $language->translate("DO_YOU_WANT_TO_LOGOUT");?></h3>
                                         
-                                        <a style="color:<?=$topbar;?>;" id="logoutSubmit" class="i-block" data-dismiss="modal">Yes</a>
+                                        <a style="color:<?=$topbar;?>;" id="logoutSubmit" class="i-block" data-dismiss="modal"><?php echo $language->translate("YES_WORD");?></a>
                                         
-                                        <a style="color:<?=$topbar;?>;" class="i-block" data-dismiss="modal">No</a>
+                                        <a style="color:<?=$topbar;?>;" class="i-block" data-dismiss="modal"><?php echo $language->translate("NO_WORD");?></a>
                                 
                                     </form>
                                     
