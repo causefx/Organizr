@@ -214,7 +214,7 @@ else :
     endif;
 
     $userpic = md5( strtolower( trim( $USER->email ) ) );
-    if(!empty(LOADINGICON)) : $loadingIcon = LOADINGICON; endif;
+    if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
 
 endif;
 
@@ -486,7 +486,7 @@ endif;
                                 <?php endforeach; endif;?>
                                 
                                 <?php if($configReady == "Yes") : if($USER->authenticated && $USER->role == "admin") :?>
-                                <li class="tab-item <?=$settingsActive;?>" id="settings.phpx">
+                                <li class="tab-item <?=$settingsActive;?>" id="settings.phpx" name="settings">
                                                             
                                     <a class="tab-link">
                                         
@@ -531,9 +531,9 @@ endif;
                     
                     if($configReady == "Yes") : 
                     
-                        if(empty(TITLELOGO)) : 
+                        if(TITLELOGO == "") : 
                     
-                            echo "<span><span style=\"color: topbartext\"><b>$title</b></span></span>"; 
+                            echo "<span><span style=\"color: $topbartext\"><b>$title</b></span></span>"; 
                     
                         else : 
                     
@@ -543,7 +543,7 @@ endif;
                     
                     else :
                     
-                        echo "<span><span style=\"color: topbartext\"><b>$title</b></span></span>"; 
+                        echo "<span><span style=\"color: $topbartext\"><b>$title</b></span></span>"; 
                     
                     endif;
                     
