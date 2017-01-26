@@ -60,20 +60,53 @@ function write_ini_file($content, $path) {
 }
 
 function getTimezone(){
+
+    $regions = array(
+        'Africa' => DateTimeZone::AFRICA,
+        'America' => DateTimeZone::AMERICA,
+        'Antarctica' => DateTimeZone::ANTARCTICA,
+        'Asia' => DateTimeZone::ASIA,
+        'Atlantic' => DateTimeZone::ATLANTIC,
+        'Europe' => DateTimeZone::EUROPE,
+        'Indian' => DateTimeZone::INDIAN,
+        'Pacific' => DateTimeZone::PACIFIC
+    );
     
-    if (ini_get('date.timezone')) :
+    $timezones = array();
+
+    foreach ($regions as $name => $mask) {
+        
+        $zones = DateTimeZone::listIdentifiers($mask);
+
+        foreach($zones as $timezone) {
+
+            $time = new DateTime(NULL, new DateTimeZone($timezone));
+
+            $ampm = $time->format('H') > 12 ? ' ('. $time->format('g:i a'). ')' : '';
+
+            $timezones[$name][$timezone] = substr($timezone, strlen($name) + 1) . ' - ' . $time->format('H:i') . $ampm;
+
+        }
+        
+    }   
     
-        echo ini_get('date.timezone');
+    print '<select name="timezone" id="timezone" class="form-control material" required>';
     
-    elseif (date_default_timezone_get()) :
+    foreach($timezones as $region => $list) {
     
-        echo date_default_timezone_get();
+        print '<optgroup label="' . $region . '">' . "\n";
     
-    else :
+        foreach($list as $timezone => $name) {
+            
+            print '<option value="' . $timezone . '">' . $name . '</option>' . "\n";
     
-        echo "America/Los_Angeles";
+        }
     
-    endif;    
+        print '</optgroup>' . "\n";
+    
+    }
+    
+    print '</select>';
     
 }
                 
@@ -461,7 +494,7 @@ endif;
                                 
                                 if($row['defaultz'] == "true") : $defaultz = "active"; else : $defaultz = ""; endif;?>
                                 
-                                <li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" name="<?php echo strtolower($row['name']);?>">
+                                <li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
                                     
                                     <a class="tab-link">
                                         
@@ -486,7 +519,7 @@ endif;
                                 <?php endforeach; endif;?>
                                 
                                 <?php if($configReady == "Yes") : if($USER->authenticated && $USER->role == "admin") :?>
-                                <li class="tab-item <?=$settingsActive;?>" id="settings.phpx" name="settings">
+                                <li class="tab-item <?=$settingsActive;?>" id="settings.phpx" data-title="Settings" name="settings">
                                                             
                                     <a class="tab-link">
                                         
@@ -705,7 +738,9 @@ endif;
                                                 
                                                 <h5><?php echo $language->translate("SET_DATABASE_LOCATION");?></h5>
                                                 
-                                                <input type="text" class="form-control material" name="timezone" autofocus value="<?php echo getTimezone();?>" autocorrect="off" autocapitalize="off" required>
+                                                <!--<input type="text" class="form-control material" name="timezone" autofocus value="<?php //echo getTimezone();?>" autocorrect="off" autocapitalize="off" required>-->
+                                                
+                                                <?php echo getTimezone();?>
                                                 
                                                 <h5><?php echo $language->translate("SET_TIMEZONE");?></h5>
                                                 
@@ -1075,6 +1110,7 @@ endif;
 
         <!--Custom Scripts-->
         <script src="<?=$baseURL;?>js/common.js"></script>
+        <script src="<?=$baseURL;?>js/mousetrap.min.js"></script>
 
         <script>
 
@@ -1314,6 +1350,10 @@ endif;
         $("li[class^='tab-item']").on('click vclick', function(){
                 
             var thisidfull = $(this).attr("id");
+            
+            var thistitle = $(this).attr("data-title");
+            
+            var thisname = $(this).attr("name");
 
             var thisid = thisidfull.substr(0, thisidfull.length-1);
 
@@ -1330,6 +1370,10 @@ endif;
                 $("div[class^='iframe active']").attr("class", "iframe hidden");
 
                 currentframe.attr("class", "iframe active");
+                
+                document.title = thistitle;
+                
+                window.location.href = '#' + thisname;
                 
                 setHeight();
 
@@ -1352,6 +1396,10 @@ endif;
                     $("div[class^='iframe active']").attr("class", "iframe hidden");
 
                     $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
+                    
+                    document.title = thistitle;
+                    
+                    window.location.href = '#' + thisname;
 
                     setHeight();
 
@@ -1364,8 +1412,23 @@ endif;
             }
 
         });
-        </script>
+            
+        Mousetrap.bind('ctrl+shift+up', function(e) {
+            var getCurrentTab = $("li[class^='tab-item active']");
+            var previousTab = getCurrentTab.prev().attr( "class", "tab-item" );
+            previousTab.trigger("click");
+            return false;
+        }); 
+            
+        Mousetrap.bind('ctrl+shift+down', function(e) {
+            var getCurrentTab = $("li[class^='tab-item active']");
+            var nextTab = getCurrentTab.next().attr( "class", "tab-item" );
+            nextTab.trigger("click");
+            return false;
+        });     
 
+        Mousetrap.bind('s s', function() { $("li[id^='settings.phpx']").trigger("click");  });       
+        </script>
 
     </body>
 
