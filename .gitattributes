@@ -17,4 +17,4 @@
 *.RTF	 diff=astextplain
 *.rb linguist-language=PHP
 *.rb linguist-vendored=PHP
-bower_components/* linguist-vendored=true
+bower_components/* linguist-vendored
