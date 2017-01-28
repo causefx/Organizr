@@ -14,6 +14,7 @@
     if(!empty($databaseConfig['titleLogo'])) : define('TITLELOGO', $databaseConfig['titleLogo']); else : define('TITLELOGO', ''); endif;
     if(!empty($databaseConfig['loadingIcon'])) : define('LOADINGICON', $databaseConfig['loadingIcon']); else : define('LOADINGICON', ''); endif;
     define('FAIL_LOG', 'loginLog.json');
+    date_default_timezone_set(TIMEZONE);
 
 	class User
 	{

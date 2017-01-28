@@ -149,8 +149,6 @@ else :
 
     $USER = new User("registration_callback");
 
-    date_default_timezone_set(TIMEZONE);
-
     $dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
 
     $database = new PDO("sqlite:" . $dbfile);
@@ -319,9 +317,12 @@ endif;
                     
                     <div class="la-ball-scale-multiple la-3x" style="color: <?=$topbar;?>">
                         
-                        <div></div>
-                        <div></div>
-                        <div></div>
+                        <?php if (pathinfo($loadingIcon, PATHINFO_EXTENSION) !== "gif" ) : 
+                        
+                            echo "<div></div><div></div><div></div>";
+                        
+                        endif; ?>
+                        
                         <logo class="logo"><img height="192px" src="<?=$loadingIcon;?>"></logo>
                     
                     </div>
@@ -332,7 +333,7 @@ endif;
         
         </div>
 
-        <div id="main-wrapper" class="main-wrapper">
+        <div id="main-wrapper" class="main-wrapper" tabindex="-1">
             
             <style>
                 .bottom-bnts a {
@@ -395,6 +396,11 @@ endif;
                     background: <?=$activetabBG;?>;
                     border-radius: 100px 0 0 100px;
                 
+                }.gn-menu li.rightActive > a {
+                    
+                    background: <?=$hoverbg;?>;
+                    border-radius: 100px 0 0 100px;
+                
                 }.active {
                     
                     display: block;
@@ -455,8 +461,20 @@ endif;
                     opacity: 0.5;
                     filter: alpha(opacity=50);
 
+                }.mini-nav .split {
+                    width: calc(50% - 25px);
+                }.splitRight {
+                    width: 50%;
+                    margin-left: 50% !important;
+                    position: absolute !important;
+                }.split {
+                    width: 50%;
+                    position: absolute !important;
+                }.mini-nav .splitRight {
+                    margin-left: calc(50% + 25px) !important;
+                    width: calc(50% - 25px);
                 }
-                
+
             </style>
 
             <ul id="gn-menu" class="gn-menu-main">
@@ -738,8 +756,6 @@ endif;
                                                 
                                                 <h5><?php echo $language->translate("SET_DATABASE_LOCATION");?></h5>
                                                 
-                                                <!--<input type="text" class="form-control material" name="timezone" autofocus value="<?php //echo getTimezone();?>" autocorrect="off" autocapitalize="off" required>-->
-                                                
                                                 <?php echo getTimezone();?>
                                                 
                                                 <h5><?php echo $language->translate("SET_TIMEZONE");?></h5>
@@ -849,6 +865,8 @@ endif;
                 <?php endif;?>
                 <!--End Load Framed Content-->
             
+            </div>
+            <div id="contentRight" class="content splitRight" style="">
             </div>
             <!--End Content-->
 
@@ -1247,6 +1265,8 @@ endif;
             if (defaultTab){
 
                 $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
+                document.getElementById('main-wrapper').focus();
+                
             }
             
             if (defaultTab == null){
@@ -1321,6 +1341,34 @@ endif;
 
         });
             
+        $('#reload').on('contextmenu', function(e){
+
+            $("i[class^='mdi mdi-refresh']").attr("class", "mdi mdi-refresh fa-spin");
+
+            var activeFrame = $('#contentRight').find('.active').children('iframe');
+
+            activeFrame.attr('src', activeFrame.attr('src'));
+
+            var refreshBox = $('#contentRight').find('.active');
+
+            $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(10);
+
+            setTimeout(function(){
+
+                var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+
+                    refreshPreloader.remove();
+                    $("i[class^='mdi mdi-refresh fa-spin']").attr("class", "mdi mdi-refresh");
+
+                });
+
+            },500);
+            
+            return false;
+
+        });
+            
         $("li[id^='settings.phpx']").on('click tap', function(){
 
             $("img[id^='settings-icon']").attr("class", "fa-spin");
@@ -1357,7 +1405,7 @@ endif;
 
             var thisid = thisidfull.substr(0, thisidfull.length-1);
 
-            var currentframe = $("div[data-content-url^='"+thisid+"']");
+            var currentframe = $("#content div[data-content-url^='"+thisid+"']");
 
             if (currentframe.attr("class") == "iframe active") {
 
@@ -1367,7 +1415,7 @@ endif;
 
                 console.log(thisid + " is active already but hidden");
 
-                $("div[class^='iframe active']").attr("class", "iframe hidden");
+                $("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
                 currentframe.attr("class", "iframe active");
                 
@@ -1382,8 +1430,6 @@ endif;
                 $(this).attr("class", "tab-item active");
 
             }else {
-
-                
                 
                 if ($(this).attr("window") == "true") {
                     
@@ -1393,7 +1439,7 @@ endif;
                 
                     console.log(thisid + " make new div");
 
-                    $("div[class^='iframe active']").attr("class", "iframe hidden");
+                    $("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
                     $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
                     
@@ -1413,6 +1459,76 @@ endif;
 
         });
             
+        $("li[class^='tab-item']").on('contextmenu', function(e){
+            
+            e.stopPropagation();
+            
+            $("#content").attr("class", "content split");
+            
+            var thisidfull = $(this).attr("id");
+            
+            var thistitle = $(this).attr("data-title");
+            
+            var thisname = $(this).attr("name");
+
+            var thisid = thisidfull.substr(0, thisidfull.length-1);
+
+            var currentframe = $("#contentRight div[data-content-url^='"+thisid+"']");
+
+            if (currentframe.attr("class") == "iframe active") {
+
+                console.log(thisid + " is active already");
+
+            }else if (currentframe.attr("class") == "iframe hidden") {
+
+                console.log(thisid + " is active already but hidden");
+
+                $("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
+
+                currentframe.attr("class", "iframe active");
+                
+                document.title = thistitle;
+                
+                window.location.href = '#' + thisname;
+                
+                setHeight();
+
+                $("li[class^='tab-item rightActive']").attr("class", "tab-item");
+
+                $(this).attr("class", "tab-item rightActive");
+
+            }else {
+                
+                if ($(this).attr("window") == "true") {
+                    
+                    window.open(thisid,'_blank');
+                    
+                }else {
+                
+                    console.log(thisid + " make new div");
+
+                    $("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
+
+                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
+                    
+                    document.title = thistitle;
+                    
+                    window.location.href = '#' + thisname;
+
+                    setHeight();
+
+                    $("li[class^='tab-item rightActive']").attr("class", "tab-item");
+
+                    $(this).attr("class", "tab-item rightActive");
+                    
+                }
+
+            }
+            
+            return false;
+                
+        });
+            
         Mousetrap.bind('ctrl+shift+up', function(e) {
             var getCurrentTab = $("li[class^='tab-item active']");
             var previousTab = getCurrentTab.prev().attr( "class", "tab-item" );
@@ -1427,7 +1543,15 @@ endif;
             return false;
         });     
 
-        Mousetrap.bind('s s', function() { $("li[id^='settings.phpx']").trigger("click");  });       
+        Mousetrap.bind('s s', function() { $("li[id^='settings.phpx']").trigger("click");  });
+        
+        Mousetrap.bind('esc esc', function() {
+            
+            $("#content").attr("class", "content");
+            $("li[class^='tab-item rightActive']").attr("class", "tab-item");
+            $("#contentRight").html('');
+        
+        });    
         </script>
 
     </body>
