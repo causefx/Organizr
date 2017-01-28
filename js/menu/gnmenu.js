@@ -83,6 +83,22 @@
    
             });
             
+            $("li[class^='tab-item']").on('contextmenu', function(e){
+            
+            e.stopPropagation();
+
+
+                if( self.isMenuOpen ) {
+					self._closeMenu();
+					document.removeEventListener( self.eventtype, self.bodyClickFn );
+				}
+				/*else {
+					self._openMenu();
+					document.addEventListener( self.eventtype, self.bodyClickFn );
+				}*/
+                return false;
+            });
+            
 		},
 		_openIconMenu : function() {
 			classie.add( this.menu, 'gn-open-part' );

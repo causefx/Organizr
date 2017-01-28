@@ -10,10 +10,10 @@ function registration_callback($username, $email, $userdir)
     global $data;
     $data = array($username, $email, $userdir);
 }
-require_once("translate.php");
+
 require_once("user.php");
 $USER = new User("registration_callback");
-date_default_timezone_set(TIMEZONE);
+require_once("translate.php");
 
 if(!$USER->authenticated) :
 
@@ -35,6 +35,13 @@ function printArray($arrayName){
     
 }
 
+function explosion($string, $position){
+    
+    $getWord = explode("|", $string);
+    return $getWord[$position];
+    
+}
+
 function write_ini_file($content, $path) { 
     
     if (!$handle = fopen($path, 'w')) {
@@ -49,6 +56,22 @@ function write_ini_file($content, $path) {
     
     return $success; 
 
+}
+
+function getServerPath(){
+    
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
+        
+        $protocol = "https://"; 
+    
+    } else {  
+        
+        $protocol = "http://"; 
+    
+    }
+    
+    return $protocol . $_SERVER['SERVER_NAME'] . dirname($_SERVER['REQUEST_URI']);
+      
 }
 
 $dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
@@ -589,7 +612,37 @@ endif;
                 display: none;
             }input.form-control.iconpicker-search {
                 color: black;
-            }
+            }.key {
+    font-family:Tahoma, sans-serif;
+    border-style:solid;
+    border-color:#D5D6AD #C1C1A8 #CDCBA5 #E7E5C5;
+    border-width:2px 3px 8px 3px;
+    background:#D6D4B4;
+    display:inline-block;
+    border-radius:5px;
+    margin:3px;
+    text-align:center;
+}
+
+.key span {
+    background:#ECEECA;
+    color:#5D5E4F;
+    display:block;
+    font-size:12px;
+    padding:0 2px;
+    border-radius:3px;
+    width:14px;
+    height:18px;
+    line-height:18px;
+    text-align:center;
+    font-weight:bold;
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
+.key.wide span {
+    width:auto;
+    padding:0 12px;
+}
         
         </style>
        
@@ -1235,7 +1288,83 @@ endif;
                                     
                                         <a href='https://github.com/causefx/Organizr/issues/new' target='_blank' type='button' class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span><?php echo $language->translate("SUBMIT_ISSUE");?></a> 
                                         <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span><?php echo $language->translate("VIEW_ON_GITHUB");?></a>
-                                        <a href='https://riot.im/app/#/room/#iCauseFX:matrix.org' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span><?php echo $language->translate("CHAT_WITH_US");?></a>
+                                        <a href='https://gitter.im/Organizrr/Lobby' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span><?php echo $language->translate("CHAT_WITH_US");?></a>
+                                        <button type="button" class="class='btn waves btn-labeled btn-warning btn text-uppercase waves-effect waves-float" data-toggle="modal" data-target=".Help-Me-modal-lg"><span class='btn-label'><i class='fa fa-life-ring'></i></span><?php echo $language->translate("HELP");?></button>
+
+                                        <div class="modal fade Help-Me-modal-lg" tabindex="-1" role="dialog">
+                                        
+                                            <div class="modal-dialog modal-lg" role="document">
+                                        
+                                                <div class="modal-content gray-bg">
+                                        
+                                                    <div class="modal-header">
+                                        
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        
+                                                        <h4 class="modal-title"><?php echo $language->translate("HELP");?>!</h4>
+                                        
+                                                    </div>
+                                        
+                                                    <div class="modal-body">
+                                        
+                                                        <h4><strong><?php echo $language->translate("ADDING_TABS");?></strong></h4>
+                                                        
+                                                        <p><?php echo $language->translate("START_ADDING_TABS");?></p>
+                                                            
+                                                        <ul>
+
+                                                            <li><strong><?php echo $language->translate("TAB_URL");?></strong> <?php echo $language->translate("TAB_URL_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("ICON_URL");?></strong> <?php echo $language->translate("ICON_URL_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("DEFAULT");?></strong> <?php echo $language->translate("DEFAULT_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("ACTIVE");?></strong> <?php echo $language->translate("ACTIVE_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("USER");?></strong> <?php echo $language->translate("USER_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("GUEST");?></strong> <?php echo $language->translate("GUEST_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("NO_IFRAME");?></strong> <?php echo $language->translate("NO_IFRAME_ABOUT");?></li>        
+
+                                                        </ul>
+
+                                                        <h4><strong><?php echo $language->translate("QUICK_ACCESS");?></strong></h4>
+                                                    
+                                                        <p><?php echo $language->translate("QUICK_ACCESS_ABOUT");?> <mark><?php echo getServerPath(); ?>#Sonarr</mark></p>
+                                                        
+                                                        <h4><strong><?php echo $language->translate("SIDE_BY_SIDE");?></strong></h4>
+                                                        
+                                                        <p><?php echo $language->translate("SIDE_BY_SIDE_ABOUT");?></p>
+                                                        
+                                                        <ul>
+                                                        
+                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS1");?></li>
+                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS2");?> [<i class='fa fa-refresh'></i>]</li>
+                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS3");?></li>
+                                                        
+                                                        </ul>
+
+                                                        <h4><strong><?php echo $language->translate("KEYBOARD_SHORTCUTS");?></strong></h4>
+                                                    
+                                                        <p><?php echo $language->translate("KEYBOARD_SHORTCUTS_ABOUT");?></p>
+                                                        
+                                                        <ul>
+                                                            
+                                                            <li><keyboard class="key"><span>S</span></keyboard> + <keyboard class="key"><span>S</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS1");?></li>
+                                                            <li><keyboard class="key wide"><span>Ctrl</span></keyboard> + <keyboard class="key wide"><span>Shift</span></keyboard> + <keyboard class="key"><span>&darr;</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS2");?></li>
+                                                            <li><keyboard class="key wide"><span>Ctrl</span></keyboard> + <keyboard class="key wide"><span>Shift</span></keyboard> + <keyboard class="key"><span>&uarr;</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS3");?></li>
+                                                            <li><keyboard class="key wide"><span>Esc</span></keyboard> + <keyboard class="key wide"><span>Esc</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS4");?></li>
+                                                            
+                                                        </ul>
+                                                        
+                                                    </div>
+                                                    
+                                                    <div class="modal-footer">
+                                        
+                                                        <button type="button" class="btn btn-default waves" data-dismiss="modal"><?php echo $language->translate("CLOSE");?></button>
+                                        
+                                                    </div>
+                                        
+                                                </div>
+                                        
+                                            </div>
+                                        
+                                        </div>
                                     
                                     </p>
                                     
@@ -1502,7 +1631,19 @@ endif;
                     displayLength: 10,
                     dom: 'T<"clear">lfrtip',
                 responsive: true,
-                    "order": [[ 0, 'desc' ]]
+                    "order": [[ 0, 'desc' ]],
+                    "language": {
+			           "info": "<?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 0);?> _START_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 1);?> _END_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 2);?> _TOTAL_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 3);?>",
+                        "infoEmpty": "<?php echo $language->translate('NO_ENTRIES');?>",
+                        "infoFiltered": "<?php echo explosion($language->translate('FILTERED'), 0);?> _MAX_ <?php echo explosion($language->translate('FILTERED'), 1);?>",
+                        "lengthMenu": "<?php echo $language->translate('SHOW');?> _MENU_ <?php echo $language->translate('ENTRIES');?>",
+                        "search": "<?php echo $language->translate('SEARCH');?>",
+                        "zeroRecords": "<?php echo $language->translate('NO_MATCHING');?>",
+                        "paginate": {
+				             "next": "<?php echo $language->translate('NEXT');?>",
+                            "previous": "<?php echo $language->translate('PREVIOUS');?>",
+				           }
+			         }
                 });
             });
         </script>
@@ -1937,6 +2078,8 @@ endif;
         
         $( document ).ready(function() {
             
+            
+            
             $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
         		
         	$.ajax({
@@ -1946,7 +2089,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.999";
+                    var currentVersion = "0.9998";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;

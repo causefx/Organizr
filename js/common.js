@@ -5,14 +5,6 @@
  *
 */
 
-var datetime = null,
-        date = null;
-
-var update = function () {
-    date = moment(new Date())
-    datetime.html(date.format('h:mm A'));
-};
-
 $(window).on('load', function(){
     //Preloader
     setTimeout(function(){
@@ -28,11 +20,6 @@ $(window).on('load', function(){
 $(function () {
   //Menu
   new gnMenu( document.getElementById( 'gn-menu' ) );
-
-  //Choose Language
-  [].slice.call( document.querySelectorAll( 'select.cs-select' ) ).forEach( function(el) {
-        new SelectFx(el);
-  } );
 
   //Refresh button
   $('.repeat-btn').click(function(e){
@@ -63,36 +50,9 @@ $(function () {
     mobileMenuWidth();
   }
 
-  //Smooth scrolling for body
-  /*$("body").niceScroll({
-    railpadding: {top:56,right:0,left:0,bottom:0},
-    scrollspeed: 30,
-    mousescrollstep: 60
-  });*/
-
-
   //Waves effect on buttons
   Waves.attach('.waves', ['waves-float']);
   Waves.init();
-
-  //Current Date
-  var dt = new Date(),
-      year = dt.getFullYear(),
-      months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-      month = dt.getMonth(),
-      days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-      day = dt.getDay(),
-      date = dt.getDate();
-
-  $('.year').append(year);
-  $('.month').append(months[month]);
-  $('.weekday').append(days[day]);
-  $('.date').append(date);
-
-  //Current Time
-  datetime = $('.current-time')
-  update();
-  setInterval(update, 60000);
 
   //Close Content Box
   $('.close-btn').click(function(e){
@@ -132,9 +92,6 @@ $(function () {
     e.preventDefault();
   });
 
-  // Full height of content
-  //$('#content').css("height", $(window).height() - 56 + "px" );
-  //$("div").find(".iframe").css("height", $(window).height() - 56 + "px" );
   //Fixed gn-menu
   $('.fix-nav').click(function(e){
     if($(window).width() > 422) {

@@ -4461,6 +4461,7 @@ body .ns-effect-loadingcircle {
 /*Buttons*/
 .btn {
   border: 0;
+  margin-bottom: 2px;
 }
 
 .btn, .btn-group {
