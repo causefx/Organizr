@@ -163,6 +163,7 @@ $folder = USER_HOME;
                 check("PDO_SQLITE");
                 check("PDO");
                 check("Zip");
+                check("openssl");
                 checkFunction("MAIL");
                 checkFunction("fopen");
 

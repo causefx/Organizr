@@ -1,7 +1,5 @@
 <?php 
 
-date_default_timezone_set('America/Los_Angeles');
-
 $data = false;
 
 ini_set("display_errors", 1);
@@ -15,6 +13,7 @@ function registration_callback($username, $email, $userdir)
 
 require_once("user.php");
 $USER = new User("registration_callback");
+require_once("translate.php");
 
 if(!$USER->authenticated) :
 
@@ -36,8 +35,47 @@ function printArray($arrayName){
     
 }
 
-$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+function explosion($string, $position){
+    
+    $getWord = explode("|", $string);
+    return $getWord[$position];
+    
+}
 
+function write_ini_file($content, $path) { 
+    
+    if (!$handle = fopen($path, 'w')) {
+        
+        return false; 
+    
+    }
+    
+    $success = fwrite($handle, $content);
+    
+    fclose($handle); 
+    
+    return $success; 
+
+}
+
+function getServerPath(){
+    
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
+        
+        $protocol = "https://"; 
+    
+    } else {  
+        
+        $protocol = "http://"; 
+    
+    }
+    
+    return $protocol . $_SERVER['SERVER_NAME'] . dirname($_SERVER['REQUEST_URI']);
+      
+}
+
+$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+$databaseLocation = "databaseLocation.ini.php";
 $userdirpath = USER_HOME;
 $userdirpath = substr_replace($userdirpath, "", -1);
 
@@ -286,6 +324,26 @@ if($action == "upgrade") :
     echo "<script>window.parent.location.reload(true);</script>";
 
 endif;
+
+if($action == "createLocation") :
+
+    $databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
+
+    foreach ($_POST as $postName => $postValue) {
+            
+        if($postName !== "action") :
+        
+            if(substr($postValue, -1) == "/") : $postValue = rtrim($postValue, "/"); endif;
+        
+            $databaseData .= $postName . " = \"" . $postValue . "\"\r\n";
+        
+        endif;
+        
+    }
+
+    write_ini_file($databaseData, $databaseLocation);
+
+endif;
                 
 if(!isset($_POST['op'])) :
 
@@ -532,6 +590,8 @@ endif;
         <script type="text/javascript" src="js/sha1.js"></script>
         <script type="text/javascript" src="js/user.js"></script>
         <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
+        <link rel="stylesheet" href="bower_components/DataTables/media/css/jquery.dataTables.css">
+        <link rel="stylesheet" href="bower_components/datatables-tabletools/css/dataTables.tableTools.css">
 
         <link rel="stylesheet" href="css/style.css">
         <link href="css/jquery.filer.css" rel="stylesheet">
@@ -552,7 +612,37 @@ endif;
                 display: none;
             }input.form-control.iconpicker-search {
                 color: black;
-            }
+            }.key {
+    font-family:Tahoma, sans-serif;
+    border-style:solid;
+    border-color:#D5D6AD #C1C1A8 #CDCBA5 #E7E5C5;
+    border-width:2px 3px 8px 3px;
+    background:#D6D4B4;
+    display:inline-block;
+    border-radius:5px;
+    margin:3px;
+    text-align:center;
+}
+
+.key span {
+    background:#ECEECA;
+    color:#5D5E4F;
+    display:block;
+    font-size:12px;
+    padding:0 2px;
+    border-radius:3px;
+    width:14px;
+    height:18px;
+    line-height:18px;
+    text-align:center;
+    font-weight:bold;
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
+.key.wide span {
+    width:auto;
+    padding:0 12px;
+}
         
         </style>
        
@@ -591,9 +681,15 @@ endif;
                      
                                 </li>
                                 
-                                 <li>
+                                <li>
                         
                                     <a href="#loginlog" data-toggle="tab"><i class="fa fa-file-text-o indigo"></i></a>
+                     
+                                </li>
+                                
+                                <li>
+                        
+                                    <a href="#systemSettings" data-toggle="tab"><i class="fa fa-cog gray"></i></a>
                      
                                 </li>
                                 
@@ -607,21 +703,21 @@ endif;
                     
                             <div class="tab-content" style="overflow: auto">
                       
-                                <div class="content-box box-shadow big-box todo-list tab-pane big-box  fade in active" id="tab-tabs">
+                                <div class="big-box todo-list tab-pane big-box  fade in active" id="tab-tabs">
 
                                     <div class="sort-todo">
 
-                                        <a class="total-tabs">Tabs <span class="badge gray-bg"></span></a>
+                                        <a class="total-tabs"><?php echo $language->translate("TABS");?> <span class="badge gray-bg"></span></a>
                                         
                                         <button id="iconHide" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
                                             
-                                            <span class="btn-label"><i class="fa fa-upload"></i></span>Upload Icons
+                                            <span class="btn-label"><i class="fa fa-upload"></i></span><?php echo $language->translate("UPLOAD_ICONS");?>
                                             
                                         </button>
                                         
                                         <button id="iconAll" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
                                             
-                                            <span class="btn-label"><i class="fa fa-picture-o"></i></span>View Icons
+                                            <span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo $language->translate("VIEW_ICONS");?>
                                             
                                         </button>
                                         
@@ -629,7 +725,7 @@ endif;
                                         
                                         <button id="apply" class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
                                         
-                                            <span class="btn-label"><i class="fa fa-check"></i></span>Apply Changes
+                                            <span class="btn-label"><i class="fa fa-check"></i></span><?php echo $language->translate("APPLY_CHANGES");?>
                                         
                                         </button>
                                         
@@ -641,7 +737,7 @@ endif;
                                     
                                     <div id="viewAllIcons" style="display: none;">
                                         
-                                        <h4><strong>All Icons</strong> [Click icon to copy path to clipboard]</h4>
+                                        <h4><strong><?php echo $language->translate("ALL_ICONS");?></strong> [<?php echo $language->translate("CLICK_ICON");?>]</h4>
                                         
                                         <div class="row">
                                             
@@ -649,15 +745,15 @@ endif;
                                             <?php
                                             $dirname = "images/";
                                             $images = scandir($dirname);
-                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store");
+                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png");
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
 
-                                            <div class="col-xs-2" style="width: 125px; height: 125px; padding-right: 0px;">    
+                                            <div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
                                             
-                                                <a class="thumbnail">
+                                                <a class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
 
-                                                    <img style="width: 100px; height: 100px;" src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
+                                                    <img style="width: 50px; height: 50px;" src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
 
                                                 </a>
                                                 
@@ -681,7 +777,7 @@ endif;
 
                                                 </div>
 
-                                                <input type="text" class="form-control name-of-todo" placeholder="Type In New Tab Name And Hit Enter" style="border-top-left-radius: 0;
+                                                <input type="text" class="form-control name-of-todo" placeholder="<?php echo $language->translate("TYPE_HIT_ENTER");?>" style="border-top-left-radius: 0;
     border-bottom-left-radius: 0;">
 
                                             </div>
@@ -727,13 +823,13 @@ endif;
 
                                                             <div class="form-group">
 
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="New Tab Name" value="<?=$row['name'];?>">
+                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="<?=$row['name'];?>">
 
                                                             </div>
 
                                                             <div class="form-group">
 
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="Tab URL" value="<?=$row['url']?>">
+                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="<?php echo $language->translate("TAB_URL");?>" value="<?=$row['url']?>">
 
                                                             </div>
 
@@ -744,13 +840,13 @@ endif;
                                                                     <span class="input-group-addon"></span>
                                                                 </div>
                                                                 
-                                                                - OR -
+                                                                - <?php echo $language->translate("OR");?> -
 
                                                             </div>
                                                             
                                                             <div class="form-group">
 
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-<?=$tabNum;?>" name="iconurl-<?=$tabNum;?>" placeholder="Icon URL" value="<?=$row['iconurl']?>">
+                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-<?=$tabNum;?>" name="iconurl-<?=$tabNum;?>" placeholder="<?php echo $language->translate("ICON_URL");?>" value="<?=$row['iconurl']?>">
 
                                                             </div>
 
@@ -760,7 +856,7 @@ endif;
 
 
                                                                     <input type="radio" id="default[<?=$tabNum;?>]" value="true" name="default" <?=$default;?>>
-                                                                    <label for="default[<?=$tabNum;?>]">Default</label>
+                                                                    <label for="default[<?=$tabNum;?>]"><?php echo $language->translate("DEFAULT");?></label>
 
                                                                 </div>
 
@@ -776,7 +872,7 @@ endif;
                                                                     <label for="active[<?=$tabNum;?>]"></label>
 
                                                                 </div>
-                                                                Active
+                                                                <?php echo $language->translate("ACTIVE");?>
                                                             </div>
 
                                                             <div class="form-group">
@@ -788,7 +884,7 @@ endif;
                                                                     <label for="user[<?=$tabNum;?>]"></label>
 
                                                                 </div>
-                                                                User
+                                                                <?php echo $language->translate("USER");?>
                                                             </div>
 
                                                             <div class="form-group">
@@ -800,7 +896,7 @@ endif;
                                                                     <label for="guest[<?=$tabNum;?>]"></label>
 
                                                                 </div>
-                                                                Guest
+                                                                <?php echo $language->translate("GUEST");?>
                                                             </div>
                                                             
                                                             <div class="form-group">
@@ -808,11 +904,11 @@ endif;
                                                                 <div class="">
 
                                                                     <input id="" class="switcher switcher-primary" value="false" name="window-<?=$tabNum;?>" type="hidden">
-                                                                    <input id="window[<?=$tabNum;?>]" class="switcher switcher-warning" name="window-<?=$tabNum;?>" type="checkbox" <?=$windowz;?>>
+                                                                    <input id="window[<?=$tabNum;?>]" class="switcher switcher-danger" name="window-<?=$tabNum;?>" type="checkbox" <?=$windowz;?>>
                                                                     <label for="window[<?=$tabNum;?>]"></label>
 
                                                                 </div>
-                                                                No iFrame
+                                                                <?php echo $language->translate("NO_IFRAME");?>
                                                             </div>
 
                                                             <div class="pull-right action-btns" style="padding-top: 8px;">
@@ -835,7 +931,7 @@ endif;
 
                                             <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
                                                 
-                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save Tabs
+                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_TABS");?>
                                                 
                                             </button>
                                             
@@ -860,25 +956,25 @@ endif;
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control gray" name="username" placeholder="Username" autocorrect="off" autocapitalize="off" value="">
+                                                        <input type="text" class="form-control gray" name="username" placeholder="<?php echo $language->translate("USERNAME");?>" autocorrect="off" autocapitalize="off" value="">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="email" class="form-control gray" name="email" placeholder="E-mail">
+                                                        <input type="email" class="form-control gray" name="email" placeholder="<?php echo $language->translate("EMAIL");?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="password" class="form-control gray" name="password1" placeholder="Password">
+                                                        <input type="password" class="form-control gray" name="password1" placeholder="<?php echo $language->translate("PASSWORD");?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="password" class="form-control gray" name="password2" placeholder="Retype Password">
+                                                        <input type="password" class="form-control gray" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
 
                                                     </div>
                                                     
@@ -894,7 +990,7 @@ endif;
                                       
                                     </div>
                                     
-                                    <div class="content-box big-box">
+                                    <div class="big-box">
                                         
                                         <form class="content-form form-inline" name="unregister" id="unregister" action="" method="POST">
                                               
@@ -912,17 +1008,17 @@ endif;
 
                                                             <th>#</th>
 
-                                                            <th>Username</th>
+                                                            <th><?php echo $language->translate("USERNAME");?></th>
                                                             
-                                                            <th>E-Mail</th>
+                                                            <th><?php echo $language->translate("EMAIL");?></th>
 
-                                                            <th>Login Status</th>
+                                                            <th><?php echo $language->translate("LOGIN_STATUS");?></th>
 
-                                                            <th>Last Seen</th>
+                                                            <th><?php echo $language->translate("LAST_SEEN");?></th>
 
-                                                            <th>User Group</th>
+                                                            <th><?php echo $language->translate("USER_GROUP");?></th>
 
-                                                            <th>User Actions</th>
+                                                            <th><?php echo $language->translate("USER_ACTIONS");?></th>
 
                                                         </tr>
 
@@ -940,10 +1036,10 @@ endif;
                                                             $disableAction = "";
                                                         endif;
                                                         if($row['active'] == "true") : 
-                                                            $userActive = "Logged In";
+                                                            $userActive = $language->translate("LOGGED_IN");
                                                             $userActiveColor = "primary";
                                                         else : 
-                                                            $userActive = "Logged Out";
+                                                            $userActive = $language->translate("LOGGED_OUT");
                                                             $userActiveColor = "danger";
                                                         endif;
                                                         $userpic = md5( strtolower( trim( $row['email'] ) ) );
@@ -972,7 +1068,7 @@ endif;
 
                                                                 <button <?=$disableAction;?> class="btn waves btn-labeled btn-danger btn btn-sm text-uppercase waves-effect waves-float deleteUser">
 
-                                                                    <span class="btn-label"><i class="fa fa-user-times"></i></span>Delete
+                                                                    <span class="btn-label"><i class="fa fa-user-times"></i></span><?php echo $language->translate("DELETE");?>
 
                                                                 </button>
 
@@ -994,113 +1090,281 @@ endif;
 
                                 </div>
                                 
-                                <div class="tab-pane big-box  fade in" id="loginlog">
+                                <div class="tab-pane big-box  fade in" id="systemSettings">
                                     
-                                    <div class="content-box big-box">
+                                    <div class="row">
+                                        
+                                        <div class="col-lg-12">
+                                          
+                                            <div class="gray-bg content-box big-box box-shadow">
+                                            
+                                                <form class="content-form form-inline" name="systemSettings" id="systemSettings" action="" method="POST">
+                        								    
+                                                    <input type="hidden" name="action" value="createLocation" />
 
-                                        <div class="table-responsive">
-                                            
-                                            <?php if(file_exists(FAIL_LOG)) : ?>
-                                            
-                                            <form id="deletelog" method="post">
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control gray" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control gray" name="timezone" placeholder="<?php echo $language->translate("SET_TIMEZONE");?>" value="<?php echo TIMEZONE;?>">
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control gray" name="titleLogo" placeholder="<?php echo $language->translate("LOGO_URL_TITLE");?>" value="<?php echo TITLELOGO;?>">
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control gray" name="loadingIcon" placeholder="<?php echo $language->translate("LOADING_ICON_URL");?>" value="<?php echo LOADINGICON;?>">
+
+                                                    </div>
                                                     
-                                                <input type="hidden" name="action" value="deleteLog" />
-                                                <button class="btn waves btn-labeled btn-danger btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
-
-                                                    <span class="btn-label"><i class="fa fa-trash"></i></span>Purge Log
-
-                                                </button>
-
-                                            </form>
-
-                                            <table class="table table-striped">
-                                                
-                                                <thead>
-
-                                                    <tr>
-
-                                                        <th>Date</th>
-
-                                                        <th>Username</th>
-
-                                                        <th>IP Address</th>
-
-                                                        <th>Type</th>
-
-                                                    </tr>
-
-                                                </thead>
-
-                                                <tbody>
                                                     
-                                                    <?php
                                                     
-                                                        $getFailLog = file_get_contents(FAIL_LOG); 
-                                                        $gotFailLog = json_decode($getFailLog, true);
+                                                    <button type="submit" class="btn btn-success btn-icon waves waves-circle waves-effect waves-float"><i class="fa fa-floppy-o"></i></button>
 
-                                                        function getColor($colorTest){
+                                                </form>               
+                                          
+                                            </div>
+                                        
+                                        </div>
+                                      
+                                    </div>
 
-                                                            if($colorTest == "bad_auth") :
+                                </div>
+                                
+                                <div class="tab-pane big-box  fade in" id="loginlog">
 
-                                                                $gotColorTest = "danger";
+                                    <div class="table-responsive">
 
-                                                            elseif($colorTest == "good_auth") :
+                                        <?php if(file_exists(FAIL_LOG)) : ?>
 
-                                                                $gotColorTest = "primary";
+                                        <div id="loginStats">
 
-                                                            endif;
+                                            <div class="content-box ultra-widget">
 
-                                                            echo $gotColorTest;
+                                                <div class="w-progress">
 
-                                                        }
+                                                    <span id="goodCount" class="w-amount blue"></span>
+                                                    <span id="badCount" class="w-amount red pull-right">3</span>
 
-                                                        foreach (array_reverse($gotFailLog["auth"]) as $key => $val) : ?>
+                                                    <br>
 
-                                                    <tr>
+                                                    <span class="text-uppercase w-name"><?php echo $language->translate("GOOD_LOGINS");?></span>
+                                                    <span class="text-uppercase w-name pull-right"><?php echo $language->translate("BAD_LOGINS");?></span>
 
-                                                        <td><?=$val["date"];?></td>
+                                                </div>
 
-                                                        <td><?=$val["username"];?></td>
+                                                <div class="progress progress-bar-sm zero-m">
 
-                                                        <td><?=$val["ip"];?></td>
+                                                    <div id="goodPercent" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%"></div>
 
-                                                        <td><span class="label label-<?php getColor($val["auth_type"]);?>"><?=$val["auth_type"];?></span></td>
+                                                    <div id="badPercent" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%"></div>
 
-                                                    </tr>
-                                                    
-                                                    <?php endforeach; ?> 
-    
-                                                </tbody>
+                                                </div>
 
-                                            </table>
-                                            
-                                            <?php endif; 
-                                            
-                                            if(!file_exists(FAIL_LOG)) :
+                                                <div class="w-status clearfix">
 
-                                                echo "Nothing in log..................";
+                                                    <div id="goodTitle" class="w-status-title pull-left text-uppercase">20%</div>
 
-                                            endif;
-                                            
-                                            ?>
+                                                    <div id="badTitle" class="w-status-number pull-right text-uppercase">80%</div>
+
+                                                </div>
+
+                                            </div>
 
                                         </div>
-                                                    
+
+                                        <form id="deletelog" method="post">
+
+                                            <input type="hidden" name="action" value="deleteLog" />
+                                            <button class="btn waves btn-labeled btn-danger btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+
+                                                <span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?>
+
+                                            </button>
+
+                                        </form>
+
+                                        <table id="datatable" class="display">
+
+                                            <thead>
+
+                                                <tr>
+
+                                                    <th><?php echo $language->translate("DATE");?></th>
+
+                                                    <th><?php echo $language->translate("USERNAME");?></th>
+
+                                                    <th><?php echo $language->translate("IP_ADDRESS");?></th>
+
+                                                    <th><?php echo $language->translate("TYPE");?></th>
+
+                                                </tr>
+
+                                            </thead>
+
+                                            <tbody>
+
+                                                <?php
+
+                                                    $getFailLog = str_replace("\r\ndate", "date", file_get_contents(FAIL_LOG));
+                                                    $gotFailLog = json_decode($getFailLog, true);
+                                                    $goodLogin = 0;
+                                                    $badLogin = 0;
+
+                                                    function getColor($colorTest){
+
+                                                        if($colorTest == "bad_auth") :
+
+                                                            $gotColorTest = "danger";
+
+                                                        elseif($colorTest == "good_auth") :
+
+                                                            $gotColorTest = "primary";
+
+                                                        endif;
+
+                                                        echo $gotColorTest;
+
+                                                    }
+
+                                                    foreach (array_reverse($gotFailLog["auth"]) as $key => $val) : 
+
+                                                    if($val["auth_type"] == "bad_auth") : $badLogin++; elseif($val["auth_type"] == "good_auth") : $goodLogin++; endif;
+                                                ?>
+
+                                                <tr>
+
+                                                    <td><?=$val["date"];?></td>
+
+                                                    <td><?=$val["username"];?></td>
+
+                                                    <td><?=$val["ip"];?></td>
+
+                                                    <td><span class="label label-<?php getColor($val["auth_type"]);?>"><?=$val["auth_type"];?></span></td>
+
+                                                </tr>
+
+                                                <?php endforeach; ?> 
+
+                                            </tbody>
+
+                                        </table>
+
+                                        <?php 
+                                        $totalLogin = $goodLogin + $badLogin;     
+                                        $goodPercent = round(($goodLogin / $totalLogin) * 100);
+                                        $badPercent = round(($badLogin / $totalLogin) * 100);
+
+                                        endif;
+
+                                        if(!file_exists(FAIL_LOG)) :
+
+                                            echo $language->translate("NOTHING_LOG");
+
+                                        endif;
+
+                                        ?>
+
                                     </div>
 
                                 </div>
                                 
                                 <div class="tab-pane big-box  fade in" id="about">
                         
-                                    <h4><strong>About Organizr</strong></h4>
+                                    <h4><strong><?php echo $language->translate("ABOUT");?> Organizr</strong></h4>
                         
                                     <p id="version"></p>
                                     
                                     <p id="submitFeedback">
                                     
-                                        <a href='https://github.com/causefx/Organizr/issues/new' target='_blank' type='button' class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span>Submit Issue or Request</a> 
-                                        <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span>View On Github</a>
-                                        <a href='https://riot.im/app/#/room/#iCauseFX:matrix.org' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span>Chat With Us</a>
+                                        <a href='https://github.com/causefx/Organizr/issues/new' target='_blank' type='button' class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span><?php echo $language->translate("SUBMIT_ISSUE");?></a> 
+                                        <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span><?php echo $language->translate("VIEW_ON_GITHUB");?></a>
+                                        <a href='https://gitter.im/Organizrr/Lobby' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span><?php echo $language->translate("CHAT_WITH_US");?></a>
+                                        <button type="button" class="class='btn waves btn-labeled btn-warning btn text-uppercase waves-effect waves-float" data-toggle="modal" data-target=".Help-Me-modal-lg"><span class='btn-label'><i class='fa fa-life-ring'></i></span><?php echo $language->translate("HELP");?></button>
+
+                                        <div class="modal fade Help-Me-modal-lg" tabindex="-1" role="dialog">
+                                        
+                                            <div class="modal-dialog modal-lg" role="document">
+                                        
+                                                <div class="modal-content gray-bg">
+                                        
+                                                    <div class="modal-header">
+                                        
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        
+                                                        <h4 class="modal-title"><?php echo $language->translate("HELP");?>!</h4>
+                                        
+                                                    </div>
+                                        
+                                                    <div class="modal-body">
+                                        
+                                                        <h4><strong><?php echo $language->translate("ADDING_TABS");?></strong></h4>
+                                                        
+                                                        <p><?php echo $language->translate("START_ADDING_TABS");?></p>
+                                                            
+                                                        <ul>
+
+                                                            <li><strong><?php echo $language->translate("TAB_URL");?></strong> <?php echo $language->translate("TAB_URL_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("ICON_URL");?></strong> <?php echo $language->translate("ICON_URL_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("DEFAULT");?></strong> <?php echo $language->translate("DEFAULT_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("ACTIVE");?></strong> <?php echo $language->translate("ACTIVE_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("USER");?></strong> <?php echo $language->translate("USER_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("GUEST");?></strong> <?php echo $language->translate("GUEST_ABOUT");?></li>
+                                                            <li><strong><?php echo $language->translate("NO_IFRAME");?></strong> <?php echo $language->translate("NO_IFRAME_ABOUT");?></li>        
+
+                                                        </ul>
+
+                                                        <h4><strong><?php echo $language->translate("QUICK_ACCESS");?></strong></h4>
+                                                    
+                                                        <p><?php echo $language->translate("QUICK_ACCESS_ABOUT");?> <mark><?php echo getServerPath(); ?>#Sonarr</mark></p>
+                                                        
+                                                        <h4><strong><?php echo $language->translate("SIDE_BY_SIDE");?></strong></h4>
+                                                        
+                                                        <p><?php echo $language->translate("SIDE_BY_SIDE_ABOUT");?></p>
+                                                        
+                                                        <ul>
+                                                        
+                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS1");?></li>
+                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS2");?> [<i class='fa fa-refresh'></i>]</li>
+                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS3");?></li>
+                                                        
+                                                        </ul>
+
+                                                        <h4><strong><?php echo $language->translate("KEYBOARD_SHORTCUTS");?></strong></h4>
+                                                    
+                                                        <p><?php echo $language->translate("KEYBOARD_SHORTCUTS_ABOUT");?></p>
+                                                        
+                                                        <ul>
+                                                            
+                                                            <li><keyboard class="key"><span>S</span></keyboard> + <keyboard class="key"><span>S</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS1");?></li>
+                                                            <li><keyboard class="key wide"><span>Ctrl</span></keyboard> + <keyboard class="key wide"><span>Shift</span></keyboard> + <keyboard class="key"><span>&darr;</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS2");?></li>
+                                                            <li><keyboard class="key wide"><span>Ctrl</span></keyboard> + <keyboard class="key wide"><span>Shift</span></keyboard> + <keyboard class="key"><span>&uarr;</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS3");?></li>
+                                                            <li><keyboard class="key wide"><span>Esc</span></keyboard> + <keyboard class="key wide"><span>Esc</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS4");?></li>
+                                                            
+                                                        </ul>
+                                                        
+                                                    </div>
+                                                    
+                                                    <div class="modal-footer">
+                                        
+                                                        <button type="button" class="btn btn-default waves" data-dismiss="modal"><?php echo $language->translate("CLOSE");?></button>
+                                        
+                                                    </div>
+                                        
+                                                </div>
+                                        
+                                            </div>
+                                        
+                                        </div>
                                     
                                     </p>
                                     
@@ -1112,21 +1376,21 @@ endif;
                                         
                                         <div class="panel-heading">
                                             
-                                            <h3 class="panel-title">Delete Database</h3>
+                                            <h3 class="panel-title"><?php echo $language->translate("DELETE_DATABASE");?></h3>
                                             
                                         </div>
                                         
                                         <div class="panel-body">
                                             
-                                            <div class="col-lg-4">
+                                            <div class="">
                                             
-                                                <p>Only do this if an upgrade requires it.  This will delete your database so there is no going back and you will need to set everything back up, including user accouts.</p>
+                                                <p><?php echo $language->translate("DELETE_WARNING");?></p>
                                                 <form id="deletedb" method="post">
                                                     
                                                     <input type="hidden" name="action" value="deleteDB" />
                                                     <button class="btn waves btn-labeled btn-danger pull-right text-uppercase waves-effect waves-float" type="submit">
                                                 
-                                                        <span class="btn-label"><i class="fa fa-trash"></i></span>Delete Databse
+                                                        <span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("DELETE_DATABASE");?>
                                                 
                                                     </button>
                                                     
@@ -1149,7 +1413,7 @@ endif;
                                         <div class="btn-group">
                                             
                                             <button type="button" class="btn btn-dark dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Choose Theme  <span class="caret"></span>
+                                            <?php echo $language->translate("CHOOSE_THEME");?>  <span class="caret"></span>
                                             </button>
                                             
                                             <ul class="dropdown-menu gray-bg">
@@ -1168,7 +1432,7 @@ endif;
                                             
                                                 <li role="separator" class="divider"></li>
                                             
-                                                <li id="defaultTheme" style="background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Default</a></li>
+                                                <li id="defaultTheme" style="background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#"><?php echo $language->translate("DEFAULT");?></a></li>
                                             
                                             </ul>
                                             
@@ -1176,19 +1440,19 @@ endif;
                                         
                                         <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
                                                 
-                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save Options
+                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_OPTIONS");?>
                                                 
                                         </button>
 
-                                        <div class="content-box box-shadow big-box grids">
+                                        <div class="big-box grids">
 
                                             <div class="row show-grids">
 
-                                                <h4><strong>Title</strong></h4>
+                                                <h4><strong><?php echo $language->translate("TITLE");?></strong></h4>
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Title</center>
+                                                    <center><?php echo $language->translate("TITLE");?></center>
 
                                                     <input name="title" class="form-control gray" value="<?=$title;?>" placeholder="Organizr">
 
@@ -1196,7 +1460,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Title Text</center>
+                                                    <center><?php echo $language->translate("TITLE_TEXT");?></center>
 
                                                     <input name="topbartext" id="topbartext" class="form-control jscolor {hash:true}" value="<?=$topbartext;?>">
 
@@ -1206,11 +1470,11 @@ endif;
 
                                             <div class="row show-grids">
 
-                                                <h4><strong>Navigation Bars</strong></h4>
+                                                <h4><strong><?php echo $language->translate("NAVIGATION_BARS");?></strong></h4>
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Top Bar</center>
+                                                    <center><?php echo $language->translate("TOP_BAR");?></center>
 
                                                     <input name="topbar" id="topbar" class="form-control jscolor {hash:true}" value="<?=$topbar;?>">
 
@@ -1218,7 +1482,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Bottom Bar</center>
+                                                    <center><?php echo $language->translate("BOTTOM_BAR");?></center>
 
                                                     <input name="bottombar" id="bottombar" class="form-control jscolor {hash:true}" value="<?=$bottombar;?>">
 
@@ -1228,7 +1492,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Side Bar</center>
+                                                    <center><?php echo $language->translate("SIDE_BAR");?></center>
 
                                                     <input name="sidebar" id="sidebar" class="form-control jscolor {hash:true}" value="<?=$sidebar;?>">
 
@@ -1236,7 +1500,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Hover BG</center>
+                                                    <center><?php echo $language->translate("HOVER_BG");?></center>
 
                                                     <input name="hoverbg" id="hoverbg" class="form-control jscolor {hash:true}" value="<?=$hoverbg;?>">
 
@@ -1246,11 +1510,11 @@ endif;
 
                                             <div class="row show-grids">
 
-                                                <h4><strong>Active Tab</strong></h4>
+                                                <h4><strong><?php echo $language->translate("ACTIVE_TAB");?></strong></h4>
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Active Tab BG</center>
+                                                    <center><?php echo $language->translate("ACTIVE_TAB_BG");?></center>
 
                                                     <input name="activetabBG" id="activetabBG" class="form-control jscolor {hash:true}" value=<?=$activetabBG;?>"">
 
@@ -1258,7 +1522,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Active Tab Icon</center>
+                                                    <center><?php echo $language->translate("ACTIVE_TAB_ICON");?></center>
 
                                                     <input name="activetabicon" id="activetabicon" class="form-control jscolor {hash:true}" value="<?=$activetabicon;?>">
 
@@ -1266,7 +1530,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Active Tab Text</center>
+                                                    <center><?php echo $language->translate("ACTIVE_TAB_TEXT");?></center>
 
                                                     <input name="activetabtext" id="activetabtext" class="form-control jscolor {hash:true}" value="<?=$activetabtext;?>">
 
@@ -1276,11 +1540,11 @@ endif;
 
                                             <div class="row show-grids">
 
-                                                <h4><strong>Inactive Tab</strong></h4>
+                                                <h4><strong><?php echo $language->translate("INACTIVE_TAB");?></strong></h4>
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Inactive Icon</center>
+                                                    <center><?php echo $language->translate("INACTIVE_ICON");?></center>
 
                                                     <input name="inactiveicon" id="inactiveicon" class="form-control jscolor {hash:true}" value="<?=$inactiveicon;?>">
 
@@ -1288,7 +1552,7 @@ endif;
 
                                                 <div class="col-md-2 gray-bg">
 
-                                                    <center>Inactive Text</center>
+                                                    <center><?php echo $language->translate("INACTIVE_TEXT");?></center>
 
                                                     <input name="inactivetext" id="inactivetext" class="form-control jscolor {hash:true}" value="<?=$inactivetext;?>">
 
@@ -1354,7 +1618,36 @@ endif;
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
         <script src="js/jquery.filer.min.js" type="text/javascript"></script>
 	    <script src="js/custom.js" type="text/javascript"></script>
+        
+        <!--Data Tables-->
+        <script src="bower_components/DataTables/media/js/jquery.dataTables.js"></script>
+        <script src="bower_components/datatables.net-responsive/js/dataTables.responsive.js"></script>
+        <script src="bower_components/datatables-tabletools/js/dataTables.tableTools.js"></script>
 
+          <script>
+            $(function () {
+                //Data Tables
+                $('#datatable').DataTable({
+                    displayLength: 10,
+                    dom: 'T<"clear">lfrtip',
+                responsive: true,
+                    "order": [[ 0, 'desc' ]],
+                    "language": {
+			           "info": "<?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 0);?> _START_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 1);?> _END_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 2);?> _TOTAL_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 3);?>",
+                        "infoEmpty": "<?php echo $language->translate('NO_ENTRIES');?>",
+                        "infoFiltered": "<?php echo explosion($language->translate('FILTERED'), 0);?> _MAX_ <?php echo explosion($language->translate('FILTERED'), 1);?>",
+                        "lengthMenu": "<?php echo $language->translate('SHOW');?> _MENU_ <?php echo $language->translate('ENTRIES');?>",
+                        "search": "<?php echo $language->translate('SEARCH');?>",
+                        "zeroRecords": "<?php echo $language->translate('NO_MATCHING');?>",
+                        "paginate": {
+				             "next": "<?php echo $language->translate('NEXT');?>",
+                            "previous": "<?php echo $language->translate('PREVIOUS');?>",
+				           }
+			         }
+                });
+            });
+        </script>
+        
         <?php if($_POST['op']) : ?>
         <script>
 
@@ -1470,7 +1763,7 @@ endif;
                         var newid = $('.list-group-item').length + 1;
 
                         $(".todo ul").append(
-                        '<li id="item-' + newid + '" class="list-group-item gray-bg" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="New Tab Name" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="Tab URL"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - OR -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="Icon URL" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']">Default</label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> Active</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> User</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> Guest</div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-warning" type="checkbox"><label for="window[' + newid + ']"></label></div> No iFrame</div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
+                        '<li id="item-' + newid + '" class="list-group-item gray-bg" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="<?php echo $language->translate("TAB_URL");?>"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - <?php echo $language->translate("OR");?> -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="<?php echo $language->translate("ICON_URL");?>" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']"><?php echo $language->translate("DEFAULT");?></label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> <?php echo $language->translate("ACTIVE");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> <?php echo $language->translate("USER");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> <?php echo $language->translate("GUEST");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-danger" type="checkbox"><label for="window[' + newid + ']"></label></div> <?php echo $language->translate("NO_IFRAME");?></div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
                         );
 
                         $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
@@ -1785,6 +2078,8 @@ endif;
         
         $( document ).ready(function() {
             
+            
+            
             $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
         		
         	$.ajax({
@@ -1794,7 +2089,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.994";
+                    var currentVersion = "0.9998";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
@@ -1807,14 +2102,14 @@ endif;
                     	console.log("You Need To Upgrade");
 
                         $.smkAlert({
-                            text: '<strong>New Version Available</strong> Click Info Tab',
+                            text: '<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>',
                             type: 'warning',
                             permanent: true
                         });
                         
-                        $(infoTabNew).html("<br/><h4><strong>What's New in " + githubVersion + "</strong></h4><strong>Title: </strong>" + githubName + " <br/><strong>Changes: </strong>" + githubDescription);
+                        $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
                         
-                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span>Auto Upgrade</button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
                         
                         $( "p[id^='upgrade']" ).toggle();
                     
@@ -1823,7 +2118,7 @@ endif;
                     	console.log("You Are on Current Version");
                         
                         $.smkAlert({
-                            text: 'Software is <strong>Up-To-Date!</strong>',
+                            text: '<?php echo $language->translate("SOFTWARE_IS");?> <strong><?php echo $language->translate("UP_TO_DATE");?></strong>',
                             type: 'success'
                         });
                     
@@ -1839,11 +2134,27 @@ endif;
                     
                     }
 
-                    $(infoTabVersion).html("<strong>Installed Version: </strong>" + currentVersion + " <strong>Current Version: </strong>" + githubVersion + " <strong>Database Location:  </strong> <?php echo DATABASE_LOCATION;?>");
+                    $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo DATABASE_LOCATION;?>");
                     
                 }
                 
             });
+            <?php if(file_exists(FAIL_LOG)) : ?>
+            goodCount = $('#loginStats').find('#goodCount');
+            goodPercent = $('#loginStats').find('#goodPercent');
+            goodTitle = $('#loginStats').find('#goodTitle');
+            badCount = $('#loginStats').find('#badCount');
+            badPercent = $('#loginStats').find('#badPercent');
+            badTitle = $('#loginStats').find('#badTitle');
+            $(goodCount).html("<?php echo $goodLogin;?>");            
+            $(goodTitle).html("<?php echo $goodPercent;?>%");            
+            $(goodPercent).attr('aria-valuenow', "<?php echo $goodPercent;?>");            
+            $(goodPercent).attr('style', "width: <?php echo $goodPercent;?>%");            
+            $(badCount).html("<?php echo $badLogin;?>");
+            $(badTitle).html("<?php echo $badPercent;?>%");            
+            $(badPercent).attr('aria-valuenow', "<?php echo $badPercent;?>");            
+            $(badPercent).attr('style', "width: <?php echo $badPercent;?>%"); 
+            <?php endif; ?>
             
         });
         

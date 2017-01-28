@@ -2,7 +2,6 @@
 //Set some variables
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
-date_default_timezone_set('America/Los_Angeles');
 $data = false;
 $databaseLocation = "databaseLocation.ini.php";
 $needSetup = "Yes";
@@ -22,7 +21,9 @@ $activetabicon = "#FFFFFF";
 $activetabtext = "#FFFFFF";
 $inactiveicon = "#FFFFFF";
 $inactivetext = "#FFFFFF";
+$loadingIcon = "images/organizr.png";
 $baseURL = "";
+require_once("translate.php");
 
 function registration_callback($username, $email, $userdir){
     
@@ -56,6 +57,57 @@ function write_ini_file($content, $path) {
     
     return $success; 
 
+}
+
+function getTimezone(){
+
+    $regions = array(
+        'Africa' => DateTimeZone::AFRICA,
+        'America' => DateTimeZone::AMERICA,
+        'Antarctica' => DateTimeZone::ANTARCTICA,
+        'Asia' => DateTimeZone::ASIA,
+        'Atlantic' => DateTimeZone::ATLANTIC,
+        'Europe' => DateTimeZone::EUROPE,
+        'Indian' => DateTimeZone::INDIAN,
+        'Pacific' => DateTimeZone::PACIFIC
+    );
+    
+    $timezones = array();
+
+    foreach ($regions as $name => $mask) {
+        
+        $zones = DateTimeZone::listIdentifiers($mask);
+
+        foreach($zones as $timezone) {
+
+            $time = new DateTime(NULL, new DateTimeZone($timezone));
+
+            $ampm = $time->format('H') > 12 ? ' ('. $time->format('g:i a'). ')' : '';
+
+            $timezones[$name][$timezone] = substr($timezone, strlen($name) + 1) . ' - ' . $time->format('H:i') . $ampm;
+
+        }
+        
+    }   
+    
+    print '<select name="timezone" id="timezone" class="form-control material" required>';
+    
+    foreach($timezones as $region => $list) {
+    
+        print '<optgroup label="' . $region . '">' . "\n";
+    
+        foreach($list as $timezone => $name) {
+            
+            print '<option value="' . $timezone . '">' . $name . '</option>' . "\n";
+    
+        }
+    
+        print '</optgroup>' . "\n";
+    
+    }
+    
+    print '</select>';
+    
 }
                 
 if(isset($_POST['action'])) :
@@ -193,6 +245,7 @@ else :
     endif;
 
     $userpic = md5( strtolower( trim( $USER->email ) ) );
+    if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
 
 endif;
 
@@ -211,7 +264,7 @@ endif;
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="msapplication-tap-highlight" content="no" />
 
-        <title><?=$title;?><?php if($title !== "Organizr") :  echo "- Organizr"; endif; ?></title>
+        <title><?=$title;?><?php if($title !== "Organizr") :  echo " - Organizr"; endif; ?></title>
 
         <link rel="stylesheet" href="<?=$baseURL;?>bower_components/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="<?=$baseURL;?>bower_components/font-awesome/css/font-awesome.min.css">
@@ -264,10 +317,13 @@ endif;
                     
                     <div class="la-ball-scale-multiple la-3x" style="color: <?=$topbar;?>">
                         
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <logo class="logo"><img height="192px" src="images/organizr.png"></logo>
+                        <?php if (pathinfo($loadingIcon, PATHINFO_EXTENSION) !== "gif" ) : 
+                        
+                            echo "<div></div><div></div><div></div>";
+                        
+                        endif; ?>
+                        
+                        <logo class="logo"><img height="192px" src="<?=$loadingIcon;?>"></logo>
                     
                     </div>
                 
@@ -277,17 +333,17 @@ endif;
         
         </div>
 
-        <div id="main-wrapper" class="main-wrapper">
+        <div id="main-wrapper" class="main-wrapper" tabindex="-1">
             
             <style>
                 .bottom-bnts a {
                     
-                    background: <?=$bottombar;?>;
-                    color: <?=$topbartext;?>;
+                    background: <?=$bottombar;?> !important;
+                    color: <?=$topbartext;?> !important;
                 
                 }.bottom-bnts {
                     
-                    background-color: <?=$bottombar;?>;
+                    background-color: <?=$bottombar;?> !important;
                 
                 }.gn-menu-main {
                     
@@ -338,6 +394,11 @@ endif;
                     
                     color: <?=$activetabtext;?> !important;
                     background: <?=$activetabBG;?>;
+                    border-radius: 100px 0 0 100px;
+                
+                }.gn-menu li.rightActive > a {
+                    
+                    background: <?=$hoverbg;?>;
                     border-radius: 100px 0 0 100px;
                 
                 }.active {
@@ -400,8 +461,20 @@ endif;
                     opacity: 0.5;
                     filter: alpha(opacity=50);
 
+                }.mini-nav .split {
+                    width: calc(50% - 25px);
+                }.splitRight {
+                    width: 50%;
+                    margin-left: 50% !important;
+                    position: absolute !important;
+                }.split {
+                    width: 50%;
+                    position: absolute !important;
+                }.mini-nav .splitRight {
+                    margin-left: calc(50% + 25px) !important;
+                    width: calc(50% - 25px);
                 }
-                
+
             </style>
 
             <ul id="gn-menu" class="gn-menu-main">
@@ -439,7 +512,7 @@ endif;
                                 
                                 if($row['defaultz'] == "true") : $defaultz = "active"; else : $defaultz = ""; endif;?>
                                 
-                                <li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" name="<?php echo strtolower($row['name']);?>">
+                                <li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
                                     
                                     <a class="tab-link">
                                         
@@ -464,7 +537,7 @@ endif;
                                 <?php endforeach; endif;?>
                                 
                                 <?php if($configReady == "Yes") : if($USER->authenticated && $USER->role == "admin") :?>
-                                <li class="tab-item <?=$settingsActive;?>" id="settings.phpx">
+                                <li class="tab-item <?=$settingsActive;?>" id="settings.phpx" data-title="Settings" name="settings">
                                                             
                                     <a class="tab-link">
                                         
@@ -479,7 +552,7 @@ endif;
                                         
                                         endif; ?>
                                         
-                                        Settings
+                                        <?php echo $language->translate("SETTINGS");?>
                                     
                                     </a>
                                 
@@ -505,7 +578,27 @@ endif;
 
                 <li class="top-clock">
                     
-                    <span><span style="color:<?=$topbartext;?>;"><b><?=$title;?></b></span></span>
+                    <?php 
+                    
+                    if($configReady == "Yes") : 
+                    
+                        if(TITLELOGO == "") : 
+                    
+                            echo "<span><span style=\"color: $topbartext\"><b>$title</b></span></span>"; 
+                    
+                        else : 
+                    
+                            echo "<img height='50px' width='250px' src='" . TITLELOGO . "'>";
+                    
+                        endif;
+                    
+                    else :
+                    
+                        echo "<span><span style=\"color: $topbartext\"><b>$title</b></span></span>"; 
+                    
+                    endif;
+                    
+                    ?>
                 
                 </li>
 
@@ -576,13 +669,13 @@ endif;
 
                                     <div class="green-bg biggest-box">
 
-                                        <h1 class="zero-m text-uppercase">Create Admin</h1>
+                                        <h1 class="zero-m text-uppercase"><?php echo $language->translate("CREATE_ADMIN");?></h1>
 
                                     </div>
 
                                     <div class="big-box text-left registration-form">
 
-                                        <h4 class="text-center">Create an account for Admin Access</h4>
+                                        <h4 class="text-center"><?php echo $language->translate("CREATE_ACCOUNT");?></h4>
 
                                         <form class="controlbox" name="new user registration" id="registration" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
 
@@ -591,29 +684,29 @@ endif;
 
                                             <div class="form-group">
 
-                                                <input type="text" class="form-control material" name="username" autofocus placeholder="Username" autocorrect="off" autocapitalize="off" minlength="3" maxlength="16" required>
+                                                <input type="text" class="form-control material" name="username" autofocus placeholder="<?php echo $language->translate("USERNAME");?>" autocorrect="off" autocapitalize="off" minlength="3" maxlength="16" required>
 
                                             </div>
 
                                             <div class="form-group">
 
-                                                <input type="email" class="form-control material" name="email" placeholder="E-mail">
+                                                <input type="email" class="form-control material" name="email" placeholder="<?php echo $language->translate("EMAIL");?>">
 
                                             </div>
 
                                             <div class="form-group">
 
-                                                <input type="password" class="form-control material" name="password1" placeholder="Password" data-smk-strongPass="weak" required>
+                                                <input type="password" class="form-control material" name="password1" placeholder="<?php echo $language->translate("PASSWORD");?>" data-smk-strongPass="weak" required>
 
                                             </div>
 
                                             <div class="form-group">
 
-                                                <input type="password" class="form-control material" name="password2" placeholder="Retype Password">
+                                                <input type="password" class="form-control material" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
 
                                             </div>
 
-                                            <button id="registerSubmit" type="submit" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register">Register</button>
+                                            <button id="registerSubmit" type="submit" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register"><?php echo $language->translate("REGISTER");?></button>
 
                                         </form>
 
@@ -644,14 +737,14 @@ endif;
 
                                     <div class="green-bg biggest-box">
 
-                                        <h1 class="zero-m text-uppercase">Database Path</h1>
+                                        <h1 class="zero-m text-uppercase"><?php echo $language->translate("DATABASE_PATH");?></h1>
 
                                     </div>
 
-                                    <div class="big-box text-left registration-form">
+                                    <div class="big-box text-left">
 
-                                        <h3 class="text-center">Specify the location of which you want to save your database files.</h3>
-                                        <h5 class="text-left"><strong>Current Directory: <?php echo __DIR__; ?> <br>Parent Directory: <?php echo dirname(__DIR__); ?></strong></h5>
+                                        <h3 class="text-center"><?php echo $language->translate("SPECIFY_LOCATION");?></h3>
+                                        <h5 class="text-left"><strong><?php echo $language->translate("CURRENT_DIRECTORY");?>: <?php echo __DIR__; ?> <br><?php echo $language->translate("PARENT_DIRECTORY");?>: <?php echo dirname(__DIR__); ?></strong></h5>
                                         
                                         <form class="controlbox" name="setupDatabase" id="setupDatabase" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                             
@@ -661,11 +754,25 @@ endif;
 
                                                 <input type="text" class="form-control material" name="databaseLocation" autofocus value="<?php echo dirname(__DIR__);?>" autocorrect="off" autocapitalize="off" required>
                                                 
-                                                <?php if(file_exists(dirname(__DIR__) . '/users.db') || file_exists(__DIR__ . '/users.db')) : echo '<h5 class="text-center red">Don\'t worry, you\'re database is still there.  Just use the same location you have it in.</h5>'; endif;?>
+                                                <h5><?php echo $language->translate("SET_DATABASE_LOCATION");?></h5>
+                                                
+                                                <?php echo getTimezone();?>
+                                                
+                                                <h5><?php echo $language->translate("SET_TIMEZONE");?></h5>
+                                                
+                                                <?php 
+                                                
+                                                if(file_exists(dirname(__DIR__) . '/users.db') || file_exists(__DIR__ . '/users.db')) : 
+                                                
+                                                echo '<h5 class="text-center red">';
+                                                echo $language->translate("DONT_WORRY");
+                                                echo '</h5>'; 
+                                                
+                                                endif;?>
 
                                             </div>
 
-                                            <button id="databaseLocationSubmit" type="submit" class="btn green-bg btn-block btn-sm text-uppercase waves waves-effect waves-float" value="Save Location">Save Location</button>
+                                            <button id="databaseLocationSubmit" type="submit" class="btn green-bg btn-block btn-sm text-uppercase waves waves-effect waves-float" value="Save Location"><?php echo $language->translate("SAVE_LOCATION");?></button>
 
                                         </form>
 
@@ -696,15 +803,15 @@ endif;
                                     
                                     <div class="blue-bg biggest-box">
                 
-                                        <h1 class="zero-m text-uppercase">Awesome!</h1>
+                                        <h1 class="zero-m text-uppercase"><?php echo $language->translate("AWESOME");?></h1>
                 
                                     </div>
                 
-                                    <div class="big-box text-left registration-form">
+                                    <div class="big-box text-left">
                 
-                                        <h4 class="text-center">Now that you created an Admin account, time to sign and start making some tabs...</h4>
+                                        <h4 class="text-center"><?php echo $language->translate("TIME_TO_LOGIN");?></h4>
                                         
-                                        <button type="submit" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float">Login</button>
+                                        <button type="submit" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("LOGIN");?></button>
                 						                                    
                                     </div>
                                 
@@ -731,17 +838,17 @@ endif;
                                     
                                     <div class="biggest-box" style="background:<?=$topbar;?>;">
                 
-                                        <h1 class="zero-m text-uppercase" style="color:<?=$topbartext;?>;">Hold Up!</h1>
+                                        <h1 class="zero-m text-uppercase" style="color:<?=$topbartext;?>;"><?php echo $language->translate("HOLD_UP");?></h1>
                 
                                     </div>
                 
-                                    <div class="big-box text-left registration-form">
+                                    <div class="big-box text-left">
                 
-                                        <br><br><br>
-                                        <h2 class="text-center">Looks like you don't have access.</h2>
+                                        <center><img src="images/sowwy.png" style="height: 200px;"></center>
+                                        <h2 class="text-center"><?php echo $language->translate("LOOKS_LIKE_YOU_DONT_HAVE_ACCESS");?></h2>
                                         
                                         <?php if(!$USER->authenticated) : ?>
-                                        <button style="background:<?=$topbar;?>;" type="submit" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><text style="color:<?=$topbartext;?>;">Login</text></button>
+                                        <button style="background:<?=$topbar;?>;" type="submit" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("LOGIN");?></text></button>
                                         <?php endif; ?>
         						                                    
                                     </div>
@@ -759,6 +866,8 @@ endif;
                 <!--End Load Framed Content-->
             
             </div>
+            <div id="contentRight" class="content splitRight" style="">
+            </div>
             <!--End Content-->
 
             <!--Welcome notification-->
@@ -766,7 +875,7 @@ endif;
             
             <div id="members-sidebar" style="background: <?=$sidebar;?>;" class="members-sidebar">
                 
-                <h4 class="pull-left zero-m">Options</h4>
+                <h4 class="pull-left zero-m"><?php echo $language->translate("OPTIONS");?></h4>
                 
                 <span class="close-members-sidebar"><i class="fa fa-remove fa-lg pull-right"></i></span>
                 
@@ -798,9 +907,9 @@ endif;
                 
                     <div id="buttonsDiv" class="profile-userbuttons">
                 
-                        <button id="editInfo" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float">Edit Info</button>
+                        <button id="editInfo" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("EDIT_INFO");?></button>
                 
-                        <button type="button" class="logout btn btn-warning waves waves-effect waves-float">Logout</button>
+                        <button type="button" class="logout btn btn-warning waves waves-effect waves-float"><?php echo $language->translate("LOGOUT");?></button>
                 
                     </div>
                     
@@ -814,19 +923,19 @@ endif;
 
                             <div class="form-group">
 
-                                <input autocomplete="off" type="text" value="<?php echo $USER->email; ?>" class="form-control" name="email" placeholder="E-mail Address">
+                                <input autocomplete="off" type="text" value="<?php echo $USER->email; ?>" class="form-control" name="email" placeholder="<?php echo $language->translate("EMAIL_ADDRESS");?>">
 
                             </div>
 
                             <div class="form-group">
 
-                                <input autocomplete="off" type="password" class="form-control" name="password1" placeholder="Password">
+                                <input autocomplete="off" type="password" class="form-control" name="password1" placeholder="<?php echo $language->translate("PASSWORD");?>">
 
                             </div>
 
                             <div class="form-group">
 
-                                <input autocomplete="off" type="password" class="form-control" name="password2" placeholder="Password Again">
+                                <input autocomplete="off" type="password" class="form-control" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
 
                             </div>
 
@@ -834,9 +943,9 @@ endif;
 
                             <div class="form-group">
 
-                                <input type="button" class="btn btn-success text-uppercase waves-effect waves-float" value="Update" onclick="User.processUpdate()"/>
+                                <input type="button" class="btn btn-success text-uppercase waves-effect waves-float" value="<?php echo $language->translate("UPDATE");?>" onclick="User.processUpdate()"/>
                                 
-                                <button id="goBackButtons" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float">Go Back</button>
+                                <button id="goBackButtons" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("GO_BACK");?></button>
 
                             </div>
 
@@ -872,7 +981,7 @@ endif;
                                 
                                 <div style="background:<?=$topbar;?>;" class="biggest-box">
 
-                                    <h1 style="color:<?=$topbartext;?>;" class="zero-m text-uppercase">Welcome</h1>
+                                    <h1 style="color:<?=$topbartext;?>;" class="zero-m text-uppercase"><?php echo $language->translate("WELCOME");?></h1>
 
                                 </div>
                                 
@@ -884,20 +993,20 @@ endif;
                                     
                                     <form name="log in" id="login" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                         
-                                        <h4 class="text-center">Login</h4>
+                                        <h4 class="text-center"><?php echo $language->translate("LOGIN");?></h4>
                                         
                                         <div class="form-group">
                                             
                                             <input type="hidden" name="op" value="login">
 				                            <input type="hidden" name="sha1" value="">
                                             <input type="hidden" name="rememberMe" value="false"/>
-                                            <input type="text" class="form-control material" name="username" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" value="" autofocus required>
+                                            <input type="text" class="form-control material" name="username" placeholder="<?php echo $language->translate("USERNAME");?>" autocomplete="off" autocorrect="off" autocapitalize="off" value="" autofocus required>
                                         
                                         </div>
                                         
                                         <div class="form-group">
                                             
-                                            <input type="password" class="form-control material" name="password1" value="" autocomplete="off" placeholder="Password" required>
+                                            <input type="password" class="form-control material" name="password1" value="" autocomplete="off" placeholder="<?php echo $language->translate("PASSWORD");?>" required>
                                         
                                         </div>
                                         
@@ -907,30 +1016,30 @@ endif;
                                                 
                                                 <label for="rememberMe" class="pull-left"></label>
                                             
-                                                <label class="pull-right"> &nbsp; Remember Me</label>
+                                                <label class="pull-right"> &nbsp; <?php echo $language->translate("REMEMBER_ME");?></label>
                                             
                                             </div>
 
                                         </div>
 
-                                        <button id="loginSubmit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()"><text style="color:<?=$topbartext;?>;">Login</text></button>
+                                        <button id="loginSubmit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("LOGIN");?></text></button>
 
                                     </form> 
                                     
-                                    <button id="switchForgot" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;">Forgot Password</text></button>
+                                    <button id="switchForgot" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("FORGOT_PASSWORD");?></text></button>
                                     
                                     <form style="display: none;" name="forgotPassword" id="forgotPassword" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                         
-                                        <h4 class="text-center">Forgot Password</h4>
+                                        <h4 class="text-center"><?php echo $language->translate("FORGOT_PASSWORD");?></h4>
                                         
                                         <div class="form-group">
                                             
                                             <input type="hidden" name="op" value="reset">
-                                            <input type="text" class="form-control material" name="email" placeholder="E-mail" autocorrect="off" autocapitalize="off" value="" autofocus required>
+                                            <input type="text" class="form-control material" name="email" placeholder="<?php echo $language->translate("EMAIL");?>" autocorrect="off" autocapitalize="off" value="" autofocus required>
                                         
                                         </div>
 
-                                        <button style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="reset password"><text style="color:<?=$topbartext;?>;">Reset Password</text></button>
+                                        <button style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="reset password"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("RESET_PASSWORD");?></text></button>
 
                                     </form> 
                                     
@@ -969,11 +1078,11 @@ endif;
                                         
                                         <input type="hidden" name="username"value="<?php echo $_SESSION["username"]; ?>" >
 			
-                                        <h3 style="color:<?=$topbar;?>;" class="zero-m text-uppercase">Do you want to logout?</h3>
+                                        <h3 style="color:<?=$topbar;?>;" class="zero-m text-uppercase"><?php echo $language->translate("DO_YOU_WANT_TO_LOGOUT");?></h3>
                                         
-                                        <a style="color:<?=$topbar;?>;" id="logoutSubmit" class="i-block" data-dismiss="modal">Yes</a>
+                                        <a style="color:<?=$topbar;?>;" id="logoutSubmit" class="i-block" data-dismiss="modal"><?php echo $language->translate("YES_WORD");?></a>
                                         
-                                        <a style="color:<?=$topbar;?>;" class="i-block" data-dismiss="modal">No</a>
+                                        <a style="color:<?=$topbar;?>;" class="i-block" data-dismiss="modal"><?php echo $language->translate("NO_WORD");?></a>
                                 
                                     </form>
                                     
@@ -1019,6 +1128,7 @@ endif;
 
         <!--Custom Scripts-->
         <script src="<?=$baseURL;?>js/common.js"></script>
+        <script src="<?=$baseURL;?>js/mousetrap.min.js"></script>
 
         <script>
 
@@ -1153,13 +1263,18 @@ endif;
             }
 
             if (defaultTab){
+
+                $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
+                document.getElementById('main-wrapper').focus();
                 
-                $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
             }
             
             if (defaultTab == null){
              
                 $("div[id^='tabEmpty']").show();
+                <?php if($needSetup == "No" && $configReady == "Yes") : if(!$USER->authenticated) : ?>
+                $('.login-modal').modal("show");
+                <?php endif; endif; ?>
                 
             }
             
@@ -1226,6 +1341,34 @@ endif;
 
         });
             
+        $('#reload').on('contextmenu', function(e){
+
+            $("i[class^='mdi mdi-refresh']").attr("class", "mdi mdi-refresh fa-spin");
+
+            var activeFrame = $('#contentRight').find('.active').children('iframe');
+
+            activeFrame.attr('src', activeFrame.attr('src'));
+
+            var refreshBox = $('#contentRight').find('.active');
+
+            $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(10);
+
+            setTimeout(function(){
+
+                var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+
+                    refreshPreloader.remove();
+                    $("i[class^='mdi mdi-refresh fa-spin']").attr("class", "mdi mdi-refresh");
+
+                });
+
+            },500);
+            
+            return false;
+
+        });
+            
         $("li[id^='settings.phpx']").on('click tap', function(){
 
             $("img[id^='settings-icon']").attr("class", "fa-spin");
@@ -1255,10 +1398,14 @@ endif;
         $("li[class^='tab-item']").on('click vclick', function(){
                 
             var thisidfull = $(this).attr("id");
+            
+            var thistitle = $(this).attr("data-title");
+            
+            var thisname = $(this).attr("name");
 
             var thisid = thisidfull.substr(0, thisidfull.length-1);
 
-            var currentframe = $("div[data-content-url^='"+thisid+"']");
+            var currentframe = $("#content div[data-content-url^='"+thisid+"']");
 
             if (currentframe.attr("class") == "iframe active") {
 
@@ -1268,9 +1415,13 @@ endif;
 
                 console.log(thisid + " is active already but hidden");
 
-                $("div[class^='iframe active']").attr("class", "iframe hidden");
+                $("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
                 currentframe.attr("class", "iframe active");
+                
+                document.title = thistitle;
+                
+                window.location.href = '#' + thisname;
                 
                 setHeight();
 
@@ -1279,8 +1430,6 @@ endif;
                 $(this).attr("class", "tab-item active");
 
             }else {
-
-                
                 
                 if ($(this).attr("window") == "true") {
                     
@@ -1290,9 +1439,13 @@ endif;
                 
                     console.log(thisid + " make new div");
 
-                    $("div[class^='iframe active']").attr("class", "iframe hidden");
+                    $("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
                     $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
+                    
+                    document.title = thistitle;
+                    
+                    window.location.href = '#' + thisname;
 
                     setHeight();
 
@@ -1305,8 +1458,101 @@ endif;
             }
 
         });
-        </script>
+            
+        $("li[class^='tab-item']").on('contextmenu', function(e){
+            
+            e.stopPropagation();
+            
+            $("#content").attr("class", "content split");
+            
+            var thisidfull = $(this).attr("id");
+            
+            var thistitle = $(this).attr("data-title");
+            
+            var thisname = $(this).attr("name");
 
+            var thisid = thisidfull.substr(0, thisidfull.length-1);
+
+            var currentframe = $("#contentRight div[data-content-url^='"+thisid+"']");
+
+            if (currentframe.attr("class") == "iframe active") {
+
+                console.log(thisid + " is active already");
+
+            }else if (currentframe.attr("class") == "iframe hidden") {
+
+                console.log(thisid + " is active already but hidden");
+
+                $("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
+
+                currentframe.attr("class", "iframe active");
+                
+                document.title = thistitle;
+                
+                window.location.href = '#' + thisname;
+                
+                setHeight();
+
+                $("li[class^='tab-item rightActive']").attr("class", "tab-item");
+
+                $(this).attr("class", "tab-item rightActive");
+
+            }else {
+                
+                if ($(this).attr("window") == "true") {
+                    
+                    window.open(thisid,'_blank');
+                    
+                }else {
+                
+                    console.log(thisid + " make new div");
+
+                    $("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
+
+                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
+                    
+                    document.title = thistitle;
+                    
+                    window.location.href = '#' + thisname;
+
+                    setHeight();
+
+                    $("li[class^='tab-item rightActive']").attr("class", "tab-item");
+
+                    $(this).attr("class", "tab-item rightActive");
+                    
+                }
+
+            }
+            
+            return false;
+                
+        });
+            
+        Mousetrap.bind('ctrl+shift+up', function(e) {
+            var getCurrentTab = $("li[class^='tab-item active']");
+            var previousTab = getCurrentTab.prev().attr( "class", "tab-item" );
+            previousTab.trigger("click");
+            return false;
+        }); 
+            
+        Mousetrap.bind('ctrl+shift+down', function(e) {
+            var getCurrentTab = $("li[class^='tab-item active']");
+            var nextTab = getCurrentTab.next().attr( "class", "tab-item" );
+            nextTab.trigger("click");
+            return false;
+        });     
+
+        Mousetrap.bind('s s', function() { $("li[id^='settings.phpx']").trigger("click");  });
+        
+        Mousetrap.bind('esc esc', function() {
+            
+            $("#content").attr("class", "content");
+            $("li[class^='tab-item rightActive']").attr("class", "tab-item");
+            $("#contentRight").html('');
+        
+        });    
+        </script>
 
     </body>
 
