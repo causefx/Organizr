@@ -15,4 +15,5 @@
 *.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
-*.rb   linguist-language=PHP
+*.css linguist-language=PHP
+bower_components/* linguist-vendored
