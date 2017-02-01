@@ -58,7 +58,7 @@ function write_ini_file($content, $path) {
 
 }
 
-function getServerPath(){
+function getServerPath() {
     
     if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
         
@@ -72,6 +72,21 @@ function getServerPath(){
     
     return $protocol . $_SERVER['SERVER_NAME'] . dirname($_SERVER['REQUEST_URI']);
       
+}
+
+function get_browser_name() {
+    
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    
+    if (strpos($user_agent, 'Opera') || strpos($user_agent, 'OPR/')) return 'Opera';
+    elseif (strpos($user_agent, 'Edge')) return 'Edge';
+    elseif (strpos($user_agent, 'Chrome')) return 'Chrome';
+    elseif (strpos($user_agent, 'Safari')) return 'Safari';
+    elseif (strpos($user_agent, 'Firefox')) return 'Firefox';
+    elseif (strpos($user_agent, 'MSIE') || strpos($user_agent, 'Trident/7')) return 'Internet Explorer';
+    
+    return 'Other';
+    
 }
 
 $dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
@@ -613,36 +628,37 @@ endif;
             }input.form-control.iconpicker-search {
                 color: black;
             }.key {
-    font-family:Tahoma, sans-serif;
-    border-style:solid;
-    border-color:#D5D6AD #C1C1A8 #CDCBA5 #E7E5C5;
-    border-width:2px 3px 8px 3px;
-    background:#D6D4B4;
-    display:inline-block;
-    border-radius:5px;
-    margin:3px;
-    text-align:center;
-}
-
-.key span {
-    background:#ECEECA;
-    color:#5D5E4F;
-    display:block;
-    font-size:12px;
-    padding:0 2px;
-    border-radius:3px;
-    width:14px;
-    height:18px;
-    line-height:18px;
-    text-align:center;
-    font-weight:bold;
-    letter-spacing:1px;
-    text-transform:uppercase;
-}
-.key.wide span {
-    width:auto;
-    padding:0 12px;
-}
+                font-family:Tahoma, sans-serif;
+                border-style:solid;
+                border-color:#D5D6AD #C1C1A8 #CDCBA5 #E7E5C5;
+                border-width:2px 3px 8px 3px;
+                background:#D6D4B4;
+                display:inline-block;
+                border-radius:5px;
+                margin:3px;
+                text-align:center;
+            }.form-control.material {
+                background-image: -webkit-gradient(linear, left top, left bottom, from(<?=$topbartext;?>), to(<?=$topbartext;?>)), -webkit-gradient(linear, left top, left bottom, from(#d2d2d2), to(#d2d2d2));
+                background-image: -webkit-linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), -webkit-linear-gradient(#d2d2d2, #d2d2d2);
+                background-image: linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), linear-gradient(#d2d2d2, #d2d2d2);
+            }.key span {
+                background:#ECEECA;
+                color:#5D5E4F;
+                display:block;
+                font-size:12px;
+                padding:0 2px;
+                border-radius:3px;
+                width:14px;
+                height:18px;
+                line-height:18px;
+                text-align:center;
+                font-weight:bold;
+                letter-spacing:1px;
+                text-transform:uppercase;
+            }.key.wide span {
+                width:auto;
+                padding:0 12px;
+            }
         
         </style>
        
@@ -661,7 +677,7 @@ endif;
                   
                         <div class="tabbable tabs-with-bg" id="eighth-tabs">
                     
-                            <ul class="nav nav-tabs" style="background: #C0C0C0">
+                            <ul id="settingsTabs" class="nav nav-tabs" style="background: #C0C0C0">
                       
                                 <li class="active">
                         
@@ -698,6 +714,16 @@ endif;
                                     <a href="#about" data-toggle="tab"><i class="fa fa-info red-orange"></i></a>
                      
                                 </li>
+                                
+                                <?php if($action) : ?>
+                                        
+                                        <button id="apply" style="margin: 8px" class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+                                        
+                                            <span class="btn-label"><i class="fa fa-check"></i></span><?php echo $language->translate("APPLY_CHANGES");?>
+                                        
+                                        </button>
+                                        
+                                        <?php endif; ?>
     
                             </ul>
                     
@@ -720,16 +746,6 @@ endif;
                                             <span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo $language->translate("VIEW_ICONS");?>
                                             
                                         </button>
-                                        
-                                        <?php if($action) : ?>
-                                        
-                                        <button id="apply" class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
-                                        
-                                            <span class="btn-label"><i class="fa fa-check"></i></span><?php echo $language->translate("APPLY_CHANGES");?>
-                                        
-                                        </button>
-                                        
-                                        <?php endif; ?>
 
                                     </div>
 
@@ -745,13 +761,13 @@ endif;
                                             <?php
                                             $dirname = "images/";
                                             $images = scandir($dirname);
-                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png");
+                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg");
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
 
                                             <div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
                                             
-                                                <a class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+                                                <a data-toggle="tooltip" data-placement="bottom" title="<?=$dirname.$curimg;?>" class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
 
                                                     <img style="width: 50px; height: 50px;" src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
 
@@ -956,25 +972,25 @@ endif;
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control gray" name="username" placeholder="<?php echo $language->translate("USERNAME");?>" autocorrect="off" autocapitalize="off" value="">
+                                                        <input type="text" class="form-control material" name="username" placeholder="<?php echo $language->translate("USERNAME");?>" autocorrect="off" autocapitalize="off" value="">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="email" class="form-control gray" name="email" placeholder="<?php echo $language->translate("EMAIL");?>">
+                                                        <input type="email" class="form-control material" name="email" placeholder="<?php echo $language->translate("EMAIL");?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="password" class="form-control gray" name="password1" placeholder="<?php echo $language->translate("PASSWORD");?>">
+                                                        <input type="password" class="form-control material" name="password1" placeholder="<?php echo $language->translate("PASSWORD");?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="password" class="form-control gray" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
+                                                        <input type="password" class="form-control material" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
 
                                                     </div>
                                                     
@@ -1104,30 +1120,28 @@ endif;
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control gray" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
+                                                        <input type="text" class="form-control material" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control gray" name="timezone" placeholder="<?php echo $language->translate("SET_TIMEZONE");?>" value="<?php echo TIMEZONE;?>">
+                                                        <input type="text" class="form-control material" name="timezone" placeholder="<?php echo $language->translate("SET_TIMEZONE");?>" value="<?php echo TIMEZONE;?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control gray" name="titleLogo" placeholder="<?php echo $language->translate("LOGO_URL_TITLE");?>" value="<?php echo TITLELOGO;?>">
+                                                        <input type="text" class="form-control material" name="titleLogo" placeholder="<?php echo $language->translate("LOGO_URL_TITLE");?>" value="<?php echo TITLELOGO;?>">
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control gray" name="loadingIcon" placeholder="<?php echo $language->translate("LOADING_ICON_URL");?>" value="<?php echo LOADINGICON;?>">
+                                                        <input type="text" class="form-control material" name="loadingIcon" placeholder="<?php echo $language->translate("LOADING_ICON_URL");?>" value="<?php echo LOADINGICON;?>">
 
                                                     </div>
-                                                    
-                                                    
-                                                    
+
                                                     <button type="submit" class="btn btn-success btn-icon waves waves-circle waves-effect waves-float"><i class="fa fa-floppy-o"></i></button>
 
                                                 </form>               
@@ -1152,7 +1166,7 @@ endif;
 
                                                 <div class="w-progress">
 
-                                                    <span id="goodCount" class="w-amount blue"></span>
+                                                    <span id="goodCount" class="w-amount green"></span>
                                                     <span id="badCount" class="w-amount red pull-right">3</span>
 
                                                     <br>
@@ -1181,17 +1195,6 @@ endif;
                                             </div>
 
                                         </div>
-
-                                        <form id="deletelog" method="post">
-
-                                            <input type="hidden" name="action" value="deleteLog" />
-                                            <button class="btn waves btn-labeled btn-danger btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
-
-                                                <span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?>
-
-                                            </button>
-
-                                        </form>
 
                                         <table id="datatable" class="display">
 
@@ -1295,7 +1298,7 @@ endif;
                                         
                                             <div class="modal-dialog modal-lg" role="document">
                                         
-                                                <div class="modal-content gray-bg">
+                                                <div class="modal-content" style="color: <?php echo $topbartext;?> !important; background: <?php echo $topbar;?> !important;">
                                         
                                                     <div class="modal-header">
                                         
@@ -1306,7 +1309,7 @@ endif;
                                                     </div>
                                         
                                                     <div class="modal-body">
-                                        
+                                                        
                                                         <h4><strong><?php echo $language->translate("ADDING_TABS");?></strong></h4>
                                                         
                                                         <p><?php echo $language->translate("START_ADDING_TABS");?></p>
@@ -1334,7 +1337,7 @@ endif;
                                                         <ul>
                                                         
                                                             <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS1");?></li>
-                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS2");?> [<i class='fa fa-refresh'></i>]</li>
+                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS2");?> [<i class='mdi mdi-refresh'></i>]</li>
                                                             <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS3");?></li>
                                                         
                                                         </ul>
@@ -1351,6 +1354,16 @@ endif;
                                                             <li><keyboard class="key wide"><span>Esc</span></keyboard> + <keyboard class="key wide"><span>Esc</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS4");?></li>
                                                             
                                                         </ul>
+                                                        
+                                                        <h4><strong><?php echo $language->translate("TAB_NOT_LOADING");?></strong></h4>
+                                                        
+                                                        <p><?php echo $language->translate("TAB_NOT_LOADING_ABOUT");?></p>
+                                                        
+                                                        <?php 
+                                                        if(get_browser_name() == "Chrome") : echo get_browser_name() . ": <a href='https://chrome.google.com/webstore/detail/ignore-x-frame-headers/gleekbfjekiniecknbkamfmkohkpodhe' target='_blank'><strong>Ignore X-Frame headers</strong> by Guillaume Ryder</a>";
+                                                        elseif(get_browser_name() == "Firefox") : echo get_browser_name() . ": <a href='https://addons.mozilla.org/en-us/firefox/addon/ignore-x-frame-options/' target='_blank'><strong>Ignore X-Frame headers</strong> by rjhoukema</a>";
+                                                        else : echo "Sorry, currently there is no other alternative for " . get_browser_name(); endif;
+                                                        ?>
                                                         
                                                     </div>
                                                     
@@ -1418,21 +1431,27 @@ endif;
                                             
                                             <ul class="dropdown-menu gray-bg">
                                             
-                                                <li id="plexTheme" style="background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex</a></li>
+                                                <li id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex</a></li>
                                             
-                                                <li id="embyTheme" style="background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby</a></li>
+                                                <li id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby</a></li>
                                                 
-                                                <li id="bookTheme" style="background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook</a></li>
+                                                <li id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook</a></li>
                                                 
-                                                <li id="spaTheme" style="background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa</a></li>
+                                                <li id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa</a></li>
                                                 
-                                                <li id="darklyTheme" style="background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly</a></li>
+                                                <li id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly</a></li>
                                                 
-                                                <li id="slateTheme" style="background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate</a></li>
+                                                <li id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate</a></li>
+                                                
+                                                <li id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai</a></li>
+                                                
+                                                <li id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker</a></li>
+                                                
+                                                <li id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red</a></li>
                                             
                                                 <li role="separator" class="divider"></li>
                                             
-                                                <li id="defaultTheme" style="background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#"><?php echo $language->translate("DEFAULT");?></a></li>
+                                                <li id="defaultTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#"><?php echo $language->translate("DEFAULT");?></a></li>
                                             
                                             </ul>
                                             
@@ -1637,7 +1656,9 @@ endif;
                         "infoEmpty": "<?php echo $language->translate('NO_ENTRIES');?>",
                         "infoFiltered": "<?php echo explosion($language->translate('FILTERED'), 0);?> _MAX_ <?php echo explosion($language->translate('FILTERED'), 1);?>",
                         "lengthMenu": "<?php echo $language->translate('SHOW');?> _MENU_ <?php echo $language->translate('ENTRIES');?>",
-                        "search": "<?php echo $language->translate('SEARCH');?>",
+                        "search": "",
+                        "searchPlaceholder": "<?php echo $language->translate('SEARCH');?>",
+                        "searchClass": "<?php echo $language->translate('SEARCH');?>",
                         "zeroRecords": "<?php echo $language->translate('NO_MATCHING');?>",
                         "paginate": {
 				             "next": "<?php echo $language->translate('NEXT');?>",
@@ -1650,19 +1671,12 @@ endif;
         
         <?php if($_POST['op']) : ?>
         <script>
-
-             $.smkAlert({
-                text: '<?php echo printArray($USER->info_log); ?>',
-                type: 'info'
-            });
+            
+            parent.notify("<?php echo printArray($USER->info_log); ?>","info-circle","notice","5000");
             
             <?php if(!empty($USER->error_log)) : ?>
-            $.smkAlert({
-                position: 'top-left',
-                text: '<?php echo printArray($USER->error_log); ?>',
-                type: 'warning'
-                
-            });
+            
+            parent.notify("<?php echo printArray($USER->error_log); ?>","exclamation-circle ","error","5000");
             
             <?php endif; ?>
             
@@ -1679,7 +1693,7 @@ endif;
                 
             }else{
                 
-               swal("Tabs Saved!", "Apply Changes To Reload The Page!", "success"); 
+               parent.notify("<strong>Tabs Saved!</strong> Apply Changes To Reload The Page!","floppy-o","success","5000"); 
                 
             }
             
@@ -1689,7 +1703,7 @@ endif;
          <?php if($action == "addOptionz") : ?>
         <script>
 
-            swal("Colors Saved!", "Apply Changes To Reload The Page!", "success");
+            parent.notify("<strong>Colors Saved!</strong> Apply Changes To Reload The Page!","floppy-o","success","5000");
             
         </script>
         <?php endif; ?>
@@ -1763,7 +1777,7 @@ endif;
                         var newid = $('.list-group-item').length + 1;
 
                         $(".todo ul").append(
-                        '<li id="item-' + newid + '" class="list-group-item gray-bg" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="<?php echo $language->translate("TAB_URL");?>"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - <?php echo $language->translate("OR");?> -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="<?php echo $language->translate("ICON_URL");?>" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']"><?php echo $language->translate("DEFAULT");?></label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> <?php echo $language->translate("ACTIVE");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> <?php echo $language->translate("USER");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> <?php echo $language->translate("GUEST");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-danger" type="checkbox"><label for="window[' + newid + ']"></label></div> <?php echo $language->translate("NO_IFRAME");?></div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
+                        '<li id="item-' + newid + '" class="list-group-item gray-bg animated zoomInDown" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="<?php echo $language->translate("TAB_URL");?>"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - <?php echo $language->translate("OR");?> -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="<?php echo $language->translate("ICON_URL");?>" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']"><?php echo $language->translate("DEFAULT");?></label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> <?php echo $language->translate("ACTIVE");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> <?php echo $language->translate("USER");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> <?php echo $language->translate("GUEST");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-danger" type="checkbox"><label for="window[' + newid + ']"></label></div> <?php echo $language->translate("NO_IFRAME");?></div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
                         );
 
                         $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
@@ -1854,6 +1868,36 @@ endif;
 
         <script>
             
+            function rememberTabSelection(tabPaneSelector, useHash) {
+            
+                var key = 'selectedTabFor' + tabPaneSelector;
+
+                if(get(key)) 
+
+                $(tabPaneSelector).find('a[href=' + get(key) + ']').tab('show');
+
+                $(tabPaneSelector).on("click", 'a[data-toggle]', function(event) {
+                    set(key, this.getAttribute('href'));
+                }); 
+
+                function get(key) {
+
+                    return useHash ? location.hash: localStorage.getItem(key);
+
+                }
+
+                function set(key, value){
+
+                    if(useHash)
+
+                        location.hash = value;
+
+                    else
+
+                        localStorage.setItem(key, value);
+                }
+            }
+            
             $("#iconHide").click(function(){
 
                 $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).toggle();
@@ -1941,13 +1985,7 @@ endif;
 
                 copyToClipboard(document.getElementById("copyTarget"));
                 
-                $.smkAlert({
-                
-                    text: 'Icon Path Copied To Clipboard',
-                
-                    type: 'success'
-                    
-                });
+                parent.notify("Icon Path Copied To Clipboard","clipboard","success","5000");
                 
                 $( "div[id^='viewAllIcons']" ).toggle();
                 
@@ -2071,6 +2109,51 @@ endif;
                 changeColor("inactivetext", "#FFFFFF");
                 
             });
+            
+            $('#redTheme').on('click touchstart', function(){
+
+                changeColor("topbartext", "#FFFFFF");
+                changeColor("topbar", "#eb6363");
+                changeColor("bottombar", "#eb6363");
+                changeColor("sidebar", "#000000");
+                changeColor("hoverbg", "#eb6363");
+                changeColor("activetabBG", "#eb6363");
+                changeColor("activetabicon", "#FFFFFF");
+                changeColor("activetabtext", "#FFFFFF");
+                changeColor("inactiveicon", "#FFFFFF");
+                changeColor("inactivetext", "#FFFFFF");
+                
+            });
+            
+            $('#monokaiTheme').on('click touchstart', function(){
+
+                changeColor("topbartext", "#66D9EF");
+                changeColor("topbar", "#333333");
+                changeColor("bottombar", "#333333");
+                changeColor("sidebar", "#393939");
+                changeColor("hoverbg", "#AD80FD");
+                changeColor("activetabBG", "#F92671");
+                changeColor("activetabicon", "#FFFFFF");
+                changeColor("activetabtext", "#FFFFFF");
+                changeColor("inactiveicon", "#66D9EF");
+                changeColor("inactivetext", "#66D9EF");
+                
+            });
+            
+            $('#thejokerTheme').on('click touchstart', function(){
+
+                changeColor("topbartext", "#CCCCCC");
+                changeColor("topbar", "#000000");
+                changeColor("bottombar", "#000000");
+                changeColor("sidebar", "#121212");
+                changeColor("hoverbg", "#CCC6CC");
+                changeColor("activetabBG", "#A50CB0");
+                changeColor("activetabicon", "#FFFFFF");
+                changeColor("activetabtext", "#FFFFFF");
+                changeColor("inactiveicon", "#949494");
+                changeColor("inactivetext", "#B8B8B8");
+
+            });
         
         </script>
         
@@ -2078,7 +2161,11 @@ endif;
         
         $( document ).ready(function() {
             
+            $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
             
+            $('[data-toggle="tooltip"]').tooltip(); 
+            
+            rememberTabSelection('#settingsTabs', !localStorage);
             
             $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
         		
@@ -2089,7 +2176,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.9998";
+                    var currentVersion = "0.9999";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
@@ -2100,13 +2187,9 @@ endif;
         			if(currentVersion < githubVersion){
                     
                     	console.log("You Need To Upgrade");
-
-                        $.smkAlert({
-                            text: '<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>',
-                            type: 'warning',
-                            permanent: true
-                        });
                         
+                        parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000");
+
                         $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
                         
                         $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
@@ -2117,24 +2200,17 @@ endif;
                     
                     	console.log("You Are on Current Version");
                         
-                        $.smkAlert({
-                            text: '<?php echo $language->translate("SOFTWARE_IS");?> <strong><?php echo $language->translate("UP_TO_DATE");?></strong>',
-                            type: 'success'
-                        });
+                        parent.notify("<?php echo $language->translate("SOFTWARE_IS");?> <strong><?php echo $language->translate("UP_TO_DATE");?></strong>","thumbs-up ","success","5000");
                     
                     }else{
                     
                     	console.log("something went wrong");
-
-                        $.smkAlert({
-                            text: '<strong>WTF!? </strong>Can\'t check version.',
-                            type: 'danger',
-                            time: 10
-                        });
+                        
+                        parent.notify("<strong>WTF!? </strong>Can\'t check version.","thumbs-down","error","5000");
                     
                     }
 
-                    $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo DATABASE_LOCATION;?>");
+                    $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?>");
                     
                 }
                 

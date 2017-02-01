@@ -2010,7 +2010,7 @@ table.dataTable > tbody > tr.child span.dtr-title {
 }
 
 .dataTables_wrapper {
-  margin-top: 30px;
+  /*margin-top: 30px;*/
 }
 
 .dataTables_wrapper table {
@@ -3260,12 +3260,13 @@ ul.inbox-pagination li {
 .ns-box {
   position: fixed;
   background: #368fe5;
-  padding: 22px;
+  /*padding: 22px;*/
+  padding: 19px 22px 19px 22px;
   line-height: 1.4;
   z-index: 4000;
   pointer-events: none;
   color: #fff;
-  font-size: 90%;
+  font-size: 80%;
 }
 
 .ns-box a {
@@ -3283,7 +3284,7 @@ ul.inbox-pagination li {
 }
 
 .ns-box .fa {
-  margin-left: -5px;
+  margin-left: -7px;
 }
 
 .ns-box.ns-show,
@@ -5901,6 +5902,13 @@ label {
           box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.13);
   -webkit-transition: all, 1s;
           transition: all, 1s;
+}
+
+.mini-nav .members-sidebar {
+  width: calc(100% - 50px);
+  width: -webkit-calc(100% - 50px);
+  right: calc(-100%);
+  right: -webkit-calc(-100%); 
 }
 
 .members-sidebar .messages {

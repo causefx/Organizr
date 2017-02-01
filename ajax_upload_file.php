@@ -5,7 +5,7 @@
     $data = $uploader->upload($_FILES['files'], array(
         'limit' => 10, //Maximum Limit of files. {null, Number}
         'maxSize' => 1, //Maximum Size of files {null, Number(in MB's)}
-        'extensions' => array('jpg', 'png'), //Whitelist for file extension. {null, Array(ex: array('jpg', 'png'))}
+        'extensions' => array('jpg', 'png', 'svg'), //Whitelist for file extension. {null, Array(ex: array('jpg', 'png'))}
         'required' => false, //Minimum one file is required for upload {Boolean}
         'uploadDir' => 'images/', //Upload directory {String}
         'title' => array('name'), //New file name {null, String, Array} *please read documentation in README.md

@@ -164,6 +164,7 @@ $folder = USER_HOME;
                 check("PDO");
                 check("Zip");
                 check("openssl");
+                check("session");
                 checkFunction("MAIL");
                 checkFunction("fopen");
 
