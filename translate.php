@@ -42,7 +42,8 @@ class setLanguage {
         
         endif; 
         
-        $translatedWord = str_replace( array( "'","'" ),'', $translatedWord );
+        //$translatedWord = str_replace( array( "'","'" ),'', $translatedWord );
+        $translatedWord = htmlspecialchars($translatedWord, ENT_QUOTES);
         
         return vsprintf($translatedWord, $allWords);
         

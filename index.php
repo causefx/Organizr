@@ -126,6 +126,8 @@ if($action == "createLocation") :
         
             if(substr($postValue, -1) == "/") : $postValue = rtrim($postValue, "/"); endif;
         
+                $postValue = str_replace("\\","/", $postValue);
+        
             $databaseData .= $postName . " = \"" . $postValue . "\"\r\n";
         
         endif;
@@ -250,10 +252,21 @@ else :
 endif;
 
 ?>
+<!--
 
+    ___       ___       ___       ___       ___       ___       ___       ___   
+   /\  \     /\  \     /\  \     /\  \     /\__\     /\  \     /\  \     /\  \  
+  /::\  \   /::\  \   /::\  \   /::\  \   /:| _|_   _\:\  \   _\:\  \   /::\  \ 
+ /:/\:\__\ /::\:\__\ /:/\:\__\ /::\:\__\ /::|/\__\ /\/::\__\ /::::\__\ /::\:\__\
+ \:\/:/  / \;:::/  / \:\:\/__/ \/\::/  / \/|::/  / \::/\/__/ \::;;/__/ \;:::/  /
+  \::/  /   |:\/__/   \::/  /    /:/  /    |:/  /   \:\__\    \:\__\    |:\/__/ 
+   \/__/     \|__|     \/__/     \/__/     \/__/     \/__/     \/__/     \|__|  
+
+
+-->
 <!DOCTYPE html>
 
-<html lang="en" class="no-js">
+<html lang="<?php echo $getLanguage; ?>" class="no-js">
 
     <head>
         
@@ -473,6 +486,10 @@ endif;
                 }.mini-nav .splitRight {
                     margin-left: calc(50% + 25px) !important;
                     width: calc(50% - 25px);
+                }.form-control.material {
+                    background-image: -webkit-gradient(linear, left top, left bottom, from(<?=$topbartext;?>), to(<?=$topbartext;?>)), -webkit-gradient(linear, left top, left bottom, from(#d2d2d2), to(#d2d2d2));
+                    background-image: -webkit-linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), -webkit-linear-gradient(#d2d2d2, #d2d2d2);
+                    background-image: linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), linear-gradient(#d2d2d2, #d2d2d2);
                 }
 
             </style>
@@ -504,13 +521,13 @@ endif;
                         
                         <div class="gn-scroller" id="gn-scroller">
                             
-                            <ul class="gn-menu metismenu">
+                            <ul id="tabList" class="gn-menu metismenu">
 
                                 <!--Start Tab List-->
                                 
-                                <?php if($tabSetup == "No") : foreach($result as $row) : 
+                                <?php if($tabSetup == "No") : $tabCount = 1; foreach($result as $row) : 
                                 
-                                if($row['defaultz'] == "true") : $defaultz = "active"; else : $defaultz = ""; endif;?>
+                                if($row['defaultz'] == "true") : $defaultz = "active"; else : $defaultz = ""; endif; ?>
                                 
                                 <li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
                                     
@@ -534,7 +551,7 @@ endif;
 
                                 </li>
                                 
-                                <?php endforeach; endif;?>
+                                <?php $tabCount++; endforeach; endif;?>
                                 
                                 <?php if($configReady == "Yes") : if($USER->authenticated && $USER->role == "admin") :?>
                                 <li class="tab-item <?=$settingsActive;?>" id="settings.phpx" data-title="Settings" name="settings">
@@ -588,7 +605,7 @@ endif;
                     
                         else : 
                     
-                            echo "<img height='50px' width='250px' src='" . TITLELOGO . "'>";
+                            echo "<img style='max-width: 250px; max-height: 50px;' src='" . TITLELOGO . "'>";
                     
                         endif;
                     
@@ -643,6 +660,15 @@ endif;
                            
                             </a>
                         
+                        </li>
+                        
+                        <li style="display: none" id="splitView" class="dropdown some-btn">
+                            
+                            <a class="spltView">
+                                
+                                <i class="mdi mdi-window-close"></i>
+                            
+                            </a>
                         </li>
                     
                     </ul>
@@ -1150,6 +1176,35 @@ endif;
             
         };
             
+        function notify(notifyString, notifyIcon, notifyType, notifyLength) {
+            
+            var notifyString = notifyString;
+            var notifyIcon = notifyIcon;
+            var notifyType = notifyType;
+            var notifyLength = notifyLength;
+
+            setTimeout(function () {
+
+                var notification = new NotificationFx({
+
+                    message: '<span class="fa fa-' + notifyIcon + ' fa-2x"></span><p>' + notifyString + '</p>',
+
+                    layout: 'bar',
+
+                    effect: 'slidetop',
+                    
+                    ttl: notifyLength,
+
+                    type: notifyType // notice, warning, success or error
+
+                });
+
+                notification.show();
+
+            }, 300);
+
+        }
+            
         $('#loginSubmit').click(function() {
             
             if ($('#login').smkValidate()) {
@@ -1295,22 +1350,49 @@ endif;
         }); 
             
         $(function () {
+
             <?php if(!empty($USER->info_log)) : ?>
-            $.smkAlert({
-                position: 'top-left',
-                text: '<?php echo printArray($USER->info_log);?>',
-                type: 'info'
-                
-            });
+            
+            setTimeout(function () {
+
+                var notification = new NotificationFx({
+
+                    message: '<span class="fa fa-info-circle fa-2x"></span><p><?php echo printArray($USER->info_log);?></p>',
+
+                    layout: 'bar',
+
+                    effect: 'slidetop',
+
+                    type: 'notice', // notice, warning, success or error
+
+                });
+
+                notification.show();
+
+            }, 1200);
+
             <?php endif; ?>
             
             <?php if(!empty($USER->error_log)) : ?>
-            $.smkAlert({
-                position: 'top-left',
-                text: '<?php echo printArray($USER->error_log); ?>',
-                type: 'warning'
-                
-            });
+
+            setTimeout(function () {
+
+                var notification = new NotificationFx({
+
+                    message: '<span class="fa fa-exclamation-triangle fa-2x"></span><p><?php echo printArray($USER->error_log); ?></p>',
+
+                    layout: 'bar',
+
+                    effect: 'slidetop',
+
+                    type: 'warning', // notice, warning, success or error
+
+                });
+
+                notification.show();
+
+            }, 1200);
+            
             <?php endif; ?>
 
         });
@@ -1366,6 +1448,15 @@ endif;
             },500);
             
             return false;
+
+        });
+            
+        $('#splitView').on('click tap', function(){
+
+            $('#splitView').hide();
+            $("#content").attr("class", "content");
+            $("li[class^='tab-item rightActive']").attr("class", "tab-item");
+            $("#contentRight").html('');
 
         });
             
@@ -1441,7 +1532,7 @@ endif;
 
                     $("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
-                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
+                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
                     
                     document.title = thistitle;
                     
@@ -1462,6 +1553,8 @@ endif;
         $("li[class^='tab-item']").on('contextmenu', function(e){
             
             e.stopPropagation();
+            
+            $('#splitView').show();
             
             $("#content").attr("class", "content split");
             
@@ -1509,7 +1602,7 @@ endif;
 
                     $("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
 
-                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
+                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
                     
                     document.title = thistitle;
                     
@@ -1530,20 +1623,37 @@ endif;
         });
             
         Mousetrap.bind('ctrl+shift+up', function(e) {
+            
             var getCurrentTab = $("li[class^='tab-item active']");
             var previousTab = getCurrentTab.prev().attr( "class", "tab-item" );
             previousTab.trigger("click");
             return false;
+            
         }); 
             
         Mousetrap.bind('ctrl+shift+down', function(e) {
+            
             var getCurrentTab = $("li[class^='tab-item active']");
             var nextTab = getCurrentTab.next().attr( "class", "tab-item" );
             nextTab.trigger("click");
             return false;
+            
         });     
 
         Mousetrap.bind('s s', function() { $("li[id^='settings.phpx']").trigger("click");  });
+        
+        Mousetrap.bind('p p', function() { $("a[class^='fix-nav']").trigger("click");  });
+            
+        Mousetrap.bind('m m', function() { $("div[class^='hamburger']").trigger("click");  });
+            
+        Mousetrap.bind('r r', function() { $("a[id^='reload']").trigger("click");  });
+            
+        Mousetrap.bind('f f', function() { $("a[class^='fullscreen']").trigger("click");  });
+            
+        <?php if($tabSetup == "No") : foreach(range(1,$tabCount) as $index) : if ($index == 10) : break; endif;?>
+            
+        Mousetrap.bind('ctrl+shift+<?php echo $index; ?>', function() { $("ul[id^='tabList'] li:nth-child(<?php echo $index; ?>)").trigger("click"); });    
+        <?php endforeach; endif; ?>
         
         Mousetrap.bind('esc esc', function() {
             
