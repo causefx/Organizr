@@ -13,6 +13,7 @@
     if(!empty($databaseConfig['timezone'])) : define('TIMEZONE', $databaseConfig['timezone']); else : define('TIMEZONE', 'America/Los_Angeles'); endif;
     if(!empty($databaseConfig['titleLogo'])) : define('TITLELOGO', $databaseConfig['titleLogo']); else : define('TITLELOGO', ''); endif;
     if(!empty($databaseConfig['loadingIcon'])) : define('LOADINGICON', $databaseConfig['loadingIcon']); else : define('LOADINGICON', ''); endif;
+    if(!empty($databaseConfig['multipleLogin'])) : define('MULTIPLELOGIN', $databaseConfig['multipleLogin']); else : define('MULTIPLELOGIN', 'false'); endif;
     define('FAIL_LOG', 'loginLog.json');
     date_default_timezone_set(TIMEZONE);
 
@@ -461,33 +462,45 @@ EOT;
             
 			// logged in, but do the tokens match?
 			$token = $this->get_user_token($username);
-            if(isset($_COOKIE["Organizr"])){
+
+            if(MULTIPLELOGIN == "false"){
             
-                if($_COOKIE["Organizr"] == $token){
-                    
-                    return true;
-                    
+                if(isset($_COOKIE["Organizr"])){
+
+                    if($_COOKIE["Organizr"] == $token){
+
+                        return true;
+
+                    }else{
+
+                        $this->error("cookie token mismatch for $username");
+                        unset($_COOKIE['Organizr']);
+                        setcookie('Organizr', '', time() - 3600, '/');
+                        unset($_COOKIE['OrganizrU']);
+                        setcookie('OrganizrU', '', time() - 3600, '/');
+                        return false;
+
+                    }
+
                 }else{
+
+                    if($token != $_SESSION["token"]) {
+                        
+                        $this->error("token mismatch for $username");
+                        return false; 
                     
-                    $this->error("cookie token mismatch for $username");
-                    unset($_COOKIE['Organizr']);
-                    setcookie('Organizr', '', time() - 3600, '/');
-                    unset($_COOKIE['OrganizrU']);
-                    setcookie('OrganizrU', '', time() - 3600, '/');
-                    return false;
+                    }
+
+                    // active, using the correct token -> authenticated
+                     return true;
                     
                 }
-            
+                
             }else{
-            
-                if($token != $_SESSION["token"]) {
-                    $this->error("token mismatch for $username");
-                    return false; 
-                }
-            
-                // active, using the correct token -> authenticated
-			     return true;
-            }
+                
+                return true;
+                
+            }    
             
 		}
 

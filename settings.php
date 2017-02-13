@@ -134,11 +134,13 @@ if($hasOptions == "No") :
     $bottombar = "#eb6363";
     $sidebar = "#000000";
     $hoverbg = "#eb6363";
+    $hovertext = "#000000";
     $activetabBG = "#eb6363";
     $activetabicon = "#FFFFFF";
     $activetabtext = "#FFFFFF";
     $inactiveicon = "#FFFFFF";
     $inactivetext = "#FFFFFF";
+    $loading = "#000000";
 
 endif;
 
@@ -164,11 +166,13 @@ if($hasOptions == "Yes") :
         $bottombar = $row['bottombar'];
         $sidebar = $row['sidebar'];
         $hoverbg = $row['hoverbg'];
+        @$hovertext = $row['hovertext'];
         $activetabBG = $row['activetabBG'];
         $activetabicon = $row['activetabicon'];
         $activetabtext = $row['activetabtext'];
         $inactiveicon = $row['inactiveicon'];
         $inactivetext = $row['inactivetext'];
+        @$loading = $row['loading'];
 
     endforeach;
 
@@ -336,7 +340,7 @@ if($action == "upgrade") :
     rcopy($source, $destination);
     rrmdir($cleanup);
 
-    echo "<script>window.parent.location.reload(true);</script>";
+    echo "<script>top.location.href = 'index.php#upgrade';</script>";
 
 endif;
 
@@ -357,6 +361,8 @@ if($action == "createLocation") :
     }
 
     write_ini_file($databaseData, $databaseLocation);
+
+    echo "<script>window.parent.location.reload(true);</script>";
 
 endif;
                 
@@ -532,7 +538,7 @@ if($action == "addOptionz") :
     
     if($hasOptions == "No") :
 
-        $file_db->exec("CREATE TABLE options (title TEXT UNIQUE, topbar TEXT, bottombar TEXT, sidebar TEXT, hoverbg TEXT, topbartext TEXT, activetabBG TEXT, activetabicon TEXT, activetabtext TEXT, inactiveicon TEXT, inactivetext TEXT)");
+        $file_db->exec("CREATE TABLE options (title TEXT UNIQUE, topbar TEXT, bottombar TEXT, sidebar TEXT, hoverbg TEXT, topbartext TEXT, activetabBG TEXT, activetabicon TEXT, activetabtext TEXT, inactiveicon TEXT, inactivetext TEXT, loading TEXT, hovertext TEXT)");
         
     endif;
             
@@ -542,14 +548,16 @@ if($action == "addOptionz") :
     $bottombar = $_POST['bottombar'];
     $sidebar = $_POST['sidebar'];
     $hoverbg = $_POST['hoverbg'];
+    $hovertext = $_POST['hovertext'];
     $activetabBG = $_POST['activetabBG'];
     $activetabicon = $_POST['activetabicon'];
     $activetabtext = $_POST['activetabtext'];
     $inactiveicon = $_POST['inactiveicon'];
     $inactivetext = $_POST['inactivetext'];
+    $loading = $_POST['loading'];
 
-    $insert = "INSERT INTO options (title, topbartext, topbar, bottombar, sidebar, hoverbg, activetabBG, activetabicon, activetabtext, inactiveicon, inactivetext) 
-                VALUES (:title, :topbartext, :topbar, :bottombar, :sidebar, :hoverbg, :activetabBG, :activetabicon , :activetabtext , :inactiveicon, :inactivetext)";
+    $insert = "INSERT INTO options (title, topbartext, topbar, bottombar, sidebar, hoverbg, activetabBG, activetabicon, activetabtext, inactiveicon, inactivetext, loading, hovertext) 
+                VALUES (:title, :topbartext, :topbar, :bottombar, :sidebar, :hoverbg, :activetabBG, :activetabicon , :activetabtext , :inactiveicon, :inactivetext, :loading, :hovertext)";
                 
     $stmt = $file_db->prepare($insert);
     
@@ -564,12 +572,11 @@ if($action == "addOptionz") :
     $stmt->bindParam(':activetabtext', $activetabtext);
     $stmt->bindParam(':inactiveicon', $inactiveicon);
     $stmt->bindParam(':inactivetext', $inactivetext);
+    $stmt->bindParam(':loading', $loading);
+    $stmt->bindParam(':hovertext', $hovertext);
 
     $stmt->execute();
 
-    
-
-    
 endif;
 ?>
 
@@ -1141,6 +1148,15 @@ endif;
                                                         <input type="text" class="form-control material" name="loadingIcon" placeholder="<?php echo $language->translate("LOADING_ICON_URL");?>" value="<?php echo LOADINGICON;?>">
 
                                                     </div>
+                                                    
+                                                    <div class="form-group">
+                                                        <?php  if(MULTIPLELOGIN == "true") : $multipleLogin = "checked"; else : $multipleLogin = ""; endif;?>
+                                                        <input id="" class="switcher switcher-success" value="false" name="multipleLogin" type="hidden">
+                                                        <input id="multipleLogin" class="switcher switcher-success" value="true" name="multipleLogin" type="checkbox" <?php echo $multipleLogin;?>>
+
+                                                        <label for="multipleLogin"></label><?php echo $language->translate("MULTIPLE_LOGINS");?>
+                                                    
+                                                    </div>
 
                                                     <button type="submit" class="btn btn-success btn-icon waves waves-circle waves-effect waves-float"><i class="fa fa-floppy-o"></i></button>
 
@@ -1308,63 +1324,220 @@ endif;
                                         
                                                     </div>
                                         
-                                                    <div class="modal-body">
+                                                    <div class="modal-body" style="background: <?php echo $sidebar;?> !important;">
                                                         
-                                                        <h4><strong><?php echo $language->translate("ADDING_TABS");?></strong></h4>
-                                                        
-                                                        <p><?php echo $language->translate("START_ADDING_TABS");?></p>
+                                                        <div style="margin-bottom: 0px;" class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                                                             
-                                                        <ul>
-
-                                                            <li><strong><?php echo $language->translate("TAB_URL");?></strong> <?php echo $language->translate("TAB_URL_ABOUT");?></li>
-                                                            <li><strong><?php echo $language->translate("ICON_URL");?></strong> <?php echo $language->translate("ICON_URL_ABOUT");?></li>
-                                                            <li><strong><?php echo $language->translate("DEFAULT");?></strong> <?php echo $language->translate("DEFAULT_ABOUT");?></li>
-                                                            <li><strong><?php echo $language->translate("ACTIVE");?></strong> <?php echo $language->translate("ACTIVE_ABOUT");?></li>
-                                                            <li><strong><?php echo $language->translate("USER");?></strong> <?php echo $language->translate("USER_ABOUT");?></li>
-                                                            <li><strong><?php echo $language->translate("GUEST");?></strong> <?php echo $language->translate("GUEST_ABOUT");?></li>
-                                                            <li><strong><?php echo $language->translate("NO_IFRAME");?></strong> <?php echo $language->translate("NO_IFRAME_ABOUT");?></li>        
-
-                                                        </ul>
-
-                                                        <h4><strong><?php echo $language->translate("QUICK_ACCESS");?></strong></h4>
-                                                    
-                                                        <p><?php echo $language->translate("QUICK_ACCESS_ABOUT");?> <mark><?php echo getServerPath(); ?>#Sonarr</mark></p>
-                                                        
-                                                        <h4><strong><?php echo $language->translate("SIDE_BY_SIDE");?></strong></h4>
-                                                        
-                                                        <p><?php echo $language->translate("SIDE_BY_SIDE_ABOUT");?></p>
-                                                        
-                                                        <ul>
-                                                        
-                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS1");?></li>
-                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS2");?> [<i class='mdi mdi-refresh'></i>]</li>
-                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS3");?></li>
-                                                        
-                                                        </ul>
-
-                                                        <h4><strong><?php echo $language->translate("KEYBOARD_SHORTCUTS");?></strong></h4>
-                                                    
-                                                        <p><?php echo $language->translate("KEYBOARD_SHORTCUTS_ABOUT");?></p>
-                                                        
-                                                        <ul>
+                                                            <div style="color: <?php echo $topbartext;?> !important; background: <?php echo $topbar;?> !important;" class="panel panel-default">
                                                             
-                                                            <li><keyboard class="key"><span>S</span></keyboard> + <keyboard class="key"><span>S</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS1");?></li>
-                                                            <li><keyboard class="key wide"><span>Ctrl</span></keyboard> + <keyboard class="key wide"><span>Shift</span></keyboard> + <keyboard class="key"><span>&darr;</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS2");?></li>
-                                                            <li><keyboard class="key wide"><span>Ctrl</span></keyboard> + <keyboard class="key wide"><span>Shift</span></keyboard> + <keyboard class="key"><span>&uarr;</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS3");?></li>
-                                                            <li><keyboard class="key wide"><span>Esc</span></keyboard> + <keyboard class="key wide"><span>Esc</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS4");?></li>
+                                                                <div class="panel-heading" role="tab" id="headingOne">
                                                             
-                                                        </ul>
+                                                                    <h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                            
+                                                                        <?php echo $language->translate("ADDING_TABS");?>
+                                                            
+                                                                    </h4>
+                                                            
+                                                                </div>
+                                                            
+                                                                <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" aria-expanded="true">
+                                                            
+                                                                    <div class="panel-body">
+                                                                
+                                                                        <p><?php echo $language->translate("START_ADDING_TABS");?></p>
+                                                            
+                                                                        <ul>
+
+                                                                            <li><strong><?php echo $language->translate("TAB_URL");?></strong> <?php echo $language->translate("TAB_URL_ABOUT");?></li>
+                                                                            <li><strong><?php echo $language->translate("ICON_URL");?></strong> <?php echo $language->translate("ICON_URL_ABOUT");?></li>
+                                                                            <li><strong><?php echo $language->translate("DEFAULT");?></strong> <?php echo $language->translate("DEFAULT_ABOUT");?></li>
+                                                                            <li><strong><?php echo $language->translate("ACTIVE");?></strong> <?php echo $language->translate("ACTIVE_ABOUT");?></li>
+                                                                            <li><strong><?php echo $language->translate("USER");?></strong> <?php echo $language->translate("USER_ABOUT");?></li>
+                                                                            <li><strong><?php echo $language->translate("GUEST");?></strong> <?php echo $language->translate("GUEST_ABOUT");?></li>
+                                                                            <li><strong><?php echo $language->translate("NO_IFRAME");?></strong> <?php echo $language->translate("NO_IFRAME_ABOUT");?></li>        
+
+                                                                        </ul>
+                                                            
+                                                                    </div>
+                                                            
+                                                                </div>
+                                                            
+                                                            </div>
+                                                            
+                                                            <div style="color: <?php echo $topbartext;?> !important; background: <?php echo $topbar;?> !important;" class="panel panel-default">
+                                                            
+                                                                <div class="panel-heading" role="tab" id="headingTwo">
+                                                            
+                                                                    <h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                                                            
+                                                                        <?php echo $language->translate("QUICK_ACCESS");?>
+                                                            
+                                                                    </h4>
+                                                            
+                                                                </div>
+                                                            
+                                                                <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo" aria-expanded="true">
+                                                            
+                                                                    <div class="panel-body">
+                                                                
+                                                                        <p><?php echo $language->translate("QUICK_ACCESS_ABOUT");?> <mark><?php echo getServerPath(); ?>#Sonarr</mark></p>
+                                                            
+                                                                    </div>
+                                                            
+                                                                </div>
+                                                            
+                                                            </div>
+                                                            
+                                                            <div style="color: <?php echo $topbartext;?> !important; background: <?php echo $topbar;?> !important;" class="panel panel-default">
+                                                            
+                                                                <div class="panel-heading" role="tab" id="headingThree">
+                                                            
+                                                                    <h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                                                            
+                                                                        <?php echo $language->translate("SIDE_BY_SIDE");?>
+                                                            
+                                                                    </h4>
+                                                            
+                                                                </div>
+                                                            
+                                                                <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree" aria-expanded="true">
+                                                            
+                                                                    <div class="panel-body">
+                                                                
+                                                                        <p><?php echo $language->translate("SIDE_BY_SIDE_ABOUT");?></p>
+
+                                                                        <ul>
+
+                                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS1");?></li>
+                                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS2");?> [<i class='mdi mdi-refresh'></i>]</li>
+                                                                            <li><?php echo $language->translate("SIDE_BY_SIDE_INSTRUCTIONS3");?></li>
+
+                                                                        </ul>
+
+                                                                    </div>
+                                                            
+                                                                </div>
+                                                            
+                                                            </div>
+                                                            
+                                                            <div style="color: <?php echo $topbartext;?> !important; background: <?php echo $topbar;?> !important;" class="panel panel-default">
+                                                            
+                                                                <div class="panel-heading" role="tab" id="headingFour">
+                                                            
+                                                                    <h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                                                            
+                                                                        <?php echo $language->translate("KEYBOARD_SHORTCUTS");?>
+                                                            
+                                                                    </h4>
+                                                            
+                                                                </div>
+                                                            
+                                                                <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour" aria-expanded="true">
+                                                            
+                                                                    <div class="panel-body">
+                                                                
+                                                                        <p><?php echo $language->translate("KEYBOARD_SHORTCUTS_ABOUT");?></p>
                                                         
-                                                        <h4><strong><?php echo $language->translate("TAB_NOT_LOADING");?></strong></h4>
+                                                                        <ul>
+
+                                                                            <li><keyboard class="key"><span>S</span></keyboard> + <keyboard class="key"><span>S</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS1");?></li>
+                                                                            <li><keyboard class="key"><span>F</span></keyboard> + <keyboard class="key"><span>F</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS6");?></li>
+                                                                            <li><keyboard class="key"><span>P</span></keyboard> + <keyboard class="key"><span>P</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS7");?></li>
+                                                                            <li><keyboard class="key"><span>M</span></keyboard> + <keyboard class="key"><span>M</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS8");?></li>
+                                                                            <li><keyboard class="key wide"><span>Ctrl</span></keyboard> + <keyboard class="key wide"><span>Shift</span></keyboard> + <keyboard class="key"><span>&darr;</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS2");?></li>
+                                                                            <li><keyboard class="key wide"><span>Ctrl</span></keyboard> + <keyboard class="key wide"><span>Shift</span></keyboard> + <keyboard class="key"><span>&uarr;</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS3");?></li>
+                                                                            <li><keyboard class="key wide"><span>Ctrl</span></keyboard> + <keyboard class="key wide"><span>Shift</span></keyboard> + <keyboard class="key"><span>1</span></keyboard> - <keyboard class="key"><span>9</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS5");?></li>
+                                                                            <li><keyboard class="key wide"><span>Esc</span></keyboard> + <keyboard class="key wide"><span>Esc</span></keyboard> <?php echo $language->translate("KEYBOARD_INSTRUCTIONS4");?></li>
+
+
+                                                                        </ul>
+
+                                                                    </div>
+                                                            
+                                                                </div>
+                                                            
+                                                            </div>
+                                                            
+                                                            <div style="color: <?php echo $topbartext;?> !important; background: <?php echo $topbar;?> !important;" class="panel panel-default">
+                                                            
+                                                                <div class="panel-heading" role="tab" id="headingFive">
+                                                            
+                                                                    <h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
+                                                            
+                                                                        <?php echo $language->translate("TAB_NOT_LOADING");?>
+                                                            
+                                                                    </h4>
+                                                            
+                                                                </div>
+                                                            
+                                                                <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive" aria-expanded="true">
+                                                            
+                                                                    <div class="panel-body">
+                                                                
+                                                                        <p><?php echo $language->translate("TAB_NOT_LOADING_ABOUT");?></p>
                                                         
-                                                        <p><?php echo $language->translate("TAB_NOT_LOADING_ABOUT");?></p>
-                                                        
-                                                        <?php 
-                                                        if(get_browser_name() == "Chrome") : echo get_browser_name() . ": <a href='https://chrome.google.com/webstore/detail/ignore-x-frame-headers/gleekbfjekiniecknbkamfmkohkpodhe' target='_blank'><strong>Ignore X-Frame headers</strong> by Guillaume Ryder</a>";
-                                                        elseif(get_browser_name() == "Firefox") : echo get_browser_name() . ": <a href='https://addons.mozilla.org/en-us/firefox/addon/ignore-x-frame-options/' target='_blank'><strong>Ignore X-Frame headers</strong> by rjhoukema</a>";
-                                                        else : echo "Sorry, currently there is no other alternative for " . get_browser_name(); endif;
-                                                        ?>
-                                                        
+                                                                        <?php 
+                                                                        if(get_browser_name() == "Chrome") : echo get_browser_name() . ": <a href='https://chrome.google.com/webstore/detail/ignore-x-frame-headers/gleekbfjekiniecknbkamfmkohkpodhe' target='_blank'><strong>Ignore X-Frame headers</strong> by Guillaume Ryder</a>";
+                                                                        elseif(get_browser_name() == "Firefox") : echo get_browser_name() . ": <a href='https://addons.mozilla.org/en-us/firefox/addon/ignore-x-frame-options/' target='_blank'><strong>Ignore X-Frame headers</strong> by rjhoukema</a>";
+                                                                        else : echo "Sorry, currently there is no other alternative for " . get_browser_name(); endif;
+                                                                        ?>
+
+                                                                    </div>
+                                                            
+                                                                </div>
+                                                            
+                                                            </div>
+                                                            
+                                                            <div style="color: <?php echo $topbartext;?> !important; background: <?php echo $topbar;?> !important;" class="panel panel-default">
+                                                            
+                                                                <div class="panel-heading" role="tab" id="headingSix">
+                                                            
+                                                                    <h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="true" aria-controls="collapseSix">
+                                                            
+                                                                        <?php echo $language->translate("USER_ICONS");?>
+                                                            
+                                                                    </h4>
+                                                            
+                                                                </div>
+                                                            
+                                                                <div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix" aria-expanded="true">
+                                                            
+                                                                    <div class="panel-body">
+                                                                
+                                                                        <p><?php echo $language->translate("USER_ICONS_ABOUT");?> <a href="http://gravatar.com" target="_blank">gravatar.com</a></p>
+
+                                                                    </div>
+                                                            
+                                                                </div>
+                                                            
+                                                            </div>
+                                                            
+                                                            <div style="color: <?php echo $topbartext;?> !important; background: <?php echo $topbar;?> !important;" class="panel panel-default">
+                                                            
+                                                                <div class="panel-heading" role="tab" id="headingSeven">
+                                                            
+                                                                    <h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="true" aria-controls="collapseSeven">
+                                                            
+                                                                        <?php echo $language->translate("TRANSLATIONS");?>
+                                                            
+                                                                    </h4>
+                                                            
+                                                                </div>
+                                                            
+                                                                <div id="collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven" aria-expanded="true">
+                                                            
+                                                                    <div class="panel-body">
+                                                                
+                                                                        <p><?php echo $language->translate("TRANSLATIONS_ABOUT");?> <a href="https://github.com/causefx/Organizr/tree/develop/lang" target="_blank">Github Develop Branch</a></p>
+
+                                                                    </div>
+                                                            
+                                                                </div>
+                                                            
+                                                            </div>
+                                                            
+                                                        </div>
+
                                                     </div>
                                                     
                                                     <div class="modal-footer">
@@ -1484,6 +1657,14 @@ endif;
                                                     <input name="topbartext" id="topbartext" class="form-control jscolor {hash:true}" value="<?=$topbartext;?>">
 
                                                 </div>
+                                                
+                                                <div class="col-md-2 gray-bg">
+
+                                                    <center><?php echo $language->translate("LOADING_COLOR");?></center>
+
+                                                    <input name="loading" id="loading" class="form-control jscolor {hash:true}" value="<?=$loading;?>">
+
+                                                </div>
 
                                             </div>
 
@@ -1522,6 +1703,14 @@ endif;
                                                     <center><?php echo $language->translate("HOVER_BG");?></center>
 
                                                     <input name="hoverbg" id="hoverbg" class="form-control jscolor {hash:true}" value="<?=$hoverbg;?>">
+
+                                                </div>
+                                                
+                                                <div class="col-md-2 gray-bg">
+
+                                                    <center><?php echo $language->translate("HOVER_TEXT");?></center>
+
+                                                    <input name="hovertext" id="hovertext" class="form-control jscolor {hash:true}" value="<?=$hovertext;?>">
 
                                                 </div>
 
@@ -2162,6 +2351,7 @@ endif;
         $( document ).ready(function() {
             
             $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
+            $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')
             
             $('[data-toggle="tooltip"]').tooltip(); 
             
@@ -2176,7 +2366,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.9999";
+                    var currentVersion = "0.99991";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
