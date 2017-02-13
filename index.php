@@ -21,6 +21,8 @@ $activetabicon = "#FFFFFF";
 $activetabtext = "#FFFFFF";
 $inactiveicon = "#FFFFFF";
 $inactivetext = "#FFFFFF";
+$loading = "#000000";
+$hovertext = "#000000";
 $loadingIcon = "images/organizr.png";
 $baseURL = "";
 require_once("translate.php");
@@ -241,6 +243,8 @@ else :
             $activetabtext = $row['activetabtext'];
             $inactiveicon = $row['inactiveicon'];
             $inactivetext = $row['inactivetext'];
+            $loading = $row['loading'];
+            $hovertext = $row['hovertext'];
 
         endforeach;
 
@@ -382,7 +386,7 @@ endif;
                 
                 }.refresh-preloader {
                     
-                    background: <?=$topbartext;?>;
+                    background: <?=$loading;?>;
                 
                 }.la-timer {
                     
@@ -397,7 +401,7 @@ endif;
                     
                     .tab-item:hover a {
                     
-                        color: <?=$sidebar;?> !important;
+                        color: <?=$hovertext;?> !important;
                         background: <?=$hoverbg;?>;
                         border-radius: 100px 0 0 100px;
                     
@@ -459,7 +463,7 @@ endif;
                     
                 }div#preloader {
                     
-                    background-color: <?=$topbartext;?>;
+                    background-color: <?=$loading;?>;
                     
                 }.iframe {
                     
@@ -570,6 +574,27 @@ endif;
                                         endif; ?>
                                         
                                         <?php echo $language->translate("SETTINGS");?>
+                                    
+                                    </a>
+                                
+                                </li>
+                                
+                                <li style="display: none;" class="tab-item" id="updatedb.phpx" data-title="Upgrade" name="upgrade">
+                                                            
+                                    <a class="tab-link">
+                                        
+                                        <?php if($settingsicon == "Yes") :
+                                        
+                                            echo '<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
+                                                <img id="upgrade-icon" src="images/upgrade.png" style="height: 30px; margin-top: -2px;"></i>';
+                                        
+                                        else :
+                                        
+                                            echo '<i id="upgrade-icon" class="fa fa-arrow-up"></i>';
+                                        
+                                        endif; ?>
+                                        
+                                        <?php echo $language->translate("UPGRADE");?>
                                     
                                     </a>
                                 
@@ -1341,7 +1366,11 @@ endif;
 
                 var getLiTab = $("li[name^='" + gotHash + "']");
                 
+                if(gotHash === "upgrade"){ getLiTab.toggle(); console.log("got it"); }
+                
                 getLiTab.trigger("click");
+                
+                
 
             }   
 
