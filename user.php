@@ -14,6 +14,7 @@
     if(!empty($databaseConfig['titleLogo'])) : define('TITLELOGO', $databaseConfig['titleLogo']); else : define('TITLELOGO', ''); endif;
     if(!empty($databaseConfig['loadingIcon'])) : define('LOADINGICON', $databaseConfig['loadingIcon']); else : define('LOADINGICON', ''); endif;
     if(!empty($databaseConfig['multipleLogin'])) : define('MULTIPLELOGIN', $databaseConfig['multipleLogin']); else : define('MULTIPLELOGIN', 'false'); endif;
+    if(!empty($databaseConfig['cookiePassword'])) : define('COOKIEPASSWORD', $databaseConfig['cookiePassword']); else : define('COOKIEPASSWORD', ''); endif;
     define('FAIL_LOG', 'loginLog.json');
     date_default_timezone_set(TIMEZONE);
 
@@ -478,6 +479,8 @@ EOT;
                         setcookie('Organizr', '', time() - 3600, '/');
                         unset($_COOKIE['OrganizrU']);
                         setcookie('OrganizrU', '', time() - 3600, '/');
+                        unset($_COOKIE['cookiePassword']);
+                        setcookie("cookiePassword", '', time() - 3600, '/');
                         return false;
 
                     }
@@ -658,6 +661,7 @@ EOT;
 					$this->info("Welcome $username");
                     file_put_contents(FAIL_LOG, buildLog($username, "good_auth"));
                     chmod(FAIL_LOG, 0660);
+                    setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/");
                     return true; 
                     
                 }
@@ -710,6 +714,8 @@ EOT;
             setcookie('Organizr', '', time() - 3600, '/');
             unset($_COOKIE['OrganizrU']);
             setcookie('OrganizrU', '', time() - 3600, '/');
+            unset($_COOKIE['cookiePassword']);
+            setcookie("cookiePassword", '', time() - 3600, '/');
 			return true;
 		}
 

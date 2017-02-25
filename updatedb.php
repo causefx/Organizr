@@ -99,6 +99,8 @@ function checkDatabase($type, $table, $check) {
                 
                 <h1><center>Database Upgrade</center></h1>
                 
+                <h5 id="countdown"></h5>
+                
                 <?php
                 
                 checkDatabase('SELECT', 'options', 'options');
@@ -111,6 +113,17 @@ function checkDatabase($type, $table, $check) {
             </div>
 
         </div>
+        
+        <script>
+        
+            (function countdown(remaining) {
+                if(remaining === 0)
+                    location.reload(true);
+                document.getElementById('countdown').innerHTML = "<center>Page will refresh in <strong>" + remaining + "</strong> seconds</center>";
+                setTimeout(function(){ countdown(remaining - 1); }, 1000);
+            })(10);
+        
+        </script>
 
     </body>
 
