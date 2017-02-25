@@ -1150,6 +1150,12 @@ endif;
                                                     </div>
                                                     
                                                     <div class="form-group">
+
+                                                        <input type="text" class="form-control material" name="cookiePassword" placeholder="<?php echo $language->translate("COOKIE_PASSWORD");?>" value="<?php echo COOKIEPASSWORD;?>">
+
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
                                                         <?php  if(MULTIPLELOGIN == "true") : $multipleLogin = "checked"; else : $multipleLogin = ""; endif;?>
                                                         <input id="" class="switcher switcher-success" value="false" name="multipleLogin" type="hidden">
                                                         <input id="multipleLogin" class="switcher switcher-success" value="true" name="multipleLogin" type="checkbox" <?php echo $multipleLogin;?>>
@@ -2206,6 +2212,8 @@ endif;
                 changeColor("activetabtext", "#FFFFFF");
                 changeColor("inactiveicon", "#949494");
                 changeColor("inactivetext", "#B8B8B8");
+                changeColor("loading", "#E49F0C");
+                changeColor("hovertext", "#000000");
                 
             });
             
@@ -2221,6 +2229,8 @@ endif;
                 changeColor("activetabtext", "#FFFFFF");
                 changeColor("inactiveicon", "#949494");
                 changeColor("inactivetext", "#B8B8B8");
+                changeColor("loading", "#52B54B");
+                changeColor("hovertext", "#000000");
                 
             });
             
@@ -2236,6 +2246,8 @@ endif;
                 changeColor("activetabtext", "#FFFFFF");
                 changeColor("inactiveicon", "#DFE3EE");
                 changeColor("inactivetext", "#DFE3EE");
+                changeColor("loading", "#FFFFFF");
+                changeColor("hovertext", "#000000");
                 
             });
             
@@ -2251,6 +2263,8 @@ endif;
                 changeColor("activetabtext", "#FFFFFF");
                 changeColor("inactiveicon", "#5B391E");
                 changeColor("inactivetext", "#5B391E");
+                changeColor("loading", "#5B391E");
+                changeColor("hovertext", "#000000");
                 
             });
             
@@ -2266,6 +2280,8 @@ endif;
                 changeColor("activetabtext", "#464545");
                 changeColor("inactiveicon", "#0CE3AC");
                 changeColor("inactivetext", "#0CE3AC");
+                changeColor("loading", "#FFFFFF");
+                changeColor("hovertext", "#000000");
                 
             });
             
@@ -2281,6 +2297,8 @@ endif;
                 changeColor("activetabtext", "#FFFFFF");
                 changeColor("inactiveicon", "#C8C8C8");
                 changeColor("inactivetext", "#C8C8C8");
+                changeColor("loading", "#C8C8C8");
+                changeColor("hovertext", "#000000");
                 
             });
             
@@ -2296,6 +2314,8 @@ endif;
                 changeColor("activetabtext", "#FFFFFF");
                 changeColor("inactiveicon", "#FFFFFF");
                 changeColor("inactivetext", "#FFFFFF");
+                changeColor("loading", "#FFFFFF");
+                changeColor("hovertext", "#000000");
                 
             });
             
@@ -2311,6 +2331,8 @@ endif;
                 changeColor("activetabtext", "#FFFFFF");
                 changeColor("inactiveicon", "#FFFFFF");
                 changeColor("inactivetext", "#FFFFFF");
+                changeColor("loading", "#FFFFFF");
+                changeColor("hovertext", "#000000");
                 
             });
             
@@ -2326,6 +2348,8 @@ endif;
                 changeColor("activetabtext", "#FFFFFF");
                 changeColor("inactiveicon", "#66D9EF");
                 changeColor("inactivetext", "#66D9EF");
+                changeColor("loading", "#66D9EF");
+                changeColor("hovertext", "#000000");
                 
             });
             
@@ -2341,6 +2365,8 @@ endif;
                 changeColor("activetabtext", "#FFFFFF");
                 changeColor("inactiveicon", "#949494");
                 changeColor("inactivetext", "#B8B8B8");
+                changeColor("loading", "#CCCCCC");
+                changeColor("hovertext", "#000000");
 
             });
         
@@ -2366,7 +2392,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.99991";
+                    var currentVersion = "0.99992";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
