@@ -15,6 +15,7 @@
     if(!empty($databaseConfig['loadingIcon'])) : define('LOADINGICON', $databaseConfig['loadingIcon']); else : define('LOADINGICON', ''); endif;
     if(!empty($databaseConfig['multipleLogin'])) : define('MULTIPLELOGIN', $databaseConfig['multipleLogin']); else : define('MULTIPLELOGIN', 'false'); endif;
     if(!empty($databaseConfig['cookiePassword'])) : define('COOKIEPASSWORD', $databaseConfig['cookiePassword']); else : define('COOKIEPASSWORD', ''); endif;
+    if(!empty($databaseConfig['registerPassword'])) : define('REGISTERPASSWORD', $databaseConfig['registerPassword']); else : define('REGISTERPASSWORD', ''); endif;
     define('FAIL_LOG', 'loginLog.json');
     date_default_timezone_set(TIMEZONE);
 

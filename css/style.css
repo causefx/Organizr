@@ -1558,11 +1558,11 @@ body {
 }
 
 .login .login-form {
-  padding: 30px 80px 120px;
+  padding: 30px 80px 30px;
 }
 
 .login form {
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 }
 
 .login input:focus {
