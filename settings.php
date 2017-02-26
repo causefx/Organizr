@@ -1156,6 +1156,12 @@ endif;
                                                     </div>
                                                     
                                                     <div class="form-group">
+
+                                                        <input type="text" class="form-control material" name="registerPassword" placeholder="<?php echo $language->translate("REGISTER_PASSWORD");?>" value="<?php echo REGISTERPASSWORD;?>">
+
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
                                                         <?php  if(MULTIPLELOGIN == "true") : $multipleLogin = "checked"; else : $multipleLogin = ""; endif;?>
                                                         <input id="" class="switcher switcher-success" value="false" name="multipleLogin" type="hidden">
                                                         <input id="multipleLogin" class="switcher switcher-success" value="true" name="multipleLogin" type="checkbox" <?php echo $multipleLogin;?>>
@@ -2392,7 +2398,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.99992";
+                    var currentVersion = "0.99993";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;

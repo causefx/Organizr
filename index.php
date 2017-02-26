@@ -11,17 +11,17 @@ $settingsicon = "No";
 $settingsActive = "";
 $action = "";
 $title = "Organizr";
-$topbar = "#eb6363"; 
-$topbartext = "#FFFFFF";
-$bottombar = "#eb6363";
-$sidebar = "#000000";
-$hoverbg = "#eb6363";
-$activetabBG = "#eb6363";
+$topbar = "#333333"; 
+$topbartext = "#66D9EF";
+$bottombar = "#333333";
+$sidebar = "#393939";
+$hoverbg = "#AD80FD";
+$activetabBG = "#F92671";
 $activetabicon = "#FFFFFF";
 $activetabtext = "#FFFFFF";
-$inactiveicon = "#FFFFFF";
-$inactivetext = "#FFFFFF";
-$loading = "#000000";
+$inactiveicon = "#66D9EF";
+$inactivetext = "#66D9EF";
+$loading = "#66D9EF";
 $hovertext = "#000000";
 $loadingIcon = "images/organizr.png";
 $baseURL = "";
@@ -1079,6 +1079,10 @@ endif;
                                     
                                     <button id="switchForgot" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("FORGOT_PASSWORD");?></text></button>
                                     
+                                    <?php if(REGISTERPASSWORD != "") : ?>
+                                    <button id="switchCreateUser" style="background:<?=$hoverbg;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$hovertext;?>;"><?php echo $language->translate("CREATE_USER");?></text></button>
+                                    <?php endif; ?>
+                                    
                                     <form style="display: none;" name="forgotPassword" id="forgotPassword" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                         
                                         <h4 class="text-center"><?php echo $language->translate("FORGOT_PASSWORD");?></h4>
@@ -1093,6 +1097,60 @@ endif;
                                         <button style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="reset password"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("RESET_PASSWORD");?></text></button>
 
                                     </form> 
+                                    
+                                    <?php if(REGISTERPASSWORD != "") : ?>
+                                    <div id="userPassForm" style="display: none;">
+                                        <form id="userCreateForm" action="register.php" method="POST">
+                                            <h4 class="text-center"><?php echo $language->translate("ENTER_PASSWORD_TO_REGISTER");?></h4>
+                                            
+                                            <center><h5 id="userCreateErrors" style="color: red"></h5></center>
+
+                                            <div class="form-group">
+
+                                                <input type="text" class="form-control material" name="registerPasswordValue" placeholder="<?php echo $language->translate("PASSWORD");?>" autocorrect="off" autocapitalize="off" value="" autofocus required>
+
+                                            </div>
+
+                                            <button style="background:<?=$topbar;?>;" type="submit" id="checkRegisterPass" class="btn btn-block btn-info text-uppercase waves" value="reset password"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("SUBMIT");?></text></button>
+                                        </form>
+                                    
+                                    </div>
+                                    
+                                    <form style="display: none;" name="createUser" id="registration" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
+                                        
+                                        <h4 class="text-center"><?php echo $language->translate("CREATE_USER");?></h4>
+                                        
+                                        <input type="hidden" name="op" value="register"/>
+                                        <input type="hidden" name="sha1" value=""/>
+
+                                        <div class="form-group">
+
+                                            <input type="text" class="form-control material" name="username" autofocus placeholder="<?php echo $language->translate("USERNAME");?>" autocorrect="off" autocapitalize="off" minlength="3" maxlength="16" required>
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <input type="email" class="form-control material" name="email" placeholder="<?php echo $language->translate("EMAIL");?>">
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <input type="password" class="form-control material" name="password1" placeholder="<?php echo $language->translate("PASSWORD");?>" data-smk-strongPass="weak" required>
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <input type="password" class="form-control material" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
+
+                                        </div>
+
+                                        <button id="registerSubmit" type="submit" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register"><?php echo $language->translate("REGISTER");?></button>
+
+                                    </form> 
+                                    <?php endif; ?>
                                     
                                 </div>
                             
@@ -1274,8 +1332,18 @@ endif;
             $( "form[id^='login']" ).toggle();
             $( "form[id^='forgotPassword']" ).toggle();
             $("#switchForgot").toggle();
+            $("#switchCreateUser").toggle();
      
         });
+            
+        $("#switchCreateUser").click(function(){
+
+            $( "form[id^='login']" ).toggle();
+            $("#userPassForm").toggle();
+            $("#switchForgot").toggle();
+            $("#switchCreateUser").toggle();
+     
+        });  
             
         //Sign in
         $(".log-in").click(function(e){
@@ -1322,6 +1390,41 @@ endif;
         });
 
         $(document).ready(function(){
+            
+            $('#userCreateForm').submit(function(event) {
+
+                var formData = {
+                    'registerPasswordValue' : $('input[name=registerPasswordValue]').val()
+                };
+
+                $.ajax({
+                    type        : 'POST', 
+                    url         : 'register.php', 
+                    data        : formData,
+                    dataType    : 'json',
+                    encode      : true
+                })
+                 
+                    .done(function(data) {
+
+                        console.log(data); 
+                    
+                        if ( ! data.success) {
+
+                            $('#userCreateErrors').html('Wrong Password!'); // add the actual error message under our input
+
+                        } else {
+
+                            $("#userPassForm").toggle();
+                            $("#registration").toggle();     
+
+                        }
+
+                    });
+
+                event.preventDefault();
+                
+            });
             
             defaultTab = $("li[class^='tab-item active']").attr("id");
            
