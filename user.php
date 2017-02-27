@@ -16,6 +16,8 @@
     if(!empty($databaseConfig['multipleLogin'])) : define('MULTIPLELOGIN', $databaseConfig['multipleLogin']); else : define('MULTIPLELOGIN', 'false'); endif;
     if(!empty($databaseConfig['cookiePassword'])) : define('COOKIEPASSWORD', $databaseConfig['cookiePassword']); else : define('COOKIEPASSWORD', ''); endif;
     if(!empty($databaseConfig['registerPassword'])) : define('REGISTERPASSWORD', $databaseConfig['registerPassword']); else : define('REGISTERPASSWORD', ''); endif;
+    if(!empty($databaseConfig['notifyEffect'])) : define('NOTIFYEFFECT', $databaseConfig['notifyEffect']); else : define('NOTIFYEFFECT', 'bar-slidetop'); endif;
+    $notifyExplode = explode("-", NOTIFYEFFECT);
     define('FAIL_LOG', 'loginLog.json');
     date_default_timezone_set(TIMEZONE);
 

@@ -232,19 +232,19 @@ else :
 
         foreach($resulto as $row) : 
 
-            $title = $row['title'];
-            $topbartext = $row['topbartext'];
-            $topbar = $row['topbar'];
-            $bottombar = $row['bottombar'];
-            $sidebar = $row['sidebar'];
-            $hoverbg = $row['hoverbg'];
-            $activetabBG = $row['activetabBG'];
-            $activetabicon = $row['activetabicon'];
-            $activetabtext = $row['activetabtext'];
-            $inactiveicon = $row['inactiveicon'];
-            $inactivetext = $row['inactivetext'];
-            $loading = $row['loading'];
-            $hovertext = $row['hovertext'];
+            $title = isset($row['title']) ? $row['title'] : "Organizr";
+            $topbartext = isset($row['topbartext']) ? $row['topbartext'] : "#66D9EF";
+            $topbar = isset($row['topbar']) ? $row['topbar'] : "#333333";
+            $bottombar = isset($row['bottombar']) ? $row['bottombar'] : "#333333";
+            $sidebar = isset($row['sidebar']) ? $row['sidebar'] : "#393939";
+            $hoverbg = isset($row['hoverbg']) ? $row['hoverbg'] : "#AD80FD";
+            $activetabBG = isset($row['activetabBG']) ? $row['activetabBG'] : "#F92671";
+            $activetabicon = isset($row['activetabicon']) ? $row['activetabicon'] : "#FFFFFF";
+            $activetabtext = isset($row['activetabtext']) ? $row['activetabtext'] : "#FFFFFF";
+            $inactiveicon = isset($row['inactiveicon']) ? $row['inactiveicon'] : "#66D9EF";
+            $inactivetext = isset($row['inactivetext']) ? $row['inactivetext'] : "#66D9EF";
+            $loading = isset($row['loading']) ? $row['loading'] : "#66D9EF";
+            $hovertext = isset($row['hovertext']) ? $row['hovertext'] : "#000000";
 
         endforeach;
 
@@ -296,6 +296,8 @@ endif;
         
         <link rel="stylesheet" href="<?=$baseURL;?>bower_components/sweetalert/dist/sweetalert.css">
         <link rel="stylesheet" href="<?=$baseURL;?>bower_components/smoke/dist/css/smoke.min.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>js/notifications/ns-style-growl.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>js/notifications/ns-style-other.css">
 
 
         <script src="<?=$baseURL;?>js/menu/modernizr.custom.js"></script>
@@ -1259,32 +1261,57 @@ endif;
             
         };
             
-        function notify(notifyString, notifyIcon, notifyType, notifyLength) {
+        function notify(notifyString, notifyIcon, notifyType, notifyLength, notifyLayout, notifyEffect) {
             
             var notifyString = notifyString;
             var notifyIcon = notifyIcon;
             var notifyType = notifyType;
             var notifyLength = notifyLength;
+            var notifyLayout = notifyLayout; 
+            var notifyEffect = notifyEffect;
+            
+            if (notifyEffect === "slidetop"){
+                
+                var addMeesage = '<span class="fa fa-' + notifyIcon + ' fa-2x"></span>' + '<p>' + notifyString + '</p>';
+                
+            }else if (notifyEffect === "exploader"){
+                
+                var addMeesage = '<span class="fa fa-' + notifyIcon + ' fa-2x pull-left"></span>' + '<p>' + notifyString + '</p>';
+            
+            }else if (notifyEffect === "thumbslider"){
+                
+                var addMeesage = '<div class="ns-thumb"><img src="images/alert.png"/></div><div class="ns-content"><p>' + notifyString + '</p></div>';    
+                
+            }else{
+                
+                var addMeesage = '<p>' + notifyString + '</p>';
+            
+            }
 
             setTimeout(function () {
 
                 var notification = new NotificationFx({
+                    
+                    message: addMeesage,
 
-                    message: '<span class="fa fa-' + notifyIcon + ' fa-2x"></span><p>' + notifyString + '</p>',
+                    layout: notifyLayout,
 
-                    layout: 'bar',
-
-                    effect: 'slidetop',
+                    effect: notifyEffect,
                     
                     ttl: notifyLength,
 
-                    type: notifyType // notice, warning, success or error
+                    type: notifyType,
+                    
+                    onClose: function () {
+                        
+                        $(".ns-box.ns-effect-thumbslider").fadeOut(400);
+                    }
 
                 });
 
                 notification.show();
 
-            }, 300);
+            }, 500);
 
         }
             
@@ -1481,53 +1508,18 @@ endif;
 
         }); 
             
-        $(function () {
+        <?php if(!empty($USER->info_log)) : ?>
 
-            <?php if(!empty($USER->info_log)) : ?>
-            
-            setTimeout(function () {
+        notify("<?php echo printArray($USER->info_log); ?>","info-circle","notice","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
 
-                var notification = new NotificationFx({
+        <?php endif; ?>
 
-                    message: '<span class="fa fa-info-circle fa-2x"></span><p><?php echo printArray($USER->info_log);?></p>',
+        <?php if(!empty($USER->error_log)) : ?>
 
-                    layout: 'bar',
+        notify("<?php echo printArray($USER->error_log); ?>","exclamation-circle ","error","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
 
-                    effect: 'slidetop',
+        <?php endif; ?>
 
-                    type: 'notice', // notice, warning, success or error
-
-                });
-
-                notification.show();
-
-            }, 1200);
-
-            <?php endif; ?>
-            
-            <?php if(!empty($USER->error_log)) : ?>
-
-            setTimeout(function () {
-
-                var notification = new NotificationFx({
-
-                    message: '<span class="fa fa-exclamation-triangle fa-2x"></span><p><?php echo printArray($USER->error_log); ?></p>',
-
-                    layout: 'bar',
-
-                    effect: 'slidetop',
-
-                    type: 'warning', // notice, warning, success or error
-
-                });
-
-                notification.show();
-
-            }, 1200);
-            
-            <?php endif; ?>
-
-        });
             
         $('#reload').on('click tap', function(){
 

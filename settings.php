@@ -160,19 +160,19 @@ if($hasOptions == "Yes") :
                                     
     foreach($resulto as $row) : 
 
-        $title = $row['title'];
-        $topbartext = $row['topbartext'];
-        $topbar = $row['topbar'];
-        $bottombar = $row['bottombar'];
-        $sidebar = $row['sidebar'];
-        $hoverbg = $row['hoverbg'];
-        @$hovertext = $row['hovertext'];
-        $activetabBG = $row['activetabBG'];
-        $activetabicon = $row['activetabicon'];
-        $activetabtext = $row['activetabtext'];
-        $inactiveicon = $row['inactiveicon'];
-        $inactivetext = $row['inactivetext'];
-        @$loading = $row['loading'];
+        $title = isset($row['title']) ? $row['title'] : "Organizr";
+        $topbartext = isset($row['topbartext']) ? $row['topbartext'] : "#66D9EF";
+        $topbar = isset($row['topbar']) ? $row['topbar'] : "#333333";
+        $bottombar = isset($row['bottombar']) ? $row['bottombar'] : "#333333";
+        $sidebar = isset($row['sidebar']) ? $row['sidebar'] : "#393939";
+        $hoverbg = isset($row['hoverbg']) ? $row['hoverbg'] : "#AD80FD";
+        $activetabBG = isset($row['activetabBG']) ? $row['activetabBG'] : "#F92671";
+        $activetabicon = isset($row['activetabicon']) ? $row['activetabicon'] : "#FFFFFF";
+        $activetabtext = isset($row['activetabtext']) ? $row['activetabtext'] : "#FFFFFF";
+        $inactiveicon = isset($row['inactiveicon']) ? $row['inactiveicon'] : "#66D9EF";
+        $inactivetext = isset($row['inactivetext']) ? $row['inactivetext'] : "#66D9EF";
+        $loading = isset($row['loading']) ? $row['loading'] : "#66D9EF";
+        $hovertext = isset($row['hovertext']) ? $row['hovertext'] : "#000000";
 
     endforeach;
 
@@ -828,7 +828,8 @@ endif;
                                                     if($row['guest'] == "true") : $guestz = "checked"; else : $guestz = ""; endif;
                                                     if($row['user'] == "true") : $userz = "checked"; else : $userz = ""; endif;
                                                     if($row['window'] == "true") : $windowz = "checked"; else : $windowz = ""; endif;
-
+                                                    if($row['iconurl'] != "") : $backgroundListImage = "background-image: url('". $row['iconurl'] . "') !important; background-repeat: no-repeat !important; background-position: left !important; background-blend-mode: difference !important; background-size: 50px 50px !important"; else : $backgroundListImage = ""; endif;
+                                                    
                                                     ?>
                                                     <li id="item-<?=$tabNum;?>" class="list-group-item gray-bg" style="position: relative; left: 0px; top: 0px;">
 
@@ -837,8 +838,16 @@ endif;
                                                             <div class="form-group">
 
                                                                 <div class="action-btns" style="width:calc(100%)">
-
-                                                                    <a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a>
+                                                                    
+                                                                    <?php if($backgroundListImage == "") : ?>
+                                                                    <a class="" style="margin-left: 0px"><span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a>
+                                                                    <?php endif; ?>
+                                                                    
+                                                                    <?php if($backgroundListImage != "") : ?>
+                                                                    <a class="" style="margin-left: 0px"><span style="display: none; font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a>
+                                                                    <a class="" style="margin-left: 0px"><span style=""><img style="height: 30px; width: 30px" src="<?=$row['iconurl']?>"></span></a>
+                                                                    
+                                                                    <?php endif; ?>
 
                                                                 </div>
 
@@ -1121,43 +1130,86 @@ endif;
                                           
                                             <div class="gray-bg content-box big-box box-shadow">
                                             
-                                                <form class="content-form form-inline" name="systemSettings" id="systemSettings" action="" method="POST">
+                                                <form class="content-form" name="systemSettings" id="systemSettings" action="" method="POST">
                         								    
                                                     <input type="hidden" name="action" value="createLocation" />
 
                                                     <div class="form-group">
 
                                                         <input type="text" class="form-control material" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
+                                                        <p class="help-text"><?php echo $language->translate("DATABASE_PATH");?></p>
 
                                                     </div>
 
                                                     <div class="form-group">
 
                                                         <input type="text" class="form-control material" name="timezone" placeholder="<?php echo $language->translate("SET_TIMEZONE");?>" value="<?php echo TIMEZONE;?>">
+                                                        <p class="help-text"><?php echo $language->translate("SET_TIMEZONE");?></p>
 
                                                     </div>
 
                                                     <div class="form-group">
 
                                                         <input type="text" class="form-control material" name="titleLogo" placeholder="<?php echo $language->translate("LOGO_URL_TITLE");?>" value="<?php echo TITLELOGO;?>">
+                                                        <p class="help-text"><?php echo $language->translate("LOGO_URL_TITLE");?></p>
 
                                                     </div>
 
                                                     <div class="form-group">
 
                                                         <input type="text" class="form-control material" name="loadingIcon" placeholder="<?php echo $language->translate("LOADING_ICON_URL");?>" value="<?php echo LOADINGICON;?>">
+                                                        <p class="help-text"><?php echo $language->translate("LOADING_ICON_URL");?></p>
 
                                                     </div>
                                                     
                                                     <div class="form-group">
 
                                                         <input type="text" class="form-control material" name="cookiePassword" placeholder="<?php echo $language->translate("COOKIE_PASSWORD");?>" value="<?php echo COOKIEPASSWORD;?>">
+                                                        <p class="help-text"><?php echo $language->translate("COOKIE_PASSWORD");?></p>
 
                                                     </div>
                                                     
                                                     <div class="form-group">
 
                                                         <input type="text" class="form-control material" name="registerPassword" placeholder="<?php echo $language->translate("REGISTER_PASSWORD");?>" value="<?php echo REGISTERPASSWORD;?>">
+                                                        <p class="help-text"><?php echo $language->translate("REGISTER_PASSWORD");?></p>
+
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+
+                                                        <?php 
+                                                        
+                                                        if($notifyExplode[1] == "slidetop") : $slidetopActive = "selected"; else : $slidetopActive = ""; endif;
+                                                        if($notifyExplode[1] == "exploader") : $exploaderActive = "selected"; else : $exploaderActive = ""; endif;
+                                                        if($notifyExplode[1] == "flip") : $flipActive = "selected"; else : $flipActive = ""; endif;
+                                                        if($notifyExplode[1] == "bouncyflip") : $bouncyflipActive = "selected"; else : $bouncyflipActive = ""; endif;
+                                                        if($notifyExplode[1] == "scale") : $scaleActive = "selected"; else : $scaleActive = ""; endif;
+                                                        if($notifyExplode[1] == "genie") : $genieActive = "selected"; else : $genieActive = ""; endif;
+                                                        if($notifyExplode[1] == "jelly") : $jellyActive = "selected"; else : $jellyActive = ""; endif;
+                                                        if($notifyExplode[1] == "slide") : $slideActive = "selected"; else : $slideActive = ""; endif;
+                                                        if($notifyExplode[1] == "boxspinner") : $boxspinnerActive = "selected"; else : $boxspinnerActive = ""; endif;
+                                                        if($notifyExplode[1] == "thumbslider") : $thumbsliderActive = "selected"; else : $thumbsliderActive = ""; endif;
+                                                        
+                                                        ?>
+                                                        <select id="notifyValue" style="background-color: #273238 !important; width: 90%; float: left;" name="notifyEffect" id="notifyEffect" class="form-control material" required>
+                                                            
+                                                            <option value="bar-slidetop" <?=$slidetopActive;?>>Slide From Top</option>
+                                                            <option value="bar-exploader" <?=$exploaderActive;?>>Exploader From Top</option>
+                                                            <option value="attached-flip" <?=$flipActive;?>>Flip</option>
+                                                            <option value="attached-bouncyflip" <?=$bouncyflipActive;?>>Bouncy Flip</option>
+                                                            <option value="growl-scale" <?=$scaleActive;?>>Growl Scale</option>
+                                                            <option value="growl-genie" <?=$genieActive;?>>Growl Genie</option>
+                                                            <option value="growl-jelly" <?=$jellyActive;?>>Growl Jelly</option>
+                                                            <option value="growl-slide" <?=$slideActive;?>>Growl Slide</option>
+                                                            <option value="other-boxspinner" <?=$boxspinnerActive;?>>Spinning Box</option>
+                                                            <option value="other-thumbslider" <?=$thumbsliderActive;?>>Sliding</option>
+                                                            
+                                                        </select>
+                                                        
+                                                        <button id="notifyTest" type="button" class="class='btn waves btn-labeled btn-success btn pull-right text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-flask"></i></span>Test</button>
+                                                        
+                                                        <p class="help-text"><?php echo $language->translate("NOTIFICATION_TYPE");?></p>
 
                                                     </div>
                                                     
@@ -1873,11 +1925,11 @@ endif;
         <?php if($_POST['op']) : ?>
         <script>
             
-            parent.notify("<?php echo printArray($USER->info_log); ?>","info-circle","notice","5000");
+            parent.notify("<?php echo printArray($USER->info_log); ?>","info-circle","notice","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
             
             <?php if(!empty($USER->error_log)) : ?>
             
-            parent.notify("<?php echo printArray($USER->error_log); ?>","exclamation-circle ","error","5000");
+            parent.notify("<?php echo printArray($USER->error_log); ?>","exclamation-circle ","error","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
             
             <?php endif; ?>
             
@@ -1894,7 +1946,7 @@ endif;
                 
             }else{
                 
-               parent.notify("<strong>Tabs Saved!</strong> Apply Changes To Reload The Page!","floppy-o","success","5000"); 
+               parent.notify("<strong>Tabs Saved!</strong> Apply Changes To Reload The Page!","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>"); 
                 
             }
             
@@ -1904,7 +1956,7 @@ endif;
          <?php if($action == "addOptionz") : ?>
         <script>
 
-            parent.notify("<strong>Colors Saved!</strong> Apply Changes To Reload The Page!","floppy-o","success","5000");
+            parent.notify("<strong>Colors Saved!</strong> Apply Changes To Reload The Page!","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
             
         </script>
         <?php endif; ?>
@@ -1978,7 +2030,7 @@ endif;
                         var newid = $('.list-group-item').length + 1;
 
                         $(".todo ul").append(
-                        '<li id="item-' + newid + '" class="list-group-item gray-bg animated zoomInDown" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="<?php echo $language->translate("TAB_URL");?>"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - <?php echo $language->translate("OR");?> -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="<?php echo $language->translate("ICON_URL");?>" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']"><?php echo $language->translate("DEFAULT");?></label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> <?php echo $language->translate("ACTIVE");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> <?php echo $language->translate("USER");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> <?php echo $language->translate("GUEST");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-danger" type="checkbox"><label for="window[' + newid + ']"></label></div> <?php echo $language->translate("NO_IFRAME");?></div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
+                        '<li id="item-' + newid + '" class="list-group-item gray-bg animated zoomInDown" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="<?php echo $language->translate("TAB_URL");?>"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - <?php echo $language->translate("OR");?> -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="<?php echo $language->translate("ICON_URL");?>" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']"><?php echo $language->translate("DEFAULT");?></label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> <?php echo $language->translate("ACTIVE");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> <?php echo $language->translate("USER");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> <?php echo $language->translate("GUEST");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-danger" type="checkbox"><label for="window[' + newid + ']"></label></div> <?php echo $language->translate("NO_IFRAME");?></div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
                         );
 
                         $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
@@ -2099,6 +2151,14 @@ endif;
                 }
             }
             
+            $("#notifyTest").click(function(){
+
+                var notifySplit = $("#notifyValue").val().split("-");
+                console.log(notifySplit[0]);
+                parent.notify("This is a test message","flask","notice","5000", notifySplit[0], notifySplit[1]);
+     
+            });
+            
             $("#iconHide").click(function(){
 
                 $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).toggle();
@@ -2125,8 +2185,10 @@ endif;
             $("li[class^='list-group-item']").bind('mouseheld', function(e) {
 
                 $(this).find("span[class^='fa fa-hand-paper-o']").attr("class", "fa fa-hand-grab-o");
+                $(this).addClass("animated pulse");
                 $(this).mouseup(function() {
                     $(this).find("span[class^='fa fa-hand-grab-o']").attr("class", "fa fa-hand-paper-o");
+                    $(this).removeClass("animated pulse");
                 });
             });
             
@@ -2186,7 +2248,7 @@ endif;
 
                 copyToClipboard(document.getElementById("copyTarget"));
                 
-                parent.notify("Icon Path Copied To Clipboard","clipboard","success","5000");
+                parent.notify("Icon Path Copied To Clipboard","clipboard","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
                 
                 $( "div[id^='viewAllIcons']" ).toggle();
                 
@@ -2398,7 +2460,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.99993";
+                    var currentVersion = "0.99994";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;
@@ -2410,7 +2472,7 @@ endif;
                     
                     	console.log("You Need To Upgrade");
                         
-                        parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000");
+                        parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
 
                         $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
                         
@@ -2422,13 +2484,13 @@ endif;
                     
                     	console.log("You Are on Current Version");
                         
-                        parent.notify("<?php echo $language->translate("SOFTWARE_IS");?> <strong><?php echo $language->translate("UP_TO_DATE");?></strong>","thumbs-up ","success","5000");
+                        parent.notify("<?php echo $language->translate("SOFTWARE_IS");?> <strong><?php echo $language->translate("UP_TO_DATE");?></strong>","thumbs-up ","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
                     
                     }else{
                     
                     	console.log("something went wrong");
                         
-                        parent.notify("<strong>WTF!? </strong>Can\'t check version.","thumbs-down","error","5000");
+                        parent.notify("<strong>WTF!? </strong>Can\'t check version.","thumbs-down","error","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
                     
                     }
 

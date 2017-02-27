@@ -1558,7 +1558,7 @@ body {
 }
 
 .login .login-form {
-  padding: 30px 80px 30px;
+  padding: 15px;
 }
 
 .login form {
@@ -1573,7 +1573,7 @@ body {
 
 /*Registration page*/
 .registration-form {
-  padding: 30px 80px 120px;
+  padding: 15px;
 }
 
 .registration-form h4 {
@@ -5643,7 +5643,8 @@ label {
 }
 
 .help-text {
-  padding: 3px 0;
+  padding: 0;
+  font-size: 10px;
 }
 
 .form-control.material {
