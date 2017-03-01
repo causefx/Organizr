@@ -4427,16 +4427,13 @@ body .ns-effect-loadingcircle {
   background: rgba(0, 0, 0, 0.2);
 }
 
-.logout-modal .login {
-  max-width: 320px;
-}
-
 .logout-modal .login a {
   font-size: 20px;
   padding: 20px;
   padding: 15px 25px 0px;
   color: #fff;
   opacity: .8;
+  cursor: pointer;
 }
 
 .logout-modal .login a:hover {

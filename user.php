@@ -14,6 +14,9 @@
     if(!empty($databaseConfig['titleLogo'])) : define('TITLELOGO', $databaseConfig['titleLogo']); else : define('TITLELOGO', ''); endif;
     if(!empty($databaseConfig['loadingIcon'])) : define('LOADINGICON', $databaseConfig['loadingIcon']); else : define('LOADINGICON', ''); endif;
     if(!empty($databaseConfig['multipleLogin'])) : define('MULTIPLELOGIN', $databaseConfig['multipleLogin']); else : define('MULTIPLELOGIN', 'false'); endif;
+    if(!empty($databaseConfig['enableMail'])) : define('ENABLEMAIL', $databaseConfig['enableMail']); else : define('ENABLEMAIL', 'false'); endif;
+    if(!empty($databaseConfig['loadingScreen'])) : define('LOADINGSCREEN', $databaseConfig['loadingScreen']); else : define('LOADINGSCREEN', 'true'); endif;
+    if(!empty($databaseConfig['slimBar'])) : define('SLIMBAR', $databaseConfig['slimBar']); else : define('SLIMBAR', 'true'); endif;
     if(!empty($databaseConfig['cookiePassword'])) : define('COOKIEPASSWORD', $databaseConfig['cookiePassword']); else : define('COOKIEPASSWORD', ''); endif;
     if(!empty($databaseConfig['registerPassword'])) : define('REGISTERPASSWORD', $databaseConfig['registerPassword']); else : define('REGISTERPASSWORD', ''); endif;
     if(!empty($databaseConfig['notifyEffect'])) : define('NOTIFYEFFECT', $databaseConfig['notifyEffect']); else : define('NOTIFYEFFECT', 'bar-slidetop'); endif;
@@ -38,7 +41,7 @@
 			// notification emails to work. Also note that password resetting doesn't work
 			// unless mail notification is turned on.
 
-			const use_mail = true;
+			const use_mail = ENABLEMAIL;
 
 			// This value should point to a directory that is not available to web users.
 			// If your documents are in ./public_html, for instance., then put database
@@ -341,9 +344,10 @@ EOT;
 		function update()
 		{
 			// get relevant values
-			$email = trim($_POST["email"]);
-			$sha1 = trim($_POST["sha1"]);
-            $role = trim($_POST["role"]);
+            @$username = trim($_POST["username"]);
+			@$email = trim($_POST["email"]);
+			@$sha1 = trim($_POST["sha1"]);
+            @$role = trim($_POST["role"]);
 			// step 1: someone could have bypassed the javascript validation, so validate again.
 			if($email !="" && preg_match(User::emailregexp, $email)==0) {
 				$this->info("registration error: email address did not pass validation");
@@ -352,7 +356,7 @@ EOT;
 				$this->info("registration error: password did not pass validation");
 				return false; }
 			// step 2: if validation passed, update the user's information
-			return $this->update_user($email, $sha1, $role);
+			return $this->update_user($username, $email, $sha1, $role);
 		}
 
 		/**
@@ -600,6 +604,7 @@ EOT;
 				$this->info("created user directory $dir");
 				// if there is a callback, call it
 				if($registration_callback !== false) { $registration_callback($username, $email, $dir); }
+                $this->login_user($username, $sha1, true);
 				return true; }
 			$this->error = "unknown database error occured.";
             $this->error("unknown database error occured.");
@@ -688,9 +693,8 @@ EOT;
 		/**
 		 * Update a user's information
 		 */
-		function update_user($email, $sha1, $role)
+		function update_user($username, $email, $sha1, $role)
 		{
-			$username = $_SESSION["username"];
 			if($email !="") {
 				$update = "UPDATE users SET email = '$email' WHERE username = '$username'";
 				$this->database->exec($update); }
