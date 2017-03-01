@@ -129,18 +129,18 @@ endforeach;
 if($hasOptions == "No") :
 
     $title = "Organizr";
-    $topbar = "#eb6363"; 
-    $topbartext = "#FFFFFF";
-    $bottombar = "#eb6363";
-    $sidebar = "#000000";
-    $hoverbg = "#eb6363";
-    $hovertext = "#000000";
-    $activetabBG = "#eb6363";
+    $topbar = "#333333"; 
+    $topbartext = "#66D9EF";
+    $bottombar = "#333333";
+    $sidebar = "#393939";
+    $hoverbg = "#AD80FD";
+    $activetabBG = "#F92671";
     $activetabicon = "#FFFFFF";
     $activetabtext = "#FFFFFF";
-    $inactiveicon = "#FFFFFF";
-    $inactivetext = "#FFFFFF";
-    $loading = "#000000";
+    $inactiveicon = "#66D9EF";
+    $inactivetext = "#66D9EF";
+    $loading = "#66D9EF";
+    $hovertext = "#000000";
 
 endif;
 
@@ -1026,7 +1026,7 @@ endif;
                                         
                                         <form class="content-form form-inline" name="unregister" id="unregister" action="" method="POST">
                                               
-                                            <input type="hidden" name="op" value="unregister"/>
+                                            
                                             
                                             <p id="inputUsername"></p>
 
@@ -1060,7 +1060,7 @@ endif;
 
                                                         <?php $countUsers = 1; 
                                                         foreach($gotUsers as $row) : 
-                                                        if($row['role'] == "admin") : 
+                                                        if($row['role'] == "admin" && $countUsers == 1) : 
                                                             $userColor = "red";
                                                             $disableAction = "disabled=\"disabled\"";
                                                         else : 
@@ -1103,6 +1103,26 @@ endif;
                                                                     <span class="btn-label"><i class="fa fa-user-times"></i></span><?php echo $language->translate("DELETE");?>
 
                                                                 </button>
+                                                                
+                                                                <?php if ($row['role'] == "user") : ?>
+                                                                
+                                                                <button class="btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float promoteUser">
+
+                                                                    <span class="btn-label"><i class="fa fa-arrow-up"></i></span><?php echo $language->translate("PROMOTE");?>
+
+                                                                </button>
+                                                                
+                                                                <?php endif; ?>
+                                                                
+                                                                <?php if ($row['role'] == "admin") : ?>
+                                                                
+                                                                <button <?=$disableAction;?> class="btn waves btn-labeled btn-warning btn btn-sm text-uppercase waves-effect waves-float demoteUser">
+
+                                                                    <span class="btn-label"><i class="fa fa-arrow-down"></i></span><?php echo $language->translate("DEMOTE");?>
+
+                                                                </button>
+                                                                
+                                                                <?php endif; ?>
 
                                                             </td>
 
@@ -1136,47 +1156,49 @@ endif;
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control material" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
+                                                        <input type="text" class="form-control material input-sm" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
                                                         <p class="help-text"><?php echo $language->translate("DATABASE_PATH");?></p>
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control material" name="timezone" placeholder="<?php echo $language->translate("SET_TIMEZONE");?>" value="<?php echo TIMEZONE;?>">
+                                                        <input type="text" class="form-control material input-sm" name="timezone" placeholder="<?php echo $language->translate("SET_TIMEZONE");?>" value="<?php echo TIMEZONE;?>">
                                                         <p class="help-text"><?php echo $language->translate("SET_TIMEZONE");?></p>
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control material" name="titleLogo" placeholder="<?php echo $language->translate("LOGO_URL_TITLE");?>" value="<?php echo TITLELOGO;?>">
+                                                        <input type="text" class="form-control material input-sm" name="titleLogo" placeholder="<?php echo $language->translate("LOGO_URL_TITLE");?>" value="<?php echo TITLELOGO;?>">
                                                         <p class="help-text"><?php echo $language->translate("LOGO_URL_TITLE");?></p>
 
                                                     </div>
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control material" name="loadingIcon" placeholder="<?php echo $language->translate("LOADING_ICON_URL");?>" value="<?php echo LOADINGICON;?>">
+                                                        <input type="text" class="form-control material input-sm" name="loadingIcon" placeholder="<?php echo $language->translate("LOADING_ICON_URL");?>" value="<?php echo LOADINGICON;?>">
                                                         <p class="help-text"><?php echo $language->translate("LOADING_ICON_URL");?></p>
 
                                                     </div>
                                                     
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control material" name="cookiePassword" placeholder="<?php echo $language->translate("COOKIE_PASSWORD");?>" value="<?php echo COOKIEPASSWORD;?>">
+                                                        <input type="text" class="form-control material input-sm" name="cookiePassword" placeholder="<?php echo $language->translate("COOKIE_PASSWORD");?>" value="<?php echo COOKIEPASSWORD;?>">
                                                         <p class="help-text"><?php echo $language->translate("COOKIE_PASSWORD");?></p>
 
                                                     </div>
                                                     
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control material" name="registerPassword" placeholder="<?php echo $language->translate("REGISTER_PASSWORD");?>" value="<?php echo REGISTERPASSWORD;?>">
+                                                        <input type="text" class="form-control material input-sm" name="registerPassword" placeholder="<?php echo $language->translate("REGISTER_PASSWORD");?>" value="<?php echo REGISTERPASSWORD;?>">
                                                         <p class="help-text"><?php echo $language->translate("REGISTER_PASSWORD");?></p>
 
                                                     </div>
                                                     
-                                                    <div class="form-group">
+                                                    <div class="content-form form-inline">
+                                                        
+                                                        <div class="form-group">
 
                                                         <?php 
                                                         
@@ -1192,37 +1214,70 @@ endif;
                                                         if($notifyExplode[1] == "thumbslider") : $thumbsliderActive = "selected"; else : $thumbsliderActive = ""; endif;
                                                         
                                                         ?>
-                                                        <select id="notifyValue" style="background-color: #273238 !important; width: 90%; float: left;" name="notifyEffect" id="notifyEffect" class="form-control material" required>
-                                                            
-                                                            <option value="bar-slidetop" <?=$slidetopActive;?>>Slide From Top</option>
-                                                            <option value="bar-exploader" <?=$exploaderActive;?>>Exploader From Top</option>
-                                                            <option value="attached-flip" <?=$flipActive;?>>Flip</option>
-                                                            <option value="attached-bouncyflip" <?=$bouncyflipActive;?>>Bouncy Flip</option>
-                                                            <option value="growl-scale" <?=$scaleActive;?>>Growl Scale</option>
-                                                            <option value="growl-genie" <?=$genieActive;?>>Growl Genie</option>
-                                                            <option value="growl-jelly" <?=$jellyActive;?>>Growl Jelly</option>
-                                                            <option value="growl-slide" <?=$slideActive;?>>Growl Slide</option>
-                                                            <option value="other-boxspinner" <?=$boxspinnerActive;?>>Spinning Box</option>
-                                                            <option value="other-thumbslider" <?=$thumbsliderActive;?>>Sliding</option>
-                                                            
-                                                        </select>
-                                                        
-                                                        <button id="notifyTest" type="button" class="class='btn waves btn-labeled btn-success btn pull-right text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-flask"></i></span>Test</button>
-                                                        
-                                                        <p class="help-text"><?php echo $language->translate("NOTIFICATION_TYPE");?></p>
+                                                            <select id="notifyValue" style="background-color: #273238 !important;" name="notifyEffect" id="notifyEffect" class="form-control material input-sm" required>
 
-                                                    </div>
-                                                    
-                                                    <div class="form-group">
-                                                        <?php  if(MULTIPLELOGIN == "true") : $multipleLogin = "checked"; else : $multipleLogin = ""; endif;?>
-                                                        <input id="" class="switcher switcher-success" value="false" name="multipleLogin" type="hidden">
-                                                        <input id="multipleLogin" class="switcher switcher-success" value="true" name="multipleLogin" type="checkbox" <?php echo $multipleLogin;?>>
+                                                                <option value="bar-slidetop" <?=$slidetopActive;?>>Slide From Top</option>
+                                                                <option value="bar-exploader" <?=$exploaderActive;?>>Exploader From Top</option>
+                                                                <option value="attached-flip" <?=$flipActive;?>>Flip</option>
+                                                                <option value="attached-bouncyflip" <?=$bouncyflipActive;?>>Bouncy Flip</option>
+                                                                <option value="growl-scale" <?=$scaleActive;?>>Growl Scale</option>
+                                                                <option value="growl-genie" <?=$genieActive;?>>Growl Genie</option>
+                                                                <option value="growl-jelly" <?=$jellyActive;?>>Growl Jelly</option>
+                                                                <option value="growl-slide" <?=$slideActive;?>>Growl Slide</option>
+                                                                <option value="other-boxspinner" <?=$boxspinnerActive;?>>Spinning Box</option>
+                                                                <option value="other-thumbslider" <?=$thumbsliderActive;?>>Sliding</option>
 
-                                                        <label for="multipleLogin"></label><?php echo $language->translate("MULTIPLE_LOGINS");?>
+                                                            </select>
+
+                                                            <button id="notifyTest" type="button" class="class='btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-flask"></i></span>Test</button>
+
+                                                            <p class="help-text"><?php echo $language->translate("NOTIFICATION_TYPE");?></p>
+
+                                                        </div>
                                                     
                                                     </div>
+                                                    
+                                                    <div class="content-form form-inline">
+                                                    
+                                                        <div class="form-group">
+                                                            <?php  if(MULTIPLELOGIN == "true") : $multipleLogin = "checked"; else : $multipleLogin = ""; endif;?>
+                                                            <input id="" class="switcher switcher-success" value="false" name="multipleLogin" type="hidden">
+                                                            <input id="multipleLogin" class="switcher switcher-success" value="true" name="multipleLogin" type="checkbox" <?php echo $multipleLogin;?>>
 
-                                                    <button type="submit" class="btn btn-success btn-icon waves waves-circle waves-effect waves-float"><i class="fa fa-floppy-o"></i></button>
+                                                            <label for="multipleLogin"></label><?php echo $language->translate("MULTIPLE_LOGINS");?>
+
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <?php  if(LOADINGSCREEN == "true") : $loadingScreen = "checked"; else : $loadingScreen = ""; endif;?>
+                                                            <input id="" class="switcher switcher-success" value="false" name="loadingScreen" type="hidden">
+                                                            <input id="loadingScreen" class="switcher switcher-success" value="true" name="loadingScreen" type="checkbox" <?php echo $loadingScreen;?>>
+
+                                                            <label for="loadingScreen"></label><?php echo $language->translate("ENABLE_LOADING_SCREEN");?>
+
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <?php  if(ENABLEMAIL == "true") : $enableMail = "checked"; else : $enableMail = ""; endif;?>
+                                                            <input id="" class="switcher switcher-success" value="false" name="enableMail" type="hidden">
+                                                            <input id="enableMail" class="switcher switcher-success" value="true" name="enableMail" type="checkbox" <?php echo $enableMail;?>>
+
+                                                            <label for="enableMail"></label><?php echo $language->translate("ENABLE_MAIL");?>
+
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <?php  if(SLIMBAR == "true") : $enableSlimBar = "checked"; else : $enableSlimBar = ""; endif;?>
+                                                            <input id="" class="switcher switcher-success" value="false" name="slimBar" type="hidden">
+                                                            <input id="slimBar" class="switcher switcher-success" value="true" name="slimBar" type="checkbox" <?php echo $enableSlimBar;?>>
+
+                                                            <label for="slimBar"></label><?php echo $language->translate("ENABLE_SLIMBAR");?>
+
+                                                        </div>
+                                                        
+                                                    </div>
+                                                    
+                                                    <button type="submit" class="class='btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save</button>
 
                                                 </form>               
                                           
@@ -2175,7 +2230,23 @@ endif;
 
                 var parent_id = $(this).parent().attr('id');
                 editUsername = $('#unregister').find('#inputUsername');
-                $(editUsername).html('<input type="hidden" name="username"value="' + parent_id + '" />');
+                $(editUsername).html('<input type="hidden" name="op" value="unregister"/><input type="hidden" name="username"value="' + parent_id + '" />');
+     
+            });
+            
+            $(".promoteUser").click(function(){
+
+                var parent_ids = $(this).parent().attr('id');
+                editUsername = $('#unregister').find('#inputUsername');
+                $(editUsername).html('<input type="hidden" name="op" value="update"/><input type="hidden" name="role" value="admin"/><input type="hidden" name="username"value="' + parent_ids + '" />');
+     
+            });
+            
+            $(".demoteUser").click(function(){
+
+                var parent_idz = $(this).parent().attr('id');
+                editUsername = $('#unregister').find('#inputUsername');
+                $(editUsername).html('<input type="hidden" name="op" value="update"/><input type="hidden" name="role" value="user"/><input type="hidden" name="username"value="' + parent_idz + '" />');
      
             });
             
@@ -2460,7 +2531,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                    
-                    var currentVersion = "0.99994";
+                    var currentVersion = "0.99995";
                     var githubVersion = github.tag_name;
                     var githubDescription = github.body;
                     var githubName = github.name;

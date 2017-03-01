@@ -254,6 +254,9 @@ else :
     if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
 
 endif;
+if(defined('SLIMBAR') && SLIMBAR == '') : define('SLIMBAR', 'true'); endif;
+
+if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
 
 ?>
 <!--
@@ -324,9 +327,233 @@ endif;
         <![endif]-->
         
     </head>
+    
+    <style>
+        .bottom-bnts a {
+
+            background: <?=$bottombar;?> !important;
+            color: <?=$topbartext;?> !important;
+
+        }.bottom-bnts {
+
+            background-color: <?=$bottombar;?> !important;
+
+        }.gn-menu-main {
+
+
+            background-color: <?=$topbar;?>;
+
+        }.gn-menu-main ul.gn-menu {
+
+            background: <?=$sidebar;?>;
+
+        }.gn-menu-wrapper {
+
+            background: <?=$sidebar;?>;
+
+        }.gn-menu i {
+
+            height: 18px;
+            width: 52px;
+
+        }.la-timer.la-dark {
+
+            color: <?=$topbartext;?>
+
+        }.refresh-preloader {
+
+            background: <?=$loading;?>;
+
+        }.la-timer {
+
+            width: 75px;
+            height: 75px;
+            padding-top: 20px;
+            border-radius: 100px;
+            background: <?=$sidebar;?>;
+            border: 2px solid <?=$topbar;?>;
+
+        }@media screen and (min-width:737px){
+
+            .tab-item:hover a {
+
+                color: <?=$hovertext;?> !important;
+                background: <?=$hoverbg;?>;
+                border-radius: 100px 0 0 100px;
+
+            }
+
+        }.gn-menu li.active > a {
+
+            color: <?=$activetabtext;?> !important;
+            background: <?=$activetabBG;?>;
+            border-radius: 100px 0 0 100px;
+
+        }.gn-menu li.rightActive > a {
+
+            background: <?=$hoverbg;?>;
+            border-radius: 100px 0 0 100px;
+
+        }.active {
+
+            display: block;
+
+        }.hidden {
+
+            display: none;
+
+        }.errorz {
+
+            background-image: linear-gradient(red, red), linear-gradient(#d2d2d2, #d2d2d2);
+            outline: none;
+            animation: input-highlight .5s forwards;
+            box-shadow: none;
+            padding-left: 0;
+            border: 0;
+            border-radius: 0;
+            background-size: 0 2px,100% 1px;
+            background-repeat: no-repeat;
+            background-position: center bottom,center calc(100% - 1px);
+            background-color: transparent;
+            box-shadow: none;
+
+        }.gn-menu li.active i.fa {
+
+            color: <?=$activetabicon;?>;
+
+        }.gn-menu li i.fa {
+
+            color: <?=$inactiveicon;?>;
+
+        }.gn-menu-main ul.gn-menu a {
+
+            color: <?=$inactivetext;?>;
+        }li.dropdown.some-btn .mdi {
+
+            color: <?=$topbartext;?>;
+
+        }.nav>li>a:focus, .nav>li>a:hover {
+
+            text-decoration: none;
+            background-color: transparent;
+
+        }div#preloader {
+
+            background-color: <?=$loading;?>;
+
+        }.iframe {
+
+            -webkit-overflow-scrolling: touch;
+
+        }.iframe iframe{
+
+        }#menu-toggle span {
+            background: <?=$topbartext;?>;
+        }logo.logo {
+
+            opacity: 0.5;
+            filter: alpha(opacity=50);
+
+        }.mini-nav .split {
+            width: calc(50% - 25px);
+        }.splitRight {
+            width: 50%;
+            margin-left: 50% !important;
+            position: absolute !important;
+        }.split {
+            width: 50%;
+            position: absolute !important;
+        }.mini-nav .splitRight {
+            margin-left: calc(50% + 25px) !important;
+            width: calc(50% - 25px);
+        }.form-control.material {
+            background-image: -webkit-gradient(linear, left top, left bottom, from(<?=$topbartext;?>), to(<?=$topbartext;?>)), -webkit-gradient(linear, left top, left bottom, from(#d2d2d2), to(#d2d2d2));
+            background-image: -webkit-linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), -webkit-linear-gradient(#d2d2d2, #d2d2d2);
+            background-image: linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), linear-gradient(#d2d2d2, #d2d2d2);
+        }
+
+        <?php if(SLIMBAR == "true") : ?>
+        /* Slim Styling */
+        body{
+
+            padding-top: 30px !important;
+
+        }.gn-menu-main {
+        
+            height: 30px !important;
+        
+        }.gn-menu-wrapper {
+         
+            top: 30px !important;
+            
+        }.gn-menu-main .navbar-right {
+            
+            line-height: 30px !important;
+            
+        }img.img-circle {
+            
+            vertical-align: inherit;
+            margin-top: 2px;
+        
+        }.menu-toggle .hamburger {
+            
+            top: 0px !important;
+            
+        }.top-clock {
+            
+            line-height: 30px !important;
+            
+        }.titlelogoclass {
+            
+            vertical-align: inherit;
+            
+        }.members-sidebar {
+            
+            top: 30px !important;
+            
+        }.menu-toggle .cross span:nth-child(2) {
+        
+            left: -9px;
+            top: 40px;
+        
+        }.menu-toggle.gn-selected .cross span:nth-child(2) {
+         
+            width: 49%;
+            
+        }.menu-toggle.gn-selected .cross span:nth-child(1) {
+            
+            height: 105% !important;
+            
+        }.menu-toggle .cross span:nth-child(1) {
+         
+            left: 6px !important;
+            top: 26px !important;
+            
+        }.menu-toggle .hamburger span {
+         
+            margin: 5px 0;
+            width: 25px;
+            
+        }.menu-toggle .hamburger {
+            
+            margin-left: -17px;
+            
+        }.ns-effect-slidetop {
+         
+            padding: 5px 22px;
+            
+        }.ns-effect-exploader {
+         
+            padding: 5px 22px;
+            
+        }
+        <?php endif; ?>
+
+    </style>
 
     <body style="overflow: hidden">
 
+        <?php if (LOADINGSCREEN == "true") : ?>
         <!--Preloader-->
         <div id="preloader" class="preloader table-wrapper">
             
@@ -351,154 +578,9 @@ endif;
             </div>
         
         </div>
+        <?php endif; ?>
 
         <div id="main-wrapper" class="main-wrapper" tabindex="-1">
-            
-            <style>
-                .bottom-bnts a {
-                    
-                    background: <?=$bottombar;?> !important;
-                    color: <?=$topbartext;?> !important;
-                
-                }.bottom-bnts {
-                    
-                    background-color: <?=$bottombar;?> !important;
-                
-                }.gn-menu-main {
-                    
-                   
-                    background-color: <?=$topbar;?>;
-                
-                }.gn-menu-main ul.gn-menu {
-                    
-                    background: <?=$sidebar;?>;
-                
-                }.gn-menu-wrapper {
-                
-                    background: <?=$sidebar;?>;
-                
-                }.gn-menu i {
-                    
-                    height: 18px;
-                    width: 52px;
-                
-                }.la-timer.la-dark {
-                    
-                    color: <?=$topbartext;?>
-                
-                }.refresh-preloader {
-                    
-                    background: <?=$loading;?>;
-                
-                }.la-timer {
-                    
-                    width: 75px;
-                    height: 75px;
-                    padding-top: 20px;
-                    border-radius: 100px;
-                    background: <?=$sidebar;?>;
-                    border: 2px solid <?=$topbar;?>;
-                
-                }@media screen and (min-width:737px){
-                    
-                    .tab-item:hover a {
-                    
-                        color: <?=$hovertext;?> !important;
-                        background: <?=$hoverbg;?>;
-                        border-radius: 100px 0 0 100px;
-                    
-                    }
-        
-                }.gn-menu li.active > a {
-                    
-                    color: <?=$activetabtext;?> !important;
-                    background: <?=$activetabBG;?>;
-                    border-radius: 100px 0 0 100px;
-                
-                }.gn-menu li.rightActive > a {
-                    
-                    background: <?=$hoverbg;?>;
-                    border-radius: 100px 0 0 100px;
-                
-                }.active {
-                    
-                    display: block;
-                
-                }.hidden {
-                    
-                    display: none;
-                    
-                }.errorz {
-                	
-                	background-image: linear-gradient(red, red), linear-gradient(#d2d2d2, #d2d2d2);
-            	    outline: none;
-            	    animation: input-highlight .5s forwards;
-            	    box-shadow: none;
-            	    padding-left: 0;
-            	    border: 0;
-            	    border-radius: 0;
-            	    background-size: 0 2px,100% 1px;
-            	    background-repeat: no-repeat;
-            	    background-position: center bottom,center calc(100% - 1px);
-            	    background-color: transparent;
-            	    box-shadow: none;
-                	    
-                }.gn-menu li.active i.fa {
-                    
-                    color: <?=$activetabicon;?>;
-                    
-                }.gn-menu li i.fa {
-                    
-                    color: <?=$inactiveicon;?>;
-                    
-                }.gn-menu-main ul.gn-menu a {
-                    
-                    color: <?=$inactivetext;?>;
-                }li.dropdown.some-btn .mdi {
-                    
-                    color: <?=$topbartext;?>;
-                    
-                }.nav>li>a:focus, .nav>li>a:hover {
-                    
-                    text-decoration: none;
-                    background-color: transparent;
-                    
-                }div#preloader {
-                    
-                    background-color: <?=$loading;?>;
-                    
-                }.iframe {
-                    
-                    -webkit-overflow-scrolling: touch;
-
-                }.iframe iframe{
-
-                }#menu-toggle span {
-                    background: <?=$topbartext;?>;
-                }logo.logo {
-                    
-                    opacity: 0.5;
-                    filter: alpha(opacity=50);
-
-                }.mini-nav .split {
-                    width: calc(50% - 25px);
-                }.splitRight {
-                    width: 50%;
-                    margin-left: 50% !important;
-                    position: absolute !important;
-                }.split {
-                    width: 50%;
-                    position: absolute !important;
-                }.mini-nav .splitRight {
-                    margin-left: calc(50% + 25px) !important;
-                    width: calc(50% - 25px);
-                }.form-control.material {
-                    background-image: -webkit-gradient(linear, left top, left bottom, from(<?=$topbartext;?>), to(<?=$topbartext;?>)), -webkit-gradient(linear, left top, left bottom, from(#d2d2d2), to(#d2d2d2));
-                    background-image: -webkit-linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), -webkit-linear-gradient(#d2d2d2, #d2d2d2);
-                    background-image: linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), linear-gradient(#d2d2d2, #d2d2d2);
-                }
-
-            </style>
 
             <ul id="gn-menu" class="gn-menu-main">
                 
@@ -632,7 +714,7 @@ endif;
                     
                         else : 
                     
-                            echo "<img style='max-width: 250px; max-height: 50px;' src='" . TITLELOGO . "'>";
+                            echo "<img class='titlelogoclass' style='max-width: 250px; max-height:" . $slimBar ."px;' src='" . TITLELOGO . "'>";
                     
                         endif;
                     
@@ -664,7 +746,7 @@ endif;
                                 
                             <?php endif; endif;?>
                                 
-                                <i class="userpic"><img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=40&d=mm" class="img-circle"></i> 
+                                <i class="userpic"><img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=<?=$userSize;?>&d=mm" class="img-circle"></i> 
                                 
                             </a>
                             
@@ -972,6 +1054,7 @@ endif;
 
                             <input type="hidden" name="op" value="update"/>
                             <input type="hidden" name="sha1" value=""/>
+                            <input type="hidden" name="username" value="<?php echo $USER->username; ?>"/>
                             <input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
 
                             <div class="form-group">
@@ -1079,8 +1162,10 @@ endif;
 
                                     </form> 
                                     
+                                    <?php if (ENABLEMAIL == "true") : ?>
                                     <button id="switchForgot" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("FORGOT_PASSWORD");?></text></button>
-                                    
+                                    <?php endif; ?>
+    
                                     <?php if(REGISTERPASSWORD != "") : ?>
                                     <button id="switchCreateUser" style="background:<?=$hoverbg;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$hovertext;?>;"><?php echo $language->translate("CREATE_USER");?></text></button>
                                     <?php endif; ?>
@@ -1100,6 +1185,8 @@ endif;
 
                                     </form> 
                                     
+                                    <button id="welcomeGoBack" style="background:<?=$topbartext;?>; display: none" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
+                                    
                                     <?php if(REGISTERPASSWORD != "") : ?>
                                     <div id="userPassForm" style="display: none;">
                                         <form id="userCreateForm" action="register.php" method="POST">
@@ -1115,6 +1202,8 @@ endif;
 
                                             <button style="background:<?=$topbar;?>;" type="submit" id="checkRegisterPass" class="btn btn-block btn-info text-uppercase waves" value="reset password"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("SUBMIT");?></text></button>
                                         </form>
+                                        
+                                        <button id="welcomeGoBack2" style="background:<?=$topbartext;?>; display: none" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
                                     
                                     </div>
                                     
@@ -1150,6 +1239,8 @@ endif;
                                         </div>
 
                                         <button id="registerSubmit" type="submit" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register"><?php echo $language->translate("REGISTER");?></button>
+                                        
+                                        <button id="welcomeGoBack3" style="background:<?=$topbartext;?>; display: none" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
 
                                     </form> 
                                     <?php endif; ?>
@@ -1171,7 +1262,7 @@ endif;
         <?php if($configReady == "Yes") : if($USER->authenticated) : ?>
         <div style="background:<?=$topbar;?>;" class="logout-modal modal fade">
             
-            <div class="table-wrapper" style="background: <?=$topbar;?>">
+            <div class="table-wrapper" style="background: <?=$sidebar;?>">
             
                 <div class="table-row">
                 
@@ -1181,14 +1272,22 @@ endif;
                         
                             <div class="content-box">
                             
-                                <div style="background:<?=$topbartext;?>;" class="biggest-box">
+                                <div style="background:<?=$topbar;?>;" class="biggest-box">
+                                    
+                                    <h1 style="color:<?=$topbartext;?>;" class="zero-m text-uppercase"><?php echo $language->translate("LOGOUT");?></h1>
+                                    
+                                </div>
                                 
+                                <div class="big-box login-form">
+                                    
                                     <form name="log out" id="logout" action="" method="POST">
                                         
 				                        <input type="hidden" name="op" value="logout">
                                         
                                         <input type="hidden" name="username"value="<?php echo $_SESSION["username"]; ?>" >
-			
+			                         
+                                        <center><img src="images/sowwy.png" style="height: 200px;"></center>
+                                        
                                         <h3 style="color:<?=$topbar;?>;" class="zero-m text-uppercase"><?php echo $language->translate("DO_YOU_WANT_TO_LOGOUT");?></h3>
                                         
                                         <a style="color:<?=$topbar;?>;" id="logoutSubmit" class="i-block" data-dismiss="modal"><?php echo $language->translate("YES_WORD");?></a>
@@ -1255,9 +1354,9 @@ endif;
             
             windowHeight = $(window).innerHeight();
             
-            $("div").find(".iframe").css('height', windowHeight - 56 + "px");
+            $("div").find(".iframe").css('height', windowHeight - <?=$slimBar;?> + "px");
             
-            $('#content').css('height', windowHeight - 56 + "px");
+            $('#content').css('height', windowHeight - <?=$slimBar;?> + "px");
             
         };
             
@@ -1354,12 +1453,43 @@ endif;
      
         });
             
+        $("#welcomeGoBack").click(function(){
+            
+            $( "form[id^='login']" ).toggle();
+            $( "form[id^='forgotPassword']" ).toggle();
+            $("#switchForgot").toggle();
+            $("#switchCreateUser").toggle();
+            $("#welcomeGoBack").toggle();
+     
+        });
+            
+        $("#welcomeGoBack2").click(function(){
+            
+            $( "form[id^='login']" ).toggle();
+            $("#userPassForm").toggle();
+            $("#switchForgot").toggle();
+            $("#switchCreateUser").toggle();
+            $("#welcomeGoBack2").toggle();
+     
+        });
+            
+        $("#welcomeGoBack3").click(function(){
+            
+            $("#registration").toggle();  
+            $("#welcomeGoBack3").toggle();
+            $( "form[id^='login']" ).toggle();
+            $("#switchForgot").toggle();
+            $("#switchCreateUser").toggle();
+     
+        });
+            
         $("#switchForgot").click(function(){
 
             $( "form[id^='login']" ).toggle();
             $( "form[id^='forgotPassword']" ).toggle();
             $("#switchForgot").toggle();
             $("#switchCreateUser").toggle();
+            $("#welcomeGoBack").toggle();
      
         });
             
@@ -1369,6 +1499,7 @@ endif;
             $("#userPassForm").toggle();
             $("#switchForgot").toggle();
             $("#switchCreateUser").toggle();
+            $("#welcomeGoBack2").toggle();
      
         });  
             
@@ -1443,7 +1574,8 @@ endif;
                         } else {
 
                             $("#userPassForm").toggle();
-                            $("#registration").toggle();     
+                            $("#registration").toggle(); 
+                            $("#welcomeGoBack3").toggle();
 
                         }
 
