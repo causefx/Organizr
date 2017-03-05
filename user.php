@@ -183,7 +183,7 @@
 		// this function rebuilds the database if there is no database to work with yet
 		function rebuild_database($dbfile)
 		{
-			$this->info("rebuilding database as ".$dbfile);
+			$this->info("creating/rebuilding database as ".$dbfile);
 			$this->database->beginTransaction();
 			$create = "CREATE TABLE users (username TEXT UNIQUE, password TEXT, email TEXT UNIQUE, token TEXT, role TEXT, active TEXT, last TEXT);";
 			$this->database->exec($create);
@@ -243,10 +243,10 @@
             $rememberMe = $_POST["rememberMe"];
 			// step 1: someone could have bypassed the javascript validation, so validate again.
 			if(!$this->validate_user_name($username)) {
-				$this->info("log in error: user name did not pass validation");
+				$this->info("<strong>log in error:</strong> user name did not pass validation");
 				return false; }
 			if(preg_match(User::sha1regexp, $sha1)==0) {
-				$this->info("log in error: password did not pass validation");
+				$this->info("<strong>log in error:</strong> password did not pass validation");
 				return false; }
 			// step 2: if validation passed, log the user in
 			if($rememberMe == "true") {
@@ -265,7 +265,7 @@
 			$username = $_POST["username"];
 			// step 1: validate the user name.
 			if(!$this->validate_user_name($username)) {
-				$this->info("log in error: user name did not pass validation");
+				$this->info("<strong>log in error:</strong> user name did not pass validation");
 				return false; }
 			// step 2: if validation passed, log the user out
 			return $this->logout_user($username);
@@ -280,7 +280,7 @@
 			$username = $_POST["username"];
 			// step 1: validate the user name.
 			if(!$this->validate_user_name($username)) {
-				$this->info("unregistration error: user name did not pass validation");
+				$this->info("<strong>unregistration error:</strong> user name did not pass validation");
 				return false; }
 			// step 2: if validation passed, drop the user from the system
 			return $this->unregister_user($username);
@@ -295,18 +295,19 @@
 			$username = $_POST["username"];
 			$email = $_POST["email"];
 			$sha1 = $_POST["sha1"];
+			$settings = $_POST["settings"];
 			// step 1: someone could have bypassed the javascript validation, so validate again.
 			if(!$this->validate_user_name($username)) {
-				$this->info("registration error: user name did not pass validation");
+				$this->info("<strong>registration error:</strong> user name did not pass validation");
 				return false; }
 			if(preg_match(User::emailregexp, $email)==0) {
-				$this->info("registration error: email address did not pass validation");
+				$this->info("<strong>registration error:</strong> email address did not pass validation");
 				return false; }
 			if(preg_match(User::sha1regexp, $sha1)==0) {
-				$this->info("registration error: password did not pass validation");
+				$this->info("<strong>registration error:</strong> password did not pass validation");
 				return false; }
 			// step 2: if validation passed, register user
-			$registered = $this->register_user($username, $email, $sha1, $registration_callback);
+			$registered = $this->register_user($username, $email, $sha1, $registration_callback, $settings);
 			if($registered && User::use_mail)
 			{
 				// send email notification
@@ -350,10 +351,10 @@ EOT;
             @$role = trim($_POST["role"]);
 			// step 1: someone could have bypassed the javascript validation, so validate again.
 			if($email !="" && preg_match(User::emailregexp, $email)==0) {
-				$this->info("registration error: email address did not pass validation");
+				$this->info("<strong>registration error:</strong> email address did not pass validation");
 				return false; }
 			if($sha1 !="" && preg_match(User::sha1regexp, $sha1)==0) {
-				$this->info("registration error: password did not pass validation");
+				$this->info("<strong>registration error:</strong> password did not pass validation");
 				return false; }
 			// step 2: if validation passed, update the user's information
 			return $this->update_user($username, $email, $sha1, $role);
@@ -555,7 +556,7 @@ EOT;
 		 * is profile information that can be set, but in no way
 		 * needs to be, in the user's profile section
 		 */
-		function register_user($username, $email, $sha1, &$registration_callback = false)
+		function register_user($username, $email, $sha1, &$registration_callback = false, $settings)
 		{
 			$dbpassword = $this->token_hash_password($username, $sha1, "");
 			if($dbpassword==$sha1) die("password hashing is not implemented.");
@@ -577,9 +578,9 @@ EOT;
 				$usernames = array();
 				foreach($this->database->query($query) as $data) { $usernames[] = $this->homogenise_username($data["username"]); }
 				if(in_array($this->homogenise_username($username), $usernames)) {
-					$this->info("user account for $username not created.");
-					$this->error = "this user name is not allowed, because it is too similar to other user names.";
-                    $this->error("this user name is not allowed, because it is too similar to other user names.");
+					//$this->info("user account for $username not created.");
+					$this->error = "<strong>$username</strong> is not allowed, because it is too similar to other user names.";
+                    $this->error("<strong>$username</strong> is not allowed, because it is too similar to other user names.");
 					return false; }}
 
 			// Is email address already in use? (see notes on safe reporting)
@@ -601,10 +602,10 @@ EOT;
 				// make the user's data directory
 				$dir = USER_HOME . $username;
 				if(!mkdir($dir, 0760, true)) { $this->error("could not make user directory $dir"); return false; }
-				$this->info("created user directory $dir");
+				//$this->info("created user directory $dir");
 				// if there is a callback, call it
 				if($registration_callback !== false) { $registration_callback($username, $email, $dir); }
-                $this->login_user($username, $sha1, true);
+                if($settings !== "true") { $this->login_user($username, $sha1, true); }
 				return true; }
 			$this->error = "unknown database error occured.";
             $this->error("unknown database error occured.");
@@ -705,7 +706,7 @@ EOT;
 				$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
 				$update = "UPDATE users SET password = '$dbpassword' WHERE username = '$username'";
 				$this->database->exec($update); }
-			$this->info("update the information for $username");
+			$this->info("updated the information for <strong>$username</strong>");
 		}
 
 		/**
@@ -716,7 +717,7 @@ EOT;
 			$update = "UPDATE users SET active = 'false' WHERE username = '$username'";
 			$this->database->exec($update);
 			$this->resetSession();
-			$this->info("logged $username out");
+			$this->info("Buh-Bye <strong>$username</strong>!");
             unset($_COOKIE['Organizr']);
             setcookie('Organizr', '', time() - 3600, '/');
             unset($_COOKIE['OrganizrU']);
@@ -733,11 +734,11 @@ EOT;
 		{
 			$delete = "DELETE FROM users WHERE username = '$username'";
 			$this->database->exec($delete);
-			$this->info("removed $username from the Organizr");
+			$this->info("<strong>$username</strong> has been kicked out of Organizr");
 			//$this->resetSession();
             $dir = USER_HOME . $username;
             if(!rmdir($dir)) { $this->error("could not delete user directory $dir"); }
-            $this->info("deleted user directory $dir");
+            $this->info("and we deleted user directory $dir");
 			return true;
 		}
 
@@ -797,7 +798,7 @@ EOT;
 			$update = "UPDATE users SET password = '$newpassword' WHERE username = '$username'";
 			$this->database->exec($update);
 			if($noMsg == "false"){
-                $this->info("updated token and password for $username");   
+                $this->info("token and password updated for <strong>$username</strong>");   
             }
 
 			return $token;
@@ -836,7 +837,7 @@ EOT;
 				//$this->info("$username is active");
 				return true; }
 
-			$this->error("$username is not active");
+			$this->error("<strong>$username</strong> is not active");
 			$this->resetSession();
 			return false;
 		}

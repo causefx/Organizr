@@ -1,7 +1,7 @@
 /* Growl-style notifications */
 .ns-growl {
 	top: 30px;
-	left: 30px;
+	right: 30px;
 	max-width: 300px;
 	border-radius: 5px;
 }

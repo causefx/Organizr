@@ -493,7 +493,7 @@ a.text-info:hover {
 }
 
 .mini-nav .gn-menu-main .navbar-right a {
-    padding: 0 15px 0 0 !important;
+    padding: 0 5px 0 0 !important;
     font-size: 18px;
 }
 
@@ -3156,12 +3156,12 @@ ul.inbox-pagination li {
 }
 
 .cbp_tmtimeline > li .cbp_tmtime span:first-child {
-  font-size: 0.9em;
+  font-size: 1.1em;
   color: #bdd0db;
 }
 
 .cbp_tmtimeline > li .cbp_tmtime span:last-child {
-  font-size: 2.9em;
+  font-size: 2.0em;
   color: #368fe5;
 }
 
@@ -3170,13 +3170,13 @@ ul.inbox-pagination li {
 }
 
 .cbp_tmtimeline > li .cbp_tmlabel {
-  margin: 0 0 15px 25%;
+  margin: 0 0 10px 25%;
   background: #368fe5;
   color: #fff;
-  padding: 2em;
-  font-size: 1.2em;
+  padding: 1em;
+  font-size: 1.1em;
   font-weight: 300;
-  line-height: 1.4;
+  line-height: 1.1;
   position: relative;
   -webkit-border-radius: 3px;
           border-radius: 3px;
@@ -3337,7 +3337,7 @@ ul.inbox-pagination li {
 
 /* Growl-style notifications */
 .ns-attached {
-  left: 30px;
+  right: 30px;
   max-width: 300px;
 }
 

@@ -39,7 +39,7 @@ function printArray($arrayName){
     
     foreach ( $arrayName as $item ) :
         
-        echo $item . "<br/>";
+        echo "<small class='text-uppercase'>" . $item . "</small> ";
         
     endforeach;
     
@@ -254,7 +254,8 @@ else :
     if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
 
 endif;
-if(defined('SLIMBAR') && SLIMBAR == '') : define('SLIMBAR', 'true'); endif;
+if(!defined('SLIMBAR')) : define('SLIMBAR', 'false'); endif;
+if(!defined('LOADINGSCREEN')) : define('LOADINGSCREEN', 'true'); endif;
 
 if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
 
@@ -470,6 +471,19 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
             background-image: -webkit-gradient(linear, left top, left bottom, from(<?=$topbartext;?>), to(<?=$topbartext;?>)), -webkit-gradient(linear, left top, left bottom, from(#d2d2d2), to(#d2d2d2));
             background-image: -webkit-linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), -webkit-linear-gradient(#d2d2d2, #d2d2d2);
             background-image: linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), linear-gradient(#d2d2d2, #d2d2d2);
+        }img.titlelogoclass {
+
+            max-width: 250px; 
+            max-height: <?=$slimBar;?>px;
+            
+        }@media only screen and (max-width: 450px) {
+            
+            img.titlelogoclass {
+
+                max-width: 150px; 
+            
+            }
+            
         }
 
         <?php if(SLIMBAR == "true") : ?>
@@ -503,7 +517,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
             
             line-height: 30px !important;
             
-        }.titlelogoclass {
+        }img.titlelogoclass {
             
             vertical-align: inherit;
             
@@ -714,7 +728,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
                     
                         else : 
                     
-                            echo "<img class='titlelogoclass' style='max-width: 250px; max-height:" . $slimBar ."px;' src='" . TITLELOGO . "'>";
+                            echo "<img class='titlelogoclass' src='" . TITLELOGO . "'>";
                     
                         endif;
                     
@@ -744,9 +758,9 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
                             
                             <a class="show-members">
                                 
-                            <?php endif; endif;?>
+                            <?php endif; endif; if($USER->authenticated) : $showPic = "<img src='https://www.gravatar.com/avatar/$userpic?s=$userSize' class='img-circle'>"; else : $showPic = "<img style='height: " . $userSize . "px'; src='images/login.png'>"; endif;?>
                                 
-                                <i class="userpic"><img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=<?=$userSize;?>&d=mm" class="img-circle"></i> 
+                                <i class="userpic"><?=$showPic;?></i> 
                                 
                             </a>
                             
@@ -816,6 +830,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
 
                                             <input type="hidden" name="op" value="register"/>
                                             <input type="hidden" name="sha1" value=""/>
+                                            <input type="hidden" name="settings" value="false"/>
 
                                             <div class="form-group">
 
@@ -1213,6 +1228,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
                                         
                                         <input type="hidden" name="op" value="register"/>
                                         <input type="hidden" name="sha1" value=""/>
+                                        <input type="hidden" name="settings" value="false"/>
 
                                         <div class="form-group">
 
