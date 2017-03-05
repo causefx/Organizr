@@ -242,7 +242,7 @@
 	width: 250px; 
 	height: 90px;
 	top: 30px;
-	left: 30px;
+	right: 30px;
 	background: #5699bc;
 	font-weight: 700;
 	border-radius: 5px;
@@ -339,6 +339,7 @@
 /* Thumb slider */
 .ns-effect-thumbslider {
 	background: transparent;
+    right: 30px;
 }
 
 .ns-effect-thumbslider .ns-close {

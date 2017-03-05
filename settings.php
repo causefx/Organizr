@@ -29,7 +29,7 @@ function printArray($arrayName){
     
     foreach ( $arrayName as $item ) :
         
-        echo $item . "<br/>";
+        echo "<small class='text-uppercase'>" . $item . "</small> ";
         
     endforeach;
     
@@ -768,7 +768,7 @@ endif;
                                             <?php
                                             $dirname = "images/";
                                             $images = scandir($dirname);
-                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg");
+                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png");
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
 
@@ -985,6 +985,7 @@ endif;
                         								    
                                                     <input type="hidden" name="op" value="register"/>
                                                     <input type="hidden" name="sha1" value=""/>
+                                                    <input type="hidden" name="settings" value="true"/>
 
                                                     <div class="form-group">
 
@@ -1148,7 +1149,7 @@ endif;
                                         
                                         <div class="col-lg-12">
                                           
-                                            <div class="gray-bg content-box big-box box-shadow">
+                                            <div class="big-box">
                                             
                                                 <form class="content-form" name="systemSettings" id="systemSettings" action="" method="POST">
                         								    
@@ -1214,7 +1215,7 @@ endif;
                                                         if($notifyExplode[1] == "thumbslider") : $thumbsliderActive = "selected"; else : $thumbsliderActive = ""; endif;
                                                         
                                                         ?>
-                                                            <select id="notifyValue" style="background-color: #273238 !important;" name="notifyEffect" id="notifyEffect" class="form-control material input-sm" required>
+                                                            <select id="notifyValue" name="notifyEffect" id="notifyEffect" class="form-control material input-sm" required>
 
                                                                 <option value="bar-slidetop" <?=$slidetopActive;?>>Slide From Top</option>
                                                                 <option value="bar-exploader" <?=$exploaderActive;?>>Exploader From Top</option>
@@ -1428,6 +1429,7 @@ endif;
                                         <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span><?php echo $language->translate("VIEW_ON_GITHUB");?></a>
                                         <a href='https://gitter.im/Organizrr/Lobby' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span><?php echo $language->translate("CHAT_WITH_US");?></a>
                                         <button type="button" class="class='btn waves btn-labeled btn-warning btn text-uppercase waves-effect waves-float" data-toggle="modal" data-target=".Help-Me-modal-lg"><span class='btn-label'><i class='fa fa-life-ring'></i></span><?php echo $language->translate("HELP");?></button>
+                                        <button id="deleteToggle" type="button" class="class='btn waves btn-labeled btn-danger btn text-uppercase waves-effect waves-float" ><span class='btn-label'><i class='fa fa-trash'></i></span><?php echo $language->translate("DELETE_DATABASE");?></button>
 
                                         <div class="modal fade Help-Me-modal-lg" tabindex="-1" role="dialog">
                                         
@@ -1677,7 +1679,7 @@ endif;
                                     
                                     <p id="downloadnow"></p>
                                     
-                                    <div class="panel panel-danger">
+                                    <div id="deleteDiv" style="display: none;" class="panel panel-danger">
                                         
                                         <div class="panel-heading">
                                             
@@ -1701,6 +1703,22 @@ endif;
                                                     
                                                 </form>
                                         
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                    </div>
+                                
+                                    <div class="timeline-container">
+                                        
+                                        <div class="row">
+                                            
+                                            <div class="col-lg-12">
+                                                
+                                                <ul class="cbp_tmtimeline" id="versionHistory">
+                                                    
+                                                </ul>
+                                                
                                             </div>
                                             
                                         </div>
@@ -2226,6 +2244,12 @@ endif;
      
             });
             
+            $("#deleteToggle").click(function(){
+
+                $( "#deleteDiv" ).toggle();
+     
+            });
+            
             $(".deleteUser").click(function(){
 
                 var parent_id = $(this).parent().attr('id');
@@ -2527,18 +2551,31 @@ endif;
         	$.ajax({
         				
         		type: "GET",
-                url: "https://api.github.com/repos/causefx/Organizr/releases/latest",
+                url: "https://api.github.com/repos/causefx/Organizr/releases",
                 dataType: "json",
                 success: function(github) {
+                    
+                    var currentVersion = "0.99996";
                    
-                    var currentVersion = "0.99995";
-                    var githubVersion = github.tag_name;
-                    var githubDescription = github.body;
-                    var githubName = github.name;
                     infoTabVersion = $('#about').find('#version');
+                    infoTabVersionHistory = $('#about').find('#versionHistory');
                     infoTabNew = $('#about').find('#whatsnew');
                     infoTabDownload = $('#about').find('#downloadnow');
-        
+                   
+                    $.each(github, function(i,v) {
+                        if(i === 0){ 
+                            
+                            console.log(v.tag_name);
+                            githubVersion = v.tag_name;
+                            githubDescription = v.body;
+                            githubName = v.name;
+                                   
+                        }
+                        
+                        $(infoTabVersionHistory).append('<li><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon cbp_tmicon-earth animated pulse"></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
+                        
+                    });
+                            
         			if(currentVersion < githubVersion){
                     
                     	console.log("You Need To Upgrade");
@@ -2566,7 +2603,7 @@ endif;
                     }
 
                     $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?>");
-                    
+                                        
                 }
                 
             });

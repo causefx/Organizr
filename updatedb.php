@@ -119,7 +119,7 @@ function checkDatabase($type, $table, $check) {
             (function countdown(remaining) {
                 if(remaining === 0)
                     location.reload(true);
-                document.getElementById('countdown').innerHTML = "<center>Page will refresh in <strong>" + remaining + "</strong> seconds</center>";
+                document.getElementById('countdown').innerHTML = "<center>Page will refresh in <strong>" + remaining + "</strong> seconds [You may close this at anytime]</center>";
                 setTimeout(function(){ countdown(remaining - 1); }, 1000);
             })(10);
         
