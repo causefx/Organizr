@@ -665,7 +665,17 @@ endif;
             }.key.wide span {
                 width:auto;
                 padding:0 12px;
-            }
+            }.todo .action-btns a span {
+                color: #76828e !important;
+            }.todo li:nth-child(even) {
+                background: #FFFFFF !important;
+            }.themeImage {
+                position: fixed;
+                left: 160px;
+                top: 0px;
+                height: 400px;
+            }.chooseTheme a span { position:absolute; display:none; z-index:99; }
+            .chooseTheme a:hover span { display:block; }
         
         </style>
        
@@ -724,7 +734,7 @@ endif;
                                 
                                 <?php if($action) : ?>
                                         
-                                        <button id="apply" style="margin: 8px" class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+                                        <button id="apply" style="margin: 8px" class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float animated tada" type="submit">
                                         
                                             <span class="btn-label"><i class="fa fa-check"></i></span><?php echo $language->translate("APPLY_CHANGES");?>
                                         
@@ -768,7 +778,7 @@ endif;
                                             <?php
                                             $dirname = "images/";
                                             $images = scandir($dirname);
-                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png");
+                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes");
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
 
@@ -831,7 +841,7 @@ endif;
                                                     if($row['iconurl'] != "") : $backgroundListImage = "background-image: url('". $row['iconurl'] . "') !important; background-repeat: no-repeat !important; background-position: left !important; background-blend-mode: difference !important; background-size: 50px 50px !important"; else : $backgroundListImage = ""; endif;
                                                     
                                                     ?>
-                                                    <li id="item-<?=$tabNum;?>" class="list-group-item gray-bg" style="position: relative; left: 0px; top: 0px;">
+                                                    <li id="item-<?=$tabNum;?>" class="list-group-item" style="position: relative; left: 0px; top: 0px;">
 
                                                         <tab class="content-form form-inline">
 
@@ -945,7 +955,7 @@ endif;
 
                                                             <div class="pull-right action-btns" style="padding-top: 8px;">
 
-                                                                <a class="trash"><span class="fa fa-close"></span></a>
+                                                                <a class="trash"><span class="fa fa-trash"></span></a>
 
                                                             </div>
 
@@ -961,7 +971,7 @@ endif;
 
                                             <div class="checkbox clear-todo pull-left"></div>
 
-                                            <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+                                            <button style="margin-top: 5px;" class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
                                                 
                                                 <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_TABS");?>
                                                 
@@ -979,7 +989,7 @@ endif;
                                         
                                         <div class="col-lg-12">
                                           
-                                            <div class="gray-bg content-box big-box box-shadow">
+                                            <div class="big-box">
                                             
                                                 <form class="content-form form-inline" name="new user registration" id="registration" action="" method="POST">
                         								    
@@ -1013,7 +1023,13 @@ endif;
                                                     
                                                     
                                                     
-                                                    <button type="submit" onclick="User.processRegistration()" class="btn btn-primary btn-icon waves waves-circle waves-effect waves-float"><i class="fa fa-user-plus"></i></button>
+                                                    <!--<button type="submit" onclick="User.processRegistration()" class="btn btn-primary btn-icon waves waves-circle waves-effect waves-float"><i class="fa fa-user-plus"></i></button>-->
+                                                    
+                                                    <button type="submit" onclick="User.processRegistration()" class="btn waves btn-labeled btn-primary btn btn-sm text-uppercase waves-effect waves-float promoteUser">
+
+                                                        <span class="btn-label"><i class="fa fa-user-plus"></i></span><?php echo $language->translate("CREATE_USER");?>
+
+                                                    </button>
 
                                                 </form>               
                                           
@@ -1230,7 +1246,7 @@ endif;
 
                                                             </select>
 
-                                                            <button id="notifyTest" type="button" class="class='btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-flask"></i></span>Test</button>
+                                                            <button id="notifyTest" type="button" class="class='btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-flask"></i></span><?php echo $language->translate("TEST");?></button>
 
                                                             <p class="help-text"><?php echo $language->translate("NOTIFICATION_TYPE");?></p>
 
@@ -1741,27 +1757,23 @@ endif;
                                             
                                             <ul class="dropdown-menu gray-bg">
                                             
-                                                <li id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex</a></li>
+                                                <li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
                                             
-                                                <li id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby</a></li>
+                                                <li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
                                                 
-                                                <li id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook</a></li>
+                                                <li class="chooseTheme" id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook<span><img class="themeImage" src="images/themes/facebook.png"></span></a></li>
                                                 
-                                                <li id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa</a></li>
+                                                <li class="chooseTheme" id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa<span><img class="themeImage" src="images/themes/spa.png"></span></a></li>
                                                 
-                                                <li id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly</a></li>
+                                                <li class="chooseTheme" id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly<span><img class="themeImage" src="images/themes/darkly.png"></span></a></li>
                                                 
-                                                <li id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate</a></li>
+                                                <li class="chooseTheme" id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate<span><img class="themeImage" src="images/themes/slate.png"></span></a></li>
                                                 
-                                                <li id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai</a></li>
+                                                <li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
                                                 
-                                                <li id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker</a></li>
+                                                <li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
                                                 
-                                                <li id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red</a></li>
-                                            
-                                                <li role="separator" class="divider"></li>
-                                            
-                                                <li id="defaultTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#"><?php echo $language->translate("DEFAULT");?></a></li>
+                                                <li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
                                             
                                             </ul>
                                             
@@ -2019,7 +2031,7 @@ endif;
                 
             }else{
                 
-               parent.notify("<strong>Tabs Saved!</strong> Apply Changes To Reload The Page!","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>"); 
+               parent.notify("<strong><?php echo $language->translate('TABS_SAVED');?></strong> <?php echo $language->translate('APPLY_RELOAD');?>","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>"); 
                 
             }
             
@@ -2029,7 +2041,7 @@ endif;
          <?php if($action == "addOptionz") : ?>
         <script>
 
-            parent.notify("<strong>Colors Saved!</strong> Apply Changes To Reload The Page!","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+            parent.notify("<strong><?php echo $language->translate('COLORS_SAVED');?></strong> <?php echo $language->translate('APPLY_RELOAD');?>","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
             
         </script>
         <?php endif; ?>
@@ -2088,8 +2100,9 @@ endif;
 
                 //$(".todo ul").sortable();
                 $(".todo ul").sortable({
-                    'containment': 'parent',
-                    'opacity': 0.9
+                    
+                    'opacity': 0.9,
+                    
                 });
 
                 $("#add_tab").on('submit', function (e) {
@@ -2103,7 +2116,7 @@ endif;
                         var newid = $('.list-group-item').length + 1;
 
                         $(".todo ul").append(
-                        '<li id="item-' + newid + '" class="list-group-item gray-bg animated zoomInDown" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="<?php echo $language->translate("TAB_URL");?>"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - <?php echo $language->translate("OR");?> -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="<?php echo $language->translate("ICON_URL");?>" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']"><?php echo $language->translate("DEFAULT");?></label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> <?php echo $language->translate("ACTIVE");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> <?php echo $language->translate("USER");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> <?php echo $language->translate("GUEST");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-danger" type="checkbox"><label for="window[' + newid + ']"></label></div> <?php echo $language->translate("NO_IFRAME");?></div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-close"></span></a></div></tab></li>'
+                        '<li id="item-' + newid + '" class="list-group-item animated zoomInDown" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="<?php echo $language->translate("TAB_URL");?>"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - <?php echo $language->translate("OR");?> -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="<?php echo $language->translate("ICON_URL");?>" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']"><?php echo $language->translate("DEFAULT");?></label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> <?php echo $language->translate("ACTIVE");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> <?php echo $language->translate("USER");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> <?php echo $language->translate("GUEST");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-danger" type="checkbox"><label for="window[' + newid + ']"></label></div> <?php echo $language->translate("NO_IFRAME");?></div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-trash"></span></a></div></tab></li>'
                         );
 
                         $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
@@ -2228,7 +2241,7 @@ endif;
 
                 var notifySplit = $("#notifyValue").val().split("-");
                 console.log(notifySplit[0]);
-                parent.notify("This is a test message","flask","notice","5000", notifySplit[0], notifySplit[1]);
+                parent.notify("<?php echo $language->translate('TEST_MESSAGE');?>","flask","notice","5000", notifySplit[0], notifySplit[1]);
      
             });
             
@@ -2343,7 +2356,7 @@ endif;
 
                 copyToClipboard(document.getElementById("copyTarget"));
                 
-                parent.notify("Icon Path Copied To Clipboard","clipboard","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+                parent.notify("<?php echo $language->translate('ICON_COPY');?>","clipboard","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
                 
                 $( "div[id^='viewAllIcons']" ).toggle();
                 
@@ -2555,7 +2568,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                     
-                    var currentVersion = "0.99996";
+                    var currentVersion = "0.99997";
                    
                     infoTabVersion = $('#about').find('#version');
                     infoTabVersionHistory = $('#about').find('#versionHistory');
@@ -2572,7 +2585,7 @@ endif;
                                    
                         }
                         
-                        $(infoTabVersionHistory).append('<li><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon cbp_tmicon-earth animated pulse"></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
+                        $(infoTabVersionHistory).append('<li><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span class="label label-default">' + v.tag_name + '</span></time><div class="cbp_tmicon cbp_tmicon-earth animated jello"></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
                         
                     });
                             

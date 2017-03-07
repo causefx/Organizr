@@ -41,8 +41,7 @@ class setLanguage {
             echo ("Translation not found for: $originalWord"); 
         
         endif; 
-        
-        //$translatedWord = str_replace( array( "'","'" ),'', $translatedWord );
+
         $translatedWord = htmlspecialchars($translatedWord, ENT_QUOTES);
         
         return vsprintf($translatedWord, $allWords);
@@ -51,7 +50,7 @@ class setLanguage {
     
 } 
 
-$getLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2); 
+$getLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : "en"; 
 $language = new setLanguage($getLanguage);
 
 ?>

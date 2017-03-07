@@ -144,6 +144,7 @@ if(!file_exists($databaseLocation)) :
 
     $configReady = "No";
     $userpic = "";
+    $showPic = "";
 
 else :
 
@@ -1934,6 +1935,14 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
             $("#contentRight").html('');
         
         });    
+        
+        var ref = document.referrer;
+        if(ref.indexOf("updated")>=0){
+
+            notify("<?php echo $language->translate('UPDATE_COMPLETE');?>","exclamation-circle ","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+
+        }    
+            
         </script>
 
     </body>

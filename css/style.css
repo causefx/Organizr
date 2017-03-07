@@ -2406,12 +2406,12 @@ table.dataTable.no-footer, table.dataTable thead th, table.dataTable thead td {
 }
 
 .todo .list-group-item {
-  border-bottom: 0;
+  /*border-bottom: 0;
   border-top: 0;
   border-right: 0;
   -webkit-border-radius: 4px;
           border-radius: 4px;
-  margin-bottom: 3px;
+  margin-bottom: 3px;*/
   background: #F3F3F3;
 }
 
@@ -2513,7 +2513,7 @@ a.thumbnail.active, a.thumbnail:focus, a.thumbnail:hover {
 }
 
 .input-group-addon {
-  border-color: #E7EBEC;
+  border: solid 1px #C0C0C0 !important;
 }
 
 .form-inline .form-group {
@@ -2977,7 +2977,7 @@ ul.inbox-pagination li {
 }
 
 .list-group-item {
-  border-color: #E7EBEC;
+  border-color: #C0C0C0;
 }
 
 .email-container .email-view, .email-container .email-compose {
