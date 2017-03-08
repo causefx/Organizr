@@ -252,11 +252,34 @@ else :
     endif;
 
     $userpic = md5( strtolower( trim( $USER->email ) ) );
-    if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
+    if(LOADINGICON !== "") : 
+
+        $loadingIcon = LOADINGICON; 
+
+    endif;
+
+    if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
+    
+    if($USER->authenticated) : 
+
+        $showPic = "<img src='https://www.gravatar.com/avatar/$userpic?s=$userSize' class='img-circle'>"; 
+
+    else : 
+
+        $showPic = "<img style='height: " . $userSize . "px'; src='images/login.png'>"; 
+
+    endif;
 
 endif;
+
 if(!defined('SLIMBAR')) : define('SLIMBAR', 'false'); endif;
 if(!defined('LOADINGSCREEN')) : define('LOADINGSCREEN', 'true'); endif;
+if(!isset($notifyExplode)) :
+
+    $notifyExplode = array("bar","slidetop");
+
+endif;
+
 
 if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
 
@@ -759,7 +782,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
                             
                             <a class="show-members">
                                 
-                            <?php endif; endif; if($USER->authenticated) : $showPic = "<img src='https://www.gravatar.com/avatar/$userpic?s=$userSize' class='img-circle'>"; else : $showPic = "<img style='height: " . $userSize . "px'; src='images/login.png'>"; endif;?>
+                            <?php endif; endif;?>
                                 
                                 <i class="userpic"><?=$showPic;?></i> 
                                 
@@ -807,7 +830,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
 
                 <!--Load Framed Content-->
                 <?php if($needSetup == "Yes" && $configReady == "Yes") : ?>
-                <div class="table-wrapper">
+                <div class="table-wrapper" style="background:<?=$sidebar;?>;">
 
                     <div class="table-row">
 
@@ -817,9 +840,9 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
 
                                 <div class="content-box">
 
-                                    <div class="green-bg biggest-box">
+                                    <div class="biggest-box" style="background:<?=$topbar;?>;">
 
-                                        <h1 class="zero-m text-uppercase"><?php echo $language->translate("CREATE_ADMIN");?></h1>
+                                        <h1 class="zero-m text-uppercase" style="color:<?=$topbartext;?>;"><?php echo $language->translate("CREATE_ADMIN");?></h1>
 
                                     </div>
 
@@ -857,7 +880,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
 
                                             </div>
 
-                                            <button id="registerSubmit" type="submit" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register"><?php echo $language->translate("REGISTER");?></button>
+                                            <button id="registerSubmit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block text-uppercase waves waves-effect waves-float" value="Register"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("REGISTER");?></text></button>
 
                                         </form>
 
@@ -876,7 +899,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
                 
                 
                 <?php if($needSetup == "Yes" && $configReady == "No") : ?>
-                <div class="table-wrapper">
+                <div class="table-wrapper" style="background:<?=$sidebar;?>;">
 
                     <div class="table-row">
 
@@ -886,9 +909,9 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
 
                                 <div class="content-box">
 
-                                    <div class="green-bg biggest-box">
+                                    <div class="biggest-box" style="background:<?=$topbar;?>;">
 
-                                        <h1 class="zero-m text-uppercase"><?php echo $language->translate("DATABASE_PATH");?></h1>
+                                        <h1 class="zero-m text-uppercase" style="color:<?=$topbartext;?>;"><?php echo $language->translate("DATABASE_PATH");?></h1>
 
                                     </div>
 
@@ -923,7 +946,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
 
                                             </div>
 
-                                            <button id="databaseLocationSubmit" type="submit" class="btn green-bg btn-block btn-sm text-uppercase waves waves-effect waves-float" value="Save Location"><?php echo $language->translate("SAVE_LOCATION");?></button>
+                                            <button style="background:<?=$topbar;?>;" id="databaseLocationSubmit" type="submit" class="btn btn-block btn-sm text-uppercase waves waves-effect waves-float" value="Save Location"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("SAVE_LOCATION");?></text></button>
 
                                         </form>
 

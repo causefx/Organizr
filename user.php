@@ -432,6 +432,12 @@ EOT;
 		{
 			$_SESSION["username"] = User::GUEST_USER;
 			$_SESSION["token"] = -1;
+            unset($_COOKIE['Organizr']);
+            setcookie('Organizr', '', time() - 3600, '/');
+            unset($_COOKIE['OrganizrU']);
+            setcookie('OrganizrU', '', time() - 3600, '/');
+            unset($_COOKIE['cookiePassword']);
+            setcookie("cookiePassword", '', time() - 3600, '/');
 		}
 
 		/**
