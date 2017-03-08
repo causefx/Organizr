@@ -89,6 +89,59 @@ function get_browser_name() {
     
 }
 
+function getTimezone(){
+
+    $regions = array(
+        'Africa' => DateTimeZone::AFRICA,
+        'America' => DateTimeZone::AMERICA,
+        'Antarctica' => DateTimeZone::ANTARCTICA,
+        'Asia' => DateTimeZone::ASIA,
+        'Atlantic' => DateTimeZone::ATLANTIC,
+        'Europe' => DateTimeZone::EUROPE,
+        'Indian' => DateTimeZone::INDIAN,
+        'Pacific' => DateTimeZone::PACIFIC
+    );
+    
+    $timezones = array();
+
+    foreach ($regions as $name => $mask) {
+        
+        $zones = DateTimeZone::listIdentifiers($mask);
+
+        foreach($zones as $timezone) {
+
+            $time = new DateTime(NULL, new DateTimeZone($timezone));
+
+            $ampm = $time->format('H') > 12 ? ' ('. $time->format('g:i a'). ')' : '';
+
+            $timezones[$name][$timezone] = substr($timezone, strlen($name) + 1) . ' - ' . $time->format('H:i') . $ampm;
+
+        }
+        
+    }   
+    
+    print '<select name="timezone" id="timezone" class="form-control material input-sm" required>';
+    
+    foreach($timezones as $region => $list) {
+    
+        print '<optgroup label="' . $region . '">' . "\n";
+    
+        foreach($list as $timezone => $name) {
+            
+            if($timezone == TIMEZONE) : $selected = " selected"; else : $selected = ""; endif;
+            
+            print '<option value="' . $timezone . '"' . $selected . '>' . $name . '</option>' . "\n";
+    
+        }
+    
+        print '</optgroup>' . "\n";
+    
+    }
+    
+    print '</select>';
+    
+}
+
 $dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
 $databaseLocation = "databaseLocation.ini.php";
 $userdirpath = USER_HOME;
@@ -1180,7 +1233,7 @@ endif;
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control material input-sm" name="timezone" placeholder="<?php echo $language->translate("SET_TIMEZONE");?>" value="<?php echo TIMEZONE;?>">
+                                                        <?php echo getTimezone();?>
                                                         <p class="help-text"><?php echo $language->translate("SET_TIMEZONE");?></p>
 
                                                     </div>
@@ -1735,6 +1788,22 @@ endif;
                                                     
                                                 </ul>
                                                 
+                                                <div class="btn-group-sm btn-group btn-group-justified">
+                                                    
+                                                    <div id="loadMore" class="btn-group" role="group">
+                                                    
+                                                        <button type="button" class="btn waves btn-primary waves-effect waves-float text-uppercase"><?php echo $language->translate("SHOW_MORE");?></button>
+                                                    
+                                                    </div>
+                                                    
+                                                    <div id="showLess" class="btn-group" role="group">
+                                                        
+                                                        <button type="button" class="btn waves btn-warning waves-effect waves-float text-uppercase"><?php echo $language->translate("SHOW_LESS");?></button>
+                                                        
+                                                    </div>
+                                                    
+                                                </div>
+                                                
                                             </div>
                                             
                                         </div>
@@ -2287,7 +2356,34 @@ endif;
      
             });
             
+            $('#showLess').hide();
+            
+            $('#loadMore').click(function () {
+                            
+                x= (x+5 <= size_li) ? x+5 : size_li;
 
+                $('#versionHistory li:lt('+x+')').show();
+                
+                $('#showLess').show();
+                
+                if(x == size_li){
+                    
+                    $('#loadMore').hide();
+                    
+                }
+
+            });
+
+            $('#showLess').click(function () {
+
+                $('#versionHistory li').not(':lt(2)').hide();
+                
+                $('#loadMore').show();
+                    
+                $('#showLess').hide();
+
+            });
+            
             $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
             
             $("li[class^='list-group-item']").bind('mouseheld', function(e) {
@@ -2568,7 +2664,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                     
-                    var currentVersion = "0.99997";
+                    var currentVersion = "0.99998";
                    
                     infoTabVersion = $('#about').find('#version');
                     infoTabVersionHistory = $('#about').find('#versionHistory');
@@ -2585,8 +2681,14 @@ endif;
                                    
                         }
                         
-                        $(infoTabVersionHistory).append('<li><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span class="label label-default">' + v.tag_name + '</span></time><div class="cbp_tmicon cbp_tmicon-earth animated jello"></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
+                        $(infoTabVersionHistory).append('<li style="display: none"><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon cbp_tmicon-earth animated jello"></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
                         
+                        size_li = $("#versionHistory li").size();
+                        
+                        x=2;
+                        
+                        $('#versionHistory li:lt('+x+')').show();
+                                                
                     });
                             
         			if(currentVersion < githubVersion){
