@@ -37,9 +37,23 @@ function registration_callback($username, $email, $userdir){
 
 function printArray($arrayName){
     
+    $messageCount = count($arrayName);
+    
+    $i = 0;
+    
     foreach ( $arrayName as $item ) :
-        
-        echo "<small class='text-uppercase'>" . $item . "</small> ";
+    
+        $i++; 
+    
+        if($i < $messageCount) :
+    
+            echo "<small class='text-uppercase'>" . $item . "</small> & ";
+    
+        elseif($i = $messageCount) :
+    
+            echo "<small class='text-uppercase'>" . $item . "</small>";
+    
+        endif;
         
     endforeach;
     
@@ -266,13 +280,17 @@ else :
 
     else : 
 
-        $showPic = "<img style='height: " . $userSize . "px'; src='images/login.png'>"; 
+        //$showPic = "<img style='height: " . $userSize . "px'; src='images/login.png'>"; 
+        $showPic = "<login class='login-btn text-uppercase'>" . $language->translate("LOGIN") . "</login>"; 
 
     endif;
 
 endif;
 
 if(!defined('SLIMBAR')) : define('SLIMBAR', 'false'); endif;
+if(!defined('AUTOHIDE')) : define('AUTOHIDE', 'false'); endif;
+if(!defined('ENABLEMAIL')) : define('ENABLEMAIL', 'false'); endif;
+if(!defined('CUSTOMCSS')) : define('CUSTOMCSS', 'false'); endif;
 if(!defined('LOADINGSCREEN')) : define('LOADINGSCREEN', 'true'); endif;
 if(!isset($notifyExplode)) :
 
@@ -280,8 +298,9 @@ if(!isset($notifyExplode)) :
 
 endif;
 
-
 if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
+
+if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon = "settings2.png"; else: $iconRotate = "true"; $settingsIcon = "settings.png"; endif;
 
 ?>
 <!--
@@ -354,6 +373,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
     </head>
     
     <style>
+
         .bottom-bnts a {
 
             background: <?=$bottombar;?> !important;
@@ -508,6 +528,30 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
             
             }
             
+        }.login-btn {
+            
+            -webkit-border-radius: 4;
+            -moz-border-radius: 4;
+            border-radius: 4px;
+            -webkit-box-shadow: 0px 1px 3px #666666;
+            -moz-box-shadow: 0px 1px 3px #666666;
+            box-shadow: 0px 1px 3px #666666;
+            font-family: Arial;
+            color: <?=$topbar;?>;
+            font-size: 10px;
+            vertical-align: top;
+            background: <?=$topbartext;?>;
+            padding: 5px 10px 5px 10px;
+            text-decoration: none;
+            font-weight: 700;
+            
+        }.login-btn:hover {
+            
+            background: <?=$hoverbg;?>;
+            color: <?=$hovertext;?>;
+            text-decoration: none;
+            font-weight: 700;
+            
         }
 
         <?php if(SLIMBAR == "true") : ?>
@@ -578,7 +622,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
             
         }.ns-effect-slidetop {
          
-            padding: 5px 22px;
+            padding: 6px 22px;
             
         }.ns-effect-exploader {
          
@@ -586,6 +630,13 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
             
         }
         <?php endif; ?>
+        <?php if(CUSTOMCSS == "true") : 
+$template_file = "custom.css";
+$file_handle = fopen($template_file, "rb");
+echo fread($file_handle, filesize($template_file));
+fclose($file_handle);
+echo "\n";
+endif; ?>
 
     </style>
 
@@ -687,7 +738,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
                                         <?php if($settingsicon == "Yes") :
                                         
                                             echo '<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
-                                                <img id="settings-icon" src="images/settings.png" style="height: 30px; margin-top: -2px;"></i>';
+                                                <img id="settings-icon" src="images/' . $settingsIcon . '" style="height: 30px; margin-top: -2px;"></i>';
                                         
                                         else :
                                         
@@ -1755,7 +1806,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
             $("#contentRight").html('');
 
         });
-            
+        <?php if($iconRotate == "true") : ?>   
         $("li[id^='settings.phpx']").on('click tap', function(){
 
             $("img[id^='settings-icon']").attr("class", "fa-spin");
@@ -1769,6 +1820,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
             },1000);
 
         });
+        <?php endif; ?>
 
         $('#logoutSubmit').on('click tap', function(){
 
@@ -1797,6 +1849,8 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
             if (currentframe.attr("class") == "iframe active") {
 
                 console.log(thisid + " is active already");
+                
+                setHeight();
 
             }else if (currentframe.attr("class") == "iframe hidden") {
 
@@ -1964,7 +2018,13 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
 
             notify("<?php echo $language->translate('UPDATE_COMPLETE');?>","exclamation-circle ","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
 
-        }    
+        }
+            
+        if(ref.indexOf("submit")>=0){
+
+            notify("<?php echo $language->translate('CUSTOM_COMPLETE');?>","exclamation-circle ","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+
+        } 
             
         </script>
 
