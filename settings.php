@@ -27,9 +27,23 @@ endif;
 
 function printArray($arrayName){
     
+    $messageCount = count($arrayName);
+    
+    $i = 0;
+    
     foreach ( $arrayName as $item ) :
-        
-        echo "<small class='text-uppercase'>" . $item . "</small> ";
+    
+        $i++; 
+    
+        if($i < $messageCount) :
+    
+            echo "<small class='text-uppercase'>" . $item . "</small> & ";
+    
+        elseif($i = $messageCount) :
+    
+            echo "<small class='text-uppercase'>" . $item . "</small>";
+    
+        endif;
         
     endforeach;
     
@@ -667,6 +681,7 @@ endif;
         <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
         <link rel="stylesheet" href="bower_components/DataTables/media/css/jquery.dataTables.css">
         <link rel="stylesheet" href="bower_components/datatables-tabletools/css/dataTables.tableTools.css">
+        <link rel="stylesheet" href="bower_components/numbered/jquery.numberedtextarea.css">
 
         <link rel="stylesheet" href="css/style.css">
         <link href="css/jquery.filer.css" rel="stylesheet">
@@ -679,10 +694,10 @@ endif;
         
     </head>
 
-    <body style="padding: 0; background: #273238;">
+    <body class="scroller-body" style="padding: 0; background: #273238; overflow-x: hidden !important">
         
         <style>
-        
+
             input.form-control.material.icp-auto.iconpicker-element.iconpicker-input {
                 display: none;
             }input.form-control.iconpicker-search {
@@ -727,9 +742,18 @@ endif;
                 left: 160px;
                 top: 0px;
                 height: 400px;
-            }.chooseTheme a span { position:absolute; display:none; z-index:99; }
-            .chooseTheme a:hover span { display:block; }
-        
+            }.chooseTheme a span { 
+                position:absolute; display:none; z-index:99; 
+            }.chooseTheme a:hover span { 
+                display:block; 
+            }<?php if(CUSTOMCSS == "true") : 
+$template_file = "custom.css";
+$file_handle = fopen($template_file, "rb");
+echo fread($file_handle, filesize($template_file));
+fclose($file_handle);
+echo "\n";
+endif; ?>
+       
         </style>
        
         <div id="main-wrapper" class="main-wrapper">
@@ -1848,6 +1872,12 @@ endif;
                                             
                                         </div>
                                         
+                                        <button id="editCssButton" class="btn waves btn-labeled btn-primary btn-sm text-uppercase waves-effect waves-float" type="button">
+                                                
+                                                <span class="btn-label"><i class="fa fa-css3"></i></span><?php echo $language->translate("EDIT_CUSTOM_CSS");?>
+                                                
+                                        </button>
+                                        
                                         <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
                                                 
                                                 <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_OPTIONS");?>
@@ -1989,6 +2019,39 @@ endif;
                                         </div>
                                         
                                     </form>
+                                    
+                                     <form style="display: none" id="editCssForm" method="POST" action="submitCSS.php">
+                                         
+                                         <button class="btn waves btn-labeled btn-warning btn-sm pull-left text-uppercase waves-effect waves-float" type="button" id="backToThemeButton">
+
+                                            <span class="btn-label"><i class="fa fa-arrow-left"></i></span><?php echo $language->translate("GO_BACK");?>
+                                                
+                                        </button>
+                                        
+                                         
+                                         <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+
+                                            <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_CSS");?>
+                                                
+                                        </button>
+                                         
+                                        <br><br>
+                                        
+                                        <input type="hidden" name="submit" value="editCSS" /> 
+                                         
+                                        <h1><?php echo $language->translate("EDIT_CUSTOM_CSS");?></h1> 
+                                         
+                                         <!--<p>Variables Available<code>$topbar - $topbartext - $bottombar - $sidebar - $hoverbg - $activetabBG - $activetabicon - $activetabtext - $inactiveicon - $inactivetext - $loading - $hovertext</code></p>-->
+                                         
+                                        <textarea class="form-control" id="css-show" name="css-show" rows="25" style="background: #000; color: #FFF;">
+<?php if(CUSTOMCSS == "true") :
+$template_file = "custom.css";
+$file_handle = fopen($template_file, "rb");
+echo fread($file_handle, filesize($template_file));
+fclose($file_handle);
+endif;?></textarea>
+                                                                        
+                                    </form>
                       
                                 </div>
                                 
@@ -2037,6 +2100,8 @@ endif;
         <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
 
         <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
+        <script src="bower_components/numbered/jquery.numberedtextarea.js"></script>
+
 
         <!--Notification-->
         <script src="js/notifications/notificationFx.js"></script>
@@ -2332,6 +2397,20 @@ endif;
      
             });
             
+            $("#editCssButton").click(function(){
+
+                $( "#add_optionz" ).toggle();
+                $( "#editCssForm" ).toggle();
+     
+            });
+            
+            $("#backToThemeButton").click(function(){
+
+                $( "#add_optionz" ).toggle();
+                $( "#editCssForm" ).toggle();
+     
+            });
+            
             $(".deleteUser").click(function(){
 
                 var parent_id = $(this).parent().attr('id');
@@ -2467,6 +2546,7 @@ endif;
                 
                 var definedElement = document.getElementById(elementName);
                 
+                definedElement.focus();
                 definedElement.value = elementColor;
                 definedElement.style.backgroundColor = elementColor;
                 
@@ -2641,12 +2721,36 @@ endif;
                 changeColor("hovertext", "#000000");
 
             });
+            
+            $('textarea').numberedtextarea({
+
+              // font color for line numbers
+              color: null,
+
+              // border color
+              borderColor: 'null',
+
+              // CSS class to be added to the line numbers
+              class: null, 
+
+              // if true Tab key creates indentation
+              allowTabChar: true,       
+
+            });
+
         
         </script>
         
         <script>
         
         $( document ).ready(function() {
+            
+            $(".scroller-body").mCustomScrollbar({
+                theme:"inset-2",
+                scrollInertia: 300,
+                autoHideScrollbar: true,
+                autoExpandScrollbar: true
+            });
             
             $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
             $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')
@@ -2664,7 +2768,7 @@ endif;
                 dataType: "json",
                 success: function(github) {
                     
-                    var currentVersion = "0.99998";
+                    var currentVersion = "1.0";
                    
                     infoTabVersion = $('#about').find('#version');
                     infoTabVersionHistory = $('#about').find('#versionHistory');
