@@ -510,12 +510,14 @@ EOT;
                     }
 
                     // active, using the correct token -> authenticated
+                     setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/");
                      return true;
                     
                 }
                 
             }else{
                 
+                setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/");
                 return true;
                 
             }    

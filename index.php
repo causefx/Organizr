@@ -544,6 +544,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             padding: 5px 10px 5px 10px;
             text-decoration: none;
             font-weight: 700;
+            font-style: normal;
             
         }.login-btn:hover {
             
@@ -1098,7 +1099,7 @@ endif; ?>
             <!--Welcome notification-->
             <div id="welcome"></div>
             
-            <div id="members-sidebar" style="background: <?=$sidebar;?>;" class="members-sidebar">
+            <div id="members-sidebar" style="background: <?=$sidebar;?>;" class="members-sidebar fade in">
                 
                 <h4 class="pull-left zero-m"><?php echo $language->translate("OPTIONS");?></h4>
                 
