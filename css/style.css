@@ -3146,7 +3146,7 @@ ul.inbox-pagination li {
 .cbp_tmtimeline > li .cbp_tmtime {
   display: block;
   width: 25%;
-  padding-right: 100px;
+  padding-right: 10%;
   position: absolute;
 }
 
@@ -5899,8 +5899,7 @@ label {
   right: -webkit-calc(-105%);    
   -webkit-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.13);
           box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.13);
-  -webkit-transition: all, 1s;
-          transition: all, 1s;
+  
 }
 
 .mini-nav .members-sidebar {

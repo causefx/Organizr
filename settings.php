@@ -694,7 +694,7 @@ endif;
         
     </head>
 
-    <body class="scroller-body" style="padding: 0; background: #273238; overflow-x: hidden !important">
+    <body class="scroller-body" style="padding: 0; background: #273238;">
         
         <style>
 
@@ -733,6 +733,8 @@ endif;
             }.key.wide span {
                 width:auto;
                 padding:0 12px;
+            }.dragging{
+                border: 2px solid;    
             }.todo .action-btns a span {
                 color: #76828e !important;
             }.todo li:nth-child(even) {
@@ -2468,10 +2470,10 @@ endif;?></textarea>
             $("li[class^='list-group-item']").bind('mouseheld', function(e) {
 
                 $(this).find("span[class^='fa fa-hand-paper-o']").attr("class", "fa fa-hand-grab-o");
-                $(this).addClass("animated pulse");
+                $(this).addClass("dragging");
                 $(this).mouseup(function() {
                     $(this).find("span[class^='fa fa-hand-grab-o']").attr("class", "fa fa-hand-paper-o");
-                    $(this).removeClass("animated pulse");
+                    $(this).removeClass("dragging");
                 });
             });
             
@@ -2768,7 +2770,7 @@ endif;?></textarea>
                 dataType: "json",
                 success: function(github) {
                     
-                    var currentVersion = "1.0";
+                    var currentVersion = "1.01";
                    
                     infoTabVersion = $('#about').find('#version');
                     infoTabVersionHistory = $('#about').find('#versionHistory');
@@ -2810,14 +2812,10 @@ endif;?></textarea>
                     }else if(currentVersion === githubVersion){
                     
                     	console.log("You Are on Current Version");
-                        
-                        parent.notify("<?php echo $language->translate("SOFTWARE_IS");?> <strong><?php echo $language->translate("UP_TO_DATE");?></strong>","thumbs-up ","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
                     
                     }else{
                     
                     	console.log("something went wrong");
-                        
-                        parent.notify("<strong>WTF!? </strong>Can\'t check version.","thumbs-down","error","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
                     
                     }
 
