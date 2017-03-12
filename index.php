@@ -67,7 +67,7 @@ function write_ini_file($content, $path) {
     
     }
     
-    $success = fwrite($handle, $content);
+    $success = fwrite($handle, trim($content));
     
     fclose($handle); 
     
