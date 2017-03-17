@@ -168,8 +168,8 @@ $folder = USER_HOME;
                 checkFunction("MAIL");
                 checkFunction("fopen");
 
-                getFilePermission($db);
-                getFilePermission($folder);
+                @getFilePermission($db);
+                @getFilePermission($folder);
                 getFilePermission((__DIR__));
                 getFilePermission(dirname(__DIR__));
                 

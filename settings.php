@@ -109,8 +109,10 @@ function getTimezone(){
         'Africa' => DateTimeZone::AFRICA,
         'America' => DateTimeZone::AMERICA,
         'Antarctica' => DateTimeZone::ANTARCTICA,
+        'Arctic' => DateTimeZone::ARCTIC,
         'Asia' => DateTimeZone::ASIA,
         'Atlantic' => DateTimeZone::ATLANTIC,
+        'Australia' => DateTimeZone::AUSTRALIA,
         'Europe' => DateTimeZone::EUROPE,
         'Indian' => DateTimeZone::INDIAN,
         'Pacific' => DateTimeZone::PACIFIC
@@ -694,7 +696,7 @@ endif;
         
     </head>
 
-    <body class="scroller-body" style="padding: 0; background: #273238;">
+    <body class="scroller-body" style="padding: 0; background: #273238; overflow: hidden">
         
         <style>
 
@@ -853,11 +855,11 @@ endif; ?>
                                         
                                         <div class="row">
                                             
-                                            <textarea id="copyTarget" class="hideCopy" style="left: -9999px; top: 0; position: absolute;"></textarea>
+                                            <textarea id="copyTarget" class="hideCopy" style="left: -9999px; top: 0; position: absolute;"></textarea>                                           
                                             <?php
                                             $dirname = "images/";
                                             $images = scandir($dirname);
-                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes");
+                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes");
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
 
@@ -926,7 +928,7 @@ endif; ?>
 
                                                             <div class="form-group">
 
-                                                                <div class="action-btns" style="width:calc(100%)">
+                                                                <div class="action-btns tabIconView" style="width:calc(100%)">
                                                                     
                                                                     <?php if($backgroundListImage == "") : ?>
                                                                     <a class="" style="margin-left: 0px"><span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a>
@@ -1520,6 +1522,7 @@ endif; ?>
                                     
                                     <p id="submitFeedback">
                                     
+                                        <a href='https://reddit.com/r/organizr' target='_blank' type='button' style="background: #AD80FD" class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-reddit'></i></span>SUBREDDIT</a> 
                                         <a href='https://github.com/causefx/Organizr/issues/new' target='_blank' type='button' class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span><?php echo $language->translate("SUBMIT_ISSUE");?></a> 
                                         <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span><?php echo $language->translate("VIEW_ON_GITHUB");?></a>
                                         <a href='https://gitter.im/Organizrr/Lobby' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span><?php echo $language->translate("CHAT_WITH_US");?></a>
@@ -1853,6 +1856,8 @@ endif; ?>
                                             <ul class="dropdown-menu gray-bg">
                                             
                                                 <li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
+                                                
+                                                <li class="chooseTheme" id="newPlexTheme" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" href="#">New Plex<span><img class="themeImage" src="images/themes/newplex.png"></span></a></li>
                                             
                                                 <li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
                                                 
@@ -2123,10 +2128,10 @@ endif;?></textarea>
                 $('#datatable').DataTable({
                     displayLength: 10,
                     dom: 'T<"clear">lfrtip',
-                responsive: true,
+                    responsive: true,
                     "order": [[ 0, 'desc' ]],
                     "language": {
-			           "info": "<?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 0);?> _START_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 1);?> _END_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 2);?> _TOTAL_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 3);?>",
+                        "info": "<?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 0);?> _START_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 1);?> _END_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 2);?> _TOTAL_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 3);?>",
                         "infoEmpty": "<?php echo $language->translate('NO_ENTRIES');?>",
                         "infoFiltered": "<?php echo explosion($language->translate('FILTERED'), 0);?> _MAX_ <?php echo explosion($language->translate('FILTERED'), 1);?>",
                         "lengthMenu": "<?php echo $language->translate('SHOW');?> _MENU_ <?php echo $language->translate('ENTRIES');?>",
@@ -2135,7 +2140,7 @@ endif;?></textarea>
                         "searchClass": "<?php echo $language->translate('SEARCH');?>",
                         "zeroRecords": "<?php echo $language->translate('NO_MATCHING');?>",
                         "paginate": {
-				             "next": "<?php echo $language->translate('NEXT');?>",
+				            "next": "<?php echo $language->translate('NEXT');?>",
                             "previous": "<?php echo $language->translate('PREVIOUS');?>",
 				           }
 			         }
@@ -2471,9 +2476,11 @@ endif;?></textarea>
 
                 $(this).find("span[class^='fa fa-hand-paper-o']").attr("class", "fa fa-hand-grab-o");
                 $(this).addClass("dragging");
+                $(this).find("div[class^='action-btns tabIconView']").addClass("animated swing");
                 $(this).mouseup(function() {
                     $(this).find("span[class^='fa fa-hand-grab-o']").attr("class", "fa fa-hand-paper-o");
                     $(this).removeClass("dragging");
+                    $(this).find("div[class^='action-btns tabIconView']").removeClass("animated swing");
                 });
             });
             
@@ -2536,6 +2543,18 @@ endif;?></textarea>
                 parent.notify("<?php echo $language->translate('ICON_COPY');?>","clipboard","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
                 
                 $( "div[id^='viewAllIcons']" ).toggle();
+                
+            });
+            
+            $('body').on('click', 'b.allIcons', function() {
+
+                $("textarea[id^='copyTarget2']").val($(this).attr("title"));
+
+                copyToClipboard(document.getElementById("copyTarget2"));
+                
+                parent.notify("<?php echo $language->translate('ICON_COPY');?>","clipboard","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+                
+                $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
                 
             });
          
@@ -2724,6 +2743,23 @@ endif;?></textarea>
 
             });
             
+            $('#newPlexTheme').on('click touchstart', function(){
+
+                changeColor("topbartext", "#E5A00D");
+                changeColor("topbar", "#282A2D");
+                changeColor("bottombar", "#282A2D");
+                changeColor("sidebar", "#3F4245");
+                changeColor("hoverbg", "#E5A00D");
+                changeColor("activetabBG", "#282A2D");
+                changeColor("activetabicon", "#E5A00D");
+                changeColor("activetabtext", "#E5A00D");
+                changeColor("inactiveicon", "#F9F9F9");
+                changeColor("inactivetext", "#F9F9F9");
+                changeColor("loading", "#E5A00D");
+                changeColor("hovertext", "#E0E3E6");
+
+            });
+            
             $('textarea').numberedtextarea({
 
               // font color for line numbers
@@ -2770,7 +2806,7 @@ endif;?></textarea>
                 dataType: "json",
                 success: function(github) {
                     
-                    var currentVersion = "1.01";
+                    var currentVersion = "1.05";
                    
                     infoTabVersion = $('#about').find('#version');
                     infoTabVersionHistory = $('#about').find('#versionHistory');
