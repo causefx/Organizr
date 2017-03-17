@@ -5,7 +5,7 @@ $(document).ready(function(){
 		limit: null,
 		maxSize: null,
 		extensions: null,
-		changeInput: '<div class="jFiler-input-dragDrop"><div class="jFiler-input-inner"><div class="jFiler-input-icon"><i class="fa fa-cloud-upload"></i></div><div class="jFiler-input-text"><h3>Drag & Drop files here</h3> <span style="display:inline-block; margin: 15px 0">or</span></div><button type="button" class="btn waves btn-labeled btn-primary btn-sm text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-folder-open"></i></span>Browse </button></div></div>',
+		changeInput: '<div class="jFiler-input-dragDrop"><textarea id="copyTarget2" class="hideCopy" style="left: -9999px; top: 0; position: absolute;"></textarea><div class="jFiler-input-inner"><div class="jFiler-input-icon"><i class="fa fa-cloud-upload"></i></div><div class="jFiler-input-text"><h3>Drag & Drop files here</h3> <span style="display:inline-block; margin: 15px 0">or</span></div><button type="button" class="btn waves btn-labeled btn-primary btn-sm text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-folder-open"></i></span>Browse </button></div></div>',
 		showThumbs: true,
 		theme: "dragdropbox",
 		templates: {
@@ -17,8 +17,8 @@ $(document).ready(function(){
 									<div class="jFiler-item-status"></div>\
 									<div class="jFiler-item-thumb-overlay">\
 										<div class="jFiler-item-info">\
-											<div style="display:table-cell;vertical-align: middle;">\
-												<span class="jFiler-item-title"><b title="{{fi-name}}">images/{{fi-name}}</b></span>\
+											<div class="allIcons" style="display:table-cell;vertical-align: middle;">\
+												<span class="jFiler-item-title"><b class="allIcons" title="images/{{fi-name}}">Click HERE To Copy</b></span>\
 												<span class="jFiler-item-others">{{fi-size2}}</span>\
 											</div>\
 										</div>\
@@ -43,8 +43,8 @@ $(document).ready(function(){
 										<div class="jFiler-item-status"></div>\
 										<div class="jFiler-item-thumb-overlay">\
 											<div class="jFiler-item-info">\
-												<div style="display:table-cell;vertical-align: middle;">\
-													<span class="jFiler-item-title"><b title="{{fi-name}}">images/{{fi-name}}</b></span>\
+												<div class="allIcons" style="display:table-cell;vertical-align: middle;">\
+													<span class="jFiler-item-title"><b class="allIcons" title="images/{{fi-name}}">Click HERE To Copy</b></span>\
 													<span class="jFiler-item-others">{{fi-size2}}</span>\
 												</div>\
 											</div>\

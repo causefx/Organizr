@@ -81,8 +81,10 @@ function getTimezone(){
         'Africa' => DateTimeZone::AFRICA,
         'America' => DateTimeZone::AMERICA,
         'Antarctica' => DateTimeZone::ANTARCTICA,
+        'Arctic' => DateTimeZone::ARCTIC,
         'Asia' => DateTimeZone::ASIA,
         'Atlantic' => DateTimeZone::ATLANTIC,
+        'Australia' => DateTimeZone::AUSTRALIA,
         'Europe' => DateTimeZone::EUROPE,
         'Indian' => DateTimeZone::INDIAN,
         'Pacific' => DateTimeZone::PACIFIC
@@ -490,7 +492,9 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
             -webkit-overflow-scrolling: touch;
 
-        }.iframe iframe{
+        }.main-wrapper{
+            
+            /*position: absolute !important;*/
 
         }#menu-toggle span {
             background: <?=$topbartext;?>;
