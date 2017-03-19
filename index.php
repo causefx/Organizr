@@ -143,8 +143,8 @@ if($action == "createLocation") :
         if($postName !== "action") :
         
             if(substr($postValue, -1) == "/") : $postValue = rtrim($postValue, "/"); endif;
-        
-                $postValue = str_replace("\\","/", $postValue);
+    
+            $postValue = str_replace("\\","/", $postValue);
         
             $databaseData .= $postName . " = \"" . $postValue . "\"\r\n";
         
@@ -268,17 +268,23 @@ else :
     endif;
 
     $userpic = md5( strtolower( trim( $USER->email ) ) );
-    if(LOADINGICON !== "") : 
-
-        $loadingIcon = LOADINGICON; 
-
-    endif;
+    
+    if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
 
     if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
     
     if($USER->authenticated) : 
 
-        $showPic = "<img src='https://www.gravatar.com/avatar/$userpic?s=$userSize' class='img-circle'>"; 
+        if(GRAVATAR == "true") :
+
+            $showPic = "<img src='https://www.gravatar.com/avatar/$userpic?s=$userSize' class='img-circle'>";
+
+        else: 
+        
+            //$showPic = "<login class='login-btn text-uppercase'>" . $language->translate("MENU") . "</login>";
+            $showPic = "<i class=\"mdi mdi-account-box-outline\"></i>";
+
+        endif;
 
     else : 
 
@@ -315,6 +321,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
   \::/  /   |:\/__/   \::/  /    /:/  /    |:/  /   \:\__\    \:\__\    |:\/__/ 
    \/__/     \|__|     \/__/     \/__/     \/__/     \/__/     \/__/     \|__|  
 
+                      [Organizr Version: <?php echo INSTALLEDVERSION; ?> - By: CauseFX]
 
 -->
 <!DOCTYPE html>
@@ -354,6 +361,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<script type="text/javascript" src="<?=$baseURL;?>js/user.js"></script>
 
         <link rel="stylesheet" href="<?=$baseURL;?>css/style.css">
+        <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
 
         <link rel="icon" type="image/png" href="<?=$baseURL;?>images/favicon/android-chrome-192x192.png" sizes="192x192">
         <link rel="apple-touch-icon" sizes="180x180" href="<?=$baseURL;?>images/favicon/apple-touch-icon.png">
@@ -479,6 +487,10 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
             color: <?=$topbartext;?>;
 
+        }li.dropdown.some-btn .mdi:hover {
+
+            color: <?=$hoverbg;?>;
+
         }.nav>li>a:focus, .nav>li>a:hover {
 
             text-decoration: none;
@@ -494,7 +506,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
         }.main-wrapper{
             
-            /*position: absolute !important;*/
+            position: absolute !important;
 
         }#menu-toggle span {
             background: <?=$topbartext;?>;
@@ -601,11 +613,11 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         }.menu-toggle .cross span:nth-child(2) {
         
             left: -9px;
-            top: 40px;
+            top: 41px;
         
         }.menu-toggle.gn-selected .cross span:nth-child(2) {
          
-            width: 49%;
+            width: 53%;
             
         }.menu-toggle.gn-selected .cross span:nth-child(1) {
             
@@ -826,7 +838,7 @@ endif; ?>
                     
                     <ul class="nav navbar-right right-menu">
                         
-                        <li class="dropdown notifications">
+                        <li class="dropdown some-btn">
                             
                             <?php if($configReady == "Yes") : if(!$USER->authenticated) : ?>
                             
@@ -1116,8 +1128,10 @@ endif; ?>
                 <br>
                 
                 <div class="content-box profile-sidebar box-shadow">
-                
-                    <img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=100&d=mm" class="img-responsive img-circle center-block" alt="user" https:="" www.gravatar.com="" avatar="">
+                    
+                    <?php if(GRAVATAR == "true") : ?>
+                    <img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=100&d=mm" class="img-responsive img-circle center-block" alt="user">
+                    <?php endif; ?>
                 
                     <div class="profile-usertitle">
                 
@@ -1435,6 +1449,8 @@ endif; ?>
         <!--Custom Scripts-->
         <script src="<?=$baseURL;?>js/common.js"></script>
         <script src="<?=$baseURL;?>js/mousetrap.min.js"></script>
+        
+        <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
 
         <script>
 
@@ -1702,7 +1718,7 @@ endif; ?>
 
             if (defaultTab){
 
-                $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+defaultTab+'"></iframe></div>');
+                $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
                 document.getElementById('main-wrapper').focus();
                 
             }
@@ -1887,7 +1903,7 @@ endif; ?>
 
                     $("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
-                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
+                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
                     
                     document.title = thistitle;
                     
@@ -1957,7 +1973,7 @@ endif; ?>
 
                     $("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
 
-                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
+                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
                     
                     document.title = thistitle;
                     

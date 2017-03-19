@@ -1184,7 +1184,7 @@ endif; ?>
 
                                                             <th scope="row"><?=$countUsers;?></th>
 
-                                                            <td><i class="userpic"><img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=25&d=mm" class="img-circle"></i> &nbsp; <?=$row['username'];?></td>
+                                                            <td><?php if(GRAVATAR == "true") : ?><i class="userpic"><img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=25&d=mm" class="img-circle"></i> &nbsp; <?php endif; ?><?=$row['username'];?></td>
                                                             
                                                             <td><?=$row['email'];?></td>
 
@@ -1370,6 +1370,15 @@ endif; ?>
                                                             <input id="slimBar" class="switcher switcher-success" value="true" name="slimBar" type="checkbox" <?php echo $enableSlimBar;?>>
 
                                                             <label for="slimBar"></label><?php echo $language->translate("ENABLE_SLIMBAR");?>
+
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <?php  if(GRAVATAR == "true") : $enableGravatar = "checked"; else : $enableGravatar = ""; endif;?>
+                                                            <input id="" class="switcher switcher-success" value="false" name="gravatar" type="hidden">
+                                                            <input id="gravatar" class="switcher switcher-success" value="true" name="gravatar" type="checkbox" <?php echo $enableGravatar;?>>
+
+                                                            <label for="gravatar"></label><?php echo $language->translate("GRAVATAR");?>
 
                                                         </div>
                                                         
@@ -2116,6 +2125,7 @@ endif;?></textarea>
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
         <script src="js/jquery.filer.min.js" type="text/javascript"></script>
 	    <script src="js/custom.js" type="text/javascript"></script>
+	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
         
         <!--Data Tables-->
         <script src="bower_components/DataTables/media/js/jquery.dataTables.js"></script>
@@ -2806,7 +2816,7 @@ endif;?></textarea>
                 dataType: "json",
                 success: function(github) {
                     
-                    var currentVersion = "1.05";
+                    var currentVersion = "<?php echo INSTALLEDVERSION;?>";
                    
                     infoTabVersion = $('#about').find('#version');
                     infoTabVersionHistory = $('#about').find('#versionHistory');
@@ -2823,7 +2833,7 @@ endif;?></textarea>
                                    
                         }
                         
-                        $(infoTabVersionHistory).append('<li style="display: none"><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon cbp_tmicon-earth animated jello"></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
+                        $(infoTabVersionHistory).append('<li style="display: none"><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon animated jello"><i class="fa fa-github-alt"></i></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
                         
                         size_li = $("#versionHistory li").size();
                         

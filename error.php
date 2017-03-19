@@ -29,11 +29,13 @@ $codes = array(
 
 @$errorTitle = $codes[$status][0];
 @$message = $codes[$status][1];
+@$errorImage = $codes[$status][2];
 
 if ($errorTitle == false || strlen($status) != 3) {
     
     $message = 'Please supply a valid status code.';
     $errorTitle = "Error";
+    $errorImage = "confused";
 
 }
 
@@ -128,9 +130,9 @@ endif;
 
         <title><?=$errorTitle;?></title>
 
-        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="bower_components/Waves/dist/waves.min.css"> 
-        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/bower_components/bower_components/Waves/dist/waves.min.css"> 
+        <link rel="stylesheet" href="/css/style.css">
         
     </head>
 
@@ -158,7 +160,7 @@ endif;
                 
                                     <div class="big-box text-left">
                 
-                                        <center><img src="images/<?=$codes[$status][2];?>.png" style="height: 200px;"></center>
+                                        <center><img src="images/<?=$errorImage;?>.png" style="height: 200px;"></center>
                                         <h4 style="color: <?=$topbar;?>;" class="text-center"><?php echo $message;?></h4>
 
                                         <button style="background:<?=$topbar;?>;" onclick="goBack()" type="button" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("GO_BACK");?></text></button>					                                    

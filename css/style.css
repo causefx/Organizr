@@ -5,7 +5,7 @@
  *   version 1.1
  *
 */
-@import url(https://fonts.googleapis.com/css?family=Roboto:100,400,500,300,700);
+/*@import url(https://fonts.googleapis.com/css?family=Roboto:100,400,500,300,700);*/
 .preloader {
   z-index: 99999;
   position: fixed !important;
@@ -473,7 +473,7 @@ a.text-info:hover {
 
 .gn-menu-main li.gn-trigger {
   position: relative;
-  width: 66px;
+  width: 50px;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -664,7 +664,7 @@ a.text-info:hover {
 }
 
 .menu-toggle.gn-selected .cross span:nth-child(2) {
-  width: 52%;
+  width: 53%;
   -webkit-transition-delay: .375s;
           transition-delay: .375s;
 }

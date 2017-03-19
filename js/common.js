@@ -1,10 +1,3 @@
-/*
- *
- *   ADVANTAGE - Responsive Admin Theme
- *   version 1.1
- *
-*/
-
 $(window).on('load', function(){
     //Preloader
     setTimeout(function(){
@@ -142,6 +135,10 @@ $(function () {
     if (localStorageSupport) {
 
         var fixNav = localStorage.getItem("fixNav");
+        
+        if(  fixNav === null ) {
+            localStorage.setItem("fixNav",'on');
+        }
 
         if (fixNav == 'on') {
           $('.gn-menu-wrapper').addClass("gn-open-fixed");
@@ -161,10 +158,7 @@ $(function () {
 
 });
 
-
 // check if browser support HTML5 local storage
 function localStorageSupport() {
     return (('localStorage' in window) && window['localStorage'] !== null)
 }
-
-
