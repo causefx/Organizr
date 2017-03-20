@@ -165,6 +165,7 @@ $folder = USER_HOME;
                 check("Zip");
                 check("openssl");
                 check("session");
+                check("simplexml");
                 checkFunction("MAIL");
                 checkFunction("fopen");
 

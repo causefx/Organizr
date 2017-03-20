@@ -5,13 +5,8 @@ $data = false;
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
 
-function registration_callback($username, $email, $userdir)
-{
-    global $data;
-    $data = array($username, $email, $userdir);
-}
-
 require_once("user.php");
+require_once("functions.php");
 $USER = new User("registration_callback");
 require_once("translate.php");
 
@@ -25,141 +20,9 @@ elseif($USER->authenticated && $USER->role !== "admin") :
 
 endif;
 
-function printArray($arrayName){
-    
-    $messageCount = count($arrayName);
-    
-    $i = 0;
-    
-    foreach ( $arrayName as $item ) :
-    
-        $i++; 
-    
-        if($i < $messageCount) :
-    
-            echo "<small class='text-uppercase'>" . $item . "</small> & ";
-    
-        elseif($i = $messageCount) :
-    
-            echo "<small class='text-uppercase'>" . $item . "</small>";
-    
-        endif;
-        
-    endforeach;
-    
-}
-
-function explosion($string, $position){
-    
-    $getWord = explode("|", $string);
-    return $getWord[$position];
-    
-}
-
-function write_ini_file($content, $path) { 
-    
-    if (!$handle = fopen($path, 'w')) {
-        
-        return false; 
-    
-    }
-    
-    $success = fwrite($handle, $content);
-    
-    fclose($handle); 
-    
-    return $success; 
-
-}
-
-function getServerPath() {
-    
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
-        
-        $protocol = "https://"; 
-    
-    } else {  
-        
-        $protocol = "http://"; 
-    
-    }
-    
-    return $protocol . $_SERVER['SERVER_NAME'] . dirname($_SERVER['REQUEST_URI']);
-      
-}
-
-function get_browser_name() {
-    
-    $user_agent = $_SERVER['HTTP_USER_AGENT'];
-    
-    if (strpos($user_agent, 'Opera') || strpos($user_agent, 'OPR/')) return 'Opera';
-    elseif (strpos($user_agent, 'Edge')) return 'Edge';
-    elseif (strpos($user_agent, 'Chrome')) return 'Chrome';
-    elseif (strpos($user_agent, 'Safari')) return 'Safari';
-    elseif (strpos($user_agent, 'Firefox')) return 'Firefox';
-    elseif (strpos($user_agent, 'MSIE') || strpos($user_agent, 'Trident/7')) return 'Internet Explorer';
-    
-    return 'Other';
-    
-}
-
-function getTimezone(){
-
-    $regions = array(
-        'Africa' => DateTimeZone::AFRICA,
-        'America' => DateTimeZone::AMERICA,
-        'Antarctica' => DateTimeZone::ANTARCTICA,
-        'Arctic' => DateTimeZone::ARCTIC,
-        'Asia' => DateTimeZone::ASIA,
-        'Atlantic' => DateTimeZone::ATLANTIC,
-        'Australia' => DateTimeZone::AUSTRALIA,
-        'Europe' => DateTimeZone::EUROPE,
-        'Indian' => DateTimeZone::INDIAN,
-        'Pacific' => DateTimeZone::PACIFIC
-    );
-    
-    $timezones = array();
-
-    foreach ($regions as $name => $mask) {
-        
-        $zones = DateTimeZone::listIdentifiers($mask);
-
-        foreach($zones as $timezone) {
-
-            $time = new DateTime(NULL, new DateTimeZone($timezone));
-
-            $ampm = $time->format('H') > 12 ? ' ('. $time->format('g:i a'). ')' : '';
-
-            $timezones[$name][$timezone] = substr($timezone, strlen($name) + 1) . ' - ' . $time->format('H:i') . $ampm;
-
-        }
-        
-    }   
-    
-    print '<select name="timezone" id="timezone" class="form-control material input-sm" required>';
-    
-    foreach($timezones as $region => $list) {
-    
-        print '<optgroup label="' . $region . '">' . "\n";
-    
-        foreach($list as $timezone => $name) {
-            
-            if($timezone == TIMEZONE) : $selected = " selected"; else : $selected = ""; endif;
-            
-            print '<option value="' . $timezone . '"' . $selected . '>' . $name . '</option>' . "\n";
-    
-        }
-    
-        print '</optgroup>' . "\n";
-    
-    }
-    
-    print '</select>';
-    
-}
-
 $dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
 $databaseLocation = "databaseLocation.ini.php";
+$homepageSettings = "homepageSettings.ini.php";
 $userdirpath = USER_HOME;
 $userdirpath = substr_replace($userdirpath, "", -1);
 
@@ -430,6 +293,28 @@ if($action == "createLocation") :
     }
 
     write_ini_file($databaseData, $databaseLocation);
+
+    echo "<script>window.parent.location.reload(true);</script>";
+
+endif;
+
+if($action == "homepageSettings") :
+
+    $homepageData = '; <?php die("Access denied"); ?>' . "\r\n";
+
+    foreach ($_POST as $postName => $postValue) {
+            
+        if($postName !== "action") :
+        
+            if(substr($postValue, -1) == "/") : $postValue = rtrim($postValue, "/"); endif;
+        
+            $homepageData .= $postName . " = \"" . $postValue . "\"\r\n";
+        
+        endif;
+        
+    }
+
+    write_ini_file($homepageData, $homepageSettings);
 
     echo "<script>window.parent.location.reload(true);</script>";
 
@@ -804,6 +689,12 @@ endif; ?>
                                 <li>
                         
                                     <a href="#systemSettings" data-toggle="tab"><i class="fa fa-cog gray"></i></a>
+                     
+                                </li>
+                                
+                                <li>
+                        
+                                    <a href="#homepageSettings" data-toggle="tab"><i class="fa fa-home yellow"></i></a>
                      
                                 </li>
                                 
@@ -1382,6 +1273,91 @@ endif; ?>
 
                                                         </div>
                                                         
+                                                    </div>
+                                                    
+                                                    <button type="submit" class="class='btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save</button>
+
+                                                </form>               
+                                          
+                                            </div>
+                                        
+                                        </div>
+                                      
+                                    </div>
+
+                                </div>
+                                
+                                <div class="tab-pane big-box  fade in" id="homepageSettings">
+                                    
+                                    <div class="row">
+                                        
+                                        <div class="col-lg-12">
+                                          
+                                            <div class="big-box">
+                                            
+                                                <form class="content-form" name="homepageSettings" id="homepageSettings" action="" method="POST">
+                        								    
+                                                    <input type="hidden" name="action" value="homepageSettings" />
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control material input-sm" name="plexURL" placeholder="<?php echo $language->translate("PLEX_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXURL;?>">
+                                                        <p class="help-text"><?php echo $language->translate("PLEX_URL");?></p>
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control material input-sm" name="plexPort" placeholder="<?php echo $language->translate("PLEX_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPORT;?>">
+                                                        <p class="help-text"><?php echo $language->translate("PLEX_PORT");?></p>
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control material input-sm" name="plexToken" placeholder="<?php echo $language->translate("PLEX_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXTOKEN;?>">
+                                                        <p class="help-text"><?php echo $language->translate("PLEX_TOKEN");?></p>
+
+                                                    </div>
+                                                    
+                                                    <div class="content-form form-inline">
+                                                    
+                                                        <div class="form-group">
+                                                            <?php  if(PLEXRECENTMOVIE == "true") : $PLEXRECENTMOVIE = "checked"; else : $PLEXRECENTMOVIE = ""; endif;?>
+                                                            <input id="" class="switcher switcher-success" value="false" name="plexRecentMovie" type="hidden">
+                                                            <input id="plexRecentMovie" class="switcher switcher-success" value="true" name="plexRecentMovie" type="checkbox" <?php echo $PLEXRECENTMOVIE;?>>
+
+                                                            <label for="plexRecentMovie"></label><?php echo $language->translate("RECENT_MOVIES");?>
+
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <?php  if(PLEXRECENTTV == "true") : $PLEXRECENTTV = "checked"; else : $PLEXRECENTTV = ""; endif;?>
+                                                            <input id="" class="switcher switcher-success" value="false" name="plexRecentTV" type="hidden">
+                                                            <input id="plexRecentTV" class="switcher switcher-success" value="true" name="plexRecentTV" type="checkbox" <?php echo $PLEXRECENTTV;?>>
+
+                                                            <label for="plexRecentTV"></label><?php echo $language->translate("RECENT_TV");?>
+
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <?php  if(PLEXRECENTMUSIC == "true") : $PLEXRECENTMUSIC = "checked"; else : $PLEXRECENTMUSIC = ""; endif;?>
+                                                            <input id="" class="switcher switcher-success" value="false" name="plexRecentMusic" type="hidden">
+                                                            <input id="plexRecentMusic" class="switcher switcher-success" value="true" name="plexRecentMusic" type="checkbox" <?php echo $PLEXRECENTMUSIC;?>>
+
+                                                            <label for="plexRecentMusic"></label><?php echo $language->translate("RECENT_MUSIC");?>
+
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <?php  if(PLEXPLAYINGNOW == "true") : $PLEXPLAYINGNOW = "checked"; else : $PLEXPLAYINGNOW = ""; endif;?>
+                                                            <input id="" class="switcher switcher-success" value="false" name="plexPlayingNow" type="hidden">
+                                                            <input id="plexPlayingNow" class="switcher switcher-success" value="true" name="plexPlayingNow" type="checkbox" <?php echo $PLEXPLAYINGNOW;?>>
+
+                                                            <label for="plexPlayingNow"></label><?php echo $language->translate("PLAYING_NOW");?>
+
+                                                        </div>
+                                                                                                                
                                                     </div>
                                                     
                                                     <button type="submit" class="class='btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save</button>

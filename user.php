@@ -7,10 +7,12 @@
 	 *	entry is assigned a new random token,  which is used in
 	 * salting subsequent password checks.
 	 */
+    
+    define('INSTALLEDVERSION', '1.10');
+
     $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
     define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
     define('DATABASE_LOCATION', $databaseConfig['databaseLocation'] . '/');
-    define('INSTALLEDVERSION', '1.08');
     if(!empty($databaseConfig['timezone'])) : define('TIMEZONE', $databaseConfig['timezone']); else : define('TIMEZONE', 'America/Los_Angeles'); endif;
     if(!empty($databaseConfig['titleLogo'])) : define('TITLELOGO', $databaseConfig['titleLogo']); else : define('TITLELOGO', ''); endif;
     if(!empty($databaseConfig['loadingIcon'])) : define('LOADINGICON', $databaseConfig['loadingIcon']); else : define('LOADINGICON', ''); endif;
@@ -22,6 +24,19 @@
     if(!empty($databaseConfig['registerPassword'])) : define('REGISTERPASSWORD', $databaseConfig['registerPassword']); else : define('REGISTERPASSWORD', ''); endif;
     if(!empty($databaseConfig['gravatar'])) : define('GRAVATAR', $databaseConfig['gravatar']); else : define('GRAVATAR', 'true'); endif;
     if(!empty($databaseConfig['notifyEffect'])) : define('NOTIFYEFFECT', $databaseConfig['notifyEffect']); else : define('NOTIFYEFFECT', 'bar-slidetop'); endif;
+
+    if(!file_exists('homepageSettings.ini.php')){ touch('homepageSettings.ini.php'); }
+        
+    $homepageConfig = parse_ini_file('homepageSettings.ini.php', true);        
+    if(!empty($homepageConfig['plexURL'])) : define('PLEXURL', $homepageConfig['plexURL']); else : define('PLEXURL', ''); endif;
+    if(!empty($homepageConfig['plexPort'])) : define('PLEXPORT', $homepageConfig['plexPort']); else : define('PLEXPORT', ''); endif;
+    if(!empty($homepageConfig['plexToken'])) : define('PLEXTOKEN', $homepageConfig['plexToken']); else : define('PLEXTOKEN', ''); endif;
+    if(!empty($homepageConfig['plexRecentMovie'])) : define('PLEXRECENTMOVIE', $homepageConfig['plexRecentMovie']); else : define('PLEXRECENTMOVIE', 'false'); endif;
+    if(!empty($homepageConfig['plexRecentTV'])) : define('PLEXRECENTTV', $homepageConfig['plexRecentTV']); else : define('PLEXRECENTTV', 'false'); endif;
+    if(!empty($homepageConfig['plexRecentMusic'])) : define('PLEXRECENTMUSIC', $homepageConfig['plexRecentMusic']); else : define('PLEXRECENTMUSIC', 'false'); endif;
+    if(!empty($homepageConfig['plexPlayingNow'])) : define('PLEXPLAYINGNOW', $homepageConfig['plexPlayingNow']); else : define('PLEXPLAYINGNOW', 'false'); endif;
+
+    
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 
     $notifyExplode = explode("-", NOTIFYEFFECT);
     define('FAIL_LOG', 'loginLog.json');
