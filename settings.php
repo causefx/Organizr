@@ -694,7 +694,7 @@ endif; ?>
                                 
                                 <li>
                         
-                                    <a href="#homepageSettings" data-toggle="tab"><i class="fa fa-home yellow"></i></a>
+                                    <a href="#homepageSettings" data-toggle="tab"><i class="fa fa-home green"></i></a>
                      
                                 </li>
                                 
@@ -750,7 +750,7 @@ endif; ?>
                                             <?php
                                             $dirname = "images/";
                                             $images = scandir($dirname);
-                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes");
+                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes", "nadaplaying.jpg");
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
 
@@ -1152,7 +1152,7 @@ endif; ?>
 
                                                     <div class="form-group">
 
-                                                        <?php echo getTimezone();?>
+                                                        <?php echo gotTimezone();?>
                                                         <p class="help-text"><?php echo $language->translate("SET_TIMEZONE");?></p>
 
                                                     </div>
@@ -1291,82 +1291,170 @@ endif; ?>
                                     
                                     <div class="row">
                                         
-                                        <div class="col-lg-12">
-                                          
-                                            <div class="big-box">
-                                            
-                                                <form class="content-form" name="homepageSettings" id="homepageSettings" action="" method="POST">
-                        								    
-                                                    <input type="hidden" name="action" value="homepageSettings" />
-
-                                                    <div class="form-group">
-
-                                                        <input type="text" class="form-control material input-sm" name="plexURL" placeholder="<?php echo $language->translate("PLEX_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXURL;?>">
-                                                        <p class="help-text"><?php echo $language->translate("PLEX_URL");?></p>
-
-                                                    </div>
-
-                                                    <div class="form-group">
-
-                                                        <input type="text" class="form-control material input-sm" name="plexPort" placeholder="<?php echo $language->translate("PLEX_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPORT;?>">
-                                                        <p class="help-text"><?php echo $language->translate("PLEX_PORT");?></p>
-
-                                                    </div>
-
-                                                    <div class="form-group">
-
-                                                        <input type="text" class="form-control material input-sm" name="plexToken" placeholder="<?php echo $language->translate("PLEX_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXTOKEN;?>">
-                                                        <p class="help-text"><?php echo $language->translate("PLEX_TOKEN");?></p>
-
-                                                    </div>
-                                                    
-                                                    <div class="content-form form-inline">
-                                                    
-                                                        <div class="form-group">
-                                                            <?php  if(PLEXRECENTMOVIE == "true") : $PLEXRECENTMOVIE = "checked"; else : $PLEXRECENTMOVIE = ""; endif;?>
-                                                            <input id="" class="switcher switcher-success" value="false" name="plexRecentMovie" type="hidden">
-                                                            <input id="plexRecentMovie" class="switcher switcher-success" value="true" name="plexRecentMovie" type="checkbox" <?php echo $PLEXRECENTMOVIE;?>>
-
-                                                            <label for="plexRecentMovie"></label><?php echo $language->translate("RECENT_MOVIES");?>
-
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <?php  if(PLEXRECENTTV == "true") : $PLEXRECENTTV = "checked"; else : $PLEXRECENTTV = ""; endif;?>
-                                                            <input id="" class="switcher switcher-success" value="false" name="plexRecentTV" type="hidden">
-                                                            <input id="plexRecentTV" class="switcher switcher-success" value="true" name="plexRecentTV" type="checkbox" <?php echo $PLEXRECENTTV;?>>
-
-                                                            <label for="plexRecentTV"></label><?php echo $language->translate("RECENT_TV");?>
-
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <?php  if(PLEXRECENTMUSIC == "true") : $PLEXRECENTMUSIC = "checked"; else : $PLEXRECENTMUSIC = ""; endif;?>
-                                                            <input id="" class="switcher switcher-success" value="false" name="plexRecentMusic" type="hidden">
-                                                            <input id="plexRecentMusic" class="switcher switcher-success" value="true" name="plexRecentMusic" type="checkbox" <?php echo $PLEXRECENTMUSIC;?>>
-
-                                                            <label for="plexRecentMusic"></label><?php echo $language->translate("RECENT_MUSIC");?>
-
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <?php  if(PLEXPLAYINGNOW == "true") : $PLEXPLAYINGNOW = "checked"; else : $PLEXPLAYINGNOW = ""; endif;?>
-                                                            <input id="" class="switcher switcher-success" value="false" name="plexPlayingNow" type="hidden">
-                                                            <input id="plexPlayingNow" class="switcher switcher-success" value="true" name="plexPlayingNow" type="checkbox" <?php echo $PLEXPLAYINGNOW;?>>
-
-                                                            <label for="plexPlayingNow"></label><?php echo $language->translate("PLAYING_NOW");?>
-
-                                                        </div>
-                                                                                                                
-                                                    </div>
-                                                    
-                                                    <button type="submit" class="class='btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save</button>
-
-                                                </form>               
-                                          
-                                            </div>
                                         
+                                        <div class="col-lg-12">
+                                            
+                                            <form class="content-form" name="homepageSettings" id="homepageSettings" action="" method="POST">    
+                                            
+                                                <div class="tabbable tabs-with-bg" id="homepage-tabs">
+                                                                                                    
+                                                    <input type="hidden" name="action" value="homepageSettings" />
+                                                
+                                                    <ul class="nav nav-tabs">
+
+                                                        <li class="active">
+
+                                                            <a href="#tab-plex" data-toggle="tab" aria-expanded="true"><img style="height:20px; width:20px;" src="images/plex.png"></a>
+
+                                                        </li>
+
+                                                        <li class="">
+
+                                                            <a href="#tab-sonarr" data-toggle="tab" aria-expanded="false"><img style="height:20px; width:20px;" src="images/sonarr.png"></a>
+
+                                                        </li>
+
+                                                        <li class="">
+
+                                                            <a href="#tab-radarr" data-toggle="tab" aria-expanded="false"><img style="height:20px; width:20px;" src="images/radarr.png"></a>
+
+                                                        </li>
+
+                                                    </ul>
+
+                                                    <div class="clearfix"></div>
+
+                                                    <div class="tab-content">
+
+                                                        <div class="tab-pane big-box fade active in" id="tab-plex">
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="plexURL" placeholder="<?php echo $language->translate("PLEX_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXURL;?>">
+                                                                <p class="help-text"><?php echo $language->translate("PLEX_URL");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="plexPort" placeholder="<?php echo $language->translate("PLEX_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPORT;?>">
+                                                                <p class="help-text"><?php echo $language->translate("PLEX_PORT");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="plexToken" placeholder="<?php echo $language->translate("PLEX_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXTOKEN;?>">
+                                                                <p class="help-text"><?php echo $language->translate("PLEX_TOKEN");?></p>
+
+                                                            </div>
+
+                                                            <div class="content-form form-inline">
+
+                                                                <div class="form-group">
+                                                                    <?php  if(PLEXRECENTMOVIE == "true") : $PLEXRECENTMOVIE = "checked"; else : $PLEXRECENTMOVIE = ""; endif;?>
+                                                                    <input id="" class="switcher switcher-success" value="false" name="plexRecentMovie" type="hidden">
+                                                                    <input id="plexRecentMovie" class="switcher switcher-success" value="true" name="plexRecentMovie" type="checkbox" <?php echo $PLEXRECENTMOVIE;?>>
+
+                                                                    <label for="plexRecentMovie"></label><?php echo $language->translate("RECENT_MOVIES");?>
+
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    <?php  if(PLEXRECENTTV == "true") : $PLEXRECENTTV = "checked"; else : $PLEXRECENTTV = ""; endif;?>
+                                                                    <input id="" class="switcher switcher-success" value="false" name="plexRecentTV" type="hidden">
+                                                                    <input id="plexRecentTV" class="switcher switcher-success" value="true" name="plexRecentTV" type="checkbox" <?php echo $PLEXRECENTTV;?>>
+
+                                                                    <label for="plexRecentTV"></label><?php echo $language->translate("RECENT_TV");?>
+
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    <?php  if(PLEXRECENTMUSIC == "true") : $PLEXRECENTMUSIC = "checked"; else : $PLEXRECENTMUSIC = ""; endif;?>
+                                                                    <input id="" class="switcher switcher-success" value="false" name="plexRecentMusic" type="hidden">
+                                                                    <input id="plexRecentMusic" class="switcher switcher-success" value="true" name="plexRecentMusic" type="checkbox" <?php echo $PLEXRECENTMUSIC;?>>
+
+                                                                    <label for="plexRecentMusic"></label><?php echo $language->translate("RECENT_MUSIC");?>
+
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    <?php  if(PLEXPLAYINGNOW == "true") : $PLEXPLAYINGNOW = "checked"; else : $PLEXPLAYINGNOW = ""; endif;?>
+                                                                    <input id="" class="switcher switcher-success" value="false" name="plexPlayingNow" type="hidden">
+                                                                    <input id="plexPlayingNow" class="switcher switcher-success" value="true" name="plexPlayingNow" type="checkbox" <?php echo $PLEXPLAYINGNOW;?>>
+
+                                                                    <label for="plexPlayingNow"></label><?php echo $language->translate("PLAYING_NOW");?>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="tab-pane big-box fade" id="tab-sonarr">
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="sonarrURL" placeholder="<?php echo $language->translate("SONARR_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo SONARRURL;?>">
+                                                                <p class="help-text"><?php echo $language->translate("SONARR_URL");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="sonarrPort" placeholder="<?php echo $language->translate("SONARR_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo SONARRPORT;?>">
+                                                                <p class="help-text"><?php echo $language->translate("SONARR_PORT");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="sonarrKey" placeholder="<?php echo $language->translate("SONARR_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo SONARRKEY;?>">
+                                                                <p class="help-text"><?php echo $language->translate("SONARR_KEY");?></p>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="tab-pane big-box fade" id="tab-radarr">
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="radarrURL" placeholder="<?php echo $language->translate("RADARR_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo RADARRURL;?>">
+                                                                <p class="help-text"><?php echo $language->translate("RADARR_URL");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="radarrPort" placeholder="<?php echo $language->translate("RADARR_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo RADARRPORT;?>">
+                                                                <p class="help-text"><?php echo $language->translate("RADARR_PORT");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="radarrKey" placeholder="<?php echo $language->translate("RADARR_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo RADARRKEY;?>">
+                                                                <p class="help-text"><?php echo $language->translate("RADARR_KEY");?></p>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+   
+                                                </div>
+                                                
+                                                <button type="submit" class="class='btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save</button>
+
+                                            </form> 
+                                            
                                         </div>
+                                        
+                                        
+
+                                        
+                                        
                                       
                                     </div>
 

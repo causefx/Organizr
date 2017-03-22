@@ -8,7 +8,7 @@
 	 * salting subsequent password checks.
 	 */
     
-    define('INSTALLEDVERSION', '1.10');
+    define('INSTALLEDVERSION', '1.15');
 
     $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
     define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
@@ -35,6 +35,12 @@
     if(!empty($homepageConfig['plexRecentTV'])) : define('PLEXRECENTTV', $homepageConfig['plexRecentTV']); else : define('PLEXRECENTTV', 'false'); endif;
     if(!empty($homepageConfig['plexRecentMusic'])) : define('PLEXRECENTMUSIC', $homepageConfig['plexRecentMusic']); else : define('PLEXRECENTMUSIC', 'false'); endif;
     if(!empty($homepageConfig['plexPlayingNow'])) : define('PLEXPLAYINGNOW', $homepageConfig['plexPlayingNow']); else : define('PLEXPLAYINGNOW', 'false'); endif;
+    if(!empty($homepageConfig['sonarrKey'])) : define('SONARRKEY', $homepageConfig['sonarrKey']); else : define('SONARRKEY', ''); endif;
+    if(!empty($homepageConfig['sonarrURL'])) : define('SONARRURL', $homepageConfig['sonarrURL']); else : define('SONARRURL', ''); endif;
+    if(!empty($homepageConfig['sonarrPort'])) : define('SONARRPORT', $homepageConfig['sonarrPort']); else : define('SONARRPORT', ''); endif;
+    if(!empty($homepageConfig['radarrKey'])) : define('RADARRKEY', $homepageConfig['radarrKey']); else : define('RADARRKEY', ''); endif;
+    if(!empty($homepageConfig['radarrURL'])) : define('RADARRURL', $homepageConfig['radarrURL']); else : define('RADARRURL', ''); endif;
+    if(!empty($homepageConfig['radarrPort'])) : define('RADARRPORT', $homepageConfig['radarrPort']); else : define('RADARRPORT', ''); endif;
 
     
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 

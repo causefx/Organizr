@@ -196,11 +196,12 @@ else :
 
 endif;
 
-if(!defined('SLIMBAR')) : define('SLIMBAR', 'false'); endif;
+if(!defined('SLIMBAR')) : define('SLIMBAR', 'true'); endif;
 if(!defined('AUTOHIDE')) : define('AUTOHIDE', 'false'); endif;
 if(!defined('ENABLEMAIL')) : define('ENABLEMAIL', 'false'); endif;
 if(!defined('CUSTOMCSS')) : define('CUSTOMCSS', 'false'); endif;
 if(!defined('LOADINGSCREEN')) : define('LOADINGSCREEN', 'true'); endif;
+if(!defined('INSTALLEDVERSION')) : define('INSTALLEDVERSION', 'Awaiting Install...'); endif;
 if(!isset($notifyExplode)) :
 
     $notifyExplode = array("bar","slidetop");
@@ -1665,6 +1666,33 @@ endif; ?>
 
         <?php endif; ?>
 
+        $("li[class^='tab-item']").dblclick(function(){
+            
+            var thisidfull = $(this).attr("id");
+            
+            var thisid = thisidfull.substr(0, thisidfull.length-1);
+            
+            var thisframe = $("#content div[data-content-url^='"+thisid+"']").children('iframe');
+            
+            $(thisframe).attr('src', $(thisframe).attr('src'));
+            
+            var refreshBox = $('#content').find('.active');
+
+            $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(10);
+
+            setTimeout(function(){
+
+                var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+
+                    refreshPreloader.remove();
+                    $("i[class^='mdi mdi-refresh fa-spin']").attr("class", "mdi mdi-refresh");
+
+                });
+
+            },800);
+            
+        });
             
         $('#reload').on('click tap', function(){
 
@@ -1755,6 +1783,8 @@ endif; ?>
             setHeight();
 
         });
+            
+            
             
         $("li[class^='tab-item']").on('click vclick', function(){
                 
