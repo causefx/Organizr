@@ -84,34 +84,22 @@ endif;
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="msapplication-tap-highlight" content="no" />
 
-        <title>Settings</title>
+        <title><?=$title;?> Homepage</title>
 
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
+        <!--<link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
         <link rel="stylesheet" href="bower_components/metisMenu/dist/metisMenu.min.css">
-        <link rel="stylesheet" href="bower_components/Waves/dist/waves.min.css"> 
+        <link rel="stylesheet" href="bower_components/Waves/dist/waves.min.css"> -->
         <link rel="stylesheet" href="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css"> 
-
-        <link rel="stylesheet" href="js/selects/cs-select.css">
-        <link rel="stylesheet" href="js/selects/cs-skin-elastic.css">
-        <link href="bower_components/iconpick/dist/css/fontawesome-iconpicker.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="bower_components/google-material-color/dist/palette.css">
         
-        <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
-        <link rel="stylesheet" href="bower_components/smoke/dist/css/smoke.min.css">
-
         <script src="js/menu/modernizr.custom.js"></script>
-        <script type="text/javascript" src="js/sha1.js"></script>
-        <script type="text/javascript" src="js/user.js"></script>
+
         <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
-        <link rel="stylesheet" href="bower_components/DataTables/media/css/jquery.dataTables.css">
-        <link rel="stylesheet" href="bower_components/datatables-tabletools/css/dataTables.tableTools.css">
-        <link rel="stylesheet" href="bower_components/numbered/jquery.numberedtextarea.css">
+
+        <link rel="stylesheet" href="bower_components/fullcalendar/dist/fullcalendar.css">
 
         <link rel="stylesheet" href="css/style.css">
-        <link href="css/jquery.filer.css" rel="stylesheet">
-	    <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
 
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
@@ -119,8 +107,30 @@ endif;
         <![endif]-->
         
         <style>
-        
-            .carousel-image{
+            table.fc-list-table {
+                table-layout: auto;
+            }.fc-day-grid-event .fc-content {
+                white-space: normal;
+            }.fc-list-item {
+                table-layout: auto;
+                position: inherit;
+                margin: 10px;
+                border-radius: 4px;
+                padding: 0 5px 0 5px;
+                color: #fff !important;
+            }.fc-calendar .fc-toolbar {
+                background: <?=$topbar;?>;
+                color: <?=$topbartext;?>;
+                border-radius: 5px 5px 0 0;
+                padding: 15px;
+            }.fc-calendar .fc-toolbar .fc-right {
+                bottom: 0px;
+                right: 20px;
+            }.fc-calendar .fc-toolbar .fc-right button {
+                color: <?=$topbartext;?>;
+            }.fc-calendar .fc-toolbar .fc-prev-button, .fc-calendar .fc-toolbar .fc-next-button {
+                color: <?=$topbartext;?>;
+            }.carousel-image{
                 width: 100px !important;
                 height: 150px !important;
                 border-radius: 3px 0 0 3px;  
@@ -167,7 +177,7 @@ endif; ?>
         
     </head>
 
-    <body class="" style="padding: 0px;">
+    <body class="scroller-body" style="padding: 0px;">
 
         <div class="main-wrapper" style="position: initial;">
             
@@ -180,22 +190,41 @@ endif; ?>
                     if(PLEXRECENTMOVIE == "true"){ $plexSize++; }
                     if(PLEXRECENTTV == "true"){ $plexSize++; }
                     if(PLEXRECENTMUSIC == "true"){ $plexSize++; }
-                    if($plexSize >= 3){ $plexSize = 4; }elseif($plexSize == 2){ $plexSize = 6; }elseif($plexSize == 1){ $plexSize = 12; }
-
-                    if($plexSize > 0){ echo '<h2 class="text-center">' . $language->translate("RECENTLY_ADDED_TO_PLEX") . '</h2>'; }
+                    if(PLEXPLAYINGNOW == "true"){ $plexSize++; }
+                    if($plexSize >= 4){ $plexSize = 3; }elseif($plexSize == 3){ $plexSize = 4; }elseif($plexSize == 2){ $plexSize = 6; }elseif($plexSize == 1){ $plexSize = 12; }
                     
                     if(PLEXRECENTMOVIE == "true"){ echo getPlexRecent(PLEXURL, PLEXPORT, "movie", PLEXTOKEN, $plexSize, $language->translate("MOVIES")); }
                     if(PLEXRECENTTV == "true"){ echo getPlexRecent(PLEXURL, PLEXPORT, "season", PLEXTOKEN, $plexSize, $language->translate("TV_SHOWS")); }
                     if(PLEXRECENTMUSIC == "true"){ echo getPlexRecent(PLEXURL, PLEXPORT, "album", PLEXTOKEN, $plexSize, $language->translate("MUSIC")); }
+                    if(PLEXPLAYINGNOW == "true"){ echo getPlexStreams(PLEXURL, PLEXPORT, PLEXTOKEN, $plexSize, $language->translate("PLAYING_NOW_ON_PLEX")); }
                     ?>
 
                 </div>
                 
-                <div class="row">
-                    <?php
-                    if(PLEXPLAYINGNOW == "true"){ echo '<h2 class="text-center">' . $language->translate("PLAYING_NOW_ON_PLEX") . '</h2>'; echo getPlexStreams(PLEXURL, PLEXPORT, PLEXTOKEN, 12); }
-                    ?>                                        
+                <?php if(SONARRURL != "" || RADARRURL != "") : ?>
+                <div class="row" style="padding: 0 0 10px 0;">
+                    
+                    <div class="col-lg-4">
+                    
+                        <span class="label progress-bar-success progress-bar-striped well-sm"><span class="fc-image"><i class="fa fa-film"></i></span> Available</span>
+                        <span class="label progress-bar-danger progress-bar-striped well-sm"><span class="fc-image"><i class="fa fa-film"></i></span> Unavailable</span>
+                        <span class="label label-primary well-sm"><span class="fc-image"><i class="fa fa-tv"></i></span> Available</span>
+                        <span class="label label-danger well-sm"><span class="fc-image"><i class="fa fa-tv"></i></span> Unavailable</span>
+                    
+                    </div>
+                    
                 </div>
+                
+                <div class="row">
+        
+                    <div class="col-lg-12">
+                    
+                        <div id="calendar" class="fc-calendar box-shadow fc fc-ltr fc-unthemed"></div>
+                                        
+                    </div>
+                                        
+                </div>
+                <?php endif; ?>
 
             </div>    
                 
@@ -204,41 +233,17 @@ endif; ?>
         <!--Scripts-->
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
         <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
-        <script src="bower_components/Waves/dist/waves.min.js"></script>
         <script src="bower_components/moment/min/moment.min.js"></script>
         <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
         <script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
         <script src="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
         <script src="bower_components/cta/dist/cta.min.js"></script>
-
-        <!--Menu-->
-        <script src="js/menu/classie.js"></script>
-        <script src="bower_components/iconpick/dist/js/fontawesome-iconpicker.js"></script>
-
-
-        <!--Selects-->
-        <script src="js/selects/selectFx.js"></script>
-        <script src="js/jscolor.js"></script>
         
-        <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
-
-        <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
-        <script src="bower_components/numbered/jquery.numberedtextarea.js"></script>
-
-
-        <!--Notification-->
-        <script src="js/notifications/notificationFx.js"></script>
+        <script src="bower_components/fullcalendar/dist/fullcalendar.js"></script>
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
-        <script src="js/jquery.filer.min.js" type="text/javascript"></script>
-	    <script src="js/custom.js" type="text/javascript"></script>
 	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
-        
-        <!--Data Tables-->
-        <script src="bower_components/DataTables/media/js/jquery.dataTables.js"></script>
-        <script src="bower_components/datatables.net-responsive/js/dataTables.responsive.js"></script>
-        <script src="bower_components/datatables-tabletools/js/dataTables.tableTools.js"></script>
+
         
         <script>
         
@@ -251,9 +256,61 @@ endif; ?>
                 autoExpandScrollbar: true
             });
             
+            $(".scroller-body").mCustomScrollbar({
+                theme:"inset-3",
+                scrollInertia: 300,
+                autoHideScrollbar: true,
+                autoExpandScrollbar: true
+            });
+            
+            $("fc-scroller").mCustomScrollbar({
+                theme:"inset-3",
+                scrollInertia: 300,
+                autoHideScrollbar: true,
+                autoExpandScrollbar: true
+            });
+            
         });
              
         </script>
+        <?php if(SONARRURL != "" || RADARRURL != "") : ?>
+        <script>
+            $(function () {
+
+              /* initialize the calendar */
+              var date = new Date();
+              var d = date.getDate();
+              var m = date.getMonth();
+              var y = date.getFullYear();
+              $('#calendar').fullCalendar({
+                  eventLimit: false, 
+                  height: "auto",
+                  //defaultDate: '2017-03-21',
+			      defaultView: 'basicWeek',
+                header: {
+                  left: 'prev, next',
+                  center: 'title',
+                  right: 'month, basicDay,basicWeek,'
+                },
+                views: {
+                    basicDay: { buttonText: '<?php echo $language->translate("DAY");?>', eventLimit: false },
+                    basicWeek: { buttonText: '<?php echo $language->translate("WEEK");?>', eventLimit: false },
+                    month: { buttonText: '<?php echo $language->translate("MONTH");?>', eventLimit: false },
+                },
+                events: [
+
+<?php if(SONARRURL != ""){ echo getSonarrCalendar(SONARRURL, SONARRPORT,SONARRKEY); } ?>
+<?php if(RADARRURL != ""){ echo getRadarrCalendar(RADARRURL, RADARRPORT,RADARRKEY); } ?>                    
+
+                  ],
+
+                editable: false,
+                droppable: false,
+
+              });
+            });
+        </script>
+        <?php endif; ?>
 
     </body>
 
