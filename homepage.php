@@ -182,7 +182,106 @@ endif; ?>
         <div class="main-wrapper" style="position: initial;">
             
             <div id="content" class="container-fluid">
-            
+                
+                <br>
+                <?php if(NZBGETURL != "") : ?>
+                <div class="row">
+
+                    <div class="col-md-12">
+
+                        <div class="tabbable panel with-nav-tabs panel-default">
+
+                            <div class="panel-heading">
+
+                                <h3 class="pull-left">NZBGet</h3>
+
+                                <ul class="nav nav-tabs pull-right">
+
+                                    <li class="active"><a href="#downloadQueue" data-toggle="tab" aria-expanded="true"><?php echo $language->translate("QUEUE");?></a></li>
+
+                                    <li class=""><a href="#downloadHistory" data-toggle="tab" aria-expanded="false"><?php echo $language->translate("HISTORY");?></a></li>
+
+                                </ul>
+
+                                <div class="clearfix"></div>
+
+                            </div>
+
+                            <div class="panel-body">
+
+                                <div class="tab-content">
+
+                                    <div class="tab-pane fade active in" id="downloadQueue">
+
+                                            <div class="table-responsive">
+
+                                                <table class="table table-striped progress-widget zero-m">
+
+                                                    <thead>
+
+                                                        <tr>
+
+                                                            <th><?php echo $language->translate("FILE");?></th>
+                                                            <th><?php echo $language->translate("STATUS");?></th>
+                                                            <th><?php echo $language->translate("CATEGORY");?></th>
+                                                            <th><?php echo $language->translate("PROGRESS");?></th>
+
+                                                        </tr>
+
+                                                    </thead>
+
+                                                    <tbody>
+                <?php echo nzbgetConnect(NZBGETURL, NZBGETPORT, NZBGETUSERNAME, NZBGETPASSWORD, "listgroups");?>                                   
+
+                                                    </tbody>
+
+                                                </table>
+
+                                            </div>
+
+                                    </div>
+
+                                    <div class="tab-pane fade" id="downloadHistory">
+
+                                        <div class="table-responsive">
+
+                                            <table class="table table-striped progress-widget zero-m">
+
+                                                <thead>
+
+                                                    <tr>
+
+                                                        <th>File</th>
+                                                        <th>Status</th>
+                                                        <th>Category</th>
+                                                        <th>Progress</th>
+
+                                                    </tr>
+
+                                                </thead>
+
+                                                <tbody>
+            <?php echo nzbgetConnect(NZBGETURL, NZBGETPORT, NZBGETUSERNAME, NZBGETPASSWORD, "history");?>                                        
+
+                                                </tbody>
+
+                                            </table>
+
+                                            </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+                <?php endif; ?>
+
                 <div class="row">
 
                     <?php
@@ -288,14 +387,15 @@ endif; ?>
                   //defaultDate: '2017-03-21',
 			      defaultView: 'basicWeek',
                 header: {
-                  left: 'prev, next',
+                  left: 'prev,next,',
                   center: 'title',
-                  right: 'month, basicDay,basicWeek,'
+                  right: 'today, month, basicDay,basicWeek,'
                 },
                 views: {
                     basicDay: { buttonText: '<?php echo $language->translate("DAY");?>', eventLimit: false },
                     basicWeek: { buttonText: '<?php echo $language->translate("WEEK");?>', eventLimit: false },
                     month: { buttonText: '<?php echo $language->translate("MONTH");?>', eventLimit: false },
+                    today: { buttonText: '<?php echo $language->translate("TODAY");?>' },
                 },
                 events: [
 
