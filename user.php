@@ -8,7 +8,7 @@
 	 * salting subsequent password checks.
 	 */
     
-    define('INSTALLEDVERSION', '1.15');
+    define('INSTALLEDVERSION', '1.18');
 
     $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
     define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
@@ -41,6 +41,10 @@
     if(!empty($homepageConfig['radarrKey'])) : define('RADARRKEY', $homepageConfig['radarrKey']); else : define('RADARRKEY', ''); endif;
     if(!empty($homepageConfig['radarrURL'])) : define('RADARRURL', $homepageConfig['radarrURL']); else : define('RADARRURL', ''); endif;
     if(!empty($homepageConfig['radarrPort'])) : define('RADARRPORT', $homepageConfig['radarrPort']); else : define('RADARRPORT', ''); endif;
+    if(!empty($homepageConfig['nzbgetURL'])) : define('NZBGETURL', $homepageConfig['nzbgetURL']); else : define('NZBGETURL', ''); endif;
+    if(!empty($homepageConfig['nzbgetPort'])) : define('NZBGETPORT', $homepageConfig['nzbgetPort']); else : define('NZBGETPORT', ''); endif;
+    if(!empty($homepageConfig['nzbgetUsername'])) : define('NZBGETUSERNAME', $homepageConfig['nzbgetUsername']); else : define('NZBGETUSERNAME', ''); endif;
+    if(!empty($homepageConfig['nzbgetPassword'])) : define('NZBGETPASSWORD', $homepageConfig['nzbgetPassword']); else : define('NZBGETPASSWORD', ''); endif;
 
     
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 

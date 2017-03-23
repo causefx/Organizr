@@ -20,20 +20,16 @@ if ($urlCheck === false) {
 
 if(PLEXPORT !== ""){ $plexAddress = $plexAddress . ":" . PLEXPORT; }
 
-//$plexAddress = PLEXURL.':'.PLEXPORT;
-
-$addressPosition = strpos($image_url, $plexAddress);
-
-if($addressPosition !== false && $addressPosition == 0) {
+if(isset($image_url) && isset($image_height) && isset($image_width)) {
     
 	$image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . PLEXTOKEN;
-    
-	header('Content-type: image/jpeg');
+
+    header('Content-type: image/jpeg');
     
 	readfile($image_src);
     
 } else {
     
-    echo "Bad Plex Image Url";	
+    echo "Invalid Plex Request";	
     
 }

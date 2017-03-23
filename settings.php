@@ -635,7 +635,17 @@ endif;
                 position:absolute; display:none; z-index:99; 
             }.chooseTheme a:hover span { 
                 display:block; 
-            }<?php if(CUSTOMCSS == "true") : 
+            }ul.nav.nav-tabs.apps {
+                border: solid;
+                border-top: 0;
+                border-left: 0;
+                border-right: 0;
+                border-radius: 0;
+            }li.apps.active {
+                border: solid;
+                border-bottom: 0;
+                border-radius: 5px;
+}<?php if(CUSTOMCSS == "true") : 
 $template_file = "custom.css";
 $file_handle = fopen($template_file, "rb");
 echo fread($file_handle, filesize($template_file));
@@ -1300,23 +1310,29 @@ endif; ?>
                                                                                                     
                                                     <input type="hidden" name="action" value="homepageSettings" />
                                                 
-                                                    <ul class="nav nav-tabs">
+                                                    <ul class="nav nav-tabs apps">
 
-                                                        <li class="active">
+                                                        <li class="apps active">
 
-                                                            <a href="#tab-plex" data-toggle="tab" aria-expanded="true"><img style="height:20px; width:20px;" src="images/plex.png"></a>
-
-                                                        </li>
-
-                                                        <li class="">
-
-                                                            <a href="#tab-sonarr" data-toggle="tab" aria-expanded="false"><img style="height:20px; width:20px;" src="images/sonarr.png"></a>
+                                                            <a href="#tab-plex" data-toggle="tab" aria-expanded="true"><img style="height:40px; width:40px;" src="images/plex.png"></a>
 
                                                         </li>
 
-                                                        <li class="">
+                                                        <li class="apps ">
 
-                                                            <a href="#tab-radarr" data-toggle="tab" aria-expanded="false"><img style="height:20px; width:20px;" src="images/radarr.png"></a>
+                                                            <a href="#tab-sonarr" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/sonarr.png"></a>
+
+                                                        </li>
+
+                                                        <li class="apps ">
+
+                                                            <a href="#tab-radarr" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/radarr.png"></a>
+
+                                                        </li>
+                                                        
+                                                        <li class="apps ">
+
+                                                            <a href="#tab-nzbget" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/nzbget.png"></a>
 
                                                         </li>
 
@@ -1436,6 +1452,38 @@ endif; ?>
 
                                                                 <input type="text" class="form-control material input-sm" name="radarrKey" placeholder="<?php echo $language->translate("RADARR_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo RADARRKEY;?>">
                                                                 <p class="help-text"><?php echo $language->translate("RADARR_KEY");?></p>
+
+                                                            </div>
+
+                                                        </div>
+                                                        
+                                                        <div class="tab-pane big-box fade" id="tab-nzbget">
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="nzbgetURL" placeholder="<?php echo $language->translate("NZBGET_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo NZBGETURL;?>">
+                                                                <p class="help-text"><?php echo $language->translate("NZBGET_URL");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="nzbgetPort" placeholder="<?php echo $language->translate("NZBGET_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo NZBGETPORT;?>">
+                                                                <p class="help-text"><?php echo $language->translate("NZBGET_PORT");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="nzbgetUsername" placeholder="<?php echo $language->translate("USERNAME");?>" autocorrect="off" autocapitalize="off" value="<?php echo NZBGETUSERNAME;?>">
+                                                                <p class="help-text"><?php echo $language->translate("USERNAME");?></p>
+
+                                                            </div>
+                                                            
+                                                            <div class="form-group">
+
+                                                                <input type="password" class="form-control material input-sm" name="nzbgetPassword" placeholder="<?php echo $language->translate("PASSWORD");?>" autocorrect="off" autocapitalize="off" value="<?php echo NZBGETPASSWORD;?>">
+                                                                <p class="help-text"><?php echo $language->translate("PASSWORD");?></p>
 
                                                             </div>
 

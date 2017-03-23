@@ -208,7 +208,8 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
     
     $address = $url;
     
-    $api = simplexml_load_file($address."/library/recentlyAdded?X-Plex-Token=".$token);
+    $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".$token);
+    $api = simplexml_load_string($api);
     
     $i = 0;
     
@@ -248,7 +249,7 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
             }
             
             
-            $gotPlex .= '<div class="item '.$active.'"><img class="carousel-image '.$type.'" src="image.php?img='.$address.$thumb.'&height='.$height.'&width='.$width.'"><div class="carousel-caption '.$type.'" style="overflow:auto"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+            $gotPlex .= '<div class="item '.$active.'"><img class="carousel-image '.$type.'" src="image.php?img='.$thumb.'&height='.$height.'&width='.$width.'"><div class="carousel-caption '.$type.'" style="overflow:auto"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
 
         }
         
@@ -284,7 +285,8 @@ function getPlexStreams($url, $port, $token, $size, $header){
     
     $address = $url;
     
-    $api = simplexml_load_file($address."/status/sessions?X-Plex-Token=".$token);
+    $api = file_get_contents($address."/status/sessions?X-Plex-Token=".$token);
+    $api = simplexml_load_string($api);
     
     $i = 0;
     
@@ -333,7 +335,7 @@ function getPlexStreams($url, $port, $token, $size, $header){
 
         $gotPlex .= '<div class="item '.$active.'">';
 
-        $gotPlex .= "<img class='carousel-image $image' src='image.php?img=$address$thumb&height=$height&width=$width'>";
+        $gotPlex .= "<img class='carousel-image $image' src='image.php?img=$thumb&height=$height&width=$width'>";
 
         $gotPlex .= '<div class="carousel-caption '. $image . '" style="overflow:auto"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
 
@@ -453,5 +455,74 @@ function getRadarrCalendar($url, $port, $key){
     if ($i != 0){ return $gotCalendar; }
 
 }
+
+function nzbgetConnect($url, $port, $username, $password, $list){
+    
+    $urlCheck = stripos($url, "http");
+
+    if ($urlCheck === false) {
+        
+        $url = "http://" . $url;
+    
+    }
+    
+    if($port !== ""){ $url = $url . ":" . $port; }
+    
+    $address = $url;
+    
+    $api = file_get_contents("$url/$username:$password/jsonrpc/$list");
+                    
+    $api = json_decode($api, true);
+    
+    $i = 0;
+    
+    $gotNZB = "";
+    
+    foreach ($api['result'] AS $child) {
+        
+        $i++;
+        //echo '<pre>' . var_export($child, true) . '</pre>';
+        $downloadName = $child['NZBName'];
+        $downloadStatus = $child['Status'];
+        $downloadCategory = $child['Category'];
+        if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
+        if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
+        if($child['Health'] <= "750"){ 
+            $downloadHealth = "danger"; 
+        }elseif($child['Health'] <= "900"){ 
+            $downloadHealth = "warning"; 
+        }elseif($child['Health'] <= "1000"){ 
+            $downloadHealth = "success"; 
+        }
+        
+        $gotNZB .= '<tr>
+
+                        <td>'.$downloadName.'</td>
+                        <td>'.$downloadStatus.'</td>
+                        <td>'.$downloadCategory.'</td>
+
+                        <td>
+
+                            <div class="progress">
+
+                                <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+
+                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                    </tr>';
+        
+        
+    }
+    
+    if($i > 0){ return $gotNZB; }
+
+}
+
 
 ?>
