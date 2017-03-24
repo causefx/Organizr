@@ -507,6 +507,7 @@ function nzbgetConnect($url, $port, $username, $password, $list){
 
                                 <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
 
+                                    <p class="text-center">'.round($downloadPercent).'%</p>
                                     <span class="sr-only">'.$downloadPercent.'% Complete</span>
 
                                 </div>
@@ -521,8 +522,116 @@ function nzbgetConnect($url, $port, $username, $password, $list){
     }
     
     if($i > 0){ return $gotNZB; }
+    if($i == 0){ echo '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>'; }
 
 }
 
+function sabnzbdConnect($url, $port, $key, $list){
+    
+    $urlCheck = stripos($url, "http");
 
+    if ($urlCheck === false) {
+        
+        $url = "http://" . $url;
+    
+    }
+    
+    if($port !== ""){ $url = $url . ":" . $port; }
+    
+    $address = $url;
+
+    $api = file_get_contents("$url/api?mode=$list&output=json&apikey=$key");
+                    
+    $api = json_decode($api, true);
+    
+    $i = 0;
+    
+    $gotNZB = "";
+    
+    foreach ($api[$list]['slots'] AS $child) {
+        
+        $i++;
+        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; } 
+        if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
+        $downloadStatus = $child['status'];
+        //echo '<pre>' . var_export($child, true) . '</pre>';
+
+
+        
+        $gotNZB .= '<tr>
+
+                        <td>'.$downloadName.'</td>
+                        <td>'.$downloadStatus.'</td>
+                        <td>'.$downloadCategory.'</td>
+
+                        <td>
+
+                            <div class="progress">
+
+                                <div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+
+                                    <p class="text-center">'.round($downloadPercent).'%</p>
+                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                    </tr>';
+        
+        
+    }
+    
+    if($i > 0){ return $gotNZB; }
+    if($i == 0){ echo '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>'; }
+
+}
+
+function getHeadphonesCalendar($url, $port, $key, $list){
+
+    $urlCheck = stripos($url, "http");
+
+    if ($urlCheck === false) {
+        
+        $url = "http://" . $url;
+    
+    }
+    
+    if($port !== ""){ $url = $url . ":" . $port; }
+    
+    $address = $url;
+    
+    $api = file_get_contents($address."/api?apikey=".$key."&cmd=$list");
+                    
+    $api = json_decode($api, true);
+    
+    $i = 0;
+    
+    $gotCalendar = "";
+
+    foreach($api AS $child) {
+        
+        //echo '<pre>' . var_export($child, true) . '</pre>';
+
+        if($child['Status'] != "Skipped"){
+        
+            $i++;
+            $albumName = $child['AlbumTitle'];
+            $albumArtist = $child['ArtistName'];
+            $albumDate = $child['ReleaseDate'];
+            $albumStatus = $child['Status'];
+
+            if($albumStatus == "Wanted"){ $albumStatus = "red-bg";}elseif($albumStatus == "Downloaded"){ $albumStatus = "green-bg";}
+
+            $gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatus\", imagetype: \"music\" }, \n";
+            
+        }
+        
+    }
+
+    if ($i != 0){ return $gotCalendar; }
+
+}
 ?>

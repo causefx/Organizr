@@ -8,7 +8,7 @@
 	 * salting subsequent password checks.
 	 */
     
-    define('INSTALLEDVERSION', '1.18');
+    define('INSTALLEDVERSION', '1.20');
 
     $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
     define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
@@ -45,6 +45,12 @@
     if(!empty($homepageConfig['nzbgetPort'])) : define('NZBGETPORT', $homepageConfig['nzbgetPort']); else : define('NZBGETPORT', ''); endif;
     if(!empty($homepageConfig['nzbgetUsername'])) : define('NZBGETUSERNAME', $homepageConfig['nzbgetUsername']); else : define('NZBGETUSERNAME', ''); endif;
     if(!empty($homepageConfig['nzbgetPassword'])) : define('NZBGETPASSWORD', $homepageConfig['nzbgetPassword']); else : define('NZBGETPASSWORD', ''); endif;
+    if(!empty($homepageConfig['sabnzbdKey'])) : define('SABNZBDKEY', $homepageConfig['sabnzbdKey']); else : define('SABNZBDKEY', ''); endif;
+    if(!empty($homepageConfig['sabnzbdURL'])) : define('SABNZBDURL', $homepageConfig['sabnzbdURL']); else : define('SABNZBDURL', ''); endif;
+    if(!empty($homepageConfig['sabnzbdPort'])) : define('SABNZBDPORT', $homepageConfig['sabnzbdPort']); else : define('SABNZBDPORT', ''); endif;
+    if(!empty($homepageConfig['headphonesKey'])) : define('HEADPHONESKEY', $homepageConfig['headphonesKey']); else : define('HEADPHONESKEY', ''); endif;
+    if(!empty($homepageConfig['headphonesURL'])) : define('HEADPHONESURL', $homepageConfig['headphonesURL']); else : define('HEADPHONESURL', ''); endif;
+    if(!empty($homepageConfig['headphonesPort'])) : define('HEADPHONESPORT', $homepageConfig['headphonesPort']); else : define('HEADPHONESPORT', ''); endif;
 
     
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 

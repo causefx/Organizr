@@ -1335,6 +1335,18 @@ endif; ?>
                                                             <a href="#tab-nzbget" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/nzbget.png"></a>
 
                                                         </li>
+                                                        
+                                                        <li class="apps ">
+
+                                                            <a href="#tab-sabnzbd" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/sabnzbd.png"></a>
+
+                                                        </li>
+                                                        
+                                                        <li class="apps ">
+
+                                                            <a href="#tab-headphones" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/headphones.png"></a>
+
+                                                        </li>
 
                                                     </ul>
 
@@ -1484,6 +1496,56 @@ endif; ?>
 
                                                                 <input type="password" class="form-control material input-sm" name="nzbgetPassword" placeholder="<?php echo $language->translate("PASSWORD");?>" autocorrect="off" autocapitalize="off" value="<?php echo NZBGETPASSWORD;?>">
                                                                 <p class="help-text"><?php echo $language->translate("PASSWORD");?></p>
+
+                                                            </div>
+
+                                                        </div>
+                                                        
+                                                        <div class="tab-pane big-box fade" id="tab-sabnzbd">
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="sabnzbdURL" placeholder="<?php echo $language->translate("SABNZBD_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo SABNZBDURL;?>">
+                                                                <p class="help-text"><?php echo $language->translate("SABNZBD_URL");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="nzbgetPort" placeholder="<?php echo $language->translate("SABNZBD_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo SABNZBDPORT;?>">
+                                                                <p class="help-text"><?php echo $language->translate("SABNZBD_PORT");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="sabnzbdKey" placeholder="<?php echo $language->translate("SABNZBD_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo SABNZBDKEY;?>">
+                                                                <p class="help-text"><?php echo $language->translate("SABNZBD_KEY");?></p>
+
+                                                            </div>
+
+                                                        </div>
+                                                        
+                                                        <div class="tab-pane big-box fade" id="tab-headphones">
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="headphonesURL" placeholder="<?php echo $language->translate("HEADPHONES_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo HEADPHONESURL;?>">
+                                                                <p class="help-text"><?php echo $language->translate("HEADPHONES_URL");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="headphonesPort" placeholder="<?php echo $language->translate("HEADPHONES_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo HEADPHONESPORT;?>">
+                                                                <p class="help-text"><?php echo $language->translate("HEADPHONES_PORT");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="headphonesKey" placeholder="<?php echo $language->translate("HEADPHONES_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo HEADPHONESKEY;?>">
+                                                                <p class="help-text"><?php echo $language->translate("HEADPHONES_KEY");?></p>
 
                                                             </div>
 
