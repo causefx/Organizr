@@ -184,8 +184,8 @@ endif; ?>
             <div id="content" class="container-fluid">
                 
                 <br>
-                <?php if(NZBGETURL != "") : ?>
-                <div class="row">
+                <?php if(NZBGETURL != "" || SABNZBDURL != "") : ?>
+                <div id="downloadClientRow" class="row">
 
                     <div class="col-md-12">
 
@@ -193,7 +193,7 @@ endif; ?>
 
                             <div class="panel-heading">
 
-                                <h3 class="pull-left">NZBGet</h3>
+                                <h3 class="pull-left"><?php if(NZBGETURL != ""){ echo "NZBGet "; } if(SABNZBDURL != ""){ echo "SABnzbd "; } ?></h3>
 
                                 <ul class="nav nav-tabs pull-right">
 
@@ -231,7 +231,8 @@ endif; ?>
                                                     </thead>
 
                                                     <tbody>
-                <?php echo nzbgetConnect(NZBGETURL, NZBGETPORT, NZBGETUSERNAME, NZBGETPASSWORD, "listgroups");?>                                   
+                <?php if(NZBGETURL != ""){ echo nzbgetConnect(NZBGETURL, NZBGETPORT, NZBGETUSERNAME, NZBGETPASSWORD, "listgroups"); }?>                                   
+                <?php if(SABNZBDURL != ""){ echo sabnzbdConnect(SABNZBDURL, SABNZBDPORT, SABNZBDKEY, "queue"); }?>                                   
 
                                                     </tbody>
 
@@ -261,7 +262,8 @@ endif; ?>
                                                 </thead>
 
                                                 <tbody>
-            <?php echo nzbgetConnect(NZBGETURL, NZBGETPORT, NZBGETUSERNAME, NZBGETPASSWORD, "history");?>                                        
+            <?php if(NZBGETURL != ""){ echo nzbgetConnect(NZBGETURL, NZBGETPORT, NZBGETUSERNAME, NZBGETPASSWORD, "history"); }?>  
+            <?php if(SABNZBDURL != ""){ echo sabnzbdConnect(SABNZBDURL, SABNZBDPORT, SABNZBDKEY, "history"); }?>                                        
 
                                                 </tbody>
 
@@ -282,7 +284,7 @@ endif; ?>
                 </div>
                 <?php endif; ?>
 
-                <div class="row">
+                <div id="plexRow" class="row">
 
                     <?php
                     $plexSize = 0;
@@ -301,7 +303,7 @@ endif; ?>
                 </div>
                 
                 <?php if(SONARRURL != "" || RADARRURL != "") : ?>
-                <div class="row" style="padding: 0 0 10px 0;">
+                <div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
                     
                     <div class="col-lg-4">
                     
@@ -314,7 +316,7 @@ endif; ?>
                     
                 </div>
                 
-                <div class="row">
+                <div id="calendarRow" class="row">
         
                     <div class="col-lg-12">
                     
@@ -374,41 +376,51 @@ endif; ?>
         </script>
         <?php if(SONARRURL != "" || RADARRURL != "") : ?>
         <script>
+            
             $(function () {
 
-              /* initialize the calendar */
-              var date = new Date();
-              var d = date.getDate();
-              var m = date.getMonth();
-              var y = date.getFullYear();
-              $('#calendar').fullCalendar({
-                  eventLimit: false, 
-                  height: "auto",
-                  //defaultDate: '2017-03-21',
-			      defaultView: 'basicWeek',
-                header: {
-                  left: 'prev,next,',
-                  center: 'title',
-                  right: 'today, month, basicDay,basicWeek,'
-                },
-                views: {
-                    basicDay: { buttonText: '<?php echo $language->translate("DAY");?>', eventLimit: false },
-                    basicWeek: { buttonText: '<?php echo $language->translate("WEEK");?>', eventLimit: false },
-                    month: { buttonText: '<?php echo $language->translate("MONTH");?>', eventLimit: false },
-                    today: { buttonText: '<?php echo $language->translate("TODAY");?>' },
-                },
-                events: [
+                var date = new Date();
+                var d = date.getDate();
+                var m = date.getMonth();
+                var y = date.getFullYear();
 
-<?php if(SONARRURL != ""){ echo getSonarrCalendar(SONARRURL, SONARRPORT,SONARRKEY); } ?>
-<?php if(RADARRURL != ""){ echo getRadarrCalendar(RADARRURL, RADARRPORT,RADARRKEY); } ?>                    
+                $('#calendar').fullCalendar({
+                    
+                    eventLimit: false, 
+                  
+                    height: "auto",
+                    defaultView: 'basicWeek',
+                
+                    header: {
+                  
+                        left: 'prev,next,',
+                        center: 'title',
+                        right: 'today, month, basicDay,basicWeek,'
+                
+                    },
+                
+                    views: {
+                    
+                        basicDay: { buttonText: '<?php echo $language->translate("DAY");?>', eventLimit: false },
+                        basicWeek: { buttonText: '<?php echo $language->translate("WEEK");?>', eventLimit: false },
+                        month: { buttonText: '<?php echo $language->translate("MONTH");?>', eventLimit: false },
+                        today: { buttonText: '<?php echo $language->translate("TODAY");?>' },
+                
+                    },
+                
+                    events: [
+<?php if(SONARRURL != ""){ echo getSonarrCalendar(SONARRURL, SONARRPORT, SONARRKEY); } ?>
+<?php if(RADARRURL != ""){ echo getRadarrCalendar(RADARRURL, RADARRPORT, RADARRKEY); } ?>                    
+<?php if(HEADPHONESURL != ""){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getUpcoming"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getWanted"); } ?>                                
+                    ],
 
-                  ],
+                    editable: false,
+                    droppable: false,
 
-                editable: false,
-                droppable: false,
-
-              });
+                });
+            
             });
+        
         </script>
         <?php endif; ?>
 
