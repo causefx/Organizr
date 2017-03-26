@@ -109,22 +109,41 @@ if($downloader == "sabnzbd"){
     foreach ($api[$list]['slots'] AS $child) {
         
         $i++;
-        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; } 
-        if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
-        $downloadStatus = $child['status'];
         
-        if($child['missing'] > "400"){ 
-            $downloadHealth = "danger"; 
-        }elseif($child['missing'] <= "400"){ 
-            $downloadHealth = "warning"; 
-        }elseif($child['missing'] <= "200"){ 
+        if($list == "queue"){ 
+            
+            $downloadName = $child['filename']; 
+            $downloadCategory = $child['cat']; 
+            $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; 
+            $progressBar = "progress-bar-striped active"; 
+            
+            if($child['missing'] > "400"){ 
+                
+                $downloadHealth = "danger"; 
+            
+            }elseif($child['missing'] <= "200"){ 
+            
+                $downloadHealth = "success"; 
+            
+            }elseif($child['missing'] <= "400"){ 
+            
+                $downloadHealth = "warning"; 
+            
+            }
+
+        } 
+        
+        if($list == "history"){ 
+            
+            $downloadName = $child['name'];
+            $downloadCategory = $child['category']; 
+            $downloadPercent = "100"; 
+            $progressBar = ""; 
             $downloadHealth = "success"; 
+        
         }
         
-        if(!isset($child['missing'])){
-            $downloadHealth = "success";
-        }
-        
+        $downloadStatus = $child['status'];
         
         $gotNZB .= '<tr>
 

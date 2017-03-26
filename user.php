@@ -8,7 +8,7 @@
 	 * salting subsequent password checks.
 	 */
     
-    define('INSTALLEDVERSION', '1.21');
+    define('INSTALLEDVERSION', '1.22');
 
     $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
     define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
