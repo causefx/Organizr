@@ -2150,8 +2150,10 @@ table.dataTable.no-footer, table.dataTable thead th, table.dataTable thead td {
 .fc-calendar {
   background: #fff;
   margin-bottom: 30px;
-  -webkit-border-radius: 3px;
-          border-radius: 3px;
+  border-radius: 10px 10px 0 0;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
 }
 
 .fc-calendar .fc-toolbar {

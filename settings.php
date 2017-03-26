@@ -1003,10 +1003,6 @@ endif; ?>
 
                                                     </div>
                                                     
-                                                    
-                                                    
-                                                    <!--<button type="submit" onclick="User.processRegistration()" class="btn btn-primary btn-icon waves waves-circle waves-effect waves-float"><i class="fa fa-user-plus"></i></button>-->
-                                                    
                                                     <button type="submit" onclick="User.processRegistration()" class="btn waves btn-labeled btn-primary btn btn-sm text-uppercase waves-effect waves-float promoteUser">
 
                                                         <span class="btn-label"><i class="fa fa-user-plus"></i></span><?php echo $language->translate("CREATE_USER");?>
@@ -1185,6 +1181,13 @@ endif; ?>
 
                                                         <input type="text" class="form-control material input-sm" name="cookiePassword" placeholder="<?php echo $language->translate("COOKIE_PASSWORD");?>" value="<?php echo COOKIEPASSWORD;?>">
                                                         <p class="help-text"><?php echo $language->translate("COOKIE_PASSWORD");?></p>
+
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control material input-sm" name="domain" placeholder="<?php echo $language->translate("COOKIE_DOMAIN");?>" value="<?php echo DOMAIN;?>">
+                                                        <p class="help-text"><?php echo $language->translate("COOKIE_DOMAIN");?></p>
 
                                                     </div>
                                                     
@@ -1512,7 +1515,7 @@ endif; ?>
 
                                                             <div class="form-group">
 
-                                                                <input type="text" class="form-control material input-sm" name="nzbgetPort" placeholder="<?php echo $language->translate("SABNZBD_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo SABNZBDPORT;?>">
+                                                                <input type="text" class="form-control material input-sm" name="sabnzbdPort" placeholder="<?php echo $language->translate("SABNZBD_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo SABNZBDPORT;?>">
                                                                 <p class="help-text"><?php echo $language->translate("SABNZBD_PORT");?></p>
 
                                                             </div>

@@ -249,7 +249,7 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
             }
             
             
-            $gotPlex .= '<div class="item '.$active.'"><img class="carousel-image '.$type.'" src="image.php?img='.$thumb.'&height='.$height.'&width='.$width.'"><div class="carousel-caption '.$type.'" style="overflow:auto"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+            $gotPlex .= '<div class="item '.$active.'"><img class="carousel-image '.$type.'" src="image.php?img='.$thumb.'&height='.$height.'&width='.$width.'"><div class="carousel-caption '.$type.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
 
         }
         
@@ -331,13 +331,22 @@ function getPlexStreams($url, $port, $token, $size, $header){
             $height = "150";
             $width = "150";
 
+        }elseif($type == "clip"){
+
+            $title = $child['title'].' - Trailer';
+            $summary = ($child['summary'] != "" ? $child['summary'] : "<i>No summary loaded.</i>");
+            $thumb = ($child['thumb'] != "" ? $child['thumb'] : 'images/nadaplaying.jpg');
+            $image = "movie";
+            $height = "150";
+            $width = "100";
+
         }
 
         $gotPlex .= '<div class="item '.$active.'">';
 
         $gotPlex .= "<img class='carousel-image $image' src='image.php?img=$thumb&height=$height&width=$width'>";
 
-        $gotPlex .= '<div class="carousel-caption '. $image . '" style="overflow:auto"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+        $gotPlex .= '<div class="carousel-caption '. $image . '""><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
 
         
     }
@@ -357,7 +366,7 @@ function getPlexStreams($url, $port, $token, $size, $header){
     $noPlex .= '<div class="carousel-inner" role="listbox">';
     $noPlex .= '<div class="item active">';
     $noPlex .= "<img class='carousel-image movie' src='images/nadaplaying.jpg'>";
-    $noPlex .= '<div class="carousel-caption" style="overflow:auto"><h4>Nothing Playing</h4><small><em>Get to Streaming!</em></small></div></div></div></div></div>';
+    $noPlex .= '<div class="carousel-caption"><h4>Nothing Playing</h4><small><em>Get to Streaming!</em></small></div></div></div></div></div>';
     
     if ($i != 0){ return $gotPlex; }
     if ($i == 0){ return $noPlex; }
@@ -398,9 +407,11 @@ function getSonarrCalendar($url, $port, $key){
         $episodeAirDate = $child['airDateUtc'];
         $episodeAirDate = strtotime($episodeAirDate);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
+        
+        if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
 
         $downloaded = $child['hasFile'];
-        if($downloaded == "0"){ $downloaded = "red-bg";}elseif($downloaded == "1"){ $downloaded = "green-bg";}
+        if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
         
         $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
         
@@ -443,9 +454,11 @@ function getRadarrCalendar($url, $port, $key){
             $physicalRelease = $child['physicalRelease'];
             $physicalRelease = strtotime($physicalRelease);
             $physicalRelease = date("Y-m-d", $physicalRelease);
+            
+            if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = true; }
 
             $downloaded = $child['hasFile'];
-            if($downloaded == "0"){ $downloaded = "progress-bar-danger progress-bar-striped";}elseif($downloaded == "1"){ $downloaded = "progress-bar-success progress-bar-striped";}
+            if($downloaded == "0" && isset($notReleased)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
 
             $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded\", imagetype: \"film\" }, \n";
         }
@@ -554,9 +567,6 @@ function sabnzbdConnect($url, $port, $key, $list){
         if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; } 
         if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
         $downloadStatus = $child['status'];
-        //echo '<pre>' . var_export($child, true) . '</pre>';
-
-
         
         $gotNZB .= '<tr>
 
@@ -612,8 +622,6 @@ function getHeadphonesCalendar($url, $port, $key, $list){
     $gotCalendar = "";
 
     foreach($api AS $child) {
-        
-        //echo '<pre>' . var_export($child, true) . '</pre>';
 
         if($child['Status'] != "Skipped"){
         
@@ -621,11 +629,15 @@ function getHeadphonesCalendar($url, $port, $key, $list){
             $albumName = $child['AlbumTitle'];
             $albumArtist = $child['ArtistName'];
             $albumDate = $child['ReleaseDate'];
+            $albumDate = strtotime($albumDate);
+            $albumDate = date("Y-m-d", $albumDate);
             $albumStatus = $child['Status'];
+            
+            if (new DateTime() < new DateTime($albumDate)) {  $notReleased = "true"; }else{ $notReleased = "false"; }
 
-            if($albumStatus == "Wanted"){ $albumStatus = "red-bg";}elseif($albumStatus == "Downloaded"){ $albumStatus = "green-bg";}
+            if($albumStatus == "Wanted" && $notReleased == "true"){ $albumStatusColor = "indigo-bg"; }elseif($albumStatus == "Downloaded"){ $albumStatusColor = "green-bg"; }else{ $albumStatusColor = "red-bg"; }
 
-            $gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatus\", imagetype: \"music\" }, \n";
+            $gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\" }, \n";
             
         }
         
