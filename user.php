@@ -8,7 +8,7 @@
 	 * salting subsequent password checks.
 	 */
     
-    define('INSTALLEDVERSION', '1.20');
+    define('INSTALLEDVERSION', '1.21');
 
     $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
     define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
@@ -24,6 +24,7 @@
     if(!empty($databaseConfig['registerPassword'])) : define('REGISTERPASSWORD', $databaseConfig['registerPassword']); else : define('REGISTERPASSWORD', ''); endif;
     if(!empty($databaseConfig['gravatar'])) : define('GRAVATAR', $databaseConfig['gravatar']); else : define('GRAVATAR', 'true'); endif;
     if(!empty($databaseConfig['notifyEffect'])) : define('NOTIFYEFFECT', $databaseConfig['notifyEffect']); else : define('NOTIFYEFFECT', 'bar-slidetop'); endif;
+    if(!empty($databaseConfig['domain'])) : define('DOMAIN', $databaseConfig['domain']); else : define('DOMAIN', $_SERVER['HTTP_HOST']); endif;
 
     if(!file_exists('homepageSettings.ini.php')){ touch('homepageSettings.ini.php'); }
         
@@ -467,11 +468,11 @@ EOT;
 			$_SESSION["username"] = User::GUEST_USER;
 			$_SESSION["token"] = -1;
             unset($_COOKIE['Organizr']);
-            setcookie('Organizr', '', time() - 3600, '/');
+            setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
             unset($_COOKIE['OrganizrU']);
-            setcookie('OrganizrU', '', time() - 3600, '/');
+            setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
             unset($_COOKIE['cookiePassword']);
-            setcookie("cookiePassword", '', time() - 3600, '/');
+            setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
 		}
 
 		/**
@@ -524,11 +525,11 @@ EOT;
 
                         $this->error("cookie token mismatch for $username");
                         unset($_COOKIE['Organizr']);
-                        setcookie('Organizr', '', time() - 3600, '/');
+                        setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
                         unset($_COOKIE['OrganizrU']);
-                        setcookie('OrganizrU', '', time() - 3600, '/');
+                        setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
                         unset($_COOKIE['cookiePassword']);
-                        setcookie("cookiePassword", '', time() - 3600, '/');
+                        setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
                         return false;
 
                     }
@@ -543,14 +544,14 @@ EOT;
                     }
 
                     // active, using the correct token -> authenticated
-                     setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/");
+                     setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
                      return true;
                     
                 }
                 
             }else{
                 
-                setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/");
+                setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
                 return true;
                 
             }    
@@ -705,14 +706,14 @@ EOT;
 					$this->setSession($username, $this->update_user_token($username, $sha1, false));
 					// authentication passed - 2) signal authenticated
                     if($remember == "true") {
-                        setcookie("Organizr", $this->get_user_token($username), time() + (86400 * 7), "/");
-                        setcookie("OrganizrU", $username, time() + (86400 * 7), "/");
+                        setcookie("Organizr", $this->get_user_token($username), time() + (86400 * 7), "/", DOMAIN);
+                        setcookie("OrganizrU", $username, time() + (86400 * 7), "/", DOMAIN);
                         
                     }
 					$this->info("Welcome $username");
                     file_put_contents(FAIL_LOG, buildLog($username, "good_auth"));
                     chmod(FAIL_LOG, 0660);
-                    setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/");
+                    setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
                     return true; 
                     
                 }
@@ -761,11 +762,11 @@ EOT;
 			$this->resetSession();
 			$this->info("Buh-Bye <strong>$username</strong>!");
             unset($_COOKIE['Organizr']);
-            setcookie('Organizr', '', time() - 3600, '/');
+            setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
             unset($_COOKIE['OrganizrU']);
-            setcookie('OrganizrU', '', time() - 3600, '/');
+            setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
             unset($_COOKIE['cookiePassword']);
-            setcookie("cookiePassword", '', time() - 3600, '/');
+            setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
 			return true;
 		}
 
