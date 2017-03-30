@@ -1,5 +1,38 @@
 <?php
 
+function clean($strin) {
+    $strout = null;
+
+    for ($i = 0; $i < strlen($strin); $i++) {
+            $ord = ord($strin[$i]);
+
+            if (($ord > 0 && $ord < 32) || ($ord >= 127)) {
+                    $strout .= "&amp;#{$ord};";
+            }
+            else {
+                    switch ($strin[$i]) {
+                            case '<':
+                                    $strout .= '&lt;';
+                                    break;
+                            case '>':
+                                    $strout .= '&gt;';
+                                    break;
+                            case '&':
+                                    $strout .= '&amp;';
+                                    break;
+                            case '"':
+                                    $strout .= '&quot;';
+                                    break;
+                            default:
+                                    $strout .= $strin[$i];
+                    }
+            }
+    }
+
+    return $strout;
+    
+}
+
 function registration_callback($username, $email, $userdir){
     
     global $data;
@@ -210,7 +243,14 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
     
     $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".$token);
     $api = simplexml_load_string($api);
+    $getServer = file_get_contents($address."/servers?X-Plex-Token=".$token);
+    $getServer = simplexml_load_string($getServer);
     
+    foreach($getServer AS $child) {
+
+       $gotServer = $child['machineIdentifier'];
+    }
+
     $i = 0;
     
     $gotPlex = '<div class="col-lg-'.$size.'"><h5 class="text-center">'.$header.'</h5><div id="carousel-'.$type.'" class="carousel slide box-shadow white-bg" data-ride="carousel"><div class="carousel-inner" role="listbox">';
@@ -224,6 +264,8 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
             if($i == 1){ $active = "active"; }else{ $active = "";}
             
             $thumb = $child['thumb'];
+
+            $plexLink = "https://app.plex.tv/web/app#!/server/$gotServer/details?key=/library/metadata/".$child['ratingKey'];
             
             if($type == "movie"){ 
                 
@@ -249,7 +291,9 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
             }
             
             
-            $gotPlex .= '<div class="item '.$active.'"><img class="carousel-image '.$type.'" src="image.php?img='.$thumb.'&height='.$height.'&width='.$width.'"><div class="carousel-caption '.$type.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+            $gotPlex .= '<div class="item '.$active.'"> <a href="'.$plexLink.'" target="_blank"> <img alt="'.$title.'" class="carousel-image '.$type.'" src="image.php?img='.$thumb.'&height='.$height.'&width='.$width.'"> </a> <div class="carousel-caption '.$type.'"> <h4>'.$title.'</h4> <small> <em>'.$summary.'</em> </small> </div> </div>';
+            
+            $plexLink = "";
 
         }
         
@@ -263,11 +307,17 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
         
     }
 
-    $gotPlex .= '</div>';
+    $gotPlex .= '</div></div>';
 
-    $gotPlex .= '</div>';
+    $noPlex = '<div class="col-lg-'.$size.'"><h5 class="text-center">'.$header.'</h5>';
+    $noPlex .= '<div id="carousel-'.$type.'" class="carousel slide box-shadow white-bg" data-ride="carousel">';
+    $noPlex .= '<div class="carousel-inner" role="listbox">';
+    $noPlex .= '<div class="item active">';
+    $noPlex .= "<img alt='nada' class='carousel-image movie' src='images/nadaplaying.jpg'>";
+    $noPlex .= '<div class="carousel-caption"> <h4>Nothing New</h4> <small> <em>Get to Adding!</em> </small></div></div></div></div></div>';
     
     if ($i != 0){ return $gotPlex; }
+    if ($i == 0){ return $noPlex; }
 
 }
 
@@ -287,6 +337,13 @@ function getPlexStreams($url, $port, $token, $size, $header){
     
     $api = file_get_contents($address."/status/sessions?X-Plex-Token=".$token);
     $api = simplexml_load_string($api);
+    $getServer = file_get_contents($address."/servers?X-Plex-Token=".$token);
+    $getServer = simplexml_load_string($getServer);
+    
+    foreach($getServer AS $child) {
+
+       $gotServer = $child['machineIdentifier'];
+    }
     
     $i = 0;
     
@@ -297,6 +354,8 @@ function getPlexStreams($url, $port, $token, $size, $header){
     foreach($api AS $child) {
      
         $type = $child['type'];
+
+        $plexLink = "https://app.plex.tv/web/app#!/server/$gotServer/details?key=/library/metadata/".$child['ratingKey'];
             
         $i++;
 
@@ -306,7 +365,7 @@ function getPlexStreams($url, $port, $token, $size, $header){
         if($type == "movie"){ 
 
             $title = $child['title']; 
-            $summary = $child['summary'];
+            $summary = htmlentities($child['summary'], ENT_QUOTES);
             $thumb = $child['thumb'];
             $image = "movie";
             $height = "150";
@@ -315,7 +374,7 @@ function getPlexStreams($url, $port, $token, $size, $header){
         }elseif($type == "episode"){ 
 
             $title = $child['grandparentTitle'];
-            $summary = htmlspecialchars($child['summary'], ENT_QUOTES);
+            $summary = htmlentities($child['summary'], ENT_QUOTES);
             $thumb = $child['grandparentThumb'];
             $image = "season";
             $height = "150";
@@ -325,7 +384,7 @@ function getPlexStreams($url, $port, $token, $size, $header){
         }elseif($type == "track"){
 
             $title = $child['grandparentTitle'] . " - " . $child['parentTitle']; 
-            $summary = $child['title'];
+            $summary = htmlentities($child['title'], ENT_QUOTES);
             $thumb = $child['thumb'];
             $image = "album";
             $height = "150";
@@ -344,9 +403,11 @@ function getPlexStreams($url, $port, $token, $size, $header){
 
         $gotPlex .= '<div class="item '.$active.'">';
 
-        $gotPlex .= "<img class='carousel-image $image' src='image.php?img=$thumb&height=$height&width=$width'>";
+        $gotPlex .= "<a href='$plexLink' target='_blank'><img alt='$title' class='carousel-image $image' src='image.php?img=$thumb&height=$height&width=$width'></a>";
 
         $gotPlex .= '<div class="carousel-caption '. $image . '""><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+        
+        $plexLink = "";
 
         
     }
@@ -365,7 +426,7 @@ function getPlexStreams($url, $port, $token, $size, $header){
     $noPlex .= '<div id="carousel-streams" class="carousel slide box-shadow white-bg" data-ride="carousel">';
     $noPlex .= '<div class="carousel-inner" role="listbox">';
     $noPlex .= '<div class="item active">';
-    $noPlex .= "<img class='carousel-image movie' src='images/nadaplaying.jpg'>";
+    $noPlex .= "<img alt='nada' class='carousel-image movie' src='images/nadaplaying.jpg'>";
     $noPlex .= '<div class="carousel-caption"><h4>Nothing Playing</h4><small><em>Get to Streaming!</em></small></div></div></div></div></div>';
     
     if ($i != 0){ return $gotPlex; }
@@ -373,37 +434,111 @@ function getPlexStreams($url, $port, $token, $size, $header){
 
 }
 
-function getSonarrCalendar($url, $port, $key){
+function getSickrageCalendarWanted($array){
     
-    $startDate = date('Y-m-d',strtotime("-30 days"));
-    $endDate = date('Y-m-d',strtotime("+30 days"));    
-    
-    $urlCheck = stripos($url, "http");
+    $array = json_decode($array, true);
+    $gotCalendar = "";
+    $i = 0;
 
-    if ($urlCheck === false) {
+    foreach($array['data']['missed'] AS $child) {
+
+            $i++;
+            $seriesName = $child['show_name'];
+            $episodeAirDate = $child['airdate'];
+            $episodeAirDateTime = explode(" ",$child['airs']);
+            $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
+            $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
+            $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
+            if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
+            $downloaded = "0";
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
         
-        $url = "http://" . $url;
-    
     }
     
-    if($port !== ""){ $url = $url . ":" . $port; }
-    
-    $address = $url;
-    
-    $api = file_get_contents($address."/api/calendar?apikey=".$key."&start=".$startDate."&end=".$endDate);
-                    
-    $api = json_decode($api, true);
-    
-    $i = 0;
-    
-    $gotCalendar = "";
+    foreach($array['data']['today'] AS $child) {
 
-    foreach($api AS $child) {
+            $i++;
+            $seriesName = $child['show_name'];
+            $episodeAirDate = $child['airdate'];
+            $episodeAirDateTime = explode(" ",$child['airs']);
+            $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
+            $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
+            $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
+            if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
+            $downloaded = "0";
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+        
+    }
+    
+    foreach($array['data']['soon'] AS $child) {
+
+            $i++;
+            $seriesName = $child['show_name'];
+            $episodeAirDate = $child['airdate'];
+            $episodeAirDateTime = explode(" ",$child['airs']);
+            $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
+            $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
+            $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
+            if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
+            $downloaded = "0";
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+        
+    }
+    
+    foreach($array['data']['later'] AS $child) {
+
+            $i++;
+            $seriesName = $child['show_name'];
+            $episodeAirDate = $child['airdate'];
+            $episodeAirDateTime = explode(" ",$child['airs']);
+            $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
+            $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
+            $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
+            if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
+            $downloaded = "0";
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+        
+    }
+
+    if ($i != 0){ return $gotCalendar; }
+
+}
+
+function getSickrageCalendarHistory($array){
+    
+    $array = json_decode($array, true);
+    $gotCalendar = "";
+    $i = 0;
+
+    foreach($array['data'] AS $child) {
+
+            $i++;
+            $seriesName = $child['show_name'];
+            $episodeAirDate = $child['date'];
+            $downloaded = "green-bg";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+        
+    }
+
+    if ($i != 0){ return $gotCalendar; }
+
+}
+
+function getSonarrCalendar($array){
+    
+    $array = json_decode($array, true);
+    $gotCalendar = "";
+    $i = 0;
+    foreach($array AS $child) {
 
         $i++;
-        $seriesName = $child['series']['title'];
+        $seriesName = htmlentities($child['series']['title'], ENT_QUOTES);
         $runtime = $child['series']['runtime'];
-        $episodeName = htmlspecialchars($child['title'], ENT_QUOTES);
+        $episodeName = htmlentities($child['title'], ENT_QUOTES);
         $episodeAirDate = $child['airDateUtc'];
         $episodeAirDate = strtotime($episodeAirDate);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
@@ -421,44 +556,24 @@ function getSonarrCalendar($url, $port, $key){
 
 }
 
-function getRadarrCalendar($url, $port, $key){
+function getRadarrCalendar($array){
     
-    $startDate = date('Y-m-d',strtotime("-30 days"));
-    $endDate = date('Y-m-d',strtotime("+30 days"));
-    
-    $urlCheck = stripos($url, "http");
-
-    if ($urlCheck === false) {
-        
-        $url = "http://" . $url;
-    
-    }
-    
-    if($port !== ""){ $url = $url . ":" . $port; }
-    
-    $address = $url;
-    
-    $api = file_get_contents($address."/api/calendar?apikey=".$key."&start=".$startDate."&end=".$endDate);
-                    
-    $api = json_decode($api, true);
-    
-    $i = 0;
-    
+    $array = json_decode($array, true);
     $gotCalendar = "";
-
-    foreach($api AS $child) {
+    $i = 0;
+    foreach($array AS $child) {
         if(isset($child['physicalRelease'])){
             $i++;
-            $movieName = $child['title'];
+            $movieName = htmlentities($child['title'], ENT_QUOTES);
             $runtime = $child['runtime'];
             $physicalRelease = $child['physicalRelease'];
             $physicalRelease = strtotime($physicalRelease);
             $physicalRelease = date("Y-m-d", $physicalRelease);
             
-            if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = true; }
+            if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
 
             $downloaded = $child['hasFile'];
-            if($downloaded == "0" && isset($notReleased)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
+            if($downloaded == "0" && $notReleased == "true"){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
 
             $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded\", imagetype: \"film\" }, \n";
         }
@@ -495,7 +610,7 @@ function nzbgetConnect($url, $port, $username, $password, $list){
         
         $i++;
         //echo '<pre>' . var_export($child, true) . '</pre>';
-        $downloadName = $child['NZBName'];
+        $downloadName = htmlentities($child['NZBName'], ENT_QUOTES);
         $downloadStatus = $child['Status'];
         $downloadCategory = $child['Category'];
         if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
@@ -626,8 +741,8 @@ function getHeadphonesCalendar($url, $port, $key, $list){
         if($child['Status'] != "Skipped"){
         
             $i++;
-            $albumName = $child['AlbumTitle'];
-            $albumArtist = $child['ArtistName'];
+            $albumName = addslashes($child['AlbumTitle']);
+            $albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
             $albumDate = $child['ReleaseDate'];
             $albumDate = strtotime($albumDate);
             $albumDate = date("Y-m-d", $albumDate);

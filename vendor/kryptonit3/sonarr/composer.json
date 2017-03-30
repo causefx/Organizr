@@ -1,0 +1,19 @@
+{
+    "name": "kryptonit3/sonarr",
+    "description": "PHP Sonarr API Wrapper",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jesse Szypulski",
+            "email": "jesse.szypulski@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^6.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kryptonit3\\Sonarr\\": "src/"
+        }
+    }
+}

@@ -8,6 +8,11 @@ ini_set("error_reporting", E_ALL | E_STRICT);
 require_once("user.php");
 require_once("translate.php");
 require_once("functions.php");
+use Kryptonit3\Sonarr\Sonarr;
+use Kryptonit3\SickRage\SickRage;
+$sonarr = new Sonarr(SONARRURL, SONARRKEY);
+$radarr = new Sonarr(RADARRURL, RADARRKEY);
+$sickrage = new SickRage(SICKRAGEURL, SICKRAGEKEY);
 $USER = new User("registration_callback");
 
 $dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
@@ -70,6 +75,9 @@ if($hasOptions == "Yes") :
     endforeach;
 
 endif;
+
+$startDate = date('Y-m-d',strtotime("-".CALENDARSTARTDAY." days"));
+$endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days")); 
 
 ?>
 
@@ -182,9 +190,9 @@ endif; ?>
         <div class="main-wrapper" style="position: initial;">
             
             <div id="content" class="container-fluid">
-                
+
                 <br/>
-                <?php if(NZBGETURL != "" || SABNZBDURL != "") : ?>
+                <?php if(($USER->authenticated && $USER->role == "admin") && (NZBGETURL != "" || SABNZBDURL != "" )) : ?>
                 <div id="downloadClientRow" class="row">
 
                     <div class="col-xs-12 col-md-12">
@@ -240,30 +248,30 @@ endif; ?>
 
                                         <div class="tab-pane fade active in" id="downloadQueue">
 
-                                                <div class="table-responsive" style="max-height: 300px">
+                                            <div class="table-responsive" style="max-height: 300px">
 
-                                                    <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
+                                                <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
 
-                                                        <thead>
+                                                    <thead>
 
-                                                            <tr>
+                                                        <tr>
 
-                                                                <th><?php echo $language->translate("FILE");?></th>
-                                                                <th><?php echo $language->translate("STATUS");?></th>
-                                                                <th><?php echo $language->translate("CATEGORY");?></th>
-                                                                <th><?php echo $language->translate("PROGRESS");?></th>
+                                                            <th><?php echo $language->translate("FILE");?></th>
+                                                            <th><?php echo $language->translate("STATUS");?></th>
+                                                            <th><?php echo $language->translate("CATEGORY");?></th>
+                                                            <th><?php echo $language->translate("PROGRESS");?></th>
 
-                                                            </tr>
+                                                        </tr>
 
-                                                        </thead>
+                                                    </thead>
 
-                                                        <tbody id="downloaderQueue">                               
+                                                    <tbody id="downloaderQueue">                               
 
-                                                        </tbody>
+                                                    </tbody>
 
-                                                    </table>
+                                                </table>
 
-                                                </div>
+                                            </div>
 
                                         </div>
 
@@ -292,7 +300,7 @@ endif; ?>
 
                                                 </table>
 
-                                                </div>
+                                            </div>
 
                                         </div>
 
@@ -327,14 +335,27 @@ endif; ?>
 
                 </div>
                 
-                <?php if(SONARRURL != "" || RADARRURL != "" || HEADPHONESURL != "") : ?>
+                <?php if(SONARRURL != "" || RADARRURL != "" || HEADPHONESURL != "" || SICKRAGEURL != "") : ?>
                 <div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
                     
-                    <div class="col-lg-4">
+                    <div class="col-lg-4 content-form form-inline">
+                        
+                        <div class="form-group">
+                        
+                            <select class="form-control" id="imagetype_selector" style="width: auto !important; display: inline-block">
 
-                        <span class="label label-primary well-sm">Available</span>
-                        <span class="label label-danger well-sm">Unavailable</span>
-                        <span class="label indigo-bg well-sm">Unreleased</span>
+                                <option value="all">View All</option>
+                                <?php if(RADARRURL != ""){ echo '<option value="film">Movies</option>'; }?>
+                                <?php if(SONARRURL != "" || SICKRAGEURL != ""){ echo '<option value="tv">TV Shows</option>'; }?>
+                                <?php if(HEADPHONESURL != ""){ echo '<option value="music">Music</option>'; }?>
+
+                            </select>
+
+                            <span class="label label-primary well-sm">Available</span>
+                            <span class="label label-danger well-sm">Unavailable</span>
+                            <span class="label indigo-bg well-sm">Unreleased</span>
+                            
+                        </div>
                     
                     </div>
                     
@@ -410,7 +431,7 @@ endif; ?>
                 return (('localStorage' in window) && window['localStorage'] !== null)
             }
             
-            <?php if(NZBGETURL != "" || SABNZBDURL != ""){ ?>
+            <?php if(($USER->authenticated && $USER->role == "admin") && (NZBGETURL != "" || SABNZBDURL != "")){ ?>
             
             var downloaderSeconds = localStorage.getItem("downloaderSeconds");
             var myInterval = undefined;
@@ -441,7 +462,7 @@ endif; ?>
             <?php } ?>
             
             
-            <?php if(NZBGETURL != ""){ ?>
+            <?php if(($USER->authenticated && $USER->role == "admin") && NZBGETURL != ""){ ?>
             
             $("#downloaderHistory").load("downloader.php?downloader=nzbget&list=history");
             $("#downloaderQueue").load("downloader.php?downloader=nzbget&list=listgroups");
@@ -463,7 +484,7 @@ endif; ?>
 
             <?php } ?>
             
-            <?php if(SABNZBDURL != ""){ ?>
+            <?php if(($USER->authenticated && $USER->role == "admin") && SABNZBDURL != ""){ ?>
             
             $("#downloaderHistory").load("downloader.php?downloader=sabnzbd&list=history");
             $("#downloaderQueue").load("downloader.php?downloader=sabnzbd&list=queue");
@@ -488,7 +509,7 @@ endif; ?>
         });
              
         </script>
-        <?php if(SONARRURL != "" || RADARRURL != "" || HEADPHONESURL != "") : ?>
+        <?php if(SONARRURL != "" || RADARRURL != "" || HEADPHONESURL != "" || SICKRAGEURL != "") : ?>
         <script>
             
             $(function () {
@@ -501,9 +522,10 @@ endif; ?>
                 $('#calendar').fullCalendar({
                     
                     eventLimit: false, 
+                    firstDay: <?php echo CALENDARSTART;?>,
                   
                     height: "auto",
-                    defaultView: 'basicWeek',
+                    defaultView: '<?php echo CALENDARVIEW;?>',
                 
                     header: {
                   
@@ -523,10 +545,15 @@ endif; ?>
                     },
                 
                     events: [
-<?php if(SONARRURL != ""){ echo getSonarrCalendar(SONARRURL, SONARRPORT, SONARRKEY); } ?>
-<?php if(RADARRURL != ""){ echo getRadarrCalendar(RADARRURL, RADARRPORT, RADARRKEY); } ?>                    
+<?php if(SICKRAGEURL != ""){ echo getSickrageCalendarWanted($sickrage->future()); echo getSickrageCalendarHistory($sickrage->history("100","downloaded")); } ?>
+<?php if(SONARRURL != ""){ echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); } ?>
+<?php if(RADARRURL != ""){ echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); } ?>                 
 <?php if(HEADPHONESURL != ""){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getUpcoming"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getWanted"); } ?>                                
                     ],
+                                            
+                    eventRender: function eventRender( event, element, view ) {
+                        return ['all', event.imagetype].indexOf($('#imagetype_selector').val()) >= 0
+                    },
 
                     editable: false,
                     droppable: false,
@@ -534,6 +561,11 @@ endif; ?>
                 });
             
             });
+            
+            $('#imagetype_selector').on('change',function(){
+                $('#calendar').fullCalendar('rerenderEvents');
+            })
+
         
         </script>
         <?php endif; ?>

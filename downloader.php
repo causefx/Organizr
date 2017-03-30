@@ -1,5 +1,9 @@
 <?php
 
+$auth = strpos($_SERVER[HTTP_REFERER], "homepage.php");
+
+if ($auth === false) { die("WTF? Bro!"); }
+
 require_once("user.php");
 
 isset($_GET['downloader']) ? $downloader = $_GET['downloader'] : die("Error");
@@ -35,12 +39,20 @@ if($downloader == "nzbget"){
     foreach ($api['result'] AS $child) {
 
         $i++;
-        //echo '<pre>' . var_export($child, true) . '</pre>';
+
         $downloadName = $child['NZBName'];
         $downloadStatus = $child['Status'];
         $downloadCategory = $child['Category'];
-        if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
+
+        if($list == "history"){ 
+            
+            $downloadPercent = "100"; 
+            $progressBar = ""; 
+        
+        }
+        
         if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
+        
         if($child['Health'] <= "750"){ 
             $downloadHealth = "danger"; 
         }elseif($child['Health'] <= "900"){ 

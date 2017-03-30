@@ -760,7 +760,7 @@ endif; ?>
                                             <?php
                                             $dirname = "images/";
                                             $images = scandir($dirname);
-                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes", "nadaplaying.jpg");
+                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
                                             foreach($images as $curimg){
                                                 if(!in_array($curimg, $ignore)) { ?>
 
@@ -1198,6 +1198,31 @@ endif; ?>
 
                                                     </div>
                                                     
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control material input-sm" name="smtpHost" placeholder="<?php echo $language->translate("SMTP_HOST");?>" value="<?php echo SMTPHOST;?>">
+                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST");?></p>
+                                                        
+                                                        <input type="text" class="form-control material input-sm" name="smtpHostPort" placeholder="<?php echo $language->translate("SMTP_HOST_PORT");?>" value="<?php echo SMTPHOSTPORT;?>">
+                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_PORT");?></p>
+                                                        
+                                                        <input type="text" class="form-control material input-sm" name="smtpHostAuth" placeholder="<?php echo $language->translate("SMTP_HOST_AUTH");?>" value="<?php echo SMTPHOSTAUTH;?>">
+                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_AUTH");?></p>
+                                                        
+                                                        <input type="text" class="form-control material input-sm" name="smtpHostUsername" placeholder="<?php echo $language->translate("SMTP_HOST_USERNAME");?>" value="<?php echo SMTPHOSTUSERNAME;?>">
+                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_USERNAME");?></p>
+                                                        
+                                                        <input type="text" class="form-control material input-sm" name="smtpHostPassword" placeholder="<?php echo $language->translate("SMTP_HOST_PASSWORD");?>" value="<?php echo SMTPHOSTPASSWORD;?>">
+                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_PASSWORD");?></p>
+                                                        
+                                                        <input type="text" class="form-control material input-sm" name="smtpHostSenderName" placeholder="<?php echo $language->translate("SMTP_HOST_SENDER_NAME");?>" value="<?php echo SMTPHOSTSENDERNAME;?>">
+                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_SENDER_NAME");?></p>
+                                                        
+                                                        <input type="text" class="form-control material input-sm" name="smtpHostSenderEmail" placeholder="<?php echo $language->translate("SMTP_HOST_SENDER_EMAIL");?>" value="<?php echo SMTPHOSTSENDEREMAIL;?>">
+                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_SENDER_EMAIL");?></p>
+
+                                                    </div>
+                                                    
                                                     <div class="content-form form-inline">
                                                         
                                                         <div class="form-group">
@@ -1335,6 +1360,12 @@ endif; ?>
                                                         
                                                         <li class="apps ">
 
+                                                            <a href="#tab-sickrage" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/sickrage.png"></a>
+
+                                                        </li>
+                                                        
+                                                        <li class="apps ">
+
                                                             <a href="#tab-nzbget" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/nzbget.png"></a>
 
                                                         </li>
@@ -1348,6 +1379,12 @@ endif; ?>
                                                         <li class="apps ">
 
                                                             <a href="#tab-headphones" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/headphones.png"></a>
+
+                                                        </li>
+                                                        
+                                                        <li class="apps ">
+
+                                                            <a href="#tab-calendar" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/calendar.png"></a>
 
                                                         </li>
 
@@ -1427,14 +1464,7 @@ endif; ?>
                                                             <div class="form-group">
 
                                                                 <input type="text" class="form-control material input-sm" name="sonarrURL" placeholder="<?php echo $language->translate("SONARR_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo SONARRURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("SONARR_URL");?></p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="sonarrPort" placeholder="<?php echo $language->translate("SONARR_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo SONARRPORT;?>">
-                                                                <p class="help-text"><?php echo $language->translate("SONARR_PORT");?></p>
+                                                                <p class="help-text"><?php echo $language->translate("SONARR_URL");?> - i.e. http://hostname:8989 | hostname/sonarr | http://hostname:8989/sonarr</p>
 
                                                             </div>
 
@@ -1446,20 +1476,31 @@ endif; ?>
                                                             </div>
 
                                                         </div>
+                                                        
+                                                        <div class="tab-pane big-box fade" id="tab-sickrage">
+                                                            
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="sickrageURL" placeholder="<?php echo $language->translate("SICK_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo SICKRAGEURL;?>">
+                                                                <p class="help-text"><?php echo $language->translate("SICK_URL");?> - i.e. http://hostname:8081 | hostname/sick | http://hostname:8081/sick</p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="sickrageKey" placeholder="<?php echo $language->translate("SICK_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo SICKRAGEKEY;?>">
+                                                                <p class="help-text"><?php echo $language->translate("SICK_KEY");?></p>
+
+                                                            </div>
+
+                                                        </div>
 
                                                         <div class="tab-pane big-box fade" id="tab-radarr">
 
                                                             <div class="form-group">
 
                                                                 <input type="text" class="form-control material input-sm" name="radarrURL" placeholder="<?php echo $language->translate("RADARR_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo RADARRURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("RADARR_URL");?></p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="radarrPort" placeholder="<?php echo $language->translate("RADARR_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo RADARRPORT;?>">
-                                                                <p class="help-text"><?php echo $language->translate("RADARR_PORT");?></p>
+                                                                <p class="help-text"><?php echo $language->translate("RADARR_URL");?> - i.e. http://hostname:8989 | hostname/radarr | http://hostname:8989/radarr</p>
 
                                                             </div>
 
@@ -1549,6 +1590,78 @@ endif; ?>
 
                                                                 <input type="text" class="form-control material input-sm" name="headphonesKey" placeholder="<?php echo $language->translate("HEADPHONES_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo HEADPHONESKEY;?>">
                                                                 <p class="help-text"><?php echo $language->translate("HEADPHONES_KEY");?></p>
+
+                                                            </div>
+
+                                                        </div>
+                                                        
+                                                        <div class="tab-pane big-box fade" id="tab-calendar">
+
+                                                            <div class="content-form form-inline">
+                                                        
+                                                                <div class="form-group">
+
+                                                                <?php 
+
+                                                                if(CALENDARSTART == "0") : $sundayActive = "selected"; else : $sundayActive = ""; endif;
+                                                                if(CALENDARSTART == "1") : $mondayActive = "selected"; else : $mondayActive = ""; endif;
+                                                                if(CALENDARSTART == "2") : $tuesdayActive = "selected"; else : $tuesdayActive = ""; endif;
+                                                                if(CALENDARSTART == "3") : $wednesdayActive = "selected"; else : $wednesdayActive = ""; endif;
+                                                                if(CALENDARSTART == "4") : $thursdayActive = "selected"; else : $thursdayActive = ""; endif;
+                                                                if(CALENDARSTART == "5") : $fridayActive = "selected"; else : $fridayActive = ""; endif;
+                                                                if(CALENDARSTART == "6") : $saturdayActive = "selected"; else : $saturdayActive = ""; endif;
+
+                                                                ?>
+                                                                    <select name="calendarStart" id="calendarStart" class="form-control material input-sm" required>
+
+                                                                        <option value="0" <?=$sundayActive;?>><?php echo explosion($language->translate('DAYS'), 0);?></option>
+                                                                        <option value="1" <?=$mondayActive;?>><?php echo explosion($language->translate('DAYS'), 1);?></option>
+                                                                        <option value="2" <?=$tuesdayActive;?>><?php echo explosion($language->translate('DAYS'), 2);?></option>
+                                                                        <option value="3" <?=$wednesdayActive;?>><?php echo explosion($language->translate('DAYS'), 3);?></option>
+                                                                        <option value="4" <?=$thursdayActive;?>><?php echo explosion($language->translate('DAYS'), 4);?></option>
+                                                                        <option value="5" <?=$fridayActive;?>><?php echo explosion($language->translate('DAYS'), 5);?></option>
+                                                                        <option value="6" <?=$saturdayActive;?>><?php echo explosion($language->translate('DAYS'), 6);?></option>
+                                                                        
+                                                                    </select>
+
+                                                                    <p class="help-text"><?php echo $language->translate("CALENDAR_START_DAY");?></p>
+
+                                                                </div>
+                                                                
+                                                                <div class="form-group">
+
+                                                                <?php 
+
+                                                                if(CALENDARVIEW == "month") : $monthActive = "selected"; else : $monthActive = ""; endif;
+                                                                if(CALENDARVIEW == "basicDay") : $dayActive = "selected"; else : $dayActive = ""; endif;
+                                                                if(CALENDARVIEW == "basicWeek") : $weekActive = "selected"; else : $weekActive = ""; endif;
+
+                                                                ?>
+                                                                    <select name="calendarView" id="calendarView" class="form-control material input-sm" required>
+
+                                                                        <option value="month" <?=$monthActive;?>><?php echo $language->translate('MONTH');?></option>
+                                                                        <option value="basicDay" <?=$dayActive;?>><?php echo $language->translate('DAY');?></option>
+                                                                        <option value="basicWeek" <?=$weekActive;?>><?php echo $language->translate('WEEK');?></option>
+                                                                        
+                                                                    </select>
+
+                                                                    <p class="help-text"><?php echo $language->translate("DEFAULT");?></p>
+
+                                                                </div>
+                                                                
+                                                                <div class="form-group">
+
+                                                                <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control material input-sm" name="calendarStartDay" placeholder="<?php echo $language->translate("CALENDAR_START_DATE");?>" autocorrect="off" autocapitalize="off" value="<?php echo CALENDARSTARTDAY;?>">
+                                                                <p class="help-text"><?php echo $language->translate("CALENDAR_START_DATE");?></p>
+
+                                                                </div>
+                                                                
+                                                                <div class="form-group">
+
+                                                                <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control material input-sm" name="calendarEndDay" placeholder="<?php echo $language->translate("CALENDAR_END_DATE");?>" autocorrect="off" autocapitalize="off" value="<?php echo CALENDARENDDAY;?>">
+                                                                <p class="help-text"><?php echo $language->translate("CALENDAR_END_DATE");?></p>
+
+                                                                </div>
 
                                                             </div>
 
@@ -1702,7 +1815,7 @@ endif; ?>
                                 
                                 <div class="tab-pane big-box  fade in" id="about">
                         
-                                    <h4><strong><?php echo $language->translate("ABOUT");?> Organizr</strong></h4>
+                                    <h4><img src="images/organizr-logo-h-d.png" height="50px"></h4>
                         
                                     <p id="version"></p>
                                     
