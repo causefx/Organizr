@@ -7,8 +7,10 @@
 	 *	entry is assigned a new random token,  which is used in
 	 * salting subsequent password checks.
 	 */
-    
-    define('INSTALLEDVERSION', '1.22');
+
+    define('INSTALLEDVERSION', '1.25');
+
+    require __DIR__ . '/vendor/autoload.php';
 
     $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
     define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
@@ -16,7 +18,7 @@
     if(!empty($databaseConfig['timezone'])) : define('TIMEZONE', $databaseConfig['timezone']); else : define('TIMEZONE', 'America/Los_Angeles'); endif;
     if(!empty($databaseConfig['titleLogo'])) : define('TITLELOGO', $databaseConfig['titleLogo']); else : define('TITLELOGO', ''); endif;
     if(!empty($databaseConfig['loadingIcon'])) : define('LOADINGICON', $databaseConfig['loadingIcon']); else : define('LOADINGICON', ''); endif;
-    if(!empty($databaseConfig['multipleLogin'])) : define('MULTIPLELOGIN', $databaseConfig['multipleLogin']); else : define('MULTIPLELOGIN', 'false'); endif;
+    if(!empty($databaseConfig['multipleLogin'])) : define('MULTIPLELOGIN', $databaseConfig['multipleLogin']); else : define('MULTIPLELOGIN', 'true'); endif;
     if(!empty($databaseConfig['enableMail'])) : define('ENABLEMAIL', $databaseConfig['enableMail']); else : define('ENABLEMAIL', 'false'); endif;
     if(!empty($databaseConfig['loadingScreen'])) : define('LOADINGSCREEN', $databaseConfig['loadingScreen']); else : define('LOADINGSCREEN', 'true'); endif;
     if(!empty($databaseConfig['slimBar'])) : define('SLIMBAR', $databaseConfig['slimBar']); else : define('SLIMBAR', 'true'); endif;
@@ -25,6 +27,13 @@
     if(!empty($databaseConfig['gravatar'])) : define('GRAVATAR', $databaseConfig['gravatar']); else : define('GRAVATAR', 'true'); endif;
     if(!empty($databaseConfig['notifyEffect'])) : define('NOTIFYEFFECT', $databaseConfig['notifyEffect']); else : define('NOTIFYEFFECT', 'bar-slidetop'); endif;
     if(!empty($databaseConfig['domain'])) : define('DOMAIN', $databaseConfig['domain']); else : define('DOMAIN', $_SERVER['HTTP_HOST']); endif;
+    if(!empty($databaseConfig['smtpHost'])) : define('SMTPHOST', $databaseConfig['smtpHost']); else : define('SMTPHOST', ''); endif;
+    if(!empty($databaseConfig['smtpHostPort'])) : define('SMTPHOSTPORT', $databaseConfig['smtpHostPort']); else : define('SMTPHOSTPORT', ''); endif;
+    if(!empty($databaseConfig['smtpHostAuth'])) : define('SMTPHOSTAUTH', $databaseConfig['smtpHostAuth']); else : define('SMTPHOSTAUTH', 'true'); endif;
+    if(!empty($databaseConfig['smtpHostUsername'])) : define('SMTPHOSTUSERNAME', $databaseConfig['smtpHostUsername']); else : define('SMTPHOSTUSERNAME', ''); endif;
+    if(!empty($databaseConfig['smtpHostPassword'])) : define('SMTPHOSTPASSWORD', $databaseConfig['smtpHostPassword']); else : define('SMTPHOSTPASSWORD', ''); endif;
+    if(!empty($databaseConfig['smtpHostSenderName'])) : define('SMTPHOSTSENDERNAME', $databaseConfig['smtpHostSenderName']); else : define('SMTPHOSTSENDERNAME', 'Organizr'); endif;
+    if(!empty($databaseConfig['smtpHostSenderEmail'])) : define('SMTPHOSTSENDEREMAIL', $databaseConfig['smtpHostSenderEmail']); else : define('SMTPHOSTSENDEREMAIL', 'no-reply@Organizr'); endif;
 
     if(!file_exists('homepageSettings.ini.php')){ touch('homepageSettings.ini.php'); }
         
@@ -52,6 +61,12 @@
     if(!empty($homepageConfig['headphonesKey'])) : define('HEADPHONESKEY', $homepageConfig['headphonesKey']); else : define('HEADPHONESKEY', ''); endif;
     if(!empty($homepageConfig['headphonesURL'])) : define('HEADPHONESURL', $homepageConfig['headphonesURL']); else : define('HEADPHONESURL', ''); endif;
     if(!empty($homepageConfig['headphonesPort'])) : define('HEADPHONESPORT', $homepageConfig['headphonesPort']); else : define('HEADPHONESPORT', ''); endif;
+    if(!empty($homepageConfig['calendarStart'])) : define('CALENDARSTART', $homepageConfig['calendarStart']); else : define('CALENDARSTART', '0'); endif;
+    if(!empty($homepageConfig['calendarView'])) : define('CALENDARVIEW', $homepageConfig['calendarView']); else : define('CALENDARVIEW', 'basicWeek'); endif;
+    if(!empty($homepageConfig['calendarStartDay'])) : define('CALENDARSTARTDAY', $homepageConfig['calendarStartDay']); else : define('CALENDARSTARTDAY', '30'); endif;
+    if(!empty($homepageConfig['calendarEndDay'])) : define('CALENDARENDDAY', $homepageConfig['calendarEndDay']); else : define('CALENDARENDDAY', '30'); endif;
+    if(!empty($homepageConfig['sickrageKey'])) : define('SICKRAGEKEY', $homepageConfig['sickrageKey']); else : define('SICKRAGEKEY', ''); endif;
+    if(!empty($homepageConfig['sickrageURL'])) : define('SICKRAGEURL', $homepageConfig['sickrageURL']); else : define('SICKRAGEURL', ''); endif;
 
     
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 
@@ -182,9 +197,32 @@
 
 		// the user's role in the system
 		var $role = "";
+		var $group = "";
 
 		// global database handle
 		var $database = false;
+        
+        //EMAIL SHIT
+        function startEmail($email, $username, $subject, $body){
+            
+            $mail = new PHPMailer;
+            $mail->isSMTP();
+            $mail->Host = SMTPHOST;
+            $mail->SMTPAuth = SMTPHOSTAUTH;
+            $mail->Username = SMTPHOSTUSERNAME;
+            $mail->Password = SMTPHOSTPASSWORD;
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = SMTPHOSTPORT;
+            $mail->setFrom(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
+            $mail->addReplyTo(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
+            $mail->isHTML(true);
+            $mail->addAddress($email, $username);
+            $mail->Subject = $subject;
+            $mail->Body    = $body;
+            $mail->send();
+            
+        }
+       
 
 		// class object constructor
 		function __construct($registration_callback=false)
@@ -257,6 +295,7 @@
 			$this->userdir = ($this->username !=User::GUEST_USER? USER_HOME . $this->username : false);
 			$this->email = $this->get_user_email($this->username);
 			$this->role = $this->get_user_role($this->username);
+			//$this->group = $this->get_user_group($this->username);
 
 			// clear database
 			$this->database->commit();
@@ -368,7 +407,8 @@ EOT;
 				$headers = "From: $from\r\n";
 				$headers .= "Reply-To: $replyto\r\n";
 				$headers .= "X-Mailer: PHP/" . phpversion();
-				mail($email, $subject, $body, $headers);
+				//mail($email, $subject, $body, $headers);
+                $this->startEmail($email, $username, $subject, $body);
 			}
 
 			return $registered;
@@ -448,7 +488,8 @@ EOT;
 			$headers = "From: $from\r\n";
 			$headers .= "Reply-To: $replyto\r\n";
 			$headers .= "X-Mailer: PHP/" . phpversion();
-			mail($email, $subject, $body, $headers);
+			//mail($email, $subject, $body, $headers);
+            $this->startEmail($email, $username, $subject, $body);
 		}
 
 	// ------------------
@@ -469,10 +510,13 @@ EOT;
 			$_SESSION["token"] = -1;
             unset($_COOKIE['Organizr']);
             setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
+            setcookie('Organizr', '', time() - 3600, '/');
             unset($_COOKIE['OrganizrU']);
             setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
+            setcookie('OrganizrU', '', time() - 3600, '/');
             unset($_COOKIE['cookiePassword']);
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
+            setcookie("cookiePassword", '', time() - 3600, '/');
 		}
 
 		/**
@@ -526,10 +570,13 @@ EOT;
                         $this->error("cookie token mismatch for $username");
                         unset($_COOKIE['Organizr']);
                         setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
+                        setcookie('Organizr', '', time() - 3600, '/');
                         unset($_COOKIE['OrganizrU']);
                         setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
+                        setcookie('OrganizrU', '', time() - 3600, '/');
                         unset($_COOKIE['cookiePassword']);
                         setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
+                        setcookie("cookiePassword", '', time() - 3600, '/');
                         return false;
 
                     }
@@ -763,10 +810,13 @@ EOT;
 			$this->info("Buh-Bye <strong>$username</strong>!");
             unset($_COOKIE['Organizr']);
             setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
+            setcookie('Organizr', '', time() - 3600, '/');
             unset($_COOKIE['OrganizrU']);
             setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
+            setcookie('OrganizrU', '', time() - 3600, '/');
             unset($_COOKIE['cookiePassword']);
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
+            setcookie("cookiePassword", '', time() - 3600, '/');
 			return true;
 		}
 
@@ -815,6 +865,14 @@ EOT;
 				foreach($this->database->query($query) as $data) { return $data["role"]; }}
 			return User::GUEST_USER;
 		}
+        
+       /* function get_user_group($username)
+		{
+			if($username && $username !="" && $username !=User::GUEST_USER) {
+				$query = "SELECT group FROM users WHERE username = '$username'";
+				foreach($this->database->query($query) as $data) { return $data["group"]; }}
+			return User::GUEST_USER;
+		}*/
 
 		/**
 		 * Get the user token
