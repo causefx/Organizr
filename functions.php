@@ -444,6 +444,7 @@ function getSickrageCalendarWanted($array){
 
             $i++;
             $seriesName = $child['show_name'];
+            $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['airdate'];
             $episodeAirDateTime = explode(" ",$child['airs']);
             $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
@@ -452,7 +453,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
     
@@ -460,6 +461,7 @@ function getSickrageCalendarWanted($array){
 
             $i++;
             $seriesName = $child['show_name'];
+            $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['airdate'];
             $episodeAirDateTime = explode(" ",$child['airs']);
             $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
@@ -468,7 +470,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
     
@@ -476,6 +478,7 @@ function getSickrageCalendarWanted($array){
 
             $i++;
             $seriesName = $child['show_name'];
+            $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['airdate'];
             $episodeAirDateTime = explode(" ",$child['airs']);
             $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
@@ -484,7 +487,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
     
@@ -492,6 +495,7 @@ function getSickrageCalendarWanted($array){
 
             $i++;
             $seriesName = $child['show_name'];
+            $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['airdate'];
             $episodeAirDateTime = explode(" ",$child['airs']);
             $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
@@ -500,7 +504,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
 
@@ -518,9 +522,10 @@ function getSickrageCalendarHistory($array){
 
             $i++;
             $seriesName = $child['show_name'];
+            $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['date'];
             $downloaded = "green-bg";
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
 
@@ -536,9 +541,11 @@ function getSonarrCalendar($array){
     foreach($array AS $child) {
 
         $i++;
-        $seriesName = htmlentities($child['series']['title'], ENT_QUOTES);
+        $seriesName = $child['series']['title'];
         $runtime = $child['series']['runtime'];
+        $episodeID = $child['series']['imdbId'];
         $episodeName = htmlentities($child['title'], ENT_QUOTES);
+        if($child['episodeNumber'] == "1"){ $episodePremier = "true"; }else{ $episodePremier = "false"; }
         $episodeAirDate = $child['airDateUtc'];
         $episodeAirDate = strtotime($episodeAirDate);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
@@ -546,9 +553,9 @@ function getSonarrCalendar($array){
         if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
 
         $downloaded = $child['hasFile'];
-        if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
+        if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "light-blue-bg"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
         
-        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"http://www.imdb.com/title/$episodeID\" }, \n";
         
     }
 
@@ -562,20 +569,33 @@ function getRadarrCalendar($array){
     $gotCalendar = "";
     $i = 0;
     foreach($array AS $child) {
-        if(isset($child['physicalRelease'])){
-            $i++;
-            $movieName = htmlentities($child['title'], ENT_QUOTES);
-            $runtime = $child['runtime'];
-            $physicalRelease = $child['physicalRelease'];
-            $physicalRelease = strtotime($physicalRelease);
-            $physicalRelease = date("Y-m-d", $physicalRelease);
+        
+        if(isset($child['inCinemas'])){
             
-            if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
+            $i++;
+            $movieName = $child['title'];
+            $movieID = $child['imdbId'];
+            $runtime = $child['runtime'];
+            
+            if(isset($child['inCinemas']) && isset($child['physicalRelease'])){ 
+                
+                $physicalRelease = $child['physicalRelease']; 
+                $physicalRelease = strtotime($physicalRelease);
+                $physicalRelease = date("Y-m-d", $physicalRelease);
 
-            $downloaded = $child['hasFile'];
-            if($downloaded == "0" && $notReleased == "true"){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
+                if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
 
-            $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded\", imagetype: \"film\" }, \n";
+                $downloaded = $child['hasFile'];
+                if($downloaded == "0" && $notReleased == "true"){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
+            
+            }else{ 
+                
+                $physicalRelease = $child['inCinemas']; 
+                $downloaded = "light-blue-bg";
+            
+            }
+                        
+            $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded\", imagetype: \"film\", url: \"http://www.imdb.com/title/$movieID\" }, \n";
         }
         
     }
@@ -738,12 +758,13 @@ function getHeadphonesCalendar($url, $port, $key, $list){
 
     foreach($api AS $child) {
 
-        if($child['Status'] != "Skipped"){
+        if($child['Status'] == "Wanted"){
         
             $i++;
             $albumName = addslashes($child['AlbumTitle']);
             $albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
             $albumDate = $child['ReleaseDate'];
+            $albumID = $child['AlbumID'];
             $albumDate = strtotime($albumDate);
             $albumDate = date("Y-m-d", $albumDate);
             $albumStatus = $child['Status'];
@@ -752,7 +773,7 @@ function getHeadphonesCalendar($url, $port, $key, $list){
 
             if($albumStatus == "Wanted" && $notReleased == "true"){ $albumStatusColor = "indigo-bg"; }elseif($albumStatus == "Downloaded"){ $albumStatusColor = "green-bg"; }else{ $albumStatusColor = "red-bg"; }
 
-            $gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\" }, \n";
+            $gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
             
         }
         
