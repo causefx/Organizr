@@ -1,6 +1,6 @@
 <?php
 
-$auth = strpos($_SERVER[HTTP_REFERER], "homepage.php");
+$auth = strpos($_SERVER['HTTP_REFERER'], "homepage.php");
 
 if ($auth === false) { die("WTF? Bro!"); }
 
