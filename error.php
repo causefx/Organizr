@@ -24,6 +24,7 @@ $codes = array(
        502 => array('Bad Gateway', 'The server received an invalid response from the upstream server while trying to fulfill the request.', 'confused'),
        503 => array('Service Unavailable', 'The server is currently unavailable (because it is overloaded or down for maintenance).', 'confused'),
        504 => array('Gateway Timeout', 'The upstream server failed to send a request in the time allowed by the server.', 'confused'),
+       999 => array('Not Logged In', 'You need to be logged in to access this page.', 'confused'),
     
 );
 

@@ -409,7 +409,6 @@ function getPlexStreams($url, $port, $token, $size, $header){
         
         $plexLink = "";
 
-        
     }
     
     $gotPlex .= '</div>';
@@ -542,7 +541,6 @@ function getSonarrCalendar($array){
 
         $i++;
         $seriesName = $child['series']['title'];
-        $runtime = $child['series']['runtime'];
         $episodeID = $child['series']['imdbId'];
         $episodeName = htmlentities($child['title'], ENT_QUOTES);
         if($child['episodeNumber'] == "1"){ $episodePremier = "true"; }else{ $episodePremier = "false"; }
@@ -575,7 +573,6 @@ function getRadarrCalendar($array){
             $i++;
             $movieName = $child['title'];
             $movieID = $child['imdbId'];
-            $runtime = $child['runtime'];
             
             if(isset($child['inCinemas']) && isset($child['physicalRelease'])){ 
                 
