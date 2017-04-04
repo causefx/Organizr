@@ -708,6 +708,7 @@ endif; ?>
         <div id="main-wrapper" class="main-wrapper">
 
             <!--Content-->
+            <div id="content"  style="margin:0 10px; overflow:hidden">
  
                 <br/>
                 
@@ -719,9 +720,11 @@ endif; ?>
                         
                         <?php if($action) : ?>
 
+                        <button id="apply" style="width: 100%" class="btn waves btn-success btn-sm text-uppercase waves-effect waves-float animated tada" type="submit">
 
                             <?php echo $language->translate("APPLY_CHANGES");?>
 
+                        </button>
 
                         <?php endif; ?>
                         

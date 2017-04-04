@@ -542,6 +542,7 @@ function getSonarrCalendar($array){
         $i++;
         $seriesName = $child['series']['title'];
         $episodeID = $child['series']['imdbId'];
+        if(!isset($episodeID)){ $episodeID = ""; }
         $episodeName = htmlentities($child['title'], ENT_QUOTES);
         if($child['episodeNumber'] == "1"){ $episodePremier = "true"; }else{ $episodePremier = "false"; }
         $episodeAirDate = $child['airDateUtc'];
@@ -573,6 +574,7 @@ function getRadarrCalendar($array){
             $i++;
             $movieName = $child['title'];
             $movieID = $child['imdbId'];
+            if(!isset($movieID)){ $movieID = ""; }
             
             if(isset($child['inCinemas']) && isset($child['physicalRelease'])){ 
                 
