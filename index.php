@@ -201,7 +201,7 @@ if(!defined('AUTOHIDE')) : define('AUTOHIDE', 'false'); endif;
 if(!defined('ENABLEMAIL')) : define('ENABLEMAIL', 'false'); endif;
 if(!defined('CUSTOMCSS')) : define('CUSTOMCSS', 'false'); endif;
 if(!defined('LOADINGSCREEN')) : define('LOADINGSCREEN', 'true'); endif;
-if(!defined('INSTALLEDVERSION')) : define('INSTALLEDVERSION', 'Awaiting Install...'); endif;
+if(!defined('INSTALLEDVERSION')) : define('INSTALLEDVERSION', 'Awaiting-Install...'); endif;
 if(!isset($notifyExplode)) :
 
     $notifyExplode = array("bar","slidetop");
@@ -262,7 +262,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         <script type="text/javascript" src="<?=$baseURL;?>js/sha1.js"></script>
 		<script type="text/javascript" src="<?=$baseURL;?>js/user.js"></script>
 
-        <link rel="stylesheet" href="<?=$baseURL;?>css/style.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>css/style.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
 
         <link rel="icon" type="image/png" href="<?=$baseURL;?>images/favicon/android-chrome-192x192.png" sizes="192x192">

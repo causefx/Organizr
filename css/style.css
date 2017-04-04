@@ -1109,7 +1109,7 @@ body {
 }
 
 .small-box {
-  padding: 20px 10px;
+  padding: 20px 5px;
 }
 
 .small-box .info {
@@ -3049,7 +3049,7 @@ ul.inbox-pagination li {
 }
 
 .profile-sidebar {
-  padding: 20px 0 10px 0;
+  padding: 15px 0 0px 0;
   background: #fff;
   -webkit-border-radius: 3px;
           border-radius: 3px;
@@ -3091,7 +3091,7 @@ ul.inbox-pagination li {
 }
 
 .profile-usermenu {
-  margin-top: 40px;
+ /* margin-top: 40px;*/
 }
 
 .profile-usermenu ul li {
@@ -3119,7 +3119,7 @@ ul.inbox-pagination li {
 }
 
 .profile-usermenu ul li.active {
-  border-bottom: none;
+  /*border-bottom: none;*/
 }
 
 .profile-usermenu ul li.active a {

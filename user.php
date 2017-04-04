@@ -8,7 +8,7 @@
 	 * salting subsequent password checks.
 	 */
 
-    define('INSTALLEDVERSION', '1.28');
+    define('INSTALLEDVERSION', '1.29');
 
     require __DIR__ . '/vendor/autoload.php';
 
