@@ -1,5 +1,5 @@
-# Organizr
-HTPC/Homelab Services Organizer - Written in PHP
+<p align="center"><img src="https://cloud.githubusercontent.com/assets/16184466/24440636/1e5e2002-140a-11e7-8da1-1cd68745cedd.png"></p>
+<p align="center">HTPC/Homelab Services Organizer - Written in PHP</p>
 
 ### About
 Do you have quite a bit of services running on your computer or server?  Do you have a lot of bookmarks or have to memorize a bunch of ip's and ports?  Well, Organizr is here to help with that.  Organizr allows you to setup "Tabs" that will be loaded all in one webpage.  You can then work on your server with ease.  You can even open up two tabs side by side.  Want to give users access to some Tabs?  No problem, just enable user support and have them make an account.  Want guests to be able to visit too?  Enable Guest support for those tabs.
