@@ -366,7 +366,7 @@ endif; ?>
                     
                     <sort>1</sort>
                     
-                    <div class="col-lg-4 content-form form-inline">
+                    <div class="col-lg-12 content-form form-inline">
                         
                         <div class="form-group">
                         

@@ -282,14 +282,14 @@ function outputCarousel($header, $size, $type, $items) {
 	$buttons = '';
 	if (count($items) > 1) {
 		$buttons = '
-			<a class="left carousel-control '.$type.'" href="#carousel-'.$type.'" role="button" data-slide="prev"><span class="fa fa-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a>
-			<a class="right carousel-control '.$type.'" href="#carousel-'.$type.'" role="button" data-slide="next"><span class="fa fa-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a>';
+			<a class="left carousel-control '.$type.'" href="#carousel-'.$type.'-emby" role="button" data-slide="prev"><span class="fa fa-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a>
+			<a class="right carousel-control '.$type.'" href="#carousel-'.$type.'-emby" role="button" data-slide="next"><span class="fa fa-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a>';
 	}
 	
 	return '
 	<div class="col-lg-'.$size.'">
 		<h5 class="text-center">'.$header.'</h5>
-		<div id="carousel-'.$type.'" class="carousel slide box-shadow white-bg" data-ride="carousel"><div class="carousel-inner" role="listbox">
+		<div id="carousel-'.$type.'-emby" class="carousel slide box-shadow white-bg" data-ride="carousel"><div class="carousel-inner" role="listbox">
 			'.implode('',$items).'
 		</div>'.$buttons.'
 	</div></div>'; 
@@ -375,13 +375,9 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
     
     $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".$token);
     $api = simplexml_load_string($api);
-    $getServer = file_get_contents($address."/servers?X-Plex-Token=".$token);
+    $getServer = file_get_contents($address."/?X-Plex-Token=".$token);
     $getServer = simplexml_load_string($getServer);
-    
-    foreach($getServer AS $child) {
-
-       $gotServer = $child['machineIdentifier'];
-    }
+    $gotServer = $getServer['machineIdentifier'];
 
     $i = 0;
     
@@ -673,8 +669,7 @@ function getSonarrCalendar($array){
 
         $i++;
         $seriesName = $child['series']['title'];
-        $episodeID = $child['series']['imdbId'];
-        if(!isset($episodeID)){ $episodeID = ""; }
+        $episodeID = $child['series']['tvdbId'];
         $episodeName = htmlentities($child['title'], ENT_QUOTES);
         if($child['episodeNumber'] == "1"){ $episodePremier = "true"; }else{ $episodePremier = "false"; }
         $episodeAirDate = $child['airDateUtc'];
@@ -686,7 +681,7 @@ function getSonarrCalendar($array){
         $downloaded = $child['hasFile'];
         if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "light-blue-bg"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
         
-        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"http://www.imdb.com/title/$episodeID\" }, \n";
+        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
 
