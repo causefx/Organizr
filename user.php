@@ -597,7 +597,8 @@ EOT;
 				$this->info("user account for $username not created.");
 				$this->error = "this email address is already in use by someone else.";
                 $this->error("this email address is already in use by someone else.");
-				return false; }
+				return false; 
+			}
 			// This user can be registered
 			$insert = "INSERT INTO users (username, email, password, token, role, active, last) ";
 			$insert .= "VALUES ('$username', '$email', '$dbpassword', '', '$newRole', 'false', '') ";
@@ -612,7 +613,7 @@ EOT;
 				//$this->info("created user directory $dir");
 				// if there is a callback, call it
 				if($registration_callback !== false) { $registration_callback($username, $email, $dir); }
-                if($settings !== "true") { $this->login_user($username, $sha1, true); }
+                if($settings !== 'false' && $settings !== false) { $this->login_user($username, $sha1, true, '', false); }
 				return true; }
 			$this->error = "unknown database error occured.";
             $this->error("unknown database error occured.");
@@ -621,9 +622,9 @@ EOT;
 		/**
 		 * Log a user in
 		 */
-		function login_user($username, $sha1, $remember, $password) {
+		function login_user($username, $sha1, $remember, $password, $surface = true) {
 
-            function buildLog($username, $authType) {
+            $buildLog = function($username, $authType) {
                 if(file_exists(FAIL_LOG)) {
                     $getFailLog = str_replace("\r\ndate", "date", file_get_contents(FAIL_LOG));
                     $gotFailLog = json_decode($getFailLog, true);
@@ -638,7 +639,7 @@ EOT;
                     $writeFailLog = str_replace("date", "\r\ndate", json_encode($failLogEntryFirst));
                 }
                 return $writeFailLog;
-            }
+            };
 			
 			// External Authentication
 			$authSuccess = false;
@@ -694,17 +695,18 @@ EOT;
 						
 					}
 					$this->info("Welcome $username");
-					file_put_contents(FAIL_LOG, buildLog($username, "good_auth"));
+					file_put_contents(FAIL_LOG, $buildLog($username, "good_auth"));
 					chmod(FAIL_LOG, 0660);
 					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
 					return true; 
-				} else if (AUTHBACKENDCREATE !== 'false') {
+				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
 					// Create User
-					debug_out('Place Create Code Here!',1);
+					$falseByRef = false;
+					$this->register_user($username, "", $sha1, $falseByRef, $remember);   //register_user($username, $email, $sha1, &$registration_callback = false, $settings)
 				} else {
 					// authentication failed
 					//$this->info("Successful Backend Auth, No User in DB, Create Set to False");
-					file_put_contents(FAIL_LOG, buildLog($username, "bad_auth"));
+					file_put_contents(FAIL_LOG, $buildLog($username, "bad_auth"));
 					chmod(FAIL_LOG, 0660);
 					if(User::unsafe_reporting) { $this->error = "Successful Backend Auth, $username not in DB, Create Set to False."; $this->error("Successful Backend Auth, $username not in DB, Create Set to False."); }
 					else { $this->error = "Not permitted to login as this user, please contact an administrator."; $this->error("Not permitted to login as this user, please contact an administrator"); }
@@ -713,7 +715,7 @@ EOT;
 			} else if (!$authSuccess) {
 				// authentication failed
 				//$this->info("password mismatch for $username");
-				file_put_contents(FAIL_LOG, buildLog($username, "bad_auth"));
+				file_put_contents(FAIL_LOG, $buildLog($username, "bad_auth"));
 				chmod(FAIL_LOG, 0660);
 				if(User::unsafe_reporting) { $this->error = "incorrect password for $username."; $this->error("incorrect password for $username."); }
 				else { $this->error = "the specified username/password combination is incorrect."; $this->error("the specified username/password combination is incorrect."); }
@@ -721,7 +723,7 @@ EOT;
 			} else {
 				// authentication could not take place
 				//$this->info("there was no user $username in the database");
-				file_put_contents(FAIL_LOG, buildLog($username, "bad_auth"));
+				file_put_contents(FAIL_LOG, $buildLog($username, "bad_auth"));
 				chmod(FAIL_LOG, 0660);
 				if(User::unsafe_reporting) { $this->error = "user $username is unknown."; $this->error("user $username is unknown."); }
 				else { $this->error = "you either did not correctly input your username, or password (... or both)."; $this->error("you either did not correctly input your username, or password (... or both)."); }
