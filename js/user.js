@@ -133,8 +133,9 @@ User = {
 
 		valid &= this.validName(form["username"]);
 		valid &= this.validPassword(form["password1"]);
-
+		
 		if(valid) {
+			form["password"].value = form["password1"].value;
 			form["sha1"].value = Sha1.hash(form["password1"].value);
 			form["password1"].value = this.randomString(16);
 			form.submit(); }
