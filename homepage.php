@@ -341,6 +341,26 @@ endif; ?>
 
                 </div>
                 
+                <div id="embyRow" class="row">
+                    
+                    <sort>3</sort>
+
+                    <?php
+                    $embySize = 0;
+                    if(EMBYRECENTMOVIE == "true"){ $embySize++; }
+                    if(EMBYRECENTTV == "true"){ $embySize++; }
+                    if(EMBYRECENTMUSIC == "true"){ $embySize++; }
+                    if(EMBYPLAYINGNOW == "true"){ $embySize++; }
+                    if($embySize >= 4){ $embySize = 3; }elseif($embySize == 3){ $embySize = 4; }elseif($embySize == 2){ $embySize = 6; }elseif($embySize == 1){ $embySize = 12; }
+                    
+                    if(EMBYRECENTMOVIE == "true"){ echo getEmbyRecent(EMBYURL, EMBYPORT, "movie", EMBYTOKEN, $embySize, $language->translate("MOVIES")); }
+                    if(EMBYRECENTTV == "true"){ echo getEmbyRecent(EMBYURL, EMBYPORT, "season", EMBYTOKEN, $embySize, $language->translate("TV_SHOWS")); }
+                    if(EMBYRECENTMUSIC == "true"){ echo getEmbyRecent(EMBYURL, EMBYPORT, "album", EMBYTOKEN, $embySize, $language->translate("MUSIC")); }
+                    if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(EMBYURL, EMBYPORT, EMBYTOKEN, $embySize, $language->translate("PLAYING_NOW_ON_EMBY")); }
+                    ?>
+
+                </div>
+		    
                 <?php if(SONARRURL != "" || RADARRURL != "" || HEADPHONESURL != "" || SICKRAGEURL != "") : ?>
                 <div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
                     
