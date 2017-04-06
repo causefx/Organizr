@@ -46,6 +46,39 @@ function plugin_auth_ftp($username, $password) {
 
 // Pass credentials to Emby Backend
 function plugin_auth_emby($username, $password) {
+	$urlCheck = stripos(AUTHBACKENDHOST, "http");
+	if ($urlCheck === false) {
+		$embyAddress = "http://" . AUTHBACKENDHOST;
+	} else {
+		$embyAddress = AUTHBACKENDHOST;	
+	}
+	if(AUTHBACKENDPORT !== ""){ $embyAddress .= ":" . AUTHBACKENDPORT; }
+	
+	$headers = array(
+		'Authorization'=> 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
+		'Content-type' => 'application/json',
+	);
+	$body = array(
+		'Username' => $username,
+		'Password' => sha1($password),
+		'PasswordMd5' => md5($password),
+	);
+	
+	$response = post_router($embyAddress.'/Users/AuthenticateByName', $body, $headers);
+	
+	if (isset($response['content'])) {
+		$json = json_decode($response['content'], true);
+		if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
+			// Login Success - Now Logout Emby Session As We No Longer Need It
+			$headers = array(
+				'X-Mediabrowser-Token' => $json['AccessToken'],
+			);
+			$response = post_router($embyAddress.'/Sessions/Logout', array(), $headers);
+			return true;
+		}
+	}
+	return false;
+}
 
 function clean($strin) {
     $strout = null;
