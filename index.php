@@ -23,7 +23,7 @@ $inactiveicon = "#66D9EF";
 $inactivetext = "#66D9EF";
 $loading = "#66D9EF";
 $hovertext = "#000000";
-$loadingIcon = "images/organizr.png";
+$loadingIcon = "images/organizr_logo_d.png";
 $baseURL = "";
 require_once("translate.php");
 require_once("functions.php");
