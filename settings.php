@@ -1419,6 +1419,71 @@ endif;?></textarea>
 
                                                         </div>
 
+                                                        <div class="tab-pane big-box fade active in" id="tab-emby">
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="embyURL" placeholder="<?php echo $language->translate("EMBY_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYURL;?>">
+                                                                <p class="help-text"><?php echo $language->translate("EMBY_URL");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="embyPort" placeholder="<?php echo $language->translate("EMBY_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYPORT;?>">
+                                                                <p class="help-text"><?php echo $language->translate("EMBY_PORT");?></p>
+
+                                                            </div>
+
+                                                            <div class="form-group">
+
+                                                                <input type="text" class="form-control material input-sm" name="embyToken" placeholder="<?php echo $language->translate("EMBY_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYTOKEN;?>">
+                                                                <p class="help-text"><?php echo $language->translate("EMBY_TOKEN");?></p>
+
+                                                            </div>
+
+                                                            <div class="content-form form-inline">
+
+                                                                <div class="form-group">
+                                                                    <?php  if(EMBYRECENTMOVIE == "true") : $EMBYRECENTMOVIE = "checked"; else : $EMBYRECENTMOVIE = ""; endif;?>
+                                                                    <input id="" class="switcher switcher-success" value="false" name="embyRecentMovie" type="hidden">
+                                                                    <input id="embyRecentMovie" class="switcher switcher-success" value="true" name="embyRecentMovie" type="checkbox" <?php echo $EMBYRECENTMOVIE;?>>
+
+                                                                    <label for="embyRecentMovie"></label><?php echo $language->translate("RECENT_MOVIES");?>
+
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    <?php  if(EMBYRECENTTV == "true") : $EMBYRECENTTV = "checked"; else : $EMBYRECENTTV = ""; endif;?>
+                                                                    <input id="" class="switcher switcher-success" value="false" name="embyRecentTV" type="hidden">
+                                                                    <input id="embyRecentTV" class="switcher switcher-success" value="true" name="embyRecentTV" type="checkbox" <?php echo $EMBYRECENTTV;?>>
+
+                                                                    <label for="embyRecentTV"></label><?php echo $language->translate("RECENT_TV");?>
+
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    <?php  if(EMBYRECENTMUSIC == "true") : $EMBYRECENTMUSIC = "checked"; else : $EMBYRECENTMUSIC = ""; endif;?>
+                                                                    <input id="" class="switcher switcher-success" value="false" name="embyRecentMusic" type="hidden">
+                                                                    <input id="embyRecentMusic" class="switcher switcher-success" value="true" name="embyRecentMusic" type="checkbox" <?php echo $EMBYRECENTMUSIC;?>>
+
+                                                                    <label for="embyRecentMusic"></label><?php echo $language->translate("RECENT_MUSIC");?>
+
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    <?php  if(EMBYPLAYINGNOW == "true") : $EMBYPLAYINGNOW = "checked"; else : $EMBYPLAYINGNOW = ""; endif;?>
+                                                                    <input id="" class="switcher switcher-success" value="false" name="embyPlayingNow" type="hidden">
+                                                                    <input id="embyPlayingNow" class="switcher switcher-success" value="true" name="embyPlayingNow" type="checkbox" <?php echo $EMBYPLAYINGNOW;?>>
+
+                                                                    <label for="embyPlayingNow"></label><?php echo $language->translate("PLAYING_NOW");?>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+							    
                                                         <div class="tab-pane big-box fade" id="tab-sonarr">
 
                                                             <div class="form-group">
