@@ -1305,6 +1305,12 @@ endif;?></textarea>
                                                             <a href="#tab-plex" data-toggle="tab" aria-expanded="true"><img style="height:40px; width:40px;" src="images/plex.png"></a>
 
                                                         </li>
+							    
+                                                        <li class="apps">
+
+                                                            <a href="#tab-emby" data-toggle="tab" aria-expanded="true"><img style="height:40px; width:40px;" src="images/emby.png"></a>
+
+                                                        </li>
 
                                                         <li class="apps ">
 
