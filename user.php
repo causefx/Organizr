@@ -582,23 +582,30 @@ EOT;
 					$this->info("user account for $username not created.");
 					$this->error = "this user name is already being used by someone else.";
                     $this->error("this user name is already being used by someone else.");
-					return false; }}
-			else{	$query = "SELECT username FROM users";
+					return false; }
+			} else {	
+				$query = "SELECT username FROM users";
 				$usernames = array();
 				foreach($this->database->query($query) as $data) { $usernames[] = $this->homogenise_username($data["username"]); }
 				if(in_array($this->homogenise_username($username), $usernames)) {
 					//$this->info("user account for $username not created.");
 					$this->error = "<strong>$username</strong> is not allowed, because it is too similar to other user names.";
                     $this->error("<strong>$username</strong> is not allowed, because it is too similar to other user names.");
-					return false; }}
-			// Is email address already in use? (see notes on safe reporting)
-			$query = "SELECT * FROM users WHERE email = '$email'";
-			foreach($this->database->query($query) as $data) {
-				$this->info("user account for $username not created.");
-				$this->error = "this email address is already in use by someone else.";
-                $this->error("this email address is already in use by someone else.");
-				return false; 
+					return false; }
 			}
+			// Is email address already in use? (see notes on safe reporting)
+			if (isset($email) && $email) {
+				$query = "SELECT * FROM users WHERE email = '$email'";
+				foreach($this->database->query($query) as $data) {
+					$this->info("user account for $username not created.");
+					$this->error = "this email address is already in use by someone else.";
+					$this->error("this email address is already in use by someone else.");
+					return false; 
+				}
+			} else {
+				$email = $this->random_ascii_string(32).'@placeholder.eml';
+			}
+
 			// This user can be registered
 			$insert = "INSERT INTO users (username, email, password, token, role, active, last) ";
 			$insert .= "VALUES ('$username', '$email', '$dbpassword', '', '$newRole', 'false', '') ";
@@ -613,7 +620,7 @@ EOT;
 				//$this->info("created user directory $dir");
 				// if there is a callback, call it
 				if($registration_callback !== false) { $registration_callback($username, $email, $dir); }
-                if($settings !== 'false' && $settings !== false) { $this->login_user($username, $sha1, true, '', false); }
+                if($settings !== 'true' && $settings !== true) { $this->login_user($username, $sha1, true, '', false); }
 				return true; }
 			$this->error = "unknown database error occured.";
             $this->error("unknown database error occured.");
@@ -702,7 +709,7 @@ EOT;
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
 					// Create User
 					$falseByRef = false;
-					$this->register_user($username, "", $sha1, $falseByRef, $remember);   //register_user($username, $email, $sha1, &$registration_callback = false, $settings)
+					$this->register_user($username, "", $sha1, $falseByRef, !$remember);
 				} else {
 					// authentication failed
 					//$this->info("Successful Backend Auth, No User in DB, Create Set to False");
