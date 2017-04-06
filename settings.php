@@ -1766,7 +1766,7 @@ endif;?></textarea>
 														
 														<select id="authBackendCreate" name="authBackendCreate" class="form-control material input-sm" required>
 															<option value="false" <?php echo (AUTHBACKENDCREATE=='false' || !AUTHBACKENDCREATE?'selected':''); ?>>Do Not Create Accounts</option>
-															<option value="true" <?php echo (AUTHBACKENDCREATE=='true'?'selected':''); ?> disabled>Create Accounts As Needed</option>
+															<option value="true" <?php echo (AUTHBACKENDCREATE=='true'?'selected':''); ?>>Create Accounts As Needed</option>
 														</select>
 														<p class="help-text"><?php echo $language->translate("AUTHBACKENDCREATE"); ?></p>
 														
