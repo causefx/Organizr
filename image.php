@@ -17,7 +17,7 @@ switch ($image_source) {
 			$embyAddress = EMBYURL;	
 		}
 		
-		if(PLEXPORT !== ""){ $embyAddress .= ":" . EMBYPORT; }
+		if(EMBYPORT !== ""){ $embyAddress .= ":" . EMBYPORT; }
 		
 		if(isset($image_url) && isset($image_height) && isset($image_width)) {
 			$image_src = $embyAddress . '/Items/'.$image_url.'/Images/Primary?maxHeight='.$image_height.'&maxWidth='.$image_width;
