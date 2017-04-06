@@ -1759,8 +1759,8 @@ endif;?></textarea>
 														<select id="authBackend" name="authBackend" class="form-control material input-sm" required>
 															<option value="ldap" <?php echo (AUTHBACKEND=='ldap' || !AUTHBACKEND?'selected':''); ?>>LDAP</option>
 															<option value="ftp" <?php echo (AUTHBACKEND=='ftp'?'selected':''); ?>>sFTP</option>
-															<option value="Emby" <?php echo (AUTHBACKEND=='emby'?'selected':''); ?>>Emby</option>
-															<option value="Plex" <?php echo (AUTHBACKEND=='plex'?'selected':''); ?> disabled>Plex</option>
+															<option value="emby" <?php echo (AUTHBACKEND=='emby'?'selected':''); ?>>Emby</option>
+															<option value="plex" <?php echo (AUTHBACKEND=='plex'?'selected':''); ?> disabled>Plex</option>
 														</select>
 														<p class="help-text"><?php echo $language->translate("AUTHBACKEND"); ?></p>
 														
