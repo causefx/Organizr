@@ -1,10 +1,51 @@
 <?php
 
+// Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
-	echo '<pre style="background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px";>'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
+	echo '<pre style="background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
 	if ($die) { http_response_code(503); die(); }
 }
+
+// Auth Plugins
+// Pass credentials to LDAP backend
+function plugin_auth_ldap($username, $password) {
+	// returns true or false
+	$ldap = ldap_connect(AUTHBACKENDHOST.(AUTHBACKENDPORT?':'.AUTHBACKENDPORT:'389'));
+	if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
+		return true;
+	} else {
+		return false;
+	}
+	return false;
+}
+
+// Pass credentials to FTP backend
+function plugin_auth_ftp($username, $password) {
+	// returns true or false
+	
+	// Connect to FTP
+	$conn_id = ftp_ssl_connect(AUTHBACKENDHOST, (AUTHBACKENDPORT?AUTHBACKENDPORT:21), 20); // 20 Second Timeout
+	
+	// Check if valid FTP connection
+	if ($conn_id) {
+		// Attempt login
+		@$login_result = ftp_login($conn_id, $username, $password);
+		
+		// Return Result
+		if ($login_result) {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		return false;
+	}
+	return false;
+}
+
+// Pass credentials to Emby Backend
+function plugin_auth_emby($username, $password) {
 
 function clean($strin) {
     $strout = null;
@@ -908,4 +949,117 @@ function getHeadphonesCalendar($url, $port, $key, $list){
     if ($i != 0){ return $gotCalendar; }
 
 }
+
+function post_router($url, $data, $headers = array(), $referer='') {
+	if (function_exists('curl_version')) {
+		return curl_post($url, $data, $headers, $referer);
+	} else {
+		return post_request($url, $data, $headers, $referer);
+	}
+}
+
+function curl_post($url, $data, $headers = array(), $referer='') {
+	// Initiate cURL
+	$curlReq = curl_init($url);
+	// As post request
+	curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
+	curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+	// Format Headers
+	$cHeaders = array();
+	foreach ($headers as $k => $v) {
+		$cHeaders[] = $k.': '.$v;
+	}
+	if (count($cHeaders)) {
+		curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+	}
+	// Format Data
+	curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
+	// Execute
+	$result = curl_exec($curlReq);
+	// Close
+	curl_close($curlReq);
+	// Return
+	return array('content'=>$result);
+}
+
+function post_request($url, $data, $headers = array(), $referer='') {
+	// Adapted from http://stackoverflow.com/a/28387011/6810513
+	
+    // Convert the data array into URL Parameters like a=b&foo=bar etc.
+	if (isset($headers['Content-type'])) {
+		switch ($headers['Content-type']) {
+			case 'application/json':
+				$data = json_encode($data);
+				break;
+			case 'application/x-www-form-urlencoded':
+				$data = http_build_query($data);
+				break;
+		}
+	} else {
+		$headers['Content-type'] = 'application/x-www-form-urlencoded';
+		$data = http_build_query($data);
+	}
+    
+    // parse the given URL
+    $urlDigest = parse_url($url);
+
+    // extract host and path:
+    $host = $urlDigest['host'].(isset($urlDigest['port'])?':'.$urlDigest['port']:'');
+    $path = $urlDigest['path'];
+	
+    if ($urlDigest['scheme'] != 'http') {
+        die('Error: Only HTTP request are supported, please use cURL to add HTTPS support! ('.$urlDigest['scheme'].'://'.$host.')');
+    }
+
+    // open a socket connection on port 80 - timeout: 30 sec
+    $fp = fsockopen($host, 80, $errno, $errstr, 30);
+
+    if ($fp){
+
+        // send the request headers:
+        fputs($fp, "POST $path HTTP/1.1\r\n");
+        fputs($fp, "Host: $host\r\n");
+
+        if ($referer != '')
+            fputs($fp, "Referer: $referer\r\n");
+		
+        fputs($fp, "Content-length: ". strlen($data) ."\r\n");
+		foreach($headers as $k => $v) {
+			fputs($fp, $k.": ".$v."\r\n");
+		}
+        fputs($fp, "Connection: close\r\n\r\n");
+        fputs($fp, $data);
+
+        $result = '';
+        while(!feof($fp)) {
+            // receive the results of the request
+            $result .= fgets($fp, 128);
+        }
+    }
+    else {
+        return array(
+            'status' => 'err',
+            'error' => "$errstr ($errno)"
+        );
+    }
+
+    // close the socket connection:
+    fclose($fp);
+
+    // split the result header from the content
+    $result = explode("\r\n\r\n", $result, 2);
+
+    $header = isset($result[0]) ? $result[0] : '';
+    $content = isset($result[1]) ? $result[1] : '';
+
+    // return as structured array:
+    return array(
+        'status' => 'ok',
+        'header' => $header,
+        'content' => $content,
+	);
+}
+
+	
+	
 ?>
