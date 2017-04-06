@@ -319,19 +319,22 @@ function resolveEmbyItem($address, $token, $item) {
 			$title = $item['SeriesName'].': '.$item['Name'].' (Season '.$item['ParentIndexNumber'].': Episode '.$item['IndexNumber'].')';
 			$imageId = $itemDetails['SeriesId'];
 			$width = 100;
-			$image = 'season';
+			$image = 'carousel-image season';
+			$style = '';
 			break;
-		case 'Music':
+		case 'MusicAlbum':
 			$title = $item['Name'];
-			$imageId = $itemDetails['AlbumId'];
+			$imageId = $itemDetails['Id'];
 			$width = 150;
 			$image = 'music';
+			$style = 'left: 160px !important;';
 			break;
 		default:
 			$title = $item['Name'];
 			$imageId = $item['Id'];
 			$width = 100;
-			$image = 'movie';
+			$image = 'carousel-image movie';
+			$style = '';
 	}
 	
 	// If No Overview
@@ -340,7 +343,7 @@ function resolveEmbyItem($address, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="carousel-image '.$image.'" src="image.php?source=emby&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption '.$image.'""><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="image.php?source=emby&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption '.$image.'" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
 }
 
 function outputCarousel($header, $size, $type, $items) {
@@ -412,14 +415,20 @@ function getEmbyRecent($url, $port, $type, $token, $size, $header) {
 			$embyTypeQuery = 'IncludeItemTypes=Episode&';
 			break;
 		case 'album':
-			$embyTypeQuery = 'IncludeItemTypes=Music&';
+			$embyTypeQuery = 'IncludeItemTypes=MusicAlbum&';
 			break;
 		default:
 			$embyTypeQuery = '';
 	}
 	
 	// Get A User
-	$userId = json_decode(file_get_contents($address.'/Users?api_key='.$token),true)[0]['Id'];
+	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.$token),true);
+	foreach ($userIds as $value) { // Scan for admin user
+		$userId = $value['Id'];
+		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+			break;
+		}
+	}
 	
 	// Get the latest Items
 	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.$token),true);
