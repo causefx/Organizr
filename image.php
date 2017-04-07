@@ -5,7 +5,7 @@ require_once("user.php");
 $image_url = $_GET['img'];
 $image_height = $_GET['height'];
 $image_width = $_GET['width'];
-$image_source = (isset($_GET['source']) ? isset($_GET['source'] : 'plex');
+$image_source = (isset($_GET['source']) ? $_GET['source'] : 'plex');
 
 switch ($image_source) {
 	case 'emby':

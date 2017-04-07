@@ -1147,6 +1147,7 @@ endif; ?>
                                             
                                             <input type="hidden" name="op" value="login">
 				                            <input type="hidden" name="sha1" value="">
+				                            <input type="hidden" name="password" value="">
                                             <input type="hidden" name="rememberMe" value="false"/>
                                             <input type="text" class="form-control material" name="username" placeholder="<?php echo $language->translate("USERNAME");?>" autocomplete="off" autocorrect="off" autocapitalize="off" value="" autofocus required>
                                         
