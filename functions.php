@@ -132,19 +132,27 @@ function plugin_auth_emby_local($username, $password) {
 // ==== Auth Plugins END ====
 // ==== General Class Definitions START ====
 class setLanguage { 
-    private $language = null; 
+    private $language = null;
+	private $langCode = null;
+	
     function __construct($language = false) {
 		// Default
 		if (!$language) {
 			$language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : "en"; 
 		}
 		
+		$this->langCode = $language;
+		
         if (file_exists("lang/{$language}.ini")) {
             $this->language = parse_ini_file("lang/{$language}.ini", false, INI_SCANNER_RAW);
         } else {
             $this->language = parse_ini_file("lang/en.ini", false, INI_SCANNER_RAW);
         }
-    } 
+    }
+	
+	public function getLang() {
+		return $this->langCode;
+	}
     
     public function translate($originalWord) {
         $getArg = func_num_args();
