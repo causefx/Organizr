@@ -560,6 +560,95 @@ function randString($length = 10) {
     return $tmp;
 }
 
+// Create config file in the return syntax
+function createConfig($array, $path, $nest = 0) {
+	$output = array();
+	foreach ($array as $k => $v) {
+		$allowCommit = true;
+		switch (gettype($v)) {
+			case 'boolean':
+				$item = ($v?'true':'false');
+				break;
+			case 'integer':
+			case 'double':
+			case 'integer':
+			case 'NULL':
+				$item = $v;
+				break;
+			case 'string':
+				$item = '"'.addslashes($v).'"';
+				break;
+			case 'array':
+				$item = createConfig($v, false, $nest+1);
+				break;
+			default:
+				$allowCommit = false;
+		}
+		
+		if($allowCommit) {
+			$output[] = str_repeat("\t",$nest+1).'"'.$k.'" => '.$item;
+		}
+	}
+	
+	$output = (!$nest?"<?php\nreturn ":'')."array(\n".implode(",\n",$output)."\n".str_repeat("\t",$nest).')'.(!$nest?';':'');
+	
+	if (!$nest && $path) {
+		$pathDigest = pathinfo($path);
+		
+		@mkdir($pathDigest['dirname'], 0770, true);
+		
+		if (file_exists($path)) {
+			rename($path, $path.'.bak');
+		}
+		
+		$file = fopen($path, 'w');
+		fwrite($file, $output);
+		fclose($file);
+		if (file_exists($path)) {
+			unlink($path.'.bak');
+			return true;
+		}
+		
+		return false;
+	} else {
+		return $output;
+	}
+}
+
+// Load a config file written in the return syntax
+function loadConfig($path) {
+	// Adapted from http://stackoverflow.com/a/14173339/6810513
+    if (!is_file($path)) {
+        return null;
+    } else {
+		return (array) call_user_func(function() use($path) {
+			return include($path);
+		});
+	}
+}
+
+// Inject Defaults As Needed
+function fillDefaultConfig($array, $path = 'config/configDefaults.php') {
+	if (is_string($path)) {
+		$loadedDefaults = loadConfig($path);
+	} else {
+		$loadedDefaults = $path;
+	}
+	
+	function recurse($current, $defaults) {
+		foreach($defaults as $k => $v) {
+			if (!isset($current[$k])) {
+				$current[$k] = $v;
+			} else if (is_array($current[$k]) && is_array($v)) {
+				$current[$k] = recurse($current[$k], $v);
+			}
+		}
+		return $current;
+	};
+	
+	return recurse($array, $loadedDefaults);
+}
+
 // ==============
 
 function clean($strin) {
