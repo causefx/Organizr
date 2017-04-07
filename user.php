@@ -8,7 +8,7 @@
 	 * salting subsequent password checks.
 	 */
 
-    define('INSTALLEDVERSION', '1.25');
+    define('INSTALLEDVERSION', '1.30');
 
     require __DIR__ . '/vendor/autoload.php';
 
@@ -45,6 +45,13 @@
     if(!empty($homepageConfig['plexRecentTV'])) : define('PLEXRECENTTV', $homepageConfig['plexRecentTV']); else : define('PLEXRECENTTV', 'false'); endif;
     if(!empty($homepageConfig['plexRecentMusic'])) : define('PLEXRECENTMUSIC', $homepageConfig['plexRecentMusic']); else : define('PLEXRECENTMUSIC', 'false'); endif;
     if(!empty($homepageConfig['plexPlayingNow'])) : define('PLEXPLAYINGNOW', $homepageConfig['plexPlayingNow']); else : define('PLEXPLAYINGNOW', 'false'); endif;
+    if(!empty($homepageConfig['embyURL'])) : define('EMBYURL', $homepageConfig['embyURL']); else : define('EMBYURL', ''); endif;
+    if(!empty($homepageConfig['embyPort'])) : define('EMBYPORT', $homepageConfig['embyPort']); else : define('EMBYPORT', ''); endif;
+    if(!empty($homepageConfig['embyToken'])) : define('EMBYTOKEN', $homepageConfig['embyToken']); else : define('EMBYTOKEN', ''); endif;
+    if(!empty($homepageConfig['embyRecentMovie'])) : define('EMBYRECENTMOVIE', $homepageConfig['embyRecentMovie']); else : define('EMBYRECENTMOVIE', 'false'); endif;
+    if(!empty($homepageConfig['embyRecentTV'])) : define('EMBYRECENTTV', $homepageConfig['embyRecentTV']); else : define('EMBYRECENTTV', 'false'); endif;
+    if(!empty($homepageConfig['embyRecentMusic'])) : define('EMBYRECENTMUSIC', $homepageConfig['embyRecentMusic']); else : define('EMBYRECENTMUSIC', 'false'); endif;
+    if(!empty($homepageConfig['embyPlayingNow'])) : define('EMBYPLAYINGNOW', $homepageConfig['embyPlayingNow']); else : define('EMBYPLAYINGNOW', 'false'); endif;    
     if(!empty($homepageConfig['sonarrKey'])) : define('SONARRKEY', $homepageConfig['sonarrKey']); else : define('SONARRKEY', ''); endif;
     if(!empty($homepageConfig['sonarrURL'])) : define('SONARRURL', $homepageConfig['sonarrURL']); else : define('SONARRURL', ''); endif;
     if(!empty($homepageConfig['sonarrPort'])) : define('SONARRPORT', $homepageConfig['sonarrPort']); else : define('SONARRPORT', ''); endif;

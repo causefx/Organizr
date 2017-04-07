@@ -112,6 +112,9 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         <![endif]-->
         
         <style>
+            sort {
+                display: none;
+            }
             table.fc-list-table {
                 table-layout: auto;
             }.tabbable{
@@ -190,10 +193,11 @@ endif; ?>
         <div class="main-wrapper" style="position: initial;">
             
             <div id="content" class="container-fluid">
-
+<!-- <button id="numBnt">Numerical</button> -->
                 <br/>
                 <?php if(($USER->authenticated && $USER->role == "admin") && (NZBGETURL != "" || SABNZBDURL != "" )) : ?>
                 <div id="downloadClientRow" class="row">
+                    <sort>2</sort>
 
                     <div class="col-xs-12 col-md-12">
                         
@@ -318,6 +322,8 @@ endif; ?>
                 <?php endif; ?>
 
                 <div id="plexRow" class="row">
+                    
+                    <sort>3</sort>
 
                     <?php
                     $plexSize = 0;
@@ -335,10 +341,32 @@ endif; ?>
 
                 </div>
                 
+                <div id="embyRow" class="row">
+                    
+                    <sort>3</sort>
+
+                    <?php
+                    $embySize = 0;
+                    if(EMBYRECENTMOVIE == "true"){ $embySize++; }
+                    if(EMBYRECENTTV == "true"){ $embySize++; }
+                    if(EMBYRECENTMUSIC == "true"){ $embySize++; }
+                    if(EMBYPLAYINGNOW == "true"){ $embySize++; }
+                    if($embySize >= 4){ $embySize = 3; }elseif($embySize == 3){ $embySize = 4; }elseif($embySize == 2){ $embySize = 6; }elseif($embySize == 1){ $embySize = 12; }
+                    
+                    if(EMBYRECENTMOVIE == "true"){ echo getEmbyRecent(EMBYURL, EMBYPORT, "movie", EMBYTOKEN, $embySize, $language->translate("MOVIES")); }
+                    if(EMBYRECENTTV == "true"){ echo getEmbyRecent(EMBYURL, EMBYPORT, "season", EMBYTOKEN, $embySize, $language->translate("TV_SHOWS")); }
+                    if(EMBYRECENTMUSIC == "true"){ echo getEmbyRecent(EMBYURL, EMBYPORT, "album", EMBYTOKEN, $embySize, $language->translate("MUSIC")); }
+                    if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(EMBYURL, EMBYPORT, EMBYTOKEN, $embySize, $language->translate("PLAYING_NOW_ON_EMBY")); }
+                    ?>
+
+                </div>
+		    
                 <?php if(SONARRURL != "" || RADARRURL != "" || HEADPHONESURL != "" || SICKRAGEURL != "") : ?>
                 <div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
                     
-                    <div class="col-lg-4 content-form form-inline">
+                    <sort>1</sort>
+                    
+                    <div class="col-lg-12 content-form form-inline">
                         
                         <div class="form-group">
                         
@@ -354,6 +382,7 @@ endif; ?>
                             <span class="label label-primary well-sm">Available</span>
                             <span class="label label-danger well-sm">Unavailable</span>
                             <span class="label indigo-bg well-sm">Unreleased</span>
+                            <span class="label light-blue-bg well-sm">Premier</span>
                             
                         </div>
                     
@@ -362,6 +391,8 @@ endif; ?>
                 </div>
                 
                 <div id="calendarRow" class="row">
+                    
+                    <sort>1</sort>
         
                     <div class="col-lg-12">
                     
@@ -548,7 +579,7 @@ endif; ?>
 <?php if(SICKRAGEURL != ""){ echo getSickrageCalendarWanted($sickrage->future()); echo getSickrageCalendarHistory($sickrage->history("100","downloaded")); } ?>
 <?php if(SONARRURL != ""){ echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); } ?>
 <?php if(RADARRURL != ""){ echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); } ?>                 
-<?php if(HEADPHONESURL != ""){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getUpcoming"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getWanted"); } ?>                                
+<?php if(HEADPHONESURL != ""){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getHistory"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getWanted"); } ?>                                
                     ],
                                             
                     eventRender: function eventRender( event, element, view ) {
@@ -565,7 +596,15 @@ endif; ?>
             $('#imagetype_selector').on('change',function(){
                 $('#calendar').fullCalendar('rerenderEvents');
             })
+            
+            var $divs = $("div.row");
 
+            $('#numBnt').on('click', function () {
+                var numericallyOrderedDivs = $divs.sort(function (a, b) {
+                    return $(a).find("sort").text() > $(b).find("sort").text();
+                });
+                $("#content").html(numericallyOrderedDivs);
+            });
         
         </script>
         <?php endif; ?>

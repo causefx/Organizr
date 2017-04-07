@@ -1,5 +1,11 @@
 <?php
 
+function debug_out($variable, $die = false) {
+	$trace = debug_backtrace()[0];
+	echo '<pre style="background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px";>'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
+	if ($die) { http_response_code(503); die(); }
+}
+
 function clean($strin) {
     $strout = null;
 
@@ -227,6 +233,132 @@ function get_browser_name() {
     
 }
 
+function resolveEmbyItem($address, $token, $item) {
+	// Static Height
+	$height = 150;
+	
+	// Get Item Details
+	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&Fields=Overview&api_key='.$token),true)['Items'][0];
+	
+	switch ($item['Type']) {
+		case 'Episode':
+			$title = $item['SeriesName'].': '.$item['Name'].' (Season '.$item['ParentIndexNumber'].': Episode '.$item['IndexNumber'].')';
+			$imageId = $itemDetails['SeriesId'];
+			$width = 100;
+			$image = 'season';
+			break;
+		case 'Music':
+			$title = $item['Name'];
+			$imageId = $itemDetails['AlbumId'];
+			$width = 150;
+			$image = 'music';
+			break;
+		default:
+			$title = $item['Name'];
+			$imageId = $item['Id'];
+			$width = 100;
+			$image = 'movie';
+	}
+	
+	// If No Overview
+	if (!isset($itemDetails['Overview'])) {
+		$itemDetails['Overview'] = '';
+	}
+	
+	// Assemble Item And Cache Into Array 
+	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="carousel-image '.$image.'" src="image.php?source=emby&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption '.$image.'""><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
+}
+
+function outputCarousel($header, $size, $type, $items) {
+	// If None Populate Empty Item
+	if (!count($items)) {
+		$items = array('<div class="item"><img alt="nada" class="carousel-image movie" src="images/nadaplaying.jpg"><div class="carousel-caption"><h4>Nothing To Show</h4><small><em>Get Some Stuff Going!</em></small></div></div>');
+	}
+	
+	// Set First As Active
+	$items[0] = preg_replace('/^<div class="item ?">/','<div class="item active">', $items[0]);
+	
+	// Add Buttons
+	$buttons = '';
+	if (count($items) > 1) {
+		$buttons = '
+			<a class="left carousel-control '.$type.'" href="#carousel-'.$type.'-emby" role="button" data-slide="prev"><span class="fa fa-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a>
+			<a class="right carousel-control '.$type.'" href="#carousel-'.$type.'-emby" role="button" data-slide="next"><span class="fa fa-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a>';
+	}
+	
+	return '
+	<div class="col-lg-'.$size.'">
+		<h5 class="text-center">'.$header.'</h5>
+		<div id="carousel-'.$type.'-emby" class="carousel slide box-shadow white-bg" data-ride="carousel"><div class="carousel-inner" role="listbox">
+			'.implode('',$items).'
+		</div>'.$buttons.'
+	</div></div>'; 
+}
+
+function getEmbyStreams($url, $port, $token, $size, $header) {
+    if (stripos($url, "http") === false) {
+        $url = "http://" . $url;
+    }
+    
+    if ($port !== "") { 
+		$url = $url . ":" . $port;
+	}
+    
+    $address = $url;
+	
+	$api = json_decode(file_get_contents($address.'/Sessions?api_key='.$token),true);
+	
+	$playingItems = array();
+	foreach($api as $key => $value) {
+		if (isset($value['NowPlayingItem'])) {
+			$playingItems[] = resolveEmbyItem($address, $token, $value['NowPlayingItem']);
+		}
+	}
+	
+	return outputCarousel($header, $size, 'streams', $playingItems);
+}
+
+function getEmbyRecent($url, $port, $type, $token, $size, $header) {
+    if (stripos($url, "http") === false) {
+        $url = "http://" . $url;
+    }
+    
+    if ($port !== "") { 
+		$url = $url . ":" . $port;
+	}
+    
+    $address = $url;
+	
+	// Resolve Types
+	switch ($type) {
+		case 'movie':
+			$embyTypeQuery = 'IncludeItemTypes=Movie&';
+			break;
+		case 'season':
+			$embyTypeQuery = 'IncludeItemTypes=Episode&';
+			break;
+		case 'album':
+			$embyTypeQuery = 'IncludeItemTypes=Music&';
+			break;
+		default:
+			$embyTypeQuery = '';
+	}
+	
+	// Get A User
+	$userId = json_decode(file_get_contents($address.'/Users?api_key='.$token),true)[0]['Id'];
+	
+	// Get the latest Items
+	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.$token),true);
+	
+	// For Each Item In Category
+	$items = array();
+	foreach ($latest as $k => $v) {
+		$items[] = resolveEmbyItem($address, $token, $v);
+	}
+	
+	return outputCarousel($header, $size, $type, $items);
+}
+
 function getPlexRecent($url, $port, $type, $token, $size, $header){
     
     $urlCheck = stripos($url, "http");
@@ -243,13 +375,9 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
     
     $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".$token);
     $api = simplexml_load_string($api);
-    $getServer = file_get_contents($address."/servers?X-Plex-Token=".$token);
+    $getServer = file_get_contents($address."/?X-Plex-Token=".$token);
     $getServer = simplexml_load_string($getServer);
-    
-    foreach($getServer AS $child) {
-
-       $gotServer = $child['machineIdentifier'];
-    }
+    $gotServer = $getServer['machineIdentifier'];
 
     $i = 0;
     
@@ -409,7 +537,6 @@ function getPlexStreams($url, $port, $token, $size, $header){
         
         $plexLink = "";
 
-        
     }
     
     $gotPlex .= '</div>';
@@ -444,6 +571,7 @@ function getSickrageCalendarWanted($array){
 
             $i++;
             $seriesName = $child['show_name'];
+            $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['airdate'];
             $episodeAirDateTime = explode(" ",$child['airs']);
             $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
@@ -452,7 +580,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
     
@@ -460,6 +588,7 @@ function getSickrageCalendarWanted($array){
 
             $i++;
             $seriesName = $child['show_name'];
+            $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['airdate'];
             $episodeAirDateTime = explode(" ",$child['airs']);
             $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
@@ -468,7 +597,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
     
@@ -476,6 +605,7 @@ function getSickrageCalendarWanted($array){
 
             $i++;
             $seriesName = $child['show_name'];
+            $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['airdate'];
             $episodeAirDateTime = explode(" ",$child['airs']);
             $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
@@ -484,7 +614,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
     
@@ -492,6 +622,7 @@ function getSickrageCalendarWanted($array){
 
             $i++;
             $seriesName = $child['show_name'];
+            $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['airdate'];
             $episodeAirDateTime = explode(" ",$child['airs']);
             $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
@@ -500,7 +631,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
 
@@ -518,9 +649,10 @@ function getSickrageCalendarHistory($array){
 
             $i++;
             $seriesName = $child['show_name'];
+            $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['date'];
             $downloaded = "green-bg";
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
 
@@ -536,9 +668,10 @@ function getSonarrCalendar($array){
     foreach($array AS $child) {
 
         $i++;
-        $seriesName = htmlentities($child['series']['title'], ENT_QUOTES);
-        $runtime = $child['series']['runtime'];
+        $seriesName = $child['series']['title'];
+        $episodeID = $child['series']['tvdbId'];
         $episodeName = htmlentities($child['title'], ENT_QUOTES);
+        if($child['episodeNumber'] == "1"){ $episodePremier = "true"; }else{ $episodePremier = "false"; }
         $episodeAirDate = $child['airDateUtc'];
         $episodeAirDate = strtotime($episodeAirDate);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
@@ -546,9 +679,9 @@ function getSonarrCalendar($array){
         if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
 
         $downloaded = $child['hasFile'];
-        if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
+        if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "light-blue-bg"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
         
-        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\" }, \n";
+        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
 
@@ -562,20 +695,33 @@ function getRadarrCalendar($array){
     $gotCalendar = "";
     $i = 0;
     foreach($array AS $child) {
-        if(isset($child['physicalRelease'])){
-            $i++;
-            $movieName = htmlentities($child['title'], ENT_QUOTES);
-            $runtime = $child['runtime'];
-            $physicalRelease = $child['physicalRelease'];
-            $physicalRelease = strtotime($physicalRelease);
-            $physicalRelease = date("Y-m-d", $physicalRelease);
+        
+        if(isset($child['inCinemas'])){
             
-            if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
+            $i++;
+            $movieName = $child['title'];
+            $movieID = $child['imdbId'];
+            if(!isset($movieID)){ $movieID = ""; }
+            
+            if(isset($child['inCinemas']) && isset($child['physicalRelease'])){ 
+                
+                $physicalRelease = $child['physicalRelease']; 
+                $physicalRelease = strtotime($physicalRelease);
+                $physicalRelease = date("Y-m-d", $physicalRelease);
 
-            $downloaded = $child['hasFile'];
-            if($downloaded == "0" && $notReleased == "true"){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
+                if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
 
-            $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded\", imagetype: \"film\" }, \n";
+                $downloaded = $child['hasFile'];
+                if($downloaded == "0" && $notReleased == "true"){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
+            
+            }else{ 
+                
+                $physicalRelease = $child['inCinemas']; 
+                $downloaded = "light-blue-bg";
+            
+            }
+                        
+            $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded\", imagetype: \"film\", url: \"http://www.imdb.com/title/$movieID\" }, \n";
         }
         
     }
@@ -738,12 +884,13 @@ function getHeadphonesCalendar($url, $port, $key, $list){
 
     foreach($api AS $child) {
 
-        if($child['Status'] != "Skipped"){
+        if($child['Status'] == "Wanted"){
         
             $i++;
             $albumName = addslashes($child['AlbumTitle']);
             $albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
             $albumDate = $child['ReleaseDate'];
+            $albumID = $child['AlbumID'];
             $albumDate = strtotime($albumDate);
             $albumDate = date("Y-m-d", $albumDate);
             $albumStatus = $child['Status'];
@@ -752,7 +899,7 @@ function getHeadphonesCalendar($url, $port, $key, $list){
 
             if($albumStatus == "Wanted" && $notReleased == "true"){ $albumStatusColor = "indigo-bg"; }elseif($albumStatus == "Downloaded"){ $albumStatusColor = "green-bg"; }else{ $albumStatusColor = "red-bg"; }
 
-            $gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\" }, \n";
+            $gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
             
         }
         
