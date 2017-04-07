@@ -228,7 +228,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 -->
 <!DOCTYPE html>
 
-<html lang="<?php echo $getLanguage; ?>" class="no-js">
+<html lang="<?php echo $language->getLang(); ?>" class="no-js">
 
     <head>
         
