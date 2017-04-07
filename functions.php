@@ -44,8 +44,58 @@ function plugin_auth_ftp($username, $password) {
 	return false;
 }
 
+// Authenticate Against Emby Local (first) and Emby Connect
+function plugin_auth_emby_all($username, $password) {
+	return plugin_auth_emby($username, $password) || plugin_auth_emby_connect($username, $password);
+}
+
+// Authenicate against emby connect
+function plugin_auth_emby_connect($username, $password) {
+	$urlCheck = stripos(AUTHBACKENDHOST, "http");
+	if ($urlCheck === false) {
+		$embyAddress = "http://" . AUTHBACKENDHOST;
+	} else {
+		$embyAddress = AUTHBACKENDHOST;	
+	}
+	if(AUTHBACKENDPORT !== "") { $embyAddress .= ":" . AUTHBACKENDPORT; }
+	
+	// Get A User
+	$connectId = '';
+	$userIds = json_decode(file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
+	foreach ($userIds as $value) { // Scan for this user
+		if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
+			if ($value['ConnectUserName'] == $username || $value['Name'] == $username) {
+				$connectId = $value['ConnectUserId'];
+			}
+			break;
+		}
+	}
+	
+	if ($connectId) {
+		$connectURL = 'https://connect.emby.media/service/user/authenticate';
+		$headers = array(
+			'Accept'=> 'application/json',
+			'Content-Type' => 'application/x-www-form-urlencoded',
+		);
+		$body = array(
+			'nameOrEmail' => $username,
+			'rawpw' => $password,
+		);
+		
+		$result = json_decode(curl_post($connectURL, $body, $headers),true);
+		
+		if (isset($response['content'])) {
+			$json = json_decode($response['content'], true);
+			if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 // Pass credentials to Emby Backend
-function plugin_auth_emby($username, $password) {
+function plugin_auth_emby_local($username, $password) {
 	$urlCheck = stripos(AUTHBACKENDHOST, "http");
 	if ($urlCheck === false) {
 		$embyAddress = "http://" . AUTHBACKENDHOST;
@@ -56,7 +106,7 @@ function plugin_auth_emby($username, $password) {
 	
 	$headers = array(
 		'Authorization'=> 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
-		'Content-type' => 'application/json',
+		'Content-Type' => 'application/json',
 	);
 	$body = array(
 		'Username' => $username,
@@ -79,6 +129,373 @@ function plugin_auth_emby($username, $password) {
 	}
 	return false;
 }
+
+// Direct request to curl if it exists, otherwise handle if not HTTPS
+function post_router($url, $data, $headers = array(), $referer='') {
+	if (function_exists('curl_version')) {
+		return curl_post($url, $data, $headers, $referer);
+	} else {
+		return post_request($url, $data, $headers, $referer);
+	}
+}
+
+// Curl Post
+function curl_post($url, $data, $headers = array(), $referer='') {
+	// Initiate cURL
+	$curlReq = curl_init($url);
+	// As post request
+	curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
+	curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+	// Format Data
+	switch ($headers['Content-Type']) {
+		case 'application/json': 
+			curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
+			break;
+		case 'application/x-www-form-urlencoded';
+			curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+			break;
+		default:
+			$headers['Content-Type'] = 'application/x-www-form-urlencoded';
+			curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+	}
+	// Format Headers
+	$cHeaders = array();
+	foreach ($headers as $k => $v) {
+		$cHeaders[] = $k.': '.$v;
+	}
+	if (count($cHeaders)) {
+		curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+	}
+	// Execute
+	$result = curl_exec($curlReq);
+	// Close
+	curl_close($curlReq);
+	// Return
+	return array('content'=>$result);
+}
+
+// HTTP post request (Removes need for curl, probably useless)
+function post_request($url, $data, $headers = array(), $referer='') {
+	// Adapted from http://stackoverflow.com/a/28387011/6810513
+	
+    // Convert the data array into URL Parameters like a=b&foo=bar etc.
+	if (isset($headers['Content-Type'])) {
+		switch ($headers['Content-Type']) {
+			case 'application/json':
+				$data = json_encode($data);
+				break;
+			case 'application/x-www-form-urlencoded':
+				$data = http_build_query($data);
+				break;
+		}
+	} else {
+		$headers['Content-Type'] = 'application/x-www-form-urlencoded';
+		$data = http_build_query($data);
+	}
+    
+    // parse the given URL
+    $urlDigest = parse_url($url);
+
+    // extract host and path:
+    $host = $urlDigest['host'].(isset($urlDigest['port'])?':'.$urlDigest['port']:'');
+    $path = $urlDigest['path'];
+	
+    if ($urlDigest['scheme'] != 'http') {
+        die('Error: Only HTTP request are supported, please use cURL to add HTTPS support! ('.$urlDigest['scheme'].'://'.$host.')');
+    }
+
+    // open a socket connection on port 80 - timeout: 30 sec
+    $fp = fsockopen($host, 80, $errno, $errstr, 30);
+
+    if ($fp){
+
+        // send the request headers:
+        fputs($fp, "POST $path HTTP/1.1\r\n");
+        fputs($fp, "Host: $host\r\n");
+
+        if ($referer != '')
+            fputs($fp, "Referer: $referer\r\n");
+		
+        fputs($fp, "Content-length: ". strlen($data) ."\r\n");
+		foreach($headers as $k => $v) {
+			fputs($fp, $k.": ".$v."\r\n");
+		}
+        fputs($fp, "Connection: close\r\n\r\n");
+        fputs($fp, $data);
+
+        $result = '';
+        while(!feof($fp)) {
+            // receive the results of the request
+            $result .= fgets($fp, 128);
+        }
+    }
+    else {
+        return array(
+            'status' => 'err',
+            'error' => "$errstr ($errno)"
+        );
+    }
+
+    // close the socket connection:
+    fclose($fp);
+
+    // split the result header from the content
+    $result = explode("\r\n\r\n", $result, 2);
+
+    $header = isset($result[0]) ? $result[0] : '';
+    $content = isset($result[1]) ? $result[1] : '';
+
+    // return as structured array:
+    return array(
+        'status' => 'ok',
+        'header' => $header,
+        'content' => $content,
+	);
+}
+
+// Format item from Emby for Carousel
+function resolveEmbyItem($address, $token, $item) {
+	// Static Height
+	$height = 150;
+	
+	// Get Item Details
+	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&Fields=Overview&api_key='.$token),true)['Items'][0];
+	
+	switch ($item['Type']) {
+		case 'Episode':
+			$title = $item['SeriesName'].': '.$item['Name'].' (Season '.$item['ParentIndexNumber'].': Episode '.$item['IndexNumber'].')';
+			$imageId = $itemDetails['SeriesId'];
+			$width = 100;
+			$image = 'carousel-image season';
+			$style = '';
+			break;
+		case 'MusicAlbum':
+			$title = $item['Name'];
+			$imageId = $itemDetails['Id'];
+			$width = 150;
+			$image = 'music';
+			$style = 'left: 160px !important;';
+			break;
+		default:
+			$title = $item['Name'];
+			$imageId = $item['Id'];
+			$width = 100;
+			$image = 'carousel-image movie';
+			$style = '';
+	}
+	
+	// If No Overview
+	if (!isset($itemDetails['Overview'])) {
+		$itemDetails['Overview'] = '';
+	}
+	
+	// Assemble Item And Cache Into Array 
+	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="image.php?source=emby&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
+}
+
+// Format item from Plex for Carousel
+function resolvePlexItem($server, $token, $item) {
+	// Static Height
+	$height = 150;
+	
+	$address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
+	
+	switch ($item['Type']) {
+		case 'season':
+			$title = $item['parentTitle'];
+			$summary = $item['parentSummary'];
+			$width = 100;
+			$image = 'carousel-image season';
+			$style = '';
+			break;
+		case 'album':
+			$title = $item['parentTitle'];
+			$summary = $item['title'];
+			$width = 150;
+			$image = 'album';
+			$style = 'left: 160px !important;';
+			break;
+		default:
+			$title = $item['title'];
+			$summary = $item['summary'];
+			$width = 100;
+			$image = 'carousel-image movie';
+			$style = '';
+	}
+	
+	// If No Overview
+	if (!isset($itemDetails['Overview'])) {
+		$itemDetails['Overview'] = '';
+	}
+	
+	// Assemble Item And Cache Into Array 
+	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="image.php?source=plex&img='.$item['thumb'].'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+}
+
+// Create Carousel
+function outputCarousel($header, $size, $type, $items) {
+	// If None Populate Empty Item
+	if (!count($items)) {
+		$items = array('<div class="item"><img alt="nada" class="carousel-image movie" src="images/nadaplaying.jpg"><div class="carousel-caption"><h4>Nothing To Show</h4><small><em>Get Some Stuff Going!</em></small></div></div>');
+	}
+	
+	// Set First As Active
+	$items[0] = preg_replace('/^<div class="item ?">/','<div class="item active">', $items[0]);
+	
+	// Add Buttons
+	$buttons = '';
+	if (count($items) > 1) {
+		$buttons = '
+			<a class="left carousel-control '.$type.'" href="#carousel-'.$type.'" role="button" data-slide="prev"><span class="fa fa-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a>
+			<a class="right carousel-control '.$type.'" href="#carousel-'.$type.'" role="button" data-slide="next"><span class="fa fa-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a>';
+	}
+	
+	return '
+	<div class="col-lg-'.$size.'">
+		<h5 class="text-center">'.$header.'</h5>
+		<div id="carousel-'.$type.'" class="carousel slide box-shadow white-bg" data-ride="carousel"><div class="carousel-inner" role="listbox">
+			'.implode('',$items).'
+		</div>'.$buttons.'
+	</div></div>'; 
+}
+
+// Get Now Playing Streams From Emby
+function getEmbyStreams($url, $port, $token, $size, $header) {
+    if (stripos($url, "http") === false) {
+        $url = "http://" . $url;
+    }
+    
+    if ($port !== "") { 
+		$url = $url . ":" . $port;
+	}
+    
+    $address = $url;
+	
+	$api = json_decode(file_get_contents($address.'/Sessions?api_key='.$token),true);
+	
+	$playingItems = array();
+	foreach($api as $key => $value) {
+		if (isset($value['NowPlayingItem'])) {
+			$playingItems[] = resolveEmbyItem($address, $token, $value['NowPlayingItem']);
+		}
+	}
+	
+	return outputCarousel($header, $size, 'streams-emby', $playingItems);
+}
+
+// Get Now Playing Streams From Plex
+function getPlexStreams($url, $port, $token, $size, $header){
+    if (stripos($url, "http") === false) {
+        $url = "http://" . $url;
+    }
+    
+    if ($port !== "") { 
+		$url = $url . ":" . $port;
+	}
+    
+    $address = $url;
+    
+	// Perform API requests
+    $api = file_get_contents($address."/status/sessions?X-Plex-Token=".$token);
+    $api = simplexml_load_string($api);
+    $getServer = file_get_contents($address."/servers?X-Plex-Token=".$token);
+    $getServer = simplexml_load_string($getServer);
+    
+	// Identify the local machine
+    foreach($getServer AS $child) {
+       $gotServer = $child['machineIdentifier'];
+    }
+	
+	$items = array();
+	foreach($api AS $child) {
+		$items[] = resolvePlexItem($gotServer, $token, $child);
+	}
+	
+	return outputCarousel($header, $size, 'streams-plex', $items);
+}
+
+// Get Recent Content From Emby
+function getEmbyRecent($url, $port, $type, $token, $size, $header) {
+    if (stripos($url, "http") === false) {
+        $url = "http://" . $url;
+    }
+    
+    if ($port !== "") { 
+		$url = $url . ":" . $port;
+	}
+    
+    $address = $url;
+	
+	// Resolve Types
+	switch ($type) {
+		case 'movie':
+			$embyTypeQuery = 'IncludeItemTypes=Movie&';
+			break;
+		case 'season':
+			$embyTypeQuery = 'IncludeItemTypes=Episode&';
+			break;
+		case 'album':
+			$embyTypeQuery = 'IncludeItemTypes=MusicAlbum&';
+			break;
+		default:
+			$embyTypeQuery = '';
+	}
+	
+	// Get A User
+	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.$token),true);
+	foreach ($userIds as $value) { // Scan for admin user
+		$userId = $value['Id'];
+		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+			break;
+		}
+	}
+	
+	// Get the latest Items
+	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.$token),true);
+	
+	// For Each Item In Category
+	$items = array();
+	foreach ($latest as $k => $v) {
+		$items[] = resolveEmbyItem($address, $token, $v);
+	}
+	
+	return outputCarousel($header, $size, $type.'-emby', $items);
+}
+
+// Get Recent Content From Plex
+function getPlexRecent($url, $port, $type, $token, $size, $header){
+    if (stripos($url, "http") === false) {
+        $url = "http://" . $url;
+    }
+    
+    if ($port !== "") { 
+		$url = $url . ":" . $port;
+	}
+    
+    $address = $url;
+    
+	// Perform Requests
+    $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".$token);
+    $api = simplexml_load_string($api);
+    $getServer = file_get_contents($address."/servers?X-Plex-Token=".$token);
+    $getServer = simplexml_load_string($getServer);
+	
+	// Identify the local machine
+    foreach($getServer AS $child) {
+       $gotServer = $child['machineIdentifier'];
+    }
+	
+	$items = array();
+	foreach($api AS $child) {
+		if($child['type'] == $type){
+			$items[] = resolvePlexItem($gotServer, $token, $child);
+		}
+	}
+	
+	return outputCarousel($header, $size, $type.'-plex', $items);
+}
+
+// ==============
 
 function clean($strin) {
     $strout = null;
@@ -307,343 +724,6 @@ function get_browser_name() {
     
 }
 
-function resolveEmbyItem($address, $token, $item) {
-	// Static Height
-	$height = 150;
-	
-	// Get Item Details
-	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&Fields=Overview&api_key='.$token),true)['Items'][0];
-	
-	switch ($item['Type']) {
-		case 'Episode':
-			$title = $item['SeriesName'].': '.$item['Name'].' (Season '.$item['ParentIndexNumber'].': Episode '.$item['IndexNumber'].')';
-			$imageId = $itemDetails['SeriesId'];
-			$width = 100;
-			$image = 'carousel-image season';
-			$style = '';
-			break;
-		case 'MusicAlbum':
-			$title = $item['Name'];
-			$imageId = $itemDetails['Id'];
-			$width = 150;
-			$image = 'music';
-			$style = 'left: 160px !important;';
-			break;
-		default:
-			$title = $item['Name'];
-			$imageId = $item['Id'];
-			$width = 100;
-			$image = 'carousel-image movie';
-			$style = '';
-	}
-	
-	// If No Overview
-	if (!isset($itemDetails['Overview'])) {
-		$itemDetails['Overview'] = '';
-	}
-	
-	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="image.php?source=emby&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
-}
-
-function outputCarousel($header, $size, $type, $items) {
-	// If None Populate Empty Item
-	if (!count($items)) {
-		$items = array('<div class="item"><img alt="nada" class="carousel-image movie" src="images/nadaplaying.jpg"><div class="carousel-caption"><h4>Nothing To Show</h4><small><em>Get Some Stuff Going!</em></small></div></div>');
-	}
-	
-	// Set First As Active
-	$items[0] = preg_replace('/^<div class="item ?">/','<div class="item active">', $items[0]);
-	
-	// Add Buttons
-	$buttons = '';
-	if (count($items) > 1) {
-		$buttons = '
-			<a class="left carousel-control '.$type.'" href="#carousel-'.$type.'-emby" role="button" data-slide="prev"><span class="fa fa-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a>
-			<a class="right carousel-control '.$type.'" href="#carousel-'.$type.'-emby" role="button" data-slide="next"><span class="fa fa-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a>';
-	}
-	
-	return '
-	<div class="col-lg-'.$size.'">
-		<h5 class="text-center">'.$header.'</h5>
-		<div id="carousel-'.$type.'-emby" class="carousel slide box-shadow white-bg" data-ride="carousel"><div class="carousel-inner" role="listbox">
-			'.implode('',$items).'
-		</div>'.$buttons.'
-	</div></div>'; 
-}
-
-function getEmbyStreams($url, $port, $token, $size, $header) {
-    if (stripos($url, "http") === false) {
-        $url = "http://" . $url;
-    }
-    
-    if ($port !== "") { 
-		$url = $url . ":" . $port;
-	}
-    
-    $address = $url;
-	
-	$api = json_decode(file_get_contents($address.'/Sessions?api_key='.$token),true);
-	
-	$playingItems = array();
-	foreach($api as $key => $value) {
-		if (isset($value['NowPlayingItem'])) {
-			$playingItems[] = resolveEmbyItem($address, $token, $value['NowPlayingItem']);
-		}
-	}
-	
-	return outputCarousel($header, $size, 'streams', $playingItems);
-}
-
-function getEmbyRecent($url, $port, $type, $token, $size, $header) {
-    if (stripos($url, "http") === false) {
-        $url = "http://" . $url;
-    }
-    
-    if ($port !== "") { 
-		$url = $url . ":" . $port;
-	}
-    
-    $address = $url;
-	
-	// Resolve Types
-	switch ($type) {
-		case 'movie':
-			$embyTypeQuery = 'IncludeItemTypes=Movie&';
-			break;
-		case 'season':
-			$embyTypeQuery = 'IncludeItemTypes=Episode&';
-			break;
-		case 'album':
-			$embyTypeQuery = 'IncludeItemTypes=MusicAlbum&';
-			break;
-		default:
-			$embyTypeQuery = '';
-	}
-	
-	// Get A User
-	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.$token),true);
-	foreach ($userIds as $value) { // Scan for admin user
-		$userId = $value['Id'];
-		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
-			break;
-		}
-	}
-	
-	// Get the latest Items
-	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.$token),true);
-	
-	// For Each Item In Category
-	$items = array();
-	foreach ($latest as $k => $v) {
-		$items[] = resolveEmbyItem($address, $token, $v);
-	}
-	
-	return outputCarousel($header, $size, $type, $items);
-}
-
-function getPlexRecent($url, $port, $type, $token, $size, $header){
-    
-    $urlCheck = stripos($url, "http");
-
-    if ($urlCheck === false) {
-        
-        $url = "http://" . $url;
-    
-    }
-    
-    if($port !== ""){ $url = $url . ":" . $port; }
-    
-    $address = $url;
-    
-    $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".$token);
-    $api = simplexml_load_string($api);
-    $getServer = file_get_contents($address."/?X-Plex-Token=".$token);
-    $getServer = simplexml_load_string($getServer);
-    $gotServer = $getServer['machineIdentifier'];
-
-    $i = 0;
-    
-    $gotPlex = '<div class="col-lg-'.$size.'"><h5 class="text-center">'.$header.'</h5><div id="carousel-'.$type.'" class="carousel slide box-shadow white-bg" data-ride="carousel"><div class="carousel-inner" role="listbox">';
-        
-    foreach($api AS $child) {
-     
-        if($child['type'] == $type){
-            
-            $i++;
-            
-            if($i == 1){ $active = "active"; }else{ $active = "";}
-            
-            $thumb = $child['thumb'];
-
-            $plexLink = "https://app.plex.tv/web/app#!/server/$gotServer/details?key=/library/metadata/".$child['ratingKey'];
-            
-            if($type == "movie"){ 
-                
-                $title = $child['title']; 
-                $summary = $child['summary'];
-                $height = "150";
-                $width = "100";
-            
-            }elseif($type == "season"){ 
-                
-                $title = $child['parentTitle'];
-                $summary = $child['parentSummary'];
-                $height = "150";
-                $width = "100";
-            
-            }elseif($type == "album"){
-                
-                $title = $child['parentTitle']; 
-                $summary = $child['title'];
-                $height = "150";
-                $width = "150";
-            
-            }
-            
-            
-            $gotPlex .= '<div class="item '.$active.'"> <a href="'.$plexLink.'" target="_blank"> <img alt="'.$title.'" class="carousel-image '.$type.'" src="image.php?img='.$thumb.'&height='.$height.'&width='.$width.'"> </a> <div class="carousel-caption '.$type.'"> <h4>'.$title.'</h4> <small> <em>'.$summary.'</em> </small> </div> </div>';
-            
-            $plexLink = "";
-
-        }
-        
-    }
-    
-    $gotPlex .= '</div>';
-    
-    if ($i > 1){ 
-
-        $gotPlex .= '<a class="left carousel-control '.$type.'" href="#carousel-'.$type.'" role="button" data-slide="prev"><span class="fa fa-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a><a class="right carousel-control '.$type.'" href="#carousel-'.$type.'" role="button" data-slide="next"><span class="fa fa-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a>';
-        
-    }
-
-    $gotPlex .= '</div></div>';
-
-    $noPlex = '<div class="col-lg-'.$size.'"><h5 class="text-center">'.$header.'</h5>';
-    $noPlex .= '<div id="carousel-'.$type.'" class="carousel slide box-shadow white-bg" data-ride="carousel">';
-    $noPlex .= '<div class="carousel-inner" role="listbox">';
-    $noPlex .= '<div class="item active">';
-    $noPlex .= "<img alt='nada' class='carousel-image movie' src='images/nadaplaying.jpg'>";
-    $noPlex .= '<div class="carousel-caption"> <h4>Nothing New</h4> <small> <em>Get to Adding!</em> </small></div></div></div></div></div>';
-    
-    if ($i != 0){ return $gotPlex; }
-    if ($i == 0){ return $noPlex; }
-
-}
-
-function getPlexStreams($url, $port, $token, $size, $header){
-    
-    $urlCheck = stripos($url, "http");
-
-    if ($urlCheck === false) {
-        
-        $url = "http://" . $url;
-    
-    }
-    
-    if($port !== ""){ $url = $url . ":" . $port; }
-    
-    $address = $url;
-    
-    $api = file_get_contents($address."/status/sessions?X-Plex-Token=".$token);
-    $api = simplexml_load_string($api);
-    $getServer = file_get_contents($address."/servers?X-Plex-Token=".$token);
-    $getServer = simplexml_load_string($getServer);
-    
-    foreach($getServer AS $child) {
-
-       $gotServer = $child['machineIdentifier'];
-    }
-    
-    $i = 0;
-    
-    $gotPlex = '<div class="col-lg-'.$size.'"><h5 class="text-center">'.$header.'</h5>';
-    $gotPlex .= '<div id="carousel-streams" class="carousel slide box-shadow white-bg" data-ride="carousel">';
-    $gotPlex .= '<div class="carousel-inner" role="listbox">';
-        
-    foreach($api AS $child) {
-     
-        $type = $child['type'];
-
-        $plexLink = "https://app.plex.tv/web/app#!/server/$gotServer/details?key=/library/metadata/".$child['ratingKey'];
-            
-        $i++;
-
-        if($i == 1){ $active = "active"; }else{ $active = "";}
-
-        
-        if($type == "movie"){ 
-
-            $title = $child['title']; 
-            $summary = htmlentities($child['summary'], ENT_QUOTES);
-            $thumb = $child['thumb'];
-            $image = "movie";
-            $height = "150";
-            $width = "100";
-
-        }elseif($type == "episode"){ 
-
-            $title = $child['grandparentTitle'];
-            $summary = htmlentities($child['summary'], ENT_QUOTES);
-            $thumb = $child['grandparentThumb'];
-            $image = "season";
-            $height = "150";
-            $width = "100";
-
-
-        }elseif($type == "track"){
-
-            $title = $child['grandparentTitle'] . " - " . $child['parentTitle']; 
-            $summary = htmlentities($child['title'], ENT_QUOTES);
-            $thumb = $child['thumb'];
-            $image = "album";
-            $height = "150";
-            $width = "150";
-
-        }elseif($type == "clip"){
-
-            $title = $child['title'].' - Trailer';
-            $summary = ($child['summary'] != "" ? $child['summary'] : "<i>No summary loaded.</i>");
-            $thumb = ($child['thumb'] != "" ? $child['thumb'] : 'images/nadaplaying.jpg');
-            $image = "movie";
-            $height = "150";
-            $width = "100";
-
-        }
-
-        $gotPlex .= '<div class="item '.$active.'">';
-
-        $gotPlex .= "<a href='$plexLink' target='_blank'><img alt='$title' class='carousel-image $image' src='image.php?img=$thumb&height=$height&width=$width'></a>";
-
-        $gotPlex .= '<div class="carousel-caption '. $image . '""><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
-        
-        $plexLink = "";
-
-    }
-    
-    $gotPlex .= '</div>';
-    
-    if ($i > 1){ 
-
-        $gotPlex .= '<a class="left carousel-control streams" href="#carousel-streams" role="button" data-slide="prev"><span class="fa fa-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a><a class="right carousel-control streams" href="#carousel-streams" role="button" data-slide="next"><span class="fa fa-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a>';
-        
-    }
-
-    $gotPlex .= '</div></div>';
-    
-    $noPlex = '<div class="col-lg-'.$size.'"><h5 class="text-center">'.$header.'</h5>';
-    $noPlex .= '<div id="carousel-streams" class="carousel slide box-shadow white-bg" data-ride="carousel">';
-    $noPlex .= '<div class="carousel-inner" role="listbox">';
-    $noPlex .= '<div class="item active">';
-    $noPlex .= "<img alt='nada' class='carousel-image movie' src='images/nadaplaying.jpg'>";
-    $noPlex .= '<div class="carousel-caption"><h4>Nothing Playing</h4><small><em>Get to Streaming!</em></small></div></div></div></div></div>';
-    
-    if ($i != 0){ return $gotPlex; }
-    if ($i == 0){ return $noPlex; }
-
-}
-
 function getSickrageCalendarWanted($array){
     
     $array = json_decode($array, true);
@@ -752,7 +832,8 @@ function getSonarrCalendar($array){
 
         $i++;
         $seriesName = $child['series']['title'];
-        $episodeID = $child['series']['tvdbId'];
+        $episodeID = $child['series']['imdbId'];
+        if(!isset($episodeID)){ $episodeID = ""; }
         $episodeName = htmlentities($child['title'], ENT_QUOTES);
         if($child['episodeNumber'] == "1"){ $episodePremier = "true"; }else{ $episodePremier = "false"; }
         $episodeAirDate = $child['airDateUtc'];
@@ -764,7 +845,7 @@ function getSonarrCalendar($array){
         $downloaded = $child['hasFile'];
         if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "light-blue-bg"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
         
-        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"http://www.imdb.com/title/$episodeID\" }, \n";
         
     }
 
@@ -992,116 +1073,5 @@ function getHeadphonesCalendar($url, $port, $key, $list){
 
 }
 
-function post_router($url, $data, $headers = array(), $referer='') {
-	if (function_exists('curl_version')) {
-		return curl_post($url, $data, $headers, $referer);
-	} else {
-		return post_request($url, $data, $headers, $referer);
-	}
-}
 
-function curl_post($url, $data, $headers = array(), $referer='') {
-	// Initiate cURL
-	$curlReq = curl_init($url);
-	// As post request
-	curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
-	curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
-	// Format Headers
-	$cHeaders = array();
-	foreach ($headers as $k => $v) {
-		$cHeaders[] = $k.': '.$v;
-	}
-	if (count($cHeaders)) {
-		curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
-	}
-	// Format Data
-	curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
-	// Execute
-	$result = curl_exec($curlReq);
-	// Close
-	curl_close($curlReq);
-	// Return
-	return array('content'=>$result);
-}
-
-function post_request($url, $data, $headers = array(), $referer='') {
-	// Adapted from http://stackoverflow.com/a/28387011/6810513
-	
-    // Convert the data array into URL Parameters like a=b&foo=bar etc.
-	if (isset($headers['Content-type'])) {
-		switch ($headers['Content-type']) {
-			case 'application/json':
-				$data = json_encode($data);
-				break;
-			case 'application/x-www-form-urlencoded':
-				$data = http_build_query($data);
-				break;
-		}
-	} else {
-		$headers['Content-type'] = 'application/x-www-form-urlencoded';
-		$data = http_build_query($data);
-	}
-    
-    // parse the given URL
-    $urlDigest = parse_url($url);
-
-    // extract host and path:
-    $host = $urlDigest['host'].(isset($urlDigest['port'])?':'.$urlDigest['port']:'');
-    $path = $urlDigest['path'];
-	
-    if ($urlDigest['scheme'] != 'http') {
-        die('Error: Only HTTP request are supported, please use cURL to add HTTPS support! ('.$urlDigest['scheme'].'://'.$host.')');
-    }
-
-    // open a socket connection on port 80 - timeout: 30 sec
-    $fp = fsockopen($host, 80, $errno, $errstr, 30);
-
-    if ($fp){
-
-        // send the request headers:
-        fputs($fp, "POST $path HTTP/1.1\r\n");
-        fputs($fp, "Host: $host\r\n");
-
-        if ($referer != '')
-            fputs($fp, "Referer: $referer\r\n");
-		
-        fputs($fp, "Content-length: ". strlen($data) ."\r\n");
-		foreach($headers as $k => $v) {
-			fputs($fp, $k.": ".$v."\r\n");
-		}
-        fputs($fp, "Connection: close\r\n\r\n");
-        fputs($fp, $data);
-
-        $result = '';
-        while(!feof($fp)) {
-            // receive the results of the request
-            $result .= fgets($fp, 128);
-        }
-    }
-    else {
-        return array(
-            'status' => 'err',
-            'error' => "$errstr ($errno)"
-        );
-    }
-
-    // close the socket connection:
-    fclose($fp);
-
-    // split the result header from the content
-    $result = explode("\r\n\r\n", $result, 2);
-
-    $header = isset($result[0]) ? $result[0] : '';
-    $content = isset($result[1]) ? $result[1] : '';
-
-    // return as structured array:
-    return array(
-        'status' => 'ok',
-        'header' => $header,
-        'content' => $content,
-	);
-}
-
-	
-	
 ?>
