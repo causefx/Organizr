@@ -7,7 +7,7 @@ function debug_out($variable, $die = false) {
 	if ($die) { http_response_code(503); die(); }
 }
 
-// Auth Plugins
+// ==== Auth Plugins START ====
 // Pass credentials to LDAP backend
 function plugin_auth_ldap($username, $password) {
 	// returns true or false
@@ -129,6 +129,44 @@ function plugin_auth_emby_local($username, $password) {
 	}
 	return false;
 }
+// ==== Auth Plugins END ====
+// ==== General Class Definitions START ====
+class setLanguage { 
+    private $language = null; 
+    function __construct($language = false) {
+		// Default
+		if (!$language) {
+			$language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : "en"; 
+		}
+		
+        if (file_exists("lang/{$language}.ini")) {
+            $this->language = parse_ini_file("lang/{$language}.ini", false, INI_SCANNER_RAW);
+        } else {
+            $this->language = parse_ini_file("lang/en.ini", false, INI_SCANNER_RAW);
+        }
+    } 
+    
+    public function translate($originalWord) {
+        $getArg = func_num_args();
+        if ($getArg > 1) {
+            $allWords = func_get_args();
+            array_shift($allWords); 
+        } else {
+            $allWords = array(); 
+        }
+
+        $translatedWord = isset($this->language[$originalWord]) ? $this->language[$originalWord] : null;
+        if (!$translatedWord) {
+            echo ("Translation not found for: $originalWord");
+        }
+
+        $translatedWord = htmlspecialchars($translatedWord, ENT_QUOTES);
+        
+        return vsprintf($translatedWord, $allWords);
+    }
+} 
+$language = new setLanguage;
+// ==== General Class Definitions END ====
 
 // Direct request to curl if it exists, otherwise handle if not HTTPS
 function post_router($url, $data, $headers = array(), $referer='') {
@@ -493,6 +531,25 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
 	}
 	
 	return outputCarousel($header, $size, $type.'-plex', $items);
+}
+
+// Simplier access to class
+function translate($string) {
+	if (isset($GLOBALS['language'])) {
+		return $GLOBALS['language']->translate($string);
+	} else {
+		return '!Translations Not Loaded!';
+	}
+}
+
+// Generate Random string
+function randString($length = 10) {
+	$tmp = '';
+	$chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+	for ($i = 0; $i < $length; $i++) {
+		$tmp .= substr(str_shuffle($chars), 0, 1);
+	}
+    return $tmp;
 }
 
 // ==============
