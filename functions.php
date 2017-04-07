@@ -1,9 +1,83 @@
 <?php
 
+// Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
-	echo '<pre style="background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px";>'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
+	echo '<pre style="background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
 	if ($die) { http_response_code(503); die(); }
+}
+
+// Auth Plugins
+// Pass credentials to LDAP backend
+function plugin_auth_ldap($username, $password) {
+	// returns true or false
+	$ldap = ldap_connect(AUTHBACKENDHOST.(AUTHBACKENDPORT?':'.AUTHBACKENDPORT:'389'));
+	if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
+		return true;
+	} else {
+		return false;
+	}
+	return false;
+}
+
+// Pass credentials to FTP backend
+function plugin_auth_ftp($username, $password) {
+	// returns true or false
+	
+	// Connect to FTP
+	$conn_id = ftp_ssl_connect(AUTHBACKENDHOST, (AUTHBACKENDPORT?AUTHBACKENDPORT:21), 20); // 20 Second Timeout
+	
+	// Check if valid FTP connection
+	if ($conn_id) {
+		// Attempt login
+		@$login_result = ftp_login($conn_id, $username, $password);
+		
+		// Return Result
+		if ($login_result) {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		return false;
+	}
+	return false;
+}
+
+// Pass credentials to Emby Backend
+function plugin_auth_emby($username, $password) {
+	$urlCheck = stripos(AUTHBACKENDHOST, "http");
+	if ($urlCheck === false) {
+		$embyAddress = "http://" . AUTHBACKENDHOST;
+	} else {
+		$embyAddress = AUTHBACKENDHOST;	
+	}
+	if(AUTHBACKENDPORT !== ""){ $embyAddress .= ":" . AUTHBACKENDPORT; }
+	
+	$headers = array(
+		'Authorization'=> 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
+		'Content-type' => 'application/json',
+	);
+	$body = array(
+		'Username' => $username,
+		'Password' => sha1($password),
+		'PasswordMd5' => md5($password),
+	);
+	
+	$response = post_router($embyAddress.'/Users/AuthenticateByName', $body, $headers);
+	
+	if (isset($response['content'])) {
+		$json = json_decode($response['content'], true);
+		if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
+			// Login Success - Now Logout Emby Session As We No Longer Need It
+			$headers = array(
+				'X-Mediabrowser-Token' => $json['AccessToken'],
+			);
+			$response = post_router($embyAddress.'/Sessions/Logout', array(), $headers);
+			return true;
+		}
+	}
+	return false;
 }
 
 function clean($strin) {
@@ -245,19 +319,22 @@ function resolveEmbyItem($address, $token, $item) {
 			$title = $item['SeriesName'].': '.$item['Name'].' (Season '.$item['ParentIndexNumber'].': Episode '.$item['IndexNumber'].')';
 			$imageId = $itemDetails['SeriesId'];
 			$width = 100;
-			$image = 'season';
+			$image = 'carousel-image season';
+			$style = '';
 			break;
-		case 'Music':
+		case 'MusicAlbum':
 			$title = $item['Name'];
-			$imageId = $itemDetails['AlbumId'];
+			$imageId = $itemDetails['Id'];
 			$width = 150;
 			$image = 'music';
+			$style = 'left: 160px !important;';
 			break;
 		default:
 			$title = $item['Name'];
 			$imageId = $item['Id'];
 			$width = 100;
-			$image = 'movie';
+			$image = 'carousel-image movie';
+			$style = '';
 	}
 	
 	// If No Overview
@@ -266,7 +343,7 @@ function resolveEmbyItem($address, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="carousel-image '.$image.'" src="image.php?source=emby&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption '.$image.'""><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="image.php?source=emby&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
 }
 
 function outputCarousel($header, $size, $type, $items) {
@@ -338,14 +415,20 @@ function getEmbyRecent($url, $port, $type, $token, $size, $header) {
 			$embyTypeQuery = 'IncludeItemTypes=Episode&';
 			break;
 		case 'album':
-			$embyTypeQuery = 'IncludeItemTypes=Music&';
+			$embyTypeQuery = 'IncludeItemTypes=MusicAlbum&';
 			break;
 		default:
 			$embyTypeQuery = '';
 	}
 	
 	// Get A User
-	$userId = json_decode(file_get_contents($address.'/Users?api_key='.$token),true)[0]['Id'];
+	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.$token),true);
+	foreach ($userIds as $value) { // Scan for admin user
+		$userId = $value['Id'];
+		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+			break;
+		}
+	}
 	
 	// Get the latest Items
 	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.$token),true);
@@ -908,4 +991,117 @@ function getHeadphonesCalendar($url, $port, $key, $list){
     if ($i != 0){ return $gotCalendar; }
 
 }
+
+function post_router($url, $data, $headers = array(), $referer='') {
+	if (function_exists('curl_version')) {
+		return curl_post($url, $data, $headers, $referer);
+	} else {
+		return post_request($url, $data, $headers, $referer);
+	}
+}
+
+function curl_post($url, $data, $headers = array(), $referer='') {
+	// Initiate cURL
+	$curlReq = curl_init($url);
+	// As post request
+	curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
+	curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+	// Format Headers
+	$cHeaders = array();
+	foreach ($headers as $k => $v) {
+		$cHeaders[] = $k.': '.$v;
+	}
+	if (count($cHeaders)) {
+		curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+	}
+	// Format Data
+	curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
+	// Execute
+	$result = curl_exec($curlReq);
+	// Close
+	curl_close($curlReq);
+	// Return
+	return array('content'=>$result);
+}
+
+function post_request($url, $data, $headers = array(), $referer='') {
+	// Adapted from http://stackoverflow.com/a/28387011/6810513
+	
+    // Convert the data array into URL Parameters like a=b&foo=bar etc.
+	if (isset($headers['Content-type'])) {
+		switch ($headers['Content-type']) {
+			case 'application/json':
+				$data = json_encode($data);
+				break;
+			case 'application/x-www-form-urlencoded':
+				$data = http_build_query($data);
+				break;
+		}
+	} else {
+		$headers['Content-type'] = 'application/x-www-form-urlencoded';
+		$data = http_build_query($data);
+	}
+    
+    // parse the given URL
+    $urlDigest = parse_url($url);
+
+    // extract host and path:
+    $host = $urlDigest['host'].(isset($urlDigest['port'])?':'.$urlDigest['port']:'');
+    $path = $urlDigest['path'];
+	
+    if ($urlDigest['scheme'] != 'http') {
+        die('Error: Only HTTP request are supported, please use cURL to add HTTPS support! ('.$urlDigest['scheme'].'://'.$host.')');
+    }
+
+    // open a socket connection on port 80 - timeout: 30 sec
+    $fp = fsockopen($host, 80, $errno, $errstr, 30);
+
+    if ($fp){
+
+        // send the request headers:
+        fputs($fp, "POST $path HTTP/1.1\r\n");
+        fputs($fp, "Host: $host\r\n");
+
+        if ($referer != '')
+            fputs($fp, "Referer: $referer\r\n");
+		
+        fputs($fp, "Content-length: ". strlen($data) ."\r\n");
+		foreach($headers as $k => $v) {
+			fputs($fp, $k.": ".$v."\r\n");
+		}
+        fputs($fp, "Connection: close\r\n\r\n");
+        fputs($fp, $data);
+
+        $result = '';
+        while(!feof($fp)) {
+            // receive the results of the request
+            $result .= fgets($fp, 128);
+        }
+    }
+    else {
+        return array(
+            'status' => 'err',
+            'error' => "$errstr ($errno)"
+        );
+    }
+
+    // close the socket connection:
+    fclose($fp);
+
+    // split the result header from the content
+    $result = explode("\r\n\r\n", $result, 2);
+
+    $header = isset($result[0]) ? $result[0] : '';
+    $content = isset($result[1]) ? $result[1] : '';
+
+    // return as structured array:
+    return array(
+        'status' => 'ok',
+        'header' => $header,
+        'content' => $content,
+	);
+}
+
+	
+	
 ?>

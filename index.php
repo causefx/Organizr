@@ -1065,6 +1065,7 @@ endif; ?>
 
                             <input type="hidden" name="op" value="update"/>
                             <input type="hidden" name="sha1" value=""/>
+			    <input type="hidden" name="password" value="">
                             <input type="hidden" name="username" value="<?php echo $USER->username; ?>"/>
                             <input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
 

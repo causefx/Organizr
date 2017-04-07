@@ -1747,7 +1747,39 @@ endif;?></textarea>
                                                 <form class="content-form" name="systemSettings" id="systemSettings" action="" method="POST">
                         								    
                                                     <input type="hidden" name="action" value="createLocation" />
-
+							
+                                                    <div class="form-group" style="background-color: #fafafa; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">
+														<select id="authType" name="authType" class="form-control material input-sm" required>
+															<option value="internal" <?php echo (AUTHTYPE=='internal' || !AUTHTYPE?'selected':''); ?>>Internal Only</option>
+															<option value="external" <?php echo (AUTHTYPE=='external'?'selected':''); ?>>External Only</option>
+															<option value="both" <?php echo (AUTHTYPE=='both'?'selected':''); ?>>Both</option>
+														</select>
+														<p class="help-text"><?php echo $language->translate("AUTHTYPE"); ?></p>
+															
+														<select id="authBackend" name="authBackend" class="form-control material input-sm" required>
+															<option value="ldap" <?php echo (AUTHBACKEND=='ldap' || !AUTHBACKEND?'selected':''); ?>>LDAP</option>
+															<option value="ftp" <?php echo (AUTHBACKEND=='ftp'?'selected':''); ?>>sFTP</option>
+															<option value="emby" <?php echo (AUTHBACKEND=='emby'?'selected':''); ?>>Emby</option>
+															<option value="plex" <?php echo (AUTHBACKEND=='plex'?'selected':''); ?> disabled>Plex</option>
+														</select>
+														<p class="help-text"><?php echo $language->translate("AUTHBACKEND"); ?></p>
+														
+														<select id="authBackendCreate" name="authBackendCreate" class="form-control material input-sm" required>
+															<option value="false" <?php echo (AUTHBACKENDCREATE=='false' || !AUTHBACKENDCREATE?'selected':''); ?>>Do Not Create Accounts</option>
+															<option value="true" <?php echo (AUTHBACKENDCREATE=='true'?'selected':''); ?>>Create Accounts As Needed</option>
+														</select>
+														<p class="help-text"><?php echo $language->translate("AUTHBACKENDCREATE"); ?></p>
+														
+														<input type="text" class="form-control material input-sm" name="authBackendHost" placeholder="<?php echo $language->translate("AUTHBACKENDHOST");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDHOST;?>">
+                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDHOST");?></p>
+														
+														<input type="text" class="form-control material input-sm" name="authBackendPort" placeholder="<?php echo $language->translate("AUTHBACKENDPORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDPORT;?>">
+                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDPORT");?></p>
+														
+														<input type="text" class="form-control material input-sm" name="authBackendDomain" placeholder="<?php echo $language->translate("AUTHBACKENDDOMAIN");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDDOMAIN;?>">
+                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDDOMAIN");?></p>
+                                                    </div>
+							
                                                     <div class="form-group">
 
                                                         <input type="text" class="form-control material input-sm" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
