@@ -94,8 +94,6 @@
     if(!empty($databaseConfig['calendarEndDay'])) : define('CALENDARENDDAY', $databaseConfig['calendarEndDay']); else : define('CALENDARENDDAY', '30'); endif;
     if(!empty($databaseConfig['sickrageKey'])) : define('SICKRAGEKEY', $databaseConfig['sickrageKey']); else : define('SICKRAGEKEY', ''); endif;
     if(!empty($databaseConfig['sickrageURL'])) : define('SICKRAGEURL', $databaseConfig['sickrageURL']); else : define('SICKRAGEURL', ''); endif;
-    if(!empty($databaseConfig['sickrageURL'])) : define('SICKRAGEURL', $databaseConfig['sickrageURL']); else : define('SICKRAGEURL', ''); endif;
-    if(!empty($databaseConfig['sickrageURL'])) : define('SICKRAGEURL', $databaseConfig['sickrageURL']); else : define('SICKRAGEURL', ''); endif;
     if(!empty($databaseConfig['plexUsername'])) : define('PLEXUSERNAME', $databaseConfig['plexUsername']); else : define('PLEXUSERNAME', ''); endif;
 	if(!empty($databaseConfig['plexPassword'])) : define('PLEXPASSWORD', $databaseConfig['plexPassword']); else : define('PLEXPASSWORD', ''); endif;
     
