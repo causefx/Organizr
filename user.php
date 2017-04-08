@@ -74,7 +74,7 @@
 		// 	You can modify the following values, but they're not security related
 		// =======================================================================
 			// rename this to whatever you like
-			const DATABASE_NAME = "users";
+			const DATABASE_NAME = "users";  // Obsolete
 			// this is the session timeout. If someone hasn't performed any page requests
 			// in [timeout] seconds, they're considered logged out.
 			const time_out = 604800;
@@ -155,7 +155,7 @@
                 $_SESSION["username"] = $_COOKIE['OrganizrU'];
             }
 			// file location for the user database
-			$dbfile = DATABASE_LOCATION  . User::DATABASE_NAME . ".db";
+			$dbfile = DATABASE_LOCATION.'users.db';
 			// do we need to build a new database?
 			$rebuild = false;
 			if(!file_exists($dbfile)) { $rebuild = true;}
