@@ -1724,9 +1724,9 @@ endif;?></textarea>
 							
                                                     <div class="form-group" style="background-color: #fafafa; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">
 														<select id="authType" name="authType" class="form-control material input-sm" required>
-															<option value="internal" <?php echo (AUTHTYPE=='internal' || !AUTHTYPE?'selected':''); ?>>Organizr Only</option>
+															<option value="internal" <?php echo (AUTHTYPE=='internal' || !AUTHTYPE?'selected':''); ?>>Organizr <?php echo $language->translate("ONLY"); ?></option>
 															<!--<option value="external" <?php echo (AUTHTYPE=='external'?'selected':''); ?>>External Only</option>-->
-															<option value="both" <?php echo (AUTHTYPE=='both'?'selected':''); ?>>Both</option>
+															<option value="both" <?php echo (AUTHTYPE=='both'?'selected':''); ?>><?php echo $language->translate("BOTH"); ?></option>
 														</select>
 														<p class="help-text"><?php echo $language->translate("AUTHTYPE"); ?></p>
 														
@@ -1742,8 +1742,8 @@ endif;?></textarea>
 														<p class="help-text"><?php echo $language->translate("AUTHBACKEND"); ?></p>
 														
 														<select id="authBackendCreate" name="authBackendCreate" class="form-control material input-sm" required>
-															<option value="false" <?php echo (AUTHBACKENDCREATE=='false' || !AUTHBACKENDCREATE?'selected':''); ?>>Do Not Create Accounts</option>
-															<option value="true" <?php echo (AUTHBACKENDCREATE=='true'?'selected':''); ?>>Create Accounts As Needed</option>
+															<option value="false" <?php echo (AUTHBACKENDCREATE=='false' || !AUTHBACKENDCREATE?'selected':''); ?>><?php echo $language->translate("NO_CREATE"); ?></option>
+															<option value="true" <?php echo (AUTHBACKENDCREATE=='true'?'selected':''); ?>><?php echo $language->translate("YES_CREATE"); ?></option>
 														</select>
 														<p class="help-text"><?php echo $language->translate("AUTHBACKENDCREATE"); ?></p>
 														

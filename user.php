@@ -28,7 +28,7 @@
 	}
 	// Upgrade Friendly END
 	 
-    define('INSTALLEDVERSION', '1.30');
+    define('INSTALLEDVERSION', '1.31');
     require __DIR__ . '/vendor/autoload.php';
     $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
     define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
