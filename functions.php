@@ -82,7 +82,7 @@ function plugin_auth_emby_connect($username, $password) {
 			'rawpw' => $password,
 		);
 		
-		$result = json_decode(curl_post($connectURL, $body, $headers),true);
+		$result = curl_post($connectURL, $body, $headers);
 		
 		if (isset($response['content'])) {
 			$json = json_decode($response['content'], true);
