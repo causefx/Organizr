@@ -877,7 +877,7 @@ endif; ?>
 
                                             <div class="form-group">
 
-                                                <input type="text" class="form-control material" name="databaseLocation" autofocus value="<?php echo dirname(__DIR__);?>" autocorrect="off" autocapitalize="off" required>
+                                                <input type="text" class="form-control material" name="database_Location" autofocus value="<?php echo dirname(__DIR__);?>" autocorrect="off" autocapitalize="off" required>
                                                 
                                                 <h5><?php echo $language->translate("SET_DATABASE_LOCATION");?></h5>
                                                 
