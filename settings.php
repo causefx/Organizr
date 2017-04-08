@@ -277,21 +277,9 @@ if($action == "upgrade") :
 endif;
 
 if($action == 'createLocation' || $action == 'homepageSettings') {
-	$currentDatabaseConfig = parse_ini_file('databaseLocation.ini.php', true);
-	
 	unset($_POST['action']);
-	foreach ($_POST as $postName => $postValue) {
-		$currentDatabaseConfig[$postName] = $postValue;
-	}
-	
-	$databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
-	foreach($currentDatabaseConfig as $k => $v) {
-		if(substr($v, -1) == "/") : $v = rtrim($v, "/"); endif;
-		$databaseData .= $k . " = \"" . $v . "\"\r\n";
-	}
-	
-    write_ini_file($databaseData, $databaseLocation);
-    echo "<script>window.parent.location.reload(true);</script>";
+	updateConfig($_POST);
+	echo "<script>window.parent.location.reload(true);</script>";
 }
                 
 if(!isset($_POST['op'])) :
