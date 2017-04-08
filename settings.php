@@ -276,49 +276,23 @@ if($action == "upgrade") :
 
 endif;
 
-if($action == "createLocation") :
-
-    $databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
-
-    foreach ($_POST as $postName => $postValue) {
-            
-        if($postName !== "action") :
-        
-            if(substr($postValue, -1) == "/") : $postValue = rtrim($postValue, "/"); endif;
-        
-            $databaseData .= $postName . " = \"" . $postValue . "\"\r\n";
-        
-        endif;
-        
-    }
-
+if($action == 'createLocation' || $action == 'homepageSettings') {
+	$currentDatabaseConfig = parse_ini_file('databaseLocation.ini.php', true);
+	
+	unset($_POST['action']);
+	foreach ($_POST as $postName => $postValue) {
+		$currentDatabaseConfig[$postName] = $postValue;
+	}
+	
+	$databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
+	foreach($currentDatabaseConfig as $k => $v) {
+		if(substr($v, -1) == "/") : $v = rtrim($v, "/"); endif;
+		$databaseData .= $k . " = \"" . $v . "\"\r\n";
+	}
+	
     write_ini_file($databaseData, $databaseLocation);
-
     echo "<script>window.parent.location.reload(true);</script>";
-
-endif;
-
-if($action == "homepageSettings") :
-
-    $homepageData = '; <?php die("Access denied"); ?>' . "\r\n";
-
-    foreach ($_POST as $postName => $postValue) {
-            
-        if($postName !== "action") :
-        
-            if(substr($postValue, -1) == "/") : $postValue = rtrim($postValue, "/"); endif;
-        
-            $homepageData .= $postName . " = \"" . $postValue . "\"\r\n";
-        
-        endif;
-        
-    }
-
-    write_ini_file($homepageData, $homepageSettings);
-
-    echo "<script>window.parent.location.reload(true);</script>";
-
-endif;
+}
                 
 if(!isset($_POST['op'])) :
 
@@ -1425,7 +1399,7 @@ endif;?></textarea>
 
                                                         </div>
 
-                                                        <div class="tab-pane big-box fade active in" id="tab-emby">
+                                                        <div class="tab-pane big-box fade" id="tab-emby">
 
                                                             <div class="form-group">
 
@@ -1747,7 +1721,51 @@ endif;?></textarea>
                                                 <form class="content-form" name="systemSettings" id="systemSettings" action="" method="POST">
                         								    
                                                     <input type="hidden" name="action" value="createLocation" />
-
+							
+                                                    <div class="form-group" style="background-color: #fafafa; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">
+														<select id="authType" name="authType" class="form-control material input-sm" required>
+															<option value="internal" <?php echo (AUTHTYPE=='internal' || !AUTHTYPE?'selected':''); ?>>Organizr <?php echo $language->translate("ONLY"); ?></option>
+															<!--<option value="external" <?php echo (AUTHTYPE=='external'?'selected':''); ?>>External Only</option>-->
+															<option value="both" <?php echo (AUTHTYPE=='both'?'selected':''); ?>><?php echo $language->translate("BOTH"); ?></option>
+														</select>
+														<p class="help-text"><?php echo $language->translate("AUTHTYPE"); ?></p>
+														
+														<select id="authBackend" name="authBackend" class="form-control material input-sm" required>
+															<?php
+																$backendFunctions = array_filter(get_defined_functions()['user'],function($v) { return strpos($v, 'plugin_auth_') === 0; });
+																foreach ($backendFunctions as $value) {
+																	$name = str_replace('plugin_auth_','',$value);
+																	echo '<option value="'.$name.'" '.(AUTHBACKEND==$name?'selected':'').'>'.ucwords(str_replace('_',' ',$name)).'</option>';
+																}
+															?>
+														</select>
+														<p class="help-text"><?php echo $language->translate("AUTHBACKEND"); ?></p>
+														
+														<select id="authBackendCreate" name="authBackendCreate" class="form-control material input-sm" required>
+															<option value="false" <?php echo (AUTHBACKENDCREATE=='false' || !AUTHBACKENDCREATE?'selected':''); ?>><?php echo $language->translate("NO_CREATE"); ?></option>
+															<option value="true" <?php echo (AUTHBACKENDCREATE=='true'?'selected':''); ?>><?php echo $language->translate("YES_CREATE"); ?></option>
+														</select>
+														<p class="help-text"><?php echo $language->translate("AUTHBACKENDCREATE"); ?></p>
+														
+														<input type="text" class="form-control material input-sm" name="authBackendHost" placeholder="<?php echo $language->translate("AUTHBACKENDHOST");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDHOST;?>">
+                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDHOST");?></p>
+														
+														<input type="text" class="form-control material input-sm" name="authBackendPort" placeholder="<?php echo $language->translate("AUTHBACKENDPORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDPORT;?>">
+                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDPORT");?></p>
+														
+														<input type="text" class="form-control material input-sm" name="authBackendDomain" placeholder="<?php echo $language->translate("AUTHBACKENDDOMAIN");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDDOMAIN;?>">
+                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDDOMAIN");?></p>
+														
+														<input type="text" class="form-control material input-sm" name="embyToken" placeholder="<?php echo $language->translate("EMBY_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYTOKEN;?>">
+														<p class="help-text"><?php echo $language->translate("EMBY_TOKEN");?></p>
+                                                        
+                                                        <input type="text" class="form-control material input-sm" name="plexUsername" placeholder="<?php echo $language->translate("PLEX_USERNAME");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXUSERNAME;?>">
+														<p class="help-text"><?php echo $language->translate("PLEX_USERNAME");?></p>
+                                                        
+                                                        <input type="password" class="form-control material input-sm" name="plexPassword" placeholder="<?php echo $language->translate("PLEX_PASSWORD");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPASSWORD;?>">
+														<p class="help-text"><?php echo $language->translate("PLEX_PASSWORD");?></p>
+                                                    </div>
+							
                                                     <div class="form-group">
 
                                                         <input type="text" class="form-control material input-sm" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
