@@ -46,7 +46,7 @@ function plugin_auth_ftp($username, $password) {
 
 // Authenticate Against Emby Local (first) and Emby Connect
 function plugin_auth_emby_all($username, $password) {
-	return plugin_auth_emby($username, $password) || plugin_auth_emby_connect($username, $password);
+	return plugin_auth_emby_local($username, $password) || plugin_auth_emby_connect($username, $password);
 }
 
 // Authenicate against emby connect
@@ -646,8 +646,10 @@ function fillDefaultConfig($array, $path = 'config/configDefaults.php') {
 		return $current;
 	};
 	
-	return recurse($array, $loadedDefaults);
+	return (is_array($loadedDefaults) ? recurse($array, $loadedDefaults) : false);
 }
+
+
 
 // ==============
 
