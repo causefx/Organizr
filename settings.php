@@ -1725,7 +1725,7 @@ endif;?></textarea>
                                                     <div class="form-group" style="background-color: #fafafa; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">
 														<select id="authType" name="authType" class="form-control material input-sm" required>
 															<option value="internal" <?php echo (AUTHTYPE=='internal' || !AUTHTYPE?'selected':''); ?>>Internal Only</option>
-															<option value="external" <?php echo (AUTHTYPE=='external'?'selected':''); ?>>External Only</option>
+															<!--<option value="external" <?php echo (AUTHTYPE=='external'?'selected':''); ?>>External Only</option>-->
 															<option value="both" <?php echo (AUTHTYPE=='both'?'selected':''); ?>>Both</option>
 														</select>
 														<p class="help-text"><?php echo $language->translate("AUTHTYPE"); ?></p>
