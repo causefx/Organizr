@@ -8,17 +8,20 @@ function debug_out($variable, $die = false) {
 }
 
 // ==== Auth Plugins START ====
-// Pass credentials to LDAP backend
-function plugin_auth_ldap($username, $password) {
-	// returns true or false
-	$ldap = ldap_connect(AUTHBACKENDHOST.(AUTHBACKENDPORT?':'.AUTHBACKENDPORT:'389'));
-	if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
-		return true;
-	} else {
+
+if (function_exists('ldap_connect')) :
+	// Pass credentials to LDAP backend
+	function plugin_auth_ldap($username, $password) {
+		// returns true or false
+		$ldap = ldap_connect(AUTHBACKENDHOST.(AUTHBACKENDPORT?':'.AUTHBACKENDPORT:'389'));
+		if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
+			return true;
+		} else {
+			return false;
+		}
 		return false;
 	}
-	return false;
-}
+endif;
 
 // Pass credentials to FTP backend
 function plugin_auth_ftp($username, $password) {
@@ -41,60 +44,6 @@ function plugin_auth_ftp($username, $password) {
 	} else {
 		return false;
 	}
-	return false;
-}
-
-// Authenticate Against Emby Local (first) and Emby Connect
-function plugin_auth_emby_all($username, $password) {
-	return plugin_auth_emby_local($username, $password) || plugin_auth_emby_connect($username, $password);
-}
-
-// Authenicate against emby connect
-function plugin_auth_emby_connect($username, $password) {
-	$urlCheck = stripos(AUTHBACKENDHOST, "http");
-	if ($urlCheck === false) {
-		$embyAddress = "http://" . AUTHBACKENDHOST;
-	} else {
-		$embyAddress = AUTHBACKENDHOST;	
-	}
-	if(AUTHBACKENDPORT !== "") { $embyAddress .= ":" . AUTHBACKENDPORT; }
-	
-	// Get A User
-	$connectId = '';
-	$userIds = json_decode(file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
-	if (is_array($userIds)) {
-		foreach ($userIds as $key => $value) { // Scan for this user
-			if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
-				if ($value['ConnectUserName'] == $username || $value['Name'] == $username) {
-					$connectId = $value['ConnectUserId'];
-					break;
-				}
-				
-			}
-		}
-		
-		if ($connectId) {
-			$connectURL = 'https://connect.emby.media/service/user/authenticate';
-			$headers = array(
-				'Accept'=> 'application/json',
-				'Content-Type' => 'application/x-www-form-urlencoded',
-			);
-			$body = array(
-				'nameOrEmail' => $username,
-				'rawpw' => $password,
-			);
-			
-			$result = curl_post($connectURL, $body, $headers);
-			
-			if (isset($result['content'])) {
-				$json = json_decode($result['content'], true);
-				if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
-					return true;
-				}
-			}
-		}
-	}
-	
 	return false;
 }
 
@@ -134,6 +83,110 @@ function plugin_auth_emby_local($username, $password) {
 	return false;
 }
 
+<<<<<<< HEAD
+if (function_exists('curl_version')) :
+	// Authenticate Against Emby Local (first) and Emby Connect
+	function plugin_auth_emby_all($username, $password) {
+		return plugin_auth_emby_local($username, $password) || plugin_auth_emby_connect($username, $password);
+	}
+	
+	// Authenicate against emby connect
+	function plugin_auth_emby_connect($username, $password) {
+		$urlCheck = stripos(AUTHBACKENDHOST, "http");
+		if ($urlCheck === false) {
+			$embyAddress = "http://" . AUTHBACKENDHOST;
+		} else {
+			$embyAddress = AUTHBACKENDHOST;	
+		}
+		if(AUTHBACKENDPORT !== "") { $embyAddress .= ":" . AUTHBACKENDPORT; }
+		
+		// Get A User
+		$connectId = '';
+		$userIds = json_decode(file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
+		if (is_array($userIds)) {
+			foreach ($userIds as $key => $value) { // Scan for this user
+				if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
+					if ($value['ConnectUserName'] == $username || $value['Name'] == $username) {
+						$connectId = $value['ConnectUserId'];
+						break;
+					}
+					
+				}
+			}
+			
+			if ($connectId) {
+				$connectURL = 'https://connect.emby.media/service/user/authenticate';
+				$headers = array(
+					'Accept'=> 'application/json',
+					'Content-Type' => 'application/x-www-form-urlencoded',
+				);
+				$body = array(
+					'nameOrEmail' => $username,
+					'rawpw' => $password,
+				);
+				
+				$result = curl_post($connectURL, $body, $headers);
+				
+				if (isset($result['content'])) {
+					$json = json_decode($result['content'], true);
+					if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	// Pass credentials to Plex Backend
+	function plugin_auth_plex($username, $password) {
+		// Quick out
+		if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
+			return true;
+		}
+		
+		//Get User List
+		$approvedUsers = array();
+		$userURL = 'https://plex.tv/pms/friends/all';
+		$userHeaders = array(
+			'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD), 
+		);
+		$userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
+		//Build User List array
+		foreach($userXML AS $child) {
+			if(isset($child['username']) && $child['username'] != ""){
+				array_push($approvedUsers, $child['username']);
+			}
+		}
+		//Check If User Is Approved
+		if(!in_arrayi("$username", $approvedUsers)){
+			return false;
+		}
+		//Login User
+		$connectURL = 'https://plex.tv/users/sign_in.json';
+		$headers = array(
+			'Accept'=> 'application/json',
+			'Content-Type' => 'application/x-www-form-urlencoded',
+			'X-Plex-Product' => 'Organizr',
+			'X-Plex-Version' => '1.0',
+			'X-Plex-Client-Identifier' => '01010101-10101010',
+		);
+		$body = array(
+			'user[login]' => $username,
+			'user[password]' => $password,
+		);
+		$result = curl_post($connectURL, $body, $headers);
+		if (isset($result['content'])) {
+			$json = json_decode($result['content'], true);
+			if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && $json['user']['username'] == $username) {
+				return true;
+			}
+		}
+		return false;
+	}
+endif;
+=======
 // Pass credentials to Plex Backend
 function plugin_auth_plex($username, $password) {
 	// Quick out
@@ -180,6 +233,7 @@ function plugin_auth_plex($username, $password) {
     }
     return false;
 }
+>>>>>>> f791eec10dd0f9a28e86d87f76e79f4d9f0febbb
 // ==== Auth Plugins END ====
 // ==== General Class Definitions START ====
 class setLanguage { 
@@ -236,6 +290,42 @@ function post_router($url, $data, $headers = array(), $referer='') {
 	}
 }
 
+<<<<<<< HEAD
+if (function_exists('curl_version')) :
+	// Curl Post
+	function curl_post($url, $data, $headers = array(), $referer='') {
+		// Initiate cURL
+		$curlReq = curl_init($url);
+		// As post request
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
+		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+		// Format Data
+		switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
+			case 'application/json': 
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
+				break;
+			case 'application/x-www-form-urlencoded';
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+				break;
+			default:
+				$headers['Content-Type'] = 'application/x-www-form-urlencoded';
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+		}
+		// Format Headers
+		$cHeaders = array();
+		foreach ($headers as $k => $v) {
+			$cHeaders[] = $k.': '.$v;
+		}
+		if (count($cHeaders)) {
+			curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+		}
+		// Execute
+		$result = curl_exec($curlReq);
+		// Close
+		curl_close($curlReq);
+		// Return
+		return array('content'=>$result);
+=======
 // Curl Post
 function curl_post($url, $data, $headers = array(), $referer='') {
 	// Initiate cURL
@@ -259,39 +349,33 @@ function curl_post($url, $data, $headers = array(), $referer='') {
 	$cHeaders = array();
 	foreach ($headers as $k => $v) {
 		$cHeaders[] = $k.': '.$v;
+>>>>>>> f791eec10dd0f9a28e86d87f76e79f4d9f0febbb
 	}
-	if (count($cHeaders)) {
-		curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+
+	//Curl Get Function
+	function curl_get($url, $headers = array()) {
+		// Initiate cURL
+		$curlReq = curl_init($url);
+		// As post request
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "GET"); 
+		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+		// Format Headers
+		$cHeaders = array();
+		foreach ($headers as $k => $v) {
+			$cHeaders[] = $k.': '.$v;
+		}
+		if (count($cHeaders)) {
+			curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+		}
+		// Execute
+		$result = curl_exec($curlReq);
+		// Close
+		curl_close($curlReq);
+		// Return
+		return $result;
 	}
-	// Execute
-	$result = curl_exec($curlReq);
-	// Close
-	curl_close($curlReq);
-	// Return
-	return array('content'=>$result);
-}
-//Curl Get Function
-function curl_get($url, $headers = array()) {
-    // Initiate cURL
-    $curlReq = curl_init($url);
-    // As post request
-    curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "GET"); 
-    curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
-    // Format Headers
-    $cHeaders = array();
-    foreach ($headers as $k => $v) {
-        $cHeaders[] = $k.': '.$v;
-    }
-    if (count($cHeaders)) {
-        curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
-    }
-    // Execute
-    $result = curl_exec($curlReq);
-    // Close
-    curl_close($curlReq);
-    // Return
-    return $result;
-}
+endif;
+
 //Case-Insensitive Function
 function in_arrayi($needle, $haystack) {
     return in_array(strtolower($needle), array_map('strtolower', $haystack));
@@ -632,7 +716,7 @@ function randString($length = 10) {
 }
 
 // Create config file in the return syntax
-function createConfig($array, $path, $nest = 0) {
+function createConfig($array, $path = 'config/config.php', $nest = 0) {
 	$output = array();
 	foreach ($array as $k => $v) {
 		$allowCommit = true;
@@ -676,7 +760,7 @@ function createConfig($array, $path, $nest = 0) {
 		fwrite($file, $output);
 		fclose($file);
 		if (file_exists($path)) {
-			unlink($path.'.bak');
+			@unlink($path.'.bak');
 			return true;
 		}
 		
@@ -687,7 +771,7 @@ function createConfig($array, $path, $nest = 0) {
 }
 
 // Load a config file written in the return syntax
-function loadConfig($path) {
+function loadConfig($path = 'config/config.php') {
 	// Adapted from http://stackoverflow.com/a/14173339/6810513
     if (!is_file($path)) {
         return null;
@@ -698,6 +782,21 @@ function loadConfig($path) {
 	}
 }
 
+function updateConfig($new, $current = false) {
+	// Get config if not supplied
+	if (!$current) {
+		$current = loadConfig();
+	}
+	
+	// Inject Parts
+	foreach ($new as $k => $v) {
+		$current[$k] = $v;
+	}
+	
+	// Return Create
+	return createConfig($current);
+}
+
 // Inject Defaults As Needed
 function fillDefaultConfig($array, $path = 'config/configDefaults.php') {
 	if (is_string($path)) {
@@ -706,20 +805,91 @@ function fillDefaultConfig($array, $path = 'config/configDefaults.php') {
 		$loadedDefaults = $path;
 	}
 	
-	function recurse($current, $defaults) {
-		foreach($defaults as $k => $v) {
-			if (!isset($current[$k])) {
-				$current[$k] = $v;
-			} else if (is_array($current[$k]) && is_array($v)) {
-				$current[$k] = recurse($current[$k], $v);
-			}
-		}
-		return $current;
-	};
-	
-	return (is_array($loadedDefaults) ? recurse($array, $loadedDefaults) : false);
+	return (is_array($loadedDefaults) ? fillDefaultConfig_recurse($array, $loadedDefaults) : false);
 }
 
+// support function for fillDefaultConfig()
+function fillDefaultConfig_recurse($current, $defaults) {
+	foreach($defaults as $k => $v) {
+		if (!isset($current[$k])) {
+			$current[$k] = $v;
+		} else if (is_array($current[$k]) && is_array($v)) {
+			$current[$k] = fillDefaultConfig_recurse($current[$k], $v);
+		}
+	}
+	return $current;
+};
+
+// Define Scalar Variables (nest non-secular with underscores)
+function defineConfig($array, $anyCase = true, $nest_prefix = false) {	
+	foreach($array as $k => $v) {
+		if (is_scalar($v) && !defined($nest_prefix.$k)) {
+			define($nest_prefix.$k, $v, $anyCase);
+		} else if (is_array($v)) {
+			defineConfig($v, $anyCase, $nest_prefix.$k.'_');
+		}
+	}
+}
+
+// This function exists only because I am lazy
+function configLazy($path) {
+	$config = fillDefaultConfig(loadConfig($path));
+	if (is_array($config)) {
+		defineConfig($config);
+	}
+	return $config;
+}
+
+// Function to be called at top of each to allow upgrading environment as the spec changes
+function upgradeCheck() {
+	// Upgrade to 1.31
+	if (file_exists('homepageSettings.ini.php')) {
+		$databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
+		$homepageConfig = parse_ini_file('homepageSettings.ini.php', true);
+		
+		$databaseConfig = array_merge($databaseConfig, $homepageConfig);
+		
+		$databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
+		foreach($databaseConfig as $k => $v) {
+			if(substr($v, -1) == "/") : $v = rtrim($v, "/"); endif;
+			$databaseData .= $k . " = \"" . $v . "\"\r\n";
+		}
+		
+		write_ini_file($databaseData, 'databaseLocation.ini.php');
+		unlink('homepageSettings.ini.php');
+		unset($databaseData);
+		unset($homepageConfig);
+	}
+	
+	// Upgrade to 1.32
+	if (file_exists('databaseLocation.ini.php')) {
+		// Load Existing
+		$config = parse_ini_file('databaseLocation.ini.php', true);
+		
+		// Refactor
+		$config['database_Location'] = $config['databaseLocation'];
+		$config['user_home'] = $config['databaseLocation'];
+		unset($config['databaseLocation']);
+		
+		$createConfigSuccess = createConfig($config, 'config/config.php', $nest = 0);
+		
+		// Create new config
+		if ($createConfigSuccess) {
+			// Make Config Dir (this should never happen as the dir and defaults file should be there);
+			@mkdir('config', 0775, true);
+			
+			// Remove Old ini file
+			unlink('databaseLocation.ini.php');
+		}
+	}
+	
+	return true;
+}
+
+// Check if all software dependancies are met
+function dependCheck() {
+	return true;
+}
 
 
 // ==============
