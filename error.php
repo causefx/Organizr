@@ -55,7 +55,7 @@ require_once("user.php");
 require_once("translate.php");
 $USER = new User("registration_callback");
 
-$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+$dbfile = DATABASE_LOCATION.'users.db';
 
 $file_db = new PDO("sqlite:" . $dbfile);
 $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
