@@ -7,6 +7,27 @@
 	 *	entry is assigned a new random token,  which is used in
 	 * salting subsequent password checks.
 	 */
+	 
+	// Upgrade Friendly START
+	if (file_exists('homepageSettings.ini.php')) {
+		$databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
+		$homepageConfig = parse_ini_file('homepageSettings.ini.php', true);
+		
+		$databaseConfig = array_merge($databaseConfig, $homepageConfig);
+		
+		$databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
+		foreach($databaseConfig as $k => $v) {
+			if(substr($v, -1) == "/") : $v = rtrim($v, "/"); endif;
+			$databaseData .= $k . " = \"" . $v . "\"\r\n";
+		}
+		
+		write_ini_file($databaseData, 'databaseLocation.ini.php');
+		unlink('homepageSettings.ini.php');
+		unset($databaseData);
+		unset($homepageConfig);
+	}
+	// Upgrade Friendly END
+	 
     define('INSTALLEDVERSION', '1.30');
     require __DIR__ . '/vendor/autoload.php';
     $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
@@ -31,55 +52,50 @@
     if(!empty($databaseConfig['smtpHostPassword'])) : define('SMTPHOSTPASSWORD', $databaseConfig['smtpHostPassword']); else : define('SMTPHOSTPASSWORD', ''); endif;
     if(!empty($databaseConfig['smtpHostSenderName'])) : define('SMTPHOSTSENDERNAME', $databaseConfig['smtpHostSenderName']); else : define('SMTPHOSTSENDERNAME', 'Organizr'); endif;
     if(!empty($databaseConfig['smtpHostSenderEmail'])) : define('SMTPHOSTSENDEREMAIL', $databaseConfig['smtpHostSenderEmail']); else : define('SMTPHOSTSENDEREMAIL', 'no-reply@Organizr'); endif;
-	
     if(!empty($databaseConfig['authType'])) : define('AUTHTYPE', $databaseConfig['authType']); else : define('AUTHTYPE', ''); endif;
     if(!empty($databaseConfig['authBackend'])) : define('AUTHBACKEND', $databaseConfig['authBackend']); else : define('AUTHBACKEND', ''); endif;
     if(!empty($databaseConfig['authBackendHost'])) : define('AUTHBACKENDHOST', $databaseConfig['authBackendHost']); else : define('AUTHBACKENDHOST', ''); endif;
     if(!empty($databaseConfig['authBackendPort'])) : define('AUTHBACKENDPORT', $databaseConfig['authBackendPort']); else : define('AUTHBACKENDPORT', ''); endif;
     if(!empty($databaseConfig['authBackendDomain'])) : define('AUTHBACKENDDOMAIN', $databaseConfig['authBackendDomain']); else : define('AUTHBACKENDDOMAIN', ''); endif;
-    if(!empty($databaseConfig['authBackendCreate'])) : define('AUTHBACKENDCREATE', $databaseConfig['authBackendCreate']); else : define('AUTHBACKENDCREATE', 'false'); endif;
+    if(!empty($databaseConfig['authBackendCreate'])) : define('AUTHBACKENDCREATE', $databaseConfig['authBackendCreate']); else : define('AUTHBACKENDCREATE', 'false'); endif;      
+	if(!empty($databaseConfig['plexURL'])) : define('PLEXURL', $databaseConfig['plexURL']); else : define('PLEXURL', ''); endif;
+    if(!empty($databaseConfig['plexPort'])) : define('PLEXPORT', $databaseConfig['plexPort']); else : define('PLEXPORT', ''); endif;
+    if(!empty($databaseConfig['plexToken'])) : define('PLEXTOKEN', $databaseConfig['plexToken']); else : define('PLEXTOKEN', ''); endif;
+    if(!empty($databaseConfig['plexRecentMovie'])) : define('PLEXRECENTMOVIE', $databaseConfig['plexRecentMovie']); else : define('PLEXRECENTMOVIE', 'false'); endif;
+    if(!empty($databaseConfig['plexRecentTV'])) : define('PLEXRECENTTV', $databaseConfig['plexRecentTV']); else : define('PLEXRECENTTV', 'false'); endif;
+    if(!empty($databaseConfig['plexRecentMusic'])) : define('PLEXRECENTMUSIC', $databaseConfig['plexRecentMusic']); else : define('PLEXRECENTMUSIC', 'false'); endif;
+    if(!empty($databaseConfig['plexPlayingNow'])) : define('PLEXPLAYINGNOW', $databaseConfig['plexPlayingNow']); else : define('PLEXPLAYINGNOW', 'false'); endif;
+    if(!empty($databaseConfig['embyURL'])) : define('EMBYURL', $databaseConfig['embyURL']); else : define('EMBYURL', ''); endif;
+    if(!empty($databaseConfig['embyPort'])) : define('EMBYPORT', $databaseConfig['embyPort']); else : define('EMBYPORT', ''); endif;
+    if(!empty($databaseConfig['embyToken'])) : define('EMBYTOKEN', $databaseConfig['embyToken']); else : define('EMBYTOKEN', ''); endif;
+    if(!empty($databaseConfig['embyRecentMovie'])) : define('EMBYRECENTMOVIE', $databaseConfig['embyRecentMovie']); else : define('EMBYRECENTMOVIE', 'false'); endif;
+    if(!empty($databaseConfig['embyRecentTV'])) : define('EMBYRECENTTV', $databaseConfig['embyRecentTV']); else : define('EMBYRECENTTV', 'false'); endif;
+    if(!empty($databaseConfig['embyRecentMusic'])) : define('EMBYRECENTMUSIC', $databaseConfig['embyRecentMusic']); else : define('EMBYRECENTMUSIC', 'false'); endif;
+    if(!empty($databaseConfig['embyPlayingNow'])) : define('EMBYPLAYINGNOW', $databaseConfig['embyPlayingNow']); else : define('EMBYPLAYINGNOW', 'false'); endif;    
+    if(!empty($databaseConfig['sonarrKey'])) : define('SONARRKEY', $databaseConfig['sonarrKey']); else : define('SONARRKEY', ''); endif;
+    if(!empty($databaseConfig['sonarrURL'])) : define('SONARRURL', $databaseConfig['sonarrURL']); else : define('SONARRURL', ''); endif;
+    if(!empty($databaseConfig['sonarrPort'])) : define('SONARRPORT', $databaseConfig['sonarrPort']); else : define('SONARRPORT', ''); endif;
+    if(!empty($databaseConfig['radarrKey'])) : define('RADARRKEY', $databaseConfig['radarrKey']); else : define('RADARRKEY', ''); endif;
+    if(!empty($databaseConfig['radarrURL'])) : define('RADARRURL', $databaseConfig['radarrURL']); else : define('RADARRURL', ''); endif;
+    if(!empty($databaseConfig['radarrPort'])) : define('RADARRPORT', $databaseConfig['radarrPort']); else : define('RADARRPORT', ''); endif;
+    if(!empty($databaseConfig['nzbgetURL'])) : define('NZBGETURL', $databaseConfig['nzbgetURL']); else : define('NZBGETURL', ''); endif;
+    if(!empty($databaseConfig['nzbgetPort'])) : define('NZBGETPORT', $databaseConfig['nzbgetPort']); else : define('NZBGETPORT', ''); endif;
+    if(!empty($databaseConfig['nzbgetUsername'])) : define('NZBGETUSERNAME', $databaseConfig['nzbgetUsername']); else : define('NZBGETUSERNAME', ''); endif;
+    if(!empty($databaseConfig['nzbgetPassword'])) : define('NZBGETPASSWORD', $databaseConfig['nzbgetPassword']); else : define('NZBGETPASSWORD', ''); endif;
+    if(!empty($databaseConfig['sabnzbdKey'])) : define('SABNZBDKEY', $databaseConfig['sabnzbdKey']); else : define('SABNZBDKEY', ''); endif;
+    if(!empty($databaseConfig['sabnzbdURL'])) : define('SABNZBDURL', $databaseConfig['sabnzbdURL']); else : define('SABNZBDURL', ''); endif;
+    if(!empty($databaseConfig['sabnzbdPort'])) : define('SABNZBDPORT', $databaseConfig['sabnzbdPort']); else : define('SABNZBDPORT', ''); endif;
+    if(!empty($databaseConfig['headphonesKey'])) : define('HEADPHONESKEY', $databaseConfig['headphonesKey']); else : define('HEADPHONESKEY', ''); endif;
+    if(!empty($databaseConfig['headphonesURL'])) : define('HEADPHONESURL', $databaseConfig['headphonesURL']); else : define('HEADPHONESURL', ''); endif;
+    if(!empty($databaseConfig['headphonesPort'])) : define('HEADPHONESPORT', $databaseConfig['headphonesPort']); else : define('HEADPHONESPORT', ''); endif;
+    if(!empty($databaseConfig['calendarStart'])) : define('CALENDARSTART', $databaseConfig['calendarStart']); else : define('CALENDARSTART', '0'); endif;
+    if(!empty($databaseConfig['calendarView'])) : define('CALENDARVIEW', $databaseConfig['calendarView']); else : define('CALENDARVIEW', 'basicWeek'); endif;
+    if(!empty($databaseConfig['calendarStartDay'])) : define('CALENDARSTARTDAY', $databaseConfig['calendarStartDay']); else : define('CALENDARSTARTDAY', '30'); endif;
+    if(!empty($databaseConfig['calendarEndDay'])) : define('CALENDARENDDAY', $databaseConfig['calendarEndDay']); else : define('CALENDARENDDAY', '30'); endif;
+    if(!empty($databaseConfig['sickrageKey'])) : define('SICKRAGEKEY', $databaseConfig['sickrageKey']); else : define('SICKRAGEKEY', ''); endif;
+    if(!empty($databaseConfig['sickrageURL'])) : define('SICKRAGEURL', $databaseConfig['sickrageURL']); else : define('SICKRAGEURL', ''); endif;
     if(!empty($databaseConfig['plexUsername'])) : define('PLEXUSERNAME', $databaseConfig['plexUsername']); else : define('PLEXUSERNAME', ''); endif;
-    if(!empty($databaseConfig['plexPassword'])) : define('PLEXPASSWORD', $databaseConfig['plexPassword']); else : define('PLEXPASSWORD', ''); endif;
-	
-    if(!file_exists('homepageSettings.ini.php')){ touch('homepageSettings.ini.php'); }
-    $homepageConfig = parse_ini_file('homepageSettings.ini.php', true);        
-    
-	if(!empty($homepageConfig['plexURL'])) : define('PLEXURL', $homepageConfig['plexURL']); else : define('PLEXURL', ''); endif;
-    if(!empty($homepageConfig['plexPort'])) : define('PLEXPORT', $homepageConfig['plexPort']); else : define('PLEXPORT', ''); endif;
-    if(!empty($homepageConfig['plexToken'])) : define('PLEXTOKEN', $homepageConfig['plexToken']); else : define('PLEXTOKEN', ''); endif;
-    if(!empty($homepageConfig['plexRecentMovie'])) : define('PLEXRECENTMOVIE', $homepageConfig['plexRecentMovie']); else : define('PLEXRECENTMOVIE', 'false'); endif;
-    if(!empty($homepageConfig['plexRecentTV'])) : define('PLEXRECENTTV', $homepageConfig['plexRecentTV']); else : define('PLEXRECENTTV', 'false'); endif;
-    if(!empty($homepageConfig['plexRecentMusic'])) : define('PLEXRECENTMUSIC', $homepageConfig['plexRecentMusic']); else : define('PLEXRECENTMUSIC', 'false'); endif;
-    if(!empty($homepageConfig['plexPlayingNow'])) : define('PLEXPLAYINGNOW', $homepageConfig['plexPlayingNow']); else : define('PLEXPLAYINGNOW', 'false'); endif;
-    if(!empty($homepageConfig['embyURL'])) : define('EMBYURL', $homepageConfig['embyURL']); else : define('EMBYURL', ''); endif;
-    if(!empty($homepageConfig['embyPort'])) : define('EMBYPORT', $homepageConfig['embyPort']); else : define('EMBYPORT', ''); endif;
-    if(!empty($homepageConfig['embyToken'])) : define('EMBYTOKEN', $homepageConfig['embyToken']); else : define('EMBYTOKEN', ''); endif;
-    if(!empty($homepageConfig['embyRecentMovie'])) : define('EMBYRECENTMOVIE', $homepageConfig['embyRecentMovie']); else : define('EMBYRECENTMOVIE', 'false'); endif;
-    if(!empty($homepageConfig['embyRecentTV'])) : define('EMBYRECENTTV', $homepageConfig['embyRecentTV']); else : define('EMBYRECENTTV', 'false'); endif;
-    if(!empty($homepageConfig['embyRecentMusic'])) : define('EMBYRECENTMUSIC', $homepageConfig['embyRecentMusic']); else : define('EMBYRECENTMUSIC', 'false'); endif;
-    if(!empty($homepageConfig['embyPlayingNow'])) : define('EMBYPLAYINGNOW', $homepageConfig['embyPlayingNow']); else : define('EMBYPLAYINGNOW', 'false'); endif;    
-    if(!empty($homepageConfig['sonarrKey'])) : define('SONARRKEY', $homepageConfig['sonarrKey']); else : define('SONARRKEY', ''); endif;
-    if(!empty($homepageConfig['sonarrURL'])) : define('SONARRURL', $homepageConfig['sonarrURL']); else : define('SONARRURL', ''); endif;
-    if(!empty($homepageConfig['sonarrPort'])) : define('SONARRPORT', $homepageConfig['sonarrPort']); else : define('SONARRPORT', ''); endif;
-    if(!empty($homepageConfig['radarrKey'])) : define('RADARRKEY', $homepageConfig['radarrKey']); else : define('RADARRKEY', ''); endif;
-    if(!empty($homepageConfig['radarrURL'])) : define('RADARRURL', $homepageConfig['radarrURL']); else : define('RADARRURL', ''); endif;
-    if(!empty($homepageConfig['radarrPort'])) : define('RADARRPORT', $homepageConfig['radarrPort']); else : define('RADARRPORT', ''); endif;
-    if(!empty($homepageConfig['nzbgetURL'])) : define('NZBGETURL', $homepageConfig['nzbgetURL']); else : define('NZBGETURL', ''); endif;
-    if(!empty($homepageConfig['nzbgetPort'])) : define('NZBGETPORT', $homepageConfig['nzbgetPort']); else : define('NZBGETPORT', ''); endif;
-    if(!empty($homepageConfig['nzbgetUsername'])) : define('NZBGETUSERNAME', $homepageConfig['nzbgetUsername']); else : define('NZBGETUSERNAME', ''); endif;
-    if(!empty($homepageConfig['nzbgetPassword'])) : define('NZBGETPASSWORD', $homepageConfig['nzbgetPassword']); else : define('NZBGETPASSWORD', ''); endif;
-    if(!empty($homepageConfig['sabnzbdKey'])) : define('SABNZBDKEY', $homepageConfig['sabnzbdKey']); else : define('SABNZBDKEY', ''); endif;
-    if(!empty($homepageConfig['sabnzbdURL'])) : define('SABNZBDURL', $homepageConfig['sabnzbdURL']); else : define('SABNZBDURL', ''); endif;
-    if(!empty($homepageConfig['sabnzbdPort'])) : define('SABNZBDPORT', $homepageConfig['sabnzbdPort']); else : define('SABNZBDPORT', ''); endif;
-    if(!empty($homepageConfig['headphonesKey'])) : define('HEADPHONESKEY', $homepageConfig['headphonesKey']); else : define('HEADPHONESKEY', ''); endif;
-    if(!empty($homepageConfig['headphonesURL'])) : define('HEADPHONESURL', $homepageConfig['headphonesURL']); else : define('HEADPHONESURL', ''); endif;
-    if(!empty($homepageConfig['headphonesPort'])) : define('HEADPHONESPORT', $homepageConfig['headphonesPort']); else : define('HEADPHONESPORT', ''); endif;
-    if(!empty($homepageConfig['calendarStart'])) : define('CALENDARSTART', $homepageConfig['calendarStart']); else : define('CALENDARSTART', '0'); endif;
-    if(!empty($homepageConfig['calendarView'])) : define('CALENDARVIEW', $homepageConfig['calendarView']); else : define('CALENDARVIEW', 'basicWeek'); endif;
-    if(!empty($homepageConfig['calendarStartDay'])) : define('CALENDARSTARTDAY', $homepageConfig['calendarStartDay']); else : define('CALENDARSTARTDAY', '30'); endif;
-    if(!empty($homepageConfig['calendarEndDay'])) : define('CALENDARENDDAY', $homepageConfig['calendarEndDay']); else : define('CALENDARENDDAY', '30'); endif;
-    if(!empty($homepageConfig['sickrageKey'])) : define('SICKRAGEKEY', $homepageConfig['sickrageKey']); else : define('SICKRAGEKEY', ''); endif;
-    if(!empty($homepageConfig['sickrageURL'])) : define('SICKRAGEURL', $homepageConfig['sickrageURL']); else : define('SICKRAGEURL', ''); endif;
+	if(!empty($databaseConfig['plexPassword'])) : define('PLEXPASSWORD', $databaseConfig['plexPassword']); else : define('PLEXPASSWORD', ''); endif;
     
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 
     $notifyExplode = explode("-", NOTIFYEFFECT);
