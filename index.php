@@ -42,7 +42,11 @@ if(!file_exists('config/config.php')) {
 			$_POST['database_Location'] = str_replace('//','/',$_POST['database_Location'].'/');
 			$_POST['USER_HOME'] = $_POST['database_Location'].'users/';
 		}
-		updateConfig($_POST);
+		if (file_exists($_POST['database_Location'])) {
+			updateConfig($_POST);
+		} else {
+			debug_out('Dir doesn\'t exist: '.$_POST['database_Location'],1); // Pretty Up
+		}
 	} else {
 		$configReady = "No";
 		$userpic = "";
