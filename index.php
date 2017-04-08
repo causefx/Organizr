@@ -38,13 +38,19 @@ if(isset($_POST['action'])) {
 // Check for config file
 if(!file_exists('config/config.php')) {
 	if($action == "createLocation") {
+		if (isset($_POST['database_Location'])) {
+			$_POST['database_Location'] = str_replace('//','/',$_POST['database_Location'].'/');
+			$_POST['USER_HOME'] = $_POST['database_Location'].'users/';
+		}
 		updateConfig($_POST);
+	} else {
+		$configReady = "No";
+		$userpic = "";
+		$showPic = "";
 	}
-	
-    $configReady = "No";
-    $userpic = "";
-    $showPic = "";
-} else {
+}
+
+if (file_exists('config/config.php')) {
 
     $configReady = "Yes";
 
