@@ -38,6 +38,8 @@
     if(!empty($databaseConfig['authBackendPort'])) : define('AUTHBACKENDPORT', $databaseConfig['authBackendPort']); else : define('AUTHBACKENDPORT', ''); endif;
     if(!empty($databaseConfig['authBackendDomain'])) : define('AUTHBACKENDDOMAIN', $databaseConfig['authBackendDomain']); else : define('AUTHBACKENDDOMAIN', ''); endif;
     if(!empty($databaseConfig['authBackendCreate'])) : define('AUTHBACKENDCREATE', $databaseConfig['authBackendCreate']); else : define('AUTHBACKENDCREATE', 'false'); endif;
+    if(!empty($databaseConfig['plexUsername'])) : define('PLEXUSERNAME', $databaseConfig['plexUsername']); else : define('PLEXUSERNAME', ''); endif;
+    if(!empty($databaseConfig['plexPassword'])) : define('PLEXPASSWORD', $databaseConfig['plexPassword']); else : define('PLEXPASSWORD', ''); endif;
 	
     if(!file_exists('homepageSettings.ini.php')){ touch('homepageSettings.ini.php'); }
     $homepageConfig = parse_ini_file('homepageSettings.ini.php', true);        

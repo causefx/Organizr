@@ -1425,7 +1425,7 @@ endif;?></textarea>
 
                                                         </div>
 
-                                                        <div class="tab-pane big-box fade active in" id="tab-emby">
+                                                        <div class="tab-pane big-box fade" id="tab-emby">
 
                                                             <div class="form-group">
 
@@ -1755,12 +1755,15 @@ endif;?></textarea>
 															<option value="both" <?php echo (AUTHTYPE=='both'?'selected':''); ?>>Both</option>
 														</select>
 														<p class="help-text"><?php echo $language->translate("AUTHTYPE"); ?></p>
-															
+														
 														<select id="authBackend" name="authBackend" class="form-control material input-sm" required>
-															<option value="ldap" <?php echo (AUTHBACKEND=='ldap' || !AUTHBACKEND?'selected':''); ?>>LDAP</option>
-															<option value="ftp" <?php echo (AUTHBACKEND=='ftp'?'selected':''); ?>>sFTP</option>
-															<option value="emby" <?php echo (AUTHBACKEND=='emby'?'selected':''); ?>>Emby</option>
-															<option value="plex" <?php echo (AUTHBACKEND=='plex'?'selected':''); ?> disabled>Plex</option>
+															<?php
+																$backendFunctions = array_filter(get_defined_functions()['user'],function($v) { return strpos($v, 'plugin_auth_') === 0; });
+																foreach ($backendFunctions as $value) {
+																	$name = str_replace('plugin_auth_','',$value);
+																	echo '<option value="'.$name.'" '.(AUTHBACKEND==$name?'selected':'').'>'.ucwords(str_replace('_',' ',$name)).'</option>';
+																}
+															?>
 														</select>
 														<p class="help-text"><?php echo $language->translate("AUTHBACKEND"); ?></p>
 														
@@ -1778,6 +1781,15 @@ endif;?></textarea>
 														
 														<input type="text" class="form-control material input-sm" name="authBackendDomain" placeholder="<?php echo $language->translate("AUTHBACKENDDOMAIN");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDDOMAIN;?>">
                                                         <p class="help-text"><?php echo $language->translate("AUTHBACKENDDOMAIN");?></p>
+														
+														<input type="text" class="form-control material input-sm" name="embyToken" placeholder="<?php echo $language->translate("EMBY_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYTOKEN;?>">
+														<p class="help-text"><?php echo $language->translate("EMBY_TOKEN");?></p>
+                                                        
+                                                        <input type="text" class="form-control material input-sm" name="plexUsername" placeholder="<?php echo $language->translate("PLEX_USERNAME");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXUSERNAME;?>">
+														<p class="help-text"><?php echo $language->translate("PLEX_USERNAME");?></p>
+                                                        
+                                                        <input type="password" class="form-control material input-sm" name="plexPassword" placeholder="<?php echo $language->translate("PLEX_PASSWORD");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPASSWORD;?>">
+														<p class="help-text"><?php echo $language->translate("PLEX_PASSWORD");?></p>
                                                     </div>
 							
                                                     <div class="form-group">

@@ -228,7 +228,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 -->
 <!DOCTYPE html>
 
-<html lang="<?php echo $getLanguage; ?>" class="no-js">
+<html lang="<?php echo $language->getLang(); ?>" class="no-js">
 
     <head>
         
@@ -1147,6 +1147,7 @@ endif; ?>
                                             
                                             <input type="hidden" name="op" value="login">
 				                            <input type="hidden" name="sha1" value="">
+				                            <input type="hidden" name="password" value="">
                                             <input type="hidden" name="rememberMe" value="false"/>
                                             <input type="text" class="form-control material" name="username" placeholder="<?php echo $language->translate("USERNAME");?>" autocomplete="off" autocorrect="off" autocapitalize="off" value="" autofocus required>
                                         
