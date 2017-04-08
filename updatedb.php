@@ -28,7 +28,7 @@ function checkDatabase($type, $table, $check) {
     
     endif;
     
-    $dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+    $dbfile = DATABASE_LOCATION.'users.db';
     $file_db = new PDO("sqlite:" . $dbfile);
     $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $runQuery = $file_db->query($query);
