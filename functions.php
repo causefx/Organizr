@@ -62,35 +62,39 @@ function plugin_auth_emby_connect($username, $password) {
 	// Get A User
 	$connectId = '';
 	$userIds = json_decode(file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
-	foreach ($userIds as $value) { // Scan for this user
-		if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
-			if ($value['ConnectUserName'] == $username || $value['Name'] == $username) {
-				$connectId = $value['ConnectUserId'];
+	if (is_array($userIds)) {
+		foreach ($userIds as $key => $value) { // Scan for this user
+			if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
+				if ($value['ConnectUserName'] == $username || $value['Name'] == $username) {
+					$connectId = $value['ConnectUserId'];
+					break;
+				}
+				
 			}
-			break;
+		}
+		
+		if ($connectId) {
+			$connectURL = 'https://connect.emby.media/service/user/authenticate';
+			$headers = array(
+				'Accept'=> 'application/json',
+				'Content-Type' => 'application/x-www-form-urlencoded',
+			);
+			$body = array(
+				'nameOrEmail' => $username,
+				'rawpw' => $password,
+			);
+			
+			$result = curl_post($connectURL, $body, $headers);
+			
+			if (isset($result['content'])) {
+				$json = json_decode($result['content'], true);
+				if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
+					return true;
+				}
+			}
 		}
 	}
 	
-	if ($connectId) {
-		$connectURL = 'https://connect.emby.media/service/user/authenticate';
-		$headers = array(
-			'Accept'=> 'application/json',
-			'Content-Type' => 'application/x-www-form-urlencoded',
-		);
-		$body = array(
-			'nameOrEmail' => $username,
-			'rawpw' => $password,
-		);
-		
-		$result = curl_post($connectURL, $body, $headers);
-		
-		if (isset($response['content'])) {
-			$json = json_decode($response['content'], true);
-			if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
-				return true;
-			}
-		}
-	}
 	return false;
 }
 
@@ -346,7 +350,7 @@ function resolvePlexItem($server, $token, $item) {
 	
 	$address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
 	
-	switch ($item['Type']) {
+	switch ($item['type']) {
 		case 'season':
 			$title = $item['parentTitle'];
 			$summary = $item['parentSummary'];
@@ -448,9 +452,7 @@ function getPlexStreams($url, $port, $token, $size, $header){
     $getServer = simplexml_load_string($getServer);
     
 	// Identify the local machine
-    foreach($getServer AS $child) {
-       $gotServer = $child['machineIdentifier'];
-    }
+    $gotServer = $getServer['machineIdentifier'];
 	
 	$items = array();
 	foreach($api AS $child) {
@@ -527,9 +529,7 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
     $getServer = simplexml_load_string($getServer);
 	
 	// Identify the local machine
-    foreach($getServer AS $child) {
-       $gotServer = $child['machineIdentifier'];
-    }
+    $gotServer = $getServer['machineIdentifier'];
 	
 	$items = array();
 	foreach($api AS $child) {
