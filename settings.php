@@ -276,49 +276,23 @@ if($action == "upgrade") :
 
 endif;
 
-if($action == "createLocation") :
-
-    $databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
-
-    foreach ($_POST as $postName => $postValue) {
-            
-        if($postName !== "action") :
-        
-            if(substr($postValue, -1) == "/") : $postValue = rtrim($postValue, "/"); endif;
-        
-            $databaseData .= $postName . " = \"" . $postValue . "\"\r\n";
-        
-        endif;
-        
-    }
-
+if($action == 'createLocation' || $action == 'homepageSettings') {
+	$currentDatabaseConfig = parse_ini_file('databaseLocation.ini.php', true);
+	
+	unset($_POST['action']);
+	foreach ($_POST as $postName => $postValue) {
+		$currentDatabaseConfig[$postName] = $postValue;
+	}
+	
+	$databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
+	foreach($currentDatabaseConfig as $k => $v) {
+		if(substr($v, -1) == "/") : $v = rtrim($v, "/"); endif;
+		$databaseData .= $k . " = \"" . $v . "\"\r\n";
+	}
+	
     write_ini_file($databaseData, $databaseLocation);
-
     echo "<script>window.parent.location.reload(true);</script>";
-
-endif;
-
-if($action == "homepageSettings") :
-
-    $homepageData = '; <?php die("Access denied"); ?>' . "\r\n";
-
-    foreach ($_POST as $postName => $postValue) {
-            
-        if($postName !== "action") :
-        
-            if(substr($postValue, -1) == "/") : $postValue = rtrim($postValue, "/"); endif;
-        
-            $homepageData .= $postName . " = \"" . $postValue . "\"\r\n";
-        
-        endif;
-        
-    }
-
-    write_ini_file($homepageData, $homepageSettings);
-
-    echo "<script>window.parent.location.reload(true);</script>";
-
-endif;
+}
                 
 if(!isset($_POST['op'])) :
 
