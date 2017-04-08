@@ -88,7 +88,7 @@ function plugin_auth_emby_connect($username, $password) {
 			
 			if (isset($result['content'])) {
 				$json = json_decode($result['content'], true);
-				if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
+				if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
 					return true;
 				}
 			}
