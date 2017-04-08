@@ -1425,7 +1425,7 @@ endif;?></textarea>
 
                                                         </div>
 
-                                                        <div class="tab-pane big-box fade active in" id="tab-emby">
+                                                        <div class="tab-pane big-box fade" id="tab-emby">
 
                                                             <div class="form-group">
 
