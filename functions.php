@@ -239,7 +239,7 @@ function curl_post($url, $data, $headers = array(), $referer='') {
 	curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
 	curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
 	// Format Data
-	switch ($headers['Content-Type']) {
+	switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
 		case 'application/json': 
 			curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
 			break;
