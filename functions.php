@@ -136,6 +136,11 @@ function plugin_auth_emby_local($username, $password) {
 
 // Pass credentials to Plex Backend
 function plugin_auth_plex($username, $password) {
+	// Quick out
+	if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
+		return true;
+	}
+	
     //Get User List
     $approvedUsers = array();
     $userURL = 'https://plex.tv/pms/friends/all';
