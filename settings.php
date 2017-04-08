@@ -1784,6 +1784,12 @@ endif;?></textarea>
 														
 														<input type="text" class="form-control material input-sm" name="embyToken" placeholder="<?php echo $language->translate("EMBY_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYTOKEN;?>">
 														<p class="help-text"><?php echo $language->translate("EMBY_TOKEN");?></p>
+                                                        
+                                                        <input type="text" class="form-control material input-sm" name="plexUsername" placeholder="<?php echo $language->translate("PLEX_USERNAME");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXUSERNAME;?>">
+														<p class="help-text"><?php echo $language->translate("PLEX_USERNAME");?></p>
+                                                        
+                                                        <input type="password" class="form-control material input-sm" name="plexPassword" placeholder="<?php echo $language->translate("PLEX_PASSWORD");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPASSWORD;?>">
+														<p class="help-text"><?php echo $language->translate("PLEX_PASSWORD");?></p>
                                                     </div>
 							
                                                     <div class="form-group">

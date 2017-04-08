@@ -133,6 +133,48 @@ function plugin_auth_emby_local($username, $password) {
 	}
 	return false;
 }
+
+// Pass credentials to Plex Backend
+function plugin_auth_plex($username, $password) {
+    //Get User List
+    $approvedUsers = array();
+    $userURL = 'https://plex.tv/pms/friends/all';
+    $userHeaders = array(
+        'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD), 
+    );
+    $userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
+    //Build User List array
+    foreach($userXML AS $child) {
+        if(isset($child['username']) && $child['username'] != ""){
+            array_push($approvedUsers, $child['username']);
+        }
+    }
+    //Check If User Is Approved
+    if(!in_arrayi("$username", $approvedUsers)){
+        return false;
+    }
+    //Login User
+    $connectURL = 'https://plex.tv/users/sign_in.json';
+    $headers = array(
+        'Accept'=> 'application/json',
+        'Content-Type' => 'application/x-www-form-urlencoded',
+        'X-Plex-Product' => 'Organizr',
+        'X-Plex-Version' => '1.0',
+        'X-Plex-Client-Identifier' => '01010101-10101010',
+    );
+    $body = array(
+        'user[login]' => $username,
+        'user[password]' => $password,
+    );
+    $result = curl_post($connectURL, $body, $headers);
+    if (isset($result['content'])) {
+        $json = json_decode($result['content'], true);
+        if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && $json['user']['username'] == $username) {
+            return true;
+        }
+    }
+    return false;
+}
 // ==== Auth Plugins END ====
 // ==== General Class Definitions START ====
 class setLanguage { 
@@ -222,6 +264,32 @@ function curl_post($url, $data, $headers = array(), $referer='') {
 	curl_close($curlReq);
 	// Return
 	return array('content'=>$result);
+}
+//Curl Get Function
+function curl_get($url, $headers = array()) {
+    // Initiate cURL
+    $curlReq = curl_init($url);
+    // As post request
+    curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "GET"); 
+    curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+    // Format Headers
+    $cHeaders = array();
+    foreach ($headers as $k => $v) {
+        $cHeaders[] = $k.': '.$v;
+    }
+    if (count($cHeaders)) {
+        curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+    }
+    // Execute
+    $result = curl_exec($curlReq);
+    // Close
+    curl_close($curlReq);
+    // Return
+    return $result;
+}
+//Case-Insensitive Function
+function in_arrayi($needle, $haystack) {
+    return in_array(strtolower($needle), array_map('strtolower', $haystack));
 }
 
 // HTTP post request (Removes need for curl, probably useless)
@@ -448,8 +516,7 @@ function getPlexStreams($url, $port, $token, $size, $header){
 	// Perform API requests
     $api = file_get_contents($address."/status/sessions?X-Plex-Token=".$token);
     $api = simplexml_load_string($api);
-    $getServer = file_get_contents($address."/servers?X-Plex-Token=".$token);
-    $getServer = simplexml_load_string($getServer);
+    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".$token));
     
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
@@ -525,8 +592,7 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
 	// Perform Requests
     $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".$token);
     $api = simplexml_load_string($api);
-    $getServer = file_get_contents($address."/servers?X-Plex-Token=".$token);
-    $getServer = simplexml_load_string($getServer);
+    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".$token));
 	
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
@@ -988,7 +1054,7 @@ function getSonarrCalendar($array){
 
         $i++;
         $seriesName = $child['series']['title'];
-        $episodeID = $child['series']['imdbId'];
+        $episodeID = $child['series']['tvdbId'];
         if(!isset($episodeID)){ $episodeID = ""; }
         $episodeName = htmlentities($child['title'], ENT_QUOTES);
         if($child['episodeNumber'] == "1"){ $episodePremier = "true"; }else{ $episodePremier = "false"; }
@@ -1001,7 +1067,7 @@ function getSonarrCalendar($array){
         $downloaded = $child['hasFile'];
         if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "light-blue-bg"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
         
-        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"http://www.imdb.com/title/$episodeID\" }, \n";
+        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
         
     }
 
@@ -1020,7 +1086,7 @@ function getRadarrCalendar($array){
             
             $i++;
             $movieName = $child['title'];
-            $movieID = $child['imdbId'];
+            $movieID = $child['tmdbId'];
             if(!isset($movieID)){ $movieID = ""; }
             
             if(isset($child['inCinemas']) && isset($child['physicalRelease'])){ 
@@ -1041,7 +1107,7 @@ function getRadarrCalendar($array){
             
             }
                         
-            $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded\", imagetype: \"film\", url: \"http://www.imdb.com/title/$movieID\" }, \n";
+            $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded\", imagetype: \"film\", url: \"https://www.themoviedb.org/movie/$movieID\" }, \n";
         }
         
     }
