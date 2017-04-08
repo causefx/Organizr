@@ -20,7 +20,7 @@ elseif($USER->authenticated && $USER->role !== "admin") :
 
 endif;
 
-$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+$dbfile = DATABASE_LOCATION.'users.db';
 $databaseLocation = "databaseLocation.ini.php";
 $homepageSettings = "homepageSettings.ini.php";
 $userdirpath = USER_HOME;
