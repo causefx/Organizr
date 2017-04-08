@@ -25,45 +25,26 @@ $loading = "#66D9EF";
 $hovertext = "#000000";
 $loadingIcon = "images/organizr_logo_d.png";
 $baseURL = "";
-require_once("translate.php");
+
+// Load functions
 require_once("functions.php");
 
-                
-if(isset($_POST['action'])) :
-
+// Get Action
+if(isset($_POST['action'])) {
     $action = $_POST['action'];
-    
-endif;
+	unset($_POST['action']);
+}
 
-if($action == "createLocation") :
-
-    $databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
-
-    foreach ($_POST as $postName => $postValue) {
-            
-        if($postName !== "action") :
-        
-            if(substr($postValue, -1) == "/") : $postValue = rtrim($postValue, "/"); endif;
-    
-            $postValue = str_replace("\\","/", $postValue);
-        
-            $databaseData .= $postName . " = \"" . $postValue . "\"\r\n";
-        
-        endif;
-        
-    }
-
-    write_ini_file($databaseData, $databaseLocation);
-
-endif;
-
-if(!file_exists($databaseLocation)) :
-
+// Check for config file
+if(!file_exists('config/config.php')) {
+	if($action == "createLocation") {
+		updateConfig($_POST);
+	}
+	
     $configReady = "No";
     $userpic = "";
     $showPic = "";
-
-else :
+} else {
 
     $configReady = "Yes";
 
@@ -194,7 +175,7 @@ else :
 
     endif;
 
-endif;
+}
 
 if(!defined('SLIMBAR')) : define('SLIMBAR', 'true'); endif;
 if(!defined('AUTOHIDE')) : define('AUTOHIDE', 'false'); endif;
