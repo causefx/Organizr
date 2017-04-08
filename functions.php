@@ -83,7 +83,6 @@ function plugin_auth_emby_local($username, $password) {
 	return false;
 }
 
-<<<<<<< HEAD
 if (function_exists('curl_version')) :
 	// Authenticate Against Emby Local (first) and Emby Connect
 	function plugin_auth_emby_all($username, $password) {
@@ -186,54 +185,6 @@ if (function_exists('curl_version')) :
 		return false;
 	}
 endif;
-=======
-// Pass credentials to Plex Backend
-function plugin_auth_plex($username, $password) {
-	// Quick out
-	if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
-		return true;
-	}
-	
-    //Get User List
-    $approvedUsers = array();
-    $userURL = 'https://plex.tv/pms/friends/all';
-    $userHeaders = array(
-        'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD), 
-    );
-    $userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
-    //Build User List array
-    foreach($userXML AS $child) {
-        if(isset($child['username']) && $child['username'] != ""){
-            array_push($approvedUsers, $child['username']);
-        }
-    }
-    //Check If User Is Approved
-    if(!in_arrayi("$username", $approvedUsers)){
-        return false;
-    }
-    //Login User
-    $connectURL = 'https://plex.tv/users/sign_in.json';
-    $headers = array(
-        'Accept'=> 'application/json',
-        'Content-Type' => 'application/x-www-form-urlencoded',
-        'X-Plex-Product' => 'Organizr',
-        'X-Plex-Version' => '1.0',
-        'X-Plex-Client-Identifier' => '01010101-10101010',
-    );
-    $body = array(
-        'user[login]' => $username,
-        'user[password]' => $password,
-    );
-    $result = curl_post($connectURL, $body, $headers);
-    if (isset($result['content'])) {
-        $json = json_decode($result['content'], true);
-        if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && $json['user']['username'] == $username) {
-            return true;
-        }
-    }
-    return false;
-}
->>>>>>> f791eec10dd0f9a28e86d87f76e79f4d9f0febbb
 // ==== Auth Plugins END ====
 // ==== General Class Definitions START ====
 class setLanguage { 
@@ -290,7 +241,6 @@ function post_router($url, $data, $headers = array(), $referer='') {
 	}
 }
 
-<<<<<<< HEAD
 if (function_exists('curl_version')) :
 	// Curl Post
 	function curl_post($url, $data, $headers = array(), $referer='') {
@@ -325,31 +275,6 @@ if (function_exists('curl_version')) :
 		curl_close($curlReq);
 		// Return
 		return array('content'=>$result);
-=======
-// Curl Post
-function curl_post($url, $data, $headers = array(), $referer='') {
-	// Initiate cURL
-	$curlReq = curl_init($url);
-	// As post request
-	curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
-	curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
-	// Format Data
-	switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
-		case 'application/json': 
-			curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
-			break;
-		case 'application/x-www-form-urlencoded';
-			curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
-			break;
-		default:
-			$headers['Content-Type'] = 'application/x-www-form-urlencoded';
-			curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
-	}
-	// Format Headers
-	$cHeaders = array();
-	foreach ($headers as $k => $v) {
-		$cHeaders[] = $k.': '.$v;
->>>>>>> f791eec10dd0f9a28e86d87f76e79f4d9f0febbb
 	}
 
 	//Curl Get Function
