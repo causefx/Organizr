@@ -792,6 +792,9 @@ function upgradeCheck() {
 		$config = parse_ini_file('databaseLocation.ini.php', true);
 		
 		// Refactor
+        //DB Location now needs trailing slash (If not found - we add it!)
+        if(substr($config['databaseLocation'], -1) != "/") : $config['databaseLocation'] = $config['databaseLocation'] . "/"; endif;
+        //Set both db location and userhome to previous location
 		$config['database_Location'] = $config['databaseLocation'];
 		$config['user_home'] = $config['databaseLocation'];
 		unset($config['databaseLocation']);
