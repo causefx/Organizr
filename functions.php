@@ -470,7 +470,7 @@ function resolvePlexItem($server, $token, $item) {
 }
 
 // Create Carousel
-function outputCarousel($header, $size, $type, $items) {
+function outputCarousel($header, $size, $type, $items, $script = false) {
 	// If None Populate Empty Item
 	if (!count($items)) {
 		$items = array('<div class="item"><img alt="nada" class="carousel-image movie" src="images/nadaplaying.jpg"><div class="carousel-caption"><h4>Nothing To Show</h4><small><em>Get Some Stuff Going!</em></small></div></div>');
@@ -493,7 +493,7 @@ function outputCarousel($header, $size, $type, $items) {
 		<div id="carousel-'.$type.'" class="carousel slide box-shadow white-bg" data-ride="carousel"><div class="carousel-inner" role="listbox">
 			'.implode('',$items).'
 		</div>'.$buttons.'
-	</div></div>'; 
+	</div></div>'.($script?'<script>'.$script.'</script>':''); 
 }
 
 // Get Now Playing Streams From Emby
@@ -509,7 +509,16 @@ function getEmbyStreams($size) {
 		}
 	}
 	
-	return outputCarousel(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems);
+	return outputCarousel(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems, "
+		setInterval(function() {
+			$('<div></div>').load('ajax.php?a=emby-streams',function() {
+				var element = $(this).find('[id]');
+				var loadedID = 	element.attr('id');
+				$('#'+loadedID).replaceWith(element);
+				console.log('Loaded updated: '+loadedID);
+			});
+		}, 10000);
+	");
 }
 
 // Get Now Playing Streams From Plex
@@ -529,7 +538,16 @@ function getPlexStreams($size){
 		$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child);
 	}
 	
-	return outputCarousel(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items);
+	return outputCarousel(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
+		setInterval(function() {
+			$('<div></div>').load('ajax.php?a=plex-streams',function() {
+				var element = $(this).find('[id]');
+				var loadedID = 	element.attr('id');
+				$('#'+loadedID).replaceWith(element);
+				console.log('Loaded updated: '+loadedID);
+			});
+		}, 10000);
+	");
 }
 
 // Get Recent Content From Emby
