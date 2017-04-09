@@ -29,6 +29,9 @@ $baseURL = "";
 // Load functions
 require_once("functions.php");
 
+//Upgrade Check
+upgradeCheck();
+
 // Get Action
 if(isset($_POST['action'])) {
     $action = $_POST['action'];
@@ -40,6 +43,7 @@ if(!file_exists('config/config.php')) {
 	if($action == "createLocation") {
 		if (isset($_POST['database_Location'])) {
 			$_POST['database_Location'] = str_replace('//','/',$_POST['database_Location'].'/');
+            if(substr($_POST['database_Location'], -1) != "/") : $_POST['database_Location'] = $_POST['database_Location'] . "/"; endif;
 			$_POST['USER_HOME'] = $_POST['database_Location'].'users/';
 		}
 		if (file_exists($_POST['database_Location'])) {
@@ -173,14 +177,12 @@ if (file_exists('config/config.php')) {
 
         else: 
         
-            //$showPic = "<login class='login-btn text-uppercase'>" . $language->translate("MENU") . "</login>";
             $showPic = "<i class=\"mdi mdi-account-box-outline\"></i>";
 
         endif;
 
     else : 
 
-        //$showPic = "<img style='height: " . $userSize . "px'; src='images/login.png'>"; 
         $showPic = "<login class='login-btn text-uppercase'>" . $language->translate("LOGIN") . "</login>"; 
 
     endif;
@@ -232,29 +234,29 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
         <title><?=$title;?><?php if($title !== "Organizr") :  echo " - Organizr"; endif; ?></title>
 
-        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/mdi/css/materialdesignicons.min.css">
-        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/metisMenu/dist/metisMenu.min.css">
-        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/Waves/dist/waves.min.css"> 
-        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css"> 
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/bootstrap/dist/css/bootstrap.min.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/font-awesome/css/font-awesome.min.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/mdi/css/materialdesignicons.min.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/metisMenu/dist/metisMenu.min.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/Waves/dist/waves.min.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css?v=<?php echo INSTALLEDVERSION; ?>">
 
-        <link rel="stylesheet" href="<?=$baseURL;?>js/selects/cs-select.css">
-        <link rel="stylesheet" href="<?=$baseURL;?>js/selects/cs-skin-elastic.css">
-        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/google-material-color/dist/palette.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>js/selects/cs-select.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="<?=$baseURL;?>js/selects/cs-skin-elastic.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/google-material-color/dist/palette.css?v=<?php echo INSTALLEDVERSION; ?>">
         
-        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/sweetalert/dist/sweetalert.css">
-        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/smoke/dist/css/smoke.min.css">
-        <link rel="stylesheet" href="<?=$baseURL;?>js/notifications/ns-style-growl.css">
-        <link rel="stylesheet" href="<?=$baseURL;?>js/notifications/ns-style-other.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/sweetalert/dist/sweetalert.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/smoke/dist/css/smoke.min.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="<?=$baseURL;?>js/notifications/ns-style-growl.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="<?=$baseURL;?>js/notifications/ns-style-other.css?v=<?php echo INSTALLEDVERSION; ?>">
 
 
-        <script src="<?=$baseURL;?>js/menu/modernizr.custom.js"></script>
-        <script type="text/javascript" src="<?=$baseURL;?>js/sha1.js"></script>
-		<script type="text/javascript" src="<?=$baseURL;?>js/user.js"></script>
+        <script src="<?=$baseURL;?>js/menu/modernizr.custom.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
+        <script type="text/javascript" src="<?=$baseURL;?>js/sha1.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
+		<script type="text/javascript" src="<?=$baseURL;?>js/user.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
         <link rel="stylesheet" href="<?=$baseURL;?>css/style.css?v=<?php echo INSTALLEDVERSION; ?>">
-        <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
+        <link rel="stylesheet" href="bower_components/animate.css/animate.min.css?v=<?php echo INSTALLEDVERSION; ?>">
 
         <link rel="icon" type="image/png" href="<?=$baseURL;?>images/favicon/android-chrome-192x192.png" sizes="192x192">
         <link rel="apple-touch-icon" sizes="180x180" href="<?=$baseURL;?>images/favicon/apple-touch-icon.png">

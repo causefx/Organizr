@@ -11,13 +11,10 @@
 	// Include functions if not already included
 	require_once('functions.php');
 	
-	// Upgrade environment
-	upgradeCheck();
-	
 	// Define Version
 	 define('INSTALLEDVERSION', '1.31');
 	 
-    // Autoload whatever this is
+    // Autoload frameworks
 	require_once(__DIR__ . '/vendor/autoload.php');
 	
     // Lazyload settings
