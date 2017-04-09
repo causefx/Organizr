@@ -276,9 +276,11 @@ if($action == "upgrade") :
 endif;
 
 if($action == 'createLocation' || $action == 'homepageSettings') {
-	unset($_POST['action']);
-	updateConfig($_POST);
-	echo "<script>setTimeout(function() {window.location.href = window.location.href},1500);</script>";
+    unset($_POST['action']);
+    updateConfig($_POST);
+    sleep(2.5);
+    header("Location: settings.php");
+    die();
 }
                 
 if(!isset($_POST['op'])) :
