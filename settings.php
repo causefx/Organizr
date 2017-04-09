@@ -1714,44 +1714,49 @@ endif;?></textarea>
 														<select id="authType" name="authType" class="form-control material input-sm" required>
 															<option value="internal" <?php echo (AUTHTYPE=='internal' || !AUTHTYPE?'selected':''); ?>>Organizr <?php echo $language->translate("ONLY"); ?></option>
 															<!--<option value="external" <?php echo (AUTHTYPE=='external'?'selected':''); ?>>External Only</option>-->
-															<option value="both" <?php echo (AUTHTYPE=='both'?'selected':''); ?>><?php echo $language->translate("BOTH"); ?></option>
+															<option value="both" <?php echo (AUTHTYPE=='both'?'selected':''); ?>>Organizr <?php echo $language->translate("BOTH"); ?></option>
 														</select>
 														<p class="help-text"><?php echo $language->translate("AUTHTYPE"); ?></p>
-														
-														<select id="authBackend" name="authBackend" class="form-control material input-sm" required>
-															<?php
-																$backendFunctions = array_filter(get_defined_functions()['user'],function($v) { return strpos($v, 'plugin_auth_') === 0; });
-																foreach ($backendFunctions as $value) {
-																	$name = str_replace('plugin_auth_','',$value);
-																	echo '<option value="'.$name.'" '.(AUTHBACKEND==$name?'selected':'').'>'.ucwords(str_replace('_',' ',$name)).'</option>';
-																}
-															?>
-														</select>
-														<p class="help-text"><?php echo $language->translate("AUTHBACKEND"); ?></p>
-														
-														<select id="authBackendCreate" name="authBackendCreate" class="form-control material input-sm" required>
-															<option value="false" <?php echo (AUTHBACKENDCREATE=='false' || !AUTHBACKENDCREATE?'selected':''); ?>><?php echo $language->translate("NO_CREATE"); ?></option>
-															<option value="true" <?php echo (AUTHBACKENDCREATE=='true'?'selected':''); ?>><?php echo $language->translate("YES_CREATE"); ?></option>
-														</select>
-														<p class="help-text"><?php echo $language->translate("AUTHBACKENDCREATE"); ?></p>
-														
-														<input type="text" class="form-control material input-sm" name="authBackendHost" placeholder="<?php echo $language->translate("AUTHBACKENDHOST");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDHOST;?>">
-                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDHOST");?></p>
-														
-														<input type="text" class="form-control material input-sm" name="authBackendPort" placeholder="<?php echo $language->translate("AUTHBACKENDPORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDPORT;?>">
-                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDPORT");?></p>
-														
-														<input type="text" class="form-control material input-sm" name="authBackendDomain" placeholder="<?php echo $language->translate("AUTHBACKENDDOMAIN");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDDOMAIN;?>">
-                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDDOMAIN");?></p>
-														
-														<input type="text" class="form-control material input-sm" name="embyToken" placeholder="<?php echo $language->translate("EMBY_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYTOKEN;?>">
-														<p class="help-text"><?php echo $language->translate("EMBY_TOKEN");?></p>
-                                                        
-                                                        <input type="text" class="form-control material input-sm" name="plexUsername" placeholder="<?php echo $language->translate("PLEX_USERNAME");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXUSERNAME;?>">
-														<p class="help-text"><?php echo $language->translate("PLEX_USERNAME");?></p>
-                                                        
-                                                        <input type="password" class="form-control material input-sm" name="plexPassword" placeholder="<?php echo $language->translate("PLEX_PASSWORD");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPASSWORD;?>">
-														<p class="help-text"><?php echo $language->translate("PLEX_PASSWORD");?></p>
+														<group id="host-selected">
+                                                            <select id="authBackend" name="authBackend" class="form-control material input-sm" required>
+                                                                <?php
+                                                                    $backendFunctions = array_filter(get_defined_functions()['user'],function($v) { return strpos($v, 'plugin_auth_') === 0; });
+                                                                    foreach ($backendFunctions as $value) {
+                                                                        $name = str_replace('plugin_auth_','',$value);
+                                                                        echo '<option value="'.$name.'" '.(AUTHBACKEND==$name?'selected':'').'>'.ucwords(str_replace('_',' ',$name)).'</option>';
+                                                                    }
+                                                                ?>
+                                                            </select>
+                                                            <p class="help-text"><?php echo $language->translate("AUTHBACKEND"); ?></p>
+
+                                                            <select id="authBackendCreate" name="authBackendCreate" class="form-control material input-sm" required>
+                                                                <option value="false" <?php echo (AUTHBACKENDCREATE=='false' || !AUTHBACKENDCREATE?'selected':''); ?>><?php echo $language->translate("NO_CREATE"); ?></option>
+                                                                <option value="true" <?php echo (AUTHBACKENDCREATE=='true'?'selected':''); ?>><?php echo $language->translate("YES_CREATE"); ?></option>
+                                                            </select>
+                                                            <p class="help-text"><?php echo $language->translate("AUTHBACKENDCREATE"); ?></p>
+                                                        </group>
+                                                        <group id="host-other">
+                                                            <input type="text" class="form-control material input-sm" name="authBackendHost" placeholder="<?php echo $language->translate("AUTHBACKENDHOST");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDHOST;?>">
+                                                            <p class="help-text"><?php echo $language->translate("AUTHBACKENDHOST");?></p>
+
+                                                            <input type="text" class="form-control material input-sm" name="authBackendPort" placeholder="<?php echo $language->translate("AUTHBACKENDPORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDPORT;?>">
+                                                            <p class="help-text"><?php echo $language->translate("AUTHBACKENDPORT");?></p>
+                                                        </group>
+                                                        <group id="host-ldap">
+                                                            <input type="text" class="form-control material input-sm" name="authBackendDomain" placeholder="<?php echo $language->translate("AUTHBACKENDDOMAIN");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDDOMAIN;?>">
+                                                            <p class="help-text"><?php echo $language->translate("AUTHBACKENDDOMAIN");?></p>
+                                                        </group>
+														<group id="host-emby">
+                                                            <input type="text" class="form-control material input-sm" name="embyToken" placeholder="<?php echo $language->translate("EMBY_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYTOKEN;?>">
+                                                            <p class="help-text"><?php echo $language->translate("EMBY_TOKEN");?></p>
+                                                        </group>
+                                                        <group id="host-plex">
+                                                            <input type="text" class="form-control material input-sm" name="plexUsername" placeholder="<?php echo $language->translate("PLEX_USERNAME");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXUSERNAME;?>">
+                                                            <p class="help-text"><?php echo $language->translate("PLEX_USERNAME");?></p>
+
+                                                            <input type="password" class="form-control material input-sm" name="plexPassword" placeholder="<?php echo $language->translate("PLEX_PASSWORD");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPASSWORD;?>">
+                                                            <p class="help-text"><?php echo $language->translate("PLEX_PASSWORD");?></p>
+                                                        </group>
                                                     </div>
 							
                                                     <div class="form-group">
@@ -3551,33 +3556,53 @@ endif;?></textarea>
         <script>
         
         $( document ).ready(function() {
-            
+            //Hide Icon box on load
+            $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
+            //Set Some Scrollbars
             $(".scroller-body").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0}
             });
-            
-            
             $(".email-content").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0}
             });
-            
+            //Stop Div behind From Scrolling
             $( '.email-content' ).on( 'mousewheel', function ( e ) {
-          
                 e.preventDefault();
-
             }, false);  
-            
+            //Set Hide Function
+            var authTypeFunc = function() {
+                // Hide Everything
+                $('#host-selected, #host-other, #host-plex, #host-emby, #host-ldap').hide();
+                // Qualify Auth Type
+                if($('#authType').val() !== "internal"){
+                    $( '#host-selected' ).show();
+
+                    // Qualify aithBackend
+                    if($('#authBackend').val() === "plex"){
+                        $('#host-selected, #host-plex').show();
+                    }else if($('#authBackend').val().indexOf("emby")>=0){
+                        $('#host-selected, #host-other, #host-emby').show();
+                    }else if($('#authBackend').val() === "ldap"){
+                        $('#host-selected, #host-other, #host-ldap').show();
+                    }else {
+                        $('#host-selected, #host-other').show();
+                    }
+                }
+            }
+            //Hide Settings on selection
+            $('#authType, #authBackend').on('change', authTypeFunc);
+            //Hide Settings on Load
+            authTypeFunc();
+            //Simulate Edit Tabs Click 
             $("#open-tabs").trigger("click");
-            
+            //Append Delete log to User Logs
             $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
             $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')
-            
+            //Enable Tooltips
             $('[data-toggle="tooltip"]').tooltip(); 
-            
-            rememberTabSelection('#settingsTabs', !localStorage);
-            
-            $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
-        		
+            //Tab save on reload - might need to delete as we changed tab layout
+            rememberTabSelection('#settingsTabs', !localStorage); 
+        	//AJAX call to github to get version info	
         	$.ajax({
         				
         		type: "GET",
@@ -3639,6 +3664,7 @@ endif;?></textarea>
                 }
                 
             });
+            //Edit Info tab with Github info
             <?php if(file_exists(FAIL_LOG)) : ?>
             goodCount = $('#loginStats').find('#goodCount');
             goodPercent = $('#loginStats').find('#goodPercent');
