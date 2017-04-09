@@ -657,6 +657,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
                 border: solid;
                 border-bottom: 0;
                 border-radius: 5px;
+                top: 3px;
 }<?php if(CUSTOMCSS == "true") : 
 $template_file = "custom.css";
 $file_handle = fopen($template_file, "rb");
@@ -696,7 +697,7 @@ endif; ?>
 
                             <div class="profile-usermenu">
 
-                                <ul class="nav">
+                                <ul class="nav" id="settings-list">
 
                                     <li class=""><a id="open-tabs"><i class="fa fa-list red-orange"></i>Edit Tabs</a></li>
                                     <li class=""><a id="open-colors"><i class="fa fa-paint-brush green"></i>Edit Colors</a></li>
@@ -1270,7 +1271,7 @@ endif;?></textarea>
 							    
                                                         <li class="apps">
 
-                                                            <a href="#tab-emby" data-toggle="tab" aria-expanded="true"><img style="height:40px; width:40px;" src="images/emby.png"></a>
+                                                            <a href="#tab-emby" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/emby.png"></a>
 
                                                         </li>
 
@@ -1709,219 +1710,281 @@ endif;?></textarea>
                                                 <form class="content-form" name="systemSettings" id="systemSettings" action="" method="POST">
                         								    
                                                     <input type="hidden" name="action" value="createLocation" />
-							
-                                                    <div class="form-group" style="background-color: #fafafa; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">
-														<select id="authType" name="authType" class="form-control material input-sm" required>
-															<option value="internal" <?php echo (AUTHTYPE=='internal' || !AUTHTYPE?'selected':''); ?>>Organizr <?php echo $language->translate("ONLY"); ?></option>
-															<!--<option value="external" <?php echo (AUTHTYPE=='external'?'selected':''); ?>>External Only</option>-->
-															<option value="both" <?php echo (AUTHTYPE=='both'?'selected':''); ?>>Organizr <?php echo $language->translate("BOTH"); ?></option>
-														</select>
-														<p class="help-text"><?php echo $language->translate("AUTHTYPE"); ?></p>
-														<group id="host-selected">
-                                                            <select id="authBackend" name="authBackend" class="form-control material input-sm" required>
-                                                                <?php
-                                                                    $backendFunctions = array_filter(get_defined_functions()['user'],function($v) { return strpos($v, 'plugin_auth_') === 0; });
-                                                                    foreach ($backendFunctions as $value) {
-                                                                        $name = str_replace('plugin_auth_','',$value);
-                                                                        echo '<option value="'.$name.'" '.(AUTHBACKEND==$name?'selected':'').'>'.ucwords(str_replace('_',' ',$name)).'</option>';
-                                                                    }
-                                                                ?>
-                                                            </select>
-                                                            <p class="help-text"><?php echo $language->translate("AUTHBACKEND"); ?></p>
-
-                                                            <select id="authBackendCreate" name="authBackendCreate" class="form-control material input-sm" required>
-                                                                <option value="false" <?php echo (AUTHBACKENDCREATE=='false' || !AUTHBACKENDCREATE?'selected':''); ?>><?php echo $language->translate("NO_CREATE"); ?></option>
-                                                                <option value="true" <?php echo (AUTHBACKENDCREATE=='true'?'selected':''); ?>><?php echo $language->translate("YES_CREATE"); ?></option>
-                                                            </select>
-                                                            <p class="help-text"><?php echo $language->translate("AUTHBACKENDCREATE"); ?></p>
-                                                        </group>
-                                                        <group id="host-other">
-                                                            <input type="text" class="form-control material input-sm" name="authBackendHost" placeholder="<?php echo $language->translate("AUTHBACKENDHOST");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDHOST;?>">
-                                                            <p class="help-text"><?php echo $language->translate("AUTHBACKENDHOST");?></p>
-
-                                                            <input type="text" class="form-control material input-sm" name="authBackendPort" placeholder="<?php echo $language->translate("AUTHBACKENDPORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDPORT;?>">
-                                                            <p class="help-text"><?php echo $language->translate("AUTHBACKENDPORT");?></p>
-                                                        </group>
-                                                        <group id="host-ldap">
-                                                            <input type="text" class="form-control material input-sm" name="authBackendDomain" placeholder="<?php echo $language->translate("AUTHBACKENDDOMAIN");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDDOMAIN;?>">
-                                                            <p class="help-text"><?php echo $language->translate("AUTHBACKENDDOMAIN");?></p>
-                                                        </group>
-														<group id="host-emby">
-                                                            <input type="text" class="form-control material input-sm" name="embyToken" placeholder="<?php echo $language->translate("EMBY_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYTOKEN;?>">
-                                                            <p class="help-text"><?php echo $language->translate("EMBY_TOKEN");?></p>
-                                                        </group>
-                                                        <group id="host-plex">
-                                                            <input type="text" class="form-control material input-sm" name="plexUsername" placeholder="<?php echo $language->translate("PLEX_USERNAME");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXUSERNAME;?>">
-                                                            <p class="help-text"><?php echo $language->translate("PLEX_USERNAME");?></p>
-
-                                                            <input type="password" class="form-control material input-sm" name="plexPassword" placeholder="<?php echo $language->translate("PLEX_PASSWORD");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPASSWORD;?>">
-                                                            <p class="help-text"><?php echo $language->translate("PLEX_PASSWORD");?></p>
-                                                        </group>
-                                                    </div>
-							
-                                                    <div class="form-group">
-
-                                                        <input type="text" class="form-control material input-sm" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
-                                                        <p class="help-text"><?php echo $language->translate("DATABASE_PATH");?></p>
-
-                                                    </div>
-
-                                                    <div class="form-group">
-
-                                                        <?php echo gotTimezone();?>
-                                                        <p class="help-text"><?php echo $language->translate("SET_TIMEZONE");?></p>
-
-                                                    </div>
-
-                                                    <div class="form-group">
-
-                                                        <input type="text" class="form-control material input-sm" name="titleLogo" placeholder="<?php echo $language->translate("LOGO_URL_TITLE");?>" value="<?php echo TITLELOGO;?>">
-                                                        <p class="help-text"><?php echo $language->translate("LOGO_URL_TITLE");?></p>
-
-                                                    </div>
-
-                                                    <div class="form-group">
-
-                                                        <input type="text" class="form-control material input-sm" name="loadingIcon" placeholder="<?php echo $language->translate("LOADING_ICON_URL");?>" value="<?php echo LOADINGICON;?>">
-                                                        <p class="help-text"><?php echo $language->translate("LOADING_ICON_URL");?></p>
-
-                                                    </div>
                                                     
-                                                    <div class="form-group">
+                                                    <div class="tabbable tabs-with-bg" id="advanced-settings-tabs">
 
-                                                        <input type="text" class="form-control material input-sm" name="cookiePassword" placeholder="<?php echo $language->translate("COOKIE_PASSWORD");?>" value="<?php echo COOKIEPASSWORD;?>">
-                                                        <p class="help-text"><?php echo $language->translate("COOKIE_PASSWORD");?></p>
+                                                        <ul class="nav nav-tabs apps">
 
-                                                    </div>
+                                                            <li class="apps active">
+
+                                                                <a href="#tab-security" data-toggle="tab" aria-expanded="true"><img style="height:40px; width:40px;" src="images/security.png"></a>
+
+                                                            </li>
+
+                                                            <li class="apps">
+
+                                                                <a href="#tab-more-settings" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/gear.png"></a>
+
+                                                            </li>
+
+                                                            <li class="apps">
+
+                                                                <a href="#tab-mail" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/mail.png"></a>
+
+                                                            </li>
+
+                                                            <li class="apps">
+
+                                                                <a href="#tab-more-custom" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/paint.png"></a>
+
+                                                            </li>
+
+                                                        </ul>
+                                                        
+                                                        <div class="tab-content">
+
+                                                            <div class="tab-pane big-box fade active in" id="tab-security">
+                                                                
+                                                                <div class="form-group">
+                                                                    <select id="authType" name="authType" class="form-control material input-sm" required>
+                                                                        <option value="internal" <?php echo (AUTHTYPE=='internal' || !AUTHTYPE?'selected':''); ?>>Organizr <?php echo $language->translate("ONLY"); ?></option>
+                                                                        <!--<option value="external" <?php echo (AUTHTYPE=='external'?'selected':''); ?>>External Only</option>-->
+                                                                        <option value="both" <?php echo (AUTHTYPE=='both'?'selected':''); ?>>Organizr <?php echo $language->translate("BOTH"); ?></option>
+                                                                    </select>
+                                                                    <p class="help-text"><?php echo $language->translate("AUTHTYPE"); ?></p>
+                                                                    <group id="host-selected">
+                                                                        <select id="authBackend" name="authBackend" class="form-control material input-sm" required>
+                                                                            <?php
+                                                                                $backendFunctions = array_filter(get_defined_functions()['user'],function($v) { return strpos($v, 'plugin_auth_') === 0; });
+                                                                                foreach ($backendFunctions as $value) {
+                                                                                    $name = str_replace('plugin_auth_','',$value);
+                                                                                    echo '<option value="'.$name.'" '.(AUTHBACKEND==$name?'selected':'').'>'.ucwords(str_replace('_',' ',$name)).'</option>';
+                                                                                }
+                                                                            ?>
+                                                                        </select>
+                                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKEND"); ?></p>
+
+                                                                        <select id="authBackendCreate" name="authBackendCreate" class="form-control material input-sm" required>
+                                                                            <option value="false" <?php echo (AUTHBACKENDCREATE=='false' || !AUTHBACKENDCREATE?'selected':''); ?>><?php echo $language->translate("NO_CREATE"); ?></option>
+                                                                            <option value="true" <?php echo (AUTHBACKENDCREATE=='true'?'selected':''); ?>><?php echo $language->translate("YES_CREATE"); ?></option>
+                                                                        </select>
+                                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDCREATE"); ?></p>
+                                                                    </group>
+                                                                    <group id="host-other">
+                                                                        <input type="text" class="form-control material input-sm" name="authBackendHost" placeholder="<?php echo $language->translate("AUTHBACKENDHOST");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDHOST;?>">
+                                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDHOST");?></p>
+
+                                                                        <input type="text" class="form-control material input-sm" name="authBackendPort" placeholder="<?php echo $language->translate("AUTHBACKENDPORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDPORT;?>">
+                                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDPORT");?></p>
+                                                                    </group>
+                                                                    <group id="host-ldap">
+                                                                        <input type="text" class="form-control material input-sm" name="authBackendDomain" placeholder="<?php echo $language->translate("AUTHBACKENDDOMAIN");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDDOMAIN;?>">
+                                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDDOMAIN");?></p>
+                                                                    </group>
+                                                                    <group id="host-emby">
+                                                                        <input type="text" class="form-control material input-sm" name="embyToken" placeholder="<?php echo $language->translate("EMBY_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYTOKEN;?>">
+                                                                        <p class="help-text"><?php echo $language->translate("EMBY_TOKEN");?></p>
+                                                                    </group>
+                                                                    <group id="host-plex">
+                                                                        <input type="text" class="form-control material input-sm" name="plexUsername" placeholder="<?php echo $language->translate("PLEX_USERNAME");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXUSERNAME;?>">
+                                                                        <p class="help-text"><?php echo $language->translate("PLEX_USERNAME");?></p>
+
+                                                                        <input type="password" class="form-control material input-sm" name="plexPassword" placeholder="<?php echo $language->translate("PLEX_PASSWORD");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPASSWORD;?>">
+                                                                        <p class="help-text"><?php echo $language->translate("PLEX_PASSWORD");?></p>
+                                                                    </group>
+                                                                </div>
+                                                                
+                                                                <hr>
+                                                                
+                                                                <div class="form-group">
+
+                                                                    <input type="text" class="form-control material input-sm" name="cookiePassword" placeholder="<?php echo $language->translate("COOKIE_PASSWORD");?>" value="<?php echo COOKIEPASSWORD;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("COOKIE_PASSWORD");?></p>
+
+                                                                </div>
+
+                                                                <div class="form-group">
+
+                                                                    <input type="text" class="form-control material input-sm" name="domain" placeholder="<?php echo $language->translate("COOKIE_DOMAIN");?>" value="<?php echo DOMAIN;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("COOKIE_DOMAIN");?></p>
+
+                                                                </div>
+
+                                                                <div class="form-group">
+
+                                                                    <input type="text" class="form-control material input-sm" name="registerPassword" placeholder="<?php echo $language->translate("REGISTER_PASSWORD");?>" value="<?php echo REGISTERPASSWORD;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("REGISTER_PASSWORD");?></p>
+
+                                                                </div>
+                                                                
+                                                                <div class="content-form form-inline">
                                                     
-                                                    <div class="form-group">
+                                                                    <div class="form-group">
+                                                                        <?php  if(MULTIPLELOGIN == "true") : $multipleLogin = "checked"; else : $multipleLogin = ""; endif;?>
+                                                                        <input id="" class="switcher switcher-success" value="false" name="multipleLogin" type="hidden">
+                                                                        <input id="multipleLogin" class="switcher switcher-success" value="true" name="multipleLogin" type="checkbox" <?php echo $multipleLogin;?>>
 
-                                                        <input type="text" class="form-control material input-sm" name="domain" placeholder="<?php echo $language->translate("COOKIE_DOMAIN");?>" value="<?php echo DOMAIN;?>">
-                                                        <p class="help-text"><?php echo $language->translate("COOKIE_DOMAIN");?></p>
+                                                                        <label for="multipleLogin"></label><?php echo $language->translate("MULTIPLE_LOGINS");?>
 
-                                                    </div>
-                                                    
-                                                    <div class="form-group">
+                                                                    </div>
 
-                                                        <input type="text" class="form-control material input-sm" name="registerPassword" placeholder="<?php echo $language->translate("REGISTER_PASSWORD");?>" value="<?php echo REGISTERPASSWORD;?>">
-                                                        <p class="help-text"><?php echo $language->translate("REGISTER_PASSWORD");?></p>
+                                                                </div>
+                                                                
+                                                            </div>
+                                                            
+                                                            <div class="tab-pane big-box fade" id="tab-more-settings">
+                                                                
+                                                                <div class="form-group">
 
-                                                    </div>
-                                                    
-                                                    <div class="form-group">
+                                                                    <input type="text" class="form-control material input-sm" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("DATABASE_PATH");?></p>
 
-                                                        <input type="text" class="form-control material input-sm" name="smtpHost" placeholder="<?php echo $language->translate("SMTP_HOST");?>" value="<?php echo SMTPHOST;?>">
-                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST");?></p>
+                                                                </div>
+
+                                                                <div class="form-group">
+
+                                                                    <?php echo gotTimezone();?>
+                                                                    <p class="help-text"><?php echo $language->translate("SET_TIMEZONE");?></p>
+
+                                                                </div>
+                                                                
+                                                            </div>
+                                                            
+                                                            <div class="tab-pane big-box fade" id="tab-mail">
+                                                                
+                                                                <div class="form-group">
+
+                                                                    <input type="text" class="form-control material input-sm" name="smtpHost" placeholder="<?php echo $language->translate("SMTP_HOST");?>" value="<?php echo SMTPHOST;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST");?></p>
+
+                                                                    <input type="text" class="form-control material input-sm" name="smtpHostPort" placeholder="<?php echo $language->translate("SMTP_HOST_PORT");?>" value="<?php echo SMTPHOSTPORT;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_PORT");?></p>
+
+                                                                    <input type="text" class="form-control material input-sm" name="smtpHostAuth" placeholder="<?php echo $language->translate("SMTP_HOST_AUTH");?>" value="<?php echo SMTPHOSTAUTH;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_AUTH");?></p>
+
+                                                                    <input type="text" class="form-control material input-sm" name="smtpHostUsername" placeholder="<?php echo $language->translate("SMTP_HOST_USERNAME");?>" value="<?php echo SMTPHOSTUSERNAME;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_USERNAME");?></p>
+
+                                                                    <input type="text" class="form-control material input-sm" name="smtpHostPassword" placeholder="<?php echo $language->translate("SMTP_HOST_PASSWORD");?>" value="<?php echo SMTPHOSTPASSWORD;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_PASSWORD");?></p>
+
+                                                                    <input type="text" class="form-control material input-sm" name="smtpHostSenderName" placeholder="<?php echo $language->translate("SMTP_HOST_SENDER_NAME");?>" value="<?php echo SMTPHOSTSENDERNAME;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_SENDER_NAME");?></p>
+
+                                                                    <input type="text" class="form-control material input-sm" name="smtpHostSenderEmail" placeholder="<?php echo $language->translate("SMTP_HOST_SENDER_EMAIL");?>" value="<?php echo SMTPHOSTSENDEREMAIL;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_SENDER_EMAIL");?></p>
+
+                                                                </div>
+                                                                
+                                                                <div class="content-form form-inline">
+
+                                                                    <div class="form-group">
+                                                                        <?php  if(ENABLEMAIL == "true") : $enableMail = "checked"; else : $enableMail = ""; endif;?>
+                                                                        <input id="" class="switcher switcher-success" value="false" name="enableMail" type="hidden">
+                                                                        <input id="enableMail" class="switcher switcher-success" value="true" name="enableMail" type="checkbox" <?php echo $enableMail;?>>
+
+                                                                        <label for="enableMail"></label><?php echo $language->translate("ENABLE_MAIL");?>
+
+                                                                    </div>
+
+                                                                </div>
+                                                                
+                                                            </div>
+                                                            
+                                                            <div class="tab-pane big-box fade" id="tab-more-custom">
+                                                                
+                                                                <div class="form-group">
+
+                                                                    <input type="text" class="form-control material input-sm" name="titleLogo" placeholder="<?php echo $language->translate("LOGO_URL_TITLE");?>" value="<?php echo TITLELOGO;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("LOGO_URL_TITLE");?></p>
+
+                                                                </div>
+
+                                                                <div class="form-group">
+
+                                                                    <input type="text" class="form-control material input-sm" name="loadingIcon" placeholder="<?php echo $language->translate("LOADING_ICON_URL");?>" value="<?php echo LOADINGICON;?>">
+                                                                    <p class="help-text"><?php echo $language->translate("LOADING_ICON_URL");?></p>
+
+                                                                </div>
+                                                                
+                                                                <div class="content-form form-inline">
                                                         
-                                                        <input type="text" class="form-control material input-sm" name="smtpHostPort" placeholder="<?php echo $language->translate("SMTP_HOST_PORT");?>" value="<?php echo SMTPHOSTPORT;?>">
-                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_PORT");?></p>
-                                                        
-                                                        <input type="text" class="form-control material input-sm" name="smtpHostAuth" placeholder="<?php echo $language->translate("SMTP_HOST_AUTH");?>" value="<?php echo SMTPHOSTAUTH;?>">
-                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_AUTH");?></p>
-                                                        
-                                                        <input type="text" class="form-control material input-sm" name="smtpHostUsername" placeholder="<?php echo $language->translate("SMTP_HOST_USERNAME");?>" value="<?php echo SMTPHOSTUSERNAME;?>">
-                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_USERNAME");?></p>
-                                                        
-                                                        <input type="text" class="form-control material input-sm" name="smtpHostPassword" placeholder="<?php echo $language->translate("SMTP_HOST_PASSWORD");?>" value="<?php echo SMTPHOSTPASSWORD;?>">
-                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_PASSWORD");?></p>
-                                                        
-                                                        <input type="text" class="form-control material input-sm" name="smtpHostSenderName" placeholder="<?php echo $language->translate("SMTP_HOST_SENDER_NAME");?>" value="<?php echo SMTPHOSTSENDERNAME;?>">
-                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_SENDER_NAME");?></p>
-                                                        
-                                                        <input type="text" class="form-control material input-sm" name="smtpHostSenderEmail" placeholder="<?php echo $language->translate("SMTP_HOST_SENDER_EMAIL");?>" value="<?php echo SMTPHOSTSENDEREMAIL;?>">
-                                                        <p class="help-text"><?php echo $language->translate("SMTP_HOST_SENDER_EMAIL");?></p>
+                                                                    <div class="form-group">
 
-                                                    </div>
-                                                    
-                                                    <div class="content-form form-inline">
-                                                        
-                                                        <div class="form-group">
+                                                                    <?php 
 
-                                                        <?php 
-                                                        
-                                                        if($notifyExplode[1] == "slidetop") : $slidetopActive = "selected"; else : $slidetopActive = ""; endif;
-                                                        if($notifyExplode[1] == "exploader") : $exploaderActive = "selected"; else : $exploaderActive = ""; endif;
-                                                        if($notifyExplode[1] == "flip") : $flipActive = "selected"; else : $flipActive = ""; endif;
-                                                        if($notifyExplode[1] == "bouncyflip") : $bouncyflipActive = "selected"; else : $bouncyflipActive = ""; endif;
-                                                        if($notifyExplode[1] == "scale") : $scaleActive = "selected"; else : $scaleActive = ""; endif;
-                                                        if($notifyExplode[1] == "genie") : $genieActive = "selected"; else : $genieActive = ""; endif;
-                                                        if($notifyExplode[1] == "jelly") : $jellyActive = "selected"; else : $jellyActive = ""; endif;
-                                                        if($notifyExplode[1] == "slide") : $slideActive = "selected"; else : $slideActive = ""; endif;
-                                                        if($notifyExplode[1] == "boxspinner") : $boxspinnerActive = "selected"; else : $boxspinnerActive = ""; endif;
-                                                        if($notifyExplode[1] == "thumbslider") : $thumbsliderActive = "selected"; else : $thumbsliderActive = ""; endif;
-                                                        
-                                                        ?>
-                                                            <select id="notifyValue" name="notifyEffect" id="notifyEffect" class="form-control material input-sm" required>
+                                                                    if($notifyExplode[1] == "slidetop") : $slidetopActive = "selected"; else : $slidetopActive = ""; endif;
+                                                                    if($notifyExplode[1] == "exploader") : $exploaderActive = "selected"; else : $exploaderActive = ""; endif;
+                                                                    if($notifyExplode[1] == "flip") : $flipActive = "selected"; else : $flipActive = ""; endif;
+                                                                    if($notifyExplode[1] == "bouncyflip") : $bouncyflipActive = "selected"; else : $bouncyflipActive = ""; endif;
+                                                                    if($notifyExplode[1] == "scale") : $scaleActive = "selected"; else : $scaleActive = ""; endif;
+                                                                    if($notifyExplode[1] == "genie") : $genieActive = "selected"; else : $genieActive = ""; endif;
+                                                                    if($notifyExplode[1] == "jelly") : $jellyActive = "selected"; else : $jellyActive = ""; endif;
+                                                                    if($notifyExplode[1] == "slide") : $slideActive = "selected"; else : $slideActive = ""; endif;
+                                                                    if($notifyExplode[1] == "boxspinner") : $boxspinnerActive = "selected"; else : $boxspinnerActive = ""; endif;
+                                                                    if($notifyExplode[1] == "thumbslider") : $thumbsliderActive = "selected"; else : $thumbsliderActive = ""; endif;
 
-                                                                <option value="bar-slidetop" <?=$slidetopActive;?>>Slide From Top</option>
-                                                                <option value="bar-exploader" <?=$exploaderActive;?>>Exploader From Top</option>
-                                                                <option value="attached-flip" <?=$flipActive;?>>Flip</option>
-                                                                <option value="attached-bouncyflip" <?=$bouncyflipActive;?>>Bouncy Flip</option>
-                                                                <option value="growl-scale" <?=$scaleActive;?>>Growl Scale</option>
-                                                                <option value="growl-genie" <?=$genieActive;?>>Growl Genie</option>
-                                                                <option value="growl-jelly" <?=$jellyActive;?>>Growl Jelly</option>
-                                                                <option value="growl-slide" <?=$slideActive;?>>Growl Slide</option>
-                                                                <option value="other-boxspinner" <?=$boxspinnerActive;?>>Spinning Box</option>
-                                                                <option value="other-thumbslider" <?=$thumbsliderActive;?>>Sliding</option>
+                                                                    ?>
+                                                                        <select id="notifyValue" name="notifyEffect" id="notifyEffect" class="form-control material input-sm" required>
 
-                                                            </select>
+                                                                            <option value="bar-slidetop" <?=$slidetopActive;?>>Slide From Top</option>
+                                                                            <option value="bar-exploader" <?=$exploaderActive;?>>Exploader From Top</option>
+                                                                            <option value="attached-flip" <?=$flipActive;?>>Flip</option>
+                                                                            <option value="attached-bouncyflip" <?=$bouncyflipActive;?>>Bouncy Flip</option>
+                                                                            <option value="growl-scale" <?=$scaleActive;?>>Growl Scale</option>
+                                                                            <option value="growl-genie" <?=$genieActive;?>>Growl Genie</option>
+                                                                            <option value="growl-jelly" <?=$jellyActive;?>>Growl Jelly</option>
+                                                                            <option value="growl-slide" <?=$slideActive;?>>Growl Slide</option>
+                                                                            <option value="other-boxspinner" <?=$boxspinnerActive;?>>Spinning Box</option>
+                                                                            <option value="other-thumbslider" <?=$thumbsliderActive;?>>Sliding</option>
 
-                                                            <button id="notifyTest" type="button" class="class='btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-flask"></i></span><?php echo $language->translate("TEST");?></button>
+                                                                        </select>
 
-                                                            <p class="help-text"><?php echo $language->translate("NOTIFICATION_TYPE");?></p>
+                                                                        <button id="notifyTest" type="button" class="class='btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-flask"></i></span><?php echo $language->translate("TEST");?></button>
 
+                                                                        <p class="help-text"><?php echo $language->translate("NOTIFICATION_TYPE");?></p>
+
+                                                                    </div>
+
+                                                                </div>
+                                                                
+                                                                <div class="content-form form-inline">
+
+                                                                    <div class="form-group">
+                                                                        <?php  if(LOADINGSCREEN == "true") : $loadingScreen = "checked"; else : $loadingScreen = ""; endif;?>
+                                                                        <input id="" class="switcher switcher-success" value="false" name="loadingScreen" type="hidden">
+                                                                        <input id="loadingScreen" class="switcher switcher-success" value="true" name="loadingScreen" type="checkbox" <?php echo $loadingScreen;?>>
+
+                                                                        <label for="loadingScreen"></label><?php echo $language->translate("ENABLE_LOADING_SCREEN");?>
+
+                                                                    </div>
+
+                                                                    <div class="form-group">
+                                                                        <?php  if(SLIMBAR == "true") : $enableSlimBar = "checked"; else : $enableSlimBar = ""; endif;?>
+                                                                        <input id="" class="switcher switcher-success" value="false" name="slimBar" type="hidden">
+                                                                        <input id="slimBar" class="switcher switcher-success" value="true" name="slimBar" type="checkbox" <?php echo $enableSlimBar;?>>
+
+                                                                        <label for="slimBar"></label><?php echo $language->translate("ENABLE_SLIMBAR");?>
+
+                                                                    </div>
+
+                                                                    <div class="form-group">
+                                                                        <?php  if(GRAVATAR == "true") : $enableGravatar = "checked"; else : $enableGravatar = ""; endif;?>
+                                                                        <input id="" class="switcher switcher-success" value="false" name="gravatar" type="hidden">
+                                                                        <input id="gravatar" class="switcher switcher-success" value="true" name="gravatar" type="checkbox" <?php echo $enableGravatar;?>>
+
+                                                                        <label for="gravatar"></label><?php echo $language->translate("GRAVATAR");?>
+
+                                                                    </div>
+
+                                                                </div>
+                                                                
+                                                            </div>
+                                                            
                                                         </div>
-                                                    
-                                                    </div>
-                                                    
-                                                    <div class="content-form form-inline">
-                                                    
-                                                        <div class="form-group">
-                                                            <?php  if(MULTIPLELOGIN == "true") : $multipleLogin = "checked"; else : $multipleLogin = ""; endif;?>
-                                                            <input id="" class="switcher switcher-success" value="false" name="multipleLogin" type="hidden">
-                                                            <input id="multipleLogin" class="switcher switcher-success" value="true" name="multipleLogin" type="checkbox" <?php echo $multipleLogin;?>>
-
-                                                            <label for="multipleLogin"></label><?php echo $language->translate("MULTIPLE_LOGINS");?>
-
-                                                        </div>
                                                         
-                                                        <div class="form-group">
-                                                            <?php  if(LOADINGSCREEN == "true") : $loadingScreen = "checked"; else : $loadingScreen = ""; endif;?>
-                                                            <input id="" class="switcher switcher-success" value="false" name="loadingScreen" type="hidden">
-                                                            <input id="loadingScreen" class="switcher switcher-success" value="true" name="loadingScreen" type="checkbox" <?php echo $loadingScreen;?>>
-
-                                                            <label for="loadingScreen"></label><?php echo $language->translate("ENABLE_LOADING_SCREEN");?>
-
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <?php  if(ENABLEMAIL == "true") : $enableMail = "checked"; else : $enableMail = ""; endif;?>
-                                                            <input id="" class="switcher switcher-success" value="false" name="enableMail" type="hidden">
-                                                            <input id="enableMail" class="switcher switcher-success" value="true" name="enableMail" type="checkbox" <?php echo $enableMail;?>>
-
-                                                            <label for="enableMail"></label><?php echo $language->translate("ENABLE_MAIL");?>
-
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <?php  if(SLIMBAR == "true") : $enableSlimBar = "checked"; else : $enableSlimBar = ""; endif;?>
-                                                            <input id="" class="switcher switcher-success" value="false" name="slimBar" type="hidden">
-                                                            <input id="slimBar" class="switcher switcher-success" value="true" name="slimBar" type="checkbox" <?php echo $enableSlimBar;?>>
-
-                                                            <label for="slimBar"></label><?php echo $language->translate("ENABLE_SLIMBAR");?>
-
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <?php  if(GRAVATAR == "true") : $enableGravatar = "checked"; else : $enableGravatar = ""; endif;?>
-                                                            <input id="" class="switcher switcher-success" value="false" name="gravatar" type="hidden">
-                                                            <input id="gravatar" class="switcher switcher-success" value="true" name="gravatar" type="checkbox" <?php echo $enableGravatar;?>>
-
-                                                            <label for="gravatar"></label><?php echo $language->translate("GRAVATAR");?>
-
-                                                        </div>
-                                                        
-                                                    </div>
+                                                    </div>                                                    
                                                     
                                                     <button type="submit" class="class='btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save</button>
 
@@ -3342,20 +3405,20 @@ endif;?></textarea>
             $(".email-header .close-button").click(function () {
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
-                $(".nav").find("li").removeClass("active");
+                $("#settings-list").find("li").removeClass("active");
             });
             
-            $(document).mouseup(function (e)
+             $(document).mouseup(function (e)
 {
                 var container = $(".email-content");
 
                 if (!container.is(e.target) && container.has(e.target).length === 0) {
                     $(".email-content").removeClass("email-active");
                     $('html').removeClass("overhid");
-                    $(".nav").find("li").removeClass("active");
+                    $("#settings-list").find("li").removeClass("active");
                 }
                 
-            });
+            }); 
             
             $( document ).on( 'keydown', function ( e ) {
                 if ( e.keyCode === 27 ) { // ESC
@@ -3364,7 +3427,7 @@ endif;?></textarea>
                     if (!container.is(e.target) && container.has(e.target).length === 0) {
                         $(".email-content").removeClass("email-active");
                         $('html').removeClass("overhid");
-                        $(".nav").find("li").removeClass("active");
+                        $("#settings-list").find("li").removeClass("active");
                     }
                 }
             });
@@ -3601,7 +3664,7 @@ endif;?></textarea>
             //Enable Tooltips
             $('[data-toggle="tooltip"]').tooltip(); 
             //Tab save on reload - might need to delete as we changed tab layout
-            rememberTabSelection('#settingsTabs', !localStorage); 
+            //rememberTabSelection('#settingsTabs', !localStorage); 
         	//AJAX call to github to get version info	
         	$.ajax({
         				
