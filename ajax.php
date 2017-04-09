@@ -43,10 +43,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
 			case 'plex-streams':
 				echo getPlexStreams(12);
 				break;
-			case 'emby-streams':
+			case 'emby-recent':
 				echo getEmbyRecent($_GET['type'], 12);
 				break;
-			case 'plex-streams':
+			case 'plex-recent':
 				echo getPlexRecent($_GET['type'], 12);
 				break;
 			

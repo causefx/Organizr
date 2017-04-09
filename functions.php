@@ -853,6 +853,16 @@ function upgradeCheck() {
 		$config['user_home'] = $config['databaseLocation'].'users/';
 		unset($config['databaseLocation']);
 		
+		// Turn Off Emby And Plex Recent
+		$config["plexRecentMovie"] = "false";
+		$config["plexRecentTV"] = "false";
+		$config["plexRecentMusic"] = "false";
+		$config["plexPlayingNow"] = "false";
+		$config["embyRecentMovie"] = "true";
+		$config["embyRecentTV"] = "true";
+		$config["embyRecentMusic"] = "false";
+		$config["embyPlayingNow"] = "true";
+		
 		$createConfigSuccess = createConfig($config, 'config/config.php', $nest = 0);
 		
 		// Create new config
