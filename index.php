@@ -29,6 +29,9 @@ $baseURL = "";
 // Load functions
 require_once("functions.php");
 
+//Upgrade Check
+upgradeCheck();
+
 // Get Action
 if(isset($_POST['action'])) {
     $action = $_POST['action'];
@@ -40,6 +43,7 @@ if(!file_exists('config/config.php')) {
 	if($action == "createLocation") {
 		if (isset($_POST['database_Location'])) {
 			$_POST['database_Location'] = str_replace('//','/',$_POST['database_Location'].'/');
+            if(substr($_POST['database_Location'], -1) != "/") : $_POST['database_Location'] = $_POST['database_Location'] . "/"; endif;
 			$_POST['USER_HOME'] = $_POST['database_Location'].'users/';
 		}
 		if (file_exists($_POST['database_Location'])) {
