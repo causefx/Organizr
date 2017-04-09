@@ -872,14 +872,16 @@ function upgradeCheck() {
 		unset($config['databaseLocation']);
 		
 		// Turn Off Emby And Plex Recent
-		$config["plexRecentMovie"] = "false";
-		$config["plexRecentTV"] = "false";
-		$config["plexRecentMusic"] = "false";
-		$config["plexPlayingNow"] = "false";
-		$config["embyRecentMovie"] = "true";
-		$config["embyRecentTV"] = "true";
-		$config["embyRecentMusic"] = "false";
-		$config["embyPlayingNow"] = "true";
+		$config["embyURL"] = $config["embyURL"].(!empty($config["embyPort"])?':'.$config["embyPort"]:'');
+		unset($config["embyPort"]);
+		$config["plexURL"] = $config["plexURL"].(!empty($config["plexPort"])?':'.$config["plexPort"]:'');
+		unset($config["plexPort"]);
+		$config["nzbgetURL"] = $config["nzbgetURL"].(!empty($config["nzbgetPort"])?':'.$config["nzbgetPort"]:'');
+		unset($config["nzbgetPort"]);
+		$config["sabnzbdURL"] = $config["sabnzbdURL"].(!empty($config["sabnzbdPort"])?':'.$config["sabnzbdPort"]:'');
+		unset($config["sabnzbdPort"]);
+		$config["headphonesURL"] = $config["headphonesURL"].(!empty($config["headphonesPort"])?':'.$config["headphonesPort"]:'');
+		unset($config["headphonesPort"]);
 		
 		$createConfigSuccess = createConfig($config, 'config/config.php', $nest = 0);
 		
@@ -890,6 +892,8 @@ function upgradeCheck() {
 			
 			// Remove Old ini file
 			unlink('databaseLocation.ini.php');
+		} else {
+			debug_out('Couldn\'t create updated configuration.' ,1);
 		}
 	}
 	
@@ -1343,18 +1347,7 @@ function getRadarrCalendar($array){
 }
 
 function nzbgetConnect($url, $port, $username, $password, $list){
-    
-    $urlCheck = stripos($url, "http");
-
-    if ($urlCheck === false) {
-        
-        $url = "http://" . $url;
-    
-    }
-    
-    if($port !== ""){ $url = $url . ":" . $port; }
-    
-    $address = $url;
+    $url = qualifyURL(NZBGETURL);
     
     $api = file_get_contents("$url/$username:$password/jsonrpc/$list");
                     
@@ -1413,18 +1406,7 @@ function nzbgetConnect($url, $port, $username, $password, $list){
 }
 
 function sabnzbdConnect($url, $port, $key, $list){
-    
-    $urlCheck = stripos($url, "http");
-
-    if ($urlCheck === false) {
-        
-        $url = "http://" . $url;
-    
-    }
-    
-    if($port !== ""){ $url = $url . ":" . $port; }
-    
-    $address = $url;
+    $url = qualifyURL(SABNZBDURL);
 
     $api = file_get_contents("$url/api?mode=$list&output=json&apikey=$key");
                     
@@ -1473,27 +1455,16 @@ function sabnzbdConnect($url, $port, $key, $list){
 }
 
 function getHeadphonesCalendar($url, $port, $key, $list){
-
-    $urlCheck = stripos($url, "http");
-
-    if ($urlCheck === false) {
-        
-        $url = "http://" . $url;
+	$url = qualifyURL(HEADPHONESURL);
     
-    }
+    $api = file_get_contents($url."/api?apikey=".$key."&cmd=$list");
     
-    if($port !== ""){ $url = $url . ":" . $port; }
-    
-    $address = $url;
-    
-    $api = file_get_contents($address."/api?apikey=".$key."&cmd=$list");
-                    
     $api = json_decode($api, true);
     
     $i = 0;
     
     $gotCalendar = "";
-
+	
     foreach($api AS $child) {
 
         if($child['Status'] == "Wanted"){

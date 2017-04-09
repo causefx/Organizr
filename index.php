@@ -899,7 +899,7 @@ endif; ?>
                                                 
                                                 <?php 
                                                 
-                                                if(file_exists(dirname(__DIR__) . '/users.db') || file_exists(__DIR__ . '/users.db')) : 
+                                                if(file_exists(dirname(__DIR__) . '/users.db') || file_exists(__DIR__ . '/users.db') || file_exists(__DIR__ . '/config/users.db')) : 
                                                 
                                                 echo '<h5 class="text-center red">';
                                                 echo $language->translate("DONT_WORRY");

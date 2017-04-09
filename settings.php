@@ -1327,14 +1327,7 @@ endif;?></textarea>
                                                             <div class="form-group">
 
                                                                 <input type="text" class="form-control material input-sm" name="plexURL" placeholder="<?php echo $language->translate("PLEX_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("PLEX_URL");?></p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="plexPort" placeholder="<?php echo $language->translate("PLEX_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPORT;?>">
-                                                                <p class="help-text"><?php echo $language->translate("PLEX_PORT");?></p>
+                                                                <p class="help-text"><?php echo $language->translate("PLEX_URL");?> - i.e. http://hostname:32400</p>
 
                                                             </div>
 
@@ -1392,14 +1385,7 @@ endif;?></textarea>
                                                             <div class="form-group">
 
                                                                 <input type="text" class="form-control material input-sm" name="embyURL" placeholder="<?php echo $language->translate("EMBY_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("EMBY_URL");?></p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="embyPort" placeholder="<?php echo $language->translate("EMBY_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYPORT;?>">
-                                                                <p class="help-text"><?php echo $language->translate("EMBY_PORT");?></p>
+                                                                <p class="help-text"><?php echo $language->translate("EMBY_URL");?> - i.e. http://hostname:8096 | hostname/emby | http://hostname:8096/emby</p>
 
                                                             </div>
 
