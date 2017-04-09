@@ -278,7 +278,7 @@ endif;
 if($action == 'createLocation' || $action == 'homepageSettings') {
 	unset($_POST['action']);
 	updateConfig($_POST);
-	echo "<script>window.parent.location.reload(true);</script>";
+	echo "<script>setTimeout(function() {window.location.href = window.location.href},1500);</script>";
 }
                 
 if(!isset($_POST['op'])) :
@@ -1800,7 +1800,7 @@ endif;?></textarea>
                                                                 
                                                                 <div class="form-group">
 
-                                                                    <input type="text" class="form-control material input-sm" name="databaseLocation" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
+                                                                    <input type="text" class="form-control material input-sm" name="database_Location" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
                                                                     <p class="help-text"><?php echo $language->translate("DATABASE_PATH");?></p>
 
                                                                 </div>
