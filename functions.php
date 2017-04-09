@@ -427,7 +427,7 @@ function resolveEmbyItem($address, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="image.php?source=emby&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=emby-image&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
 }
 
 // Format item from Plex for Carousel
@@ -466,7 +466,7 @@ function resolvePlexItem($server, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="image.php?source=plex&img='.$item['thumb'].'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="image.php?a=plex-image&img='.$item['thumb'].'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
 }
 
 // Create Carousel
@@ -497,86 +497,66 @@ function outputCarousel($header, $size, $type, $items) {
 }
 
 // Get Now Playing Streams From Emby
-function getEmbyStreams($url, $port, $token, $size, $header) {
-    if (stripos($url, "http") === false) {
-        $url = "http://" . $url;
-    }
-    
-    if ($port !== "") { 
-		$url = $url . ":" . $port;
-	}
-    
-    $address = $url;
+function getEmbyStreams($size) {
+	$address = qualifyURL(EMBYURL);
 	
-	$api = json_decode(file_get_contents($address.'/Sessions?api_key='.$token),true);
+	$api = json_decode(file_get_contents($address.'/Sessions?api_key='.EMBYTOKEN),true);
 	
 	$playingItems = array();
 	foreach($api as $key => $value) {
 		if (isset($value['NowPlayingItem'])) {
-			$playingItems[] = resolveEmbyItem($address, $token, $value['NowPlayingItem']);
+			$playingItems[] = resolveEmbyItem($address, EMBYTOKEN, $value['NowPlayingItem']);
 		}
 	}
 	
-	return outputCarousel($header, $size, 'streams-emby', $playingItems);
+	return outputCarousel(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems);
 }
 
 // Get Now Playing Streams From Plex
-function getPlexStreams($url, $port, $token, $size, $header){
-    if (stripos($url, "http") === false) {
-        $url = "http://" . $url;
-    }
-    
-    if ($port !== "") { 
-		$url = $url . ":" . $port;
-	}
-    
-    $address = $url;
+function getPlexStreams($size){
+    $address = qualifyURL(PLEXURL);
     
 	// Perform API requests
-    $api = file_get_contents($address."/status/sessions?X-Plex-Token=".$token);
+    $api = file_get_contents($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".$token));
+    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
     
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
 	
 	$items = array();
 	foreach($api AS $child) {
-		$items[] = resolvePlexItem($gotServer, $token, $child);
+		$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child);
 	}
 	
-	return outputCarousel($header, $size, 'streams-plex', $items);
+	return outputCarousel(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items);
 }
 
 // Get Recent Content From Emby
-function getEmbyRecent($url, $port, $type, $token, $size, $header) {
-    if (stripos($url, "http") === false) {
-        $url = "http://" . $url;
-    }
-    
-    if ($port !== "") { 
-		$url = $url . ":" . $port;
-	}
-    
-    $address = $url;
+function getEmbyRecent($type, $size) {
+    $address = qualifyURL(EMBYURL);
 	
 	// Resolve Types
 	switch ($type) {
 		case 'movie':
 			$embyTypeQuery = 'IncludeItemTypes=Movie&';
+			$header = translate('MOVIES');
 			break;
 		case 'season':
 			$embyTypeQuery = 'IncludeItemTypes=Episode&';
+			$header = translate('TV_SHOWS');
 			break;
 		case 'album':
 			$embyTypeQuery = 'IncludeItemTypes=MusicAlbum&';
+			$header = translate('MUSIC');
 			break;
 		default:
 			$embyTypeQuery = '';
+			$header = translate('RECENT_CONTENT');
 	}
 	
 	// Get A User
-	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.$token),true);
+	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
 	foreach ($userIds as $value) { // Scan for admin user
 		$userId = $value['Id'];
 		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
@@ -585,33 +565,40 @@ function getEmbyRecent($url, $port, $type, $token, $size, $header) {
 	}
 	
 	// Get the latest Items
-	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.$token),true);
+	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.EMBYTOKEN),true);
 	
 	// For Each Item In Category
 	$items = array();
 	foreach ($latest as $k => $v) {
-		$items[] = resolveEmbyItem($address, $token, $v);
+		$items[] = resolveEmbyItem($address, EMBYTOKEN, $v);
 	}
 	
 	return outputCarousel($header, $size, $type.'-emby', $items);
 }
 
 // Get Recent Content From Plex
-function getPlexRecent($url, $port, $type, $token, $size, $header){
-    if (stripos($url, "http") === false) {
-        $url = "http://" . $url;
-    }
+function getPlexRecent($type, $size){
+    $address = qualifyURL(PLEXURL);
     
-    if ($port !== "") { 
-		$url = $url . ":" . $port;
+	// Resolve Types
+	switch ($type) {
+		case 'movie':
+			$header = translate('MOVIES');
+			break;
+		case 'season':
+			$header = translate('TV_SHOWS');
+			break;
+		case 'album':
+			$header = translate('MUSIC');
+			break;
+		default:
+			$header = translate('RECENT_CONTENT');
 	}
-    
-    $address = $url;
-    
+	
 	// Perform Requests
-    $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".$token);
+    $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".$token));
+    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
 	
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
@@ -619,11 +606,46 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
 	$items = array();
 	foreach($api AS $child) {
 		if($child['type'] == $type){
-			$items[] = resolvePlexItem($gotServer, $token, $child);
+			$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child);
 		}
 	}
 	
 	return outputCarousel($header, $size, $type.'-plex', $items);
+}
+
+// Get Image From Emby
+function getEmbyImage() {
+	$embyAddress = qualifyURL(EMBYURL);
+	
+	$itemId = $_GET['img'];
+	$imgParams = array();
+	if (isset($_GET['height'])) { $imgParams['height'] = 'maxHeight='.$_GET['height']; }
+	if (isset($_GET['width'])) { $imgParams['width'] = 'maxWidth='.$_GET['width']; }
+
+	if(isset($itemId)) {
+		$image_src = $embyAddress . '/Items/'.$itemId.'/Images/Primary?'.implode('&', $imgParams);
+		header('Content-type: image/jpeg');
+		readfile($image_src);
+	} else {
+		debug_out('Invalid Request',1);
+	}
+}
+
+// Get Image From Plex
+function getPlexImage() {
+	$plexAddress = qualifyURL(PLEXURL);
+	
+	$image_url = $_GET['img'];
+	$image_height = $_GET['height'];
+	$image_width = $_GET['width'];
+	
+	if(isset($image_url) && isset($image_height) && isset($image_width)) {
+		$image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . PLEXTOKEN;
+		header('Content-type: image/jpeg');
+		readfile($image_src);
+	} else {
+		echo "Invalid Plex Request";	
+	}
 }
 
 // Simplier access to class
@@ -712,6 +734,7 @@ function loadConfig($path = 'config/config.php') {
 	}
 }
 
+// Commit new values to the configuration
 function updateConfig($new, $current = false) {
 	// Get config if not supplied
 	if (!$current) {
@@ -770,6 +793,35 @@ function configLazy($path) {
 	return $config;
 }
 
+// Qualify URL
+function qualifyURL($url) {
+	// Get Digest
+	$digest = parse_url($url);
+	
+	// http/https
+	if (!isset($digest['scheme'])) {
+		if (isset($digest['port']) && in_array($digest['port'], array(80,8080,8096))) {
+			$scheme = 'http';
+		} else {
+			$scheme = 'https';
+		}
+	} else {
+		$scheme = $digest['scheme'];
+	}
+	
+	// Host
+	$host = (isset($digest['host'])?$digest['host']:'');
+	
+	// Port
+	$port = (isset($digest['port'])?':'.$digest['port']:'');
+	
+	// Path
+	$path = (isset($digest['path'])?$digest['path']:'');
+	
+	// Output
+	return $scheme.'://'.$host.$port.$path;
+}
+
 // Function to be called at top of each to allow upgrading environment as the spec changes
 function upgradeCheck() {
 	// Upgrade to 1.31
@@ -819,6 +871,47 @@ function upgradeCheck() {
 // Check if all software dependancies are met
 function dependCheck() {
 	return true;
+}
+
+// Process file uploads
+function uploadFiles($path, $ext_mask = null) {
+	if (isset($_FILES) && count($_FILES)) {
+		require_once('class.uploader.php');
+
+		$uploader = new Uploader();
+		$data = $uploader->upload($_FILES['files'], array(
+			'limit' => 10,
+			'maxSize' => 10,
+			'extensions' => $ext_mask,
+			'required' => false,
+			'uploadDir' => str_replace('//','/',$path.'/'),
+			'title' => array('name'),
+			'removeFiles' => true,
+			'replace' => true,
+		));
+
+		if($data['isComplete']){
+			$files = $data['data'];
+
+			echo json_encode($files['metas'][0]['name']);
+		}
+
+		if($data['hasErrors']){
+			$errors = $data['errors'];
+			echo json_encode($errors);
+		}
+	} else {
+		echo json_encode('No files submitted!');
+	}
+}
+
+// Remove file
+function removeFiles($path) {
+    if(is_file($path)) {
+        unlink($path);
+    } else {
+		echo json_encode('No file specified for removal!');
+	}
 }
 
 

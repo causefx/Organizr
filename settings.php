@@ -8,7 +8,6 @@ ini_set("error_reporting", E_ALL | E_STRICT);
 require_once("user.php");
 require_once("functions.php");
 $USER = new User("registration_callback");
-require_once("translate.php");
 
 if(!$USER->authenticated) :
 
@@ -1188,7 +1187,7 @@ endif; ?>
                                         
                                     </form>
                                     
-                                     <form style="display: none" id="editCssForm" method="POST" action="submitCSS.php">
+                                     <form style="display: none" id="editCssForm" method="POST" action="ajax.php">
                                          
                                          <button class="btn waves btn-labeled btn-warning btn-sm pull-left text-uppercase waves-effect waves-float" type="button" id="backToThemeButton">
 

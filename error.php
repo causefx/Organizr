@@ -52,7 +52,6 @@ function registration_callback($username, $email, $userdir)
 }
 
 require_once("user.php");
-require_once("translate.php");
 $USER = new User("registration_callback");
 
 $dbfile = DATABASE_LOCATION.'users.db';

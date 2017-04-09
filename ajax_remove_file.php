@@ -1,8 +1,6 @@
 <?php
-if(isset($_POST['file'])){
-    $file = 'images/' . $_POST['file'];
-    if(file_exists($file)){
-        unlink($file);
-    }
-}
+	// This file exists for legacy reasons
+	
+	$action = 'remove-images';
+	require_once('ajax.php');
 ?>
