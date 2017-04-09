@@ -2739,7 +2739,7 @@ endif;?></textarea>
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
         <script src="js/jquery.filer.min.js" type="text/javascript"></script>
-	    <script src="js/custom.js" type="text/javascript"></script>
+	    <script src="js/custom.js?v=<?php echo INSTALLEDVERSION; ?>" type="text/javascript"></script>
 	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
         
         <!--Data Tables-->
