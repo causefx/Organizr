@@ -152,34 +152,39 @@ if (function_exists('curl_version')) :
 			'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD), 
 		);
 		$userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
-		//Build User List array
-		foreach($userXML AS $child) {
-			if(isset($child['username']) && $child['username'] != ""){
-				array_push($approvedUsers, $child['username']);
+		
+		if (is_array($userXML) || is_object($userXML)) {
+			//Build User List array
+			$isUser = false;
+			$usernameLower = strtolower($username);
+			foreach($userXML AS $child) {
+				if(isset($child['username']) && strtolower($child['username']) == $usernameLower) {
+					$isUser = true;
+					break;
+				}
 			}
-		}
-		//Check If User Is Approved
-		if(!in_arrayi("$username", $approvedUsers)){
-			return false;
-		}
-		//Login User
-		$connectURL = 'https://plex.tv/users/sign_in.json';
-		$headers = array(
-			'Accept'=> 'application/json',
-			'Content-Type' => 'application/x-www-form-urlencoded',
-			'X-Plex-Product' => 'Organizr',
-			'X-Plex-Version' => '1.0',
-			'X-Plex-Client-Identifier' => '01010101-10101010',
-		);
-		$body = array(
-			'user[login]' => $username,
-			'user[password]' => $password,
-		);
-		$result = curl_post($connectURL, $body, $headers);
-		if (isset($result['content'])) {
-			$json = json_decode($result['content'], true);
-			if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && $json['user']['username'] == $username) {
-				return true;
+			
+			if ($isUser) {
+				//Login User
+				$connectURL = 'https://plex.tv/users/sign_in.json';
+				$headers = array(
+					'Accept'=> 'application/json',
+					'Content-Type' => 'application/x-www-form-urlencoded',
+					'X-Plex-Product' => 'Organizr',
+					'X-Plex-Version' => '1.0',
+					'X-Plex-Client-Identifier' => '01010101-10101010',
+				);
+				$body = array(
+					'user[login]' => $username,
+					'user[password]' => $password,
+				);
+				$result = curl_post($connectURL, $body, $headers);
+				if (isset($result['content'])) {
+					$json = json_decode($result['content'], true);
+					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && $json['user']['username'] == $username) {
+						return true;
+					}
+				}
 			}
 		}
 		return false;
@@ -792,8 +797,8 @@ function upgradeCheck() {
 		$config = parse_ini_file('databaseLocation.ini.php', true);
 		
 		// Refactor
-		$config['database_Location'] = $config['databaseLocation'];
-		$config['user_home'] = $config['databaseLocation'];
+		$config['database_Location'] = str_replace('//','/',$config['databaseLocation'].'/');
+		$config['user_home'] = $config['databaseLocation'].'users/';
 		unset($config['databaseLocation']);
 		
 		$createConfigSuccess = createConfig($config, 'config/config.php', $nest = 0);
