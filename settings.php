@@ -1497,14 +1497,7 @@ endif;?></textarea>
                                                             <div class="form-group">
 
                                                                 <input type="text" class="form-control material input-sm" name="nzbgetURL" placeholder="<?php echo $language->translate("NZBGET_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo NZBGETURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("NZBGET_URL");?></p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="nzbgetPort" placeholder="<?php echo $language->translate("NZBGET_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo NZBGETPORT;?>">
-                                                                <p class="help-text"><?php echo $language->translate("NZBGET_PORT");?></p>
+                                                                <p class="help-text"><?php echo $language->translate("NZBGET_URL");?> - i.e. http://hostname:6789</p>
 
                                                             </div>
 
@@ -1529,14 +1522,7 @@ endif;?></textarea>
                                                             <div class="form-group">
 
                                                                 <input type="text" class="form-control material input-sm" name="sabnzbdURL" placeholder="<?php echo $language->translate("SABNZBD_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo SABNZBDURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("SABNZBD_URL");?></p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="sabnzbdPort" placeholder="<?php echo $language->translate("SABNZBD_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo SABNZBDPORT;?>">
-                                                                <p class="help-text"><?php echo $language->translate("SABNZBD_PORT");?></p>
+                                                                <p class="help-text"><?php echo $language->translate("SABNZBD_URL");?> - i.e. http://hostname:8080 | http://hostname/sabnzbd | http://hostname:8080/sabnzbd</p>
 
                                                             </div>
 
@@ -1554,14 +1540,7 @@ endif;?></textarea>
                                                             <div class="form-group">
 
                                                                 <input type="text" class="form-control material input-sm" name="headphonesURL" placeholder="<?php echo $language->translate("HEADPHONES_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo HEADPHONESURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("HEADPHONES_URL");?></p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="headphonesPort" placeholder="<?php echo $language->translate("HEADPHONES_PORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo HEADPHONESPORT;?>">
-                                                                <p class="help-text"><?php echo $language->translate("HEADPHONES_PORT");?></p>
+                                                                <p class="help-text"><?php echo $language->translate("HEADPHONES_URL");?> - i.e. http://hostname:8181</p>
 
                                                             </div>
 
