@@ -12,7 +12,7 @@
 	require_once('functions.php');
 	
 	// Define Version
-	 define('INSTALLEDVERSION', '1.31');
+	 define('INSTALLEDVERSION', '1.32');
 	 
     // Autoload frameworks
 	require_once(__DIR__ . '/vendor/autoload.php');

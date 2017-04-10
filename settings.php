@@ -278,9 +278,8 @@ endif;
 if($action == 'createLocation' || $action == 'homepageSettings') {
     unset($_POST['action']);
     updateConfig($_POST);
-    sleep(2.5);
-    header("Location: settings.php");
-    die();
+    echo "<script>parent.notify('<strong>".$language->translate("SETTINGS_SAVED")."</strong>','floppy-o','success','5000', '$notifyExplode[0]', '$notifyExplode[1]');</script>";
+    echo "<script>setTimeout(function() {window.location.href = window.location.href},1500);</script>";
 }
                 
 if(!isset($_POST['op'])) :
