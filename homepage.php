@@ -578,7 +578,7 @@ endif; ?>
 <?php if(SICKRAGEURL != ""){ echo getSickrageCalendarWanted($sickrage->future()); echo getSickrageCalendarHistory($sickrage->history("100","downloaded")); } ?>
 <?php if(SONARRURL != ""){ echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); } ?>
 <?php if(RADARRURL != ""){ echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); } ?>                 
-<?php if(HEADPHONESURL != ""){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getHistory"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getWanted"); } ?>                                
+<?php if(HEADPHONESURL != ""){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); } ?>                                
                     ],
                                             
                     eventRender: function eventRender( event, element, view ) {
