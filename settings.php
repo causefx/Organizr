@@ -1723,7 +1723,12 @@ endif;?></textarea>
                                                                                 $backendFunctions = array_filter(get_defined_functions()['user'],function($v) { return strpos($v, 'plugin_auth_') === 0; });
                                                                                 foreach ($backendFunctions as $value) {
                                                                                     $name = str_replace('plugin_auth_','',$value);
-                                                                                    echo '<option value="'.$name.'" '.(AUTHBACKEND==$name?'selected':'').'>'.ucwords(str_replace('_',' ',$name)).'</option>';
+																					if (strpos($name, 'disabled') === false) {
+																						echo '<option value="'.$name.'" '.(AUTHBACKEND==$name?'selected':'').'>'.ucwords(str_replace('_',' ',$name)).'</option>';
+																					} else {
+																						echo '<option disabled>'.$value().'</option>';
+																					}
+                                                                                    
                                                                                 }
                                                                             ?>
                                                                         </select>

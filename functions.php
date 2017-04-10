@@ -21,6 +21,11 @@ if (function_exists('ldap_connect')) :
 		}
 		return false;
 	}
+else :
+	// Ldap Auth Missing Dependancy
+	function plugin_auth_ldap_disabled() {
+		return 'Plex - Disabled (Dependancy: php-ldap missing!)';
+	}
 endif;
 
 // Pass credentials to FTP backend
@@ -188,6 +193,21 @@ if (function_exists('curl_version')) :
 			}
 		}
 		return false;
+	}
+else :
+	// Plex Auth Missing Dependancy
+	function plugin_auth_plex_disabled() {
+		return 'Plex - Disabled (Dependancy: php-curl missing!)';
+	}
+	
+	// Emby Connect Auth Missing Dependancy
+	function plugin_auth_emby_connect_disabled() {
+		return 'Emby Connect - Disabled (Dependancy: php-curl missing!)';
+	}
+	
+	// Emby Both Auth Missing Dependancy
+	function plugin_auth_emby_both_disabled() {
+		return 'Emby Both - Disabled (Dependancy: php-curl missing!)';
 	}
 endif;
 // ==== Auth Plugins END ====
