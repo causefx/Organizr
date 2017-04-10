@@ -818,7 +818,7 @@ function qualifyURL($url) {
 	
 	// http/https
 	if (!isset($digest['scheme'])) {
-		if (isset($digest['port']) && in_array($digest['port'], array(80,8080,8096))) {
+		if (isset($digest['port']) && in_array($digest['port'], array(80,8080,8096,32400,7878,8989,8182,8081,6789))) {
 			$scheme = 'http';
 		} else {
 			$scheme = 'https';
