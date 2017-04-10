@@ -818,7 +818,7 @@ function qualifyURL($url) {
 	
 	// http/https
 	if (!isset($digest['scheme'])) {
-		if (isset($digest['port']) && in_array($digest['port'], array(80,8080,8096))) {
+		if (isset($digest['port']) && in_array($digest['port'], array(80,8080,8096,32400,7878,8989,8182,8081,6789))) {
 			$scheme = 'http';
 		} else {
 			$scheme = 'https';
@@ -1346,7 +1346,7 @@ function getRadarrCalendar($array){
 
 }
 
-function nzbgetConnect($url, $port, $username, $password, $list){
+function nzbgetConnect($url, $username, $password, $list){
     $url = qualifyURL(NZBGETURL);
     
     $api = file_get_contents("$url/$username:$password/jsonrpc/$list");
@@ -1405,7 +1405,7 @@ function nzbgetConnect($url, $port, $username, $password, $list){
 
 }
 
-function sabnzbdConnect($url, $port, $key, $list){
+function sabnzbdConnect($url, $key, $list){
     $url = qualifyURL(SABNZBDURL);
 
     $api = file_get_contents("$url/api?mode=$list&output=json&apikey=$key");
@@ -1454,7 +1454,7 @@ function sabnzbdConnect($url, $port, $key, $list){
 
 }
 
-function getHeadphonesCalendar($url, $port, $key, $list){
+function getHeadphonesCalendar($url, $key, $list){
 	$url = qualifyURL(HEADPHONESURL);
     
     $api = file_get_contents($url."/api?apikey=".$key."&cmd=$list");

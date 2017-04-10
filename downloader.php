@@ -12,7 +12,6 @@ isset($_GET['list']) ? $list = $_GET['list'] : die("Error");
 if($downloader == "nzbget"){
     
     $url = NZBGETURL;
-    $port = NZBGETPORT;
     $username = NZBGETUSERNAME;
     $password = NZBGETPASSWORD;
 
@@ -23,8 +22,6 @@ if($downloader == "nzbget"){
         $url = "http://" . $url;
 
     }
-
-    if($port !== ""){ $url = $url . ":" . $port; }
 
     $address = $url;
 
@@ -95,7 +92,6 @@ if($downloader == "nzbget"){
 if($downloader == "sabnzbd"){
     
     $url = SABNZBDURL;
-    $port = SABNZBDPORT;
     $key = SABNZBDKEY;
     
     $urlCheck = stripos($url, "http");
@@ -105,8 +101,6 @@ if($downloader == "sabnzbd"){
         $url = "http://" . $url;
     
     }
-    
-    if($port !== ""){ $url = $url . ":" . $port; }
     
     $address = $url;
 
