@@ -2,12 +2,6 @@
 
 $data = false;
 
-function registration_callback($username, $email, $userdir)
-{
-    global $data;
-    $data = array($username, $email, $userdir);
-}
-
 function getBannedUsers($string){
     
     if (strpos($string, ',') !== false) {
