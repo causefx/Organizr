@@ -116,7 +116,7 @@ function getFilePermission($file) {
     endif;
 }
 
-$db = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+$db = DATABASE_LOCATION.'users.db';
 $folder = USER_HOME;
 
 ?>

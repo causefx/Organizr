@@ -8,17 +8,20 @@ function debug_out($variable, $die = false) {
 }
 
 // ==== Auth Plugins START ====
-// Pass credentials to LDAP backend
-function plugin_auth_ldap($username, $password) {
-	// returns true or false
-	$ldap = ldap_connect(AUTHBACKENDHOST.(AUTHBACKENDPORT?':'.AUTHBACKENDPORT:'389'));
-	if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
-		return true;
-	} else {
+
+if (function_exists('ldap_connect')) :
+	// Pass credentials to LDAP backend
+	function plugin_auth_ldap($username, $password) {
+		// returns true or false
+		$ldap = ldap_connect(AUTHBACKENDHOST.(AUTHBACKENDPORT?':'.AUTHBACKENDPORT:'389'));
+		if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
+			return true;
+		} else {
+			return false;
+		}
 		return false;
 	}
-	return false;
-}
+endif;
 
 // Pass credentials to FTP backend
 function plugin_auth_ftp($username, $password) {
@@ -41,60 +44,6 @@ function plugin_auth_ftp($username, $password) {
 	} else {
 		return false;
 	}
-	return false;
-}
-
-// Authenticate Against Emby Local (first) and Emby Connect
-function plugin_auth_emby_all($username, $password) {
-	return plugin_auth_emby_local($username, $password) || plugin_auth_emby_connect($username, $password);
-}
-
-// Authenicate against emby connect
-function plugin_auth_emby_connect($username, $password) {
-	$urlCheck = stripos(AUTHBACKENDHOST, "http");
-	if ($urlCheck === false) {
-		$embyAddress = "http://" . AUTHBACKENDHOST;
-	} else {
-		$embyAddress = AUTHBACKENDHOST;	
-	}
-	if(AUTHBACKENDPORT !== "") { $embyAddress .= ":" . AUTHBACKENDPORT; }
-	
-	// Get A User
-	$connectId = '';
-	$userIds = json_decode(file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
-	if (is_array($userIds)) {
-		foreach ($userIds as $key => $value) { // Scan for this user
-			if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
-				if ($value['ConnectUserName'] == $username || $value['Name'] == $username) {
-					$connectId = $value['ConnectUserId'];
-					break;
-				}
-				
-			}
-		}
-		
-		if ($connectId) {
-			$connectURL = 'https://connect.emby.media/service/user/authenticate';
-			$headers = array(
-				'Accept'=> 'application/json',
-				'Content-Type' => 'application/x-www-form-urlencoded',
-			);
-			$body = array(
-				'nameOrEmail' => $username,
-				'rawpw' => $password,
-			);
-			
-			$result = curl_post($connectURL, $body, $headers);
-			
-			if (isset($result['content'])) {
-				$json = json_decode($result['content'], true);
-				if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
-					return true;
-				}
-			}
-		}
-	}
-	
 	return false;
 }
 
@@ -134,47 +83,113 @@ function plugin_auth_emby_local($username, $password) {
 	return false;
 }
 
-// Pass credentials to Plex Backend
-function plugin_auth_plex($username, $password) {
-    //Get User List
-    $approvedUsers = array();
-    $userURL = 'https://plex.tv/pms/friends/all';
-    $userHeaders = array(
-        'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD), 
-    );
-    $userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
-    //Build User List array
-    foreach($userXML AS $child) {
-        if(isset($child['username']) && $child['username'] != ""){
-            array_push($approvedUsers, $child['username']);
-        }
-    }
-    //Check If User Is Approved
-    if(!in_arrayi("$username", $approvedUsers)){
-        return false;
-    }
-    //Login User
-    $connectURL = 'https://plex.tv/users/sign_in.json';
-    $headers = array(
-        'Accept'=> 'application/json',
-        'Content-Type' => 'application/x-www-form-urlencoded',
-        'X-Plex-Product' => 'Organizr',
-        'X-Plex-Version' => '1.0',
-        'X-Plex-Client-Identifier' => '01010101-10101010',
-    );
-    $body = array(
-        'user[login]' => $username,
-        'user[password]' => $password,
-    );
-    $result = curl_post($connectURL, $body, $headers);
-    if (isset($result['content'])) {
-        $json = json_decode($result['content'], true);
-        if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && $json['user']['username'] == $username) {
-            return true;
-        }
-    }
-    return false;
-}
+if (function_exists('curl_version')) :
+	// Authenticate Against Emby Local (first) and Emby Connect
+	function plugin_auth_emby_all($username, $password) {
+		return plugin_auth_emby_local($username, $password) || plugin_auth_emby_connect($username, $password);
+	}
+	
+	// Authenicate against emby connect
+	function plugin_auth_emby_connect($username, $password) {
+		$urlCheck = stripos(AUTHBACKENDHOST, "http");
+		if ($urlCheck === false) {
+			$embyAddress = "http://" . AUTHBACKENDHOST;
+		} else {
+			$embyAddress = AUTHBACKENDHOST;	
+		}
+		if(AUTHBACKENDPORT !== "") { $embyAddress .= ":" . AUTHBACKENDPORT; }
+		
+		// Get A User
+		$connectId = '';
+		$userIds = json_decode(file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
+		if (is_array($userIds)) {
+			foreach ($userIds as $key => $value) { // Scan for this user
+				if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
+					if ($value['ConnectUserName'] == $username || $value['Name'] == $username) {
+						$connectId = $value['ConnectUserId'];
+						break;
+					}
+					
+				}
+			}
+			
+			if ($connectId) {
+				$connectURL = 'https://connect.emby.media/service/user/authenticate';
+				$headers = array(
+					'Accept'=> 'application/json',
+					'Content-Type' => 'application/x-www-form-urlencoded',
+				);
+				$body = array(
+					'nameOrEmail' => $username,
+					'rawpw' => $password,
+				);
+				
+				$result = curl_post($connectURL, $body, $headers);
+				
+				if (isset($result['content'])) {
+					$json = json_decode($result['content'], true);
+					if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	// Pass credentials to Plex Backend
+	function plugin_auth_plex($username, $password) {
+		// Quick out
+		if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
+			return true;
+		}
+		
+		//Get User List
+		$approvedUsers = array();
+		$userURL = 'https://plex.tv/pms/friends/all';
+		$userHeaders = array(
+			'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD), 
+		);
+		$userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
+		
+		if (is_array($userXML) || is_object($userXML)) {
+			//Build User List array
+			$isUser = false;
+			$usernameLower = strtolower($username);
+			foreach($userXML AS $child) {
+				if(isset($child['username']) && strtolower($child['username']) == $usernameLower) {
+					$isUser = true;
+					break;
+				}
+			}
+			
+			if ($isUser) {
+				//Login User
+				$connectURL = 'https://plex.tv/users/sign_in.json';
+				$headers = array(
+					'Accept'=> 'application/json',
+					'Content-Type' => 'application/x-www-form-urlencoded',
+					'X-Plex-Product' => 'Organizr',
+					'X-Plex-Version' => '1.0',
+					'X-Plex-Client-Identifier' => '01010101-10101010',
+				);
+				$body = array(
+					'user[login]' => $username,
+					'user[password]' => $password,
+				);
+				$result = curl_post($connectURL, $body, $headers);
+				if (isset($result['content'])) {
+					$json = json_decode($result['content'], true);
+					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && $json['user']['username'] == $username) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+endif;
 // ==== Auth Plugins END ====
 // ==== General Class Definitions START ====
 class setLanguage { 
@@ -231,62 +246,66 @@ function post_router($url, $data, $headers = array(), $referer='') {
 	}
 }
 
-// Curl Post
-function curl_post($url, $data, $headers = array(), $referer='') {
-	// Initiate cURL
-	$curlReq = curl_init($url);
-	// As post request
-	curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
-	curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
-	// Format Data
-	switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
-		case 'application/json': 
-			curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
-			break;
-		case 'application/x-www-form-urlencoded';
-			curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
-			break;
-		default:
-			$headers['Content-Type'] = 'application/x-www-form-urlencoded';
-			curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+if (function_exists('curl_version')) :
+	// Curl Post
+	function curl_post($url, $data, $headers = array(), $referer='') {
+		// Initiate cURL
+		$curlReq = curl_init($url);
+		// As post request
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
+		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+		// Format Data
+		switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
+			case 'application/json': 
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
+				break;
+			case 'application/x-www-form-urlencoded';
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+				break;
+			default:
+				$headers['Content-Type'] = 'application/x-www-form-urlencoded';
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+		}
+		// Format Headers
+		$cHeaders = array();
+		foreach ($headers as $k => $v) {
+			$cHeaders[] = $k.': '.$v;
+		}
+		if (count($cHeaders)) {
+			curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+		}
+		// Execute
+		$result = curl_exec($curlReq);
+		// Close
+		curl_close($curlReq);
+		// Return
+		return array('content'=>$result);
 	}
-	// Format Headers
-	$cHeaders = array();
-	foreach ($headers as $k => $v) {
-		$cHeaders[] = $k.': '.$v;
+
+	//Curl Get Function
+	function curl_get($url, $headers = array()) {
+		// Initiate cURL
+		$curlReq = curl_init($url);
+		// As post request
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "GET"); 
+		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+		// Format Headers
+		$cHeaders = array();
+		foreach ($headers as $k => $v) {
+			$cHeaders[] = $k.': '.$v;
+		}
+		if (count($cHeaders)) {
+			curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+		}
+		// Execute
+		$result = curl_exec($curlReq);
+		// Close
+		curl_close($curlReq);
+		// Return
+		return $result;
 	}
-	if (count($cHeaders)) {
-		curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
-	}
-	// Execute
-	$result = curl_exec($curlReq);
-	// Close
-	curl_close($curlReq);
-	// Return
-	return array('content'=>$result);
-}
-//Curl Get Function
-function curl_get($url, $headers = array()) {
-    // Initiate cURL
-    $curlReq = curl_init($url);
-    // As post request
-    curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "GET"); 
-    curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
-    // Format Headers
-    $cHeaders = array();
-    foreach ($headers as $k => $v) {
-        $cHeaders[] = $k.': '.$v;
-    }
-    if (count($cHeaders)) {
-        curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
-    }
-    // Execute
-    $result = curl_exec($curlReq);
-    // Close
-    curl_close($curlReq);
-    // Return
-    return $result;
-}
+endif;
+
 //Case-Insensitive Function
 function in_arrayi($needle, $haystack) {
     return in_array(strtolower($needle), array_map('strtolower', $haystack));
@@ -408,7 +427,7 @@ function resolveEmbyItem($address, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="image.php?source=emby&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=emby-image&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
 }
 
 // Format item from Plex for Carousel
@@ -447,11 +466,11 @@ function resolvePlexItem($server, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="image.php?source=plex&img='.$item['thumb'].'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="image.php?a=plex-image&img='.$item['thumb'].'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
 }
 
 // Create Carousel
-function outputCarousel($header, $size, $type, $items) {
+function outputCarousel($header, $size, $type, $items, $script = false) {
 	// If None Populate Empty Item
 	if (!count($items)) {
 		$items = array('<div class="item"><img alt="nada" class="carousel-image movie" src="images/nadaplaying.jpg"><div class="carousel-caption"><h4>Nothing To Show</h4><small><em>Get Some Stuff Going!</em></small></div></div>');
@@ -474,90 +493,88 @@ function outputCarousel($header, $size, $type, $items) {
 		<div id="carousel-'.$type.'" class="carousel slide box-shadow white-bg" data-ride="carousel"><div class="carousel-inner" role="listbox">
 			'.implode('',$items).'
 		</div>'.$buttons.'
-	</div></div>'; 
+	</div></div>'.($script?'<script>'.$script.'</script>':''); 
 }
 
 // Get Now Playing Streams From Emby
-function getEmbyStreams($url, $port, $token, $size, $header) {
-    if (stripos($url, "http") === false) {
-        $url = "http://" . $url;
-    }
-    
-    if ($port !== "") { 
-		$url = $url . ":" . $port;
-	}
-    
-    $address = $url;
+function getEmbyStreams($size) {
+	$address = qualifyURL(EMBYURL);
 	
-	$api = json_decode(file_get_contents($address.'/Sessions?api_key='.$token),true);
+	$api = json_decode(file_get_contents($address.'/Sessions?api_key='.EMBYTOKEN),true);
 	
 	$playingItems = array();
 	foreach($api as $key => $value) {
 		if (isset($value['NowPlayingItem'])) {
-			$playingItems[] = resolveEmbyItem($address, $token, $value['NowPlayingItem']);
+			$playingItems[] = resolveEmbyItem($address, EMBYTOKEN, $value['NowPlayingItem']);
 		}
 	}
 	
-	return outputCarousel($header, $size, 'streams-emby', $playingItems);
+	return outputCarousel(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems, "
+		setInterval(function() {
+			$('<div></div>').load('ajax.php?a=emby-streams',function() {
+				var element = $(this).find('[id]');
+				var loadedID = 	element.attr('id');
+				$('#'+loadedID).replaceWith(element);
+				console.log('Loaded updated: '+loadedID);
+			});
+		}, 10000);
+	");
 }
 
 // Get Now Playing Streams From Plex
-function getPlexStreams($url, $port, $token, $size, $header){
-    if (stripos($url, "http") === false) {
-        $url = "http://" . $url;
-    }
-    
-    if ($port !== "") { 
-		$url = $url . ":" . $port;
-	}
-    
-    $address = $url;
+function getPlexStreams($size){
+    $address = qualifyURL(PLEXURL);
     
 	// Perform API requests
-    $api = file_get_contents($address."/status/sessions?X-Plex-Token=".$token);
+    $api = file_get_contents($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".$token));
+    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
     
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
 	
 	$items = array();
 	foreach($api AS $child) {
-		$items[] = resolvePlexItem($gotServer, $token, $child);
+		$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child);
 	}
 	
-	return outputCarousel($header, $size, 'streams-plex', $items);
+	return outputCarousel(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
+		setInterval(function() {
+			$('<div></div>').load('ajax.php?a=plex-streams',function() {
+				var element = $(this).find('[id]');
+				var loadedID = 	element.attr('id');
+				$('#'+loadedID).replaceWith(element);
+				console.log('Loaded updated: '+loadedID);
+			});
+		}, 10000);
+	");
 }
 
 // Get Recent Content From Emby
-function getEmbyRecent($url, $port, $type, $token, $size, $header) {
-    if (stripos($url, "http") === false) {
-        $url = "http://" . $url;
-    }
-    
-    if ($port !== "") { 
-		$url = $url . ":" . $port;
-	}
-    
-    $address = $url;
+function getEmbyRecent($type, $size) {
+    $address = qualifyURL(EMBYURL);
 	
 	// Resolve Types
 	switch ($type) {
 		case 'movie':
 			$embyTypeQuery = 'IncludeItemTypes=Movie&';
+			$header = translate('MOVIES');
 			break;
 		case 'season':
 			$embyTypeQuery = 'IncludeItemTypes=Episode&';
+			$header = translate('TV_SHOWS');
 			break;
 		case 'album':
 			$embyTypeQuery = 'IncludeItemTypes=MusicAlbum&';
+			$header = translate('MUSIC');
 			break;
 		default:
 			$embyTypeQuery = '';
+			$header = translate('RECENT_CONTENT');
 	}
 	
 	// Get A User
-	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.$token),true);
+	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
 	foreach ($userIds as $value) { // Scan for admin user
 		$userId = $value['Id'];
 		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
@@ -566,33 +583,40 @@ function getEmbyRecent($url, $port, $type, $token, $size, $header) {
 	}
 	
 	// Get the latest Items
-	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.$token),true);
+	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.EMBYTOKEN),true);
 	
 	// For Each Item In Category
 	$items = array();
 	foreach ($latest as $k => $v) {
-		$items[] = resolveEmbyItem($address, $token, $v);
+		$items[] = resolveEmbyItem($address, EMBYTOKEN, $v);
 	}
 	
 	return outputCarousel($header, $size, $type.'-emby', $items);
 }
 
 // Get Recent Content From Plex
-function getPlexRecent($url, $port, $type, $token, $size, $header){
-    if (stripos($url, "http") === false) {
-        $url = "http://" . $url;
-    }
+function getPlexRecent($type, $size){
+    $address = qualifyURL(PLEXURL);
     
-    if ($port !== "") { 
-		$url = $url . ":" . $port;
+	// Resolve Types
+	switch ($type) {
+		case 'movie':
+			$header = translate('MOVIES');
+			break;
+		case 'season':
+			$header = translate('TV_SHOWS');
+			break;
+		case 'album':
+			$header = translate('MUSIC');
+			break;
+		default:
+			$header = translate('RECENT_CONTENT');
 	}
-    
-    $address = $url;
-    
+	
 	// Perform Requests
-    $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".$token);
+    $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".$token));
+    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
 	
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
@@ -600,11 +624,46 @@ function getPlexRecent($url, $port, $type, $token, $size, $header){
 	$items = array();
 	foreach($api AS $child) {
 		if($child['type'] == $type){
-			$items[] = resolvePlexItem($gotServer, $token, $child);
+			$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child);
 		}
 	}
 	
 	return outputCarousel($header, $size, $type.'-plex', $items);
+}
+
+// Get Image From Emby
+function getEmbyImage() {
+	$embyAddress = qualifyURL(EMBYURL);
+	
+	$itemId = $_GET['img'];
+	$imgParams = array();
+	if (isset($_GET['height'])) { $imgParams['height'] = 'maxHeight='.$_GET['height']; }
+	if (isset($_GET['width'])) { $imgParams['width'] = 'maxWidth='.$_GET['width']; }
+
+	if(isset($itemId)) {
+		$image_src = $embyAddress . '/Items/'.$itemId.'/Images/Primary?'.implode('&', $imgParams);
+		header('Content-type: image/jpeg');
+		readfile($image_src);
+	} else {
+		debug_out('Invalid Request',1);
+	}
+}
+
+// Get Image From Plex
+function getPlexImage() {
+	$plexAddress = qualifyURL(PLEXURL);
+	
+	$image_url = $_GET['img'];
+	$image_height = $_GET['height'];
+	$image_width = $_GET['width'];
+	
+	if(isset($image_url) && isset($image_height) && isset($image_width)) {
+		$image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . PLEXTOKEN;
+		header('Content-type: image/jpeg');
+		readfile($image_src);
+	} else {
+		echo "Invalid Plex Request";	
+	}
 }
 
 // Simplier access to class
@@ -627,7 +686,7 @@ function randString($length = 10) {
 }
 
 // Create config file in the return syntax
-function createConfig($array, $path, $nest = 0) {
+function createConfig($array, $path = 'config/config.php', $nest = 0) {
 	$output = array();
 	foreach ($array as $k => $v) {
 		$allowCommit = true;
@@ -671,7 +730,7 @@ function createConfig($array, $path, $nest = 0) {
 		fwrite($file, $output);
 		fclose($file);
 		if (file_exists($path)) {
-			unlink($path.'.bak');
+			@unlink($path.'.bak');
 			return true;
 		}
 		
@@ -682,7 +741,7 @@ function createConfig($array, $path, $nest = 0) {
 }
 
 // Load a config file written in the return syntax
-function loadConfig($path) {
+function loadConfig($path = 'config/config.php') {
 	// Adapted from http://stackoverflow.com/a/14173339/6810513
     if (!is_file($path)) {
         return null;
@@ -693,6 +752,22 @@ function loadConfig($path) {
 	}
 }
 
+// Commit new values to the configuration
+function updateConfig($new, $current = false) {
+	// Get config if not supplied
+	if (!$current) {
+		$current = loadConfig();
+	}
+	
+	// Inject Parts
+	foreach ($new as $k => $v) {
+		$current[$k] = $v;
+	}
+	
+	// Return Create
+	return createConfig($current);
+}
+
 // Inject Defaults As Needed
 function fillDefaultConfig($array, $path = 'config/configDefaults.php') {
 	if (is_string($path)) {
@@ -701,20 +776,175 @@ function fillDefaultConfig($array, $path = 'config/configDefaults.php') {
 		$loadedDefaults = $path;
 	}
 	
-	function recurse($current, $defaults) {
-		foreach($defaults as $k => $v) {
-			if (!isset($current[$k])) {
-				$current[$k] = $v;
-			} else if (is_array($current[$k]) && is_array($v)) {
-				$current[$k] = recurse($current[$k], $v);
-			}
-		}
-		return $current;
-	};
-	
-	return (is_array($loadedDefaults) ? recurse($array, $loadedDefaults) : false);
+	return (is_array($loadedDefaults) ? fillDefaultConfig_recurse($array, $loadedDefaults) : false);
 }
 
+// support function for fillDefaultConfig()
+function fillDefaultConfig_recurse($current, $defaults) {
+	foreach($defaults as $k => $v) {
+		if (!isset($current[$k])) {
+			$current[$k] = $v;
+		} else if (is_array($current[$k]) && is_array($v)) {
+			$current[$k] = fillDefaultConfig_recurse($current[$k], $v);
+		}
+	}
+	return $current;
+};
+
+// Define Scalar Variables (nest non-secular with underscores)
+function defineConfig($array, $anyCase = true, $nest_prefix = false) {	
+	foreach($array as $k => $v) {
+		if (is_scalar($v) && !defined($nest_prefix.$k)) {
+			define($nest_prefix.$k, $v, $anyCase);
+		} else if (is_array($v)) {
+			defineConfig($v, $anyCase, $nest_prefix.$k.'_');
+		}
+	}
+}
+
+// This function exists only because I am lazy
+function configLazy($path) {
+	$config = fillDefaultConfig(loadConfig($path));
+	if (is_array($config)) {
+		defineConfig($config);
+	}
+	return $config;
+}
+
+// Qualify URL
+function qualifyURL($url) {
+	// Get Digest
+	$digest = parse_url($url);
+	
+	// http/https
+	if (!isset($digest['scheme'])) {
+		if (isset($digest['port']) && in_array($digest['port'], array(80,8080,8096))) {
+			$scheme = 'http';
+		} else {
+			$scheme = 'https';
+		}
+	} else {
+		$scheme = $digest['scheme'];
+	}
+	
+	// Host
+	$host = (isset($digest['host'])?$digest['host']:'');
+	
+	// Port
+	$port = (isset($digest['port'])?':'.$digest['port']:'');
+	
+	// Path
+	$path = (isset($digest['path'])?$digest['path']:'');
+	
+	// Output
+	return $scheme.'://'.$host.$port.$path;
+}
+
+// Function to be called at top of each to allow upgrading environment as the spec changes
+function upgradeCheck() {
+	// Upgrade to 1.31
+	if (file_exists('homepageSettings.ini.php')) {
+		$databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
+		$homepageConfig = parse_ini_file('homepageSettings.ini.php', true);
+		
+		$databaseConfig = array_merge($databaseConfig, $homepageConfig);
+		
+		$databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
+		foreach($databaseConfig as $k => $v) {
+			if(substr($v, -1) == "/") : $v = rtrim($v, "/"); endif;
+			$databaseData .= $k . " = \"" . $v . "\"\r\n";
+		}
+		
+		write_ini_file($databaseData, 'databaseLocation.ini.php');
+		unlink('homepageSettings.ini.php');
+		unset($databaseData);
+		unset($homepageConfig);
+	}
+	
+	// Upgrade to 1.32
+	if (file_exists('databaseLocation.ini.php')) {
+		// Load Existing
+		$config = parse_ini_file('databaseLocation.ini.php', true);
+		
+		// Refactor
+		$config['database_Location'] = str_replace('//','/',$config['databaseLocation'].'/');
+		$config['user_home'] = $config['databaseLocation'].'users/';
+		unset($config['databaseLocation']);
+		
+		// Turn Off Emby And Plex Recent
+		$config["embyURL"] = $config["embyURL"].(!empty($config["embyPort"])?':'.$config["embyPort"]:'');
+		unset($config["embyPort"]);
+		$config["plexURL"] = $config["plexURL"].(!empty($config["plexPort"])?':'.$config["plexPort"]:'');
+		unset($config["plexPort"]);
+		$config["nzbgetURL"] = $config["nzbgetURL"].(!empty($config["nzbgetPort"])?':'.$config["nzbgetPort"]:'');
+		unset($config["nzbgetPort"]);
+		$config["sabnzbdURL"] = $config["sabnzbdURL"].(!empty($config["sabnzbdPort"])?':'.$config["sabnzbdPort"]:'');
+		unset($config["sabnzbdPort"]);
+		$config["headphonesURL"] = $config["headphonesURL"].(!empty($config["headphonesPort"])?':'.$config["headphonesPort"]:'');
+		unset($config["headphonesPort"]);
+		
+		$createConfigSuccess = createConfig($config, 'config/config.php', $nest = 0);
+		
+		// Create new config
+		if ($createConfigSuccess) {
+			// Make Config Dir (this should never happen as the dir and defaults file should be there);
+			@mkdir('config', 0775, true);
+			
+			// Remove Old ini file
+			unlink('databaseLocation.ini.php');
+		} else {
+			debug_out('Couldn\'t create updated configuration.' ,1);
+		}
+	}
+	
+	return true;
+}
+
+// Check if all software dependancies are met
+function dependCheck() {
+	return true;
+}
+
+// Process file uploads
+function uploadFiles($path, $ext_mask = null) {
+	if (isset($_FILES) && count($_FILES)) {
+		require_once('class.uploader.php');
+
+		$uploader = new Uploader();
+		$data = $uploader->upload($_FILES['files'], array(
+			'limit' => 10,
+			'maxSize' => 10,
+			'extensions' => $ext_mask,
+			'required' => false,
+			'uploadDir' => str_replace('//','/',$path.'/'),
+			'title' => array('name'),
+			'removeFiles' => true,
+			'replace' => true,
+		));
+
+		if($data['isComplete']){
+			$files = $data['data'];
+
+			echo json_encode($files['metas'][0]['name']);
+		}
+
+		if($data['hasErrors']){
+			$errors = $data['errors'];
+			echo json_encode($errors);
+		}
+	} else {
+		echo json_encode('No files submitted!');
+	}
+}
+
+// Remove file
+function removeFiles($path) {
+    if(is_file($path)) {
+        unlink($path);
+    } else {
+		echo json_encode('No file specified for removal!');
+	}
+}
 
 
 // ==============
@@ -1117,18 +1347,7 @@ function getRadarrCalendar($array){
 }
 
 function nzbgetConnect($url, $port, $username, $password, $list){
-    
-    $urlCheck = stripos($url, "http");
-
-    if ($urlCheck === false) {
-        
-        $url = "http://" . $url;
-    
-    }
-    
-    if($port !== ""){ $url = $url . ":" . $port; }
-    
-    $address = $url;
+    $url = qualifyURL(NZBGETURL);
     
     $api = file_get_contents("$url/$username:$password/jsonrpc/$list");
                     
@@ -1187,18 +1406,7 @@ function nzbgetConnect($url, $port, $username, $password, $list){
 }
 
 function sabnzbdConnect($url, $port, $key, $list){
-    
-    $urlCheck = stripos($url, "http");
-
-    if ($urlCheck === false) {
-        
-        $url = "http://" . $url;
-    
-    }
-    
-    if($port !== ""){ $url = $url . ":" . $port; }
-    
-    $address = $url;
+    $url = qualifyURL(SABNZBDURL);
 
     $api = file_get_contents("$url/api?mode=$list&output=json&apikey=$key");
                     
@@ -1247,27 +1455,16 @@ function sabnzbdConnect($url, $port, $key, $list){
 }
 
 function getHeadphonesCalendar($url, $port, $key, $list){
-
-    $urlCheck = stripos($url, "http");
-
-    if ($urlCheck === false) {
-        
-        $url = "http://" . $url;
+	$url = qualifyURL(HEADPHONESURL);
     
-    }
+    $api = file_get_contents($url."/api?apikey=".$key."&cmd=$list");
     
-    if($port !== ""){ $url = $url . ":" . $port; }
-    
-    $address = $url;
-    
-    $api = file_get_contents($address."/api?apikey=".$key."&cmd=$list");
-                    
     $api = json_decode($api, true);
     
     $i = 0;
     
     $gotCalendar = "";
-
+	
     foreach($api AS $child) {
 
         if($child['Status'] == "Wanted"){

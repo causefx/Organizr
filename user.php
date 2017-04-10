@@ -7,95 +7,18 @@
 	 *	entry is assigned a new random token,  which is used in
 	 * salting subsequent password checks.
 	 */
+	
+	// Include functions if not already included
+	require_once('functions.php');
+	
+	// Define Version
+	 define('INSTALLEDVERSION', '1.32');
 	 
-	// Upgrade Friendly START
-	if (file_exists('homepageSettings.ini.php')) {
-		$databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
-		$homepageConfig = parse_ini_file('homepageSettings.ini.php', true);
-		
-		$databaseConfig = array_merge($databaseConfig, $homepageConfig);
-		
-		$databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
-		foreach($databaseConfig as $k => $v) {
-			if(substr($v, -1) == "/") : $v = rtrim($v, "/"); endif;
-			$databaseData .= $k . " = \"" . $v . "\"\r\n";
-		}
-		
-		write_ini_file($databaseData, 'databaseLocation.ini.php');
-		unlink('homepageSettings.ini.php');
-		unset($databaseData);
-		unset($homepageConfig);
-	}
-	// Upgrade Friendly END
-	 
-    define('INSTALLEDVERSION', '1.31');
-    require __DIR__ . '/vendor/autoload.php';
-    $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
-    define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
-    define('DATABASE_LOCATION', $databaseConfig['databaseLocation'] . '/');
-    if(!empty($databaseConfig['timezone'])) : define('TIMEZONE', $databaseConfig['timezone']); else : define('TIMEZONE', 'America/Los_Angeles'); endif;
-    if(!empty($databaseConfig['titleLogo'])) : define('TITLELOGO', $databaseConfig['titleLogo']); else : define('TITLELOGO', ''); endif;
-    if(!empty($databaseConfig['loadingIcon'])) : define('LOADINGICON', $databaseConfig['loadingIcon']); else : define('LOADINGICON', ''); endif;
-    if(!empty($databaseConfig['multipleLogin'])) : define('MULTIPLELOGIN', $databaseConfig['multipleLogin']); else : define('MULTIPLELOGIN', 'true'); endif;
-    if(!empty($databaseConfig['enableMail'])) : define('ENABLEMAIL', $databaseConfig['enableMail']); else : define('ENABLEMAIL', 'false'); endif;
-    if(!empty($databaseConfig['loadingScreen'])) : define('LOADINGSCREEN', $databaseConfig['loadingScreen']); else : define('LOADINGSCREEN', 'true'); endif;
-    if(!empty($databaseConfig['slimBar'])) : define('SLIMBAR', $databaseConfig['slimBar']); else : define('SLIMBAR', 'true'); endif;
-    if(!empty($databaseConfig['cookiePassword'])) : define('COOKIEPASSWORD', $databaseConfig['cookiePassword']); else : define('COOKIEPASSWORD', ''); endif;
-    if(!empty($databaseConfig['registerPassword'])) : define('REGISTERPASSWORD', $databaseConfig['registerPassword']); else : define('REGISTERPASSWORD', ''); endif;
-    if(!empty($databaseConfig['gravatar'])) : define('GRAVATAR', $databaseConfig['gravatar']); else : define('GRAVATAR', 'true'); endif;
-    if(!empty($databaseConfig['notifyEffect'])) : define('NOTIFYEFFECT', $databaseConfig['notifyEffect']); else : define('NOTIFYEFFECT', 'bar-slidetop'); endif;
-    if(!empty($databaseConfig['domain'])) : define('DOMAIN', $databaseConfig['domain']); else : define('DOMAIN', $_SERVER['HTTP_HOST']); endif;
-    if(!empty($databaseConfig['smtpHost'])) : define('SMTPHOST', $databaseConfig['smtpHost']); else : define('SMTPHOST', ''); endif;
-    if(!empty($databaseConfig['smtpHostPort'])) : define('SMTPHOSTPORT', $databaseConfig['smtpHostPort']); else : define('SMTPHOSTPORT', ''); endif;
-    if(!empty($databaseConfig['smtpHostAuth'])) : define('SMTPHOSTAUTH', $databaseConfig['smtpHostAuth']); else : define('SMTPHOSTAUTH', 'true'); endif;
-    if(!empty($databaseConfig['smtpHostUsername'])) : define('SMTPHOSTUSERNAME', $databaseConfig['smtpHostUsername']); else : define('SMTPHOSTUSERNAME', ''); endif;
-    if(!empty($databaseConfig['smtpHostPassword'])) : define('SMTPHOSTPASSWORD', $databaseConfig['smtpHostPassword']); else : define('SMTPHOSTPASSWORD', ''); endif;
-    if(!empty($databaseConfig['smtpHostSenderName'])) : define('SMTPHOSTSENDERNAME', $databaseConfig['smtpHostSenderName']); else : define('SMTPHOSTSENDERNAME', 'Organizr'); endif;
-    if(!empty($databaseConfig['smtpHostSenderEmail'])) : define('SMTPHOSTSENDEREMAIL', $databaseConfig['smtpHostSenderEmail']); else : define('SMTPHOSTSENDEREMAIL', 'no-reply@Organizr'); endif;
-    if(!empty($databaseConfig['authType'])) : define('AUTHTYPE', $databaseConfig['authType']); else : define('AUTHTYPE', ''); endif;
-    if(!empty($databaseConfig['authBackend'])) : define('AUTHBACKEND', $databaseConfig['authBackend']); else : define('AUTHBACKEND', ''); endif;
-    if(!empty($databaseConfig['authBackendHost'])) : define('AUTHBACKENDHOST', $databaseConfig['authBackendHost']); else : define('AUTHBACKENDHOST', ''); endif;
-    if(!empty($databaseConfig['authBackendPort'])) : define('AUTHBACKENDPORT', $databaseConfig['authBackendPort']); else : define('AUTHBACKENDPORT', ''); endif;
-    if(!empty($databaseConfig['authBackendDomain'])) : define('AUTHBACKENDDOMAIN', $databaseConfig['authBackendDomain']); else : define('AUTHBACKENDDOMAIN', ''); endif;
-    if(!empty($databaseConfig['authBackendCreate'])) : define('AUTHBACKENDCREATE', $databaseConfig['authBackendCreate']); else : define('AUTHBACKENDCREATE', 'false'); endif;      
-	if(!empty($databaseConfig['plexURL'])) : define('PLEXURL', $databaseConfig['plexURL']); else : define('PLEXURL', ''); endif;
-    if(!empty($databaseConfig['plexPort'])) : define('PLEXPORT', $databaseConfig['plexPort']); else : define('PLEXPORT', ''); endif;
-    if(!empty($databaseConfig['plexToken'])) : define('PLEXTOKEN', $databaseConfig['plexToken']); else : define('PLEXTOKEN', ''); endif;
-    if(!empty($databaseConfig['plexRecentMovie'])) : define('PLEXRECENTMOVIE', $databaseConfig['plexRecentMovie']); else : define('PLEXRECENTMOVIE', 'false'); endif;
-    if(!empty($databaseConfig['plexRecentTV'])) : define('PLEXRECENTTV', $databaseConfig['plexRecentTV']); else : define('PLEXRECENTTV', 'false'); endif;
-    if(!empty($databaseConfig['plexRecentMusic'])) : define('PLEXRECENTMUSIC', $databaseConfig['plexRecentMusic']); else : define('PLEXRECENTMUSIC', 'false'); endif;
-    if(!empty($databaseConfig['plexPlayingNow'])) : define('PLEXPLAYINGNOW', $databaseConfig['plexPlayingNow']); else : define('PLEXPLAYINGNOW', 'false'); endif;
-    if(!empty($databaseConfig['embyURL'])) : define('EMBYURL', $databaseConfig['embyURL']); else : define('EMBYURL', ''); endif;
-    if(!empty($databaseConfig['embyPort'])) : define('EMBYPORT', $databaseConfig['embyPort']); else : define('EMBYPORT', ''); endif;
-    if(!empty($databaseConfig['embyToken'])) : define('EMBYTOKEN', $databaseConfig['embyToken']); else : define('EMBYTOKEN', ''); endif;
-    if(!empty($databaseConfig['embyRecentMovie'])) : define('EMBYRECENTMOVIE', $databaseConfig['embyRecentMovie']); else : define('EMBYRECENTMOVIE', 'false'); endif;
-    if(!empty($databaseConfig['embyRecentTV'])) : define('EMBYRECENTTV', $databaseConfig['embyRecentTV']); else : define('EMBYRECENTTV', 'false'); endif;
-    if(!empty($databaseConfig['embyRecentMusic'])) : define('EMBYRECENTMUSIC', $databaseConfig['embyRecentMusic']); else : define('EMBYRECENTMUSIC', 'false'); endif;
-    if(!empty($databaseConfig['embyPlayingNow'])) : define('EMBYPLAYINGNOW', $databaseConfig['embyPlayingNow']); else : define('EMBYPLAYINGNOW', 'false'); endif;    
-    if(!empty($databaseConfig['sonarrKey'])) : define('SONARRKEY', $databaseConfig['sonarrKey']); else : define('SONARRKEY', ''); endif;
-    if(!empty($databaseConfig['sonarrURL'])) : define('SONARRURL', $databaseConfig['sonarrURL']); else : define('SONARRURL', ''); endif;
-    if(!empty($databaseConfig['sonarrPort'])) : define('SONARRPORT', $databaseConfig['sonarrPort']); else : define('SONARRPORT', ''); endif;
-    if(!empty($databaseConfig['radarrKey'])) : define('RADARRKEY', $databaseConfig['radarrKey']); else : define('RADARRKEY', ''); endif;
-    if(!empty($databaseConfig['radarrURL'])) : define('RADARRURL', $databaseConfig['radarrURL']); else : define('RADARRURL', ''); endif;
-    if(!empty($databaseConfig['radarrPort'])) : define('RADARRPORT', $databaseConfig['radarrPort']); else : define('RADARRPORT', ''); endif;
-    if(!empty($databaseConfig['nzbgetURL'])) : define('NZBGETURL', $databaseConfig['nzbgetURL']); else : define('NZBGETURL', ''); endif;
-    if(!empty($databaseConfig['nzbgetPort'])) : define('NZBGETPORT', $databaseConfig['nzbgetPort']); else : define('NZBGETPORT', ''); endif;
-    if(!empty($databaseConfig['nzbgetUsername'])) : define('NZBGETUSERNAME', $databaseConfig['nzbgetUsername']); else : define('NZBGETUSERNAME', ''); endif;
-    if(!empty($databaseConfig['nzbgetPassword'])) : define('NZBGETPASSWORD', $databaseConfig['nzbgetPassword']); else : define('NZBGETPASSWORD', ''); endif;
-    if(!empty($databaseConfig['sabnzbdKey'])) : define('SABNZBDKEY', $databaseConfig['sabnzbdKey']); else : define('SABNZBDKEY', ''); endif;
-    if(!empty($databaseConfig['sabnzbdURL'])) : define('SABNZBDURL', $databaseConfig['sabnzbdURL']); else : define('SABNZBDURL', ''); endif;
-    if(!empty($databaseConfig['sabnzbdPort'])) : define('SABNZBDPORT', $databaseConfig['sabnzbdPort']); else : define('SABNZBDPORT', ''); endif;
-    if(!empty($databaseConfig['headphonesKey'])) : define('HEADPHONESKEY', $databaseConfig['headphonesKey']); else : define('HEADPHONESKEY', ''); endif;
-    if(!empty($databaseConfig['headphonesURL'])) : define('HEADPHONESURL', $databaseConfig['headphonesURL']); else : define('HEADPHONESURL', ''); endif;
-    if(!empty($databaseConfig['headphonesPort'])) : define('HEADPHONESPORT', $databaseConfig['headphonesPort']); else : define('HEADPHONESPORT', ''); endif;
-    if(!empty($databaseConfig['calendarStart'])) : define('CALENDARSTART', $databaseConfig['calendarStart']); else : define('CALENDARSTART', '0'); endif;
-    if(!empty($databaseConfig['calendarView'])) : define('CALENDARVIEW', $databaseConfig['calendarView']); else : define('CALENDARVIEW', 'basicWeek'); endif;
-    if(!empty($databaseConfig['calendarStartDay'])) : define('CALENDARSTARTDAY', $databaseConfig['calendarStartDay']); else : define('CALENDARSTARTDAY', '30'); endif;
-    if(!empty($databaseConfig['calendarEndDay'])) : define('CALENDARENDDAY', $databaseConfig['calendarEndDay']); else : define('CALENDARENDDAY', '30'); endif;
-    if(!empty($databaseConfig['sickrageKey'])) : define('SICKRAGEKEY', $databaseConfig['sickrageKey']); else : define('SICKRAGEKEY', ''); endif;
-    if(!empty($databaseConfig['sickrageURL'])) : define('SICKRAGEURL', $databaseConfig['sickrageURL']); else : define('SICKRAGEURL', ''); endif;
-    if(!empty($databaseConfig['plexUsername'])) : define('PLEXUSERNAME', $databaseConfig['plexUsername']); else : define('PLEXUSERNAME', ''); endif;
-	if(!empty($databaseConfig['plexPassword'])) : define('PLEXPASSWORD', $databaseConfig['plexPassword']); else : define('PLEXPASSWORD', ''); endif;
+    // Autoload frameworks
+	require_once(__DIR__ . '/vendor/autoload.php');
+	
+    // Lazyload settings
+	$databaseConfig = configLazy('config/config.php');
     
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 
     $notifyExplode = explode("-", NOTIFYEFFECT);
@@ -148,7 +71,7 @@
 		// 	You can modify the following values, but they're not security related
 		// =======================================================================
 			// rename this to whatever you like
-			const DATABASE_NAME = "users";
+			const DATABASE_NAME = "users";  // Obsolete
 			// this is the session timeout. If someone hasn't performed any page requests
 			// in [timeout] seconds, they're considered logged out.
 			const time_out = 604800;
@@ -229,7 +152,7 @@
                 $_SESSION["username"] = $_COOKIE['OrganizrU'];
             }
 			// file location for the user database
-			$dbfile = DATABASE_LOCATION  . User::DATABASE_NAME . ".db";
+			$dbfile = DATABASE_LOCATION.'users.db';
 			// do we need to build a new database?
 			$rebuild = false;
 			if(!file_exists($dbfile)) { $rebuild = true;}

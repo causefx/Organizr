@@ -80,7 +80,7 @@ $(document).ready(function(){
 			dragContainer: null,
 		},
 		uploadFile: {
-			url: "./ajax_upload_file.php",
+			url: "./ajax.php?a=upload-images",
 			data: null,
 			type: 'POST',
 			enctype: 'multipart/form-data',
@@ -122,7 +122,7 @@ $(document).ready(function(){
 			var filerKit = inputEl.prop("jFiler"),
 		        file_name = filerKit.files_list[id].name;
 
-		    $.post('./ajax_remove_file.php', {file: file_name});
+		    $.post('./ajax.php?a=remove-images', {file: file_name});
 		},
 		onEmpty: null,
 		options: null,

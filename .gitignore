@@ -55,3 +55,10 @@ loginLog.json
 custom.css
 _config.yml
 test.php
+users.db
+config/config.php
+config/users/
+config/users
+config/users.db
+
+
