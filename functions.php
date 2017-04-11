@@ -1012,6 +1012,22 @@ function resolveSelectOptions($array, $selected = '') {
 	return implode('',$output);
 }
 
+// Check if user is allowed to continue
+function qualifyUser($type, $errOnFail = false) {
+	if (!isset($GLOBALS['USER'])) {
+		require_once("user.php");
+		$GLOBALS['USER'] = new User('registration_callback');
+	}
+	
+	$authorized = ($GLOBALS['USER']->authenticated && $GLOBALS['USER']->role == $type);
+	
+	if (!$authorized && $errOnFail) {
+		debug_out('Not Authorized' ,1);
+	} else {
+		return $authorized;
+	}
+}
+
 // ==============
 
 function clean($strin) {

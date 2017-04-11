@@ -57,6 +57,7 @@ _config.yml
 test.php
 users.db
 config/config.php
+config/config.bak.php
 config/users/
 config/users
 config/users.db
