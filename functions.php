@@ -772,14 +772,13 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		@mkdir($pathDigest['dirname'], 0770, true);
 		
 		if (file_exists($path)) {
-			rename($path, $path.'.bak');
+			rename($path, $pathDigest['dirname'].'/'.$pathDigest['filename'].'.bak.php');
 		}
 		
 		$file = fopen($path, 'w');
 		fwrite($file, $output);
 		fclose($file);
 		if (file_exists($path)) {
-			@unlink($path.'.bak');
 			return true;
 		}
 		
