@@ -5,9 +5,6 @@ require_once('functions.php');
 // Upgrade environment
 upgradeCheck();
 
-// Define Version
- define('INSTALLEDVERSION', '1.31');
-
 // Lazyload settings
 $databaseConfig = configLazy('config/config.php');
 

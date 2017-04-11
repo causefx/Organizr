@@ -1,5 +1,10 @@
 <?php
 
+// ===================================
+// Define Version
+ define('INSTALLEDVERSION', '1.323');
+// ===================================
+
 // Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
@@ -715,7 +720,16 @@ function randString($length = 10) {
 
 // Create config file in the return syntax
 function createConfig($array, $path = 'config/config.php', $nest = 0) {
+	// Define Initial Value
 	$output = array();
+	
+	// Sort Items
+	ksort($array);
+	
+	// Unset the current version
+	unset($array['CONFIG_VERSION']);
+	
+	// Process Settings
 	foreach ($array as $k => $v) {
 		$allowCommit = true;
 		switch (gettype($v)) {
@@ -743,6 +757,12 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		}
 	}
 	
+	if (!$nest) {
+		// Inject Current Version
+		$output[] = "\t".'"CONFIG_VERSION" => "'.INSTALLEDVERSION.'"';
+	}
+	
+	// Build output
 	$output = (!$nest?"<?php\nreturn ":'')."array(\n".implode(",\n",$output)."\n".str_repeat("\t",$nest).')'.(!$nest?';':'');
 	
 	if (!$nest && $path) {
@@ -831,7 +851,7 @@ function defineConfig($array, $anyCase = true, $nest_prefix = false) {
 }
 
 // This function exists only because I am lazy
-function configLazy($path) {
+function configLazy($path = null) {
 	$config = fillDefaultConfig(loadConfig($path));
 	if (is_array($config)) {
 		defineConfig($config);
@@ -911,7 +931,7 @@ function upgradeCheck() {
 		$config["headphonesURL"] = $config["headphonesURL"].(!empty($config["headphonesPort"])?':'.$config["headphonesPort"]:'');
 		unset($config["headphonesPort"]);
 		
-		$createConfigSuccess = createConfig($config, 'config/config.php', $nest = 0);
+		$createConfigSuccess = createConfig($config);
 		
 		// Create new config
 		if ($createConfigSuccess) {
@@ -924,6 +944,15 @@ function upgradeCheck() {
 			debug_out('Couldn\'t create updated configuration.' ,1);
 		}
 	}
+	
+	// Upgrade
+	$config = loadConfig();
+	if (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33') {
+		$config['user_home'] = $config['database_Location'].'users/';
+		unset($config['USER_HOME']);
+		$createConfigSuccess = createConfig($config);
+	}
+	unset($config);
 	
 	return true;
 }

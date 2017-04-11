@@ -10,9 +10,6 @@
 	
 	// Include functions if not already included
 	require_once('functions.php');
-	
-	// Define Version
-	 define('INSTALLEDVERSION', '1.323');
 	 
     // Autoload frameworks
 	require_once(__DIR__ . '/vendor/autoload.php');
@@ -549,7 +546,7 @@ EOT;
 
 			// This user can be registered
 			$insert = "INSERT INTO users (username, email, password, token, role, active, last) ";
-			$insert .= "VALUES ('$username', '$email', '$dbpassword', '', '$newRole', 'false', '') ";
+			$insert .= "VALUES ('".strtolower($username)."', '$email', '$dbpassword', '', '$newRole', 'false', '') ";
 			$this->database->exec($insert);
 			$query = "SELECT * FROM users WHERE username = '$username'";
 			foreach($this->database->query($query) as $data) {
@@ -605,7 +602,7 @@ EOT;
 				default: // Internal
 					if (!$authSuccess) {
 						// perform the internal authentication step
-						$query = "SELECT password FROM users WHERE username = '$username'";
+						$query = "SELECT password FROM users WHERE LOWER(username) = '".strtolower($username)."'";
 						foreach($this->database->query($query) as $data) {
 							if (password_verify($password, $data["password"])) { // Better
 								$authSuccess = true;
@@ -622,13 +619,11 @@ EOT;
 			
 			if ($authSuccess) {
 				// Make sure user exists in database
-				$query = "SELECT username FROM users WHERE username = '$username'";
+				$query = "SELECT username FROM users WHERE LOWER(username) = '".strtolower($username)."'";
 				$userExists = false;
 				foreach($this->database->query($query) as $data) {
-					if ($data['username'] == $username) {
-						$userExists = true;
-						break;
-					}
+					$userExists = true;
+					break;
 				}
 				
 				if ($userExists) {

@@ -44,7 +44,7 @@ if(!file_exists('config/config.php')) {
 		if (isset($_POST['database_Location'])) {
 			$_POST['database_Location'] = str_replace('//','/',$_POST['database_Location'].'/');
             if(substr($_POST['database_Location'], -1) != "/") : $_POST['database_Location'] = $_POST['database_Location'] . "/"; endif;
-			$_POST['USER_HOME'] = $_POST['database_Location'].'users/';
+			$_POST['user_home'] = $_POST['database_Location'].'users/';
 		}
 		if (file_exists($_POST['database_Location'])) {
 			updateConfig($_POST);
@@ -194,7 +194,6 @@ if(!defined('AUTOHIDE')) : define('AUTOHIDE', 'false'); endif;
 if(!defined('ENABLEMAIL')) : define('ENABLEMAIL', 'false'); endif;
 if(!defined('CUSTOMCSS')) : define('CUSTOMCSS', 'false'); endif;
 if(!defined('LOADINGSCREEN')) : define('LOADINGSCREEN', 'true'); endif;
-if(!defined('INSTALLEDVERSION')) : define('INSTALLEDVERSION', 'Awaiting-Install...'); endif;
 if(!isset($notifyExplode)) :
 
     $notifyExplode = array("bar","slidetop");
