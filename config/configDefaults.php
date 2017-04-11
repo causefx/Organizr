@@ -58,5 +58,5 @@ return array(
 	"enableMail" => "false",
 	"slimBar" => "true",
 	"gravatar" => "true",
-	"CALTIMEFORMAT" => "h(:mm)t",
+	"calTimeFormat" => "h(:mm)t",
 );

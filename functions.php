@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.323');
+ define('INSTALLEDVERSION', '1.33');
 // ===================================
 
 // Debugging output functions
