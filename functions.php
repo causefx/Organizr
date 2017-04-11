@@ -1006,7 +1006,19 @@ function removeFiles($path) {
 function resolveSelectOptions($array, $selected = '') {
 	$output = array();
 	foreach ($array as $key => $value) {
-		$output[] = '<option value="'.$value.'"'.($selected===$value?' selected':'').'>'.$key.'</option>';
+		if (is_array($value)) {
+			if (isset($value['optgroup'])) {
+				$output[] = '<optgroup label="'.$key.'">';
+				foreach($value['optgroup'] as $k => $v) {
+					$output[] = '<option value="'.$v['value'].'"'.($selected===$v['value']?' selected':'').(isset($v['disabled']) && $v['disabled']?' disabled':'').'>'.$k.'</option>';
+				}
+			} else {
+				$output[] = '<option value="'.$value['value'].'"'.($selected===$value['value']?' selected':'').(isset($value['disabled']) && $value['disabled']?' disabled':'').'>'.$key.'</option>';
+			}
+		} else {
+			$output[] = '<option value="'.$value.'"'.($selected===$value?' selected':'').'>'.$key.'</option>';
+		}
+		
 	}
 	return implode('',$output);
 }
@@ -1216,6 +1228,36 @@ function buildField($params) {
 	
 	$labelOut = '<p class="help-text">'.$label.$assist.'</p>';
 	return $field.$labelOut;
+}
+
+// Timezone array
+function timezoneOptions() {
+	$output = array();
+	$timezones = array();
+    $regions = array(
+        'Africa' => DateTimeZone::AFRICA,
+        'America' => DateTimeZone::AMERICA,
+        'Antarctica' => DateTimeZone::ANTARCTICA,
+        'Arctic' => DateTimeZone::ARCTIC,
+        'Asia' => DateTimeZone::ASIA,
+        'Atlantic' => DateTimeZone::ATLANTIC,
+        'Australia' => DateTimeZone::AUSTRALIA,
+        'Europe' => DateTimeZone::EUROPE,
+        'Indian' => DateTimeZone::INDIAN,
+        'Pacific' => DateTimeZone::PACIFIC
+    );
+    
+    foreach ($regions as $name => $mask) {
+        $zones = DateTimeZone::listIdentifiers($mask);
+        foreach($zones as $timezone) {
+            $time = new DateTime(NULL, new DateTimeZone($timezone));
+            $ampm = $time->format('H') > 12 ? ' ('. $time->format('g:i a'). ')' : '';
+			
+			$output[$name]['optgroup'][substr($timezone, strlen($name) + 1) . ' - ' . $time->format('H:i') . $ampm]['value'] = $timezone;
+        }
+    }   
+	
+	return $output;
 }
 
 // ==============
