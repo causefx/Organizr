@@ -13,7 +13,7 @@ if (function_exists('ldap_connect')) :
 	// Pass credentials to LDAP backend
 	function plugin_auth_ldap($username, $password) {
 		// returns true or false
-		$ldap = ldap_connect(AUTHBACKENDHOST.(AUTHBACKENDPORT?':'.AUTHBACKENDPORT:'389'));
+		$ldap = ldap_connect(AUTHBACKENDHOST, (AUTHBACKENDPORT ? AUTHBACKENDPORT : '389'));
 		if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
 			return true;
 		} else {
@@ -91,7 +91,12 @@ function plugin_auth_emby_local($username, $password) {
 if (function_exists('curl_version')) :
 	// Authenticate Against Emby Local (first) and Emby Connect
 	function plugin_auth_emby_all($username, $password) {
-		return plugin_auth_emby_local($username, $password) || plugin_auth_emby_connect($username, $password);
+		$localResult = plugin_auth_emby_local($username, $password);
+		if ($localResult) {
+			return $localResult;
+		} else {
+			return plugin_auth_emby_connect($username, $password);
+		}
 	}
 	
 	// Authenicate against emby connect
@@ -134,7 +139,10 @@ if (function_exists('curl_version')) :
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
 					if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
-						return true;
+						return array(
+							'email' => $json['User']['Email'],
+							'image' => $json['User']['ImageUrl'],
+						);
 					}
 				}
 			}
@@ -418,24 +426,24 @@ function resolveEmbyItem($address, $token, $item) {
 	// Get Item Details
 	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&Fields=Overview&api_key='.$token),true)['Items'][0];
 	
-	switch ($item['Type']) {
+	switch ($itemDetails['Type']) {
 		case 'Episode':
-			$title = $item['SeriesName'].': '.$item['Name'].' (Season '.$item['ParentIndexNumber'].': Episode '.$item['IndexNumber'].')';
+			$title = $itemDetails['SeriesName'].': '.$itemDetails['Name'].' (Season '.$itemDetails['ParentIndexNumber'].': Episode '.$itemDetails['IndexNumber'].')';
 			$imageId = $itemDetails['SeriesId'];
 			$width = 100;
 			$image = 'carousel-image season';
 			$style = '';
 			break;
 		case 'MusicAlbum':
-			$title = $item['Name'];
+			$title = $itemDetails['Name'];
 			$imageId = $itemDetails['Id'];
 			$width = 150;
 			$image = 'music';
 			$style = 'left: 160px !important;';
 			break;
 		default:
-			$title = $item['Name'];
-			$imageId = $item['Id'];
+			$title = $itemDetails['Name'];
+			$imageId = $itemDetails['Id'];
 			$width = 100;
 			$image = 'carousel-image movie';
 			$style = '';
@@ -447,7 +455,7 @@ function resolveEmbyItem($address, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=emby-image&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$itemDetails['Id'].'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" src="ajax.php?a=emby-image&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
 }
 
 // Format item from Plex for Carousel
@@ -888,7 +896,7 @@ function upgradeCheck() {
 		
 		// Refactor
 		$config['database_Location'] = str_replace('//','/',$config['databaseLocation'].'/');
-		$config['user_home'] = $config['databaseLocation'].'users/';
+		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['databaseLocation']);
 		
 		// Turn Off Emby And Plex Recent

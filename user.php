@@ -607,7 +607,6 @@ EOT;
 						// perform the internal authentication step
 						$query = "SELECT password FROM users WHERE username = '$username'";
 						foreach($this->database->query($query) as $data) {
-							
 							if (password_verify($password, $data["password"])) { // Better
 								$authSuccess = true;
 							} else {
@@ -650,7 +649,7 @@ EOT;
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
 					// Create User
 					$falseByRef = false;
-					$this->register_user($username, "", $sha1, $falseByRef, !$remember);
+					$this->register_user($username, (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''), $sha1, $falseByRef, !$remember);
 				} else {
 					// authentication failed
 					//$this->info("Successful Backend Auth, No User in DB, Create Set to False");
