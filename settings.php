@@ -1610,18 +1610,33 @@ endif;?></textarea>
                                                                 
                                                                 <div class="form-group">
 
-                                                                <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control material input-sm" name="calendarStartDay" placeholder="<?php echo $language->translate("CALENDAR_START_DATE");?>" autocorrect="off" autocapitalize="off" value="<?php echo CALENDARSTARTDAY;?>">
-                                                                <p class="help-text"><?php echo $language->translate("CALENDAR_START_DATE");?></p>
+																	<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control material input-sm" name="calendarStartDay" placeholder="<?php echo $language->translate("CALENDAR_START_DATE");?>" autocorrect="off" autocapitalize="off" value="<?php echo CALENDARSTARTDAY;?>">
+																	<p class="help-text"><?php echo $language->translate("CALENDAR_START_DATE");?></p>
 
                                                                 </div>
                                                                 
                                                                 <div class="form-group">
 
-                                                                <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control material input-sm" name="calendarEndDay" placeholder="<?php echo $language->translate("CALENDAR_END_DATE");?>" autocorrect="off" autocapitalize="off" value="<?php echo CALENDARENDDAY;?>">
-                                                                <p class="help-text"><?php echo $language->translate("CALENDAR_END_DATE");?></p>
+																	<input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control material input-sm" name="calendarEndDay" placeholder="<?php echo $language->translate("CALENDAR_END_DATE");?>" autocorrect="off" autocapitalize="off" value="<?php echo CALENDARENDDAY;?>">
+																	<p class="help-text"><?php echo $language->translate("CALENDAR_END_DATE");?></p>
 
                                                                 </div>
-
+																
+                                                                <div class="form-group">
+																	<select name="calTimeFormat" class="form-control material input-sm" required>
+																		<?php
+																			echo resolveSelectOptions(array(
+																				'6p' => 'h(:mm)t',
+																				'6:00p' => 'h:mmt',
+																				'6:00' => 'h:mm',
+																				'18' => 'H(:mm)',
+																				'18:00' => 'H:mm',
+																			), CALTIMEFORMAT);
+																		?>
+																	</select>
+																	<p class="help-text"><?php echo $language->translate("CALTIMEFORMAT");?></p>
+                                                                </div>
+																
                                                             </div>
 
                                                         </div>

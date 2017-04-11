@@ -587,7 +587,7 @@ endif; ?>
 
                     editable: false,
                     droppable: false,
-
+					timeFormat: '<?php echo CALTIMEFORMAT; ?>',
                 });
             
             });

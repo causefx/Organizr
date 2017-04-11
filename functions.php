@@ -1004,6 +1004,14 @@ function removeFiles($path) {
 	}
 }
 
+// Lazy select options
+function resolveSelectOptions($array, $selected = '') {
+	$output = array();
+	foreach ($array as $key => $value) {
+		$output[] = '<option value="'.$value.'"'.($selected===$value?' selected':'').'>'.$key.'</option>';
+	}
+	return implode('',$output);
+}
 
 // ==============
 

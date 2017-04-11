@@ -57,5 +57,6 @@ return array(
 	"loadingScreen" => "true",
 	"enableMail" => "false",
 	"slimBar" => "true",
-	"gravatar" => "true"
+	"gravatar" => "true",
+	"CALTIMEFORMAT" => "h(:mm)t",
 );
