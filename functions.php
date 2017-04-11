@@ -710,9 +710,8 @@ function translate($string) {
 }
 
 // Generate Random string
-function randString($length = 10) {
+function randString($length = 10, $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
 	$tmp = '';
-	$chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
 	for ($i = 0; $i < $length; $i++) {
 		$tmp .= substr(str_shuffle($chars), 0, 1);
 	}
@@ -947,7 +946,7 @@ function upgradeCheck() {
 	
 	// Upgrade
 	$config = loadConfig();
-	if (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33') {
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33')) {
 		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['USER_HOME']);
 		$createConfigSuccess = createConfig($config);
@@ -1019,13 +1018,204 @@ function qualifyUser($type, $errOnFail = false) {
 		$GLOBALS['USER'] = new User('registration_callback');
 	}
 	
-	$authorized = ($GLOBALS['USER']->authenticated && $GLOBALS['USER']->role == $type);
+	if (is_bool($type)) {
+		if ($type === true) {
+			$authorized = ($GLOBALS['USER']->authenticated == true);
+		} else {
+			$authorized = true;
+		}
+	} elseif (is_string($type)) {
+		if ($type !== 'false') {
+			$type = explode('|',$type);
+			$authorized = ($GLOBALS['USER']->authenticated && in_array($GLOBALS['USER']->role,$type));
+		} else {
+			$authorized = true;
+		}
+	} else {
+		debug_out('Invalid Syntax!',1);
+	}
 	
 	if (!$authorized && $errOnFail) {
 		debug_out('Not Authorized' ,1);
 	} else {
 		return $authorized;
 	}
+}
+
+// Build an (optionally) tabbed settings page.
+function buildSettings($array) {
+	/*
+	array(
+		'title' => '',
+		'id' => '',
+		'fields' => array( See buildField() ),
+		'tabs' => array(
+			array(
+				'title' => '',
+				'id' => '',
+				'image' => '',
+				'fields' => array( See buildField() ),
+			),
+		),
+	);
+	*/
+	
+	$fieldFunc = function($fieldArr) {
+		$fields = '<div class="row">';
+		foreach($fieldArr as $key => $value) {
+			$isSingle = isset($value['type']);
+			if ($isSingle) { $value = array($value); }
+			$tmpField = '';
+			foreach($value as $k => $v) {
+				$tmpField .= '<div class="form-group">'.buildField($v).'</div>';
+			}
+			$fields .= ($isSingle?$tmpField:'<div class="content-form form-inline">'.$tmpField.'</div>');
+		}
+		$fields .= '</div>';
+		return $fields;
+	};
+	
+	$fields = (isset($array['fields'])?$fieldFunc($array['fields']):'');
+	
+	$tabSelectors = array();
+	$tabContent = array();
+	if (isset($array['tabs'])) {
+		foreach($array['tabs'] as $key => $value) {
+			$id = (isset($value['id'])?$value['id']:randString(32));
+			$tabSelectors[$key] = '<li class="apps'.($tabSelectors?'':' active').'"><a href="#tab-'.$id.'" data-toggle="tab" aria-expanded="true"><img style="height:40px; width:40px;" src="'.(isset($value['image'])?$value['image']:'images/organizr.png').'"></a></li>';
+			$tabContent[$key] = '<div class="tab-pane big-box fade'.($tabContent?'':' active in').'" id="tab-'.$id.'">'.$fieldFunc($value['fields']).'</div>';
+		}
+	}
+	
+	$pageID = (isset($array['id'])?$array['id']:str_replace(array(' ','"',"'"),array('_'),strtolower($array['id'])));
+	
+	return '
+	<div class="email-body">
+		<div class="email-header gray-bg">
+			<button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+			<h1>'.$array['title'].'</h1>
+		</div>
+		<div class="email-inner small-box">
+			<div class="email-inner-section">
+				<div class="small-box fade in" id="'.$pageID.'_frame">
+					<div class="row">
+						<div class="col-lg-12">
+							<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
+								<input type="hidden" name="action" value="'.$pageID.'" />
+								'.$fields.'
+								<div class="tabbable tabs-with-bg" id="'.$pageID.'_tabs">
+									<ul class="nav nav-tabs apps">
+										'.implode('', $tabSelectors).'
+									</ul>
+									<div class="clearfix"></div>
+									<div class="tab-content">
+										'.implode('', $tabContent).'
+									</div>
+								</div>
+								<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
+									<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
+								</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			$(\'#'.$pageID.'_form\').find(\'input, select, textarea\').on(\'change\', function() {
+				$(this).attr(\'data-changed\', \'true\');
+			});
+			$(\'#'.$pageID.'_form\').submit(function () {
+				var newVals = {};
+				$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').each(function() {
+					newVals[$(this).attr(\'name\')] = $(this).val();
+				});
+				$.post(\'ajax.php?a=update-config\', newVals, function(data) {
+					console.log(data);
+					parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect);
+				}, \'json\');
+				return false;
+			});
+		});
+	</script>
+	';
+}
+
+// Build Settings Fields
+function buildField($params) {
+	/*
+	array(
+		'type' => '',
+		'placeholder' => '',
+		'label' => '',
+		'labelTranslate' => '',
+		'assist' => '',
+		'name' => '',
+		'pattern' => '',
+		'options' => array( // For SELECT only
+			'Display' => 'value',
+		),
+	)
+	*/
+	
+	// Tags
+	$tags = array();
+	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave') as $value) {
+		$tags[] = (isset($params[$value])?$value.'="'.$params[$value].'"':'');
+	}
+	
+	$name = (isset($params['name'])?$params['name']:(isset($params['id'])?$params['id']:''));
+	$id = (isset($params['id'])?$params['id']:(isset($params['name'])?$params['name'].'_id':randString(32)));
+	$val = (isset($params['value'])?$params['value']:'');
+	$class = (isset($params['class'])?' '.$params['class']:'');
+	$assist = (isset($params['assist'])?' - i.e. '.$params['assist']:'');
+	$label = (isset($params['labelTranslate'])?translate($params['labelTranslate']):(isset($params['label'])?$params['label']:''));
+	
+	switch ($params['type']) {
+		case 'input':
+		case 'text':
+			$field = '
+			<input id="'.$id.'" name="'.$name.'" type="text" class="form-control material input-sm'.$class.'" '.implode(' ',$tags).' autocorrect="off" autocapitalize="off" value="'.$val.'">
+			';
+			break;
+		case 'select':
+		case 'dropdown':
+			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control material input-sm" '.implode(' ',$tags).'>
+			'.resolveSelectOptions($params['options'], $val).'
+			</select>';
+			break;
+		case 'check':
+		case 'checkbox':
+		case 'toggle':
+			$checked = ((is_bool($val) && $val) || trim($val) === 'true'?' checked':'');
+			return '
+			<input id="'.$id.'_disabled" name="'.$name.'" type="hidden" class="switcher switcher-success" value="false">
+			<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-success'.$class.'" '.implode(' ',$tags).' value="'.$val.'"'.$checked.'><label for="'.$id.'"></label>'.$label.'
+			';
+			break;
+		case 'date':
+			$field = '
+			
+			';
+			break;
+		case 'number':
+			$field = '
+			<input id="'.$id.'" name="'.$name.'" type="number" class="form-control material input-sm'.$class.'" '.implode(' ',$tags).' autocorrect="off" autocapitalize="off" value="'.$val.'">
+			';
+			break;
+		case 'password':
+			$field = '
+			<input id="'.$id.'" name="'.$name.'" type="password" class="form-control material input-sm'.$class.'" '.implode(' ',$tags).' autocorrect="off" autocapitalize="off" value="'.$val.'">
+			';
+			break;
+		default:
+			$field = '';
+	}
+	
+	$labelOut = '<p class="help-text">'.$label.$assist.'</p>';
+	return $field.$labelOut;
 }
 
 // ==============

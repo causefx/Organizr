@@ -14,6 +14,9 @@ $radarr = new Sonarr(RADARRURL, RADARRKEY);
 $sickrage = new SickRage(SICKRAGEURL, SICKRAGEKEY);
 $USER = new User("registration_callback");
 
+// Check if connection to homepage is allowed
+qualifyUser(HOMEPAGEAUTHNEEDED, true);
+
 $dbfile = DATABASE_LOCATION.'users.db';
 
 $file_db = new PDO("sqlite:" . $dbfile);

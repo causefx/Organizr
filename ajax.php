@@ -13,6 +13,7 @@ if (isset($_POST['submit'])) { $action = $_POST['submit']; }
 if (isset($_POST['action'])) { $action = $_POST['action']; }
 if (isset($_GET['action'])) { $action = $_GET['action']; }
 if (isset($_GET['a'])) { $action = $_GET['a']; }
+unset($_POST['action']);
 
 // No Action
 if (!isset($action)) {
@@ -41,6 +42,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
 			case 'plex-recent':
 				echo getPlexRecent($_GET['type'], 12);
 				break;
+			case 'sabnzbd-update':
+				
+				break;
+			case 'nzbget-update':
+				
+				break;
 			
 			default:
 				debug_out('Unsupported Action!',1);
@@ -56,6 +63,30 @@ switch ($_SERVER['REQUEST_METHOD']) {
 			case 'remove-images':
 				removeFiles('images/'.(isset($_POST['file'])?$_POST['file']:''));
 				break;
+			case 'update-config':
+				header('Content-Type: application/json');
+				$notifyExplode = explode("-", NOTIFYEFFECT);
+				if (updateConfig($_POST)) {
+					$msg = array(
+						'html' => '<strong>'.translate("SETTINGS_SAVED").'</strong>',
+						'icon' => 'floppy-o',
+						'type' => 'success',
+						'length' => '5000',
+						'layout' => $notifyExplode[0],
+						'effect' => $notifyExplode[1],
+					);
+				} else {
+					$msg = array(
+						'html' => '<strong>'.translate("SETTINGS__NOT_SAVED").'</strong>',
+						'icon' => 'floppy-o',
+						'type' => 'failed',
+						'length' => '5000',
+						'layout' => $notifyExplode[0],
+						'effect' => $notifyExplode[1],
+					);
+				}
+				echo json_encode($msg);
+				break;
 			case 'editCSS':
 				write_ini_file($_POST["css-show"], "custom.css");
 				echo '<script>window.top.location = window.top.location.href.split(\'#\')[0];</script>';
@@ -65,10 +96,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		}
 		break;
 	case 'PUT':
-		
+		debug_out('Unsupported Action!',1);
 		break;
 	case 'DELETE':
-		
+		debug_out('Unsupported Action!',1);
 		break;
 	default:
 		debug_out('Unknown Request Type!',1);
