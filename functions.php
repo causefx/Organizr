@@ -159,7 +159,6 @@ if (function_exists('curl_version')) :
 		}
 		
 		//Get User List
-		$approvedUsers = array();
 		$userURL = 'https://plex.tv/pms/friends/all';
 		$userHeaders = array(
 			'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD), 
@@ -167,7 +166,6 @@ if (function_exists('curl_version')) :
 		$userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
 		
 		if (is_array($userXML) || is_object($userXML)) {
-			//Build User List array
 			$isUser = false;
 			$usernameLower = strtolower($username);
 			foreach($userXML AS $child) {
@@ -194,7 +192,7 @@ if (function_exists('curl_version')) :
 				$result = curl_post($connectURL, $body, $headers);
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
-					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && $json['user']['username'] == $username) {
+					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && strtolower($json['user']['username']) == $usernameLower) {
 						return true;
 					}
 				}
