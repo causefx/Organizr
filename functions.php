@@ -198,7 +198,10 @@ if (function_exists('curl_version')) :
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
 					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && strtolower($json['user']['username']) == $usernameLower) {
-						return true;
+                        return array(
+							'email' => $json['user']['email'],
+							'image' => $json['user']['thumb']
+						);
 					}
 				}
 			}
