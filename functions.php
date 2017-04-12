@@ -1146,7 +1146,7 @@ function buildSettings($array) {
 					if (this.type == \'checkbox\') {
 						newVals[this.name] = this.checked;
 					} else {
-						newVals[this.name] = ele.val();
+						newVals[this.name] = $(this).val();
 					}
 				});
 				$.post(\'ajax.php?a=update-config\', newVals, function(data) {

@@ -274,13 +274,6 @@ if($action == "upgrade") :
     echo "<script>top.location.href = 'index.php#upgrade';</script>";
 
 endif;
-
-if($action == 'createLocation' || $action == 'homepageSettings') {
-    unset($_POST['action']);
-    updateConfig($_POST);
-    echo "<script>parent.notify('<strong>".$language->translate("SETTINGS_SAVED")."</strong>','floppy-o','success','5000', '$notifyExplode[0]', '$notifyExplode[1]');</script>";
-    echo "<script>setTimeout(function() {window.location.href = window.location.href},1500);</script>";
-}
                 
 if(!isset($_POST['op'])) :
 
@@ -1274,10 +1267,24 @@ endif;?></textarea>
                 <div class="email-content homepage-box white-bg">
 <?php
 $urlPattern = '.*'; // https?:\/\/([-a-zA-Z0-9@:%._\+~#=]{2,256}\.)+[a-z]{2,}\b(:\d{2,5})?[^?.\s]*
+$userTypes = array(
+	'None' => 'false',
+	'User' => 'user',
+	'Admin' => 'Admin',
+);
 echo buildSettings(
 	array(
 		'title' => 'Homepage Settings',
 		'id' => 'homepage_settings',
+		'fields' => array(
+			array(
+				'type' => 'select',
+				'labelTranslate' => 'SHOW_HOMEPAGE',
+				'name' => 'homePageAuthNeeded',
+				'value' => HOMEPAGEAUTHNEEDED,
+				'options' => $userTypes,
+			),
+		),
 		'tabs' => array(
 			array(
 				'title' => 'Plex',
@@ -1326,6 +1333,13 @@ echo buildSettings(
 							'name' => 'plexPlayingNow',
 							'value' => PLEXPLAYINGNOW,
 						),
+					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'plexHomeAuth',
+						'value' => PLEXHOMEAUTH,
+						'options' => $userTypes,
 					),
 				),
 			),
@@ -1377,6 +1391,13 @@ echo buildSettings(
 							'value' => EMBYPLAYINGNOW,
 						),
 					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'embyHomeAuth',
+						'value' => EMBYHOMEAUTH,
+						'options' => $userTypes,
+					),
 				),
 			),
 			array(
@@ -1400,6 +1421,13 @@ echo buildSettings(
 						'name' => 'sonarrKey',
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => SONARRKEY,
+					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sonarrHomeAuth',
+						'value' => SONARRHOMEAUTH,
+						'options' => $userTypes,
 					),
 				),
 			),
@@ -1425,6 +1453,13 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => RADARRKEY,
 					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'radarrHomeAuth',
+						'value' => RADARRHOMEAUTH,
+						'options' => $userTypes,
+					),
 				),
 			),
 			array(
@@ -1448,6 +1483,13 @@ echo buildSettings(
 						'name' => 'sickrageKey',
 						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => SICKRAGEKEY,
+					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sickrageHomeAuth',
+						'value' => SICKRAGEHOMEAUTH,
+						'options' => $userTypes,
 					),
 				),
 			),
@@ -1473,6 +1515,13 @@ echo buildSettings(
 						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => HEADPHONESKEY,
 					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'headphonesHomeAuth',
+						'value' => HEADPHONESHOMEAUTH,
+						'options' => $userTypes,
+					),
 				),
 			),
 			array(
@@ -1496,6 +1545,13 @@ echo buildSettings(
 						'name' => 'sabnzbdKey',
 						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => SABNZBDKEY,
+					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sabnzbdHomeAuth',
+						'value' => SABNZBDHOMEAUTH,
+						'options' => $userTypes,
 					),
 				),
 			),
@@ -1526,6 +1582,13 @@ echo buildSettings(
 						'name' => 'nzbgetPassword',
 						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => (empty(NZBGETPASSWORD)?'':randString(20)),
+					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'nzbgetHomeAuth',
+						'value' => NZBGETHOMEAUTH,
+						'options' => $userTypes,
 					),
 				),
 			),
@@ -1594,11 +1657,6 @@ echo buildSettings(
 		),
 	)
 );
-
-
-
-
-
 ?>
                 </div>
    
@@ -1846,7 +1904,7 @@ echo buildSettings(
 						'type' => 'select',
 						'labelTranslate' => 'NOTIFICATION_TYPE',
 						'name' => 'notifyEffect',
-						'onchange' => 'parent.notify(\'This is an example popup!\', \'fa-bullhorn\', \'success\', 4000, this.value.split(\'-\')[0], this.value.split(\'-\')[1]);',
+						'onchange' => 'parent.notify(\'This is an example popup!\', \'bullhorn\', \'success\', 4000, this.value.split(\'-\')[0], this.value.split(\'-\')[1]);',
 						'value' => explode("-", NOTIFYEFFECT)[1],
 						'options' => array(
 							'Slide From Top' => 'bar-slidetop',

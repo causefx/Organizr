@@ -67,5 +67,5 @@ return array(
 	"slimBar" => "true",
 	"gravatar" => "true",
 	"calTimeFormat" => "h(:mm)t",
-	"HOMEPAGEAUTHNEEDED" => false,
+	"homePageAuthNeeded" => false,
 );
