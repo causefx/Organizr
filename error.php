@@ -125,9 +125,9 @@ endif;
 
         <title><?=$errorTitle;?></title>
 
-        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/bower_components/Waves/dist/waves.min.css"> 
-        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/bower_components/Waves/dist/waves.min.css"> 
+        <link rel="stylesheet" href="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/css/style.css">
         
     </head>
 
