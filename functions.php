@@ -1113,8 +1113,9 @@ function buildSettings($array) {
 					<div class="row">
 						<div class="col-lg-12">
 							<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
-								<input type="hidden" name="action" value="'.$pageID.'" />
-								'.$fields.'
+								<div style="position: relative; left: 2.5%; width: 95%;">
+									'.$fields.'
+								</div>
 								<div class="tabbable tabs-with-bg" id="'.$pageID.'_tabs">
 									<ul class="nav nav-tabs apps">
 										'.implode('', $tabSelectors).'
@@ -1150,6 +1151,7 @@ function buildSettings($array) {
 				}, \'json\');
 				return false;
 			});
+			'.(isset($array['onready'])?$array['onready']:'').'
 		});
 	</script>
 	';
@@ -1186,10 +1188,11 @@ function buildField($params) {
 	$label = (isset($params['labelTranslate'])?translate($params['labelTranslate']):(isset($params['label'])?$params['label']:''));
 	
 	switch ($params['type']) {
-		case 'input':
 		case 'text':
+		case 'number':
+		case 'password':
 			$field = '
-			<input id="'.$id.'" name="'.$name.'" type="text" class="form-control material input-sm'.$class.'" '.implode(' ',$tags).' autocorrect="off" autocapitalize="off" value="'.$val.'">
+			<input id="'.$id.'" name="'.$name.'" type="'.$params['type'].'" class="form-control material input-sm'.$class.'" '.implode(' ',$tags).' autocorrect="off" autocapitalize="off" value="'.$val.'">
 			';
 			break;
 		case 'select':
@@ -1206,22 +1209,17 @@ function buildField($params) {
 			<input id="'.$id.'_disabled" name="'.$name.'" type="hidden" class="switcher switcher-success" value="false">
 			<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-success'.$class.'" '.implode(' ',$tags).' value="'.$val.'"'.$checked.'><label for="'.$id.'"></label>'.$label.'
 			';
-			break;
 		case 'date':
 			$field = '
 			
 			';
 			break;
-		case 'number':
-			$field = '
-			<input id="'.$id.'" name="'.$name.'" type="number" class="form-control material input-sm'.$class.'" '.implode(' ',$tags).' autocorrect="off" autocapitalize="off" value="'.$val.'">
-			';
-			break;
-		case 'password':
-			$field = '
-			<input id="'.$id.'" name="'.$name.'" type="password" class="form-control material input-sm'.$class.'" '.implode(' ',$tags).' autocorrect="off" autocapitalize="off" value="'.$val.'">
-			';
-			break;
+		case 'hidden':
+			return '<input id="'.$id.'" name="'.$name.'" type="hidden" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'">';
+		case 'header':
+			return '<h3 class="'.$class.'" '.implode(' ',$tags).'>'.$val.'</h3>';
+		case 'button':
+			return '<button id="'.$id.'" type="button" class="btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float'.$class.'"><span class="btn-label"><i class="fa fa-flask" '.implode(' ',$tags).'></i></span>'.$label.'</button>';
 		default:
 			$field = '';
 	}

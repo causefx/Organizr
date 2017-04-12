@@ -1621,20 +1621,18 @@ echo buildSettings(
 	array(
 		'title' => 'Advanced Settings',
 		'id' => 'advanced_settings',
+		'onready' => '$(\'.be-auth\').each(function() { $(this).parent().hide(); }); $(\'.be-auth-\'+$(\'#authBackend_id\').val()).each(function() { $(this).parent().show(); });',
 		'fields' => array(
+			array(
+				'type' => 'header',
+				'value' => "General",
+			),
 			array(
 				'type' => 'text',
 				'labelTranslate' => 'REGISTER_PASSWORD',
 				'name' => 'registerPassword',
 				//'pattern' => '[a-zA-Z0-9]{32}',
 				'value' => REGISTERPASSWORD,
-			),
-			array(
-				'type' => 'checkbox',
-				'labelTranslate' => 'MULTIPLE_LOGINS',
-				'name' => 'multipleLogin',
-				//'pattern' => '[a-zA-Z0-9]{32}',
-				'value' => MULTIPLELOGIN,
 			),
 			array(
 				'type' => 'text',
@@ -1649,6 +1647,13 @@ echo buildSettings(
 				'name' => 'cookiePassword',
 				//'pattern' => '[a-zA-Z0-9]{32}',
 				'value' => (empty(COOKIEPASSWORD)?'':randString(20)),
+			),
+			array(
+				'type' => 'checkbox',
+				'labelTranslate' => 'MULTIPLE_LOGINS',
+				'name' => 'multipleLogin',
+				//'pattern' => '[a-zA-Z0-9]{32}',
+				'value' => MULTIPLELOGIN,
 			),
 		),
 		'tabs' => array(
@@ -1672,6 +1677,7 @@ echo buildSettings(
 						'type' => 'select',
 						'labelTranslate' => 'AUTHBACKEND',
 						'name' => 'authBackend',
+						'onchange' => '$(\'.be-auth\').each(function() { $(this).parent().hide(); }); $(\'.be-auth-\'+this.value).each(function() { $(this).parent().show(); });',
 						'value' => AUTHBACKEND,
 						'options' => $backendOptions,
 					),
@@ -1691,15 +1697,17 @@ echo buildSettings(
 						'labelTranslate' => 'AUTHBACKENDHOST',
 						'assist' => 'http(s)://hostname:8181 | Ldap(s)://localhost:389 | ftp(s)://localhost:21',
 						'name' => 'authBackendHost',
+						'class' => 'be-auth be-auth-emby_local be-auth-emby_all be-auth-emby_connect be-auth-ftp be-auth-ldap',
 						'pattern' => $urlPattern,
 						'value' => AUTHBACKENDHOST,
 					),
 					array(
-						'type' => 'text',
+						'type' => 'number',
 						'placeholder' => 'DEPRECIATED',
 						'labelTranslate' => 'AUTHBACKENDPORT',
 						'assist' => 'DEPRECIATED',
 						'name' => 'authBackendPort',
+						'class' => 'be-auth be-auth-emby_local be-auth-emby_all be-auth-emby_connect be-auth-ftp be-auth-ldap',
 						'value' => AUTHBACKENDPORT,
 					),
 					array(
@@ -1707,6 +1715,7 @@ echo buildSettings(
 						'placeholder' => 'domain',
 						'labelTranslate' => 'AUTHBACKENDDOMAIN',
 						'name' => 'authBackendDomain',
+						'class' => 'be-auth be-auth-ldap',
 						'value' => AUTHBACKENDDOMAIN,
 					),
 					array(
@@ -1714,6 +1723,7 @@ echo buildSettings(
 						'placeholder' => randString(32),
 						'labelTranslate' => 'EMBY_TOKEN',
 						'name' => 'plexToken',
+						'class' => 'be-auth be-auth-emby_all be-auth-emby_connect',
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
 					),
@@ -1721,6 +1731,7 @@ echo buildSettings(
 						'type' => 'text',
 						'labelTranslate' => 'PLEX_USERNAME',
 						'name' => 'plexUsername',
+						'class' => 'be-auth be-auth-plex',
 						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => PLEXUSERNAME,
 					),
@@ -1728,6 +1739,7 @@ echo buildSettings(
 						'type' => 'password',
 						'labelTranslate' => 'PLEX_PASSWORD',
 						'name' => 'plexPassword',
+						'class' => 'be-auth be-auth-plex',
 						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => (empty(PLEXPASSWORD)?'':randString(20)),
 					),
@@ -1840,6 +1852,7 @@ echo buildSettings(
 						'type' => 'select',
 						'labelTranslate' => 'NOTIFICATION_TYPE',
 						'name' => 'notifyEffect',
+						'onchange' => 'parent.notify(\'This is an example popup!\', \'fa-bullhorn\', \'success\', 4000, this.value.split(\'-\')[0], this.value.split(\'-\')[1]);',
 						'value' => explode("-", NOTIFYEFFECT)[1],
 						'options' => array(
 							'Slide From Top' => 'bar-slidetop',
