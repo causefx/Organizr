@@ -917,6 +917,7 @@ function upgradeCheck() {
 		unlink('homepageSettings.ini.php');
 		unset($databaseData);
 		unset($homepageConfig);
+		$effectiveVersion = '1.31';
 	}
 	
 	// Upgrade to 1.32
@@ -953,10 +954,12 @@ function upgradeCheck() {
 		} else {
 			debug_out('Couldn\'t create updated configuration.' ,1);
 		}
+		$effectiveVersion = '1.32';
 	}
 	
 	// Upgrade to 1.33
 	$config = loadConfig();
+	if (isset($effectiveVersion)) { $config['CONFIG_VERSION'] = $effectiveVersion; }
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33')) {
 		// Fix User Directory
 		$config['user_home'] = $config['database_Location'].'users/';
@@ -973,11 +976,16 @@ function upgradeCheck() {
 			$config['embyURL'] = $config['authBackendHost'];
 		}
 		
+		// Upgrade database to latest version
+		updateSQLiteDB();
+		
 		// Update Version and Commit
 		$config['CONFIG_VERSION'] = '1.33';
 		$createConfigSuccess = createConfig($config);
+		
+		$effectiveVersion = $config['CONFIG_VERSION'];
+		unset($config);
 	}
-	unset($config);
 	
 	return true;
 }
@@ -1063,9 +1071,11 @@ function qualifyUser($type, $errOnFail = false) {
 		} else {
 			$authorized = true;
 		}
-	} elseif (is_string($type)) {
+	} elseif (is_string($type) || is_array($type)) {
 		if ($type !== 'false') {
-			$type = explode('|',$type);
+			if (!is_array($type)) {
+				$type = explode('|',$type);
+			}
 			$authorized = ($GLOBALS['USER']->authenticated && in_array($GLOBALS['USER']->role,$type));
 		} else {
 			$authorized = true;
@@ -1075,8 +1085,14 @@ function qualifyUser($type, $errOnFail = false) {
 	}
 	
 	if (!$authorized && $errOnFail) {
-		header('Location: error.php?error=401');
-		echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=401\'</script>';
+		if ($GLOBALS['USER']->authenticated) {
+			header('Location: error.php?error=401');
+			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=401\'</script>';
+		} else {
+			header('Location: error.php?error=999');
+			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=999\'</script>';
+		}
+
 		debug_out('Not Authorized' ,1);
 	} else {
 		return $authorized;
@@ -1142,7 +1158,11 @@ function buildSettings($array) {
 			<div class="email-inner-section">
 				<div class="small-box fade in" id="'.$pageID.'_frame">
 					<div class="col-lg-12">
+						'.(isset($array['customBeforeForm'])?$array['customBeforeForm']:'').'
 						<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
+							<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
+							<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
+							</button>
 							'.$fields.($tabContent?'
 							<div class="tabbable tabs-with-bg" id="'.$pageID.'_tabs">
 								<ul class="nav nav-tabs apps">
@@ -1153,10 +1173,8 @@ function buildSettings($array) {
 									'.implode('', $tabContent).'
 								</div>
 							</div>':'').'
-							<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
-								<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
-							</button>
 						</form>
+						'.(isset($array['customAfterForm'])?$array['customAfterForm']:'').'
 					</div>
 				</div>
 			</div>
@@ -1188,7 +1206,7 @@ function buildSettings($array) {
 				});
 				if (hasVals) {
 					console.log(newVals);
-					$.post(\'ajax.php?a=update-config\', newVals, function(data) {
+					$.post(\'ajax.php?a='.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data) {
 						console.log(data);
 						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
 						parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect);
@@ -1223,7 +1241,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 	
 	// Tags
 	$tags = array();
-	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave') as $value) {
+	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href') as $value) {
 		$tags[] = (isset($params[$value])?$value.'="'.$params[$value].'"':'');
 	}
 	
@@ -1273,7 +1291,10 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 			break;
 		case 'button':
 			$labelOut = '';
-			$field = '<button id="'.$id.'" type="button" class="btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float'.$class.'"><span class="btn-label"><i class="fa fa-flask" '.implode(' ',$tags).'></i></span>'.$label.'</button>';
+			$icon = (isset($params['icon'])?$params['icon']:'flask');
+			$bType = (isset($params['buttonType'])?$params['buttonType']:'success');
+			$bDropdown = (isset($params['buttonDrop'])?$params['buttonDrop']:'');
+			$field = ($bDropdown?'<div class="btn-group">':'').'<button id="'.$id.'" type="button" class="btn waves btn-labeled btn-'.$bType.' btn-sm text-uppercase waves-effect waves-float'.$class.''.($bDropdown?' dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':'"').' '.implode(' ',$tags).'><span class="btn-label"><i class="fa fa-'.$icon.'"></i></span>'.$label.'</button>'.($bDropdown?$bDropdown.'</div>':'');
 			break;
 		case 'space':
 			$labelOut = '';
@@ -1329,6 +1350,297 @@ function timezoneOptions() {
     }   
 	
 	return $output;
+}
+
+// Build Database
+function createSQLiteDB() {
+	if (!is_file(DATABASE_LOCATION.'users.db')) {
+		if (!isset($GLOBALS['file_db'])) {
+			$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+			$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		}
+		
+		// Create Users
+		$users = $GLOBALS['file_db']->query('CREATE TABLE `users` (
+			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`username`	TEXT UNIQUE,
+			`password`	TEXT,
+			`email`	TEXT,
+			`token`	TEXT,
+			`role`	TEXT,
+			`active`	TEXT,
+			`last`	TEXT,
+			`auth_service`	TEXT DEFAULT \'internal\'
+		);');
+		
+		// Create Tabs
+		$tabs = $GLOBALS['file_db']->query('CREATE TABLE `tabs` (
+			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`users_id`	INTEGER,
+			`name`	TEXT,
+			`url`	TEXT,
+			`defaultz`	TEXT,
+			`active`	TEXT,
+			`user`	TEXT,
+			`guest`	TEXT,
+			`icon`	TEXT,
+			`iconurl`	TEXT,
+			`window`	TEXT
+		);');
+		
+		// Create Options
+		$options = $GLOBALS['file_db']->query('CREATE TABLE `options` (
+			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`users_id`	INTEGER UNIQUE,
+			`title`	TEXT UNIQUE,
+			`topbar`	TEXT,
+			`bottombar`	TEXT,
+			`sidebar`	TEXT,
+			`hoverbg`	TEXT,
+			`topbartext`	TEXT,
+			`activetabBG`	TEXT,
+			`activetabicon`	TEXT,
+			`activetabtext`	TEXT,
+			`inactiveicon`	TEXT,
+			`inactivetext`	TEXT,
+			`loading`	TEXT,
+			`hovertext`	TEXT
+		);');
+		
+		return $users && $tabs && $options;
+	} else {
+		return false;
+	}
+}
+
+// Upgrade Database
+function updateSQLiteDB() {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	
+	// Cache current DB
+	$cache = array();
+	foreach($GLOBALS['file_db']->query('SELECT name FROM sqlite_master WHERE type="table";') as $table) {
+		foreach($GLOBALS['file_db']->query('SELECT * FROM '.$table['name'].';') as $key => $row) {
+			foreach($row as $k => $v) {
+				if (is_string($k)) {
+					$cache[$table['name']][$key][$k] = $v;
+				}
+			}
+		}
+	}
+	
+	// Remove Current Database
+	$pathDigest = pathinfo(DATABASE_LOCATION.'users.db');
+	if (file_exists(DATABASE_LOCATION.'users.db')) {
+		rename(DATABASE_LOCATION.'users.db', $pathDigest['dirname'].'/'.$pathDigest['filename'].'.bak.db');
+	}
+    $GLOBALS['file_db'] = null;
+	
+	// Create New Database
+	$success = createSQLiteDB();
+	
+	// Restore Items
+	if ($success) {
+		foreach($cache as $table => $tableData) {
+			if ($tableData) {
+				$queryBase = 'INSERT INTO '.$table.' (`'.implode('`,`',array_keys(current($tableData))).'`) values ';
+				$insertValues = array();
+				reset($tableData);
+				foreach($tableData as $key => $value) {
+					$insertValues[] = '('.implode(',',array_map(function($d) { 
+						return (isset($d)?"'".addslashes($d)."'":'null');
+					}, $value)).')';
+				}
+				$GLOBALS['file_db']->query($queryBase.implode(',',$insertValues).';');
+			}
+		}
+		return true;
+	} else {
+		
+		return false;
+	}
+}
+
+// Commit colours to database
+function updateDBOptions($values) {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	
+	// Commit new values to database
+	$GLOBALS['file_db']->exec('UPDATE options SET '.implode(',',array_map(function($d, $k) { 
+		return '`'.$k.'` = '.(isset($d)?"'".addslashes($d)."'":'null');
+	}, $values, array_keys($values))).';'); // WHERE user_id = '';
+	
+	return true;
+}
+
+// Send AJAX notification
+function sendNotification($success, $message = false) {
+	header('Content-Type: application/json');
+	$notifyExplode = explode("-", NOTIFYEFFECT);
+	if ($success) {
+		$msg = array(
+			'html' => '<strong>'.translate("SETTINGS_SAVED").'</strong>'.($message?'<br>'.$message:''),
+			'icon' => 'floppy-o',
+			'type' => 'success',
+			'length' => '5000',
+			'layout' => $notifyExplode[0],
+			'effect' => $notifyExplode[1],
+		);
+	} else {
+		$msg = array(
+			'html' => '<strong>'.translate("SETTINGS_NOT_SAVED").'</strong>'.($message?'<br>'.$message:''),
+			'icon' => 'floppy-o',
+			'type' => 'failed',
+			'length' => '5000',
+			'layout' => $notifyExplode[0],
+			'effect' => $notifyExplode[1],
+		);
+	}
+	echo json_encode($msg);
+	die();
+}
+
+// Load colours from the database
+function loadAppearance() {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	
+	// Defaults
+	$defaults = array(
+		'title' => 'Organizr',
+		'topbartext' => '#66D9EF',
+		'topbar' => '#333333',
+		'bottombar' => '#333333',
+		'sidebar' => '#393939',
+		'hoverbg' => '#AD80FD',
+		'activetabBG' => '#F92671',
+		'activetabicon' => '#FFFFFF',
+		'activetabtext' => '#FFFFFF',
+		'inactiveicon' => '#66D9EF',
+		'inactivetext' => '#66D9EF',
+		'loading' => '#66D9EF',
+		'hovertext' => '#000000',
+	);
+	
+	// Database Lookup
+	$options = $GLOBALS['file_db']->query('SELECT * FROM options');
+	
+	// Replace defaults with filled options
+	foreach($options as $row) {
+		foreach($defaults as $key => $value) {
+			if (isset($row[$key]) && $row[$key]) {
+				$defaults[$key] = $row[$key];
+			}
+		}
+	}
+	
+	// Return the Results
+	return $defaults;
+}
+
+// Delete Database
+function deleteDatabase() {
+    unset($_COOKIE['Organizr']);
+    setcookie('Organizr', '', time() - 3600, '/');
+    unset($_COOKIE['OrganizrU']);
+    setcookie('OrganizrU', '', time() - 3600, '/');
+	
+    $GLOBALS['file_db'] = null;
+
+    unlink(DATABASE_LOCATION.'users.db'); 
+	
+    foreach(glob(substr_replace($userdirpath, "", -1).'/*') as $file) {
+        if(is_dir($file)) {
+            rmdir($file); 
+        } elseif (!is_dir($file)) {
+            unlink($file);
+        }
+	}
+
+    rmdir($userdirpath);
+	
+	return true;
+}
+
+// Upgrade the installation
+function upgradeInstall() {
+    function downloadFile($url, $path){
+        $folderPath = "upgrade/";
+        if(!mkdir($folderPath)) : echo "can't make dir"; endif;
+        $newfname = $folderPath . $path;
+        $file = fopen ($url, 'rb');
+        if ($file) {
+            $newf = fopen ($newfname, 'wb');
+            if ($newf) {
+                while(!feof($file)) {
+                    fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
+                }
+            }
+        }
+
+        if ($file) {
+            fclose($file);
+        }
+
+        if ($newf) {
+            fclose($newf);
+        }
+    }
+
+    function unzipFile($zipFile){
+        $zip = new ZipArchive;
+        $extractPath = "upgrade/";
+        if($zip->open($extractPath . $zipFile) != "true"){
+            echo "Error :- Unable to open the Zip File";
+        }
+
+        /* Extract Zip File */
+        $zip->extractTo($extractPath);
+        $zip->close();
+    }
+
+    // Function to remove folders and files 
+    function rrmdir($dir) {
+        if (is_dir($dir)) {
+            $files = scandir($dir);
+            foreach ($files as $file)
+                if ($file != "." && $file != "..") rrmdir("$dir/$file");
+            rmdir($dir);
+        }
+        else if (file_exists($dir)) unlink($dir);
+    }
+
+    // Function to Copy folders and files       
+    function rcopy($src, $dst) {
+        if (is_dir ( $src )) {
+            if (!file_exists($dst)) : mkdir ( $dst ); endif;
+            $files = scandir ( $src );
+            foreach ( $files as $file )
+                if ($file != "." && $file != "..")
+                    rcopy ( "$src/$file", "$dst/$file" );
+        } else if (file_exists ( $src ))
+            copy ( $src, $dst );
+    }
+
+    $url = "https://github.com/causefx/Organizr/archive/master.zip";
+    $file = "upgrade.zip";
+    $source = __DIR__ . "/upgrade/Organizr-master/";
+    $cleanup = __DIR__ . "/upgrade/";
+    $destination = __DIR__ . "/";
+    downloadFile($url, $file);
+    unzipFile($file);
+    rcopy($source, $destination);
+    rrmdir($cleanup);
+	
+	return true;
 }
 
 // ==============

@@ -61,5 +61,6 @@ config/config.bak.php
 config/users/
 config/users
 config/users.db
+config/users.bak.db
 
 

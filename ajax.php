@@ -25,30 +25,37 @@ switch ($_SERVER['REQUEST_METHOD']) {
 	case 'GET':
 		switch ($action) {
 			case 'emby-image':
+				qualifyUser(EMBYHOMEAUTH, true);
 				getEmbyImage();
 				break;
 			case 'plex-image':
+				qualifyUser(PLEXHOMEAUTH, true);
 				getPlexImage();
 				break;
 			case 'emby-streams':
+				qualifyUser(EMBYHOMEAUTH, true);
 				echo getEmbyStreams(12);
 				break;
 			case 'plex-streams':
+				qualifyUser(PLEXHOMEAUTH, true);
 				echo getPlexStreams(12);
 				break;
 			case 'emby-recent':
+				qualifyUser(EMBYHOMEAUTH, true);
 				echo getEmbyRecent($_GET['type'], 12);
 				break;
 			case 'plex-recent':
+				qualifyUser(PLEXHOMEAUTH, true);
 				echo getPlexRecent($_GET['type'], 12);
 				break;
 			case 'sabnzbd-update':
+				qualifyUser(NZBGETHOMEAUTH, true);
 				
 				break;
 			case 'nzbget-update':
+				qualifyUser(NZBGETHOMEAUTH, true);
 				
 				break;
-			
 			default:
 				debug_out('Unsupported Action!',1);
 		}
@@ -64,32 +71,25 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				removeFiles('images/'.(isset($_POST['file'])?$_POST['file']:''));
 				break;
 			case 'update-config':
-				header('Content-Type: application/json');
-				$notifyExplode = explode("-", NOTIFYEFFECT);
-				if (updateConfig($_POST)) {
-					$msg = array(
-						'html' => '<strong>'.translate("SETTINGS_SAVED").'</strong>',
-						'icon' => 'floppy-o',
-						'type' => 'success',
-						'length' => '5000',
-						'layout' => $notifyExplode[0],
-						'effect' => $notifyExplode[1],
-					);
-				} else {
-					$msg = array(
-						'html' => '<strong>'.translate("SETTINGS__NOT_SAVED").'</strong>',
-						'icon' => 'floppy-o',
-						'type' => 'failed',
-						'length' => '5000',
-						'layout' => $notifyExplode[0],
-						'effect' => $notifyExplode[1],
-					);
-				}
-				echo json_encode($msg);
+				sendNotification(updateConfig($_POST));
 				break;
 			case 'editCSS':
 				write_ini_file($_POST["css-show"], "custom.css");
 				echo '<script>window.top.location = window.top.location.href.split(\'#\')[0];</script>';
+				break;
+			case 'update-appearance':
+				sendNotification(updateDBOptions($_POST));
+				break;
+			case 'deleteDB':
+				deleteDatabase();
+				echo json_encode(array('result' => 'success'));
+				break;
+			case 'upgradeInstall':
+				upgradeInstall();
+				echo json_encode(array('result' => 'success'));
+				break;
+			case 'deleteLog':
+				sendNotification(unlink(FAIL_LOG));
 				break;
 			default:
 				debug_out('Unsupported Action!',1);

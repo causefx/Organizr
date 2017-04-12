@@ -165,10 +165,8 @@
 		function rebuild_database($dbfile)
 		{
 			$this->info("creating/rebuilding database as ".$dbfile);
-			$this->database->beginTransaction();
-			$create = "CREATE TABLE users (username TEXT UNIQUE, password TEXT, email TEXT UNIQUE, token TEXT, role TEXT, active TEXT, last TEXT);";
-			$this->database->exec($create);
-			$this->database->commit();
+			createSQLiteDB();
+			$this->database = new PDO("sqlite:" . $dbfile);
 		}
 		// process a page request
 		function process(&$registration_callback=false)

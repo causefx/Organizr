@@ -12,280 +12,44 @@ $databaseConfig = configLazy('config/config.php');
 require_once("user.php");
 $USER = new User("registration_callback");
 
+// Create Database Connection
+$file_db = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-
-
-$data = false;
-
+// Some PHP config stuff
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
 
-if(!$USER->authenticated) :
+// Confirm Access
+qualifyUser('admin', true);
 
-    header( 'Location: error.php?error=999' );
-
-elseif($USER->authenticated && $USER->role !== "admin") :
-
-    header( 'Location: error.php?error=401' );
-
-endif;
-
-$dbfile = DATABASE_LOCATION.'users.db';
-$databaseLocation = "databaseLocation.ini.php";
-$homepageSettings = "homepageSettings.ini.php";
-$userdirpath = USER_HOME;
-$userdirpath = substr_replace($userdirpath, "", -1);
-
-$file_db = new PDO("sqlite:" . $dbfile);
-$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-$getUsers = $file_db->query('SELECT * FROM users');
+// Load User List
 $gotUsers = $file_db->query('SELECT * FROM users');
 
-$dbTab = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"');
-$dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
+// Load Colours/Appearance
+foreach(loadAppearance() as $key => $value) {
+	$$key = $value;
+}
 
-$tabSetup = "Yes";
-$hasOptions = "No";
 
-foreach($dbTab as $row) :
 
-    if (in_array("tabs", $row)) :
-        $tabSetup = "No";
-    endif;
 
-endforeach;
 
-foreach($dbOptions as $row) :
 
-    if (in_array("options", $row)) :
-        $hasOptions = "Yes";
-    endif;
 
-endforeach;
-
-if($hasOptions == "No") :
-
-    $title = "Organizr";
-    $topbar = "#333333"; 
-    $topbartext = "#66D9EF";
-    $bottombar = "#333333";
-    $sidebar = "#393939";
-    $hoverbg = "#AD80FD";
-    $activetabBG = "#F92671";
-    $activetabicon = "#FFFFFF";
-    $activetabtext = "#FFFFFF";
-    $inactiveicon = "#66D9EF";
-    $inactivetext = "#66D9EF";
-    $loading = "#66D9EF";
-    $hovertext = "#000000";
-
-endif;
-
-if($tabSetup == "No") :
-
-    $result = $file_db->query('SELECT * FROM tabs');
-endif;
-
-if($hasOptions == "Yes") :
-
-    $resulto = $file_db->query('SELECT * FROM options');
-endif;
-
-if($hasOptions == "Yes") : 
-    foreach($resulto as $row) : 
-
-        $title = isset($row['title']) ? $row['title'] : "Organizr";
-        $topbartext = isset($row['topbartext']) ? $row['topbartext'] : "#66D9EF";
-        $topbar = isset($row['topbar']) ? $row['topbar'] : "#333333";
-        $bottombar = isset($row['bottombar']) ? $row['bottombar'] : "#333333";
-        $sidebar = isset($row['sidebar']) ? $row['sidebar'] : "#393939";
-        $hoverbg = isset($row['hoverbg']) ? $row['hoverbg'] : "#AD80FD";
-        $activetabBG = isset($row['activetabBG']) ? $row['activetabBG'] : "#F92671";
-        $activetabicon = isset($row['activetabicon']) ? $row['activetabicon'] : "#FFFFFF";
-        $activetabtext = isset($row['activetabtext']) ? $row['activetabtext'] : "#FFFFFF";
-        $inactiveicon = isset($row['inactiveicon']) ? $row['inactiveicon'] : "#66D9EF";
-        $inactivetext = isset($row['inactivetext']) ? $row['inactivetext'] : "#66D9EF";
-        $loading = isset($row['loading']) ? $row['loading'] : "#66D9EF";
-        $hovertext = isset($row['hovertext']) ? $row['hovertext'] : "#000000";
-
-    endforeach;
-
-endif;
 
 $action = "";
 if(isset($_POST['action'])) :
-
     $action = $_POST['action'];
 endif;
 
-if($action == "deleteDB") : 
-    unset($_COOKIE['Organizr']);
-    setcookie('Organizr', '', time() - 3600, '/');
-    unset($_COOKIE['OrganizrU']);
-    setcookie('OrganizrU', '', time() - 3600, '/');
-
-    $file_db = null;
-
-    unlink($dbfile); 
-
-    foreach(glob($userdirpath . '/*') as $file) : 
-
-        if(is_dir($file)) :
-
-            rmdir($file); 
-
-        elseif(!is_dir($file)) :
-
-            unlink($file);
-
-        endif;
-
-    endforeach; 
-
-    rmdir($userdirpath);
-
-   echo "<script>window.parent.location.reload();</script>";
-
-endif;
-
-if($action == "deleteLog") : 
-    unlink(FAIL_LOG); 
-
-   echo "<script type='text/javascript'>window.location.replace('settings.php');</script>";
-
-endif;
-
-if($action == "upgrade") : 
-    function downloadFile($url, $path){
-
-        $folderPath = "upgrade/";
-
-        if(!mkdir($folderPath)) : echo "can't make dir"; endif;
-
-        $newfname = $folderPath . $path;
-
-        $file = fopen ($url, 'rb');
-
-        if ($file) {
-
-            $newf = fopen ($newfname, 'wb');
-
-            if ($newf) {
-
-                while(!feof($file)) {
-
-                    fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
-
-                }
-
-            }
-
-        }
-
-        if ($file) {
-
-            fclose($file);
-
-        }
-
-        if ($newf) {
-
-            fclose($newf);
-
-        }
-
-    }
-
-    function unzipFile($zipFile){
-
-        $zip = new ZipArchive;
-
-        $extractPath = "upgrade/";
-
-        if($zip->open($extractPath . $zipFile) != "true"){
-
-            echo "Error :- Unable to open the Zip File";
-        }
-
-        /* Extract Zip File */
-        $zip->extractTo($extractPath);
-        $zip->close();
-
-    }
-
-    // Function to remove folders and files 
-    function rrmdir($dir) {
-
-        if (is_dir($dir)) {
-
-            $files = scandir($dir);
-
-            foreach ($files as $file)
-
-                if ($file != "." && $file != "..") rrmdir("$dir/$file");
-
-            rmdir($dir);
-
-        }
-
-        else if (file_exists($dir)) unlink($dir);
-
-    }
-
-    // Function to Copy folders and files       
-    function rcopy($src, $dst) {
-
-        if (is_dir ( $src )) {
-
-            if (!file_exists($dst)) : mkdir ( $dst ); endif;
-
-            $files = scandir ( $src );
-
-            foreach ( $files as $file )
-
-                if ($file != "." && $file != "..")
-
-                    rcopy ( "$src/$file", "$dst/$file" );
-
-        } else if (file_exists ( $src ))
-
-            copy ( $src, $dst );
-
-    }
-
-    $url = "https://github.com/causefx/Organizr/archive/master.zip";
-
-    $file = "upgrade.zip";
-
-    $source = __DIR__ . "/upgrade/Organizr-master/";
-
-    $cleanup = __DIR__ . "/upgrade/";
-
-    $destination = __DIR__ . "/";
-
-    downloadFile($url, $file);
-    unzipFile($file);
-
-    rcopy($source, $destination);
-    rrmdir($cleanup);
-
-    echo "<script>top.location.href = 'index.php#upgrade';</script>";
-
-endif;
 if(!isset($_POST['op'])) :
 
     $_POST['op'] = "";
 endif; 
 
 if($action == "addTabz") :
-    if($tabSetup == "No") :
-
-        $file_db->exec("DELETE FROM tabs");
-    endif;
-    if($tabSetup == "Yes") :
-        $file_db->exec("CREATE TABLE tabs (name TEXT UNIQUE, url TEXT, defaultz TEXT, active TEXT, user TEXT, guest TEXT, icon TEXT, iconurl TEXT, window TEXT)");
-    endif;
+	$file_db->exec("DELETE FROM tabs");
 
     $addTabName = array();
     $addTabUrl = array();
@@ -380,49 +144,6 @@ if($action == "addTabz") :
 
         $stmt->execute();
     endforeach;
-endif;
-
-if($action == "addOptionz") :
-    if($hasOptions == "Yes") :
-        $file_db->exec("DELETE FROM options");
-    endif;
-    if($hasOptions == "No") :
-
-        $file_db->exec("CREATE TABLE options (title TEXT UNIQUE, topbar TEXT, bottombar TEXT, sidebar TEXT, hoverbg TEXT, topbartext TEXT, activetabBG TEXT, activetabicon TEXT, activetabtext TEXT, inactiveicon TEXT, inactivetext TEXT, loading TEXT, hovertext TEXT)");
-    endif;
-    $title = $_POST['title'];
-    $topbartext = $_POST['topbartext'];
-    $topbar = $_POST['topbar'];
-    $bottombar = $_POST['bottombar'];
-    $sidebar = $_POST['sidebar'];
-    $hoverbg = $_POST['hoverbg'];
-    $hovertext = $_POST['hovertext'];
-    $activetabBG = $_POST['activetabBG'];
-    $activetabicon = $_POST['activetabicon'];
-    $activetabtext = $_POST['activetabtext'];
-    $inactiveicon = $_POST['inactiveicon'];
-    $inactivetext = $_POST['inactivetext'];
-    $loading = $_POST['loading'];
-
-    $insert = "INSERT INTO options (title, topbartext, topbar, bottombar, sidebar, hoverbg, activetabBG, activetabicon, activetabtext, inactiveicon, inactivetext, loading, hovertext) 
-                VALUES (:title, :topbartext, :topbar, :bottombar, :sidebar, :hoverbg, :activetabBG, :activetabicon , :activetabtext , :inactiveicon, :inactivetext, :loading, :hovertext)";
-    $stmt = $file_db->prepare($insert);
-    $stmt->bindParam(':title', $title);
-    $stmt->bindParam(':topbartext', $topbartext);
-    $stmt->bindParam(':topbar', $topbar);
-    $stmt->bindParam(':bottombar', $bottombar);
-    $stmt->bindParam(':sidebar', $sidebar);
-    $stmt->bindParam(':hoverbg', $hoverbg);
-    $stmt->bindParam(':activetabBG', $activetabBG);
-    $stmt->bindParam(':activetabicon', $activetabicon);
-    $stmt->bindParam(':activetabtext', $activetabtext);
-    $stmt->bindParam(':inactiveicon', $inactiveicon);
-    $stmt->bindParam(':inactivetext', $inactivetext);
-    $stmt->bindParam(':loading', $loading);
-    $stmt->bindParam(':hovertext', $hovertext);
-
-    $stmt->execute();
-
 endif;
 
 if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
@@ -762,9 +483,9 @@ endif; ?>
 
                                                 <ul class="list-group ui-sortable">
 
-                                                    <?php if($tabSetup == "No") : $tabNum = 1; 
-
-                                                    foreach($result as $row) : 
+                                                    <?php  
+													$tabNum = 1;
+                                                    foreach($file_db->query('SELECT * FROM tabs') as $row) {
 
                                                     if($row['defaultz'] == "true") : $default = "checked"; else : $default = ""; endif;
                                                     if($row['active'] == "true") : $activez = "checked"; else : $activez = ""; endif;
@@ -895,7 +616,7 @@ endif; ?>
                                                         </tab>
 
                                                     </li>
-                                                    <?php $tabNum ++; endforeach; endif;?>
+                                                    <?php $tabNum ++; }?>
 
                                                 </ul>
 
@@ -921,14 +642,61 @@ endif; ?>
 
                 <div class="email-content color-box white-bg">
 <?php
-
 // Build Colour Settings
-/*
 echo buildSettings(
 	array(
-		'title' => 'Homepage Settings',
-		'id' => 'homepage_settings',
+		'title' => 'Appearance Settings',
+		'id' => 'appearance_settings',
+		'submitAction' => 'update-appearance',
+		'onready' => '$("#editCssButton, #backToThemeButton").click(function(){ $("#appearance_settings_form").toggle(); $("#editCssForm").toggle(); });',
+		'customAfterForm' => '                                     
+<form style="display: none" id="editCssForm" method="POST" action="ajax.php">
+	<button class="btn waves btn-labeled btn-warning btn-sm pull-left text-uppercase waves-effect waves-float" type="button" id="backToThemeButton">
+
+	<span class="btn-label"><i class="fa fa-arrow-left"></i></span>'.translate("GO_BACK").'
+	</button>
+
+	<button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+
+	<span class="btn-label"><i class="fa fa-floppy-o"></i></span>'.translate("SAVE_CSS").'
+	</button>
+	<br><br>
+	<input type="hidden" name="submit" value="editCSS" /> 
+	<h1>'.translate("EDIT_CUSTOM_CSS").'</h1> 
+	<!--<p>Variables Available<code>$topbar - $topbartext - $bottombar - $sidebar - $hoverbg - $activetabBG - $activetabicon - $activetabtext - $inactiveicon - $inactivetext - $loading - $hovertext</code></p>-->
+	<textarea class="form-control" id="css-show" name="css-show" rows="25" style="background: #000; color: #FFF;">'.(file_exists('./custom.css')?file_get_contents('./custom.css'):'').'</textarea>
+</form>',
 		'fields' => array(
+			array(
+				array(
+					'type' => 'button',
+					'labelTranslate' => 'CHOOSE_THEME',
+					'icon' => 'css3',
+					'id' => 'themeSelector',
+					'buttonType' => 'dark',
+					'buttonDrop' => '
+<ul class="dropdown-menu gray-bg">
+	<li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
+	<li class="chooseTheme" id="newPlexTheme" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" href="#">New Plex<span><img class="themeImage" src="images/themes/newplex.png"></span></a></li>
+	<li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
+	<li class="chooseTheme" id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook<span><img class="themeImage" src="images/themes/facebook.png"></span></a></li>
+	<li class="chooseTheme" id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa<span><img class="themeImage" src="images/themes/spa.png"></span></a></li>
+	<li class="chooseTheme" id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly<span><img class="themeImage" src="images/themes/darkly.png"></span></a></li>
+	<li class="chooseTheme" id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate<span><img class="themeImage" src="images/themes/slate.png"></span></a></li>
+	<li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
+	<li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
+	<li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
+</ul>
+					',
+				),
+				array(
+					'type' => 'button',
+					'labelTranslate' => 'EDIT_CUSTOM_CSS',
+					'icon' => 'css3',
+					'buttonType' => 'primary',
+					'id' => 'editCssButton',
+				),
+			),
 			array(
 				'type' => 'header',
 				'labelTranslate' => 'TITLE',
@@ -938,7 +706,8 @@ echo buildSettings(
 					'type' => 'text',
 					'format' => 'colour',
 					'labelTranslate' => 'TITLE',
-					'name' => 'colour_',
+					'name' => 'title',
+					'id' => 'title',
 					'value' => $title,
 				),
 				array(
@@ -946,7 +715,8 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'TITLE_TEXT',
-					'name' => 'colour_',
+					'name' => 'topbartext',
+					'id' => 'topbartext',
 					'value' => $topbartext,
 				),
 				array(
@@ -954,7 +724,8 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'LOADING_COLOR',
-					'name' => 'colour_',
+					'name' => 'loading',
+					'id' => 'loading',
 					'value' => $loading,
 				),
 			),
@@ -968,7 +739,8 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'TOP_BAR',
-					'name' => 'colour_',
+					'name' => 'topbar',
+					'id' => 'topbar',
 					'value' => $topbar,
 				),
 				array(
@@ -976,7 +748,8 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'BOTTOM_BAR',
-					'name' => 'colour_',
+					'name' => 'bottombar',
+					'id' => 'bottombar',
 					'value' => $bottombar,
 				),
 				array(
@@ -984,7 +757,8 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'SIDE_BAR',
-					'name' => 'colour_',
+					'name' => 'sidebar',
+					'id' => 'sidebar',
 					'value' => $sidebar,
 				),
 			),
@@ -994,7 +768,8 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'HOVER_BG',
-					'name' => 'colour_',
+					'name' => 'hoverbg',
+					'id' => 'hoverbg',
 					'value' => $hoverbg,
 				),
 				array(
@@ -1002,7 +777,8 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'HOVER_TEXT',
-					'name' => 'colour_',
+					'name' => 'hovertext',
+					'id' => 'hovertext',
 					'value' => $hovertext,
 				),
 			),
@@ -1016,7 +792,8 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'ACTIVE_TAB_BG',
-					'name' => 'colour_',
+					'name' => 'activetabBG',
+					'id' => 'activetabBG',
 					'value' => $activetabBG,
 				),
 				array(
@@ -1024,7 +801,8 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'ACTIVE_TAB_ICON',
-					'name' => 'colour_',
+					'name' => 'activetabicon',
+					'id' => 'activetabicon',
 					'value' => $activetabicon,
 				),
 				array(
@@ -1032,7 +810,8 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'ACTIVE_TAB_TEXT',
-					'name' => 'colour_',
+					'name' => 'activetabtext',
+					'id' => 'activetabtext',
 					'value' => $activetabtext,
 				),
 			),
@@ -1046,7 +825,8 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'INACTIVE_ICON',
-					'name' => 'colour_',
+					'name' => 'inactiveicon',
+					'id' => 'inactiveicon',
 					'value' => $inactiveicon,
 				),
 				array(
@@ -1054,211 +834,15 @@ echo buildSettings(
 					'format' => 'colour',
 					'class' => 'jscolor {hash:true}',
 					'labelTranslate' => 'INACTIVE_TEXT',
-					'name' => 'colour_',
+					'name' => 'inactivetext',
+					'id' => 'inactivetext',
 					'value' => $inactivetext,
 				),
 			),
 		),
 	)
 );
-*/
-?>				
-                    <div class="email-body">
-                        <div class="email-header gray-bg">
-                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
-                            <h1>Color Settings</h1>
-                        </div>
-                        <div class="email-inner small-box">
-                            <div class="email-inner-section">
-                                <div class="small-box fade in" id="customedit">
-
-                                    <form id="add_optionz" method="post">
-                                        <input type="hidden" name="action" value="addOptionz" />
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-dark dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <?php echo $language->translate("CHOOSE_THEME");?>  <span class="caret"></span>
-                                            </button>
-                                            <ul class="dropdown-menu gray-bg">
-                                                <li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
-                                                <li class="chooseTheme" id="newPlexTheme" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" href="#">New Plex<span><img class="themeImage" src="images/themes/newplex.png"></span></a></li>
-                                                <li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
-                                                <li class="chooseTheme" id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook<span><img class="themeImage" src="images/themes/facebook.png"></span></a></li>
-                                                <li class="chooseTheme" id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa<span><img class="themeImage" src="images/themes/spa.png"></span></a></li>
-                                                <li class="chooseTheme" id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly<span><img class="themeImage" src="images/themes/darkly.png"></span></a></li>
-                                                <li class="chooseTheme" id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate<span><img class="themeImage" src="images/themes/slate.png"></span></a></li>
-                                                <li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
-                                                <li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
-                                                <li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
-                                            </ul>
-                                        </div>
-                                        <button id="editCssButton" class="btn waves btn-labeled btn-primary btn-sm text-uppercase waves-effect waves-float" type="button">
-                                                <span class="btn-label"><i class="fa fa-css3"></i></span><?php echo $language->translate("EDIT_CUSTOM_CSS");?>
-                                        </button>
-                                        <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
-                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_OPTIONS");?>
-                                        </button>
-
-                                        <div class="big-box grids">
-
-                                            <div class="row show-grids col-lg-12">
-
-                                                <h4><strong><?php echo $language->translate("TITLE");?></strong></h4>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("TITLE");?></center>
-
-                                                    <input name="title" class="form-control gray" value="<?=$title;?>" placeholder="Organizr">
-
-                                                </div>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("TITLE_TEXT");?></center>
-
-                                                    <input name="topbartext" id="topbartext" class="form-control jscolor {hash:true}" value="<?=$topbartext;?>">
-
-                                                </div>
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("LOADING_COLOR");?></center>
-
-                                                    <input name="loading" id="loading" class="form-control jscolor {hash:true}" value="<?=$loading;?>">
-
-                                                </div>
-
-                                            </div>
-
-                                            <div class="row show-grids col-lg-12">
-
-                                                <h4><strong><?php echo $language->translate("NAVIGATION_BARS");?></strong></h4>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("TOP_BAR");?></center>
-
-                                                    <input name="topbar" id="topbar" class="form-control jscolor {hash:true}" value="<?=$topbar;?>">
-
-                                                </div>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("BOTTOM_BAR");?></center>
-
-                                                    <input name="bottombar" id="bottombar" class="form-control jscolor {hash:true}" value="<?=$bottombar;?>">
-
-                                                </div>
-
-                                                <div class="clearfix visible-xs-block"></div>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("SIDE_BAR");?></center>
-
-                                                    <input name="sidebar" id="sidebar" class="form-control jscolor {hash:true}" value="<?=$sidebar;?>">
-
-                                                </div>
-                                            </div>
-                                            <div class="row show-grids col-lg-12">
-
-                                                <div class="col-md-6 gray-bg">
-
-                                                    <center><?php echo $language->translate("HOVER_BG");?></center>
-
-                                                    <input name="hoverbg" id="hoverbg" class="form-control jscolor {hash:true}" value="<?=$hoverbg;?>">
-
-                                                </div>
-                                                <div class="col-md-6 gray-bg">
-
-                                                    <center><?php echo $language->translate("HOVER_TEXT");?></center>
-
-                                                    <input name="hovertext" id="hovertext" class="form-control jscolor {hash:true}" value="<?=$hovertext;?>">
-
-                                                </div>
-
-                                            </div>
-
-                                            <div class="row show-grids col-lg-12">
-
-                                                <h4><strong><?php echo $language->translate("ACTIVE_TAB");?></strong></h4>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("ACTIVE_TAB_BG");?></center>
-
-                                                    <input name="activetabBG" id="activetabBG" class="form-control jscolor {hash:true}" value=<?=$activetabBG;?>"">
-
-                                                </div>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("ACTIVE_TAB_ICON");?></center>
-
-                                                    <input name="activetabicon" id="activetabicon" class="form-control jscolor {hash:true}" value="<?=$activetabicon;?>">
-
-                                                </div>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("ACTIVE_TAB_TEXT");?></center>
-
-                                                    <input name="activetabtext" id="activetabtext" class="form-control jscolor {hash:true}" value="<?=$activetabtext;?>">
-
-                                                </div>
-
-                                            </div>
-
-                                            <div class="row show-grids col-lg-12">
-
-                                                <h4><strong><?php echo $language->translate("INACTIVE_TAB");?></strong></h4>
-
-                                                <div class="col-md-6 gray-bg">
-
-                                                    <center><?php echo $language->translate("INACTIVE_ICON");?></center>
-
-                                                    <input name="inactiveicon" id="inactiveicon" class="form-control jscolor {hash:true}" value="<?=$inactiveicon;?>">
-
-                                                </div>
-
-                                                <div class="col-md-6 gray-bg">
-
-                                                    <center><?php echo $language->translate("INACTIVE_TEXT");?></center>
-
-                                                    <input name="inactivetext" id="inactivetext" class="form-control jscolor {hash:true}" value="<?=$inactivetext;?>">
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                    </form>
-                                     <form style="display: none" id="editCssForm" method="POST" action="ajax.php">
-                                         <button class="btn waves btn-labeled btn-warning btn-sm pull-left text-uppercase waves-effect waves-float" type="button" id="backToThemeButton">
-
-                                            <span class="btn-label"><i class="fa fa-arrow-left"></i></span><?php echo $language->translate("GO_BACK");?>
-                                        </button>
-                                         
-                                         <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
-
-                                            <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_CSS");?>
-                                        </button>
-                                        <br><br>
-                                        <input type="hidden" name="submit" value="editCSS" /> 
-                                        <h1><?php echo $language->translate("EDIT_CUSTOM_CSS");?></h1> 
-                                         <!--<p>Variables Available<code>$topbar - $topbartext - $bottombar - $sidebar - $hoverbg - $activetabBG - $activetabicon - $activetabtext - $inactiveicon - $inactivetext - $loading - $hovertext</code></p>-->
-                                        <textarea class="form-control" id="css-show" name="css-show" rows="25" style="background: #000; color: #FFF;">
-<?php if(CUSTOMCSS == "true") :
-$template_file = "custom.css";
-$file_handle = fopen($template_file, "rb");
-echo fread($file_handle, filesize($template_file));
-fclose($file_handle);
-endif;?></textarea>
-                                    </form>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+?>
                 </div>
                 <div class="email-content homepage-box white-bg">
 <?php
@@ -2213,8 +1797,7 @@ echo buildSettings(
                                         <div class="panel-body">
                                             <div class="">
                                                 <p><?php echo $language->translate("DELETE_WARNING");?></p>
-                                                <form id="deletedb" method="post">
-                                                    <input type="hidden" name="action" value="deleteDB" />
+                                                <form id="deletedb" method="post" onsubmit="$.post(\'ajax.php?a=deleteDB\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;">
                                                     <button class="btn waves btn-labeled btn-danger pull-right text-uppercase waves-effect waves-float" type="submit">
                                                         <span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("DELETE_DATABASE");?>
                                                     </button>
@@ -2780,16 +2363,6 @@ echo buildSettings(
 
                 $( "#deleteDiv" ).toggle();
             });
-            $("#editCssButton").click(function(){
-
-                $( "#add_optionz" ).toggle();
-                $( "#editCssForm" ).toggle();
-            });
-            $("#backToThemeButton").click(function(){
-
-                $( "#add_optionz" ).toggle();
-                $( "#editCssForm" ).toggle();
-            });
             $(".deleteUser").click(function(){
 
                 var parent_id = $(this).parent().attr('id');
@@ -2912,6 +2485,7 @@ echo buildSettings(
                 definedElement.focus();
                 definedElement.value = elementColor;
                 definedElement.style.backgroundColor = elementColor;
+				$(definedElement).trigger('change');
             }
 
             $('#plexTheme').on('click touchstart', function(){
@@ -3315,7 +2889,7 @@ echo buildSettings(
             //Simulate Edit Tabs Click 
             $("#open-tabs").trigger("click");
             //Append Delete log to User Logs
-            $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
+            $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post" onsubmit="$.post(\'ajax.php?a=deleteLog\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
             $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')
             //Enable Tooltips
             $('[data-toggle="tooltip"]').tooltip(); 
@@ -3349,7 +2923,7 @@ echo buildSettings(
                         parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
 
                         $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
-                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\" onsubmit=\"$.post(\'ajax.php?a=upgradeInstall\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
                         $( "p[id^='upgrade']" ).toggle();
                     }else if(currentVersion === githubVersion){
                     	console.log("You Are on Current Version");
