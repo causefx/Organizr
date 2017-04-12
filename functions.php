@@ -1138,12 +1138,16 @@ function buildSettings($array) {
 	<script>
 		$(document).ready(function() {
 			$(\'#'.$pageID.'_form\').find(\'input, select, textarea\').on(\'change\', function() {
-				$(this).attr(\'data-changed\', \'true\');
+				$(this).attr(\'data-changed\', \'true\');			
 			});
 			$(\'#'.$pageID.'_form\').submit(function () {
 				var newVals = {};
 				$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').each(function() {
-					newVals[$(this).attr(\'name\')] = $(this).val();
+					if (this.type == \'checkbox\') {
+						newVals[this.name] = this.checked;
+					} else {
+						newVals[this.name] = ele.val();
+					}
 				});
 				$.post(\'ajax.php?a=update-config\', newVals, function(data) {
 					console.log(data);
@@ -1206,7 +1210,6 @@ function buildField($params) {
 		case 'toggle':
 			$checked = ((is_bool($val) && $val) || trim($val) === 'true'?' checked':'');
 			return '
-			<input id="'.$id.'_disabled" name="'.$name.'" type="hidden" class="switcher switcher-success" value="false">
 			<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-success'.$class.'" '.implode(' ',$tags).' value="'.$val.'"'.$checked.'><label for="'.$id.'"></label>'.$label.'
 			';
 		case 'date':
