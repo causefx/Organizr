@@ -1109,8 +1109,8 @@ endif;?></textarea>
 $urlPattern = '.*'; // https?:\/\/([-a-zA-Z0-9@:%._\+~#=]{2,256}\.)+[a-z]{2,}\b(:\d{2,5})?[^?.\s]*
 $userTypes = array(
 	'None' => 'false',
-	'User' => 'user',
-	'Admin' => 'Admin',
+	'User' => 'user|admin',
+	'Admin' => 'admin',
 );
 echo buildSettings(
 	array(

@@ -1048,6 +1048,8 @@ function qualifyUser($type, $errOnFail = false) {
 	}
 	
 	if (!$authorized && $errOnFail) {
+		header('Location: error.php?error=401');
+		echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=401\'</script>';
 		debug_out('Not Authorized' ,1);
 	} else {
 		return $authorized;

@@ -188,7 +188,7 @@ endif; ?>
             <div id="content" class="container-fluid">
 <!-- <button id="numBnt">Numerical</button> -->
                 <br/>
-                <?php if(($USER->authenticated && $USER->role == "admin") && (NZBGETURL != "" || SABNZBDURL != "" )) : ?>
+                <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
                 <div id="downloadClientRow" class="row">
                     <sort>2</sort>
 
@@ -307,54 +307,45 @@ endif; ?>
                     </div>
 
                 </div>
-                <?php endif; ?>
-
+                <?php } ?>
+				<?php if (qualifyUser(PLEXHOMEAUTH)) { ?>
                 <div id="plexRow" class="row">
                     <sort>3</sort>
 
                     <?php
-                    $plexSize = 0;
-                    if(PLEXRECENTMOVIE == "true"){ $plexSize++; }
-                    if(PLEXRECENTTV == "true"){ $plexSize++; }
-                    if(PLEXRECENTMUSIC == "true"){ $plexSize++; }
-                    if(PLEXPLAYINGNOW == "true"){ $plexSize++; }
-                    if($plexSize >= 4){ $plexSize = 3; }elseif($plexSize == 3){ $plexSize = 4; }elseif($plexSize == 2){ $plexSize = 6; }elseif($plexSize == 1){ $plexSize = 12; }
-                    if(PLEXRECENTMOVIE == "true"){ echo getPlexRecent("movie", $plexSize); }
-                    if(PLEXRECENTTV == "true"){ echo getPlexRecent("season", $plexSize); }
-                    if(PLEXRECENTMUSIC == "true"){ echo getPlexRecent("album", $plexSize); }
-                    if(PLEXPLAYINGNOW == "true"){ echo getPlexStreams($plexSize); }
+                    $plexSize = (PLEXRECENTMOVIE == "true") + (PLEXRECENTTV == "true") + (PLEXRECENTMUSIC == "true") + (PLEXPLAYINGNOW == "true");
+                    if(PLEXRECENTMOVIE == "true"){ echo getPlexRecent("movie", 12/$plexSize); }
+                    if(PLEXRECENTTV == "true"){ echo getPlexRecent("season", 12/$plexSize); }
+                    if(PLEXRECENTMUSIC == "true"){ echo getPlexRecent("album", 12/$plexSize); }
+                    if(PLEXPLAYINGNOW == "true"){ echo getPlexStreams(12/$plexSize); }
                     ?>
 
                 </div>
+				<?php } ?>
+				<?php if (qualifyUser(EMBYHOMEAUTH)) { ?>
                 <div id="embyRow" class="row">
                     <sort>3</sort>
 
                     <?php
-                    $embySize = 0;
-                    if(EMBYRECENTMOVIE == "true"){ $embySize++; }
-                    if(EMBYRECENTTV == "true"){ $embySize++; }
-                    if(EMBYRECENTMUSIC == "true"){ $embySize++; }
-                    if(EMBYPLAYINGNOW == "true"){ $embySize++; }
-                    if($embySize >= 4){ $embySize = 3; }elseif($embySize == 3){ $embySize = 4; }elseif($embySize == 2){ $embySize = 6; }elseif($embySize == 1){ $embySize = 12; }
-                    if(EMBYRECENTMOVIE == "true"){ echo getEmbyRecent("movie", $embySize); }
-                    if(EMBYRECENTTV == "true"){ echo getEmbyRecent("season", $embySize); }
-                    if(EMBYRECENTMUSIC == "true"){ echo getEmbyRecent("album", $embySize); }
-                    if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams($embySize); }
+                    $embySize = (EMBYRECENTMOVIE == "true") + (EMBYRECENTTV == "true") + (EMBYRECENTMUSIC == "true") + (EMBYPLAYINGNOW == "true");
+                    if(EMBYRECENTMOVIE == "true"){ echo getEmbyRecent("movie", 12/$embySize); }
+                    if(EMBYRECENTTV == "true"){ echo getEmbyRecent("season", 12/$embySize); }
+                    if(EMBYRECENTMUSIC == "true"){ echo getEmbyRecent("album", 12/$embySize); }
+                    if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(12/$embySize); }
                     ?>
 
                 </div>
-                <?php if(SONARRURL != "" || RADARRURL != "" || HEADPHONESURL != "" || SICKRAGEURL != "") : ?>
+				<?php } ?>
+                <?php if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH))) { ?>
                 <div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
                     <sort>1</sort>
                     <div class="col-lg-12 content-form form-inline">
                         <div class="form-group">
                             <select class="form-control" id="imagetype_selector" style="width: auto !important; display: inline-block">
-
                                 <option value="all">View All</option>
                                 <?php if(RADARRURL != ""){ echo '<option value="film">Movies</option>'; }?>
                                 <?php if(SONARRURL != "" || SICKRAGEURL != ""){ echo '<option value="tv">TV Shows</option>'; }?>
                                 <?php if(HEADPHONESURL != ""){ echo '<option value="music">Music</option>'; }?>
-
                             </select>
 
                             <span class="label label-primary well-sm">Available</span>
@@ -370,7 +361,7 @@ endif; ?>
                         <div id="calendar" class="fc-calendar box-shadow fc fc-ltr fc-unthemed"></div>
                     </div>
                 </div>
-                <?php endif; ?>
+                <?php } ?>
 
             </div>    
         </div>
@@ -482,7 +473,7 @@ endif; ?>
             <?php } ?>
         });
         </script>
-        <?php if(SONARRURL != "" || RADARRURL != "" || HEADPHONESURL != "" || SICKRAGEURL != "") : ?>
+        <?php if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH))) { ?>
         <script>
             $(function () {
 
@@ -508,10 +499,10 @@ endif; ?>
                         today: { buttonText: '<?php echo $language->translate("TODAY");?>' },
                     },
                     events: [
-<?php if(SICKRAGEURL != ""){ echo getSickrageCalendarWanted($sickrage->future()); echo getSickrageCalendarHistory($sickrage->history("100","downloaded")); } ?>
-<?php if(SONARRURL != ""){ echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); } ?>
-<?php if(RADARRURL != ""){ echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); } ?>                 
-<?php if(HEADPHONESURL != ""){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); } ?>                                
+<?php if (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)){ echo getSickrageCalendarWanted($sickrage->future()); echo getSickrageCalendarHistory($sickrage->history("100","downloaded")); } ?>
+<?php if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){ echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); } ?>
+<?php if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){ echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); } ?>                 
+<?php if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); } ?>                                
                     ],
                     eventRender: function eventRender( event, element, view ) {
                         return ['all', event.imagetype].indexOf($('#imagetype_selector').val()) >= 0
@@ -534,7 +525,7 @@ endif; ?>
                 $("#content").html(numericallyOrderedDivs);
             });
         </script>
-        <?php endif; ?>
+        <?php } ?>
 
     </body>
 
