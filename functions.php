@@ -17,8 +17,20 @@ function debug_out($variable, $die = false) {
 if (function_exists('ldap_connect')) :
 	// Pass credentials to LDAP backend
 	function plugin_auth_ldap($username, $password) {
+		$ldapServers = explode(',',AUTHBACKENDHOST);
+		foreach($ldapServers as $key => $value) {
+			// Calculate parts
+			$digest = parse_url(trim($value));
+			$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:'ldap'));
+			$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
+			$port = (isset($digest['port'])?$digest['port']:(strtolower($scheme)=='ldap'?389:636));
+			
+			// Reassign
+			$ldapServers[$key] = $scheme.'://'.$host.':'.$port;
+		}
+		
 		// returns true or false
-		$ldap = ldap_connect(AUTHBACKENDHOST, (AUTHBACKENDPORT ? AUTHBACKENDPORT : '389'));
+		$ldap = ldap_connect(implode(' ',$ldapServers));
 		if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
 			return true;
 		} else {
@@ -35,15 +47,27 @@ endif;
 
 // Pass credentials to FTP backend
 function plugin_auth_ftp($username, $password) {
-	// returns true or false
+	// Calculate parts
+	$digest = parse_url(AUTHBACKENDHOST);
+	$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:(function_exists('ftp_ssl_connect')?'ftps':'ftp')));
+	$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
+	$port = (isset($digest['port'])?$digest['port']:21);
 	
-	// Connect to FTP
-	$conn_id = ftp_ssl_connect(AUTHBACKENDHOST, (AUTHBACKENDPORT?AUTHBACKENDPORT:21), 20); // 20 Second Timeout
+	// Determine Connection Type
+	if ($scheme == 'ftps') {
+		$conn_id = ftp_ssl_connect($host, $port, 20);
+	} elseif ($scheme == 'ftp') {
+		$conn_id = ftp_connect($host, $port, 20);
+	} else {
+		debug_out('Invalid FTP scheme. Use ftp or ftps');
+		return false;
+	}
 	
 	// Check if valid FTP connection
 	if ($conn_id) {
 		// Attempt login
 		@$login_result = ftp_login($conn_id, $username, $password);
+		ftp_close($conn_id);
 		
 		// Return Result
 		if ($login_result) {
@@ -59,13 +83,7 @@ function plugin_auth_ftp($username, $password) {
 
 // Pass credentials to Emby Backend
 function plugin_auth_emby_local($username, $password) {
-	$urlCheck = stripos(AUTHBACKENDHOST, "http");
-	if ($urlCheck === false) {
-		$embyAddress = "http://" . AUTHBACKENDHOST;
-	} else {
-		$embyAddress = AUTHBACKENDHOST;	
-	}
-	if(AUTHBACKENDPORT !== ""){ $embyAddress .= ":" . AUTHBACKENDPORT; }
+	$embyAddress = qualifyURL(AUTHBACKENDHOST);
 	
 	$headers = array(
 		'Authorization'=> 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
@@ -106,13 +124,7 @@ if (function_exists('curl_version')) :
 	
 	// Authenicate against emby connect
 	function plugin_auth_emby_connect($username, $password) {
-		$urlCheck = stripos(AUTHBACKENDHOST, "http");
-		if ($urlCheck === false) {
-			$embyAddress = "http://" . AUTHBACKENDHOST;
-		} else {
-			$embyAddress = AUTHBACKENDHOST;	
-		}
-		if(AUTHBACKENDPORT !== "") { $embyAddress .= ":" . AUTHBACKENDPORT; }
+		$embyAddress = qualifyURL(AUTHBACKENDHOST);
 		
 		// Get A User
 		$connectId = '';
@@ -944,11 +956,21 @@ function upgradeCheck() {
 		}
 	}
 	
-	// Upgrade
+	// Upgrade to 1.33
 	$config = loadConfig();
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33')) {
+		// Fix User Directory
 		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['USER_HOME']);
+		
+		// Backend auth merge
+		if (isset($config['authBackendPort']) && !isset(parse_url($config['authBackendHost'])['port'])) {
+			$config['authBackendHost'] .= ':'.$config['authBackendPort'];
+		}
+		unset($config['authBackendPort']);
+		
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.33';
 		$createConfigSuccess = createConfig($config);
 	}
 	unset($config);

@@ -1,4 +1,14 @@
 <?php 
+// Include functions if not already included
+require_once('functions.php');
+
+// Upgrade environment
+upgradeCheck();
+
+// Lazyload settings
+$databaseConfig = configLazy('config/config.php');
+
+
 //Set some variables
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
@@ -25,12 +35,6 @@ $loading = "#66D9EF";
 $hovertext = "#000000";
 $loadingIcon = "images/organizr_logo_d.png";
 $baseURL = "";
-
-// Load functions
-require_once("functions.php");
-
-//Upgrade Check
-upgradeCheck();
 
 // Get Action
 if(isset($_POST['action'])) {

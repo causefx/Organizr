@@ -44,7 +44,6 @@ return array(
 	"authBackend" => "",
 	"authBackendCreate" => "true",
 	"authBackendHost" => "",
-	"authBackendPort" => "",
 	"authBackendDomain" => "",
 	"plexUsername" => "",
 	"plexPassword" => "",

@@ -1,13 +1,24 @@
 <?php 
+// Include functions if not already included
+require_once('functions.php');
+
+// Upgrade environment
+upgradeCheck();
+
+// Lazyload settings
+$databaseConfig = configLazy('config/config.php');
+
+// Load USER
+require_once("user.php");
+$USER = new User("registration_callback");
+
+
+
 
 $data = false;
 
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
-
-require_once("user.php");
-require_once("functions.php");
-$USER = new User("registration_callback");
 
 if(!$USER->authenticated) :
 
