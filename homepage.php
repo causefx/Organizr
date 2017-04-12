@@ -412,7 +412,7 @@ endif; ?>
             function localStorageSupport() {
                 return (('localStorage' in window) && window['localStorage'] !== null)
             }
-            <?php if(($USER->authenticated && $USER->role == "admin") && (NZBGETURL != "" || SABNZBDURL != "")){ ?>
+            <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>
             var downloaderSeconds = localStorage.getItem("downloaderSeconds");
             var myInterval = undefined;
             $("ul").find("[data-value='" + downloaderSeconds + "']").addClass("active");
@@ -433,7 +433,7 @@ endif; ?>
                 refreshDownloader(newDownloaderSeconds);
             });
             <?php } ?>
-            <?php if(($USER->authenticated && $USER->role == "admin") && NZBGETURL != ""){ ?>
+            <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH))){ ?>
             $("#downloaderHistory").load("downloader.php?downloader=nzbget&list=history");
             $("#downloaderQueue").load("downloader.php?downloader=nzbget&list=listgroups");
             refreshDownloader = function(secs){
@@ -452,7 +452,7 @@ endif; ?>
             });
 
             <?php } ?>
-            <?php if(($USER->authenticated && $USER->role == "admin") && SABNZBDURL != ""){ ?>
+            <?php if((SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>
             $("#downloaderHistory").load("downloader.php?downloader=sabnzbd&list=history");
             $("#downloaderQueue").load("downloader.php?downloader=sabnzbd&list=queue");
             refreshDownloader = function(secs){
