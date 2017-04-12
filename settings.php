@@ -1117,23 +1117,37 @@ endif;?></textarea>
                 </div>
                 <div class="email-content homepage-box white-bg">
 <?php
-$urlPattern = '.*'; // https?:\/\/([-a-zA-Z0-9@:%._\+~#=]{2,256}\.)+[a-z]{2,}\b(:\d{2,5})?[^?.\s]*
+// Qualify most typical hostnames prior to form submission
+$urlPattern = '([hH][tT][tT][pP][sS]?):\/\/([\w\.]{1,250})(?::(\d{1,5}))?((?:\/[^?.\s]+))?';
+
+// Once configurable user groups is added change to select-multi to allow specific group selection
+$userSelectType = 'select'; 
 $userTypes = array(
 	'None' => 'false',
 	'User' => 'user|admin',
 	'Admin' => 'admin',
 );
+
+// Build Advanced Settings
 echo buildSettings(
 	array(
 		'title' => 'Homepage Settings',
 		'id' => 'homepage_settings',
 		'fields' => array(
 			array(
-				'type' => 'select',
+				'type' => 'header',
+				'value' => 'General',
+			),
+			array(
+				'type' => $userSelectType,
 				'labelTranslate' => 'SHOW_HOMEPAGE',
 				'name' => 'homePageAuthNeeded',
 				'value' => HOMEPAGEAUTHNEEDED,
 				'options' => $userTypes,
+			),
+			array(
+				'type' => 'header',
+				'value' => 'Services',
 			),
 		),
 		'tabs' => array(
@@ -1186,7 +1200,7 @@ echo buildSettings(
 						),
 					),
 					array(
-						'type' => 'select',
+						'type' => $userSelectType,
 						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 						'name' => 'plexHomeAuth',
 						'value' => PLEXHOMEAUTH,
@@ -1243,7 +1257,7 @@ echo buildSettings(
 						),
 					),
 					array(
-						'type' => 'select',
+						'type' => $userSelectType,
 						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 						'name' => 'embyHomeAuth',
 						'value' => EMBYHOMEAUTH,
@@ -1274,7 +1288,7 @@ echo buildSettings(
 						'value' => SONARRKEY,
 					),
 					array(
-						'type' => 'select',
+						'type' => $userSelectType,
 						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 						'name' => 'sonarrHomeAuth',
 						'value' => SONARRHOMEAUTH,
@@ -1305,7 +1319,7 @@ echo buildSettings(
 						'value' => RADARRKEY,
 					),
 					array(
-						'type' => 'select',
+						'type' => $userSelectType,
 						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 						'name' => 'radarrHomeAuth',
 						'value' => RADARRHOMEAUTH,
@@ -1332,11 +1346,10 @@ echo buildSettings(
 						'placeholder' => randString(32),
 						'labelTranslate' => 'SICK_KEY',
 						'name' => 'sickrageKey',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => SICKRAGEKEY,
 					),
 					array(
-						'type' => 'select',
+						'type' => $userSelectType,
 						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 						'name' => 'sickrageHomeAuth',
 						'value' => SICKRAGEHOMEAUTH,
@@ -1363,11 +1376,10 @@ echo buildSettings(
 						'placeholder' => randString(32),
 						'labelTranslate' => 'HEADPHONES_KEY',
 						'name' => 'headphonesKey',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => HEADPHONESKEY,
 					),
 					array(
-						'type' => 'select',
+						'type' => $userSelectType,
 						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 						'name' => 'headphonesHomeAuth',
 						'value' => HEADPHONESHOMEAUTH,
@@ -1394,11 +1406,10 @@ echo buildSettings(
 						'placeholder' => randString(32),
 						'labelTranslate' => 'SABNZBD_KEY',
 						'name' => 'sabnzbdKey',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => SABNZBDKEY,
 					),
 					array(
-						'type' => 'select',
+						'type' => $userSelectType,
 						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 						'name' => 'sabnzbdHomeAuth',
 						'value' => SABNZBDHOMEAUTH,
@@ -1424,18 +1435,16 @@ echo buildSettings(
 						'type' => 'text',
 						'labelTranslate' => 'USERNAME',
 						'name' => 'nzbgetUsername',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => NZBGETUSERNAME,
 					),
 					array(
 						'type' => 'password',
 						'labelTranslate' => 'PASSWORD',
 						'name' => 'nzbgetPassword',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => (empty(NZBGETPASSWORD)?'':randString(20)),
 					),
 					array(
-						'type' => 'select',
+						'type' => $userSelectType,
 						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 						'name' => 'nzbgetHomeAuth',
 						'value' => NZBGETHOMEAUTH,
@@ -1524,7 +1533,8 @@ foreach (array_filter(get_defined_functions()['user'],function($v) { return strp
 		);
 	}
 }
-$urlPattern = '.*'; // https?:\/\/([-a-zA-Z0-9@:%._\+~#=]{2,256}\.)+[a-z]{2,}\b(:\d{2,5})?[^?.\s]*
+ksort($backendOptions);
+
 echo buildSettings(
 	array(
 		'title' => 'Advanced Settings',
@@ -1571,18 +1581,9 @@ echo buildSettings(
 						'labelTranslate' => 'AUTHBACKENDHOST',
 						'assist' => 'http(s)://hostname:8181 | Ldap(s)://localhost:389 | ftp(s)://localhost:21',
 						'name' => 'authBackendHost',
-						'class' => 'be-auth be-auth-emby_local be-auth-emby_all be-auth-emby_connect be-auth-ftp be-auth-ldap',
-						'pattern' => $urlPattern,
+						'class' => 'be-auth be-auth-ftp be-auth-ldap',
+						'pattern' => '((?:[hH][tT][tT][pP]|[lL][dD][aA][pP]|[fF][tT][pP])[sS]?):\/\/([\w\.]{1,250})(?::(\d{1,5}))?((?:\/[^?.\s]+))?',
 						'value' => AUTHBACKENDHOST,
-					),
-					array(
-						'type' => 'number',
-						'placeholder' => 'DEPRECIATED',
-						'labelTranslate' => 'AUTHBACKENDPORT',
-						'assist' => 'DEPRECIATED',
-						'name' => 'authBackendPort',
-						'class' => 'be-auth be-auth-emby_local be-auth-emby_all be-auth-emby_connect be-auth-ftp be-auth-ldap',
-						'value' => AUTHBACKENDPORT,
 					),
 					array(
 						'type' => 'text',
@@ -1591,6 +1592,16 @@ echo buildSettings(
 						'name' => 'authBackendDomain',
 						'class' => 'be-auth be-auth-ldap',
 						'value' => AUTHBACKENDDOMAIN,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:8096/emby',
+						'labelTranslate' => 'EMBY_URL',
+						'assist' => 'http://hostname:8096 | https://hostname/emby | http://hostname:8096/emby',
+						'class' => 'be-auth be-auth-emby_local be-auth-emby_all be-auth-emby_connect',
+						'name' => 'embyURL',
+						'pattern' => $urlPattern,
+						'value' => EMBYURL,
 					),
 					array(
 						'type' => 'text',
@@ -1606,7 +1617,6 @@ echo buildSettings(
 						'labelTranslate' => 'PLEX_USERNAME',
 						'name' => 'plexUsername',
 						'class' => 'be-auth be-auth-plex',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => PLEXUSERNAME,
 					),
 					array(
@@ -1614,7 +1624,6 @@ echo buildSettings(
 						'labelTranslate' => 'PLEX_PASSWORD',
 						'name' => 'plexPassword',
 						'class' => 'be-auth be-auth-plex',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => (empty(PLEXPASSWORD)?'':randString(20)),
 					),
 				),
@@ -1642,28 +1651,24 @@ echo buildSettings(
 						'type' => 'text',
 						'labelTranslate' => 'REGISTER_PASSWORD',
 						'name' => 'registerPassword',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => REGISTERPASSWORD,
 					),
 					array(
 						'type' => 'text',
 						'labelTranslate' => 'COOKIE_DOMAIN',
 						'name' => 'domain',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => DOMAIN,
 					),
 					array(
 						'type' => 'password',
 						'labelTranslate' => 'COOKIE_PASSWORD',
 						'name' => 'cookiePassword',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => (empty(COOKIEPASSWORD)?'':randString(20)),
 					),
 					array(
 						'type' => 'checkbox',
 						'labelTranslate' => 'MULTIPLE_LOGINS',
 						'name' => 'multipleLogin',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => MULTIPLELOGIN,
 					),
 				),
@@ -1692,14 +1697,12 @@ echo buildSettings(
 						'type' => 'text',
 						'labelTranslate' => 'SMTP_HOST_USERNAME',
 						'name' => 'smtpHostUsername',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => SMTPHOSTUSERNAME,
 					),
 					array(
 						'type' => 'password',
 						'labelTranslate' => 'SMTP_HOST_PASSWORD',
 						'name' => 'smtpHostPassword',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => (empty(SMTPHOSTPASSWORD)?'':randString(20)),
 					),
 					array(
@@ -1712,7 +1715,6 @@ echo buildSettings(
 						'type' => 'text',
 						'labelTranslate' => 'SMTP_HOST_SENDER_EMAIL',
 						'name' => 'smtpHostSenderEmail',
-						//'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => SMTPHOSTSENDEREMAIL,
 					),
 					array(

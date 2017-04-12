@@ -13,7 +13,6 @@ function debug_out($variable, $die = false) {
 }
 
 // ==== Auth Plugins START ====
-
 if (function_exists('ldap_connect')) :
 	// Pass credentials to LDAP backend
 	function plugin_auth_ldap($username, $password) {
@@ -83,7 +82,7 @@ function plugin_auth_ftp($username, $password) {
 
 // Pass credentials to Emby Backend
 function plugin_auth_emby_local($username, $password) {
-	$embyAddress = qualifyURL(AUTHBACKENDHOST);
+	$embyAddress = qualifyURL(EMBYURL);
 	
 	$headers = array(
 		'Authorization'=> 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
@@ -124,7 +123,7 @@ if (function_exists('curl_version')) :
 	
 	// Authenicate against emby connect
 	function plugin_auth_emby_connect($username, $password) {
-		$embyAddress = qualifyURL(AUTHBACKENDHOST);
+		$embyAddress = qualifyURL(EMBYURL);
 		
 		// Get A User
 		$connectId = '';
@@ -969,6 +968,11 @@ function upgradeCheck() {
 		}
 		unset($config['authBackendPort']);
 		
+		// If auth is being used move it to embyURL as that is now used in auth functions
+		if ((isset($config['authType']) && $config['authType'] == 'true') && (isset($config['authBackendHost']) && $config['authBackendHost'] == 'true') && (isset($config['authBackend']) && in_array($config['authBackend'], array('emby_all','emby_local','emby_connect')))) {
+			$config['embyURL'] = $config['authBackendHost'];
+		}
+		
 		// Update Version and Commit
 		$config['CONFIG_VERSION'] = '1.33';
 		$createConfigSuccess = createConfig($config);
@@ -1027,18 +1031,19 @@ function removeFiles($path) {
 // Lazy select options
 function resolveSelectOptions($array, $selected = '') {
 	$output = array();
+	$selectedArr = explode('|', $selected);
 	foreach ($array as $key => $value) {
 		if (is_array($value)) {
 			if (isset($value['optgroup'])) {
 				$output[] = '<optgroup label="'.$key.'">';
 				foreach($value['optgroup'] as $k => $v) {
-					$output[] = '<option value="'.$v['value'].'"'.($selected===$v['value']?' selected':'').(isset($v['disabled']) && $v['disabled']?' disabled':'').'>'.$k.'</option>';
+					$output[] = '<option value="'.$v['value'].'"'.($selected===$v['value']||in_array($v['value'],$selectedArr)?' selected':'').(isset($v['disabled']) && $v['disabled']?' disabled':'').'>'.$k.'</option>';
 				}
 			} else {
-				$output[] = '<option value="'.$value['value'].'"'.($selected===$value['value']?' selected':'').(isset($value['disabled']) && $value['disabled']?' disabled':'').'>'.$key.'</option>';
+				$output[] = '<option value="'.$value['value'].'"'.($selected===$value['value']||in_array($v['value'],$selectedArr)?' selected':'').(isset($value['disabled']) && $value['disabled']?' disabled':'').'>'.$key.'</option>';
 			}
 		} else {
-			$output[] = '<option value="'.$value.'"'.($selected===$value?' selected':'').'>'.$key.'</option>';
+			$output[] = '<option value="'.$value.'"'.($selected===$value||in_array($value,$selectedArr)?' selected':'').'>'.$key.'</option>';
 		}
 		
 	}
@@ -1134,26 +1139,22 @@ function buildSettings($array) {
 		<div class="email-inner small-box">
 			<div class="email-inner-section">
 				<div class="small-box fade in" id="'.$pageID.'_frame">
-					<div class="row">
-						<div class="col-lg-12">
-							<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
-								<div style="position: relative; left: 2.5%; width: 95%;">
-									'.$fields.'
+					<div class="col-lg-12">
+						<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
+							'.$fields.'
+							<div class="tabbable tabs-with-bg" id="'.$pageID.'_tabs">
+								<ul class="nav nav-tabs apps">
+									'.implode('', $tabSelectors).'
+								</ul>
+								<div class="clearfix"></div>
+								<div class="tab-content">
+									'.implode('', $tabContent).'
 								</div>
-								<div class="tabbable tabs-with-bg" id="'.$pageID.'_tabs">
-									<ul class="nav nav-tabs apps">
-										'.implode('', $tabSelectors).'
-									</ul>
-									<div class="clearfix"></div>
-									<div class="tab-content">
-										'.implode('', $tabContent).'
-									</div>
-								</div>
-								<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
-									<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
-								</button>
-							</form>
-						</div>
+							</div>
+							<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
+								<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
+							</button>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -1161,22 +1162,38 @@ function buildSettings($array) {
 	</div>
 	<script>
 		$(document).ready(function() {
-			$(\'#'.$pageID.'_form\').find(\'input, select, textarea\').on(\'change\', function() {
-				$(this).attr(\'data-changed\', \'true\');			
-			});
+			$(\'#'.$pageID.'_form\').find(\'input, select, textarea\').on(\'change\', function() { $(this).attr(\'data-changed\', \'true\'); });
+			$(\'#'.$pageID.'_form\').find(\'select[multiple]\').on(\'click\', function() { $(this).attr(\'data-changed\', \'true\'); });
+			
 			$(\'#'.$pageID.'_form\').submit(function () {
 				var newVals = {};
+				var hasVals = false;
 				$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').each(function() {
+					hasVals = true;
 					if (this.type == \'checkbox\') {
 						newVals[this.name] = this.checked;
 					} else {
-						newVals[this.name] = $(this).val();
+						var fieldVal = $(this).val();
+						if (typeof fieldVal == \'object\') {
+							if (typeof fieldVal.join == \'function\') {
+								fieldVal = fieldVal.join(\'|\');
+							} else {
+								fieldVal = JSON.stringify(fieldVal);
+							}
+						}
+						newVals[this.name] = fieldVal;
 					}
 				});
-				$.post(\'ajax.php?a=update-config\', newVals, function(data) {
-					console.log(data);
-					parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect);
-				}, \'json\');
+				if (hasVals) {
+					console.log(newVals);
+					$.post(\'ajax.php?a=update-config\', newVals, function(data) {
+						console.log(data);
+						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
+						parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect);
+					}, \'json\');
+				} else {
+					parent.notify(\'Nothing to update!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
+				}
 				return false;
 			});
 			'.(isset($array['onready'])?$array['onready']:'').'
@@ -1226,7 +1243,13 @@ function buildField($params) {
 		case 'select':
 		case 'dropdown':
 			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control material input-sm" '.implode(' ',$tags).'>
-			'.resolveSelectOptions($params['options'], $val).'
+				'.resolveSelectOptions($params['options'], $val).'
+			</select>';
+			break;
+		case 'select-multi':
+		case 'dropdown-multi':
+			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control input-sm" '.implode(' ',$tags).' multiple="multiple">
+				'.resolveSelectOptions($params['options'], $val).'
 			</select>';
 			break;
 		case 'check':
