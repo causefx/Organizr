@@ -1107,10 +1107,12 @@ function buildSettings($array) {
 			$isSingle = isset($value['type']);
 			if ($isSingle) { $value = array($value); }
 			$tmpField = '';
+			$sizeLg = max(floor(12/count($value)),2);
+			$sizeMd = max(floor(($isSingle?12:6)/count($value)),3);
 			foreach($value as $k => $v) {
-				$tmpField .= '<div class="form-group">'.buildField($v).'</div>';
+				$tmpField .= buildField($v, 12, $sizeMd, $sizeLg);
 			}
-			$fields .= ($isSingle?$tmpField:'<div class="content-form form-inline">'.$tmpField.'</div>');
+			$fields .= ($isSingle?$tmpField:'<div class="row col-sm-12 content-form">'.$tmpField.'</div>');
 		}
 		$fields .= '</div>';
 		return $fields;
@@ -1141,7 +1143,7 @@ function buildSettings($array) {
 				<div class="small-box fade in" id="'.$pageID.'_frame">
 					<div class="col-lg-12">
 						<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
-							'.$fields.'
+							'.$fields.($tabContent?'
 							<div class="tabbable tabs-with-bg" id="'.$pageID.'_tabs">
 								<ul class="nav nav-tabs apps">
 									'.implode('', $tabSelectors).'
@@ -1150,7 +1152,7 @@ function buildSettings($array) {
 								<div class="tab-content">
 									'.implode('', $tabContent).'
 								</div>
-							</div>
+							</div>':'').'
 							<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
 								<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
 							</button>
@@ -1203,7 +1205,7 @@ function buildSettings($array) {
 }
 
 // Build Settings Fields
-function buildField($params) {
+function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 	/*
 	array(
 		'type' => '',
@@ -1225,57 +1227,78 @@ function buildField($params) {
 		$tags[] = (isset($params[$value])?$value.'="'.$params[$value].'"':'');
 	}
 	
+	$format = (isset($params['format']) && in_array($params['format'],array(false,'colour','color'))?$params['format']:false);
 	$name = (isset($params['name'])?$params['name']:(isset($params['id'])?$params['id']:''));
 	$id = (isset($params['id'])?$params['id']:(isset($params['name'])?$params['name'].'_id':randString(32)));
 	$val = (isset($params['value'])?$params['value']:'');
 	$class = (isset($params['class'])?' '.$params['class']:'');
+	$wrapClass = (isset($params['wrapClass'])?$params['wrapClass']:'form-content');
 	$assist = (isset($params['assist'])?' - i.e. '.$params['assist']:'');
 	$label = (isset($params['labelTranslate'])?translate($params['labelTranslate']):(isset($params['label'])?$params['label']:''));
+	$labelOut = '<p class="help-text">'.$label.$assist.'</p>';
 	
+	// Field Design
 	switch ($params['type']) {
 		case 'text':
 		case 'number':
 		case 'password':
-			$field = '
-			<input id="'.$id.'" name="'.$name.'" type="'.$params['type'].'" class="form-control material input-sm'.$class.'" '.implode(' ',$tags).' autocorrect="off" autocapitalize="off" value="'.$val.'">
-			';
+			$field = '<input id="'.$id.'" name="'.$name.'" type="'.$params['type'].'" class="form-control material input-sm'.$class.'" '.implode(' ',$tags).' autocorrect="off" autocapitalize="off" value="'.$val.'">';
 			break;
 		case 'select':
 		case 'dropdown':
-			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control material input-sm" '.implode(' ',$tags).'>
-				'.resolveSelectOptions($params['options'], $val).'
-			</select>';
+			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control material input-sm" '.implode(' ',$tags).'>'.resolveSelectOptions($params['options'], $val).'</select>';
 			break;
 		case 'select-multi':
 		case 'dropdown-multi':
-			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control input-sm" '.implode(' ',$tags).' multiple="multiple">
-				'.resolveSelectOptions($params['options'], $val).'
-			</select>';
+			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control input-sm" '.implode(' ',$tags).' multiple="multiple">'.resolveSelectOptions($params['options'], $val).'</select>';
 			break;
 		case 'check':
 		case 'checkbox':
 		case 'toggle':
 			$checked = ((is_bool($val) && $val) || trim($val) === 'true'?' checked':'');
-			return '
-			<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-success'.$class.'" '.implode(' ',$tags).' value="'.$val.'"'.$checked.'><label for="'.$id.'"></label>'.$label.'
-			';
+			$labelOut = '<label for="'.$id.'"></label>'.$label;
+			$field = '<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-success'.$class.'" '.implode(' ',$tags).' value="'.$val.'"'.$checked.'>';
+			break;
 		case 'date':
-			$field = '
-			
-			';
+			$field = 'Unsupported, planned.';
 			break;
 		case 'hidden':
-			return '<input id="'.$id.'" name="'.$name.'" type="hidden" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'">';
+			$labelOut = '';
+			$field = '<input id="'.$id.'" name="'.$name.'" type="hidden" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'">';
+			break;
 		case 'header':
-			return '<h3 class="'.$class.'" '.implode(' ',$tags).'>'.$val.'</h3>';
+			$labelOut = '';
+			$headType = (isset($params['value'])?$params['value']:3);
+			$field = '<h'.$headType.' class="'.$class.'" '.implode(' ',$tags).'>'.$label.'</h'.$headType.'>';
+			break;
 		case 'button':
-			return '<button id="'.$id.'" type="button" class="btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float'.$class.'"><span class="btn-label"><i class="fa fa-flask" '.implode(' ',$tags).'></i></span>'.$label.'</button>';
+			$labelOut = '';
+			$field = '<button id="'.$id.'" type="button" class="btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float'.$class.'"><span class="btn-label"><i class="fa fa-flask" '.implode(' ',$tags).'></i></span>'.$label.'</button>';
+			break;
+		case 'space':
+			$labelOut = '';
+			$field = str_repeat('<br>', (isset($params['value'])?$params['value']:1));
+			break;
 		default:
-			$field = '';
+			$field = 'Unsupported field type';
+			break;
 	}
 	
-	$labelOut = '<p class="help-text">'.$label.$assist.'</p>';
-	return $field.$labelOut;
+	// Field Formats
+	switch ($format) {
+		case 'colour': // Fuckin Eh, Canada!
+		case 'color':
+			$labelBef = '<center>'.$label.'</center>';
+			$wrapClass = 'gray-bg colour-field';
+			$labelAft = '';
+			$field = str_replace(' material input-sm','',$field);
+			break;
+		default:
+			$labelBef = '';
+			$labelAft = $labelOut;
+	}
+	
+	return '<div class="'.$wrapClass.' col-sm-'.$sizeSm.' col-md-'.$sizeMd.' col-lg-'.$sizeLg.'">'.$labelBef.$field.$labelAft.'</div>';
 }
 
 // Timezone array

@@ -463,6 +463,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
         <link rel="stylesheet" href="bower_components/numbered/jquery.numberedtextarea.css">
 
         <link rel="stylesheet" href="css/style.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="css/settings.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link href="css/jquery.filer.css" rel="stylesheet">
 	    <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
 
@@ -470,6 +471,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
         <![endif]-->
+		
         <!--Scripts-->
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
         <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -918,6 +920,149 @@ endif; ?>
                 </div>
 
                 <div class="email-content color-box white-bg">
+<?php
+
+// Build Colour Settings
+/*
+echo buildSettings(
+	array(
+		'title' => 'Homepage Settings',
+		'id' => 'homepage_settings',
+		'fields' => array(
+			array(
+				'type' => 'header',
+				'labelTranslate' => 'TITLE',
+			),
+			array(
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'labelTranslate' => 'TITLE',
+					'name' => 'colour_',
+					'value' => $title,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'TITLE_TEXT',
+					'name' => 'colour_',
+					'value' => $topbartext,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'LOADING_COLOR',
+					'name' => 'colour_',
+					'value' => $loading,
+				),
+			),
+			array(
+				'type' => 'header',
+				'labelTranslate' => 'NAVIGATION_BARS',
+			),
+			array(
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'TOP_BAR',
+					'name' => 'colour_',
+					'value' => $topbar,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'BOTTOM_BAR',
+					'name' => 'colour_',
+					'value' => $bottombar,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'SIDE_BAR',
+					'name' => 'colour_',
+					'value' => $sidebar,
+				),
+			),
+			array(
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'HOVER_BG',
+					'name' => 'colour_',
+					'value' => $hoverbg,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'HOVER_TEXT',
+					'name' => 'colour_',
+					'value' => $hovertext,
+				),
+			),
+			array(
+				'type' => 'header',
+				'labelTranslate' => 'ACTIVE_TAB',
+			),
+			array(
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'ACTIVE_TAB_BG',
+					'name' => 'colour_',
+					'value' => $activetabBG,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'ACTIVE_TAB_ICON',
+					'name' => 'colour_',
+					'value' => $activetabicon,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'ACTIVE_TAB_TEXT',
+					'name' => 'colour_',
+					'value' => $activetabtext,
+				),
+			),
+			array(
+				'type' => 'header',
+				'labelTranslate' => 'INACTIVE_TAB',
+			),
+			array(
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'INACTIVE_ICON',
+					'name' => 'colour_',
+					'value' => $inactiveicon,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'INACTIVE_TEXT',
+					'name' => 'colour_',
+					'value' => $inactivetext,
+				),
+			),
+		),
+	)
+);
+*/
+?>				
                     <div class="email-body">
                         <div class="email-header gray-bg">
                             <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
@@ -1128,7 +1273,7 @@ $userTypes = array(
 	'Admin' => 'admin',
 );
 
-// Build Advanced Settings
+// Build Homepage Settings
 echo buildSettings(
 	array(
 		'title' => 'Homepage Settings',
@@ -1136,7 +1281,7 @@ echo buildSettings(
 		'fields' => array(
 			array(
 				'type' => 'header',
-				'value' => 'General',
+				'label' => 'General',
 			),
 			array(
 				'type' => $userSelectType,
@@ -1147,7 +1292,7 @@ echo buildSettings(
 			),
 			array(
 				'type' => 'header',
-				'value' => 'Services',
+				'label' => 'Services',
 			),
 		),
 		'tabs' => array(
