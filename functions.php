@@ -977,7 +977,7 @@ function upgradeCheck() {
 		}
 		
 		// Upgrade database to latest version
-		updateSQLiteDB();
+		updateSQLiteDB($config['database_Location']);
 		
 		// Update Version and Commit
 		$config['CONFIG_VERSION'] = '1.33';
