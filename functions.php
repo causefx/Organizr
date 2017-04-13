@@ -1414,9 +1414,16 @@ function createSQLiteDB() {
 }
 
 // Upgrade Database
-function updateSQLiteDB() {
+function updateSQLiteDB($db_path = false) {
+	if (!$db_path) {
+		if (defined('DATABASE_LOCATION')) {
+			$db_path = DATABASE_LOCATION;
+		} else {
+			debug_out('No Path Specified',1);
+		}
+	}
 	if (!isset($GLOBALS['file_db'])) {
-		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db'] = new PDO('sqlite:'.$db_path.'users.db');
 		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
 	
@@ -1433,11 +1440,11 @@ function updateSQLiteDB() {
 	}
 	
 	// Remove Current Database
-	$pathDigest = pathinfo(DATABASE_LOCATION.'users.db');
-	if (file_exists(DATABASE_LOCATION.'users.db')) {
-		rename(DATABASE_LOCATION.'users.db', $pathDigest['dirname'].'/'.$pathDigest['filename'].'.bak.db');
+	$GLOBALS['file_db'] = null;
+	$pathDigest = pathinfo($db_path.'users.db');
+	if (file_exists($db_path.'users.db')) {
+		rename($db_path.'users.db', $pathDigest['dirname'].'/'.$pathDigest['filename'].'.bak.db');
 	}
-    $GLOBALS['file_db'] = null;
 	
 	// Create New Database
 	$success = createSQLiteDB();
@@ -1459,7 +1466,6 @@ function updateSQLiteDB() {
 		}
 		return true;
 	} else {
-		
 		return false;
 	}
 }
