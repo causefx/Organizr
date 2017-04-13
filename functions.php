@@ -445,7 +445,7 @@ function resolveEmbyItem($address, $token, $item) {
 	
 	switch ($itemDetails['Type']) {
 		case 'Episode':
-			$title = $itemDetails['SeriesName'].': '.$itemDetails['Name'].' (Season '.$itemDetails['ParentIndexNumber'].': Episode '.$itemDetails['IndexNumber'].')';
+			$title = $itemDetails['SeriesName'].': '.$itemDetails['Name'].(isset($itemDetails['ParentIndexNumber']) && isset($itemDetails['IndexNumber'])?' (Season '.$itemDetails['ParentIndexNumber'].': Episode '.$itemDetails['IndexNumber'].')':'');
 			$imageId = $itemDetails['SeriesId'];
 			$width = 100;
 			$image = 'carousel-image season';
