@@ -1486,7 +1486,7 @@ echo buildSettings(
 						'labelTranslate' => 'NOTIFICATION_TYPE',
 						'name' => 'notifyEffect',
 						'onchange' => 'parent.notify(\'This is an example popup!\', \'bullhorn\', \'success\', 4000, this.value.split(\'-\')[0], this.value.split(\'-\')[1]);',
-						'value' => explode("-", NOTIFYEFFECT)[1],
+						'value' => NOTIFYEFFECT,
 						'options' => array(
 							'Slide From Top' => 'bar-slidetop',
 							'Exploader From Top' => 'bar-exploader',
