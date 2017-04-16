@@ -7,99 +7,38 @@
 	 *	entry is assigned a new random token,  which is used in
 	 * salting subsequent password checks.
 	 */
-
-    define('INSTALLEDVERSION', '1.30');
-
-    require __DIR__ . '/vendor/autoload.php';
-
-    $databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
-    define('USER_HOME', $databaseConfig['databaseLocation'] . '/users/');
-    define('DATABASE_LOCATION', $databaseConfig['databaseLocation'] . '/');
-    if(!empty($databaseConfig['timezone'])) : define('TIMEZONE', $databaseConfig['timezone']); else : define('TIMEZONE', 'America/Los_Angeles'); endif;
-    if(!empty($databaseConfig['titleLogo'])) : define('TITLELOGO', $databaseConfig['titleLogo']); else : define('TITLELOGO', ''); endif;
-    if(!empty($databaseConfig['loadingIcon'])) : define('LOADINGICON', $databaseConfig['loadingIcon']); else : define('LOADINGICON', ''); endif;
-    if(!empty($databaseConfig['multipleLogin'])) : define('MULTIPLELOGIN', $databaseConfig['multipleLogin']); else : define('MULTIPLELOGIN', 'true'); endif;
-    if(!empty($databaseConfig['enableMail'])) : define('ENABLEMAIL', $databaseConfig['enableMail']); else : define('ENABLEMAIL', 'false'); endif;
-    if(!empty($databaseConfig['loadingScreen'])) : define('LOADINGSCREEN', $databaseConfig['loadingScreen']); else : define('LOADINGSCREEN', 'true'); endif;
-    if(!empty($databaseConfig['slimBar'])) : define('SLIMBAR', $databaseConfig['slimBar']); else : define('SLIMBAR', 'true'); endif;
-    if(!empty($databaseConfig['cookiePassword'])) : define('COOKIEPASSWORD', $databaseConfig['cookiePassword']); else : define('COOKIEPASSWORD', ''); endif;
-    if(!empty($databaseConfig['registerPassword'])) : define('REGISTERPASSWORD', $databaseConfig['registerPassword']); else : define('REGISTERPASSWORD', ''); endif;
-    if(!empty($databaseConfig['gravatar'])) : define('GRAVATAR', $databaseConfig['gravatar']); else : define('GRAVATAR', 'true'); endif;
-    if(!empty($databaseConfig['notifyEffect'])) : define('NOTIFYEFFECT', $databaseConfig['notifyEffect']); else : define('NOTIFYEFFECT', 'bar-slidetop'); endif;
-    if(!empty($databaseConfig['domain'])) : define('DOMAIN', $databaseConfig['domain']); else : define('DOMAIN', $_SERVER['HTTP_HOST']); endif;
-    if(!empty($databaseConfig['smtpHost'])) : define('SMTPHOST', $databaseConfig['smtpHost']); else : define('SMTPHOST', ''); endif;
-    if(!empty($databaseConfig['smtpHostPort'])) : define('SMTPHOSTPORT', $databaseConfig['smtpHostPort']); else : define('SMTPHOSTPORT', ''); endif;
-    if(!empty($databaseConfig['smtpHostAuth'])) : define('SMTPHOSTAUTH', $databaseConfig['smtpHostAuth']); else : define('SMTPHOSTAUTH', 'true'); endif;
-    if(!empty($databaseConfig['smtpHostUsername'])) : define('SMTPHOSTUSERNAME', $databaseConfig['smtpHostUsername']); else : define('SMTPHOSTUSERNAME', ''); endif;
-    if(!empty($databaseConfig['smtpHostPassword'])) : define('SMTPHOSTPASSWORD', $databaseConfig['smtpHostPassword']); else : define('SMTPHOSTPASSWORD', ''); endif;
-    if(!empty($databaseConfig['smtpHostSenderName'])) : define('SMTPHOSTSENDERNAME', $databaseConfig['smtpHostSenderName']); else : define('SMTPHOSTSENDERNAME', 'Organizr'); endif;
-    if(!empty($databaseConfig['smtpHostSenderEmail'])) : define('SMTPHOSTSENDEREMAIL', $databaseConfig['smtpHostSenderEmail']); else : define('SMTPHOSTSENDEREMAIL', 'no-reply@Organizr'); endif;
-
-    if(!file_exists('homepageSettings.ini.php')){ touch('homepageSettings.ini.php'); }
-        
-    $homepageConfig = parse_ini_file('homepageSettings.ini.php', true);        
-    if(!empty($homepageConfig['plexURL'])) : define('PLEXURL', $homepageConfig['plexURL']); else : define('PLEXURL', ''); endif;
-    if(!empty($homepageConfig['plexPort'])) : define('PLEXPORT', $homepageConfig['plexPort']); else : define('PLEXPORT', ''); endif;
-    if(!empty($homepageConfig['plexToken'])) : define('PLEXTOKEN', $homepageConfig['plexToken']); else : define('PLEXTOKEN', ''); endif;
-    if(!empty($homepageConfig['plexRecentMovie'])) : define('PLEXRECENTMOVIE', $homepageConfig['plexRecentMovie']); else : define('PLEXRECENTMOVIE', 'false'); endif;
-    if(!empty($homepageConfig['plexRecentTV'])) : define('PLEXRECENTTV', $homepageConfig['plexRecentTV']); else : define('PLEXRECENTTV', 'false'); endif;
-    if(!empty($homepageConfig['plexRecentMusic'])) : define('PLEXRECENTMUSIC', $homepageConfig['plexRecentMusic']); else : define('PLEXRECENTMUSIC', 'false'); endif;
-    if(!empty($homepageConfig['plexPlayingNow'])) : define('PLEXPLAYINGNOW', $homepageConfig['plexPlayingNow']); else : define('PLEXPLAYINGNOW', 'false'); endif;
-    if(!empty($homepageConfig['embyURL'])) : define('EMBYURL', $homepageConfig['embyURL']); else : define('EMBYURL', ''); endif;
-    if(!empty($homepageConfig['embyPort'])) : define('EMBYPORT', $homepageConfig['embyPort']); else : define('EMBYPORT', ''); endif;
-    if(!empty($homepageConfig['embyToken'])) : define('EMBYTOKEN', $homepageConfig['embyToken']); else : define('EMBYTOKEN', ''); endif;
-    if(!empty($homepageConfig['embyRecentMovie'])) : define('EMBYRECENTMOVIE', $homepageConfig['embyRecentMovie']); else : define('EMBYRECENTMOVIE', 'false'); endif;
-    if(!empty($homepageConfig['embyRecentTV'])) : define('EMBYRECENTTV', $homepageConfig['embyRecentTV']); else : define('EMBYRECENTTV', 'false'); endif;
-    if(!empty($homepageConfig['embyRecentMusic'])) : define('EMBYRECENTMUSIC', $homepageConfig['embyRecentMusic']); else : define('EMBYRECENTMUSIC', 'false'); endif;
-    if(!empty($homepageConfig['embyPlayingNow'])) : define('EMBYPLAYINGNOW', $homepageConfig['embyPlayingNow']); else : define('EMBYPLAYINGNOW', 'false'); endif;    
-    if(!empty($homepageConfig['sonarrKey'])) : define('SONARRKEY', $homepageConfig['sonarrKey']); else : define('SONARRKEY', ''); endif;
-    if(!empty($homepageConfig['sonarrURL'])) : define('SONARRURL', $homepageConfig['sonarrURL']); else : define('SONARRURL', ''); endif;
-    if(!empty($homepageConfig['sonarrPort'])) : define('SONARRPORT', $homepageConfig['sonarrPort']); else : define('SONARRPORT', ''); endif;
-    if(!empty($homepageConfig['radarrKey'])) : define('RADARRKEY', $homepageConfig['radarrKey']); else : define('RADARRKEY', ''); endif;
-    if(!empty($homepageConfig['radarrURL'])) : define('RADARRURL', $homepageConfig['radarrURL']); else : define('RADARRURL', ''); endif;
-    if(!empty($homepageConfig['radarrPort'])) : define('RADARRPORT', $homepageConfig['radarrPort']); else : define('RADARRPORT', ''); endif;
-    if(!empty($homepageConfig['nzbgetURL'])) : define('NZBGETURL', $homepageConfig['nzbgetURL']); else : define('NZBGETURL', ''); endif;
-    if(!empty($homepageConfig['nzbgetPort'])) : define('NZBGETPORT', $homepageConfig['nzbgetPort']); else : define('NZBGETPORT', ''); endif;
-    if(!empty($homepageConfig['nzbgetUsername'])) : define('NZBGETUSERNAME', $homepageConfig['nzbgetUsername']); else : define('NZBGETUSERNAME', ''); endif;
-    if(!empty($homepageConfig['nzbgetPassword'])) : define('NZBGETPASSWORD', $homepageConfig['nzbgetPassword']); else : define('NZBGETPASSWORD', ''); endif;
-    if(!empty($homepageConfig['sabnzbdKey'])) : define('SABNZBDKEY', $homepageConfig['sabnzbdKey']); else : define('SABNZBDKEY', ''); endif;
-    if(!empty($homepageConfig['sabnzbdURL'])) : define('SABNZBDURL', $homepageConfig['sabnzbdURL']); else : define('SABNZBDURL', ''); endif;
-    if(!empty($homepageConfig['sabnzbdPort'])) : define('SABNZBDPORT', $homepageConfig['sabnzbdPort']); else : define('SABNZBDPORT', ''); endif;
-    if(!empty($homepageConfig['headphonesKey'])) : define('HEADPHONESKEY', $homepageConfig['headphonesKey']); else : define('HEADPHONESKEY', ''); endif;
-    if(!empty($homepageConfig['headphonesURL'])) : define('HEADPHONESURL', $homepageConfig['headphonesURL']); else : define('HEADPHONESURL', ''); endif;
-    if(!empty($homepageConfig['headphonesPort'])) : define('HEADPHONESPORT', $homepageConfig['headphonesPort']); else : define('HEADPHONESPORT', ''); endif;
-    if(!empty($homepageConfig['calendarStart'])) : define('CALENDARSTART', $homepageConfig['calendarStart']); else : define('CALENDARSTART', '0'); endif;
-    if(!empty($homepageConfig['calendarView'])) : define('CALENDARVIEW', $homepageConfig['calendarView']); else : define('CALENDARVIEW', 'basicWeek'); endif;
-    if(!empty($homepageConfig['calendarStartDay'])) : define('CALENDARSTARTDAY', $homepageConfig['calendarStartDay']); else : define('CALENDARSTARTDAY', '30'); endif;
-    if(!empty($homepageConfig['calendarEndDay'])) : define('CALENDARENDDAY', $homepageConfig['calendarEndDay']); else : define('CALENDARENDDAY', '30'); endif;
-    if(!empty($homepageConfig['sickrageKey'])) : define('SICKRAGEKEY', $homepageConfig['sickrageKey']); else : define('SICKRAGEKEY', ''); endif;
-    if(!empty($homepageConfig['sickrageURL'])) : define('SICKRAGEURL', $homepageConfig['sickrageURL']); else : define('SICKRAGEURL', ''); endif;
-
+	
+	// Include functions if not already included
+	require_once('functions.php');
+	
+	// Define Version
+	 define('INSTALLEDVERSION', '1.323');
+	 
+    // Autoload frameworks
+	require_once(__DIR__ . '/vendor/autoload.php');
+	
+    // Lazyload settings
+	$databaseConfig = configLazy('config/config.php');
     
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 
     $notifyExplode = explode("-", NOTIFYEFFECT);
     define('FAIL_LOG', 'loginLog.json');
     date_default_timezone_set(TIMEZONE);
-
+	
 	class User
 	{
 		// =======================================================================
 		// IMPORTANT VALUES THAT YOU *NEED* TO CHANGE FOR THIS TO BE SECURE
 		// =======================================================================
-
 			// Keeping this location on ./... means that it will be publically visible to all,
 			// and you need to use htaccess rules or some such to ensure no one
 			// grabs your user's data.
-
 			//const USER_HOME = "../users/";
-
 			// In order for users to be notified by email of certain things, set this to true.
 			// Note that the server you run this on should have sendmail in order for
 			// notification emails to work. Also note that password resetting doesn't work
 			// unless mail notification is turned on.
-
 			const use_mail = ENABLEMAIL;
-
 			// This value should point to a directory that is not available to web users.
 			// If your documents are in ./public_html, for instance., then put database
 			// in something like ./database - that way, you don't have to rely on
@@ -109,23 +48,18 @@
 			// By default it's set to the stupidly dangerous and publically accessible same
 			// base dir as your web page. So change it, because people are going to try
 			// to download your database file. And succeed.
-
 			//const DATABASE_LOCATION = "../";
-
 			// if this is set to "true", registration failure due to known usernames is reported,
 			// and login failures are explained as either the wrong username or the wrong password.
 			// You really want to set this to 'false', but it's on true by default because goddamnit
 			// I'm going to confront you with security issues right off the bat =)
-
 			const unsafe_reporting = false;
-
 			/**
 				Think about security for a moment. On the one hand, you want your website
 				to not reveal whether usernames are already taken, so when people log in
 				you will want to say "username or password incorrect". However, you also want
 				to be able to tell people that they can't register because the username they
 				picked is already taken.
-
 				Because these are mutually exclusive, you can't do both using this framework.
 				You can either use unsafe reporting, where the system will will tell you that
 				a username exists, both during registration and login, or you can use safe
@@ -133,79 +67,56 @@
 				similarity, not exact match. But then it also won't say which of the username
 				or password in a login attempt was incorrect.
 			**/
-
 		// =======================================================================
 		// 	You can modify the following values, but they're not security related
 		// =======================================================================
-
 			// rename this to whatever you like
-			const DATABASE_NAME = "users";
-
+			const DATABASE_NAME = "users";  // Obsolete
 			// this is the session timeout. If someone hasn't performed any page requests
 			// in [timeout] seconds, they're considered logged out.
 			const time_out = 604800;
-
 			// You'll probably want to change this to something sensible. If your site is
 			// www.sockmonkey.com, then you want this to be "sockmonkey.com"
 			const DOMAIN_NAME = "Organizr";
-
 			// This is going to be the "from" address
 			const MAILER_NAME = "noreply@organizr";
-
 			// if you want people to be able to reply to a real address, override
 			// this variable to "yourmail@somedomain.ext" here.
 			const MAILER_REPLYTO = "noreply@organizr";
-
 		// =======================================================================
 		// 	Don't modify any variables beyond this point =)
 		// =======================================================================
-
 		// this is the global error message. If anything goes wrong, this tells you why.
 		var $error = "";
-
 		// progress log
 		var $info_log = array();
-
 		// Information logging
 		function info($string) { $this->info_log[] = $string; }
-
 		// error log
 		var $error_log = array();
-
 		// Error logging
 		function error($string) { $this->error_log[] = $string; }
-
 		// all possible values for a hexadecimal number
 		var $hex = "0123456789abcdef";
-
 		// all possible values for an ascii password, skewed a bit so the number to letter ratio is closer to 1:1
 		var $ascii = "0a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6A7B8C9D0E1F2G3H4I5J6K7L8M9N0O1P2Q3R4S5T6U7V8W9X0Y1Z23456789";
-
 		// the regular expression for email matching (see http://www.regular-expressions.info/email.html)
 		const emailregexp = "/[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/";
-
 		// the regular expression for SHA1 hash matching
 		const sha1regexp = "/[0123456789abcdef]{40,40}/";
-
 		// this will tell us whether the client that requested the page is authenticated or not.
 		var $authenticated = false;
-
 		// the guest user name
 		const GUEST_USER  = "guest user";
-
 		// this will contain the user name for the user doing the page request
 		var $username = User::GUEST_USER;
-
 		// if this is a properly logged in user, this will contain the data directory location for this user
 		var $userdir = false;
-
 		// the user's email address, if logged in.
 		var $email = "";
-
 		// the user's role in the system
 		var $role = "";
 		var $group = "";
-
 		// global database handle
 		var $database = false;
         
@@ -230,7 +141,6 @@
             
         }
        
-
 		// class object constructor
 		function __construct($registration_callback=false)
 		{
@@ -241,25 +151,19 @@
             }else{
                 $_SESSION["username"] = $_COOKIE['OrganizrU'];
             }
-
 			// file location for the user database
-			$dbfile = DATABASE_LOCATION  . User::DATABASE_NAME . ".db";
-
+			$dbfile = DATABASE_LOCATION.'users.db';
 			// do we need to build a new database?
 			$rebuild = false;
 			if(!file_exists($dbfile)) { $rebuild = true;}
-
 			// bind the database handler
 			$this->database = new PDO("sqlite:" . $dbfile);
-
 			// If we need to rebuild, the file will have been automatically made by the PDO call,
 			// but we'll still need to define the user table before we can use the database.
 			if($rebuild) { $this->rebuild_database($dbfile); }
-
 			// finally, process the page request.
 			$this->process($registration_callback);
 		}
-
 		// this function rebuilds the database if there is no database to work with yet
 		function rebuild_database($dbfile)
 		{
@@ -269,7 +173,6 @@
 			$this->database->exec($create);
 			$this->database->commit();
 		}
-
 		// process a page request
 		function process(&$registration_callback=false)
 		{
@@ -288,7 +191,6 @@
 				// we only allow password resetting if we can send notification mails
 				elseif($operation == "reset" && User::use_mail) { $this->reset_password(); }
 			}
-
 			// if the previous operations didn't authorise the current user,
 			// see if they're already marked as authorised in the database.
 			if(!$this->authenticated) {
@@ -296,23 +198,19 @@
 				if($username != User::GUEST_USER) {
 					$this->authenticated = $this->authenticate_user($username,"");
 					if($this->authenticated) { $this->mark_user_active($username); }}}
-
 			// at this point we can make some globals available.
 			$this->username = $_SESSION["username"];
 			$this->userdir = ($this->username !=User::GUEST_USER? USER_HOME . $this->username : false);
 			$this->email = $this->get_user_email($this->username);
 			$this->role = $this->get_user_role($this->username);
 			//$this->group = $this->get_user_group($this->username);
-
 			// clear database
 			$this->database->commit();
 			$this->database = null;
 		}
-
 	// ---------------------
 	// validation passthroughs
 	// ---------------------
-
 		/**
 		 * Called when the requested POST operation is "login"
 		 */
@@ -321,6 +219,7 @@
 			// get relevant values
 			$username = $_POST["username"];
 			$sha1 = $_POST["sha1"];
+			$password = $_POST["password"];
             $rememberMe = $_POST["rememberMe"];
 			// step 1: someone could have bypassed the javascript validation, so validate again.
 			if(!$this->validate_user_name($username)) {
@@ -330,13 +229,8 @@
 				$this->info("<strong>log in error:</strong> password did not pass validation");
 				return false; }
 			// step 2: if validation passed, log the user in
-			if($rememberMe == "true") {
-                return $this->login_user($username, $sha1, true);    
-            }else{
-                return $this->login_user($username, $sha1, false);                    
-            }
+			return $this->login_user($username, $sha1, $rememberMe == "true", $password); 
 		}
-
 		/**
 		 * Called when the requested POST operation is "logout"
 		 */
@@ -351,7 +245,6 @@
 			// step 2: if validation passed, log the user out
 			return $this->logout_user($username);
 		}
-
 		/**
 		 * Users should always have the option to unregister
 		 */
@@ -366,7 +259,6 @@
 			// step 2: if validation passed, drop the user from the system
 			return $this->unregister_user($username);
 		}
-
 		/**
 		 * Called when the requested POST operation is "register"
 		 */
@@ -398,17 +290,11 @@
 				$subject = User::DOMAIN_NAME . " registration";
 				$body = <<<EOT
 	Hi,
-
 	this is an automated message to let you know that someone signed up at $domain_name with the user name "$username", using this email address as mailing address.
-
 	Because of the way our user registration works, we have no idea which password was used to register this account (it gets one-way hashed by the browser before it is sent to our user registration system, so that we don't know your password either), so if you registered this account, hopefully you wrote your password down somewhere.
-
 	However, if you ever forget your password, you can click the "I forgot my password" link in the log-in section for $domain_name and you will be sent an email containing a new, ridiculously long and complicated password that you can use to log in. You can change your password after logging in, but that's up to you. No one's going to guess it, or brute force it, but if other people can read your emails, it's generally a good idea to change passwords.
-
 	If you were not the one to register this account, you can either contact us the normal way or —much easier— you can ask the system to reset the password for the account, after which you can simply log in with the temporary password and delete the account. That'll teach whoever pretended to be you not to mess with you!
-
 	Of course, if you did register it yourself, welcome to $domain_name!
-
 	- the $domain_name team
 EOT;
 				$headers = "From: $from\r\n";
@@ -417,10 +303,8 @@ EOT;
 				//mail($email, $subject, $body, $headers);
                 $this->startEmail($email, $username, $subject, $body);
 			}
-
 			return $registered;
 		}
-
 		/**
 		 * Called when the requested POST operation is "update"
 		 */
@@ -441,7 +325,6 @@ EOT;
 			// step 2: if validation passed, update the user's information
 			return $this->update_user($username, $email, $sha1, $role);
 		}
-
 		/**
 		 * Reset a user's password
 		 */
@@ -449,12 +332,10 @@ EOT;
 		{
 			// get the email for which we should reset
 			$email = $_POST["email"];
-
 			// step 1: someone could have bypassed the javascript validation, so validate again.
 			if(preg_match(User::emailregexp, $email)==0) {
 				$this->info("email address did not pass validation");
 				return false; }
-
 			// step 2: if validation passed, see if there is a matching user, and reset the password if there is
 			$newpassword = $this->random_ascii_string(64);
 			$sha1 = sha1($newpassword);
@@ -462,16 +343,13 @@ EOT;
 			$username = "";
 			$token = "";
 			foreach($this->database->query($query) as $data) { $username = $data["username"]; $token = $data["token"]; break; }
-
 			// step 2a: if there was no user to reset a password for, stop.
 			if($username == "" || $token == "") return false;
-
 			// step 2b: if there was a user to reset a password for, reset it.
 			$dbpassword = $this->token_hash_password($username, $sha1, $token);
 			$update = "UPDATE users SET password = '$dbpassword' WHERE email= '$email'";
 			$this->database->exec($update);
             $this->info("Email has been sent with new password");
-
 			// step 3: notify the user of the new password
 			$from = User::MAILER_NAME;
 			$replyto = User::MAILER_REPLYTO;
@@ -479,17 +357,11 @@ EOT;
 			$subject = User::DOMAIN_NAME . " password reset request";
 			$body = <<<EOT
 	Hi,
-
 	this is an automated message to let you know that someone requested a password reset for the $domain_name user account with user name "$username", which is linked to this email address.
-
 	We've reset the password to the following 64 character string, so make sure to copy/paste it without any leading or trailing spaces:
-
 	$newpassword
-
 	If you didn't even know this account existed, now is the time to log in and delete it. How dare people use your email address to register accounts! Of course, if you did register it yourself, but you didn't request the reset, some jerk is apparently reset-spamming. We hope he gets run over by a steam shovel driven by rabid ocelots or something.
-
 	Then again, it's far more likely that you did register this account, and you simply forgot the password so you asked for the reset yourself, in which case: here's your new password, and thank you for your patronage at $domain_name!
-
 	- the $domain_name team
 EOT;
 			$headers = "From: $from\r\n";
@@ -498,18 +370,15 @@ EOT;
 			//mail($email, $subject, $body, $headers);
             $this->startEmail($email, $username, $subject, $body);
 		}
-
 	// ------------------
 	// specific functions
 	// ------------------
-
 		// session management: set session values
 		function setSession($username, $token)
 		{
 			$_SESSION["username"]=$username;
 			$_SESSION["token"]=$token;
 		}
-
 		// session management: reset session values
 		function resetSession()
 		{
@@ -525,7 +394,6 @@ EOT;
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
             setcookie("cookiePassword", '', time() - 3600, '/');
 		}
-
 		/**
 		 * Validate a username. Empty usernames or names
 		 * that are modified by making them SQL safe are
@@ -538,7 +406,6 @@ EOT;
 			if(!$validated) { $this->error = "user name did not pass validation."; $this->error("user name did not pass validation."); }
 			return $validated;
 		}
-
 		/**
 		 * Clean strings for SQL insertion as string in SQLite (single quote enclosed).
 		 * Note that if the cleaning changes the string, this system won't insert.
@@ -551,7 +418,6 @@ EOT;
 			$replace = array('', '', '');
 			return trim(str_replace($search, $replace, $string));
 		}
-
 		/**
 		 * Verify that the given username is allowed
 		 * to perform the given operation.
@@ -563,17 +429,12 @@ EOT;
             
 			// logged in, but do the tokens match?
 			$token = $this->get_user_token($username);
-
             if(MULTIPLELOGIN == "false"){
             
                 if(isset($_COOKIE["Organizr"])){
-
                     if($_COOKIE["Organizr"] == $token){
-
                         return true;
-
                     }else{
-
                         $this->error("cookie token mismatch for $username");
                         unset($_COOKIE['Organizr']);
                         setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
@@ -585,18 +446,14 @@ EOT;
                         setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
                         setcookie("cookiePassword", '', time() - 3600, '/');
                         return false;
-
                     }
-
                 }else{
-
                     if($token != $_SESSION["token"]) {
                         
                         $this->error("token mismatch for $username");
                         return false; 
                     
                     }
-
                     // active, using the correct token -> authenticated
                      setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
                      return true;
@@ -611,7 +468,6 @@ EOT;
             }    
             
 		}
-
 		/**
 		 * Unicode friendly(ish) version of strtolower
 		 * see: http://ca3.php.net/manual/en/function.strtolower.php#91805
@@ -630,7 +486,6 @@ EOT;
 							"Ь", "Э", "Ю", "Я" );
 			return str_replace($convert_from, $convert_to, $string);
 		}
-
 		/**
 		 * This functions flattens user name strings for similarity comparison purposes
 		 */
@@ -646,7 +501,6 @@ EOT;
 			// finally, collapse case
 			return $this->strtolower_utf8($string);
 		}
-
 		/**
 		 * We don't require assloads of personal information.
 		 * A username and a password are all we want. The rest
@@ -662,7 +516,6 @@ EOT;
             foreach($this->database->query($queryAdmin) as $data) {
                 $newRole = "user";
             }
-
 			// Does user already exist? (see notes on safe reporting)
 			if(User::unsafe_reporting) {
 				$query = "SELECT username FROM users WHERE username LIKE '$username'";
@@ -670,23 +523,29 @@ EOT;
 					$this->info("user account for $username not created.");
 					$this->error = "this user name is already being used by someone else.";
                     $this->error("this user name is already being used by someone else.");
-					return false; }}
-			else{	$query = "SELECT username FROM users";
+					return false; }
+			} else {	
+				$query = "SELECT username FROM users";
 				$usernames = array();
 				foreach($this->database->query($query) as $data) { $usernames[] = $this->homogenise_username($data["username"]); }
 				if(in_array($this->homogenise_username($username), $usernames)) {
 					//$this->info("user account for $username not created.");
 					$this->error = "<strong>$username</strong> is not allowed, because it is too similar to other user names.";
                     $this->error("<strong>$username</strong> is not allowed, because it is too similar to other user names.");
-					return false; }}
-
+					return false; }
+			}
 			// Is email address already in use? (see notes on safe reporting)
-			$query = "SELECT * FROM users WHERE email = '$email'";
-			foreach($this->database->query($query) as $data) {
-				$this->info("user account for $username not created.");
-				$this->error = "this email address is already in use by someone else.";
-                $this->error("this email address is already in use by someone else.");
-				return false; }
+			if (isset($email) && $email) {
+				$query = "SELECT * FROM users WHERE email = '$email'";
+				foreach($this->database->query($query) as $data) {
+					$this->info("user account for $username not created.");
+					$this->error = "this email address is already in use by someone else.";
+					$this->error("this email address is already in use by someone else.");
+					return false; 
+				}
+			} else {
+				$email = $this->random_ascii_string(32).'@placeholder.eml';
+			}
 
 			// This user can be registered
 			$insert = "INSERT INTO users (username, email, password, token, role, active, last) ";
@@ -702,92 +561,123 @@ EOT;
 				//$this->info("created user directory $dir");
 				// if there is a callback, call it
 				if($registration_callback !== false) { $registration_callback($username, $email, $dir); }
-                if($settings !== "true") { $this->login_user($username, $sha1, true); }
+                if($settings !== 'true' && $settings !== true) { $this->login_user($username, $sha1, true, '', false); }
 				return true; }
 			$this->error = "unknown database error occured.";
             $this->error("unknown database error occured.");
 			return false;
 		}
-
 		/**
 		 * Log a user in
 		 */
-		function login_user($username, $sha1, $remember)
-		{
+		function login_user($username, $sha1, $remember, $password, $surface = true) {
 
-            function buildLog($username, $authType){
-                
-                if(file_exists(FAIL_LOG)) { 
-                    
+            $buildLog = function($username, $authType) {
+                if(file_exists(FAIL_LOG)) {
                     $getFailLog = str_replace("\r\ndate", "date", file_get_contents(FAIL_LOG));
-                    
                     $gotFailLog = json_decode($getFailLog, true);
-                
                 }
                 
                 $failLogEntryFirst = array('logType' => 'login_log', 'auth' => array(array('date' => date("Y-m-d H:i:s"), 'username' => $username, 'ip' => $_SERVER['REMOTE_ADDR'], 'auth_type' => $authType)));
-                
                 $failLogEntry = array('date' => date("Y-m-d H:i:s"), 'username' => $username, 'ip' => $_SERVER['REMOTE_ADDR'], 'auth_type' => $authType);
-                
                 if(isset($gotFailLog)) { 
-
                     array_push($gotFailLog["auth"], $failLogEntry);
-                    
                     $writeFailLog = str_replace("date", "\r\ndate", json_encode($gotFailLog));
-
-                }else{
-
+                } else {
                     $writeFailLog = str_replace("date", "\r\ndate", json_encode($failLogEntryFirst));
-
                 }
-                
                 return $writeFailLog;
-                
-            }
-
-            // transform sha1 into real password
-			$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
-			if($dbpassword==$sha1) {
-				$this->info("password hashing is not implemented.");
-				return false; }
-
-			// perform the authentication step
-			$query = "SELECT password FROM users WHERE username = '$username'";
-			foreach($this->database->query($query) as $data) {
-				if($dbpassword==$data["password"]) {
+            };
+			
+			// External Authentication
+			$authSuccess = false;
+			$function = 'plugin_auth_'.AUTHBACKEND;
+			switch (AUTHTYPE) {
+				case 'external':
+					if (function_exists($function)) {
+						$authSuccess = $function($username, $password);
+					}
+					break;
+				case 'both':
+					if (function_exists($function)) {
+						$authSuccess = $function($username, $password);
+					}
+				default: // Internal
+					if (!$authSuccess) {
+						// perform the internal authentication step
+						$query = "SELECT password FROM users WHERE username = '$username'";
+						foreach($this->database->query($query) as $data) {
+							
+							if (password_verify($password, $data["password"])) { // Better
+								$authSuccess = true;
+							} else {
+								// Legacy - Less Secure
+								$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
+								if($dbpassword==$data["password"]) { 
+									$authSuccess = true;
+								}
+							}
+						}
+					}
+			}
+			
+			if ($authSuccess) {
+				// Make sure user exists in database
+				$query = "SELECT username FROM users WHERE username = '$username'";
+				$userExists = false;
+				foreach($this->database->query($query) as $data) {
+					if ($data['username'] == $username) {
+						$userExists = true;
+						break;
+					}
+				}
+				
+				if ($userExists) {
 					// authentication passed - 1) mark active and update token
 					$this->mark_user_active($username);
 					$this->setSession($username, $this->update_user_token($username, $sha1, false));
 					// authentication passed - 2) signal authenticated
-                    if($remember == "true") {
-                        setcookie("Organizr", $this->get_user_token($username), time() + (86400 * 7), "/", DOMAIN);
-                        setcookie("OrganizrU", $username, time() + (86400 * 7), "/", DOMAIN);
-                        
-                    }
+					if($remember == "true") {
+						setcookie("Organizr", $this->get_user_token($username), time() + (86400 * 7), "/", DOMAIN);
+						setcookie("OrganizrU", $username, time() + (86400 * 7), "/", DOMAIN);
+						
+					}
 					$this->info("Welcome $username");
-                    file_put_contents(FAIL_LOG, buildLog($username, "good_auth"));
-                    chmod(FAIL_LOG, 0660);
-                    setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
-                    return true; 
-                    
-                }
+					file_put_contents(FAIL_LOG, $buildLog($username, "good_auth"));
+					chmod(FAIL_LOG, 0660);
+					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
+					return true; 
+				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
+					// Create User
+					$falseByRef = false;
+					$this->register_user($username, "", $sha1, $falseByRef, !$remember);
+				} else {
+					// authentication failed
+					//$this->info("Successful Backend Auth, No User in DB, Create Set to False");
+					file_put_contents(FAIL_LOG, $buildLog($username, "bad_auth"));
+					chmod(FAIL_LOG, 0660);
+					if(User::unsafe_reporting) { $this->error = "Successful Backend Auth, $username not in DB, Create Set to False."; $this->error("Successful Backend Auth, $username not in DB, Create Set to False."); }
+					else { $this->error = "Not permitted to login as this user, please contact an administrator."; $this->error("Not permitted to login as this user, please contact an administrator"); }
+					return false; 
+				}
+			} else if (!$authSuccess) {
 				// authentication failed
 				//$this->info("password mismatch for $username");
-                file_put_contents(FAIL_LOG, buildLog($username, "bad_auth"));
-                chmod(FAIL_LOG, 0660);
+				file_put_contents(FAIL_LOG, $buildLog($username, "bad_auth"));
+				chmod(FAIL_LOG, 0660);
 				if(User::unsafe_reporting) { $this->error = "incorrect password for $username."; $this->error("incorrect password for $username."); }
 				else { $this->error = "the specified username/password combination is incorrect."; $this->error("the specified username/password combination is incorrect."); }
-				return false; }
-
-			// authentication could not take place
-			//$this->info("there was no user $username in the database");
-            file_put_contents(FAIL_LOG, buildLog($username, "bad_auth"));
-            chmod(FAIL_LOG, 0660);
-			if(User::unsafe_reporting) { $this->error = "user $username is unknown."; $this->error("user $username is unknown."); }
-			else { $this->error = "you either did not correctly input your username, or password (... or both)."; $this->error("you either did not correctly input your username, or password (... or both)."); }
-			return false;
+				return false; 
+			} else {
+				// authentication could not take place
+				//$this->info("there was no user $username in the database");
+				file_put_contents(FAIL_LOG, $buildLog($username, "bad_auth"));
+				chmod(FAIL_LOG, 0660);
+				if(User::unsafe_reporting) { $this->error = "user $username is unknown."; $this->error("user $username is unknown."); }
+				else { $this->error = "you either did not correctly input your username, or password (... or both)."; $this->error("you either did not correctly input your username, or password (... or both)."); }
+				return false;
+			}
 		}
-
 		/**
 		 * Update a user's information
 		 */
@@ -805,7 +695,6 @@ EOT;
 				$this->database->exec($update); }
 			$this->info("updated the information for <strong>$username</strong>");
 		}
-
 		/**
 		 * Log a user out.
 		 */
@@ -826,7 +715,6 @@ EOT;
             setcookie("cookiePassword", '', time() - 3600, '/');
 			return true;
 		}
-
 		/**
 		 * Drop a user from the system
 		 */
@@ -841,7 +729,6 @@ EOT;
             $this->info("and we deleted user directory $dir");
 			return true;
 		}
-
 		/**
 		 * The incoming password will already be a sha1 print (40 bytes) long,
 		 * but for the database we want it to be hased as sha256 (using 64 bytes).
@@ -850,7 +737,6 @@ EOT;
 		{
 			return hash("sha256", $username . $sha1 . $token);
 		}
-
 		/**
 		 * Get a user's email address
 		 */
@@ -861,7 +747,6 @@ EOT;
 				foreach($this->database->query($query) as $data) { return $data["email"]; }}
 			return "";
 		}
-
 		/**
 		 * Get a user's role
 		 */
@@ -880,7 +765,6 @@ EOT;
 				foreach($this->database->query($query) as $data) { return $data["group"]; }}
 			return User::GUEST_USER;
 		}*/
-
 		/**
 		 * Get the user token
 		 */
@@ -890,7 +774,6 @@ EOT;
 			foreach($this->database->query($query) as $data) { return $data["token"]; }
 			return false;
 		}
-
 		/**
 		 * Update the user's token and password upon successful login
 		 */
@@ -900,7 +783,6 @@ EOT;
 			$token = $this->random_hex_string(32);
 			$update = "UPDATE users SET token = '$token' WHERE username = '$username'";
 			$this->database->exec($update);
-
 			// update the user's password
 			$newpassword = $this->token_hash_password($username, $sha1, $token);
 			$update = "UPDATE users SET password = '$newpassword' WHERE username = '$username'";
@@ -908,10 +790,8 @@ EOT;
 			if($noMsg == "false"){
                 $this->info("token and password updated for <strong>$username</strong>");   
             }
-
 			return $token;
 		}
-
 		/**
 		 * Mark a user as active.
 		 */
@@ -922,7 +802,6 @@ EOT;
 			//$this->info("$username has been marked currently active.");
 			return true;
 		}
-
 		/**
 		 * Check if user can be considered active
 		 */
@@ -935,7 +814,6 @@ EOT;
 				$last = intval($data["last"]);
 				$active = $data["active"];
 				break; }
-
 			if($active=="true") {
 				$diff = time() - $last;
 				if($diff >= User::time_out) {
@@ -944,12 +822,10 @@ EOT;
 					return false; }
 				//$this->info("$username is active");
 				return true; }
-
 			$this->error("<strong>$username</strong> is not active");
 			$this->resetSession();
 			return false;
 		}
-
 		/**
 		 * Random hex string generator
 		 */
@@ -960,7 +836,6 @@ EOT;
 			while($len-->0) { $string .= $this->hex[mt_rand(0, $max)]; }
 			return $string;
 		}
-
 		/**
 		 * Random password string generator
 		 */

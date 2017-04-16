@@ -7,12 +7,6 @@ $data = false;
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
 
-function registration_callback($username, $email, $userdir)
-{
-    global $data;
-    $data = array($username, $email, $userdir);
-}
-
 require_once("user.php");
 $USER = new User("registration_callback");
 
@@ -28,7 +22,7 @@ function checkDatabase($type, $table, $check) {
     
     endif;
     
-    $dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+    $dbfile = DATABASE_LOCATION.'users.db';
     $file_db = new PDO("sqlite:" . $dbfile);
     $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $runQuery = $file_db->query($query);

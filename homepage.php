@@ -6,7 +6,6 @@ ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
 
 require_once("user.php");
-require_once("translate.php");
 require_once("functions.php");
 use Kryptonit3\Sonarr\Sonarr;
 use Kryptonit3\SickRage\SickRage;
@@ -15,7 +14,7 @@ $radarr = new Sonarr(RADARRURL, RADARRKEY);
 $sickrage = new SickRage(SICKRAGEURL, SICKRAGEKEY);
 $USER = new User("registration_callback");
 
-$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
+$dbfile = DATABASE_LOCATION.'users.db';
 
 $file_db = new PDO("sqlite:" . $dbfile);
 $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -333,10 +332,10 @@ endif; ?>
                     if(PLEXPLAYINGNOW == "true"){ $plexSize++; }
                     if($plexSize >= 4){ $plexSize = 3; }elseif($plexSize == 3){ $plexSize = 4; }elseif($plexSize == 2){ $plexSize = 6; }elseif($plexSize == 1){ $plexSize = 12; }
                     
-                    if(PLEXRECENTMOVIE == "true"){ echo getPlexRecent(PLEXURL, PLEXPORT, "movie", PLEXTOKEN, $plexSize, $language->translate("MOVIES")); }
-                    if(PLEXRECENTTV == "true"){ echo getPlexRecent(PLEXURL, PLEXPORT, "season", PLEXTOKEN, $plexSize, $language->translate("TV_SHOWS")); }
-                    if(PLEXRECENTMUSIC == "true"){ echo getPlexRecent(PLEXURL, PLEXPORT, "album", PLEXTOKEN, $plexSize, $language->translate("MUSIC")); }
-                    if(PLEXPLAYINGNOW == "true"){ echo getPlexStreams(PLEXURL, PLEXPORT, PLEXTOKEN, $plexSize, $language->translate("PLAYING_NOW_ON_PLEX")); }
+                    if(PLEXRECENTMOVIE == "true"){ echo getPlexRecent("movie", $plexSize); }
+                    if(PLEXRECENTTV == "true"){ echo getPlexRecent("season", $plexSize); }
+                    if(PLEXRECENTMUSIC == "true"){ echo getPlexRecent("album", $plexSize); }
+                    if(PLEXPLAYINGNOW == "true"){ echo getPlexStreams($plexSize); }
                     ?>
 
                 </div>
@@ -353,10 +352,10 @@ endif; ?>
                     if(EMBYPLAYINGNOW == "true"){ $embySize++; }
                     if($embySize >= 4){ $embySize = 3; }elseif($embySize == 3){ $embySize = 4; }elseif($embySize == 2){ $embySize = 6; }elseif($embySize == 1){ $embySize = 12; }
                     
-                    if(EMBYRECENTMOVIE == "true"){ echo getEmbyRecent(EMBYURL, EMBYPORT, "movie", EMBYTOKEN, $embySize, $language->translate("MOVIES")); }
-                    if(EMBYRECENTTV == "true"){ echo getEmbyRecent(EMBYURL, EMBYPORT, "season", EMBYTOKEN, $embySize, $language->translate("TV_SHOWS")); }
-                    if(EMBYRECENTMUSIC == "true"){ echo getEmbyRecent(EMBYURL, EMBYPORT, "album", EMBYTOKEN, $embySize, $language->translate("MUSIC")); }
-                    if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(EMBYURL, EMBYPORT, EMBYTOKEN, $embySize, $language->translate("PLAYING_NOW_ON_EMBY")); }
+                    if(EMBYRECENTMOVIE == "true"){ echo getEmbyRecent("movie", $embySize); }
+                    if(EMBYRECENTTV == "true"){ echo getEmbyRecent("season", $embySize); }
+                    if(EMBYRECENTMUSIC == "true"){ echo getEmbyRecent("album", $embySize); }
+                    if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams($embySize); }
                     ?>
 
                 </div>
@@ -579,7 +578,7 @@ endif; ?>
 <?php if(SICKRAGEURL != ""){ echo getSickrageCalendarWanted($sickrage->future()); echo getSickrageCalendarHistory($sickrage->history("100","downloaded")); } ?>
 <?php if(SONARRURL != ""){ echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); } ?>
 <?php if(RADARRURL != ""){ echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); } ?>                 
-<?php if(HEADPHONESURL != ""){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getHistory"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESPORT, HEADPHONESKEY, "getWanted"); } ?>                                
+<?php if(HEADPHONESURL != ""){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); } ?>                                
                     ],
                                             
                     eventRender: function eventRender( event, element, view ) {
