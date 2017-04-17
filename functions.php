@@ -1037,9 +1037,9 @@ function removeFiles($path) {
 }
 
 // Lazy select options
-function resolveSelectOptions($array, $selected = '') {
+function resolveSelectOptions($array, $selected = '', $multi = false) {
 	$output = array();
-	$selectedArr = explode('|', $selected);
+	$selectedArr = ($multi?explode('|', $selected):array());
 	foreach ($array as $key => $value) {
 		if (is_array($value)) {
 			if (isset($value['optgroup'])) {
@@ -1268,7 +1268,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 			break;
 		case 'select-multi':
 		case 'dropdown-multi':
-			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control input-sm" '.implode(' ',$tags).' multiple="multiple">'.resolveSelectOptions($params['options'], $val).'</select>';
+			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control input-sm" '.implode(' ',$tags).' multiple="multiple">'.resolveSelectOptions($params['options'], $val, true).'</select>';
 			break;
 		case 'check':
 		case 'checkbox':
