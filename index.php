@@ -33,7 +33,7 @@ $inactiveicon = "#66D9EF";
 $inactivetext = "#66D9EF";
 $loading = "#66D9EF";
 $hovertext = "#000000";
-$loadingIcon = "images/organizr_logo_d.png";
+$loadingIcon = "images/organizr-load-w-thick.gif";
 $baseURL = "";
 
 // Get Action
