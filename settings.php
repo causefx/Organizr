@@ -862,24 +862,21 @@ echo buildSettings(
 	array(
 		'title' => 'Homepage Settings',
 		'id' => 'homepage_settings',
-		'fields' => array(
-			array(
-				'type' => 'header',
-				'label' => 'General',
-			),
-			array(
-				'type' => $userSelectType,
-				'labelTranslate' => 'SHOW_HOMEPAGE',
-				'name' => 'homePageAuthNeeded',
-				'value' => HOMEPAGEAUTHNEEDED,
-				'options' => $userTypes,
-			),
-			array(
-				'type' => 'header',
-				'label' => 'Services',
-			),
-		),
 		'tabs' => array(
+			array(
+				'title' => 'General',
+				'id' => 'home_general',
+				'image' => 'images/gear.png',
+				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_HOMEPAGE',
+						'name' => 'homePageAuthNeeded',
+						'value' => HOMEPAGEAUTHNEEDED,
+						'options' => $userTypes,
+					),
+				),
+			),
 			array(
 				'title' => 'Plex',
 				'id' => 'plex',
@@ -901,6 +898,13 @@ echo buildSettings(
 						'name' => 'plexToken',
 						'pattern' => '[a-zA-Z0-9]{20}',
 						'value' => PLEXTOKEN,
+					),
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'plexHomeAuth',
+						'value' => PLEXHOMEAUTH,
+						'options' => $userTypes,
 					),
 					array(
 						array(
@@ -928,13 +932,6 @@ echo buildSettings(
 							'value' => PLEXPLAYINGNOW,
 						),
 					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'plexHomeAuth',
-						'value' => PLEXHOMEAUTH,
-						'options' => $userTypes,
-					),
 				),
 			),
 			array(
@@ -958,6 +955,13 @@ echo buildSettings(
 						'name' => 'plexToken',
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
+					),
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'embyHomeAuth',
+						'value' => EMBYHOMEAUTH,
+						'options' => $userTypes,
 					),
 					array(
 						array(
@@ -984,13 +988,6 @@ echo buildSettings(
 							'name' => 'embyPlayingNow',
 							'value' => EMBYPLAYINGNOW,
 						),
-					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'embyHomeAuth',
-						'value' => EMBYHOMEAUTH,
-						'options' => $userTypes,
 					),
 				),
 			),
@@ -1268,7 +1265,7 @@ echo buildSettings(
 	array(
 		'title' => 'Advanced Settings',
 		'id' => 'advanced_settings',
-		'onready' => '$(\'.be-auth\').each(function() { $(this).parent().hide(); }); $(\'.be-auth-\'+$(\'#authBackend_id\').val()).each(function() { $(this).parent().show(); });',
+		'onready' => '$(\'#authType_id\').trigger(\'change\')',
 		'tabs' => array(
 			array(
 				'title' => 'Backend Authentication',
@@ -1280,6 +1277,7 @@ echo buildSettings(
 						'labelTranslate' => 'AUTHTYPE',
 						'name' => 'authType',
 						'value' => AUTHTYPE,
+						'onchange' => 'if (this.value == \'internal\') { $(\'.be-auth, #authBackend_id, #authBackendCreate_id\').parent().hide(); } else { $(\'#authBackend_id, #authBackendCreate_id\').trigger(\'change\').parent().show(); }',
 						'options' => array(
 							'Organizr' => 'internal',
 							'Organizr & Backend' => 'both',

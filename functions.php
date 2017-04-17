@@ -40,7 +40,7 @@ if (function_exists('ldap_connect')) :
 else :
 	// Ldap Auth Missing Dependancy
 	function plugin_auth_ldap_disabled() {
-		return 'Plex - Disabled (Dependancy: php-ldap missing!)';
+		return 'LDAP - Disabled (Dependancy: php-ldap missing!)';
 	}
 endif;
 
@@ -768,7 +768,7 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		}
 	}
 	
-	if (!$nest) {
+	if (!$nest && !isset($array['CONFIG_VERSION'])) {
 		// Inject Current Version
 		$output[] = "\t".'"CONFIG_VERSION" => "'.INSTALLEDVERSION.'"';
 	}
@@ -917,7 +917,6 @@ function upgradeCheck() {
 		unlink('homepageSettings.ini.php');
 		unset($databaseData);
 		unset($homepageConfig);
-		$effectiveVersion = '1.31';
 	}
 	
 	// Upgrade to 1.32
@@ -942,24 +941,25 @@ function upgradeCheck() {
 		$config["headphonesURL"] = $config["headphonesURL"].(!empty($config["headphonesPort"])?':'.$config["headphonesPort"]:'');
 		unset($config["headphonesPort"]);
 		
+		// Write config file
+		$config['CONFIG_VERSION'] = '1.32';
 		$createConfigSuccess = createConfig($config);
 		
 		// Create new config
 		if ($createConfigSuccess) {
-			// Make Config Dir (this should never happen as the dir and defaults file should be there);
-			@mkdir('config', 0775, true);
-			
-			// Remove Old ini file
-			unlink('databaseLocation.ini.php');
+			if (file_exists('config/config.php')) {
+				// Remove Old ini file
+				unlink('databaseLocation.ini.php');
+			} else {
+				debug_out('Something is not right here!');
+			}
 		} else {
 			debug_out('Couldn\'t create updated configuration.' ,1);
 		}
-		$effectiveVersion = '1.32';
 	}
 	
 	// Upgrade to 1.33
 	$config = loadConfig();
-	if (isset($effectiveVersion)) { $config['CONFIG_VERSION'] = $effectiveVersion; }
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33')) {
 		// Fix User Directory
 		$config['user_home'] = $config['database_Location'].'users/';
@@ -1353,10 +1353,18 @@ function timezoneOptions() {
 }
 
 // Build Database
-function createSQLiteDB() {
-	if (!is_file(DATABASE_LOCATION.'users.db')) {
+function createSQLiteDB($path = false) {
+	if ($path === false) {
+		if (defined('DATABASE_LOCATION')) {
+			$path = DATABASE_LOCATION;
+		} else {
+			debug_out('No Path Specified!');
+		}
+	}
+	
+	if (!is_file($path.'users.db')) {
 		if (!isset($GLOBALS['file_db'])) {
-			$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+			$GLOBALS['file_db'] = new PDO('sqlite:'.$path.'users.db');
 			$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}
 		
@@ -1447,7 +1455,7 @@ function updateSQLiteDB($db_path = false) {
 	}
 	
 	// Create New Database
-	$success = createSQLiteDB();
+	$success = createSQLiteDB($db_path);
 	
 	// Restore Items
 	if ($success) {
