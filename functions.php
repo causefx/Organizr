@@ -489,13 +489,24 @@ function resolvePlexItem($server, $token, $item) {
 			$width = 100;
 			$image = 'carousel-image season';
 			$style = '';
+            $thumb = $item['thumb'];
+			break;
+        case 'episode':
+			$title = $item['grandparentTitle'];
+			$summary = $item['title'];
+			$width = 100;
+			$image = 'carousel-image season';
+			$style = '';
+            $thumb = $item['parentThumb'];
 			break;
 		case 'album':
+		case 'track':
 			$title = $item['parentTitle'];
 			$summary = $item['title'];
 			$width = 150;
 			$image = 'album';
 			$style = 'left: 160px !important;';
+            $thumb = $item['thumb'];
 			break;
 		default:
 			$title = $item['title'];
@@ -503,6 +514,7 @@ function resolvePlexItem($server, $token, $item) {
 			$width = 100;
 			$image = 'carousel-image movie';
 			$style = '';
+            $thumb = $item['thumb'];
 	}
 	
 	// If No Overview
@@ -511,7 +523,7 @@ function resolvePlexItem($server, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=plex-image&img='.$item['thumb'].'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
 }
 
 // Create Carousel
