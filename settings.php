@@ -1,306 +1,55 @@
 <?php 
+// Include functions if not already included
+require_once('functions.php');
 
-$data = false;
+// Upgrade environment
+upgradeCheck();
 
+// Lazyload settings
+$databaseConfig = configLazy('config/config.php');
+
+// Load USER
+require_once("user.php");
+$USER = new User("registration_callback");
+
+// Create Database Connection
+$file_db = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+// Some PHP config stuff
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
 
-require_once("user.php");
-require_once("functions.php");
-$USER = new User("registration_callback");
+// Confirm Access
+qualifyUser('admin', true);
 
-if(!$USER->authenticated) :
-
-    header( 'Location: error.php?error=999' );
-
-elseif($USER->authenticated && $USER->role !== "admin") :
-
-    header( 'Location: error.php?error=401' );
-
-endif;
-
-$dbfile = DATABASE_LOCATION.'users.db';
-$databaseLocation = "databaseLocation.ini.php";
-$homepageSettings = "homepageSettings.ini.php";
-$userdirpath = USER_HOME;
-$userdirpath = substr_replace($userdirpath, "", -1);
-
-$file_db = new PDO("sqlite:" . $dbfile);
-$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-$getUsers = $file_db->query('SELECT * FROM users');
+// Load User List
 $gotUsers = $file_db->query('SELECT * FROM users');
 
-$dbTab = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"');
-$dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
+// Load Colours/Appearance
+foreach(loadAppearance() as $key => $value) {
+	$$key = $value;
+}
 
-$tabSetup = "Yes";
-$hasOptions = "No";
 
-foreach($dbTab as $row) :
 
-    if (in_array("tabs", $row)) :
-    
-        $tabSetup = "No";
-    
-    endif;
 
-endforeach;
 
-foreach($dbOptions as $row) :
 
-    if (in_array("options", $row)) :
-    
-        $hasOptions = "Yes";
-    
-    endif;
 
-endforeach;
-
-if($hasOptions == "No") :
-
-    $title = "Organizr";
-    $topbar = "#333333"; 
-    $topbartext = "#66D9EF";
-    $bottombar = "#333333";
-    $sidebar = "#393939";
-    $hoverbg = "#AD80FD";
-    $activetabBG = "#F92671";
-    $activetabicon = "#FFFFFF";
-    $activetabtext = "#FFFFFF";
-    $inactiveicon = "#66D9EF";
-    $inactivetext = "#66D9EF";
-    $loading = "#66D9EF";
-    $hovertext = "#000000";
-
-endif;
-
-if($tabSetup == "No") :
-
-    $result = $file_db->query('SELECT * FROM tabs');
-    
-endif;
-
-if($hasOptions == "Yes") :
-
-    $resulto = $file_db->query('SELECT * FROM options');
-    
-endif;
-
-if($hasOptions == "Yes") : 
-                                    
-    foreach($resulto as $row) : 
-
-        $title = isset($row['title']) ? $row['title'] : "Organizr";
-        $topbartext = isset($row['topbartext']) ? $row['topbartext'] : "#66D9EF";
-        $topbar = isset($row['topbar']) ? $row['topbar'] : "#333333";
-        $bottombar = isset($row['bottombar']) ? $row['bottombar'] : "#333333";
-        $sidebar = isset($row['sidebar']) ? $row['sidebar'] : "#393939";
-        $hoverbg = isset($row['hoverbg']) ? $row['hoverbg'] : "#AD80FD";
-        $activetabBG = isset($row['activetabBG']) ? $row['activetabBG'] : "#F92671";
-        $activetabicon = isset($row['activetabicon']) ? $row['activetabicon'] : "#FFFFFF";
-        $activetabtext = isset($row['activetabtext']) ? $row['activetabtext'] : "#FFFFFF";
-        $inactiveicon = isset($row['inactiveicon']) ? $row['inactiveicon'] : "#66D9EF";
-        $inactivetext = isset($row['inactivetext']) ? $row['inactivetext'] : "#66D9EF";
-        $loading = isset($row['loading']) ? $row['loading'] : "#66D9EF";
-        $hovertext = isset($row['hovertext']) ? $row['hovertext'] : "#000000";
-
-    endforeach;
-
-endif;
 
 $action = "";
-                
 if(isset($_POST['action'])) :
-
     $action = $_POST['action'];
-    
 endif;
 
-if($action == "deleteDB") : 
-                     
-    unset($_COOKIE['Organizr']);
-    setcookie('Organizr', '', time() - 3600, '/');
-    unset($_COOKIE['OrganizrU']);
-    setcookie('OrganizrU', '', time() - 3600, '/');
-
-    $file_db = null;
-
-    unlink($dbfile); 
-
-    foreach(glob($userdirpath . '/*') as $file) : 
-
-        if(is_dir($file)) :
-
-            rmdir($file); 
-
-        elseif(!is_dir($file)) :
-
-            unlink($file);
-
-        endif;
-
-    endforeach; 
-
-    rmdir($userdirpath);
-
-   echo "<script>window.parent.location.reload();</script>";
-
-endif;
-
-if($action == "deleteLog") : 
-                     
-    unlink(FAIL_LOG); 
-
-   echo "<script type='text/javascript'>window.location.replace('settings.php');</script>";
-
-endif;
-
-if($action == "upgrade") : 
-                     
-    function downloadFile($url, $path){
-
-        $folderPath = "upgrade/";
-
-        if(!mkdir($folderPath)) : echo "can't make dir"; endif;
-
-        $newfname = $folderPath . $path;
-
-        $file = fopen ($url, 'rb');
-
-        if ($file) {
-
-            $newf = fopen ($newfname, 'wb');
-
-            if ($newf) {
-
-                while(!feof($file)) {
-
-                    fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
-
-                }
-
-            }
-
-        }
-
-        if ($file) {
-
-            fclose($file);
-
-        }
-
-        if ($newf) {
-
-            fclose($newf);
-
-        }
-
-    }
-
-    function unzipFile($zipFile){
-
-        $zip = new ZipArchive;
-
-        $extractPath = "upgrade/";
-
-        if($zip->open($extractPath . $zipFile) != "true"){
-
-            echo "Error :- Unable to open the Zip File";
-        }
-
-        /* Extract Zip File */
-        $zip->extractTo($extractPath);
-        $zip->close();
-
-    }
-
-    // Function to remove folders and files 
-    function rrmdir($dir) {
-
-        if (is_dir($dir)) {
-
-            $files = scandir($dir);
-
-            foreach ($files as $file)
-
-                if ($file != "." && $file != "..") rrmdir("$dir/$file");
-
-            rmdir($dir);
-
-        }
-
-        else if (file_exists($dir)) unlink($dir);
-
-    }
-
-    // Function to Copy folders and files       
-    function rcopy($src, $dst) {
-
-        if (is_dir ( $src )) {
-
-            if (!file_exists($dst)) : mkdir ( $dst ); endif;
-
-            $files = scandir ( $src );
-
-            foreach ( $files as $file )
-
-                if ($file != "." && $file != "..")
-
-                    rcopy ( "$src/$file", "$dst/$file" );
-
-        } else if (file_exists ( $src ))
-
-            copy ( $src, $dst );
-
-    }
-
-    $url = "https://github.com/causefx/Organizr/archive/master.zip";
-
-    $file = "upgrade.zip";
-
-    $source = __DIR__ . "/upgrade/Organizr-master/";
-
-    $cleanup = __DIR__ . "/upgrade/";
-
-    $destination = __DIR__ . "/";
-
-    downloadFile($url, $file);
-    unzipFile($file);
-
-    rcopy($source, $destination);
-    rrmdir($cleanup);
-
-    echo "<script>top.location.href = 'index.php#upgrade';</script>";
-
-endif;
-
-if($action == 'createLocation' || $action == 'homepageSettings') {
-    unset($_POST['action']);
-    updateConfig($_POST);
-    echo "<script>parent.notify('<strong>".$language->translate("SETTINGS_SAVED")."</strong>','floppy-o','success','5000', '$notifyExplode[0]', '$notifyExplode[1]');</script>";
-    echo "<script>setTimeout(function() {window.location.href = window.location.href},1500);</script>";
-}
-                
 if(!isset($_POST['op'])) :
 
     $_POST['op'] = "";
-    
 endif; 
 
 if($action == "addTabz") :
-    
-    if($tabSetup == "No") :
-
-        $file_db->exec("DELETE FROM tabs");
-        
-    endif;
-    
-    if($tabSetup == "Yes") :
-    
-        $file_db->exec("CREATE TABLE tabs (name TEXT UNIQUE, url TEXT, defaultz TEXT, active TEXT, user TEXT, guest TEXT, icon TEXT, iconurl TEXT, window TEXT)");
-        
-    endif;
+	$file_db->exec("DELETE FROM tabs");
 
     $addTabName = array();
     $addTabUrl = array();
@@ -314,87 +63,49 @@ if($action == "addTabz") :
     $buildArray = array();
 
     foreach ($_POST as $key => $value) :
-    
         $trueKey = explode('-', $key);
-        
         if ($value == "on") :
-        
             $value = "true";
-            
         endif;
-        
         if($trueKey[0] == "name"):
-            
             array_push($addTabName, $value);
-            
         endif;
-        
         if($trueKey[0] == "url"):
-            
             array_push($addTabUrl, $value);
-            
         endif;
-        
         if($trueKey[0] == "icon"):
-            
             array_push($addTabIcon, $value);
-            
         endif;
 
         if($trueKey[0] == "iconurl"):
-            
             array_push($addTabIconUrl, $value);
-            
         endif;
-        
         if($trueKey[0] == "default"):
-            
             array_push($addTabDefault, $value);
-            
         endif;
-        
         if($trueKey[0] == "active"):
-            
             array_push($addTabActive, $value);
-            
         endif;
-        
         if($trueKey[0] == "user"):
-            
             array_push($addTabUser, $value);
-            
         endif;
-        
         if($trueKey[0] == "guest"):
-            
             array_push($addTabGuest, $value);
-            
         endif; 
 
         if($trueKey[0] == "window"):
-            
             array_push($addTabWindow, $value);
-            
         endif;  
-        
     endforeach;
 
     $tabArray = 0;
-    
     if(count($addTabName) > 0) : 
-        
         foreach(range(1,count($addTabName)) as $index) :
-        
             if(!isset($addTabDefault[$tabArray])) :
-                
                 $tabDefault = "false";
-            
             else :
-                
                 $tabDefault = $addTabDefault[$tabArray];
-            
             endif;
-            
             $buildArray[] = array('name' => $addTabName[$tabArray],
                   'url' => $addTabUrl[$tabArray],
                   'defaultz' => $tabDefault,
@@ -406,16 +117,11 @@ if($action == "addTabz") :
                   'iconurl' => $addTabIconUrl[$tabArray]);
 
             $tabArray++;
-        
         endforeach;
-        
     endif; 
-    
     $insert = "INSERT INTO tabs (name, url, defaultz, active, user, guest, icon, iconurl, window) 
                 VALUES (:name, :url, :defaultz, :active, :user, :guest, :icon, :iconurl, :window)";
-                
     $stmt = $file_db->prepare($insert);
-    
     $stmt->bindParam(':name', $name);
     $stmt->bindParam(':url', $url);
     $stmt->bindParam(':defaultz', $defaultz);
@@ -425,9 +131,7 @@ if($action == "addTabz") :
     $stmt->bindParam(':icon', $icon);
     $stmt->bindParam(':iconurl', $iconurl);
     $stmt->bindParam(':window', $window);
-    
     foreach ($buildArray as $t) :
-    
         $name = $t['name'];
         $url = $t['url'];
         $defaultz = $t['defaultz'];
@@ -439,60 +143,7 @@ if($action == "addTabz") :
         $window = $t['window'];
 
         $stmt->execute();
-        
     endforeach;
-    
-endif;
-
-if($action == "addOptionz") :
-    
-    if($hasOptions == "Yes") :
-    
-        $file_db->exec("DELETE FROM options");
-        
-    endif;
-    
-    if($hasOptions == "No") :
-
-        $file_db->exec("CREATE TABLE options (title TEXT UNIQUE, topbar TEXT, bottombar TEXT, sidebar TEXT, hoverbg TEXT, topbartext TEXT, activetabBG TEXT, activetabicon TEXT, activetabtext TEXT, inactiveicon TEXT, inactivetext TEXT, loading TEXT, hovertext TEXT)");
-        
-    endif;
-            
-    $title = $_POST['title'];
-    $topbartext = $_POST['topbartext'];
-    $topbar = $_POST['topbar'];
-    $bottombar = $_POST['bottombar'];
-    $sidebar = $_POST['sidebar'];
-    $hoverbg = $_POST['hoverbg'];
-    $hovertext = $_POST['hovertext'];
-    $activetabBG = $_POST['activetabBG'];
-    $activetabicon = $_POST['activetabicon'];
-    $activetabtext = $_POST['activetabtext'];
-    $inactiveicon = $_POST['inactiveicon'];
-    $inactivetext = $_POST['inactivetext'];
-    $loading = $_POST['loading'];
-
-    $insert = "INSERT INTO options (title, topbartext, topbar, bottombar, sidebar, hoverbg, activetabBG, activetabicon, activetabtext, inactiveicon, inactivetext, loading, hovertext) 
-                VALUES (:title, :topbartext, :topbar, :bottombar, :sidebar, :hoverbg, :activetabBG, :activetabicon , :activetabtext , :inactiveicon, :inactivetext, :loading, :hovertext)";
-                
-    $stmt = $file_db->prepare($insert);
-    
-    $stmt->bindParam(':title', $title);
-    $stmt->bindParam(':topbartext', $topbartext);
-    $stmt->bindParam(':topbar', $topbar);
-    $stmt->bindParam(':bottombar', $bottombar);
-    $stmt->bindParam(':sidebar', $sidebar);
-    $stmt->bindParam(':hoverbg', $hoverbg);
-    $stmt->bindParam(':activetabBG', $activetabBG);
-    $stmt->bindParam(':activetabicon', $activetabicon);
-    $stmt->bindParam(':activetabtext', $activetabtext);
-    $stmt->bindParam(':inactiveicon', $inactiveicon);
-    $stmt->bindParam(':inactivetext', $inactivetext);
-    $stmt->bindParam(':loading', $loading);
-    $stmt->bindParam(':hovertext', $hovertext);
-
-    $stmt->execute();
-
 endif;
 
 if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
@@ -503,7 +154,6 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
 <html lang="en" class="no-js">
 
     <head>
-        
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -522,7 +172,6 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
         <link rel="stylesheet" href="js/selects/cs-skin-elastic.css">
         <link href="bower_components/iconpick/dist/css/fontawesome-iconpicker.min.css" rel="stylesheet">
         <link rel="stylesheet" href="bower_components/google-material-color/dist/palette.css">
-        
         <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
         <link rel="stylesheet" href="bower_components/smoke/dist/css/smoke.min.css">
 
@@ -535,6 +184,7 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
         <link rel="stylesheet" href="bower_components/numbered/jquery.numberedtextarea.css">
 
         <link rel="stylesheet" href="css/style.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="css/settings.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link href="css/jquery.filer.css" rel="stylesheet">
 	    <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
 
@@ -542,11 +192,46 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
         <![endif]-->
-        
+		
+        <!--Scripts-->
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
+        <script src="bower_components/Waves/dist/waves.min.js"></script>
+        <script src="bower_components/moment/min/moment.min.js"></script>
+        <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
+        <script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
+        <script src="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
+        <script src="bower_components/cta/dist/cta.min.js"></script>
+
+        <!--Menu-->
+        <script src="js/menu/classie.js"></script>
+        <script src="bower_components/iconpick/dist/js/fontawesome-iconpicker.js"></script>
+
+
+        <!--Selects-->
+        <script src="js/selects/selectFx.js"></script>
+        <script src="js/jscolor.js"></script>
+        <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+
+        <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
+        <script src="bower_components/numbered/jquery.numberedtextarea.js"></script>
+
+
+        <!--Notification-->
+        <script src="js/notifications/notificationFx.js"></script>
+
+        <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
+        <script src="js/jquery.filer.min.js" type="text/javascript"></script>
+	    <script src="js/custom.js?v=<?php echo INSTALLEDVERSION; ?>" type="text/javascript"></script>
+	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
+        <!--Data Tables-->
+        <script src="bower_components/DataTables/media/js/jquery.dataTables.js"></script>
+        <script src="bower_components/datatables.net-responsive/js/dataTables.responsive.js"></script>
+        <script src="bower_components/datatables-tabletools/js/dataTables.tableTools.js"></script>
     </head>
 
     <body class="scroller-body" style="padding: 0; background: #273238; overflow: hidden">
-        
         <style>
             @media screen and (max-width:737px){
                 .email-body{width: 100%; overflow: auto;}
@@ -557,7 +242,6 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
                     position: fixed;
                     height:100% !important;
                     margin-top:0;
-      
 
                 }.email-content .email-header, .email-new .email-header{
                     padding: 10px 30px;
@@ -665,22 +349,15 @@ echo fread($file_handle, filesize($template_file));
 fclose($file_handle);
 echo "\n";
 endif; ?>
-       
         </style>
-       
         <div id="main-wrapper" class="main-wrapper">
 
             <!--Content-->
             <div id="content"  style="margin:0 10px; overflow:hidden">
- 
                 <br/>
-                
                 <div id="versionCheck"></div>
-                            
                 <div class="row">
-                    
                     <div class="col-lg-2">
-                        
                         <?php if($action) : ?>
 
                         <button id="apply" style="width: 100%" class="btn waves btn-success btn-sm text-uppercase waves-effect waves-float animated tada" type="submit">
@@ -690,9 +367,7 @@ endif; ?>
                         </button>
 
                         <?php endif; ?>
-                        
                         <div class="content-box profile-sidebar box-shadow">
-                            
                             <img src="images/organizr-logo-h-d.png" width="100%" style="margin-top: -10px;">
 
                             <div class="profile-usermenu">
@@ -712,33 +387,19 @@ endif; ?>
                             </div>
 
                         </div>
-              
                     </div>
-                
                     <div class="col-lg-10">
                         
-                        
-   
                     </div>
-                              
                 </div>
-            
                 <div class="email-content tab-box white-bg">
-                
                     <div class="email-body">
-                
                         <div class="email-header gray-bg">
-                 
                             <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
-                  
                             <h1>Edit Tabs</h1>
-                
                         </div>
-                
                         <div class="email-inner small-box">
-                  
                             <div class="email-inner-section">
-                                
                                 <div class="small-box todo-list fade in" id="tab-tabs">
 
                                     <div class="sort-todo">
@@ -822,9 +483,9 @@ endif; ?>
 
                                                 <ul class="list-group ui-sortable">
 
-                                                    <?php if($tabSetup == "No") : $tabNum = 1; 
-
-                                                    foreach($result as $row) : 
+                                                    <?php  
+													$tabNum = 1;
+                                                    foreach($file_db->query('SELECT * FROM tabs') as $row) {
 
                                                     if($row['defaultz'] == "true") : $default = "checked"; else : $default = ""; endif;
                                                     if($row['active'] == "true") : $activez = "checked"; else : $activez = ""; endif;
@@ -955,7 +616,7 @@ endif; ?>
                                                         </tab>
 
                                                     </li>
-                                                    <?php $tabNum ++; endforeach; endif;?>
+                                                    <?php $tabNum ++; }?>
 
                                                 </ul>
 
@@ -974,1034 +635,914 @@ endif; ?>
                                     </div>
 
                                 </div>
-                                
                             </div>
-                            
                         </div>
-                        
                     </div>
-                    
                 </div>
 
                 <div class="email-content color-box white-bg">
-                
-                    <div class="email-body">
-                
-                        <div class="email-header gray-bg">
-                 
-                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
-                  
-                            <h1>Color Settings</h1>
-                
-                        </div>
-                
-                        <div class="email-inner small-box">
-                  
-                            <div class="email-inner-section">
-                                
-                                <div class="small-box fade in" id="customedit">
-
-                                    <form id="add_optionz" method="post">
-                                        
-                                        <input type="hidden" name="action" value="addOptionz" />
-                                        
-                                        <div class="btn-group">
-                                            
-                                            <button type="button" class="btn btn-dark dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <?php echo $language->translate("CHOOSE_THEME");?>  <span class="caret"></span>
-                                            </button>
-                                            
-                                            <ul class="dropdown-menu gray-bg">
-                                            
-                                                <li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
-                                                
-                                                <li class="chooseTheme" id="newPlexTheme" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" href="#">New Plex<span><img class="themeImage" src="images/themes/newplex.png"></span></a></li>
-                                            
-                                                <li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
-                                                
-                                                <li class="chooseTheme" id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook<span><img class="themeImage" src="images/themes/facebook.png"></span></a></li>
-                                                
-                                                <li class="chooseTheme" id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa<span><img class="themeImage" src="images/themes/spa.png"></span></a></li>
-                                                
-                                                <li class="chooseTheme" id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly<span><img class="themeImage" src="images/themes/darkly.png"></span></a></li>
-                                                
-                                                <li class="chooseTheme" id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate<span><img class="themeImage" src="images/themes/slate.png"></span></a></li>
-                                                
-                                                <li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
-                                                
-                                                <li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
-                                                
-                                                <li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
-                                            
-                                            </ul>
-                                            
-                                        </div>
-                                        
-                                        <button id="editCssButton" class="btn waves btn-labeled btn-primary btn-sm text-uppercase waves-effect waves-float" type="button">
-                                                
-                                                <span class="btn-label"><i class="fa fa-css3"></i></span><?php echo $language->translate("EDIT_CUSTOM_CSS");?>
-                                                
-                                        </button>
-                                        
-                                        <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
-                                                
-                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_OPTIONS");?>
-                                                
-                                        </button>
-
-                                        <div class="big-box grids">
-
-                                            <div class="row show-grids col-lg-12">
-
-                                                <h4><strong><?php echo $language->translate("TITLE");?></strong></h4>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("TITLE");?></center>
-
-                                                    <input name="title" class="form-control gray" value="<?=$title;?>" placeholder="Organizr">
-
-                                                </div>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("TITLE_TEXT");?></center>
-
-                                                    <input name="topbartext" id="topbartext" class="form-control jscolor {hash:true}" value="<?=$topbartext;?>">
-
-                                                </div>
-                                                
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("LOADING_COLOR");?></center>
-
-                                                    <input name="loading" id="loading" class="form-control jscolor {hash:true}" value="<?=$loading;?>">
-
-                                                </div>
-
-                                            </div>
-
-                                            <div class="row show-grids col-lg-12">
-
-                                                <h4><strong><?php echo $language->translate("NAVIGATION_BARS");?></strong></h4>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("TOP_BAR");?></center>
-
-                                                    <input name="topbar" id="topbar" class="form-control jscolor {hash:true}" value="<?=$topbar;?>">
-
-                                                </div>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("BOTTOM_BAR");?></center>
-
-                                                    <input name="bottombar" id="bottombar" class="form-control jscolor {hash:true}" value="<?=$bottombar;?>">
-
-                                                </div>
-
-                                                <div class="clearfix visible-xs-block"></div>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("SIDE_BAR");?></center>
-
-                                                    <input name="sidebar" id="sidebar" class="form-control jscolor {hash:true}" value="<?=$sidebar;?>">
-
-                                                </div>
-                                                
-                                            </div>
-                                            
-                                            <div class="row show-grids col-lg-12">
-
-                                                <div class="col-md-6 gray-bg">
-
-                                                    <center><?php echo $language->translate("HOVER_BG");?></center>
-
-                                                    <input name="hoverbg" id="hoverbg" class="form-control jscolor {hash:true}" value="<?=$hoverbg;?>">
-
-                                                </div>
-                                                
-                                                <div class="col-md-6 gray-bg">
-
-                                                    <center><?php echo $language->translate("HOVER_TEXT");?></center>
-
-                                                    <input name="hovertext" id="hovertext" class="form-control jscolor {hash:true}" value="<?=$hovertext;?>">
-
-                                                </div>
-
-                                            </div>
-
-                                            <div class="row show-grids col-lg-12">
-
-                                                <h4><strong><?php echo $language->translate("ACTIVE_TAB");?></strong></h4>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("ACTIVE_TAB_BG");?></center>
-
-                                                    <input name="activetabBG" id="activetabBG" class="form-control jscolor {hash:true}" value=<?=$activetabBG;?>"">
-
-                                                </div>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("ACTIVE_TAB_ICON");?></center>
-
-                                                    <input name="activetabicon" id="activetabicon" class="form-control jscolor {hash:true}" value="<?=$activetabicon;?>">
-
-                                                </div>
-
-                                                <div class="col-md-4 gray-bg">
-
-                                                    <center><?php echo $language->translate("ACTIVE_TAB_TEXT");?></center>
-
-                                                    <input name="activetabtext" id="activetabtext" class="form-control jscolor {hash:true}" value="<?=$activetabtext;?>">
-
-                                                </div>
-
-                                            </div>
-
-                                            <div class="row show-grids col-lg-12">
-
-                                                <h4><strong><?php echo $language->translate("INACTIVE_TAB");?></strong></h4>
-
-                                                <div class="col-md-6 gray-bg">
-
-                                                    <center><?php echo $language->translate("INACTIVE_ICON");?></center>
-
-                                                    <input name="inactiveicon" id="inactiveicon" class="form-control jscolor {hash:true}" value="<?=$inactiveicon;?>">
-
-                                                </div>
-
-                                                <div class="col-md-6 gray-bg">
-
-                                                    <center><?php echo $language->translate("INACTIVE_TEXT");?></center>
-
-                                                    <input name="inactivetext" id="inactivetext" class="form-control jscolor {hash:true}" value="<?=$inactivetext;?>">
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                        
-                                    </form>
-                                    
-                                     <form style="display: none" id="editCssForm" method="POST" action="ajax.php">
-                                         
-                                         <button class="btn waves btn-labeled btn-warning btn-sm pull-left text-uppercase waves-effect waves-float" type="button" id="backToThemeButton">
-
-                                            <span class="btn-label"><i class="fa fa-arrow-left"></i></span><?php echo $language->translate("GO_BACK");?>
-                                                
-                                        </button>
-                                        
-                                         
-                                         <button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
-
-                                            <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_CSS");?>
-                                                
-                                        </button>
-                                         
-                                        <br><br>
-                                        
-                                        <input type="hidden" name="submit" value="editCSS" /> 
-                                         
-                                        <h1><?php echo $language->translate("EDIT_CUSTOM_CSS");?></h1> 
-                                         
-                                         <!--<p>Variables Available<code>$topbar - $topbartext - $bottombar - $sidebar - $hoverbg - $activetabBG - $activetabicon - $activetabtext - $inactiveicon - $inactivetext - $loading - $hovertext</code></p>-->
-                                         
-                                        <textarea class="form-control" id="css-show" name="css-show" rows="25" style="background: #000; color: #FFF;">
-<?php if(CUSTOMCSS == "true") :
-$template_file = "custom.css";
-$file_handle = fopen($template_file, "rb");
-echo fread($file_handle, filesize($template_file));
-fclose($file_handle);
-endif;?></textarea>
-                                                                        
-                                    </form>
-                      
-                                </div>
-                  
-                            </div>
-
-                        </div>
-                
-                    </div>
-                
+<?php
+// Build Colour Settings
+echo buildSettings(
+	array(
+		'title' => 'Appearance Settings',
+		'id' => 'appearance_settings',
+		'submitAction' => 'update-appearance',
+		'onready' => '$("#editCssButton, #backToThemeButton").click(function(){ $("#appearance_settings_form").toggle(); $("#editCssForm").toggle(); });',
+		'customAfterForm' => '                                     
+<form style="display: none" id="editCssForm" method="POST" action="ajax.php">
+	<button class="btn waves btn-labeled btn-warning btn-sm pull-left text-uppercase waves-effect waves-float" type="button" id="backToThemeButton">
+
+	<span class="btn-label"><i class="fa fa-arrow-left"></i></span>'.translate("GO_BACK").'
+	</button>
+
+	<button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
+
+	<span class="btn-label"><i class="fa fa-floppy-o"></i></span>'.translate("SAVE_CSS").'
+	</button>
+	<br><br>
+	<input type="hidden" name="submit" value="editCSS" /> 
+	<h1>'.translate("EDIT_CUSTOM_CSS").'</h1> 
+	<!--<p>Variables Available<code>$topbar - $topbartext - $bottombar - $sidebar - $hoverbg - $activetabBG - $activetabicon - $activetabtext - $inactiveicon - $inactivetext - $loading - $hovertext</code></p>-->
+	<textarea class="form-control" id="css-show" name="css-show" rows="25" style="background: #000; color: #FFF;">'.(file_exists('./custom.css')?file_get_contents('./custom.css'):'').'</textarea>
+</form>',
+		'fields' => array(
+			array(
+				array(
+					'type' => 'button',
+					'labelTranslate' => 'CHOOSE_THEME',
+					'icon' => 'css3',
+					'id' => 'themeSelector',
+					'buttonType' => 'dark',
+					'buttonDrop' => '
+<ul class="dropdown-menu gray-bg">
+	<li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
+	<li class="chooseTheme" id="newPlexTheme" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" href="#">New Plex<span><img class="themeImage" src="images/themes/newplex.png"></span></a></li>
+	<li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
+	<li class="chooseTheme" id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook<span><img class="themeImage" src="images/themes/facebook.png"></span></a></li>
+	<li class="chooseTheme" id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa<span><img class="themeImage" src="images/themes/spa.png"></span></a></li>
+	<li class="chooseTheme" id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly<span><img class="themeImage" src="images/themes/darkly.png"></span></a></li>
+	<li class="chooseTheme" id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate<span><img class="themeImage" src="images/themes/slate.png"></span></a></li>
+	<li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
+	<li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
+	<li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
+</ul>
+					',
+				),
+				array(
+					'type' => 'button',
+					'labelTranslate' => 'EDIT_CUSTOM_CSS',
+					'icon' => 'css3',
+					'buttonType' => 'primary',
+					'id' => 'editCssButton',
+				),
+			),
+			array(
+				'type' => 'header',
+				'labelTranslate' => 'TITLE',
+			),
+			array(
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'labelTranslate' => 'TITLE',
+					'name' => 'title',
+					'id' => 'title',
+					'value' => $title,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'TITLE_TEXT',
+					'name' => 'topbartext',
+					'id' => 'topbartext',
+					'value' => $topbartext,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'LOADING_COLOR',
+					'name' => 'loading',
+					'id' => 'loading',
+					'value' => $loading,
+				),
+			),
+			array(
+				'type' => 'header',
+				'labelTranslate' => 'NAVIGATION_BARS',
+			),
+			array(
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'TOP_BAR',
+					'name' => 'topbar',
+					'id' => 'topbar',
+					'value' => $topbar,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'BOTTOM_BAR',
+					'name' => 'bottombar',
+					'id' => 'bottombar',
+					'value' => $bottombar,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'SIDE_BAR',
+					'name' => 'sidebar',
+					'id' => 'sidebar',
+					'value' => $sidebar,
+				),
+			),
+			array(
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'HOVER_BG',
+					'name' => 'hoverbg',
+					'id' => 'hoverbg',
+					'value' => $hoverbg,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'HOVER_TEXT',
+					'name' => 'hovertext',
+					'id' => 'hovertext',
+					'value' => $hovertext,
+				),
+			),
+			array(
+				'type' => 'header',
+				'labelTranslate' => 'ACTIVE_TAB',
+			),
+			array(
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'ACTIVE_TAB_BG',
+					'name' => 'activetabBG',
+					'id' => 'activetabBG',
+					'value' => $activetabBG,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'ACTIVE_TAB_ICON',
+					'name' => 'activetabicon',
+					'id' => 'activetabicon',
+					'value' => $activetabicon,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'ACTIVE_TAB_TEXT',
+					'name' => 'activetabtext',
+					'id' => 'activetabtext',
+					'value' => $activetabtext,
+				),
+			),
+			array(
+				'type' => 'header',
+				'labelTranslate' => 'INACTIVE_TAB',
+			),
+			array(
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'INACTIVE_ICON',
+					'name' => 'inactiveicon',
+					'id' => 'inactiveicon',
+					'value' => $inactiveicon,
+				),
+				array(
+					'type' => 'text',
+					'format' => 'colour',
+					'class' => 'jscolor {hash:true}',
+					'labelTranslate' => 'INACTIVE_TEXT',
+					'name' => 'inactivetext',
+					'id' => 'inactivetext',
+					'value' => $inactivetext,
+				),
+			),
+		),
+	)
+);
+?>
                 </div>
-    
                 <div class="email-content homepage-box white-bg">
-                
-                    <div class="email-body">
-                
-                        <div class="email-header gray-bg">
-                 
-                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
-                  
-                            <h1>Homepage Settings</h1>
-                
-                        </div>
-                
-                        <div class="email-inner small-box">
-                  
-                            <div class="email-inner-section">
-                                
-                                <div class="small-box fade in" id="homepageSettings">
-                                    
-                                    <div class="row">
-                                        
-                                        
-                                        <div class="col-lg-12">
-                                            
-                                            <form class="content-form" name="homepageSettings" id="homepageSettings" action="" method="POST">    
-                                            
-                                                <div class="tabbable tabs-with-bg" id="homepage-tabs">
-                                                                                                    
-                                                    <input type="hidden" name="action" value="homepageSettings" />
-                                                
-                                                    <ul class="nav nav-tabs apps">
-
-                                                        <li class="apps active">
-
-                                                            <a href="#tab-plex" data-toggle="tab" aria-expanded="true"><img style="height:40px; width:40px;" src="images/plex.png"></a>
-
-                                                        </li>
-							    
-                                                        <li class="apps">
-
-                                                            <a href="#tab-emby" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/emby.png"></a>
-
-                                                        </li>
-
-                                                        <li class="apps ">
-
-                                                            <a href="#tab-sonarr" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/sonarr.png"></a>
-
-                                                        </li>
-
-                                                        <li class="apps ">
-
-                                                            <a href="#tab-radarr" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/radarr.png"></a>
-
-                                                        </li>
-                                                        
-                                                        <li class="apps ">
-
-                                                            <a href="#tab-sickrage" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/sickrage.png"></a>
-
-                                                        </li>
-                                                        
-                                                        <li class="apps ">
-
-                                                            <a href="#tab-nzbget" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/nzbget.png"></a>
-
-                                                        </li>
-                                                        
-                                                        <li class="apps ">
-
-                                                            <a href="#tab-sabnzbd" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/sabnzbd.png"></a>
-
-                                                        </li>
-                                                        
-                                                        <li class="apps ">
-
-                                                            <a href="#tab-headphones" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/headphones.png"></a>
-
-                                                        </li>
-                                                        
-                                                        <li class="apps ">
-
-                                                            <a href="#tab-calendar" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/calendar.png"></a>
-
-                                                        </li>
-
-                                                    </ul>
-
-                                                    <div class="clearfix"></div>
-
-                                                    <div class="tab-content">
-
-                                                        <div class="tab-pane big-box fade active in" id="tab-plex">
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="plexURL" placeholder="<?php echo $language->translate("PLEX_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("PLEX_URL");?> - i.e. http://hostname:32400</p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="plexToken" placeholder="<?php echo $language->translate("PLEX_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXTOKEN;?>">
-                                                                <p class="help-text"><?php echo $language->translate("PLEX_TOKEN");?></p>
-
-                                                            </div>
-
-                                                            <div class="content-form form-inline">
-
-                                                                <div class="form-group">
-                                                                    <?php  if(PLEXRECENTMOVIE == "true") : $PLEXRECENTMOVIE = "checked"; else : $PLEXRECENTMOVIE = ""; endif;?>
-                                                                    <input id="" class="switcher switcher-success" value="false" name="plexRecentMovie" type="hidden">
-                                                                    <input id="plexRecentMovie" class="switcher switcher-success" value="true" name="plexRecentMovie" type="checkbox" <?php echo $PLEXRECENTMOVIE;?>>
-
-                                                                    <label for="plexRecentMovie"></label><?php echo $language->translate("RECENT_MOVIES");?>
-
-                                                                </div>
-
-                                                                <div class="form-group">
-                                                                    <?php  if(PLEXRECENTTV == "true") : $PLEXRECENTTV = "checked"; else : $PLEXRECENTTV = ""; endif;?>
-                                                                    <input id="" class="switcher switcher-success" value="false" name="plexRecentTV" type="hidden">
-                                                                    <input id="plexRecentTV" class="switcher switcher-success" value="true" name="plexRecentTV" type="checkbox" <?php echo $PLEXRECENTTV;?>>
-
-                                                                    <label for="plexRecentTV"></label><?php echo $language->translate("RECENT_TV");?>
-
-                                                                </div>
-
-                                                                <div class="form-group">
-                                                                    <?php  if(PLEXRECENTMUSIC == "true") : $PLEXRECENTMUSIC = "checked"; else : $PLEXRECENTMUSIC = ""; endif;?>
-                                                                    <input id="" class="switcher switcher-success" value="false" name="plexRecentMusic" type="hidden">
-                                                                    <input id="plexRecentMusic" class="switcher switcher-success" value="true" name="plexRecentMusic" type="checkbox" <?php echo $PLEXRECENTMUSIC;?>>
-
-                                                                    <label for="plexRecentMusic"></label><?php echo $language->translate("RECENT_MUSIC");?>
-
-                                                                </div>
-
-                                                                <div class="form-group">
-                                                                    <?php  if(PLEXPLAYINGNOW == "true") : $PLEXPLAYINGNOW = "checked"; else : $PLEXPLAYINGNOW = ""; endif;?>
-                                                                    <input id="" class="switcher switcher-success" value="false" name="plexPlayingNow" type="hidden">
-                                                                    <input id="plexPlayingNow" class="switcher switcher-success" value="true" name="plexPlayingNow" type="checkbox" <?php echo $PLEXPLAYINGNOW;?>>
-
-                                                                    <label for="plexPlayingNow"></label><?php echo $language->translate("PLAYING_NOW");?>
-
-                                                                </div>
-
-                                                            </div>
-
-                                                        </div>
-
-                                                        <div class="tab-pane big-box fade" id="tab-emby">
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="embyURL" placeholder="<?php echo $language->translate("EMBY_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("EMBY_URL");?> - i.e. http://hostname:8096 | hostname/emby | http://hostname:8096/emby</p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="embyToken" placeholder="<?php echo $language->translate("EMBY_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYTOKEN;?>">
-                                                                <p class="help-text"><?php echo $language->translate("EMBY_TOKEN");?></p>
-
-                                                            </div>
-
-                                                            <div class="content-form form-inline">
-
-                                                                <div class="form-group">
-                                                                    <?php  if(EMBYRECENTMOVIE == "true") : $EMBYRECENTMOVIE = "checked"; else : $EMBYRECENTMOVIE = ""; endif;?>
-                                                                    <input id="" class="switcher switcher-success" value="false" name="embyRecentMovie" type="hidden">
-                                                                    <input id="embyRecentMovie" class="switcher switcher-success" value="true" name="embyRecentMovie" type="checkbox" <?php echo $EMBYRECENTMOVIE;?>>
-
-                                                                    <label for="embyRecentMovie"></label><?php echo $language->translate("RECENT_MOVIES");?>
-
-                                                                </div>
-
-                                                                <div class="form-group">
-                                                                    <?php  if(EMBYRECENTTV == "true") : $EMBYRECENTTV = "checked"; else : $EMBYRECENTTV = ""; endif;?>
-                                                                    <input id="" class="switcher switcher-success" value="false" name="embyRecentTV" type="hidden">
-                                                                    <input id="embyRecentTV" class="switcher switcher-success" value="true" name="embyRecentTV" type="checkbox" <?php echo $EMBYRECENTTV;?>>
-
-                                                                    <label for="embyRecentTV"></label><?php echo $language->translate("RECENT_TV");?>
-
-                                                                </div>
-
-                                                                <div class="form-group">
-                                                                    <?php  if(EMBYRECENTMUSIC == "true") : $EMBYRECENTMUSIC = "checked"; else : $EMBYRECENTMUSIC = ""; endif;?>
-                                                                    <input id="" class="switcher switcher-success" value="false" name="embyRecentMusic" type="hidden">
-                                                                    <input id="embyRecentMusic" class="switcher switcher-success" value="true" name="embyRecentMusic" type="checkbox" <?php echo $EMBYRECENTMUSIC;?>>
-
-                                                                    <label for="embyRecentMusic"></label><?php echo $language->translate("RECENT_MUSIC");?>
-
-                                                                </div>
-
-                                                                <div class="form-group">
-                                                                    <?php  if(EMBYPLAYINGNOW == "true") : $EMBYPLAYINGNOW = "checked"; else : $EMBYPLAYINGNOW = ""; endif;?>
-                                                                    <input id="" class="switcher switcher-success" value="false" name="embyPlayingNow" type="hidden">
-                                                                    <input id="embyPlayingNow" class="switcher switcher-success" value="true" name="embyPlayingNow" type="checkbox" <?php echo $EMBYPLAYINGNOW;?>>
-
-                                                                    <label for="embyPlayingNow"></label><?php echo $language->translate("PLAYING_NOW");?>
-
-                                                                </div>
-
-                                                            </div>
-
-                                                        </div>
-							    
-                                                        <div class="tab-pane big-box fade" id="tab-sonarr">
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="sonarrURL" placeholder="<?php echo $language->translate("SONARR_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo SONARRURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("SONARR_URL");?> - i.e. http://hostname:8989 | hostname/sonarr | http://hostname:8989/sonarr</p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="sonarrKey" placeholder="<?php echo $language->translate("SONARR_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo SONARRKEY;?>">
-                                                                <p class="help-text"><?php echo $language->translate("SONARR_KEY");?></p>
-
-                                                            </div>
-
-                                                        </div>
-                                                        
-                                                        <div class="tab-pane big-box fade" id="tab-sickrage">
-                                                            
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="sickrageURL" placeholder="<?php echo $language->translate("SICK_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo SICKRAGEURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("SICK_URL");?> - i.e. http://hostname:8081 | hostname/sick | http://hostname:8081/sick</p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="sickrageKey" placeholder="<?php echo $language->translate("SICK_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo SICKRAGEKEY;?>">
-                                                                <p class="help-text"><?php echo $language->translate("SICK_KEY");?></p>
-
-                                                            </div>
-
-                                                        </div>
-
-                                                        <div class="tab-pane big-box fade" id="tab-radarr">
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="radarrURL" placeholder="<?php echo $language->translate("RADARR_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo RADARRURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("RADARR_URL");?> - i.e. http://hostname:7878 | hostname/radarr | http://hostname:7878/radarr</p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="radarrKey" placeholder="<?php echo $language->translate("RADARR_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo RADARRKEY;?>">
-                                                                <p class="help-text"><?php echo $language->translate("RADARR_KEY");?></p>
-
-                                                            </div>
-
-                                                        </div>
-                                                        
-                                                        <div class="tab-pane big-box fade" id="tab-nzbget">
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="nzbgetURL" placeholder="<?php echo $language->translate("NZBGET_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo NZBGETURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("NZBGET_URL");?> - i.e. http://hostname:6789</p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="nzbgetUsername" placeholder="<?php echo $language->translate("USERNAME");?>" autocorrect="off" autocapitalize="off" value="<?php echo NZBGETUSERNAME;?>">
-                                                                <p class="help-text"><?php echo $language->translate("USERNAME");?></p>
-
-                                                            </div>
-                                                            
-                                                            <div class="form-group">
-
-                                                                <input type="password" class="form-control material input-sm" name="nzbgetPassword" placeholder="<?php echo $language->translate("PASSWORD");?>" autocorrect="off" autocapitalize="off" value="<?php echo NZBGETPASSWORD;?>">
-                                                                <p class="help-text"><?php echo $language->translate("PASSWORD");?></p>
-
-                                                            </div>
-
-                                                        </div>
-                                                        
-                                                        <div class="tab-pane big-box fade" id="tab-sabnzbd">
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="sabnzbdURL" placeholder="<?php echo $language->translate("SABNZBD_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo SABNZBDURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("SABNZBD_URL");?> - i.e. http://hostname:8080 | http://hostname/sabnzbd | http://hostname:8080/sabnzbd</p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="sabnzbdKey" placeholder="<?php echo $language->translate("SABNZBD_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo SABNZBDKEY;?>">
-                                                                <p class="help-text"><?php echo $language->translate("SABNZBD_KEY");?></p>
-
-                                                            </div>
-
-                                                        </div>
-                                                        
-                                                        <div class="tab-pane big-box fade" id="tab-headphones">
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="headphonesURL" placeholder="<?php echo $language->translate("HEADPHONES_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo HEADPHONESURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("HEADPHONES_URL");?> - i.e. http://hostname:8181</p>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input type="text" class="form-control material input-sm" name="headphonesKey" placeholder="<?php echo $language->translate("HEADPHONES_KEY");?>" autocorrect="off" autocapitalize="off" value="<?php echo HEADPHONESKEY;?>">
-                                                                <p class="help-text"><?php echo $language->translate("HEADPHONES_KEY");?></p>
-
-                                                            </div>
-
-                                                        </div>
-                                                        
-                                                        <div class="tab-pane big-box fade" id="tab-calendar">
-
-                                                            <div class="content-form form-inline">
-                                                        
-                                                                <div class="form-group">
-
-                                                                <?php 
-
-                                                                if(CALENDARSTART == "0") : $sundayActive = "selected"; else : $sundayActive = ""; endif;
-                                                                if(CALENDARSTART == "1") : $mondayActive = "selected"; else : $mondayActive = ""; endif;
-                                                                if(CALENDARSTART == "2") : $tuesdayActive = "selected"; else : $tuesdayActive = ""; endif;
-                                                                if(CALENDARSTART == "3") : $wednesdayActive = "selected"; else : $wednesdayActive = ""; endif;
-                                                                if(CALENDARSTART == "4") : $thursdayActive = "selected"; else : $thursdayActive = ""; endif;
-                                                                if(CALENDARSTART == "5") : $fridayActive = "selected"; else : $fridayActive = ""; endif;
-                                                                if(CALENDARSTART == "6") : $saturdayActive = "selected"; else : $saturdayActive = ""; endif;
-
-                                                                ?>
-                                                                    <select name="calendarStart" id="calendarStart" class="form-control material input-sm" required>
-
-                                                                        <option value="0" <?=$sundayActive;?>><?php echo explosion($language->translate('DAYS'), 0);?></option>
-                                                                        <option value="1" <?=$mondayActive;?>><?php echo explosion($language->translate('DAYS'), 1);?></option>
-                                                                        <option value="2" <?=$tuesdayActive;?>><?php echo explosion($language->translate('DAYS'), 2);?></option>
-                                                                        <option value="3" <?=$wednesdayActive;?>><?php echo explosion($language->translate('DAYS'), 3);?></option>
-                                                                        <option value="4" <?=$thursdayActive;?>><?php echo explosion($language->translate('DAYS'), 4);?></option>
-                                                                        <option value="5" <?=$fridayActive;?>><?php echo explosion($language->translate('DAYS'), 5);?></option>
-                                                                        <option value="6" <?=$saturdayActive;?>><?php echo explosion($language->translate('DAYS'), 6);?></option>
-                                                                        
-                                                                    </select>
-
-                                                                    <p class="help-text"><?php echo $language->translate("CALENDAR_START_DAY");?></p>
-
-                                                                </div>
-                                                                
-                                                                <div class="form-group">
-
-                                                                <?php 
-
-                                                                if(CALENDARVIEW == "month") : $monthActive = "selected"; else : $monthActive = ""; endif;
-                                                                if(CALENDARVIEW == "basicDay") : $dayActive = "selected"; else : $dayActive = ""; endif;
-                                                                if(CALENDARVIEW == "basicWeek") : $weekActive = "selected"; else : $weekActive = ""; endif;
-
-                                                                ?>
-                                                                    <select name="calendarView" id="calendarView" class="form-control material input-sm" required>
-
-                                                                        <option value="month" <?=$monthActive;?>><?php echo $language->translate('MONTH');?></option>
-                                                                        <option value="basicDay" <?=$dayActive;?>><?php echo $language->translate('DAY');?></option>
-                                                                        <option value="basicWeek" <?=$weekActive;?>><?php echo $language->translate('WEEK');?></option>
-                                                                        
-                                                                    </select>
-
-                                                                    <p class="help-text"><?php echo $language->translate("DEFAULT");?></p>
-
-                                                                </div>
-                                                                
-                                                                <div class="form-group">
-
-                                                                <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control material input-sm" name="calendarStartDay" placeholder="<?php echo $language->translate("CALENDAR_START_DATE");?>" autocorrect="off" autocapitalize="off" value="<?php echo CALENDARSTARTDAY;?>">
-                                                                <p class="help-text"><?php echo $language->translate("CALENDAR_START_DATE");?></p>
-
-                                                                </div>
-                                                                
-                                                                <div class="form-group">
-
-                                                                <input type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="form-control material input-sm" name="calendarEndDay" placeholder="<?php echo $language->translate("CALENDAR_END_DATE");?>" autocorrect="off" autocapitalize="off" value="<?php echo CALENDARENDDAY;?>">
-                                                                <p class="help-text"><?php echo $language->translate("CALENDAR_END_DATE");?></p>
-
-                                                                </div>
-
-                                                            </div>
-
-                                                        </div>
-
-                                                    </div>
-   
-                                                </div>
-                                                
-                                                <button type="submit" class="class='btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save</button>
-
-                                            </form> 
-                                            
-                                        </div>
-  
-                                    </div>
-
-                                </div>
-                                
-                            </div>
-                            
-                        </div>
-                        
-                    </div>
-                    
+<?php
+// Qualify most typical hostnames prior to form submission
+$urlPattern = '([hH][tT][tT][pP][sS]?):\/\/([\w\.]{1,250})(?::(\d{1,5}))?((?:\/[^?.\s]+))?';
+
+// Once configurable user groups is added change to select-multi to allow specific group selection
+$userSelectType = 'select'; 
+$userTypes = array(
+	'None' => 'false',
+	'User' => 'user|admin',
+	'Admin' => 'admin',
+);
+
+// Build Homepage Settings
+echo buildSettings(
+	array(
+		'title' => 'Homepage Settings',
+		'id' => 'homepage_settings',
+		'tabs' => array(
+			array(
+				'title' => 'General',
+				'id' => 'home_general',
+				'image' => 'images/gear.png',
+				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_HOMEPAGE',
+						'name' => 'homePageAuthNeeded',
+						'value' => HOMEPAGEAUTHNEEDED,
+						'options' => $userTypes,
+					),
+				),
+			),
+			array(
+				'title' => 'Plex',
+				'id' => 'plex',
+				'image' => 'images/plex.png',
+				'fields' => array(
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:32400',
+						'labelTranslate' => 'PLEX_URL',
+						'assist' => 'http://hostname:32400',
+						'name' => 'plexURL',
+						'pattern' => $urlPattern,
+						'value' => PLEXURL,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => randString(20),
+						'labelTranslate' => 'PLEX_TOKEN',
+						'name' => 'plexToken',
+						'pattern' => '[a-zA-Z0-9]{20}',
+						'value' => PLEXTOKEN,
+					),
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'plexHomeAuth',
+						'value' => PLEXHOMEAUTH,
+						'options' => $userTypes,
+					),
+					array(
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'RECENT_MOVIES',
+							'name' => 'plexRecentMovie',
+							'value' => PLEXRECENTMOVIE,
+						),
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'RECENT_TV',
+							'name' => 'plexRecentTV',
+							'value' => PLEXRECENTTV,
+						),
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'RECENT_MUSIC',
+							'name' => 'plexRecentMusic',
+							'value' => PLEXRECENTMUSIC,
+						),
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'PLAYING_NOW',
+							'name' => 'plexPlayingNow',
+							'value' => PLEXPLAYINGNOW,
+						),
+					),
+				),
+			),
+			array(
+				'title' => 'Emby',
+				'id' => 'emby',
+				'image' => 'images/emby.png',
+				'fields' => array(
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:8096/emby',
+						'labelTranslate' => 'EMBY_URL',
+						'assist' => 'http://hostname:8096 | https://hostname/emby | http://hostname:8096/emby',
+						'name' => 'embyURL',
+						'pattern' => $urlPattern,
+						'value' => EMBYURL,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => randString(32),
+						'labelTranslate' => 'EMBY_TOKEN',
+						'name' => 'plexToken',
+						'pattern' => '[a-zA-Z0-9]{32}',
+						'value' => EMBYTOKEN,
+					),
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'embyHomeAuth',
+						'value' => EMBYHOMEAUTH,
+						'options' => $userTypes,
+					),
+					array(
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'RECENT_MOVIES',
+							'name' => 'embyRecentMovie',
+							'value' => EMBYRECENTMOVIE,
+						),
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'RECENT_TV',
+							'name' => 'embyRecentTV',
+							'value' => EMBYRECENTTV,
+						),
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'RECENT_MUSIC',
+							'name' => 'embyRecentMusic',
+							'value' => EMBYRECENTMUSIC,
+						),
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'PLAYING_NOW',
+							'name' => 'embyPlayingNow',
+							'value' => EMBYPLAYINGNOW,
+						),
+					),
+				),
+			),
+			array(
+				'title' => 'Sonarr',
+				'id' => 'sonarr',
+				'image' => 'images/sonarr.png',
+				'fields' => array(
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:8989',
+						'labelTranslate' => 'SONARR_URL',
+						'assist' => 'http://hostname:8989 | hostname/sonarr | http://hostname:8989/sonarr',
+						'name' => 'sonarrURL',
+						'pattern' => $urlPattern,
+						'value' => SONARRURL,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => randString(32),
+						'labelTranslate' => 'SONARR_KEY',
+						'name' => 'sonarrKey',
+						'pattern' => '[a-zA-Z0-9]{32}',
+						'value' => SONARRKEY,
+					),
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sonarrHomeAuth',
+						'value' => SONARRHOMEAUTH,
+						'options' => $userTypes,
+					),
+				),
+			),
+			array(
+				'title' => 'Radarr',
+				'id' => 'radarr',
+				'image' => 'images/radarr.png',
+				'fields' => array(
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:7878',
+						'labelTranslate' => 'RADARR_URL',
+						'assist' => 'http://hostname:7878 | hostname/radarr | http://hostname:7878/radarr',
+						'name' => 'radarrURL',
+						'pattern' => $urlPattern,
+						'value' => RADARRURL,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => randString(32),
+						'labelTranslate' => 'RADARR_KEY',
+						'name' => 'radarrKey',
+						'pattern' => '[a-zA-Z0-9]{32}',
+						'value' => RADARRKEY,
+					),
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'radarrHomeAuth',
+						'value' => RADARRHOMEAUTH,
+						'options' => $userTypes,
+					),
+				),
+			),
+			array(
+				'title' => 'Sickbeard/Sickrage',
+				'id' => 'sick',
+				'image' => 'images/sickrage.png',
+				'fields' => array(
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:8081/sick',
+						'labelTranslate' => 'SICK_URL',
+						'assist' => 'http://hostname:8081 | hostname/sick | http://hostname:8081/sick',
+						'name' => 'sickrageURL',
+						'pattern' => $urlPattern,
+						'value' => SICKRAGEURL,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => randString(32),
+						'labelTranslate' => 'SICK_KEY',
+						'name' => 'sickrageKey',
+						'value' => SICKRAGEKEY,
+					),
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sickrageHomeAuth',
+						'value' => SICKRAGEHOMEAUTH,
+						'options' => $userTypes,
+					),
+				),
+			),
+			array(
+				'title' => 'Headphones',
+				'id' => 'headphones',
+				'image' => 'images/headphones.png',
+				'fields' => array(
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:8181',
+						'labelTranslate' => 'HEADPHONES_URL',
+						'assist' => 'http://hostname:8181',
+						'name' => 'headphonesURL',
+						'pattern' => $urlPattern,
+						'value' => HEADPHONESURL,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => randString(32),
+						'labelTranslate' => 'HEADPHONES_KEY',
+						'name' => 'headphonesKey',
+						'value' => HEADPHONESKEY,
+					),
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'headphonesHomeAuth',
+						'value' => HEADPHONESHOMEAUTH,
+						'options' => $userTypes,
+					),
+				),
+			),
+			array(
+				'title' => 'Sabnzbd',
+				'id' => 'sabnzbd',
+				'image' => 'images/sabnzbd.png',
+				'fields' => array(
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:8080/sabnzbd',
+						'labelTranslate' => 'SABNZBD_URL',
+						'assist' => 'http://hostname:8080 | http://hostname/sabnzbd | http://hostname:8080/sabnzbd',
+						'name' => 'sabnzbdURL',
+						'pattern' => $urlPattern,
+						'value' => SABNZBDURL,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => randString(32),
+						'labelTranslate' => 'SABNZBD_KEY',
+						'name' => 'sabnzbdKey',
+						'value' => SABNZBDKEY,
+					),
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sabnzbdHomeAuth',
+						'value' => SABNZBDHOMEAUTH,
+						'options' => $userTypes,
+					),
+				),
+			),
+			array(
+				'title' => 'nzbGET',
+				'id' => 'nzbget',
+				'image' => 'images/nzbget.png',
+				'fields' => array(
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:6789',
+						'labelTranslate' => 'NZBGET_URL',
+						'assist' => 'http://hostname:6789',
+						'name' => 'nzbgetURL',
+						'pattern' => $urlPattern,
+						'value' => NZBGETURL,
+					),
+					array(
+						'type' => 'text',
+						'labelTranslate' => 'USERNAME',
+						'name' => 'nzbgetUsername',
+						'value' => NZBGETUSERNAME,
+					),
+					array(
+						'type' => 'password',
+						'labelTranslate' => 'PASSWORD',
+						'name' => 'nzbgetPassword',
+						'value' => (empty(NZBGETPASSWORD)?'':randString(20)),
+					),
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'nzbgetHomeAuth',
+						'value' => NZBGETHOMEAUTH,
+						'options' => $userTypes,
+					),
+				),
+			),
+			array(
+				'title' => 'Calendar',
+				'id' => 'calendar',
+				'image' => 'images/calendar.png',
+				'fields' => array(
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'CALENDAR_START_DAY',
+						'name' => 'calendarStart',
+						'value' => CALENDARSTART,
+						'options' => array(
+							explode('|', translate('DAYS'))[0] => '0',
+							explode('|', translate('DAYS'))[1] => '1',
+							explode('|', translate('DAYS'))[2] => '2',
+							explode('|', translate('DAYS'))[3] => '3',
+							explode('|', translate('DAYS'))[4] => '4',
+							explode('|', translate('DAYS'))[5] => '5',
+							explode('|', translate('DAYS'))[6] => '6',
+						),
+					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'DEFAULT',
+						'name' => 'calendarView',
+						'value' => CALENDARVIEW,
+						'options' => array(
+							translate('MONTH') => 'month',
+							translate('DAY') => 'basicDay',
+							translate('WEEK') => 'basicWeek',
+						),
+					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'CALTIMEFORMAT',
+						'name' => 'calTimeFormat',
+						'value' => CALTIMEFORMAT,
+						'options' => array(
+							'6p' => 'h(:mm)t',
+							'6:00p' => 'h:mmt',
+							'6:00' => 'h:mm',
+							'18' => 'H(:mm)',
+							'18:00' => 'H:mm',
+						),
+					),
+					array(
+						'type' => 'number',
+						'placeholder' => '10',
+						'labelTranslate' => 'CALENDAR_START_DATE',
+						'name' => 'calendarStartDay',
+						'pattern' => '[1-9][0-9]+',
+						'value' => CALENDARSTARTDAY,
+					),
+					array(
+						'type' => 'number',
+						'placeholder' => '10',
+						'labelTranslate' => 'CALENDAR_END_DATE',
+						'name' => 'calendarEndDay',
+						'pattern' => '[1-9][0-9]+',
+						'value' => CALENDARENDDAY,
+					),
+				),
+			),
+		),
+	)
+);
+?>
                 </div>
-   
                 <div class="email-content advanced-box white-bg">
-                
-                    <div class="email-body">
-                
-                        <div class="email-header gray-bg">
-                 
-                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
-                  
-                            <h1>Advanced Settings</h1>
-                
-                        </div>
-                
-                        <div class="email-inner small-box">
-                  
-                            <div class="email-inner-section">
-                                
-                                <div class="small-box fade in" id="systemSettings">
-                                    
-                                    <div class="row">
-                                        
-                                        <div class="col-lg-12">
-                                          
-                                            <div class="small-box">
-                                            
-                                                <form class="content-form" name="systemSettings" id="systemSettings" action="" method="POST">
-                        								    
-                                                    <input type="hidden" name="action" value="createLocation" />
-                                                    
-                                                    <div class="tabbable tabs-with-bg" id="advanced-settings-tabs">
-
-                                                        <ul class="nav nav-tabs apps">
-
-                                                            <li class="apps active">
-
-                                                                <a href="#tab-security" data-toggle="tab" aria-expanded="true"><img style="height:40px; width:40px;" src="images/security.png"></a>
-
-                                                            </li>
-
-                                                            <li class="apps">
-
-                                                                <a href="#tab-more-settings" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/gear.png"></a>
-
-                                                            </li>
-
-                                                            <li class="apps">
-
-                                                                <a href="#tab-mail" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/mail.png"></a>
-
-                                                            </li>
-
-                                                            <li class="apps">
-
-                                                                <a href="#tab-more-custom" data-toggle="tab" aria-expanded="false"><img style="height:40px; width:40px;" src="images/paint.png"></a>
-
-                                                            </li>
-
-                                                        </ul>
-                                                        
-                                                        <div class="tab-content">
-
-                                                            <div class="tab-pane big-box fade active in" id="tab-security">
-                                                                
-                                                                <div class="form-group">
-                                                                    <select id="authType" name="authType" class="form-control material input-sm" required>
-                                                                        <option value="internal" <?php echo (AUTHTYPE=='internal' || !AUTHTYPE?'selected':''); ?>>Organizr <?php echo $language->translate("ONLY"); ?></option>
-                                                                        <!--<option value="external" <?php echo (AUTHTYPE=='external'?'selected':''); ?>>External Only</option>-->
-                                                                        <option value="both" <?php echo (AUTHTYPE=='both'?'selected':''); ?>>Organizr <?php echo $language->translate("BOTH"); ?></option>
-                                                                    </select>
-                                                                    <p class="help-text"><?php echo $language->translate("AUTHTYPE"); ?></p>
-                                                                    <group id="host-selected">
-                                                                        <select id="authBackend" name="authBackend" class="form-control material input-sm" required>
-                                                                            <?php
-                                                                                $backendFunctions = array_filter(get_defined_functions()['user'],function($v) { return strpos($v, 'plugin_auth_') === 0; });
-                                                                                foreach ($backendFunctions as $value) {
-                                                                                    $name = str_replace('plugin_auth_','',$value);
-                                                                                    echo '<option value="'.$name.'" '.(AUTHBACKEND==$name?'selected':'').'>'.ucwords(str_replace('_',' ',$name)).'</option>';
-                                                                                }
-                                                                            ?>
-                                                                        </select>
-                                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKEND"); ?></p>
-
-                                                                        <select id="authBackendCreate" name="authBackendCreate" class="form-control material input-sm" required>
-                                                                            <option value="false" <?php echo (AUTHBACKENDCREATE=='false' || !AUTHBACKENDCREATE?'selected':''); ?>><?php echo $language->translate("NO_CREATE"); ?></option>
-                                                                            <option value="true" <?php echo (AUTHBACKENDCREATE=='true'?'selected':''); ?>><?php echo $language->translate("YES_CREATE"); ?></option>
-                                                                        </select>
-                                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDCREATE"); ?></p>
-                                                                    </group>
-                                                                    <group id="host-other">
-                                                                        <input type="text" class="form-control material input-sm" name="authBackendHost" placeholder="<?php echo $language->translate("AUTHBACKENDHOST");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDHOST;?>">
-                                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDHOST");?></p>
-
-                                                                        <input type="text" class="form-control material input-sm" name="authBackendPort" placeholder="<?php echo $language->translate("AUTHBACKENDPORT");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDPORT;?>">
-                                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDPORT");?></p>
-                                                                    </group>
-                                                                    <group id="host-ldap">
-                                                                        <input type="text" class="form-control material input-sm" name="authBackendDomain" placeholder="<?php echo $language->translate("AUTHBACKENDDOMAIN");?>" autocorrect="off" autocapitalize="off" value="<?php echo AUTHBACKENDDOMAIN;?>">
-                                                                        <p class="help-text"><?php echo $language->translate("AUTHBACKENDDOMAIN");?></p>
-                                                                    </group>
-                                                                    <group id="host-emby">
-                                                                        <input type="text" class="form-control material input-sm" name="embyToken" placeholder="<?php echo $language->translate("EMBY_TOKEN");?>" autocorrect="off" autocapitalize="off" value="<?php echo EMBYTOKEN;?>">
-                                                                        <p class="help-text"><?php echo $language->translate("EMBY_TOKEN");?></p>
-                                                                    </group>
-                                                                    <group id="host-plex">
-                                                                        <input type="text" class="form-control material input-sm" name="plexUsername" placeholder="<?php echo $language->translate("PLEX_USERNAME");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXUSERNAME;?>">
-                                                                        <p class="help-text"><?php echo $language->translate("PLEX_USERNAME");?></p>
-
-                                                                        <input type="password" class="form-control material input-sm" name="plexPassword" placeholder="<?php echo $language->translate("PLEX_PASSWORD");?>" autocorrect="off" autocapitalize="off" value="<?php echo PLEXPASSWORD;?>">
-                                                                        <p class="help-text"><?php echo $language->translate("PLEX_PASSWORD");?></p>
-                                                                    </group>
-                                                                </div>
-                                                                
-                                                                <hr>
-                                                                
-                                                                <div class="form-group">
-
-                                                                    <input type="text" class="form-control material input-sm" name="cookiePassword" placeholder="<?php echo $language->translate("COOKIE_PASSWORD");?>" value="<?php echo COOKIEPASSWORD;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("COOKIE_PASSWORD");?></p>
-
-                                                                </div>
-
-                                                                <div class="form-group">
-
-                                                                    <input type="text" class="form-control material input-sm" name="domain" placeholder="<?php echo $language->translate("COOKIE_DOMAIN");?>" value="<?php echo DOMAIN;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("COOKIE_DOMAIN");?></p>
-
-                                                                </div>
-
-                                                                <div class="form-group">
-
-                                                                    <input type="text" class="form-control material input-sm" name="registerPassword" placeholder="<?php echo $language->translate("REGISTER_PASSWORD");?>" value="<?php echo REGISTERPASSWORD;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("REGISTER_PASSWORD");?></p>
-
-                                                                </div>
-                                                                
-                                                                <div class="content-form form-inline">
-                                                    
-                                                                    <div class="form-group">
-                                                                        <?php  if(MULTIPLELOGIN == "true") : $multipleLogin = "checked"; else : $multipleLogin = ""; endif;?>
-                                                                        <input id="" class="switcher switcher-success" value="false" name="multipleLogin" type="hidden">
-                                                                        <input id="multipleLogin" class="switcher switcher-success" value="true" name="multipleLogin" type="checkbox" <?php echo $multipleLogin;?>>
-
-                                                                        <label for="multipleLogin"></label><?php echo $language->translate("MULTIPLE_LOGINS");?>
-
-                                                                    </div>
-
-                                                                </div>
-                                                                
-                                                            </div>
-                                                            
-                                                            <div class="tab-pane big-box fade" id="tab-more-settings">
-                                                                
-                                                                <div class="form-group">
-
-                                                                    <input type="text" class="form-control material input-sm" name="database_Location" placeholder="<?php echo $language->translate("DATABASE_PATH");?>" autocorrect="off" autocapitalize="off" value="<?php echo DATABASE_LOCATION;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("DATABASE_PATH");?></p>
-
-                                                                </div>
-
-                                                                <div class="form-group">
-
-                                                                    <?php echo gotTimezone();?>
-                                                                    <p class="help-text"><?php echo $language->translate("SET_TIMEZONE");?></p>
-
-                                                                </div>
-                                                                
-                                                            </div>
-                                                            
-                                                            <div class="tab-pane big-box fade" id="tab-mail">
-                                                                
-                                                                <div class="form-group">
-
-                                                                    <input type="text" class="form-control material input-sm" name="smtpHost" placeholder="<?php echo $language->translate("SMTP_HOST");?>" value="<?php echo SMTPHOST;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST");?></p>
-
-                                                                    <input type="text" class="form-control material input-sm" name="smtpHostPort" placeholder="<?php echo $language->translate("SMTP_HOST_PORT");?>" value="<?php echo SMTPHOSTPORT;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_PORT");?></p>
-
-                                                                    <input type="text" class="form-control material input-sm" name="smtpHostAuth" placeholder="<?php echo $language->translate("SMTP_HOST_AUTH");?>" value="<?php echo SMTPHOSTAUTH;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_AUTH");?></p>
-
-                                                                    <input type="text" class="form-control material input-sm" name="smtpHostUsername" placeholder="<?php echo $language->translate("SMTP_HOST_USERNAME");?>" value="<?php echo SMTPHOSTUSERNAME;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_USERNAME");?></p>
-
-                                                                    <input type="text" class="form-control material input-sm" name="smtpHostPassword" placeholder="<?php echo $language->translate("SMTP_HOST_PASSWORD");?>" value="<?php echo SMTPHOSTPASSWORD;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_PASSWORD");?></p>
-
-                                                                    <input type="text" class="form-control material input-sm" name="smtpHostSenderName" placeholder="<?php echo $language->translate("SMTP_HOST_SENDER_NAME");?>" value="<?php echo SMTPHOSTSENDERNAME;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_SENDER_NAME");?></p>
-
-                                                                    <input type="text" class="form-control material input-sm" name="smtpHostSenderEmail" placeholder="<?php echo $language->translate("SMTP_HOST_SENDER_EMAIL");?>" value="<?php echo SMTPHOSTSENDEREMAIL;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("SMTP_HOST_SENDER_EMAIL");?></p>
-
-                                                                </div>
-                                                                
-                                                                <div class="content-form form-inline">
-
-                                                                    <div class="form-group">
-                                                                        <?php  if(ENABLEMAIL == "true") : $enableMail = "checked"; else : $enableMail = ""; endif;?>
-                                                                        <input id="" class="switcher switcher-success" value="false" name="enableMail" type="hidden">
-                                                                        <input id="enableMail" class="switcher switcher-success" value="true" name="enableMail" type="checkbox" <?php echo $enableMail;?>>
-
-                                                                        <label for="enableMail"></label><?php echo $language->translate("ENABLE_MAIL");?>
-
-                                                                    </div>
-
-                                                                </div>
-                                                                
-                                                            </div>
-                                                            
-                                                            <div class="tab-pane big-box fade" id="tab-more-custom">
-                                                                
-                                                                <div class="form-group">
-
-                                                                    <input type="text" class="form-control material input-sm" name="titleLogo" placeholder="<?php echo $language->translate("LOGO_URL_TITLE");?>" value="<?php echo TITLELOGO;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("LOGO_URL_TITLE");?></p>
-
-                                                                </div>
-
-                                                                <div class="form-group">
-
-                                                                    <input type="text" class="form-control material input-sm" name="loadingIcon" placeholder="<?php echo $language->translate("LOADING_ICON_URL");?>" value="<?php echo LOADINGICON;?>">
-                                                                    <p class="help-text"><?php echo $language->translate("LOADING_ICON_URL");?></p>
-
-                                                                </div>
-                                                                
-                                                                <div class="content-form form-inline">
-                                                        
-                                                                    <div class="form-group">
-
-                                                                    <?php 
-
-                                                                    if($notifyExplode[1] == "slidetop") : $slidetopActive = "selected"; else : $slidetopActive = ""; endif;
-                                                                    if($notifyExplode[1] == "exploader") : $exploaderActive = "selected"; else : $exploaderActive = ""; endif;
-                                                                    if($notifyExplode[1] == "flip") : $flipActive = "selected"; else : $flipActive = ""; endif;
-                                                                    if($notifyExplode[1] == "bouncyflip") : $bouncyflipActive = "selected"; else : $bouncyflipActive = ""; endif;
-                                                                    if($notifyExplode[1] == "scale") : $scaleActive = "selected"; else : $scaleActive = ""; endif;
-                                                                    if($notifyExplode[1] == "genie") : $genieActive = "selected"; else : $genieActive = ""; endif;
-                                                                    if($notifyExplode[1] == "jelly") : $jellyActive = "selected"; else : $jellyActive = ""; endif;
-                                                                    if($notifyExplode[1] == "slide") : $slideActive = "selected"; else : $slideActive = ""; endif;
-                                                                    if($notifyExplode[1] == "boxspinner") : $boxspinnerActive = "selected"; else : $boxspinnerActive = ""; endif;
-                                                                    if($notifyExplode[1] == "thumbslider") : $thumbsliderActive = "selected"; else : $thumbsliderActive = ""; endif;
-
-                                                                    ?>
-                                                                        <select id="notifyValue" name="notifyEffect" id="notifyEffect" class="form-control material input-sm" required>
-
-                                                                            <option value="bar-slidetop" <?=$slidetopActive;?>>Slide From Top</option>
-                                                                            <option value="bar-exploader" <?=$exploaderActive;?>>Exploader From Top</option>
-                                                                            <option value="attached-flip" <?=$flipActive;?>>Flip</option>
-                                                                            <option value="attached-bouncyflip" <?=$bouncyflipActive;?>>Bouncy Flip</option>
-                                                                            <option value="growl-scale" <?=$scaleActive;?>>Growl Scale</option>
-                                                                            <option value="growl-genie" <?=$genieActive;?>>Growl Genie</option>
-                                                                            <option value="growl-jelly" <?=$jellyActive;?>>Growl Jelly</option>
-                                                                            <option value="growl-slide" <?=$slideActive;?>>Growl Slide</option>
-                                                                            <option value="other-boxspinner" <?=$boxspinnerActive;?>>Spinning Box</option>
-                                                                            <option value="other-thumbslider" <?=$thumbsliderActive;?>>Sliding</option>
-
-                                                                        </select>
-
-                                                                        <button id="notifyTest" type="button" class="class='btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-flask"></i></span><?php echo $language->translate("TEST");?></button>
-
-                                                                        <p class="help-text"><?php echo $language->translate("NOTIFICATION_TYPE");?></p>
-
-                                                                    </div>
-
-                                                                </div>
-                                                                
-                                                                <div class="content-form form-inline">
-
-                                                                    <div class="form-group">
-                                                                        <?php  if(LOADINGSCREEN == "true") : $loadingScreen = "checked"; else : $loadingScreen = ""; endif;?>
-                                                                        <input id="" class="switcher switcher-success" value="false" name="loadingScreen" type="hidden">
-                                                                        <input id="loadingScreen" class="switcher switcher-success" value="true" name="loadingScreen" type="checkbox" <?php echo $loadingScreen;?>>
-
-                                                                        <label for="loadingScreen"></label><?php echo $language->translate("ENABLE_LOADING_SCREEN");?>
-
-                                                                    </div>
-
-                                                                    <div class="form-group">
-                                                                        <?php  if(SLIMBAR == "true") : $enableSlimBar = "checked"; else : $enableSlimBar = ""; endif;?>
-                                                                        <input id="" class="switcher switcher-success" value="false" name="slimBar" type="hidden">
-                                                                        <input id="slimBar" class="switcher switcher-success" value="true" name="slimBar" type="checkbox" <?php echo $enableSlimBar;?>>
-
-                                                                        <label for="slimBar"></label><?php echo $language->translate("ENABLE_SLIMBAR");?>
-
-                                                                    </div>
-
-                                                                    <div class="form-group">
-                                                                        <?php  if(GRAVATAR == "true") : $enableGravatar = "checked"; else : $enableGravatar = ""; endif;?>
-                                                                        <input id="" class="switcher switcher-success" value="false" name="gravatar" type="hidden">
-                                                                        <input id="gravatar" class="switcher switcher-success" value="true" name="gravatar" type="checkbox" <?php echo $enableGravatar;?>>
-
-                                                                        <label for="gravatar"></label><?php echo $language->translate("GRAVATAR");?>
-
-                                                                    </div>
-
-                                                                </div>
-                                                                
-                                                            </div>
-                                                            
-                                                        </div>
-                                                        
-                                                    </div>                                                    
-                                                    
-                                                    <button type="submit" class="class='btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save</button>
-
-                                                </form>               
-                                          
-                                            </div>
-                                        
-                                        </div>
-                                      
-                                    </div>
-
-                                </div>
-                                
-                            </div>
-                            
-                        </div>
-                        
-                    </div>
-                    
+<?php
+$backendOptions = array();
+foreach (array_filter(get_defined_functions()['user'],function($v) { return strpos($v, 'plugin_auth_') === 0; }) as $value) {
+	$name = str_replace('plugin_auth_','',$value);
+	if (strpos($name, 'disabled') === false) {
+		$backendOptions[ucwords(str_replace('_',' ',$name))] = $name;
+	} else {
+		$backendOptions[$value()] = array(
+			'value' => randString(),
+			'disabled' => true,
+		);
+	}
+}
+ksort($backendOptions);
+
+echo buildSettings(
+	array(
+		'title' => 'Advanced Settings',
+		'id' => 'advanced_settings',
+		'onready' => '$(\'#authType_id\').trigger(\'change\')',
+		'tabs' => array(
+			array(
+				'title' => 'Backend Authentication',
+				'id' => 'be_auth',
+				'image' => 'images/security.png',
+				'fields' => array(
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'AUTHTYPE',
+						'name' => 'authType',
+						'value' => AUTHTYPE,
+						'onchange' => 'if (this.value == \'internal\') { $(\'.be-auth, #authBackend_id, #authBackendCreate_id\').parent().hide(); } else { $(\'#authBackend_id, #authBackendCreate_id\').trigger(\'change\').parent().show(); }',
+						'options' => array(
+							'Organizr' => 'internal',
+							'Organizr & Backend' => 'both',
+							// 'Backend' => 'external',
+						),
+					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'AUTHBACKEND',
+						'name' => 'authBackend',
+						'onchange' => '$(\'.be-auth\').each(function() { $(this).parent().hide(); }); $(\'.be-auth-\'+this.value).each(function() { $(this).parent().show(); });',
+						'value' => AUTHBACKEND,
+						'options' => $backendOptions,
+					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'AUTHBACKENDCREATE',
+						'name' => 'authBackendCreate',
+						'value' => AUTHBACKENDCREATE,
+						'options' => array(
+							translate('YES_CREATE') => 'true',
+							translate('NO_CREATE') => 'false',
+						),
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:8181',
+						'labelTranslate' => 'AUTHBACKENDHOST',
+						'assist' => 'http(s)://hostname:8181 | Ldap(s)://localhost:389 | ftp(s)://localhost:21',
+						'name' => 'authBackendHost',
+						'class' => 'be-auth be-auth-ftp be-auth-ldap',
+						'pattern' => '((?:[hH][tT][tT][pP]|[lL][dD][aA][pP]|[fF][tT][pP])[sS]?):\/\/([\w\.]{1,250})(?::(\d{1,5}))?((?:\/[^?.\s]+))?',
+						'value' => AUTHBACKENDHOST,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => 'domain',
+						'labelTranslate' => 'AUTHBACKENDDOMAIN',
+						'name' => 'authBackendDomain',
+						'class' => 'be-auth be-auth-ldap',
+						'value' => AUTHBACKENDDOMAIN,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:8096/emby',
+						'labelTranslate' => 'EMBY_URL',
+						'assist' => 'http://hostname:8096 | https://hostname/emby | http://hostname:8096/emby',
+						'class' => 'be-auth be-auth-emby_local be-auth-emby_all be-auth-emby_connect',
+						'name' => 'embyURL',
+						'pattern' => $urlPattern,
+						'value' => EMBYURL,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => randString(32),
+						'labelTranslate' => 'EMBY_TOKEN',
+						'name' => 'plexToken',
+						'class' => 'be-auth be-auth-emby_all be-auth-emby_connect',
+						'pattern' => '[a-zA-Z0-9]{32}',
+						'value' => EMBYTOKEN,
+					),
+					array(
+						'type' => 'text',
+						'labelTranslate' => 'PLEX_USERNAME',
+						'name' => 'plexUsername',
+						'class' => 'be-auth be-auth-plex',
+						'value' => PLEXUSERNAME,
+					),
+					array(
+						'type' => 'password',
+						'labelTranslate' => 'PLEX_PASSWORD',
+						'name' => 'plexPassword',
+						'class' => 'be-auth be-auth-plex',
+						'value' => (empty(PLEXPASSWORD)?'':randString(20)),
+					),
+				),
+			),
+			array(
+				'title' => 'Super Advanced',
+				'id' => 'super_advanced',
+				'image' => 'images/gear.png',
+				'fields' => array(
+					array(
+						'type' => 'text',
+						'placeholder' => '/home/www-data/',
+						'labelTranslate' => 'DATABASE_PATH',
+						'name' => 'database_Location',
+						'value' => DATABASE_LOCATION,
+					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'SET_TIMEZONE',
+						'name' => 'timezone',
+						'value' => TIMEZONE,
+						'options' => timezoneOptions(),
+					),
+					array(
+						'type' => 'text',
+						'labelTranslate' => 'REGISTER_PASSWORD',
+						'name' => 'registerPassword',
+						'value' => REGISTERPASSWORD,
+					),
+					array(
+						'type' => 'text',
+						'labelTranslate' => 'COOKIE_DOMAIN',
+						'name' => 'domain',
+						'value' => DOMAIN,
+					),
+					array(
+						'type' => 'password',
+						'labelTranslate' => 'COOKIE_PASSWORD',
+						'name' => 'cookiePassword',
+						'value' => (empty(COOKIEPASSWORD)?'':randString(20)),
+					),
+					array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'MULTIPLE_LOGINS',
+						'name' => 'multipleLogin',
+						'value' => MULTIPLELOGIN,
+					),
+				),
+			),
+			array(
+				'title' => 'Mail Settings',
+				'id' => 'mail_settings',
+				'image' => 'images/mail.png',
+				'fields' => array(
+					array(
+						'type' => 'text',
+						'placeholder' => 'mail.provider.com',
+						'labelTranslate' => 'SMTP_HOST',
+						'name' => 'smtpHost',
+						'pattern' => '([\w\.]{1,250})',
+						'value' => SMTPHOST,
+					),
+					array(
+						'type' => 'number',
+						'placeholder' => '465',
+						'labelTranslate' => 'SMTP_HOST_PORT',
+						'name' => 'smtpHostPort',
+						'value' => SMTPHOSTPORT,
+					),
+					array(
+						'type' => 'text',
+						'labelTranslate' => 'SMTP_HOST_USERNAME',
+						'name' => 'smtpHostUsername',
+						'value' => SMTPHOSTUSERNAME,
+					),
+					array(
+						'type' => 'password',
+						'labelTranslate' => 'SMTP_HOST_PASSWORD',
+						'name' => 'smtpHostPassword',
+						'value' => (empty(SMTPHOSTPASSWORD)?'':randString(20)),
+					),
+					array(
+						'type' => 'text',
+						'labelTranslate' => 'SMTP_HOST_SENDER_NAME',
+						'name' => 'smtpHostSenderName',
+						'value' => SMTPHOSTSENDERNAME,
+					),
+					array(
+						'type' => 'text',
+						'labelTranslate' => 'SMTP_HOST_SENDER_EMAIL',
+						'name' => 'smtpHostSenderEmail',
+						'value' => SMTPHOSTSENDEREMAIL,
+					),
+					array(
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'SMTP_HOST_AUTH',
+							'name' => 'smtpHostAuth',
+							'value' => SMTPHOSTAUTH,
+						),
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'ENABLE_MAIL',
+							'name' => 'enableMail',
+							'value' => ENABLEMAIL,
+						),
+					),
+				),
+			),
+			array(
+				'title' => 'Advanced Visual',
+				'id' => 'advanced_visual',
+				'image' => 'images/paint.png',
+				'fields' => array(
+					array(
+						'type' => 'text',
+						'placeholder' => 'images/organizr.png',
+						'labelTranslate' => 'LOADING_ICON_URL',
+						'name' => 'loadingIcon',
+						'value' => LOADINGICON,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => 'images/organizr.png',
+						'labelTranslate' => 'LOGO_URL_TITLE',
+						'name' => 'titleLogo',
+						'value' => TITLELOGO,
+					),
+					array(
+						'type' => 'select',
+						'labelTranslate' => 'NOTIFICATION_TYPE',
+						'name' => 'notifyEffect',
+						'onchange' => 'parent.notify(\'This is an example popup!\', \'bullhorn\', \'success\', 4000, this.value.split(\'-\')[0], this.value.split(\'-\')[1]);',
+						'value' => NOTIFYEFFECT,
+						'options' => array(
+							'Slide From Top' => 'bar-slidetop',
+							'Exploader From Top' => 'bar-exploader',
+							'Flip' => 'attached-flip',
+							'Bouncy Flip' => 'attached-bouncyflip',
+							'Growl Scale' => 'growl-scale',
+							'Growl Genie' => 'growl-genie',
+							'Growl Jelly' => 'growl-jelly',
+							'Growl Slide' => 'growl-slide',
+							'Spinning Box' => 'other-boxspinner',
+							'Sliding' => 'other-thumbslider',
+						),
+					),
+					array(
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'ENABLE_LOADING_SCREEN',
+							'name' => 'loadingScreen',
+							'value' => LOADINGSCREEN,
+						),
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'ENABLE_SLIMBAR',
+							'name' => 'slimBar',
+							'value' => SLIMBAR,
+						),
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'GRAVATAR',
+							'name' => 'gravatar',
+							'value' => GRAVATAR,
+						),
+					),
+				),
+			),
+		),
+	)
+);
+?>
                 </div>
-    
                 <div class="email-content info-box white-bg">
-                
                     <div class="email-body">
-                
                         <div class="email-header gray-bg">
-                 
                             <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
-                  
                             <h1>About Organizr</h1>
-                
                         </div>
-                
                         <div class="email-inner small-box">
-                  
                             <div class="email-inner-section">
-                                
                                 <div class="small-box fade in" id="about">
-                        
                                     <h4><img src="images/organizr-logo-h-d.png" height="50px"></h4>
-                        
                                     <p id="version"></p>
-                                    
                                     <p id="submitFeedback">
-                                    
                                         <a href='https://reddit.com/r/organizr' target='_blank' type='button' style="background: #AD80FD" class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-reddit'></i></span>SUBREDDIT</a> 
                                         <a href='https://github.com/causefx/Organizr/issues/new' target='_blank' type='button' class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span><?php echo $language->translate("SUBMIT_ISSUE");?></a> 
                                         <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span><?php echo $language->translate("VIEW_ON_GITHUB");?></a>
                                         <a href='https://gitter.im/Organizrr/Lobby' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span><?php echo $language->translate("CHAT_WITH_US");?></a>
                                         <button type="button" class="class='btn waves btn-labeled btn-warning btn text-uppercase waves-effect waves-float" data-toggle="modal" data-target=".Help-Me-modal-lg"><span class='btn-label'><i class='fa fa-life-ring'></i></span><?php echo $language->translate("HELP");?></button>
                                         <button id="deleteToggle" type="button" class="class='btn waves btn-labeled btn-danger btn text-uppercase waves-effect waves-float" ><span class='btn-label'><i class='fa fa-trash'></i></span><?php echo $language->translate("DELETE_DATABASE");?></button>
-                                        
                                     </p>
 
                                     <div class="modal fade Help-Me-modal-lg" tabindex="-1" role="dialog">
@@ -2245,109 +1786,58 @@ endif;?></textarea>
                                         </div>
 
                                     </div>
-                                    
                                     <p id="whatsnew"></p>
-                                    
                                     <p id="downloadnow"></p>
-                                    
                                     <div id="deleteDiv" style="display: none;" class="panel panel-danger">
-                                        
                                         <div class="panel-heading">
-                                            
                                             <h3 class="panel-title"><?php echo $language->translate("DELETE_DATABASE");?></h3>
-                                            
                                         </div>
-                                        
                                         <div class="panel-body">
-                                            
                                             <div class="">
-                                            
                                                 <p><?php echo $language->translate("DELETE_WARNING");?></p>
-                                                <form id="deletedb" method="post">
-                                                    
-                                                    <input type="hidden" name="action" value="deleteDB" />
+                                                <form id="deletedb" method="post" onsubmit="$.post(\'ajax.php?a=deleteDB\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;">
                                                     <button class="btn waves btn-labeled btn-danger pull-right text-uppercase waves-effect waves-float" type="submit">
-                                                
                                                         <span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("DELETE_DATABASE");?>
-                                                
                                                     </button>
-                                                    
                                                 </form>
-                                        
                                             </div>
-                                            
                                         </div>
-                                        
                                     </div>
-                                
                                     <div class="timeline-container">
-                                        
                                         <div class="row">
-                                            
                                             <div class="col-lg-12">
-                                                
                                                 <ul class="cbp_tmtimeline" id="versionHistory">
-                                                    
                                                 </ul>
-                                                
                                                 <div class="btn-group-sm btn-group btn-group-justified">
-                                                    
                                                     <div id="loadMore" class="btn-group" role="group">
-                                                    
                                                         <button type="button" class="btn waves btn-primary waves-effect waves-float text-uppercase"><?php echo $language->translate("SHOW_MORE");?></button>
-                                                    
                                                     </div>
-                                                    
                                                     <div id="showLess" class="btn-group" role="group">
-                                                        
                                                         <button type="button" class="btn waves btn-warning waves-effect waves-float text-uppercase"><?php echo $language->translate("SHOW_LESS");?></button>
-                                                        
                                                     </div>
-                                                    
                                                 </div>
-                                                
                                             </div>
-                                            
                                         </div>
-                                        
                                     </div>
-                      
                                 </div>
-                                
                             </div>
-                            
                         </div>
-                        
                     </div>
-                    
                 </div>
 
                 <div class="email-content users-box white-bg">
-                
                     <div class="email-body">
-                
                         <div class="email-header gray-bg">
-                 
                             <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
-                  
                             <h1>Users Management</h1>
-                
                         </div>
-                
                         <div class="email-inner small-box">
-                  
                             <div class="email-inner-section">
-                                
                                 <div class="small-box fade in" id="useredit">
-                                    
                                     <div class="row">
-                                        
                                         <div class="col-lg-12">
-                                          
                                             <div class="small-box">
-                                            
                                                 <form class="content-form form-inline" name="new user registration" id="registration" action="" method="POST">
-                        								    
                                                     <input type="hidden" name="op" value="register"/>
                                                     <input type="hidden" name="sha1" value=""/>
                                                     <input type="hidden" name="settings" value="true"/>
@@ -2375,7 +1865,6 @@ endif;?></textarea>
                                                         <input type="password" class="form-control material" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
 
                                                     </div>
-                                                    
                                                     <button type="submit" onclick="User.processRegistration()" class="btn waves btn-labeled btn-primary btn btn-sm text-uppercase waves-effect waves-float promoteUser">
 
                                                         <span class="btn-label"><i class="fa fa-user-plus"></i></span><?php echo $language->translate("CREATE_USER");?>
@@ -2383,18 +1872,11 @@ endif;?></textarea>
                                                     </button>
 
                                                 </form>               
-                                          
                                             </div>
-                                        
                                         </div>
-                                      
                                     </div>
-                                    
                                     <div class="small-box">
-                                        
                                         <form class="content-form form-inline" name="unregister" id="unregister" action="" method="POST">
-                                              
-                                            
                                             
                                             <p id="inputUsername"></p>
 
@@ -2409,7 +1891,6 @@ endif;?></textarea>
                                                             <th>#</th>
 
                                                             <th><?php echo $language->translate("USERNAME");?></th>
-                                                            
                                                             <th><?php echo $language->translate("EMAIL");?></th>
 
                                                             <th><?php echo $language->translate("LOGIN_STATUS");?></th>
@@ -2455,7 +1936,6 @@ endif;?></textarea>
                                                             <th scope="row"><?=$countUsers;?></th>
 
                                                             <td><?php if(GRAVATAR == "true") : ?><i class="userpic"><img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=25&d=mm" class="img-circle"></i> &nbsp; <?php endif; ?><?=$row['username'];?></td>
-                                                            
                                                             <td><?=$row['email'];?></td>
 
                                                             <td><span class="label label-<?=$userActiveColor;?>"><?=$userActive;?></span></td>
@@ -2471,25 +1951,19 @@ endif;?></textarea>
                                                                     <span class="btn-label"><i class="fa fa-user-times"></i></span><?php echo $language->translate("DELETE");?>
 
                                                                 </button>
-                                                                
                                                                 <?php if ($row['role'] == "user") : ?>
-                                                                
                                                                 <button class="btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float promoteUser">
 
                                                                     <span class="btn-label"><i class="fa fa-arrow-up"></i></span><?php echo $language->translate("PROMOTE");?>
 
                                                                 </button>
-                                                                
                                                                 <?php endif; ?>
-                                                                
                                                                 <?php if ($row['role'] == "admin") : ?>
-                                                                
                                                                 <button <?=$disableAction;?> class="btn waves btn-labeled btn-warning btn btn-sm text-uppercase waves-effect waves-float demoteUser">
 
                                                                     <span class="btn-label"><i class="fa fa-arrow-down"></i></span><?php echo $language->translate("DEMOTE");?>
 
                                                                 </button>
-                                                                
                                                                 <?php endif; ?>
 
                                                             </td>
@@ -2503,37 +1977,22 @@ endif;?></textarea>
                                                 </table>
 
                                             </div>
-                                            
                                         </form>
-                                        
                                     </div>
 
                                 </div>
-                                
                             </div>
-                            
                         </div>
-                        
                     </div>
-                    
                 </div>
-                
                 <div class="email-content logs-box white-bg">
-                
                     <div class="email-body">
-                
                         <div class="email-header gray-bg">
-                 
                             <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
-                  
                             <h1>Logs</h1>
-                
                         </div>
-                
                         <div class="email-inner small-box">
-                  
                             <div class="email-inner-section">
-                                
                                 <div class="small-box" id="loginlog">
 
                                     <div class="table-responsive">
@@ -2660,58 +2119,14 @@ endif;?></textarea>
                                     </div>
 
                                 </div>
-                                
                             </div>
-                            
                         </div>
-                        
                     </div>
-                    
                 </div>
-            
             </div>
             <!--End Content-->
 
         </div>
-
-        <!--Scripts-->
-        <script src="bower_components/jquery/dist/jquery.min.js"></script>
-        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
-        <script src="bower_components/Waves/dist/waves.min.js"></script>
-        <script src="bower_components/moment/min/moment.min.js"></script>
-        <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
-        <script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
-        <script src="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
-        <script src="bower_components/cta/dist/cta.min.js"></script>
-
-        <!--Menu-->
-        <script src="js/menu/classie.js"></script>
-        <script src="bower_components/iconpick/dist/js/fontawesome-iconpicker.js"></script>
-
-
-        <!--Selects-->
-        <script src="js/selects/selectFx.js"></script>
-        <script src="js/jscolor.js"></script>
-        
-        <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
-
-        <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
-        <script src="bower_components/numbered/jquery.numberedtextarea.js"></script>
-
-
-        <!--Notification-->
-        <script src="js/notifications/notificationFx.js"></script>
-
-        <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
-        <script src="js/jquery.filer.min.js" type="text/javascript"></script>
-	    <script src="js/custom.js?v=<?php echo INSTALLEDVERSION; ?>" type="text/javascript"></script>
-	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
-        
-        <!--Data Tables-->
-        <script src="bower_components/DataTables/media/js/jquery.dataTables.js"></script>
-        <script src="bower_components/datatables.net-responsive/js/dataTables.responsive.js"></script>
-        <script src="bower_components/datatables-tabletools/js/dataTables.tableTools.js"></script>
 
           <script>
             $(function () {
@@ -2738,103 +2153,66 @@ endif;?></textarea>
                 });
             });
         </script>
-        
         <?php if($_POST['op']) : ?>
         <script>
-            
             parent.notify("<?php echo printArray($USER->info_log); ?>","info-circle","notice","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
-            
             <?php if(!empty($USER->error_log)) : ?>
-            
             parent.notify("<?php echo printArray($USER->error_log); ?>","exclamation-circle ","error","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
-            
             <?php endif; ?>
-            
         </script>
         <?php endif; ?>
-        
         <?php if($action == "addTabz") : ?>
         <script>
 
             if(!window.location.hash) {
-                
                 window.location = window.location + '#loaded';
                 window.location.reload();
-                
             }else{
-                
                parent.notify("<strong><?php echo $language->translate('TABS_SAVED');?></strong> <?php echo $language->translate('APPLY_RELOAD');?>","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>"); 
-                
             }
-            
         </script>
         <?php endif; ?>
-        
          <?php if($action == "addOptionz") : ?>
         <script>
 
             parent.notify("<strong><?php echo $language->translate('COLORS_SAVED');?></strong> <?php echo $language->translate('APPLY_RELOAD');?>","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
-            
         </script>
         <?php endif; ?>
 
         <script>
-            
             (function($) {
-            
                 function startTrigger(e,data) {
-            
                     var $elem = $(this);
-            
                     $elem.data('mouseheld_timeout', setTimeout(function() {
-            
                         $elem.trigger('mouseheld');
-            
                     }, e.data));
                 }
 
                 function stopTrigger() {
-                
                     var $elem = $(this);
-                
                     clearTimeout($elem.data('mouseheld_timeout'));
                 }
 
                 var mouseheld = $.event.special.mouseheld = {
-                
                     setup: function(data) {
-                
                         var $this = $(this);
-                
                         $this.bind('mousedown', +data || mouseheld.time, startTrigger);
-                
                         $this.bind('mouseleave mouseup', stopTrigger);
-                
                     },
-                
                     teardown: function() {
-                
                         var $this = $(this);
-                
                         $this.unbind('mousedown', startTrigger);
-                
                         $this.unbind('mouseleave mouseup', stopTrigger);
-                
                     },
-                
                     time: 200 // default to 750ms
-                
                 };
-                
             })(jQuery);
 
             $(function () {
 
                 //$(".todo ul").sortable();
                 $(".todo ul").sortable({
-                    
                     'opacity': 0.9,
-                    
                 });
 
                 $("#add_tab").on('submit', function (e) {
@@ -2892,7 +2270,6 @@ endif;?></textarea>
                         e.preventDefault();
                         count();
                     }, 800);
-                    
 
                 });
 
@@ -2938,9 +2315,7 @@ endif;?></textarea>
         </script>
 
         <script>
-            
             function rememberTabSelection(tabPaneSelector, useHash) {
-            
                 var key = 'selectedTabFor' + tabPaneSelector;
 
                 if(get(key)) 
@@ -2968,85 +2343,50 @@ endif;?></textarea>
                         localStorage.setItem(key, value);
                 }
             }
-            
             $("#notifyTest").click(function(){
 
                 var notifySplit = $("#notifyValue").val().split("-");
                 console.log(notifySplit[0]);
                 parent.notify("<?php echo $language->translate('TEST_MESSAGE');?>","flask","notice","5000", notifySplit[0], notifySplit[1]);
-     
             });
-            
             $("#iconHide").click(function(){
 
                 $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).toggle();
-     
             });
-            
             $("#iconAll").click(function(){
 
                 $( "div[id^='viewAllIcons']" ).toggle();
-     
             });
-            
             $("#deleteToggle").click(function(){
 
                 $( "#deleteDiv" ).toggle();
-     
             });
-            
-            $("#editCssButton").click(function(){
-
-                $( "#add_optionz" ).toggle();
-                $( "#editCssForm" ).toggle();
-     
-            });
-            
-            $("#backToThemeButton").click(function(){
-
-                $( "#add_optionz" ).toggle();
-                $( "#editCssForm" ).toggle();
-     
-            });
-            
             $(".deleteUser").click(function(){
 
                 var parent_id = $(this).parent().attr('id');
                 editUsername = $('#unregister').find('#inputUsername');
                 $(editUsername).html('<input type="hidden" name="op" value="unregister"/><input type="hidden" name="username"value="' + parent_id + '" />');
-     
             });
-            
             $(".promoteUser").click(function(){
 
                 var parent_ids = $(this).parent().attr('id');
                 editUsername = $('#unregister').find('#inputUsername');
                 $(editUsername).html('<input type="hidden" name="op" value="update"/><input type="hidden" name="role" value="admin"/><input type="hidden" name="username"value="' + parent_ids + '" />');
-     
             });
-            
             $(".demoteUser").click(function(){
 
                 var parent_idz = $(this).parent().attr('id');
                 editUsername = $('#unregister').find('#inputUsername');
                 $(editUsername).html('<input type="hidden" name="op" value="update"/><input type="hidden" name="role" value="user"/><input type="hidden" name="username"value="' + parent_idz + '" />');
-     
             });
-            
             $('#showLess').hide();
-            
             $('#loadMore').click(function () {
-                            
                 x= (x+5 <= size_li) ? x+5 : size_li;
 
                 $('#versionHistory li:lt('+x+')').show();
-                
                 $('#showLess').show();
-                
                 if(x == size_li){
-                    
                     $('#loadMore').hide();
-                    
                 }
 
             });
@@ -3054,15 +2394,11 @@ endif;?></textarea>
             $('#showLess').click(function () {
 
                 $('#versionHistory li').not(':lt(2)').hide();
-                
                 $('#loadMore').show();
-                    
                 $('#showLess').hide();
 
             });
-            
             $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
-            
             $("li[class^='list-group-item']").bind('mouseheld', function(e) {
 
                 $(this).find("span[class^='fa fa-hand-paper-o']").attr("class", "fa fa-hand-grab-o");
@@ -3074,7 +2410,6 @@ endif;?></textarea>
                     $(this).find("div[class^='action-btns tabIconView']").removeClass("animated swing");
                 });
             });
-            
             function copyToClipboard(elem) {
                   // create hidden text element, if it doesn't already exist
                 var targetId = "_hiddenCopyText_";
@@ -3124,44 +2459,31 @@ endif;?></textarea>
                 }
                 return succeed;
             }
-            
             $("img[class^='allIcons']").click(function(){
 
                 $("textarea[id^='copyTarget']").val($(this).attr("src"));
 
                 copyToClipboard(document.getElementById("copyTarget"));
-                
                 parent.notify("<?php echo $language->translate('ICON_COPY');?>","clipboard","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
-                
                 $( "div[id^='viewAllIcons']" ).toggle();
-                
             });
-            
             $('body').on('click', 'b.allIcons', function() {
 
                 $("textarea[id^='copyTarget2']").val($(this).attr("title"));
 
                 copyToClipboard(document.getElementById("copyTarget2"));
-                
                 parent.notify("<?php echo $language->translate('ICON_COPY');?>","clipboard","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
-                
                 $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
-                
             });
-         
         </script>
-        
         <script>
-            
             //Custom Themes            
             function changeColor(elementName, elementColor) {
-                
                 var definedElement = document.getElementById(elementName);
-                
                 definedElement.focus();
                 definedElement.value = elementColor;
                 definedElement.style.backgroundColor = elementColor;
-                
+				$(definedElement).trigger('change');
             }
 
             $('#plexTheme').on('click touchstart', function(){
@@ -3178,9 +2500,7 @@ endif;?></textarea>
                 changeColor("inactivetext", "#B8B8B8");
                 changeColor("loading", "#E49F0C");
                 changeColor("hovertext", "#000000");
-                
             });
-            
             $('#embyTheme').on('click touchstart', function(){
 
                 changeColor("topbartext", "#52B54B");
@@ -3195,9 +2515,7 @@ endif;?></textarea>
                 changeColor("inactivetext", "#B8B8B8");
                 changeColor("loading", "#52B54B");
                 changeColor("hovertext", "#000000");
-                
             });
-            
             $('#bookTheme').on('click touchstart', function(){
 
                 changeColor("topbartext", "#FFFFFF");
@@ -3212,9 +2530,7 @@ endif;?></textarea>
                 changeColor("inactivetext", "#DFE3EE");
                 changeColor("loading", "#FFFFFF");
                 changeColor("hovertext", "#000000");
-                
             });
-            
             $('#spaTheme').on('click touchstart', function(){
 
                 changeColor("topbartext", "#5B391E");
@@ -3229,9 +2545,7 @@ endif;?></textarea>
                 changeColor("inactivetext", "#5B391E");
                 changeColor("loading", "#5B391E");
                 changeColor("hovertext", "#000000");
-                
             });
-            
             $('#darklyTheme').on('click touchstart', function(){
 
                 changeColor("topbartext", "#FFFFFF");
@@ -3246,9 +2560,7 @@ endif;?></textarea>
                 changeColor("inactivetext", "#0CE3AC");
                 changeColor("loading", "#FFFFFF");
                 changeColor("hovertext", "#000000");
-                
             });
-            
             $('#slateTheme').on('click touchstart', function(){
 
                 changeColor("topbartext", "#C8C8C8");
@@ -3263,9 +2575,7 @@ endif;?></textarea>
                 changeColor("inactivetext", "#C8C8C8");
                 changeColor("loading", "#C8C8C8");
                 changeColor("hovertext", "#000000");
-                
             });
-            
             $('#defaultTheme').on('click touchstart', function(){
 
                 changeColor("topbartext", "#FFFFFF");
@@ -3280,9 +2590,7 @@ endif;?></textarea>
                 changeColor("inactivetext", "#FFFFFF");
                 changeColor("loading", "#FFFFFF");
                 changeColor("hovertext", "#000000");
-                
             });
-            
             $('#redTheme').on('click touchstart', function(){
 
                 changeColor("topbartext", "#FFFFFF");
@@ -3297,9 +2605,7 @@ endif;?></textarea>
                 changeColor("inactivetext", "#FFFFFF");
                 changeColor("loading", "#FFFFFF");
                 changeColor("hovertext", "#000000");
-                
             });
-            
             $('#monokaiTheme').on('click touchstart', function(){
 
                 changeColor("topbartext", "#66D9EF");
@@ -3314,9 +2620,7 @@ endif;?></textarea>
                 changeColor("inactivetext", "#66D9EF");
                 changeColor("loading", "#66D9EF");
                 changeColor("hovertext", "#000000");
-                
             });
-            
             $('#thejokerTheme').on('click touchstart', function(){
 
                 changeColor("topbartext", "#CCCCCC");
@@ -3333,7 +2637,6 @@ endif;?></textarea>
                 changeColor("hovertext", "#000000");
 
             });
-            
             $('#newPlexTheme').on('click touchstart', function(){
 
                 changeColor("topbartext", "#E5A00D");
@@ -3350,7 +2653,6 @@ endif;?></textarea>
                 changeColor("hovertext", "#E0E3E6");
 
             });
-            
             $('textarea').numberedtextarea({
 
               // font color for line numbers
@@ -3366,13 +2668,11 @@ endif;?></textarea>
               allowTabChar: true,       
 
             });
-            
             $(".email-header .close-button").click(function () {
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
                 $("#settings-list").find("li").removeClass("active");
             });
-            
              $(document).mouseup(function (e)
 {
                 var container = $(".email-content");
@@ -3382,9 +2682,7 @@ endif;?></textarea>
                     $('html').removeClass("overhid");
                     $("#settings-list").find("li").removeClass("active");
                 }
-                
             }); 
-            
             $( document ).on( 'keydown', function ( e ) {
                 if ( e.keyCode === 27 ) { // ESC
                     var container = $(".email-content");
@@ -3398,10 +2696,8 @@ endif;?></textarea>
             });
 
             $("#open-tabs").on("click",function (e) {
-                
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
-                                
                 if($(window).width() < 768){
                     $('html').addClass("overhid");
                 }
@@ -3417,17 +2713,12 @@ endif;?></textarea>
                     deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
                     refreshMailPreloader.remove();
                 });
-            
                 },600);
-            
                 e.preventDefault();
             });
-            
             $("#open-colors").on("click",function (e) {
-                
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
-                                
                 if($(window).width() < 768){
                     $('html').addClass("overhid");
                 }
@@ -3443,17 +2734,12 @@ endif;?></textarea>
                     deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
                     refreshMailPreloader.remove();
                 });
-            
                 },600);
-            
                 e.preventDefault();
             });
-            
             $("#open-homepage").on("click",function (e) {
-                
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
-                
                 if($(window).width() < 768){
                     $('html').addClass("overhid");
                 }
@@ -3469,17 +2755,12 @@ endif;?></textarea>
                     deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
                     refreshMailPreloader.remove();
                 });
-            
                 },600);
-            
                 e.preventDefault();
             });
-            
             $("#open-advanced").on("click",function (e) {
-                
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
-                
                 if($(window).width() < 768){
                     $('html').addClass("overhid");
                 }
@@ -3495,17 +2776,12 @@ endif;?></textarea>
                     deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
                     refreshMailPreloader.remove();
                 });
-            
                 },600);
-            
                 e.preventDefault();
             });
-            
             $("#open-info").on("click",function (e) {
-                
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
-                
                 if($(window).width() < 768){
                     $('html').addClass("overhid");
                 }
@@ -3521,17 +2797,12 @@ endif;?></textarea>
                     deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
                     refreshMailPreloader.remove();
                 });
-            
                 },600);
-            
                 e.preventDefault();
             });
-            
             $("#open-users").on("click",function (e) {
-                
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
-                
                 if($(window).width() < 768){
                     $('html').addClass("overhid");
                 }
@@ -3547,17 +2818,12 @@ endif;?></textarea>
                     deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
                     refreshMailPreloader.remove();
                 });
-            
                 },600);
-            
                 e.preventDefault();
             });
-            
             $("#open-logs").on("click",function (e) {
-                
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
-                
                 if($(window).width() < 768){
                     $('html').addClass("overhid");
                 }
@@ -3573,16 +2839,11 @@ endif;?></textarea>
                     deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
                     refreshMailPreloader.remove();
                 });
-            
                 },600);
-            
                 e.preventDefault();
             });
-        
         </script>
-        
         <script>
-        
         $( document ).ready(function() {
             //Hide Icon box on load
             $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
@@ -3598,6 +2859,7 @@ endif;?></textarea>
                 e.preventDefault();
             }, false);  
             //Set Hide Function
+			if (0) {
             var authTypeFunc = function() {
                 // Hide Everything
                 $('#host-selected, #host-other, #host-plex, #host-emby, #host-ldap').hide();
@@ -3621,10 +2883,11 @@ endif;?></textarea>
             $('#authType, #authBackend').on('change', authTypeFunc);
             //Hide Settings on Load
             authTypeFunc();
+			} else { console.log() }
             //Simulate Edit Tabs Click 
             $("#open-tabs").trigger("click");
             //Append Delete log to User Logs
-            $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
+            $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post" onsubmit="$.post(\'ajax.php?a=deleteLog\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
             $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')
             //Enable Tooltips
             $('[data-toggle="tooltip"]').tooltip(); 
@@ -3632,65 +2895,42 @@ endif;?></textarea>
             //rememberTabSelection('#settingsTabs', !localStorage); 
         	//AJAX call to github to get version info	
         	$.ajax({
-        				
         		type: "GET",
                 url: "https://api.github.com/repos/causefx/Organizr/releases",
                 dataType: "json",
                 success: function(github) {
-                    
                     var currentVersion = "<?php echo INSTALLEDVERSION;?>";
-                   
                     infoTabVersion = $('#about').find('#version');
                     infoTabVersionHistory = $('#about').find('#versionHistory');
                     infoTabNew = $('#about').find('#whatsnew');
                     infoTabDownload = $('#about').find('#downloadnow');
-                   
                     $.each(github, function(i,v) {
                         if(i === 0){ 
-                            
                             console.log(v.tag_name);
                             githubVersion = v.tag_name;
                             githubDescription = v.body;
                             githubName = v.name;
-                                   
                         }
-                        
                         $(infoTabVersionHistory).append('<li style="display: none"><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon animated jello"><i class="fa fa-github-alt"></i></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
-                        
                         size_li = $("#versionHistory li").size();
-                        
                         x=2;
-                        
                         $('#versionHistory li:lt('+x+')').show();
-                                                
                     });
-                            
         			if(currentVersion < githubVersion){
-                    
                     	console.log("You Need To Upgrade");
-                        
                         parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
 
                         $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
-                        
-                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
-                        
+                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\" onsubmit=\"$.post(\'ajax.php?a=upgradeInstall\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
                         $( "p[id^='upgrade']" ).toggle();
-                    
                     }else if(currentVersion === githubVersion){
-                    
                     	console.log("You Are on Current Version");
-                    
                     }else{
-                    
                     	console.log("something went wrong");
-                    
                     }
 
                     $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?>");
-                                        
                 }
-                
             });
             //Edit Info tab with Github info
             <?php if(file_exists(FAIL_LOG)) : ?>
@@ -3709,9 +2949,7 @@ endif;?></textarea>
             $(badPercent).attr('aria-valuenow', "<?php echo $badPercent;?>");            
             $(badPercent).attr('style', "width: <?php echo $badPercent;?>%"); 
             <?php endif; ?>
-            
         });
-        
         </script>
 
     </body>
