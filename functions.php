@@ -1,5 +1,10 @@
 <?php
 
+// ===================================
+// Define Version
+ define('INSTALLEDVERSION', '1.33');
+// ===================================
+
 // Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
@@ -8,12 +13,23 @@ function debug_out($variable, $die = false) {
 }
 
 // ==== Auth Plugins START ====
-
 if (function_exists('ldap_connect')) :
 	// Pass credentials to LDAP backend
 	function plugin_auth_ldap($username, $password) {
+		$ldapServers = explode(',',AUTHBACKENDHOST);
+		foreach($ldapServers as $key => $value) {
+			// Calculate parts
+			$digest = parse_url(trim($value));
+			$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:'ldap'));
+			$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
+			$port = (isset($digest['port'])?$digest['port']:(strtolower($scheme)=='ldap'?389:636));
+			
+			// Reassign
+			$ldapServers[$key] = $scheme.'://'.$host.':'.$port;
+		}
+		
 		// returns true or false
-		$ldap = ldap_connect(AUTHBACKENDHOST.(AUTHBACKENDPORT?':'.AUTHBACKENDPORT:'389'));
+		$ldap = ldap_connect(implode(' ',$ldapServers));
 		if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
 			return true;
 		} else {
@@ -21,19 +37,36 @@ if (function_exists('ldap_connect')) :
 		}
 		return false;
 	}
+else :
+	// Ldap Auth Missing Dependancy
+	function plugin_auth_ldap_disabled() {
+		return 'LDAP - Disabled (Dependancy: php-ldap missing!)';
+	}
 endif;
 
 // Pass credentials to FTP backend
 function plugin_auth_ftp($username, $password) {
-	// returns true or false
+	// Calculate parts
+	$digest = parse_url(AUTHBACKENDHOST);
+	$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:(function_exists('ftp_ssl_connect')?'ftps':'ftp')));
+	$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
+	$port = (isset($digest['port'])?$digest['port']:21);
 	
-	// Connect to FTP
-	$conn_id = ftp_ssl_connect(AUTHBACKENDHOST, (AUTHBACKENDPORT?AUTHBACKENDPORT:21), 20); // 20 Second Timeout
+	// Determine Connection Type
+	if ($scheme == 'ftps') {
+		$conn_id = ftp_ssl_connect($host, $port, 20);
+	} elseif ($scheme == 'ftp') {
+		$conn_id = ftp_connect($host, $port, 20);
+	} else {
+		debug_out('Invalid FTP scheme. Use ftp or ftps');
+		return false;
+	}
 	
 	// Check if valid FTP connection
 	if ($conn_id) {
 		// Attempt login
 		@$login_result = ftp_login($conn_id, $username, $password);
+		ftp_close($conn_id);
 		
 		// Return Result
 		if ($login_result) {
@@ -49,13 +82,7 @@ function plugin_auth_ftp($username, $password) {
 
 // Pass credentials to Emby Backend
 function plugin_auth_emby_local($username, $password) {
-	$urlCheck = stripos(AUTHBACKENDHOST, "http");
-	if ($urlCheck === false) {
-		$embyAddress = "http://" . AUTHBACKENDHOST;
-	} else {
-		$embyAddress = AUTHBACKENDHOST;	
-	}
-	if(AUTHBACKENDPORT !== ""){ $embyAddress .= ":" . AUTHBACKENDPORT; }
+	$embyAddress = qualifyURL(EMBYURL);
 	
 	$headers = array(
 		'Authorization'=> 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
@@ -86,18 +113,17 @@ function plugin_auth_emby_local($username, $password) {
 if (function_exists('curl_version')) :
 	// Authenticate Against Emby Local (first) and Emby Connect
 	function plugin_auth_emby_all($username, $password) {
-		return plugin_auth_emby_local($username, $password) || plugin_auth_emby_connect($username, $password);
+		$localResult = plugin_auth_emby_local($username, $password);
+		if ($localResult) {
+			return $localResult;
+		} else {
+			return plugin_auth_emby_connect($username, $password);
+		}
 	}
 	
 	// Authenicate against emby connect
 	function plugin_auth_emby_connect($username, $password) {
-		$urlCheck = stripos(AUTHBACKENDHOST, "http");
-		if ($urlCheck === false) {
-			$embyAddress = "http://" . AUTHBACKENDHOST;
-		} else {
-			$embyAddress = AUTHBACKENDHOST;	
-		}
-		if(AUTHBACKENDPORT !== "") { $embyAddress .= ":" . AUTHBACKENDPORT; }
+		$embyAddress = qualifyURL(EMBYURL);
 		
 		// Get A User
 		$connectId = '';
@@ -129,7 +155,10 @@ if (function_exists('curl_version')) :
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
 					if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
-						return true;
+						return array(
+							'email' => $json['User']['Email'],
+							'image' => $json['User']['ImageUrl'],
+						);
 					}
 				}
 			}
@@ -146,7 +175,6 @@ if (function_exists('curl_version')) :
 		}
 		
 		//Get User List
-		$approvedUsers = array();
 		$userURL = 'https://plex.tv/pms/friends/all';
 		$userHeaders = array(
 			'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD), 
@@ -154,7 +182,6 @@ if (function_exists('curl_version')) :
 		$userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
 		
 		if (is_array($userXML) || is_object($userXML)) {
-			//Build User List array
 			$isUser = false;
 			$usernameLower = strtolower($username);
 			foreach($userXML AS $child) {
@@ -181,13 +208,31 @@ if (function_exists('curl_version')) :
 				$result = curl_post($connectURL, $body, $headers);
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
-					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && $json['user']['username'] == $username) {
-						return true;
+					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && strtolower($json['user']['username']) == $usernameLower) {
+                        return array(
+							'email' => $json['user']['email'],
+							'image' => $json['user']['thumb']
+						);
 					}
 				}
 			}
 		}
 		return false;
+	}
+else :
+	// Plex Auth Missing Dependancy
+	function plugin_auth_plex_disabled() {
+		return 'Plex - Disabled (Dependancy: php-curl missing!)';
+	}
+	
+	// Emby Connect Auth Missing Dependancy
+	function plugin_auth_emby_connect_disabled() {
+		return 'Emby Connect - Disabled (Dependancy: php-curl missing!)';
+	}
+	
+	// Emby Both Auth Missing Dependancy
+	function plugin_auth_emby_both_disabled() {
+		return 'Emby Both - Disabled (Dependancy: php-curl missing!)';
 	}
 endif;
 // ==== Auth Plugins END ====
@@ -398,24 +443,24 @@ function resolveEmbyItem($address, $token, $item) {
 	// Get Item Details
 	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&Fields=Overview&api_key='.$token),true)['Items'][0];
 	
-	switch ($item['Type']) {
+	switch ($itemDetails['Type']) {
 		case 'Episode':
-			$title = $item['SeriesName'].': '.$item['Name'].' (Season '.$item['ParentIndexNumber'].': Episode '.$item['IndexNumber'].')';
+			$title = $itemDetails['SeriesName'].': '.$itemDetails['Name'].(isset($itemDetails['ParentIndexNumber']) && isset($itemDetails['IndexNumber'])?' (Season '.$itemDetails['ParentIndexNumber'].': Episode '.$itemDetails['IndexNumber'].')':'');
 			$imageId = $itemDetails['SeriesId'];
 			$width = 100;
 			$image = 'carousel-image season';
 			$style = '';
 			break;
 		case 'MusicAlbum':
-			$title = $item['Name'];
+			$title = $itemDetails['Name'];
 			$imageId = $itemDetails['Id'];
 			$width = 150;
 			$image = 'music';
 			$style = 'left: 160px !important;';
 			break;
 		default:
-			$title = $item['Name'];
-			$imageId = $item['Id'];
+			$title = $itemDetails['Name'];
+			$imageId = $itemDetails['Id'];
 			$width = 100;
 			$image = 'carousel-image movie';
 			$style = '';
@@ -427,7 +472,7 @@ function resolveEmbyItem($address, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=emby-image&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$itemDetails['Id'].'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" src="ajax.php?a=emby-image&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
 }
 
 // Format item from Plex for Carousel
@@ -444,13 +489,24 @@ function resolvePlexItem($server, $token, $item) {
 			$width = 100;
 			$image = 'carousel-image season';
 			$style = '';
+            $thumb = $item['thumb'];
+			break;
+        case 'episode':
+			$title = $item['grandparentTitle'];
+			$summary = $item['title'];
+			$width = 100;
+			$image = 'carousel-image season';
+			$style = '';
+            $thumb = $item['parentThumb'];
 			break;
 		case 'album':
+		case 'track':
 			$title = $item['parentTitle'];
 			$summary = $item['title'];
 			$width = 150;
 			$image = 'album';
 			$style = 'left: 160px !important;';
+            $thumb = $item['thumb'];
 			break;
 		default:
 			$title = $item['title'];
@@ -458,6 +514,7 @@ function resolvePlexItem($server, $token, $item) {
 			$width = 100;
 			$image = 'carousel-image movie';
 			$style = '';
+            $thumb = $item['thumb'];
 	}
 	
 	// If No Overview
@@ -466,7 +523,7 @@ function resolvePlexItem($server, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=plex-image&img='.$item['thumb'].'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
 }
 
 // Create Carousel
@@ -676,9 +733,8 @@ function translate($string) {
 }
 
 // Generate Random string
-function randString($length = 10) {
+function randString($length = 10, $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
 	$tmp = '';
-	$chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
 	for ($i = 0; $i < $length; $i++) {
 		$tmp .= substr(str_shuffle($chars), 0, 1);
 	}
@@ -687,7 +743,16 @@ function randString($length = 10) {
 
 // Create config file in the return syntax
 function createConfig($array, $path = 'config/config.php', $nest = 0) {
+	// Define Initial Value
 	$output = array();
+	
+	// Sort Items
+	ksort($array);
+	
+	// Unset the current version
+	unset($array['CONFIG_VERSION']);
+	
+	// Process Settings
 	foreach ($array as $k => $v) {
 		$allowCommit = true;
 		switch (gettype($v)) {
@@ -715,6 +780,12 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		}
 	}
 	
+	if (!$nest && !isset($array['CONFIG_VERSION'])) {
+		// Inject Current Version
+		$output[] = "\t".'"CONFIG_VERSION" => "'.INSTALLEDVERSION.'"';
+	}
+	
+	// Build output
 	$output = (!$nest?"<?php\nreturn ":'')."array(\n".implode(",\n",$output)."\n".str_repeat("\t",$nest).')'.(!$nest?';':'');
 	
 	if (!$nest && $path) {
@@ -723,14 +794,13 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		@mkdir($pathDigest['dirname'], 0770, true);
 		
 		if (file_exists($path)) {
-			rename($path, $path.'.bak');
+			rename($path, $pathDigest['dirname'].'/'.$pathDigest['filename'].'.bak.php');
 		}
 		
 		$file = fopen($path, 'w');
 		fwrite($file, $output);
 		fclose($file);
 		if (file_exists($path)) {
-			@unlink($path.'.bak');
 			return true;
 		}
 		
@@ -803,7 +873,7 @@ function defineConfig($array, $anyCase = true, $nest_prefix = false) {
 }
 
 // This function exists only because I am lazy
-function configLazy($path) {
+function configLazy($path = null) {
 	$config = fillDefaultConfig(loadConfig($path));
 	if (is_array($config)) {
 		defineConfig($config);
@@ -868,7 +938,7 @@ function upgradeCheck() {
 		
 		// Refactor
 		$config['database_Location'] = str_replace('//','/',$config['databaseLocation'].'/');
-		$config['user_home'] = $config['databaseLocation'].'users/';
+		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['databaseLocation']);
 		
 		// Turn Off Emby And Plex Recent
@@ -883,18 +953,50 @@ function upgradeCheck() {
 		$config["headphonesURL"] = $config["headphonesURL"].(!empty($config["headphonesPort"])?':'.$config["headphonesPort"]:'');
 		unset($config["headphonesPort"]);
 		
-		$createConfigSuccess = createConfig($config, 'config/config.php', $nest = 0);
+		// Write config file
+		$config['CONFIG_VERSION'] = '1.32';
+		$createConfigSuccess = createConfig($config);
 		
 		// Create new config
 		if ($createConfigSuccess) {
-			// Make Config Dir (this should never happen as the dir and defaults file should be there);
-			@mkdir('config', 0775, true);
-			
-			// Remove Old ini file
-			unlink('databaseLocation.ini.php');
+			if (file_exists('config/config.php')) {
+				// Remove Old ini file
+				unlink('databaseLocation.ini.php');
+			} else {
+				debug_out('Something is not right here!');
+			}
 		} else {
 			debug_out('Couldn\'t create updated configuration.' ,1);
 		}
+	}
+	
+	// Upgrade to 1.33
+	$config = loadConfig();
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33')) {
+		// Fix User Directory
+		$config['user_home'] = $config['database_Location'].'users/';
+		unset($config['USER_HOME']);
+		
+		// Backend auth merge
+		if (isset($config['authBackendPort']) && !isset(parse_url($config['authBackendHost'])['port'])) {
+			$config['authBackendHost'] .= ':'.$config['authBackendPort'];
+		}
+		unset($config['authBackendPort']);
+		
+		// If auth is being used move it to embyURL as that is now used in auth functions
+		if ((isset($config['authType']) && $config['authType'] == 'true') && (isset($config['authBackendHost']) && $config['authBackendHost'] == 'true') && (isset($config['authBackend']) && in_array($config['authBackend'], array('emby_all','emby_local','emby_connect')))) {
+			$config['embyURL'] = $config['authBackendHost'];
+		}
+		
+		// Upgrade database to latest version
+		updateSQLiteDB($config['database_Location']);
+		
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.33';
+		$createConfigSuccess = createConfig($config);
+		
+		$effectiveVersion = $config['CONFIG_VERSION'];
+		unset($config);
 	}
 	
 	return true;
@@ -946,6 +1048,626 @@ function removeFiles($path) {
 	}
 }
 
+// Lazy select options
+function resolveSelectOptions($array, $selected = '', $multi = false) {
+	$output = array();
+	$selectedArr = ($multi?explode('|', $selected):array());
+	foreach ($array as $key => $value) {
+		if (is_array($value)) {
+			if (isset($value['optgroup'])) {
+				$output[] = '<optgroup label="'.$key.'">';
+				foreach($value['optgroup'] as $k => $v) {
+					$output[] = '<option value="'.$v['value'].'"'.($selected===$v['value']||in_array($v['value'],$selectedArr)?' selected':'').(isset($v['disabled']) && $v['disabled']?' disabled':'').'>'.$k.'</option>';
+				}
+			} else {
+				$output[] = '<option value="'.$value['value'].'"'.($selected===$value['value']||in_array($value['value'],$selectedArr)?' selected':'').(isset($value['disabled']) && $value['disabled']?' disabled':'').'>'.$key.'</option>';
+			}
+		} else {
+			$output[] = '<option value="'.$value.'"'.($selected===$value||in_array($value,$selectedArr)?' selected':'').'>'.$key.'</option>';
+		}
+		
+	}
+	return implode('',$output);
+}
+
+// Check if user is allowed to continue
+function qualifyUser($type, $errOnFail = false) {
+	if (!isset($GLOBALS['USER'])) {
+		require_once("user.php");
+		$GLOBALS['USER'] = new User('registration_callback');
+	}
+	
+	if (is_bool($type)) {
+		if ($type === true) {
+			$authorized = ($GLOBALS['USER']->authenticated == true);
+		} else {
+			$authorized = true;
+		}
+	} elseif (is_string($type) || is_array($type)) {
+		if ($type !== 'false') {
+			if (!is_array($type)) {
+				$type = explode('|',$type);
+			}
+			$authorized = ($GLOBALS['USER']->authenticated && in_array($GLOBALS['USER']->role,$type));
+		} else {
+			$authorized = true;
+		}
+	} else {
+		debug_out('Invalid Syntax!',1);
+	}
+	
+	if (!$authorized && $errOnFail) {
+		if ($GLOBALS['USER']->authenticated) {
+			header('Location: error.php?error=401');
+			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=401\'</script>';
+		} else {
+			header('Location: error.php?error=999');
+			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=999\'</script>';
+		}
+
+		debug_out('Not Authorized' ,1);
+	} else {
+		return $authorized;
+	}
+}
+
+// Build an (optionally) tabbed settings page.
+function buildSettings($array) {
+	/*
+	array(
+		'title' => '',
+		'id' => '',
+		'fields' => array( See buildField() ),
+		'tabs' => array(
+			array(
+				'title' => '',
+				'id' => '',
+				'image' => '',
+				'fields' => array( See buildField() ),
+			),
+		),
+	);
+	*/
+	
+	$fieldFunc = function($fieldArr) {
+		$fields = '<div class="row">';
+		foreach($fieldArr as $key => $value) {
+			$isSingle = isset($value['type']);
+			if ($isSingle) { $value = array($value); }
+			$tmpField = '';
+			$sizeLg = max(floor(12/count($value)),2);
+			$sizeMd = max(floor(($isSingle?12:6)/count($value)),3);
+			foreach($value as $k => $v) {
+				$tmpField .= buildField($v, 12, $sizeMd, $sizeLg);
+			}
+			$fields .= ($isSingle?$tmpField:'<div class="row col-sm-12 content-form">'.$tmpField.'</div>');
+		}
+		$fields .= '</div>';
+		return $fields;
+	};
+	
+	$fields = (isset($array['fields'])?$fieldFunc($array['fields']):'');
+	
+	$tabSelectors = array();
+	$tabContent = array();
+	if (isset($array['tabs'])) {
+		foreach($array['tabs'] as $key => $value) {
+			$id = (isset($value['id'])?$value['id']:randString(32));
+			$tabSelectors[$key] = '<li class="apps'.($tabSelectors?'':' active').'"><a href="#tab-'.$id.'" data-toggle="tab" aria-expanded="true"><img style="height:40px; width:40px;" src="'.(isset($value['image'])?$value['image']:'images/organizr.png').'"></a></li>';
+			$tabContent[$key] = '<div class="tab-pane big-box fade'.($tabContent?'':' active in').'" id="tab-'.$id.'">'.$fieldFunc($value['fields']).'</div>';
+		}
+	}
+	
+	$pageID = (isset($array['id'])?$array['id']:str_replace(array(' ','"',"'"),array('_'),strtolower($array['id'])));
+	
+	return '
+	<div class="email-body">
+		<div class="email-header gray-bg">
+			<button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+			<h1>'.$array['title'].'</h1>
+		</div>
+		<div class="email-inner small-box">
+			<div class="email-inner-section">
+				<div class="small-box fade in" id="'.$pageID.'_frame">
+					<div class="col-lg-12">
+						'.(isset($array['customBeforeForm'])?$array['customBeforeForm']:'').'
+						<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
+							<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
+							<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
+							</button>
+							'.$fields.($tabContent?'
+							<div class="tabbable tabs-with-bg" id="'.$pageID.'_tabs">
+								<ul class="nav nav-tabs apps">
+									'.implode('', $tabSelectors).'
+								</ul>
+								<div class="clearfix"></div>
+								<div class="tab-content">
+									'.implode('', $tabContent).'
+								</div>
+							</div>':'').'
+						</form>
+						'.(isset($array['customAfterForm'])?$array['customAfterForm']:'').'
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			$(\'#'.$pageID.'_form\').find(\'input, select, textarea\').on(\'change\', function() { $(this).attr(\'data-changed\', \'true\'); });
+			$(\'#'.$pageID.'_form\').find(\'select[multiple]\').on(\'click\', function() { $(this).attr(\'data-changed\', \'true\'); });
+			
+			$(\'#'.$pageID.'_form\').submit(function () {
+				var newVals = {};
+				var hasVals = false;
+				$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').each(function() {
+					hasVals = true;
+					if (this.type == \'checkbox\') {
+						newVals[this.name] = this.checked;
+					} else {
+						var fieldVal = $(this).val();
+						if (typeof fieldVal == \'object\') {
+							if (typeof fieldVal.join == \'function\') {
+								fieldVal = fieldVal.join(\'|\');
+							} else {
+								fieldVal = JSON.stringify(fieldVal);
+							}
+						}
+						newVals[this.name] = fieldVal;
+					}
+				});
+				if (hasVals) {
+					console.log(newVals);
+					$.post(\'ajax.php?a='.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data) {
+						console.log(data);
+						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
+						parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect);
+					}, \'json\');
+				} else {
+					parent.notify(\'Nothing to update!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
+				}
+				return false;
+			});
+			'.(isset($array['onready'])?$array['onready']:'').'
+		});
+	</script>
+	';
+}
+
+// Build Settings Fields
+function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
+	/*
+	array(
+		'type' => '',
+		'placeholder' => '',
+		'label' => '',
+		'labelTranslate' => '',
+		'assist' => '',
+		'name' => '',
+		'pattern' => '',
+		'options' => array( // For SELECT only
+			'Display' => 'value',
+		),
+	)
+	*/
+	
+	// Tags
+	$tags = array();
+	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href') as $value) {
+		$tags[] = (isset($params[$value])?$value.'="'.$params[$value].'"':'');
+	}
+	
+	$format = (isset($params['format']) && in_array($params['format'],array(false,'colour','color'))?$params['format']:false);
+	$name = (isset($params['name'])?$params['name']:(isset($params['id'])?$params['id']:''));
+	$id = (isset($params['id'])?$params['id']:(isset($params['name'])?$params['name'].'_id':randString(32)));
+	$val = (isset($params['value'])?$params['value']:'');
+	$class = (isset($params['class'])?' '.$params['class']:'');
+	$wrapClass = (isset($params['wrapClass'])?$params['wrapClass']:'form-content');
+	$assist = (isset($params['assist'])?' - i.e. '.$params['assist']:'');
+	$label = (isset($params['labelTranslate'])?translate($params['labelTranslate']):(isset($params['label'])?$params['label']:''));
+	$labelOut = '<p class="help-text">'.$label.$assist.'</p>';
+	
+	// Field Design
+	switch ($params['type']) {
+		case 'text':
+		case 'number':
+		case 'password':
+			$field = '<input id="'.$id.'" name="'.$name.'" type="'.$params['type'].'" class="form-control material input-sm'.$class.'" '.implode(' ',$tags).' autocorrect="off" autocapitalize="off" value="'.$val.'">';
+			break;
+		case 'select':
+		case 'dropdown':
+			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control material input-sm" '.implode(' ',$tags).'>'.resolveSelectOptions($params['options'], $val).'</select>';
+			break;
+		case 'select-multi':
+		case 'dropdown-multi':
+			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control input-sm" '.implode(' ',$tags).' multiple="multiple">'.resolveSelectOptions($params['options'], $val, true).'</select>';
+			break;
+		case 'check':
+		case 'checkbox':
+		case 'toggle':
+			$checked = ((is_bool($val) && $val) || trim($val) === 'true'?' checked':'');
+			$labelOut = '<label for="'.$id.'"></label>'.$label;
+			$field = '<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-success'.$class.'" '.implode(' ',$tags).' value="'.$val.'"'.$checked.'>';
+			break;
+		case 'date':
+			$field = 'Unsupported, planned.';
+			break;
+		case 'hidden':
+			$labelOut = '';
+			$field = '<input id="'.$id.'" name="'.$name.'" type="hidden" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'">';
+			break;
+		case 'header':
+			$labelOut = '';
+			$headType = (isset($params['value'])?$params['value']:3);
+			$field = '<h'.$headType.' class="'.$class.'" '.implode(' ',$tags).'>'.$label.'</h'.$headType.'>';
+			break;
+		case 'button':
+			$labelOut = '';
+			$icon = (isset($params['icon'])?$params['icon']:'flask');
+			$bType = (isset($params['buttonType'])?$params['buttonType']:'success');
+			$bDropdown = (isset($params['buttonDrop'])?$params['buttonDrop']:'');
+			$field = ($bDropdown?'<div class="btn-group">':'').'<button id="'.$id.'" type="button" class="btn waves btn-labeled btn-'.$bType.' btn-sm text-uppercase waves-effect waves-float'.$class.''.($bDropdown?' dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':'"').' '.implode(' ',$tags).'><span class="btn-label"><i class="fa fa-'.$icon.'"></i></span>'.$label.'</button>'.($bDropdown?$bDropdown.'</div>':'');
+			break;
+		case 'space':
+			$labelOut = '';
+			$field = str_repeat('<br>', (isset($params['value'])?$params['value']:1));
+			break;
+		default:
+			$field = 'Unsupported field type';
+			break;
+	}
+	
+	// Field Formats
+	switch ($format) {
+		case 'colour': // Fuckin Eh, Canada!
+		case 'color':
+			$labelBef = '<center>'.$label.'</center>';
+			$wrapClass = 'gray-bg colour-field';
+			$labelAft = '';
+			$field = str_replace(' material input-sm','',$field);
+			break;
+		default:
+			$labelBef = '';
+			$labelAft = $labelOut;
+	}
+	
+	return '<div class="'.$wrapClass.' col-sm-'.$sizeSm.' col-md-'.$sizeMd.' col-lg-'.$sizeLg.'">'.$labelBef.$field.$labelAft.'</div>';
+}
+
+// Timezone array
+function timezoneOptions() {
+	$output = array();
+	$timezones = array();
+    $regions = array(
+        'Africa' => DateTimeZone::AFRICA,
+        'America' => DateTimeZone::AMERICA,
+        'Antarctica' => DateTimeZone::ANTARCTICA,
+        'Arctic' => DateTimeZone::ARCTIC,
+        'Asia' => DateTimeZone::ASIA,
+        'Atlantic' => DateTimeZone::ATLANTIC,
+        'Australia' => DateTimeZone::AUSTRALIA,
+        'Europe' => DateTimeZone::EUROPE,
+        'Indian' => DateTimeZone::INDIAN,
+        'Pacific' => DateTimeZone::PACIFIC
+    );
+    
+    foreach ($regions as $name => $mask) {
+        $zones = DateTimeZone::listIdentifiers($mask);
+        foreach($zones as $timezone) {
+            $time = new DateTime(NULL, new DateTimeZone($timezone));
+            $ampm = $time->format('H') > 12 ? ' ('. $time->format('g:i a'). ')' : '';
+			
+			$output[$name]['optgroup'][substr($timezone, strlen($name) + 1) . ' - ' . $time->format('H:i') . $ampm]['value'] = $timezone;
+        }
+    }   
+	
+	return $output;
+}
+
+// Build Database
+function createSQLiteDB($path = false) {
+	if ($path === false) {
+		if (defined('DATABASE_LOCATION')) {
+			$path = DATABASE_LOCATION;
+		} else {
+			debug_out('No Path Specified!');
+		}
+	}
+	
+	if (!is_file($path.'users.db')) {
+		if (!isset($GLOBALS['file_db'])) {
+			$GLOBALS['file_db'] = new PDO('sqlite:'.$path.'users.db');
+			$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		}
+		
+		// Create Users
+		$users = $GLOBALS['file_db']->query('CREATE TABLE `users` (
+			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`username`	TEXT UNIQUE,
+			`password`	TEXT,
+			`email`	TEXT,
+			`token`	TEXT,
+			`role`	TEXT,
+			`active`	TEXT,
+			`last`	TEXT,
+			`auth_service`	TEXT DEFAULT \'internal\'
+		);');
+		
+		// Create Tabs
+		$tabs = $GLOBALS['file_db']->query('CREATE TABLE `tabs` (
+			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`users_id`	INTEGER,
+			`name`	TEXT,
+			`url`	TEXT,
+			`defaultz`	TEXT,
+			`active`	TEXT,
+			`user`	TEXT,
+			`guest`	TEXT,
+			`icon`	TEXT,
+			`iconurl`	TEXT,
+			`window`	TEXT
+		);');
+		
+		// Create Options
+		$options = $GLOBALS['file_db']->query('CREATE TABLE `options` (
+			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`users_id`	INTEGER UNIQUE,
+			`title`	TEXT UNIQUE,
+			`topbar`	TEXT,
+			`bottombar`	TEXT,
+			`sidebar`	TEXT,
+			`hoverbg`	TEXT,
+			`topbartext`	TEXT,
+			`activetabBG`	TEXT,
+			`activetabicon`	TEXT,
+			`activetabtext`	TEXT,
+			`inactiveicon`	TEXT,
+			`inactivetext`	TEXT,
+			`loading`	TEXT,
+			`hovertext`	TEXT
+		);');
+		
+		return $users && $tabs && $options;
+	} else {
+		return false;
+	}
+}
+
+// Upgrade Database
+function updateSQLiteDB($db_path = false) {
+	if (!$db_path) {
+		if (defined('DATABASE_LOCATION')) {
+			$db_path = DATABASE_LOCATION;
+		} else {
+			debug_out('No Path Specified',1);
+		}
+	}
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.$db_path.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	
+	// Cache current DB
+	$cache = array();
+	foreach($GLOBALS['file_db']->query('SELECT name FROM sqlite_master WHERE type="table";') as $table) {
+		foreach($GLOBALS['file_db']->query('SELECT * FROM '.$table['name'].';') as $key => $row) {
+			foreach($row as $k => $v) {
+				if (is_string($k)) {
+					$cache[$table['name']][$key][$k] = $v;
+				}
+			}
+		}
+	}
+	
+	// Remove Current Database
+	$GLOBALS['file_db'] = null;
+	$pathDigest = pathinfo($db_path.'users.db');
+	if (file_exists($db_path.'users.db')) {
+		rename($db_path.'users.db', $pathDigest['dirname'].'/'.$pathDigest['filename'].'.bak.db');
+	}
+	
+	// Create New Database
+	$success = createSQLiteDB($db_path);
+	
+	// Restore Items
+	if ($success) {
+		foreach($cache as $table => $tableData) {
+			if ($tableData) {
+				$queryBase = 'INSERT INTO '.$table.' (`'.implode('`,`',array_keys(current($tableData))).'`) values ';
+				$insertValues = array();
+				reset($tableData);
+				foreach($tableData as $key => $value) {
+					$insertValues[] = '('.implode(',',array_map(function($d) { 
+						return (isset($d)?"'".addslashes($d)."'":'null');
+					}, $value)).')';
+				}
+				$GLOBALS['file_db']->query($queryBase.implode(',',$insertValues).';');
+			}
+		}
+		return true;
+	} else {
+		return false;
+	}
+}
+
+// Commit colours to database
+function updateDBOptions($values) {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	
+	// Commit new values to database
+	$GLOBALS['file_db']->exec('UPDATE options SET '.implode(',',array_map(function($d, $k) { 
+		return '`'.$k.'` = '.(isset($d)?"'".addslashes($d)."'":'null');
+	}, $values, array_keys($values))).';'); // WHERE user_id = '';
+	
+	return true;
+}
+
+// Send AJAX notification
+function sendNotification($success, $message = false) {
+	header('Content-Type: application/json');
+	$notifyExplode = explode("-", NOTIFYEFFECT);
+	if ($success) {
+		$msg = array(
+			'html' => '<strong>'.translate("SETTINGS_SAVED").'</strong>'.($message?'<br>'.$message:''),
+			'icon' => 'floppy-o',
+			'type' => 'success',
+			'length' => '5000',
+			'layout' => $notifyExplode[0],
+			'effect' => $notifyExplode[1],
+		);
+	} else {
+		$msg = array(
+			'html' => '<strong>'.translate("SETTINGS_NOT_SAVED").'</strong>'.($message?'<br>'.$message:''),
+			'icon' => 'floppy-o',
+			'type' => 'failed',
+			'length' => '5000',
+			'layout' => $notifyExplode[0],
+			'effect' => $notifyExplode[1],
+		);
+	}
+	echo json_encode($msg);
+	die();
+}
+
+// Load colours from the database
+function loadAppearance() {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	
+	// Defaults
+	$defaults = array(
+		'title' => 'Organizr',
+		'topbartext' => '#66D9EF',
+		'topbar' => '#333333',
+		'bottombar' => '#333333',
+		'sidebar' => '#393939',
+		'hoverbg' => '#AD80FD',
+		'activetabBG' => '#F92671',
+		'activetabicon' => '#FFFFFF',
+		'activetabtext' => '#FFFFFF',
+		'inactiveicon' => '#66D9EF',
+		'inactivetext' => '#66D9EF',
+		'loading' => '#66D9EF',
+		'hovertext' => '#000000',
+	);
+	
+	// Database Lookup
+	$options = $GLOBALS['file_db']->query('SELECT * FROM options');
+	
+	// Replace defaults with filled options
+	foreach($options as $row) {
+		foreach($defaults as $key => $value) {
+			if (isset($row[$key]) && $row[$key]) {
+				$defaults[$key] = $row[$key];
+			}
+		}
+	}
+	
+	// Return the Results
+	return $defaults;
+}
+
+// Delete Database
+function deleteDatabase() {
+    unset($_COOKIE['Organizr']);
+    setcookie('Organizr', '', time() - 3600, '/');
+    unset($_COOKIE['OrganizrU']);
+    setcookie('OrganizrU', '', time() - 3600, '/');
+	
+    $GLOBALS['file_db'] = null;
+
+    unlink(DATABASE_LOCATION.'users.db'); 
+	
+    foreach(glob(substr_replace($userdirpath, "", -1).'/*') as $file) {
+        if(is_dir($file)) {
+            rmdir($file); 
+        } elseif (!is_dir($file)) {
+            unlink($file);
+        }
+	}
+
+    rmdir($userdirpath);
+	
+	return true;
+}
+
+// Upgrade the installation
+function upgradeInstall() {
+    function downloadFile($url, $path){
+        $folderPath = "upgrade/";
+        if(!mkdir($folderPath)) : echo "can't make dir"; endif;
+        $newfname = $folderPath . $path;
+        $file = fopen ($url, 'rb');
+        if ($file) {
+            $newf = fopen ($newfname, 'wb');
+            if ($newf) {
+                while(!feof($file)) {
+                    fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
+                }
+            }
+        }
+
+        if ($file) {
+            fclose($file);
+        }
+
+        if ($newf) {
+            fclose($newf);
+        }
+    }
+
+    function unzipFile($zipFile){
+        $zip = new ZipArchive;
+        $extractPath = "upgrade/";
+        if($zip->open($extractPath . $zipFile) != "true"){
+            echo "Error :- Unable to open the Zip File";
+        }
+
+        /* Extract Zip File */
+        $zip->extractTo($extractPath);
+        $zip->close();
+    }
+
+    // Function to remove folders and files 
+    function rrmdir($dir) {
+        if (is_dir($dir)) {
+            $files = scandir($dir);
+            foreach ($files as $file)
+                if ($file != "." && $file != "..") rrmdir("$dir/$file");
+            rmdir($dir);
+        }
+        else if (file_exists($dir)) unlink($dir);
+    }
+
+    // Function to Copy folders and files       
+    function rcopy($src, $dst) {
+        if (is_dir ( $src )) {
+            if (!file_exists($dst)) : mkdir ( $dst ); endif;
+            $files = scandir ( $src );
+            foreach ( $files as $file )
+                if ($file != "." && $file != "..")
+                    rcopy ( "$src/$file", "$dst/$file" );
+        } else if (file_exists ( $src ))
+            copy ( $src, $dst );
+    }
+
+    $url = "https://github.com/causefx/Organizr/archive/master.zip";
+    $file = "upgrade.zip";
+    $source = __DIR__ . "/upgrade/Organizr-master/";
+    $cleanup = __DIR__ . "/upgrade/";
+    $destination = __DIR__ . "/";
+    downloadFile($url, $file);
+    unzipFile($file);
+    rcopy($source, $destination);
+    rrmdir($cleanup);
+	
+	return true;
+}
 
 // ==============
 

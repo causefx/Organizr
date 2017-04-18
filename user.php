@@ -10,9 +10,6 @@
 	
 	// Include functions if not already included
 	require_once('functions.php');
-	
-	// Define Version
-	 define('INSTALLEDVERSION', '1.323');
 	 
     // Autoload frameworks
 	require_once(__DIR__ . '/vendor/autoload.php');
@@ -168,10 +165,8 @@
 		function rebuild_database($dbfile)
 		{
 			$this->info("creating/rebuilding database as ".$dbfile);
-			$this->database->beginTransaction();
-			$create = "CREATE TABLE users (username TEXT UNIQUE, password TEXT, email TEXT UNIQUE, token TEXT, role TEXT, active TEXT, last TEXT);";
-			$this->database->exec($create);
-			$this->database->commit();
+			createSQLiteDB();
+			$this->database = new PDO("sqlite:" . $dbfile);
 		}
 		// process a page request
 		function process(&$registration_callback=false)
@@ -549,7 +544,7 @@ EOT;
 
 			// This user can be registered
 			$insert = "INSERT INTO users (username, email, password, token, role, active, last) ";
-			$insert .= "VALUES ('$username', '$email', '$dbpassword', '', '$newRole', 'false', '') ";
+			$insert .= "VALUES ('".strtolower($username)."', '$email', '$dbpassword', '', '$newRole', 'false', '') ";
 			$this->database->exec($insert);
 			$query = "SELECT * FROM users WHERE username = '$username'";
 			foreach($this->database->query($query) as $data) {
@@ -605,9 +600,8 @@ EOT;
 				default: // Internal
 					if (!$authSuccess) {
 						// perform the internal authentication step
-						$query = "SELECT password FROM users WHERE username = '$username'";
+						$query = "SELECT password FROM users WHERE LOWER(username) = '".strtolower($username)."'";
 						foreach($this->database->query($query) as $data) {
-							
 							if (password_verify($password, $data["password"])) { // Better
 								$authSuccess = true;
 							} else {
@@ -623,13 +617,11 @@ EOT;
 			
 			if ($authSuccess) {
 				// Make sure user exists in database
-				$query = "SELECT username FROM users WHERE username = '$username'";
+				$query = "SELECT username FROM users WHERE LOWER(username) = '".strtolower($username)."'";
 				$userExists = false;
 				foreach($this->database->query($query) as $data) {
-					if ($data['username'] == $username) {
-						$userExists = true;
-						break;
-					}
+					$userExists = true;
+					break;
 				}
 				
 				if ($userExists) {
@@ -650,7 +642,7 @@ EOT;
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
 					// Create User
 					$falseByRef = false;
-					$this->register_user($username, "", $sha1, $falseByRef, !$remember);
+					$this->register_user($username, (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''), $sha1, $falseByRef, !$remember);
 				} else {
 					// authentication failed
 					//$this->info("Successful Backend Auth, No User in DB, Create Set to False");

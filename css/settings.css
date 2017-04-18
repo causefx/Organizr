@@ -1,0 +1,11 @@
+div.colour-field {
+    border: 1px solid #cbd3d5;
+    border-radius: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+div.colour-field input {
+	color: #000;
+}
