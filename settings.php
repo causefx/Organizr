@@ -1480,7 +1480,7 @@ endif;?></textarea>
                                                             <div class="form-group">
 
                                                                 <input type="text" class="form-control material input-sm" name="radarrURL" placeholder="<?php echo $language->translate("RADARR_URL");?>" autocorrect="off" autocapitalize="off" value="<?php echo RADARRURL;?>">
-                                                                <p class="help-text"><?php echo $language->translate("RADARR_URL");?> - i.e. http://hostname:8989 | hostname/radarr | http://hostname:8989/radarr</p>
+                                                                <p class="help-text"><?php echo $language->translate("RADARR_URL");?> - i.e. http://hostname:7878 | hostname/radarr | http://hostname:7878/radarr</p>
 
                                                             </div>
 
