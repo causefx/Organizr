@@ -1374,7 +1374,7 @@ function createSQLiteDB($path = false) {
 		}
 	}
 	
-	if (!is_file($path.'users.db')) {
+	if (!is_file($path.'users.db') || filesize($path.'users.db') <= 0) {
 		if (!isset($GLOBALS['file_db'])) {
 			$GLOBALS['file_db'] = new PDO('sqlite:'.$path.'users.db');
 			$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

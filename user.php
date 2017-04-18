@@ -20,7 +20,7 @@
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 
     $notifyExplode = explode("-", NOTIFYEFFECT);
     define('FAIL_LOG', 'loginLog.json');
-    date_default_timezone_set(TIMEZONE);
+    @date_default_timezone_set(TIMEZONE);
 	
 	class User
 	{
