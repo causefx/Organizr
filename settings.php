@@ -1029,9 +1029,9 @@ echo buildSettings(
 				'fields' => array(
 					array(
 						'type' => 'text',
-						'placeholder' => 'http://hostname:8989',
+						'placeholder' => 'http://hostname:7878',
 						'labelTranslate' => 'RADARR_URL',
-						'assist' => 'http://hostname:8989 | hostname/radarr | http://hostname:8989/radarr',
+						'assist' => 'http://hostname:7878 | hostname/radarr | http://hostname:7878/radarr',
 						'name' => 'radarrURL',
 						'pattern' => $urlPattern,
 						'value' => RADARRURL,
