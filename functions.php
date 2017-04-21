@@ -873,8 +873,14 @@ function defineConfig($array, $anyCase = true, $nest_prefix = false) {
 }
 
 // This function exists only because I am lazy
-function configLazy($path = null) {
-	$config = fillDefaultConfig(loadConfig($path));
+function configLazy($path = 'config/config.php') {
+	// Load config or default
+	if (file_exists($path)) {
+		$config = fillDefaultConfig(loadConfig($path));
+	} else {
+		$config = loadConfig('config/configDefaults.php');
+	}
+	
 	if (is_array($config)) {
 		defineConfig($config);
 	}
@@ -1498,11 +1504,15 @@ function updateDBOptions($values) {
 	}
 	
 	// Commit new values to database
-	$GLOBALS['file_db']->exec('UPDATE options SET '.implode(',',array_map(function($d, $k) { 
+	if ($GLOBALS['file_db']->query('UPDATE options SET '.implode(',',array_map(function($d, $k) { 
 		return '`'.$k.'` = '.(isset($d)?"'".addslashes($d)."'":'null');
-	}, $values, array_keys($values))).';'); // WHERE user_id = '';
-	
-	return true;
+	}, $values, array_keys($values))).';')->rowCount()) {
+		return true;
+	} else if ($GLOBALS['file_db']->query('INSERT OR IGNORE INTO options (`'.implode('`,`',array_keys($values)).'`) VALUES (\''.implode("','",$values).'\');')->rowCount()) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 // Send AJAX notification
