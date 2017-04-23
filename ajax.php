@@ -1,6 +1,8 @@
 <?php
-// Include functions if not already included
+// Include functions and user
 require_once('functions.php');
+require_once("user.php");
+$GLOBALS['USER'] = new User('registration_callback');
 
 // Upgrade environment
 upgradeCheck();

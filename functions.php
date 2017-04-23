@@ -611,6 +611,12 @@ function getPlexStreams($size){
 function getEmbyRecent($type, $size) {
     $address = qualifyURL(EMBYURL);
 	
+	// Currently Logged In User
+	$username = false;
+	if (isset($GLOBALS['USER'])) {
+		$username = strtolower($GLOBALS['USER']->username);
+	}
+	
 	// Resolve Types
 	switch ($type) {
 		case 'movie':
@@ -632,15 +638,20 @@ function getEmbyRecent($type, $size) {
 	
 	// Get A User
 	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
+	$showPlayed = true;
 	foreach ($userIds as $value) { // Scan for admin user
-		$userId = $value['Id'];
 		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+			$userId = $value['Id'];
+		}
+		if ($username && strtolower($value['Name']) == $username) {
+			$userId = $value['Id'];
+			$showPlayed = false;
 			break;
 		}
 	}
 	
 	// Get the latest Items
-	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.EMBYTOKEN),true);
+	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
 	
 	// For Each Item In Category
 	$items = array();

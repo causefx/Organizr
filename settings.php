@@ -878,6 +878,7 @@ echo buildSettings(
 						'value' => HOMEPAGEAUTHNEEDED,
 						'options' => $userTypes,
 					),
+					/*
 					array(
 						'type' => 'custom',
 						'labelTranslate' => 'SHOW_HOMEPAGE',
@@ -885,6 +886,7 @@ echo buildSettings(
 						'name' => 'homePagelayout',
 						'value' => '',
 					),
+					*/
 				),
 			),
 			array(
@@ -969,7 +971,7 @@ echo buildSettings(
 						'type' => 'text',
 						'placeholder' => randString(32),
 						'labelTranslate' => 'EMBY_TOKEN',
-						'name' => 'plexToken',
+						'name' => 'embyToken',
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
 					),
