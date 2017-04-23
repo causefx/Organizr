@@ -216,7 +216,9 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
 
         <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
         <script src="bower_components/numbered/jquery.numberedtextarea.js"></script>
-
+		
+		<!--Other-->
+		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
         <!--Notification-->
         <script src="js/notifications/notificationFx.js"></script>
@@ -650,7 +652,7 @@ echo buildSettings(
 		'submitAction' => 'update-appearance',
 		'onready' => '$("#editCssButton, #backToThemeButton").click(function(){ $("#appearance_settings_form").toggle(); $("#editCssForm").toggle(); });',
 		'customAfterForm' => '                                     
-<form style="display: none" id="editCssForm" method="POST" action="ajax.php">
+<form style="display: none" id="editCssForm" method="POST" onsubmit="ajax_request(\'POST\', \'editCSS\', {\'css-show\': $(\'#css-show\').val()}); return false;">
 	<button class="btn waves btn-labeled btn-warning btn-sm pull-left text-uppercase waves-effect waves-float" type="button" id="backToThemeButton">
 
 	<span class="btn-label"><i class="fa fa-arrow-left"></i></span>'.translate("GO_BACK").'
@@ -661,7 +663,6 @@ echo buildSettings(
 	<span class="btn-label"><i class="fa fa-floppy-o"></i></span>'.translate("SAVE_CSS").'
 	</button>
 	<br><br>
-	<input type="hidden" name="submit" value="editCSS" /> 
 	<h1>'.translate("EDIT_CUSTOM_CSS").'</h1> 
 	<!--<p>Variables Available<code>$topbar - $topbartext - $bottombar - $sidebar - $hoverbg - $activetabBG - $activetabicon - $activetabtext - $inactiveicon - $inactivetext - $loading - $hovertext</code></p>-->
 	<textarea class="form-control" id="css-show" name="css-show" rows="25" style="background: #000; color: #FFF;">'.(file_exists('./custom.css')?file_get_contents('./custom.css'):'').'</textarea>
@@ -1795,7 +1796,7 @@ echo buildSettings(
                                         <div class="panel-body">
                                             <div class="">
                                                 <p><?php echo $language->translate("DELETE_WARNING");?></p>
-                                                <form id="deletedb" method="post" onsubmit="$.post(\'ajax.php?a=deleteDB\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;">
+                                                <form id="deletedb" method="post" onsubmit="ajax_request('POST', 'deleteDB'); return false;">
                                                     <button class="btn waves btn-labeled btn-danger pull-right text-uppercase waves-effect waves-float" type="submit">
                                                         <span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("DELETE_DATABASE");?>
                                                     </button>
@@ -2887,7 +2888,7 @@ echo buildSettings(
             //Simulate Edit Tabs Click 
             $("#open-tabs").trigger("click");
             //Append Delete log to User Logs
-            $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post" onsubmit="$.post(\'ajax.php?a=deleteLog\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
+            $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post" onsubmit="ajax_request(\'POST\', \'deleteLog\'); return false;"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
             $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')
             //Enable Tooltips
             $('[data-toggle="tooltip"]').tooltip(); 
@@ -2921,7 +2922,7 @@ echo buildSettings(
                         parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
 
                         $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
-                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\" onsubmit=\"$.post(\'ajax.php?a=upgradeInstall\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\" onsubmit=\"ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
                         $( "p[id^='upgrade']" ).toggle();
                     }else if(currentVersion === githubVersion){
                     	console.log("You Are on Current Version");

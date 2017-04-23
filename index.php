@@ -266,6 +266,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         <meta name="theme-color" content="#2d89ef">
         <link rel="stylesheet" type="text/css" href="css/addtohomescreen.css">
         <script src="js/addtohomescreen.js"></script>
+		<!--Other-->
+		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
         <script src="bower_components/respondJs/dest/respond.min.js"></script>

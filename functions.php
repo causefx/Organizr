@@ -701,6 +701,7 @@ function getEmbyImage() {
 		$image_src = $embyAddress . '/Items/'.$itemId.'/Images/Primary?'.implode('&', $imgParams);
 		header('Content-type: image/jpeg');
 		readfile($image_src);
+		die();
 	} else {
 		debug_out('Invalid Request',1);
 	}
@@ -718,6 +719,7 @@ function getPlexImage() {
 		$image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . PLEXTOKEN;
 		header('Content-type: image/jpeg');
 		readfile($image_src);
+		die();
 	} else {
 		echo "Invalid Plex Request";	
 	}
@@ -1224,11 +1226,9 @@ function buildSettings($array) {
 				});
 				if (hasVals) {
 					console.log(newVals);
-					$.post(\'ajax.php?a='.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data) {
-						console.log(data);
+					ajax_request(\'POST\', \''.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data, code) {
 						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
-						parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect);
-					}, \'json\');
+					});
 				} else {
 					parent.notify(\'Nothing to update!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
 				}
@@ -1516,12 +1516,11 @@ function updateDBOptions($values) {
 }
 
 // Send AJAX notification
-function sendNotification($success, $message = false) {
-	header('Content-Type: application/json');
+function sendNotification($success, $message = false, $send = true) {
 	$notifyExplode = explode("-", NOTIFYEFFECT);
 	if ($success) {
 		$msg = array(
-			'html' => '<strong>'.translate("SETTINGS_SAVED").'</strong>'.($message?'<br>'.$message:''),
+			'html' => ($message?'<br>'.$message:'<strong>'.translate("SETTINGS_SAVED").'</strong>'),
 			'icon' => 'floppy-o',
 			'type' => 'success',
 			'length' => '5000',
@@ -1530,7 +1529,7 @@ function sendNotification($success, $message = false) {
 		);
 	} else {
 		$msg = array(
-			'html' => '<strong>'.translate("SETTINGS_NOT_SAVED").'</strong>'.($message?'<br>'.$message:''),
+			'html' => ($message?'<br>'.$message:'<strong>'.translate("SETTINGS_NOT_SAVED").'</strong>'),
 			'icon' => 'floppy-o',
 			'type' => 'failed',
 			'length' => '5000',
@@ -1538,8 +1537,14 @@ function sendNotification($success, $message = false) {
 			'effect' => $notifyExplode[1],
 		);
 	}
-	echo json_encode($msg);
-	die();
+	
+	// Send and kill script?
+	if ($send) {
+		header('Content-Type: application/json');
+		echo json_encode(array('notify'=>$msg));
+		die();
+	}
+	return $msg;
 }
 
 // Load colours from the database
@@ -1677,6 +1682,87 @@ function upgradeInstall() {
     rrmdir($cleanup);
 	
 	return true;
+}
+
+// NzbGET Items
+function nzbgetConnect($list = 'listgroups') {
+    $url = qualifyURL(NZBGETURL);
+    
+    $api = file_get_contents($url.'/'.NZBGETUSERNAME.':'.NZBGETPASSWORD.'/jsonrpc/'.$list);          
+    $api = json_decode($api, true);
+    
+    $gotNZB = array();
+    
+    foreach ($api['result'] AS $child) {
+        $downloadName = htmlentities($child['NZBName'], ENT_QUOTES);
+        $downloadStatus = $child['Status'];
+        $downloadCategory = $child['Category'];
+        if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
+        if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
+        if($child['Health'] <= "750"){ 
+            $downloadHealth = "danger"; 
+        }elseif($child['Health'] <= "900"){ 
+            $downloadHealth = "warning"; 
+        }elseif($child['Health'] <= "1000"){ 
+            $downloadHealth = "success"; 
+        }
+        
+        $gotNZB[] = '<tr>
+                        <td>'.$downloadName.'</td>
+                        <td>'.$downloadStatus.'</td>
+                        <td>'.$downloadCategory.'</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+                                    <p class="text-center">'.round($downloadPercent).'%</p>
+                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>';
+    }
+    
+	if ($gotNZB) {
+		return implode('',$gotNZB);
+	} else {
+		return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+	}
+}
+
+// Sabnzbd Items
+function sabnzbdConnect($list = 'queue') {
+    $url = qualifyURL(SABNZBDURL);
+	
+    $api = file_get_contents($url.'/api?mode='.$list.'&output=json&apikey='.SABNZBDKEY); 
+    $api = json_decode($api, true);
+    
+    $gotNZB = array();
+    
+    foreach ($api[$list]['slots'] AS $child) {
+        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; } 
+        if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
+        $downloadStatus = $child['status'];
+        
+        $gotNZB[] = '<tr>
+                        <td>'.$downloadName.'</td>
+                        <td>'.$downloadStatus.'</td>
+                        <td>'.$downloadCategory.'</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+                                    <p class="text-center">'.round($downloadPercent).'%</p>
+                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>';
+    }
+    
+	if ($gotNZB) {
+		return implode('',$gotNZB);
+	} else {
+		return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+	}
 }
 
 // ==============
@@ -2075,114 +2161,6 @@ function getRadarrCalendar($array){
     }
 
     if ($i != 0){ return $gotCalendar; }
-
-}
-
-function nzbgetConnect($url, $username, $password, $list){
-    $url = qualifyURL(NZBGETURL);
-    
-    $api = file_get_contents("$url/$username:$password/jsonrpc/$list");
-                    
-    $api = json_decode($api, true);
-    
-    $i = 0;
-    
-    $gotNZB = "";
-    
-    foreach ($api['result'] AS $child) {
-        
-        $i++;
-        //echo '<pre>' . var_export($child, true) . '</pre>';
-        $downloadName = htmlentities($child['NZBName'], ENT_QUOTES);
-        $downloadStatus = $child['Status'];
-        $downloadCategory = $child['Category'];
-        if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
-        if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
-        if($child['Health'] <= "750"){ 
-            $downloadHealth = "danger"; 
-        }elseif($child['Health'] <= "900"){ 
-            $downloadHealth = "warning"; 
-        }elseif($child['Health'] <= "1000"){ 
-            $downloadHealth = "success"; 
-        }
-        
-        $gotNZB .= '<tr>
-
-                        <td>'.$downloadName.'</td>
-                        <td>'.$downloadStatus.'</td>
-                        <td>'.$downloadCategory.'</td>
-
-                        <td>
-
-                            <div class="progress">
-
-                                <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
-
-                                    <p class="text-center">'.round($downloadPercent).'%</p>
-                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
-
-                                </div>
-
-                            </div>
-
-                        </td>
-
-                    </tr>';
-        
-        
-    }
-    
-    if($i > 0){ return $gotNZB; }
-    if($i == 0){ echo '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>'; }
-
-}
-
-function sabnzbdConnect($url, $key, $list){
-    $url = qualifyURL(SABNZBDURL);
-
-    $api = file_get_contents("$url/api?mode=$list&output=json&apikey=$key");
-                    
-    $api = json_decode($api, true);
-    
-    $i = 0;
-    
-    $gotNZB = "";
-    
-    foreach ($api[$list]['slots'] AS $child) {
-        
-        $i++;
-        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; } 
-        if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
-        $downloadStatus = $child['status'];
-        
-        $gotNZB .= '<tr>
-
-                        <td>'.$downloadName.'</td>
-                        <td>'.$downloadStatus.'</td>
-                        <td>'.$downloadCategory.'</td>
-
-                        <td>
-
-                            <div class="progress">
-
-                                <div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
-
-                                    <p class="text-center">'.round($downloadPercent).'%</p>
-                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
-
-                                </div>
-
-                            </div>
-
-                        </td>
-
-                    </tr>';
-        
-        
-    }
-    
-    if($i > 0){ return $gotNZB; }
-    if($i == 0){ echo '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>'; }
 
 }
 
