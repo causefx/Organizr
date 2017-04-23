@@ -275,7 +275,7 @@ endif; ?>
                     </div>
                 </div>
                 <?php } ?>
-				<?php if (qualifyUser(PLEXHOMEAUTH)) { ?>
+				<?php if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) { ?>
                 <div id="plexRow" class="row">
                     <sort>3</sort>
 
@@ -289,7 +289,7 @@ endif; ?>
 
                 </div>
 				<?php } ?>
-				<?php if (qualifyUser(EMBYHOMEAUTH)) { ?>
+				<?php if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) { ?>
                 <div id="embyRow" class="row">
                     <sort>3</sort>
 
@@ -329,7 +329,12 @@ endif; ?>
                     </div>
                 </div>
                 <?php } ?>
-
+				
+                <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { ?>
+				<div>
+					<?php echo HOMEPAGECUSTOMHTML1; ?>
+				</div>
+                <?php } ?>
             </div>    
         </div>
         <script>
