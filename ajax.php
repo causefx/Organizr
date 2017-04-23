@@ -84,12 +84,19 @@ switch ($_SERVER['REQUEST_METHOD']) {
 			case 'update-config':
 				sendNotification(updateConfig($_POST));
 				break;
-			case 'editCSS':
-				write_ini_file($_POST["css-show"], "custom.css");
-				$response['parent']['reload'] = true;
-				break;
 			case 'update-appearance':
-				sendNotification(updateDBOptions($_POST));
+				// Custom CSS Special Case START
+				if (isset($_POST['customCSS'])) {
+					if ($_POST['customCSS']) {
+						write_ini_file($_POST['customCSS'], 'custom.css');
+					} else {
+						unlink('custom.css');
+					}
+					$response['parent']['reload'] = true;
+				}
+				unset($_POST['customCSS']);
+				// Custom CSS Special Case END
+				$response['notify'] = sendNotification(updateDBOptions($_POST),false,false);
 				break;
 			case 'deleteDB':
 				deleteDatabase();
@@ -102,12 +109,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				break;
 			case 'deleteLog':
 				sendNotification(unlink(FAIL_LOG));
-				break;
-			case 'nav-test-tab':
-				$response['tab']['goto'] = 'homepage.php';
-				break;
-			case 'nav-test-tab':
-				$response['parent']['goto'] = 'homepage.php';
 				break;
 			default:
 				sendNotification(false, 'Unsupported Action!');

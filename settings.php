@@ -650,194 +650,195 @@ echo buildSettings(
 		'title' => 'Appearance Settings',
 		'id' => 'appearance_settings',
 		'submitAction' => 'update-appearance',
-		'onready' => '$("#editCssButton, #backToThemeButton").click(function(){ $("#appearance_settings_form").toggle(); $("#editCssForm").toggle(); });',
-		'customAfterForm' => '                                     
-<form style="display: none" id="editCssForm" method="POST" onsubmit="ajax_request(\'POST\', \'editCSS\', {\'css-show\': $(\'#css-show\').val()}); return false;">
-	<button class="btn waves btn-labeled btn-warning btn-sm pull-left text-uppercase waves-effect waves-float" type="button" id="backToThemeButton">
-
-	<span class="btn-label"><i class="fa fa-arrow-left"></i></span>'.translate("GO_BACK").'
-	</button>
-
-	<button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
-
-	<span class="btn-label"><i class="fa fa-floppy-o"></i></span>'.translate("SAVE_CSS").'
-	</button>
-	<br><br>
-	<h1>'.translate("EDIT_CUSTOM_CSS").'</h1> 
-	<!--<p>Variables Available<code>$topbar - $topbartext - $bottombar - $sidebar - $hoverbg - $activetabBG - $activetabicon - $activetabtext - $inactiveicon - $inactivetext - $loading - $hovertext</code></p>-->
-	<textarea class="form-control" id="css-show" name="css-show" rows="25" style="background: #000; color: #FFF;">'.(file_exists('./custom.css')?file_get_contents('./custom.css'):'').'</textarea>
-</form>',
-		'fields' => array(
+		'tabs' => array(
 			array(
-				array(
-					'type' => 'button',
-					'labelTranslate' => 'CHOOSE_THEME',
-					'icon' => 'css3',
-					'id' => 'themeSelector',
-					'buttonType' => 'dark',
-					'buttonDrop' => '
-<ul class="dropdown-menu gray-bg">
-	<li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
-	<li class="chooseTheme" id="newPlexTheme" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" href="#">New Plex<span><img class="themeImage" src="images/themes/newplex.png"></span></a></li>
-	<li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
-	<li class="chooseTheme" id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook<span><img class="themeImage" src="images/themes/facebook.png"></span></a></li>
-	<li class="chooseTheme" id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa<span><img class="themeImage" src="images/themes/spa.png"></span></a></li>
-	<li class="chooseTheme" id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly<span><img class="themeImage" src="images/themes/darkly.png"></span></a></li>
-	<li class="chooseTheme" id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate<span><img class="themeImage" src="images/themes/slate.png"></span></a></li>
-	<li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
-	<li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
-	<li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
-</ul>
-					',
-				),
-				array(
-					'type' => 'button',
-					'labelTranslate' => 'EDIT_CUSTOM_CSS',
-					'icon' => 'css3',
-					'buttonType' => 'primary',
-					'id' => 'editCssButton',
+				'title' => 'Colours',
+				'id' => 'theme_colours',
+				'image' => 'images/paint.png',
+				'fields' => array(
+					array(
+						array(
+							'type' => 'button',
+							'labelTranslate' => 'CHOOSE_THEME',
+							'icon' => 'css3',
+							'id' => 'themeSelector',
+							'buttonType' => 'dark',
+							'buttonDrop' => '
+		<ul class="dropdown-menu gray-bg">
+			<li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
+			<li class="chooseTheme" id="newPlexTheme" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" href="#">New Plex<span><img class="themeImage" src="images/themes/newplex.png"></span></a></li>
+			<li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
+			<li class="chooseTheme" id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook<span><img class="themeImage" src="images/themes/facebook.png"></span></a></li>
+			<li class="chooseTheme" id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa<span><img class="themeImage" src="images/themes/spa.png"></span></a></li>
+			<li class="chooseTheme" id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly<span><img class="themeImage" src="images/themes/darkly.png"></span></a></li>
+			<li class="chooseTheme" id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate<span><img class="themeImage" src="images/themes/slate.png"></span></a></li>
+			<li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
+			<li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
+			<li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
+		</ul>
+							',
+						),
+					),
+					array(
+						'type' => 'header',
+						'labelTranslate' => 'TITLE',
+					),
+					array(
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'labelTranslate' => 'TITLE',
+							'name' => 'title',
+							'id' => 'title',
+							'value' => $title,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'TITLE_TEXT',
+							'name' => 'topbartext',
+							'id' => 'topbartext',
+							'value' => $topbartext,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'LOADING_COLOR',
+							'name' => 'loading',
+							'id' => 'loading',
+							'value' => $loading,
+						),
+					),
+					array(
+						'type' => 'header',
+						'labelTranslate' => 'NAVIGATION_BARS',
+					),
+					array(
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'TOP_BAR',
+							'name' => 'topbar',
+							'id' => 'topbar',
+							'value' => $topbar,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'BOTTOM_BAR',
+							'name' => 'bottombar',
+							'id' => 'bottombar',
+							'value' => $bottombar,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'SIDE_BAR',
+							'name' => 'sidebar',
+							'id' => 'sidebar',
+							'value' => $sidebar,
+						),
+					),
+					array(
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'HOVER_BG',
+							'name' => 'hoverbg',
+							'id' => 'hoverbg',
+							'value' => $hoverbg,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'HOVER_TEXT',
+							'name' => 'hovertext',
+							'id' => 'hovertext',
+							'value' => $hovertext,
+						),
+					),
+					array(
+						'type' => 'header',
+						'labelTranslate' => 'ACTIVE_TAB',
+					),
+					array(
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'ACTIVE_TAB_BG',
+							'name' => 'activetabBG',
+							'id' => 'activetabBG',
+							'value' => $activetabBG,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'ACTIVE_TAB_ICON',
+							'name' => 'activetabicon',
+							'id' => 'activetabicon',
+							'value' => $activetabicon,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'ACTIVE_TAB_TEXT',
+							'name' => 'activetabtext',
+							'id' => 'activetabtext',
+							'value' => $activetabtext,
+						),
+					),
+					array(
+						'type' => 'header',
+						'labelTranslate' => 'INACTIVE_TAB',
+					),
+					array(
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'INACTIVE_ICON',
+							'name' => 'inactiveicon',
+							'id' => 'inactiveicon',
+							'value' => $inactiveicon,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'INACTIVE_TEXT',
+							'name' => 'inactivetext',
+							'id' => 'inactivetext',
+							'value' => $inactivetext,
+						),
+					),
 				),
 			),
 			array(
-				'type' => 'header',
-				'labelTranslate' => 'TITLE',
-			),
-			array(
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'labelTranslate' => 'TITLE',
-					'name' => 'title',
-					'id' => 'title',
-					'value' => $title,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'TITLE_TEXT',
-					'name' => 'topbartext',
-					'id' => 'topbartext',
-					'value' => $topbartext,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'LOADING_COLOR',
-					'name' => 'loading',
-					'id' => 'loading',
-					'value' => $loading,
-				),
-			),
-			array(
-				'type' => 'header',
-				'labelTranslate' => 'NAVIGATION_BARS',
-			),
-			array(
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'TOP_BAR',
-					'name' => 'topbar',
-					'id' => 'topbar',
-					'value' => $topbar,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'BOTTOM_BAR',
-					'name' => 'bottombar',
-					'id' => 'bottombar',
-					'value' => $bottombar,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'SIDE_BAR',
-					'name' => 'sidebar',
-					'id' => 'sidebar',
-					'value' => $sidebar,
-				),
-			),
-			array(
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'HOVER_BG',
-					'name' => 'hoverbg',
-					'id' => 'hoverbg',
-					'value' => $hoverbg,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'HOVER_TEXT',
-					'name' => 'hovertext',
-					'id' => 'hovertext',
-					'value' => $hovertext,
-				),
-			),
-			array(
-				'type' => 'header',
-				'labelTranslate' => 'ACTIVE_TAB',
-			),
-			array(
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'ACTIVE_TAB_BG',
-					'name' => 'activetabBG',
-					'id' => 'activetabBG',
-					'value' => $activetabBG,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'ACTIVE_TAB_ICON',
-					'name' => 'activetabicon',
-					'id' => 'activetabicon',
-					'value' => $activetabicon,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'ACTIVE_TAB_TEXT',
-					'name' => 'activetabtext',
-					'id' => 'activetabtext',
-					'value' => $activetabtext,
-				),
-			),
-			array(
-				'type' => 'header',
-				'labelTranslate' => 'INACTIVE_TAB',
-			),
-			array(
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'INACTIVE_ICON',
-					'name' => 'inactiveicon',
-					'id' => 'inactiveicon',
-					'value' => $inactiveicon,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'INACTIVE_TEXT',
-					'name' => 'inactivetext',
-					'id' => 'inactivetext',
-					'value' => $inactivetext,
+				'title' => 'Custom CSS',
+				'id' => 'theme_css',
+				'image' => 'images/gear.png',
+				'fields' => array(
+					array(
+						'type' => 'header',
+						'label' => 'Custom CSS',
+					),
+					array(
+						'type' => 'textarea',
+						'name' => 'customCSS',
+						'value' => (file_exists('./custom.css')?file_get_contents('./custom.css'):''),
+						'rows' => 25,
+						'style' => 'background: #000; color: #FFF;',
+					),
 				),
 			),
 		),
@@ -863,6 +864,7 @@ echo buildSettings(
 	array(
 		'title' => 'Homepage Settings',
 		'id' => 'homepage_settings',
+		'onready' => '',
 		'tabs' => array(
 			array(
 				'title' => 'General',
@@ -876,6 +878,13 @@ echo buildSettings(
 						'value' => HOMEPAGEAUTHNEEDED,
 						'options' => $userTypes,
 					),
+					array(
+						'type' => 'custom',
+						'labelTranslate' => 'SHOW_HOMEPAGE',
+						'html' => 'homePageAuthNeeded',
+						'name' => 'homePagelayout',
+						'value' => '',
+					),
 				),
 			),
 			array(
@@ -883,6 +892,13 @@ echo buildSettings(
 				'id' => 'plex',
 				'image' => 'images/plex.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'plexHomeAuth',
+						'value' => PLEXHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:32400',
@@ -899,13 +915,6 @@ echo buildSettings(
 						'name' => 'plexToken',
 						'pattern' => '[a-zA-Z0-9]{20}',
 						'value' => PLEXTOKEN,
-					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'plexHomeAuth',
-						'value' => PLEXHOMEAUTH,
-						'options' => $userTypes,
 					),
 					array(
 						array(
@@ -941,6 +950,13 @@ echo buildSettings(
 				'image' => 'images/emby.png',
 				'fields' => array(
 					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'embyHomeAuth',
+						'value' => EMBYHOMEAUTH,
+						'options' => $userTypes,
+					),
+					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:8096/emby',
 						'labelTranslate' => 'EMBY_URL',
@@ -956,13 +972,6 @@ echo buildSettings(
 						'name' => 'plexToken',
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
-					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'embyHomeAuth',
-						'value' => EMBYHOMEAUTH,
-						'options' => $userTypes,
 					),
 					array(
 						array(
@@ -998,6 +1007,13 @@ echo buildSettings(
 				'image' => 'images/sonarr.png',
 				'fields' => array(
 					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sonarrHomeAuth',
+						'value' => SONARRHOMEAUTH,
+						'options' => $userTypes,
+					),
+					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:8989',
 						'labelTranslate' => 'SONARR_URL',
@@ -1014,13 +1030,6 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => SONARRKEY,
 					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'sonarrHomeAuth',
-						'value' => SONARRHOMEAUTH,
-						'options' => $userTypes,
-					),
 				),
 			),
 			array(
@@ -1028,6 +1037,13 @@ echo buildSettings(
 				'id' => 'radarr',
 				'image' => 'images/radarr.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'radarrHomeAuth',
+						'value' => RADARRHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:7878',
@@ -1045,13 +1061,6 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => RADARRKEY,
 					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'radarrHomeAuth',
-						'value' => RADARRHOMEAUTH,
-						'options' => $userTypes,
-					),
 				),
 			),
 			array(
@@ -1059,6 +1068,13 @@ echo buildSettings(
 				'id' => 'sick',
 				'image' => 'images/sickrage.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sickrageHomeAuth',
+						'value' => SICKRAGEHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:8081/sick',
@@ -1075,13 +1091,6 @@ echo buildSettings(
 						'name' => 'sickrageKey',
 						'value' => SICKRAGEKEY,
 					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'sickrageHomeAuth',
-						'value' => SICKRAGEHOMEAUTH,
-						'options' => $userTypes,
-					),
 				),
 			),
 			array(
@@ -1089,6 +1098,13 @@ echo buildSettings(
 				'id' => 'headphones',
 				'image' => 'images/headphones.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'headphonesHomeAuth',
+						'value' => HEADPHONESHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:8181',
@@ -1105,13 +1121,6 @@ echo buildSettings(
 						'name' => 'headphonesKey',
 						'value' => HEADPHONESKEY,
 					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'headphonesHomeAuth',
-						'value' => HEADPHONESHOMEAUTH,
-						'options' => $userTypes,
-					),
 				),
 			),
 			array(
@@ -1119,6 +1128,13 @@ echo buildSettings(
 				'id' => 'sabnzbd',
 				'image' => 'images/sabnzbd.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sabnzbdHomeAuth',
+						'value' => SABNZBDHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:8080/sabnzbd',
@@ -1135,13 +1151,6 @@ echo buildSettings(
 						'name' => 'sabnzbdKey',
 						'value' => SABNZBDKEY,
 					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'sabnzbdHomeAuth',
-						'value' => SABNZBDHOMEAUTH,
-						'options' => $userTypes,
-					),
 				),
 			),
 			array(
@@ -1149,6 +1158,13 @@ echo buildSettings(
 				'id' => 'nzbget',
 				'image' => 'images/nzbget.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'nzbgetHomeAuth',
+						'value' => NZBGETHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:6789',
@@ -1169,13 +1185,6 @@ echo buildSettings(
 						'labelTranslate' => 'PASSWORD',
 						'name' => 'nzbgetPassword',
 						'value' => (empty(NZBGETPASSWORD)?'':randString(20)),
-					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'nzbgetHomeAuth',
-						'value' => NZBGETHOMEAUTH,
-						'options' => $userTypes,
 					),
 				),
 			),
@@ -1238,6 +1247,28 @@ echo buildSettings(
 						'name' => 'calendarEndDay',
 						'pattern' => '[1-9][0-9]+',
 						'value' => CALENDARENDDAY,
+					),
+				),
+			),
+			array(
+				'title' => 'Custom HTML 1',
+				'id' => 'customhtml1',
+				'image' => 'images/gear.png',
+				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'homepageCustomHTML1Auth',
+						'value' => HOMEPAGECUSTOMHTML1AUTH,
+						'options' => $userTypes,
+					),
+					array(
+						'type' => 'textarea',
+						'labelTranslate' => 'CUSTOMHTML',
+						'name' => 'homepageCustomHTML1',
+						'value' => HOMEPAGECUSTOMHTML1,
+						'rows' => 10,
+						'style' => 'background: #000; color: #FFF;',
 					),
 				),
 			),

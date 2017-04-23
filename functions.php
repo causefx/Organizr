@@ -1314,6 +1314,28 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 			$bDropdown = (isset($params['buttonDrop'])?$params['buttonDrop']:'');
 			$field = ($bDropdown?'<div class="btn-group">':'').'<button id="'.$id.'" type="button" class="btn waves btn-labeled btn-'.$bType.' btn-sm text-uppercase waves-effect waves-float'.$class.''.($bDropdown?' dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':'"').' '.implode(' ',$tags).'><span class="btn-label"><i class="fa fa-'.$icon.'"></i></span>'.$label.'</button>'.($bDropdown?$bDropdown.'</div>':'');
 			break;
+		case 'textarea':
+			$rows = (isset($params['rows'])?$params['rows']:5);
+			$field = '<textarea id="'.$id.'" name="'.$name.'" class="form-control'.$class.'" rows="'.$rows.'" '.implode(' ',$tags).'>'.$val.'</textarea>';
+			break;
+		case 'custom':
+			// Settings
+			$settings = array(
+				'$id' => $id,
+				'$name' => $name,
+				'$val' => $val,
+				'$label' => $label,
+				'$labelOut' => $labelOut,
+			);
+			// Get HTML
+			$html = (isset($params['html'])?$params['html']:'Nothing Specified!');
+			// If LabelOut is in html dont print it twice
+			$labelOut = (strpos($html,'$labelOut')!==false?'':$labelOut);
+			// Replace variables in settings
+			$html = preg_replace_callback('/\$\w+\b/', function ($match) use ($settings) { return (isset($settings[$match[0]])?$settings[$match[0]]:'{'.$match[0].' is undefined}'); }, $html);
+			// Build Field
+			$field = '<div id="'.$id.'_html" class="custom-field">'.$html.'</div>';
+			break;
 		case 'space':
 			$labelOut = '';
 			$field = str_repeat('<br>', (isset($params['value'])?$params['value']:1));
