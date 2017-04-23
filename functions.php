@@ -379,7 +379,7 @@ function post_request($url, $data, $headers = array(), $referer='') {
     $urlDigest = parse_url($url);
 
     // extract host and path:
-    $host = $urlDigest['host'].(isset($urlDigest['port'])?':'.$urlDigest['port']:'');
+    $host = $urlDigest['host'];
     $path = $urlDigest['path'];
 	
     if ($urlDigest['scheme'] != 'http') {
@@ -387,7 +387,7 @@ function post_request($url, $data, $headers = array(), $referer='') {
     }
 
     // open a socket connection on port 80 - timeout: 30 sec
-    $fp = fsockopen($host, 80, $errno, $errstr, 30);
+    $fp = fsockopen($host, (isset($urlDigest['port'])?':'.$urlDigest['port']:80), $errno, $errstr, 30);
 
     if ($fp){
 
