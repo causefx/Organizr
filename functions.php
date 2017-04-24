@@ -779,7 +779,7 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 				$item = $v;
 				break;
 			case 'string':
-				$item = '"'.addcslashes($v,'\'"\\$').'"';
+				$item = "'".str_replace(array('\\',"'"),array('\\\\',"\'"),$v)."'";
 				break;
 			case 'array':
 				$item = createConfig($v, false, $nest+1);
@@ -789,13 +789,13 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		}
 		
 		if($allowCommit) {
-			$output[] = str_repeat("\t",$nest+1).'"'.$k.'" => '.$item;
+			$output[] = str_repeat("\t",$nest+1)."'$k' => $item";
 		}
 	}
 	
 	if (!$nest && !isset($array['CONFIG_VERSION'])) {
 		// Inject Current Version
-		$output[] = "\t".'"CONFIG_VERSION" => "'.INSTALLEDVERSION.'"';
+		$output[] = "\t'CONFIG_VERSION' => '".INSTALLEDVERSION."'";
 	}
 	
 	// Build output
