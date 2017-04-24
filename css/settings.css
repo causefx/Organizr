@@ -9,3 +9,7 @@ div.colour-field {
 div.colour-field input {
 	color: #000;
 }
+
+input.invalid {
+	background-color: #ffb5b5 !important;
+}
