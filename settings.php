@@ -919,6 +919,10 @@ echo buildSettings(
 						'value' => PLEXTOKEN,
 					),
 					array(
+						'type' => 'custom',
+						'html' => '<a href="https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token">Plex Token Wiki Article</a>',
+					),
+					array(
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'RECENT_MOVIES',
