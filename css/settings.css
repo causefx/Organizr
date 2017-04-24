@@ -13,3 +13,7 @@ div.colour-field input {
 input.invalid {
 	background-color: #ffb5b5 !important;
 }
+
+input.invalid + p.help-text::after {
+	content: " - Does not match pattern!";
+}
