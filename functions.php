@@ -779,7 +779,7 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 				$item = $v;
 				break;
 			case 'string':
-				$item = '"'.addslashes($v).'"';
+				$item = '"'.addcslashes($v,'\'"\\$').'"';
 				break;
 			case 'array':
 				$item = createConfig($v, false, $nest+1);
