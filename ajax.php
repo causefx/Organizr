@@ -112,6 +112,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
 			case 'deleteLog':
 				sendNotification(unlink(FAIL_LOG));
 				break;
+			case 'submit-tabs':
+				$response['notify'] = sendNotification(updateTabs($_POST) , false, false);
+				//$response['parent']['reload'] = true;
+				break;
 			default:
 				sendNotification(false, 'Unsupported Action!');
 		}

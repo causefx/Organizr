@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.33');
+ define('INSTALLEDVERSION', '1.34');
 // ===================================
 
 // Debugging output functions
@@ -1013,8 +1013,18 @@ function upgradeCheck() {
 		// Update Version and Commit
 		$config['CONFIG_VERSION'] = '1.33';
 		$createConfigSuccess = createConfig($config);
+		unset($config);
+	}
+	
+	// Upgrade to 1.33
+	$config = loadConfig();
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.34')) {
+		// Upgrade database to latest version
+		updateSQLiteDB($config['database_Location']);
 		
-		$effectiveVersion = $config['CONFIG_VERSION'];
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.34';
+		$createConfigSuccess = createConfig($config);
 		unset($config);
 	}
 	
@@ -1272,7 +1282,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 	
 	// Tags
 	$tags = array();
-	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href') as $value) {
+	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href','onclick') as $value) {
 		$tags[] = (isset($params[$value])?$value.'="'.$params[$value].'"':'');
 	}
 	
@@ -1306,14 +1316,19 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 		case 'toggle':
 			$checked = ((is_bool($val) && $val) || trim($val) === 'true'?' checked':'');
 			$labelOut = '<label for="'.$id.'"></label>'.$label;
-			$field = '<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-success'.$class.'" '.implode(' ',$tags).' value="'.$val.'"'.$checked.'>';
+			$field = '<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-success'.$class.'" '.implode(' ',$tags).' data-value="'.$val.'"'.$checked.'>';
+			break;
+		case 'radio':
+			$labelOut = '';
+			$checked = ((is_bool($val) && $val) || ($val && trim($val) !== 'false')?' checked':'');
+			$bType = (isset($params['buttonType'])?$params['buttonType']:'success');
+			$field = '<div class="radio radio-'.$bType.'"><input id="'.$id.'" name="'.$name.'" type="radio" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'"'.$checked.'><label for="'.$id.'">'.$label.'</label></div>';
 			break;
 		case 'date':
 			$field = 'Unsupported, planned.';
 			break;
 		case 'hidden':
-			$labelOut = '';
-			$field = '<input id="'.$id.'" name="'.$name.'" type="hidden" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'">';
+			return '<input id="'.$id.'" name="'.$name.'" type="hidden" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'">';
 			break;
 		case 'header':
 			$labelOut = '';
@@ -1343,7 +1358,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 			// Get HTML
 			$html = (isset($params['html'])?$params['html']:'Nothing Specified!');
 			// If LabelOut is in html dont print it twice
-			$labelOut = (strpos($html,'$labelOut')!==false?'':$labelOut);
+			$labelOut = (strpos($html,'$label')!==false?'':$labelOut);
 			// Replace variables in settings
 			$html = preg_replace_callback('/\$\w+\b/', function ($match) use ($settings) { return (isset($settings[$match[0]])?$settings[$match[0]]:'{'.$match[0].' is undefined}'); }, $html);
 			// Build Field
@@ -1373,6 +1388,116 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 	}
 	
 	return '<div class="'.$wrapClass.' col-sm-'.$sizeSm.' col-md-'.$sizeMd.' col-lg-'.$sizeLg.'">'.$labelBef.$field.$labelAft.'</div>';
+}
+
+// Tab Settings Generation
+function printTabRow($data) {
+	$hidden = false;
+	if ($data===false) {
+		$hidden = true;
+		$data = array( // New Tab Defaults
+			'id' => 'new',
+			'name' => '',
+			'url' => '',
+			'icon' => 'fa-diamond',
+			'iconurl' => '',
+			'active' => 'true',
+			'user' => 'true',
+			'guest' => 'true',
+			'window' => 'false',
+			'defaultz' => '',
+		);
+	}
+	$image = '<span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span>';
+	
+	$output = '
+		<li id="tab-'.$data['id'].'" class="list-group-item" style="position: relative; left: 0px; top: 0px; '.($hidden?' display: none;':'').'">
+			<tab class="content-form form-inline">
+				<div class="row">
+					'.buildField(array(
+						'type' => 'custom',
+						'html' => '<div class="action-btns tabIconView" style="width:100%;"><a style="margin-left: 0px">$val</a></div>',
+						'value' => $image,
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'hidden',
+						'id' => 'tab-'.$data['id'].'-id',
+						'name' => 'id['.$data['id'].']',
+						'value' => $data['id'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'text',
+						'id' => 'tab-'.$data['id'].'-name',
+						'name' => 'name['.$data['id'].']',
+						'placeholder' => 'Organizr Homepage',
+						'labelTranslate' => 'TAB_NAME',
+						'value' => $data['name'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'text',
+						'id' => 'tab-'.$data['id'].'-url',
+						'name' => 'url['.$data['id'].']',
+						'placeholder' => 'homepage.php',
+						'labelTranslate' => 'TAB_URL',
+						'value' => $data['url'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'text',
+						'id' => 'tab-'.$data['id'].'-iconurl',
+						'name' => 'iconurl['.$data['id'].']',
+						'placeholder' => 'images/organizr.png',
+						'labelTranslate' => 'ICON_URL',
+						'value' => $data['iconurl'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'custom',
+						'id' => 'tab-'.$data['id'].'-icon',
+						'name' => 'icon['.$data['id'].']',
+						'html' => '- '.translate('OR').' - <div class="input-group"><input data-placement="bottomRight" class="form-control material icp-auto'.($hidden?'-pend':'').'" id="$id" name="$name" value="$val" type="text" /><span class="input-group-addon"></span></div>',
+						'value' => $data['icon'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'ACTIVE',
+						'name' => 'active['.$data['id'].']',
+						'value' => $data['active'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'USER',
+						'name' => 'user['.$data['id'].']',
+						'value' => $data['user'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'GUEST',
+						'name' => 'guest['.$data['id'].']',
+						'value' => $data['guest'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'NO_IFRAME',
+						'name' => 'window['.$data['id'].']',
+						'value' => $data['window'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'radio',
+						'labelTranslate' => 'DEFAULT',
+						'name' => 'defaultz['.$data['id'].']',
+						'value' => $data['defaultz'],
+						'onclick' => "$('[type=radio][id!=\''+this.id+'\']').each(function() { this.checked=false; });",
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'button',
+						'icon' => 'trash',
+						'labelTranslate' => 'REMOVE',
+						'onclick' => "$(this).parents('li').remove();",
+					),12,1,1).'
+				</div>
+			</tab>
+		</li>
+	';
+	return $output;
 }
 
 // Timezone array
@@ -1437,6 +1562,7 @@ function createSQLiteDB($path = false) {
 		// Create Tabs
 		$tabs = $GLOBALS['file_db']->query('CREATE TABLE `tabs` (
 			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`order`	INTEGER,
 			`users_id`	INTEGER,
 			`name`	TEXT,
 			`url`	TEXT,
@@ -1798,6 +1924,38 @@ function sabnzbdConnect($list = 'queue') {
 	} else {
 		return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
 	}
+}
+
+function updateTabs($tabs) {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	// Validate
+	if (!isset($tabs['defaultz'])) { $tabs['defaultz'][current(array_keys($tabs['name']))] = 'true'; }
+	if (isset($tabs['name']) && isset($tabs['url']) && is_array($tabs['name'])) {
+		// Clear Existing Tabs
+		$GLOBALS['file_db']->query("DELETE FROM tabs");
+		// Process New Tabs
+		$totalValid = 0;
+		foreach ($tabs['name'] as $key => $value) {
+			// Qualify
+			if (!$value || !isset($tabs['url']) || !$tabs['url'][$key]) { continue; }
+			$totalValid++;
+			$fields = array();
+			foreach(array('id','name','url','icon','iconurl','order') as $v) {
+				if (isset($tabs[$v]) && isset($tabs[$v][$key])) { $fields[$v] = $tabs[$v][$key]; }
+			}
+			foreach(array('active','user','guest','defaultz','window') as $v) {
+				if (isset($tabs[$v]) && isset($tabs[$v][$key])) { $fields[$v] = ($tabs[$v][$key]!=='false'?'true':'false'); }
+			}
+			$GLOBALS['file_db']->query('INSERT INTO tabs (`'.implode('`,`',array_keys($fields)).'`) VALUES (\''.implode("','",$fields).'\');');
+		}
+		return $totalValid;
+	} else {
+		return false;
+	}
+	return false;
 }
 
 // ==============

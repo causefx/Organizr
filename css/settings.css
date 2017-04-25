@@ -17,3 +17,22 @@ input.invalid {
 input.invalid + p.help-text::after {
 	content: " - Does not match pattern!";
 }
+
+
+div.form-content input:not([type=radio]) {
+	width: 100% !important;
+}
+
+tab > div.row {
+	padding: 0px 10px 0px 10px;
+}
+
+tab > div.row > div {
+	padding: 5px !important;
+}
+
+tab > div.row > div:first-child {
+	max-width: 42px;
+}
+
+

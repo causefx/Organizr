@@ -31,9 +31,12 @@ function ajax_request(method, action, data, callback, options) {
 				
 				// Internal Process Function
 				var scopefunctions = function(scopeObj, data) {
+					
 					// Reload?
 					if (data.reload === true) {
+						console.log(scopeObj.location.href );
 						scopeObj.location.href = scopeObj.location.href;
+						scopeObj.location.reload(true);
 					}
 					
 					// Navigate?

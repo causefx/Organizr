@@ -31,26 +31,23 @@ foreach(loadAppearance() as $key => $value) {
 	$$key = $value;
 }
 
+// Slimbar
+if(SLIMBAR == "true") {
+	$slimBar = "30"; 
+	$userSize = "25";
+} else {
+	$slimBar = "56"; 
+	$userSize = "40"; 
+}
 
 
 
 
 
-
-
-$action = "";
-if(isset($_POST['action'])) :
-    $action = $_POST['action'];
-endif;
-
-if(!isset($_POST['op'])) :
-
-    $_POST['op'] = "";
-endif; 
-
-if($action == "addTabz") :
+if(0) :
+	debug_out($_POST,1);
 	$file_db->exec("DELETE FROM tabs");
-
+	
     $addTabName = array();
     $addTabUrl = array();
     $addTabIcon = array();
@@ -146,13 +143,12 @@ if($action == "addTabz") :
     endforeach;
 endif;
 
-if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
+
 ?>
 
 <!DOCTYPE html>
 
 <html lang="en" class="no-js">
-
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -231,9 +227,50 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
         <script src="bower_components/DataTables/media/js/jquery.dataTables.js"></script>
         <script src="bower_components/datatables.net-responsive/js/dataTables.responsive.js"></script>
         <script src="bower_components/datatables-tabletools/js/dataTables.tableTools.js"></script>
-    </head>
-
-    <body class="scroller-body" style="padding: 0; background: #273238; overflow: hidden">
+		
+		<!--Other-->
+		<script>
+			function addTab() {
+				var idNumber = Math.round(Math.random() * 999999999) + 1000000000;
+				var $element = $('#tab-new').clone();
+				$element.css('display','block');
+				$element.attr('id', $element.attr('id').replace('new',idNumber));
+				$element.find('[value=new]').attr('value', idNumber).val(idNumber);
+				$element.find('[id][name]').each(function () {
+					this.id = this.id.replace('new',idNumber);
+					this.name = this.name.replace('new',idNumber);
+				});
+				$element.find('[for]').each(function () {
+					$(this).attr('for',$(this).attr('for').replace('new',idNumber));
+				});
+				$element.appendTo('#submitTabs ul');
+				$element.find('.icp-auto-pend').iconpicker({placement: 'left', hideOnSelect: false, collision: true}).hide();
+			}
+			function submitTabs(form) {
+				var formData = {};
+				var ids = [];
+				
+				$.each($(form).serializeArray(), function(i,v) {
+					var regmatch = /(\w+)\[((?:new-)?\d+)\]/i.exec(v.name);
+					if (regmatch) {
+						if (ids.indexOf(regmatch[2]) == -1) {
+							ids.push(regmatch[2]);
+							if (typeof formData['order'] !== 'object') { formData['order'] = {}; }
+							formData['order'][regmatch[2]] = ids.length;
+						}
+						if (typeof formData[regmatch[1]] !== 'object') { formData[regmatch[1]] = {}; }
+						formData[regmatch[1]][regmatch[2]] = v.value; 
+					} else {
+						console.log(regmatch);
+					}
+				});
+				console.log(formData);
+				ajax_request('POST', 'submit-tabs', formData);
+				
+				return false;
+			}
+		</script>
+		
         <style>
             @media screen and (max-width:737px){
                 .email-body{width: 100%; overflow: auto;}
@@ -352,6 +389,9 @@ fclose($file_handle);
 echo "\n";
 endif; ?>
         </style>
+    </head>
+
+    <body class="scroller-body" style="padding: 0; background: #273238; overflow: hidden">
         <div id="main-wrapper" class="main-wrapper">
 
             <!--Content-->
@@ -360,22 +400,13 @@ endif; ?>
                 <div id="versionCheck"></div>
                 <div class="row">
                     <div class="col-lg-2">
-                        <?php if($action) : ?>
-
-                        <button id="apply" style="width: 100%" class="btn waves btn-success btn-sm text-uppercase waves-effect waves-float animated tada" type="submit">
-
-                            <?php echo $language->translate("APPLY_CHANGES");?>
-
-                        </button>
-
-                        <?php endif; ?>
+						<button id="apply" style="width: 100%; display: none;" class="btn waves btn-success btn-sm text-uppercase waves-effect waves-float animated tada" type="submit">
+							<?php echo $language->translate("APPLY_CHANGES");?>
+						</button>
                         <div class="content-box profile-sidebar box-shadow">
                             <img src="images/organizr-logo-h-d.png" width="100%" style="margin-top: -10px;">
-
                             <div class="profile-usermenu">
-
                                 <ul class="nav" id="settings-list">
-
                                     <li class=""><a id="open-tabs"><i class="fa fa-list red-orange"></i>Edit Tabs</a></li>
                                     <li class=""><a id="open-colors"><i class="fa fa-paint-brush green"></i>Edit Colors</a></li>
                                     <li><a id="open-users"><i class="fa fa-user red"></i>Manage Users</a></li>
@@ -383,11 +414,8 @@ endif; ?>
                                     <li><a id="open-homepage"><i class=" fa fa-home yellow"></i>Edit Homepage</a></li>
                                     <li><a id="open-advanced"><i class=" fa fa-cog light-blue"></i>Advanced</a></li>
                                     <li><a id="open-info"><i class=" fa fa-info orange"></i>&nbsp; About</a></li>
-
                                 </ul>
-
                             </div>
-
                         </div>
                     </div>
                     <div class="col-lg-10">
@@ -403,245 +431,62 @@ endif; ?>
                         <div class="email-inner small-box">
                             <div class="email-inner-section">
                                 <div class="small-box todo-list fade in" id="tab-tabs">
-
-                                    <div class="sort-todo">
-
-                                        <a class="total-tabs"><?php echo $language->translate("TABS");?> <span class="badge gray-bg"></span></a>
-
-                                        <button id="iconHide" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
-
-                                            <span class="btn-label"><i class="fa fa-upload"></i></span><?php echo $language->translate("UPLOAD_ICONS");?>
-
-                                        </button>
-
-                                        <button id="iconAll" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
-
-                                            <span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo $language->translate("VIEW_ICONS");?>
-
-                                        </button>
-
-                                    </div>
-
-                                    <input type="file" name="files[]" id="uploadIcons" multiple="multiple">
-
-                                    <div id="viewAllIcons" style="display: none;">
-
-                                        <h4><strong><?php echo $language->translate("ALL_ICONS");?></strong> [<?php echo $language->translate("CLICK_ICON");?>]</h4>
-
-                                        <div class="row">
-
-                                            <textarea id="copyTarget" class="hideCopy" style="left: -9999px; top: 0; position: absolute;"></textarea>                                           
-                                            <?php
-                                            $dirname = "images/";
-                                            $images = scandir($dirname);
-                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
-                                            foreach($images as $curimg){
-                                                if(!in_array($curimg, $ignore)) { ?>
-
-                                            <div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
-
-                                                <a data-toggle="tooltip" data-placement="bottom" title="<?=$dirname.$curimg;?>" class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
-
-                                                    <img style="width: 50px; height: 50px;" src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
-
-                                                </a>
-
-                                            </div>
-
-                                            <?php } } ?>
-
-                                        </div>
-
-                                    </div>
-
-                                    <form id="add_tab" method="post">
-
-                                        <div class="form-group add-tab">
-
-                                            <div class="input-group">
-
-                                                <div class="input-group-addon">
-
-                                                    <i class="fa fa-pencil gray"></i>
-
-                                                </div>
-
-                                                <input type="text" class="form-control name-of-todo" placeholder="<?php echo $language->translate("TYPE_HIT_ENTER");?>" style="border-top-left-radius: 0;
-            border-bottom-left-radius: 0;">
-
-                                            </div>
-
-                                        </div>
-
-                                    </form>
-
-                                    <div class="panel">
-
-                                        <form id="submitTabs" method="post">
-
+									<form id="submitTabs" onsubmit="submitTabs(this); return false;">
+										<div class="sort-todo">
+											<button id="newtab" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float" onclick="addTab()">
+												<span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo translate("NEW_TAB");?>
+											</button>
+											<button id="iconHide" type="button" class="btn waves btn-labeled btn-warning btn-sm text-uppercase waves-effect waves-float">
+												<span class="btn-label"><i class="fa fa-upload"></i></span><?php echo $language->translate("UPLOAD_ICONS");?>
+											</button>
+											<button id="iconAll" type="button" class="btn waves btn-labeled btn-info btn-sm text-uppercase waves-effect waves-float">
+												<span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo $language->translate("VIEW_ICONS");?>
+											</button>
+											<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
+												<span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo translate('SAVE_TABS'); ?>
+											</button>
+										</div>
+										<input type="file" name="files[]" id="uploadIcons" multiple="multiple">
+										<div id="viewAllIcons" style="display: none;">
+											<h4><strong><?php echo $language->translate("ALL_ICONS");?></strong> [<?php echo $language->translate("CLICK_ICON");?>]</h4>
+											<div class="row">
+												<textarea id="copyTarget" class="hideCopy" style="left: -9999px; top: 0; position: absolute;"></textarea>                                           
+<?php
+$dirname = "images/";
+$images = scandir($dirname);
+$ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
+foreach($images as $curimg){
+	if(!in_array($curimg, $ignore)) { ?>
+												<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
+													<a data-toggle="tooltip" data-placement="bottom" title="<?=$dirname.$curimg;?>" class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+														<img style="width: 50px; height: 50px;" src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
+													</a>
+												</div>
+<?php 
+	}
+}
+?>
+											</div>
+										</div>
+										<div class="panel">
                                             <div class="panel-body todo">
-
-                                                <input type="hidden" name="action" value="addTabz" />
-
                                                 <ul class="list-group ui-sortable">
-
-                                                    <?php  
-													$tabNum = 1;
-                                                    foreach($file_db->query('SELECT * FROM tabs') as $row) {
-
-                                                    if($row['defaultz'] == "true") : $default = "checked"; else : $default = ""; endif;
-                                                    if($row['active'] == "true") : $activez = "checked"; else : $activez = ""; endif;
-                                                    if($row['guest'] == "true") : $guestz = "checked"; else : $guestz = ""; endif;
-                                                    if($row['user'] == "true") : $userz = "checked"; else : $userz = ""; endif;
-                                                    if($row['window'] == "true") : $windowz = "checked"; else : $windowz = ""; endif;
-                                                    if($row['iconurl'] != "") : $backgroundListImage = "background-image: url('". $row['iconurl'] . "') !important; background-repeat: no-repeat !important; background-position: left !important; background-blend-mode: difference !important; background-size: 50px 50px !important"; else : $backgroundListImage = ""; endif;
-
-                                                    ?>
-                                                    <li id="item-<?=$tabNum;?>" class="list-group-item" style="position: relative; left: 0px; top: 0px;">
-
-                                                        <tab class="content-form form-inline">
-
-                                                            <div class="form-group">
-
-                                                                <div class="action-btns tabIconView" style="width:calc(100%)">
-
-                                                                    <?php if($backgroundListImage == "") : ?>
-                                                                    <a class="" style="margin-left: 0px"><span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a>
-                                                                    <?php endif; ?>
-
-                                                                    <?php if($backgroundListImage != "") : ?>
-                                                                    <a class="" style="margin-left: 0px"><span style="display: none; font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a>
-                                                                    <a class="" style="margin-left: 0px"><span style=""><img style="height: 30px; width: 30px" src="<?=$row['iconurl']?>"></span></a>
-
-                                                                    <?php endif; ?>
-
-                                                                </div>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="<?=$row['name'];?>">
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="<?php echo $language->translate("TAB_URL");?>" value="<?=$row['url']?>">
-
-                                                            </div>
-
-                                                            <div style="margin-right: 5px;" class="form-group">
-
-                                                                <div class="input-group">
-                                                                    <input data-placement="bottomRight" class="form-control material icp-auto" name="icon-<?=$tabNum;?>" value="<?=$row['icon'];?>" type="text" />
-                                                                    <span class="input-group-addon"></span>
-                                                                </div>
-
-                                                                - <?php echo $language->translate("OR");?> -
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-<?=$tabNum;?>" name="iconurl-<?=$tabNum;?>" placeholder="<?php echo $language->translate("ICON_URL");?>" value="<?=$row['iconurl']?>">
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <div class="radio radio-danger">
-
-
-                                                                    <input type="radio" id="default[<?=$tabNum;?>]" value="true" name="default" <?=$default;?>>
-                                                                    <label for="default[<?=$tabNum;?>]"><?php echo $language->translate("DEFAULT");?></label>
-
-                                                                </div>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <div class="">
-
-                                                                    <input id="" class="switcher switcher-success" value="false" name="active-<?=$tabNum;?>" type="hidden">
-                                                                    <input id="active[<?=$tabNum;?>]" class="switcher switcher-success" name="active-<?=$tabNum;?>" type="checkbox" <?=$activez;?>>
-
-                                                                    <label for="active[<?=$tabNum;?>]"></label>
-
-                                                                </div>
-                                                                <?php echo $language->translate("ACTIVE");?>
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <div class="">
-
-                                                                    <input id="" class="switcher switcher-primary" value="false" name="user-<?=$tabNum;?>" type="hidden">
-                                                                    <input id="user[<?=$tabNum;?>]" class="switcher switcher-primary" name="user-<?=$tabNum;?>" type="checkbox" <?=$userz;?>>
-                                                                    <label for="user[<?=$tabNum;?>]"></label>
-
-                                                                </div>
-                                                                <?php echo $language->translate("USER");?>
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <div class="">
-
-                                                                    <input id="" class="switcher switcher-primary" value="false" name="guest-<?=$tabNum;?>" type="hidden">
-                                                                    <input id="guest[<?=$tabNum;?>]" class="switcher switcher-warning" name="guest-<?=$tabNum;?>" type="checkbox" <?=$guestz;?>>
-                                                                    <label for="guest[<?=$tabNum;?>]"></label>
-
-                                                                </div>
-                                                                <?php echo $language->translate("GUEST");?>
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <div class="">
-
-                                                                    <input id="" class="switcher switcher-primary" value="false" name="window-<?=$tabNum;?>" type="hidden">
-                                                                    <input id="window[<?=$tabNum;?>]" class="switcher switcher-danger" name="window-<?=$tabNum;?>" type="checkbox" <?=$windowz;?>>
-                                                                    <label for="window[<?=$tabNum;?>]"></label>
-
-                                                                </div>
-                                                                <?php echo $language->translate("NO_IFRAME");?>
-                                                            </div>
-
-                                                            <div class="pull-right action-btns" style="padding-top: 8px;">
-
-                                                                <a class="trash"><span class="fa fa-trash"></span></a>
-
-                                                            </div>
-
-                                                        </tab>
-
-                                                    </li>
-                                                    <?php $tabNum ++; }?>
-
+<?php
+foreach($file_db->query('SELECT * FROM tabs ORDER BY `order` asc') as $key => $row) {
+	if (!isset($row['id'])) { $row['id'] = $key + 1; }
+	echo printTabRow($row);
+}
+?>
                                                 </ul>
-
                                             </div>
-
-                                            <div class="checkbox clear-todo pull-left"></div>
-
-                                            <button style="margin-top: 5px;" class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
-
-                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_TABS");?>
-
-                                            </button>
-
-                                        </form>
-
-                                    </div>
-
+										</div>
+									</form>
+<?php echo printTabRow(false); ?>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
                 <div class="email-content color-box white-bg">
 <?php
 // Build Colour Settings
@@ -2191,32 +2036,6 @@ echo buildSettings(
                 });
             });
         </script>
-        <?php if($_POST['op']) : ?>
-        <script>
-            parent.notify("<?php echo printArray($USER->info_log); ?>","info-circle","notice","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
-            <?php if(!empty($USER->error_log)) : ?>
-            parent.notify("<?php echo printArray($USER->error_log); ?>","exclamation-circle ","error","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
-            <?php endif; ?>
-        </script>
-        <?php endif; ?>
-        <?php if($action == "addTabz") : ?>
-        <script>
-
-            if(!window.location.hash) {
-                window.location = window.location + '#loaded';
-                window.location.reload();
-            }else{
-               parent.notify("<strong><?php echo $language->translate('TABS_SAVED');?></strong> <?php echo $language->translate('APPLY_RELOAD');?>","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>"); 
-            }
-        </script>
-        <?php endif; ?>
-         <?php if($action == "addOptionz") : ?>
-        <script>
-
-            parent.notify("<strong><?php echo $language->translate('COLORS_SAVED');?></strong> <?php echo $language->translate('APPLY_RELOAD');?>","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
-        </script>
-        <?php endif; ?>
-
         <script>
             (function($) {
                 function startTrigger(e,data) {
@@ -2321,7 +2140,8 @@ echo buildSettings(
                 };
 
                 $("#submitTabs").on('submit', function (e) {
-
+					console.log('disabled this func')
+					return false;
                     console.log("submitted");
 
                     $("div.radio").each(function(i) {
