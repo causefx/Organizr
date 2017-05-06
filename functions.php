@@ -1315,8 +1315,9 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 		case 'checkbox':
 		case 'toggle':
 			$checked = ((is_bool($val) && $val) || trim($val) === 'true'?' checked':'');
+			$colour = (isset($params['colour'])?$params['colour']:'success');
 			$labelOut = '<label for="'.$id.'"></label>'.$label;
-			$field = '<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-success'.$class.'" '.implode(' ',$tags).' data-value="'.$val.'"'.$checked.'>';
+			$field = '<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-'.$colour.' '.$class.'" '.implode(' ',$tags).' data-value="'.$val.'"'.$checked.'>';
 			break;
 		case 'radio':
 			$labelOut = '';
@@ -1465,18 +1466,21 @@ function printTabRow($data) {
 					'.buildField(array(
 						'type' => 'checkbox',
 						'labelTranslate' => 'USER',
+						'colour' => 'primary',
 						'name' => 'user['.$data['id'].']',
 						'value' => $data['user'],
 					),12,1,1).'
 					'.buildField(array(
 						'type' => 'checkbox',
 						'labelTranslate' => 'GUEST',
+						'colour' => 'warning',
 						'name' => 'guest['.$data['id'].']',
 						'value' => $data['guest'],
 					),12,1,1).'
 					'.buildField(array(
 						'type' => 'checkbox',
 						'labelTranslate' => 'NO_IFRAME',
+						'colour' => 'danger',
 						'name' => 'window['.$data['id'].']',
 						'value' => $data['window'],
 					),12,1,1).'

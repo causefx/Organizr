@@ -28,11 +28,17 @@ tab > div.row {
 }
 
 tab > div.row > div {
-	padding: 5px !important;
+	padding: 1px 5px !important;
 }
 
 tab > div.row > div:first-child {
 	max-width: 42px;
 }
 
+tab p.help-text {
+	margin: 0px !important;
+}
 
+#submitTabs ul > li {
+	padding: 0px 10px !important;
+}
