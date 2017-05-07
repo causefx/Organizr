@@ -1781,7 +1781,7 @@ function deleteDatabase() {
 }
 
 // Upgrade the installation
-function upgradeInstall() {
+function upgradeInstall($branch = 'master') {
     function downloadFile($url, $path){
         $folderPath = "upgrade/";
         if(!mkdir($folderPath)) : echo "can't make dir"; endif;
@@ -1839,10 +1839,10 @@ function upgradeInstall() {
         } else if (file_exists ( $src ))
             copy ( $src, $dst );
     }
-
-    $url = "https://github.com/causefx/Organizr/archive/master.zip";
+	
+    $url = 'https://github.com/causefx/Organizr/archive/'.$branch.'.zip';
     $file = "upgrade.zip";
-    $source = __DIR__ . "/upgrade/Organizr-master/";
+    $source = __DIR__ . '/upgrade/Organizr-'.$branch.'/';
     $cleanup = __DIR__ . "/upgrade/";
     $destination = __DIR__ . "/";
     downloadFile($url, $file);
@@ -1934,6 +1934,7 @@ function sabnzbdConnect($list = 'queue') {
 	}
 }
 
+// Apply new tab settings
 function updateTabs($tabs) {
 	if (!isset($GLOBALS['file_db'])) {
 		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');

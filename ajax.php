@@ -106,7 +106,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				break;
 			case 'upgradeInstall':
 				upgradeInstall();
-				$response['notify'] = sendNotification(true, 'Performing Checks',false);
+				$response['notify'] = sendNotification(true, 'Performing Checks', false);
+				$response['tab']['goto'] = 'updatedb.php';
+				break;
+			case 'forceBranchInstall':
+				upgradeInstall(GIT_BRANCH);
+				$response['notify'] = sendNotification(true, 'Performing Checks', false);
 				$response['tab']['goto'] = 'updatedb.php';
 				break;
 			case 'deleteLog':

@@ -1170,20 +1170,27 @@ echo buildSettings(
 						'name' => 'cookiePassword',
 						'value' => (empty(COOKIEPASSWORD)?'':randString(20)),
 					),
-					/*
 					array(
 						'type' => 'text',
 						'labelTranslate' => 'GIT_BRANCH',
+						'placeholder' => 'Default: \'master\' - Development: \'develop\' OR \'cero-dev\'',
+						'id' => 'git_branch_id',
 						'name' => 'git_branch',
 						'value' => GIT_BRANCH,
 					),
-					*/
 					array(
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'GIT_CHECK',
 							'name' => 'git_check',
 							'value' => GIT_CHECK,
+						),
+						array(
+							'type' => 'button',
+							'id' => 'gitForceInstall',
+							'labelTranslate' => 'GIT_FORCE',
+							'icon' => 'gear',
+							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { ajax_request(\'POST\', \'forceBranchInstall\'); } }',
 						),
 					),
 					array(
@@ -2640,7 +2647,7 @@ echo buildSettings(
 					parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
 
 					$(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
-					$(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\" onsubmit=\"ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/<?php echo GIT_BRANCH; ?>.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+					$(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\" onsubmit=\"ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
 					$( "p[id^='upgrade']" ).toggle();
 				}else if(currentVersion === githubVersion){
 					console.log("You Are on Current Version");
