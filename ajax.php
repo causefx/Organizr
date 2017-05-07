@@ -114,7 +114,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				break;
 			case 'submit-tabs':
 				$response['notify'] = sendNotification(updateTabs($_POST) , false, false);
-				//$response['parent']['reload'] = true;
+				$response['show_apply'] = true;
 				break;
 			default:
 				sendNotification(false, 'Unsupported Action!');

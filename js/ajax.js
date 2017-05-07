@@ -24,6 +24,11 @@ function ajax_request(method, action, data, callback, options) {
 					}
 				}
 				
+				// Show Apply
+				if (data.show_apply === true) {
+					$('#apply').show();
+				}
+				
 				// Callback
 				if (typeof data.callback === 'string') {
 					eval(data.callback);

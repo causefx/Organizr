@@ -1283,7 +1283,10 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 	// Tags
 	$tags = array();
 	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href','onclick') as $value) {
-		$tags[] = (isset($params[$value])?$value.'="'.$params[$value].'"':'');
+		if (isset($params[$value])) {
+			if (is_string($params[$value])) { $tags[] = $value.'="'.$params[$value].'"';
+			} else if ($params[$value] === true) { $tags[] = $value; }
+		}
 	}
 	
 	$format = (isset($params['format']) && in_array($params['format'],array(false,'colour','color'))?$params['format']:false);
@@ -1417,8 +1420,7 @@ function printTabRow($data) {
 				<div class="row">
 					'.buildField(array(
 						'type' => 'custom',
-						'html' => '<div class="action-btns tabIconView" style="width:100%;"><a style="margin-left: 0px">$val</a></div>',
-						'value' => $image,
+						'html' => '<div class="action-btns tabIconView"><a style="margin-left: 0px">'.($data['iconurl']?'<img src="'.$data['iconurl'].'" height="30" width="30">':'<span style="font: normal normal normal 30px/1 FontAwesome;" class="fa '.($data['icon']?$data['icon']:'hand-paper-o').'"></span>').'</a></div>',
 					),12,1,1).'
 					'.buildField(array(
 						'type' => 'hidden',
@@ -1430,6 +1432,7 @@ function printTabRow($data) {
 						'type' => 'text',
 						'id' => 'tab-'.$data['id'].'-name',
 						'name' => 'name['.$data['id'].']',
+						'required' => true,
 						'placeholder' => 'Organizr Homepage',
 						'labelTranslate' => 'TAB_NAME',
 						'value' => $data['name'],
@@ -1438,6 +1441,7 @@ function printTabRow($data) {
 						'type' => 'text',
 						'id' => 'tab-'.$data['id'].'-url',
 						'name' => 'url['.$data['id'].']',
+						'required' => true,
 						'placeholder' => 'homepage.php',
 						'labelTranslate' => 'TAB_URL',
 						'value' => $data['url'],
