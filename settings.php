@@ -1170,6 +1170,22 @@ echo buildSettings(
 						'name' => 'cookiePassword',
 						'value' => (empty(COOKIEPASSWORD)?'':randString(20)),
 					),
+					/*
+					array(
+						'type' => 'text',
+						'labelTranslate' => 'GIT_BRANCH',
+						'name' => 'git_branch',
+						'value' => GIT_BRANCH,
+					),
+					*/
+					array(
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'GIT_CHECK',
+							'name' => 'git_check',
+							'value' => GIT_CHECK,
+						),
+					),
 					array(
 						'type' => 'checkbox',
 						'labelTranslate' => 'MULTIPLE_LOGINS',
@@ -2595,6 +2611,47 @@ echo buildSettings(
                 },600);
                 e.preventDefault();
             });
+			
+	function checkGithub() {
+		$.ajax({
+			type: "GET",
+			url: "https://api.github.com/repos/causefx/Organizr/releases",
+			dataType: "json",
+			success: function(github) {
+				var currentVersion = "<?php echo INSTALLEDVERSION;?>";
+				infoTabVersion = $('#about').find('#version');
+				infoTabVersionHistory = $('#about').find('#versionHistory');
+				infoTabNew = $('#about').find('#whatsnew');
+				infoTabDownload = $('#about').find('#downloadnow');
+				$.each(github, function(i,v) {
+					if(i === 0){ 
+						console.log(v.tag_name);
+						githubVersion = v.tag_name;
+						githubDescription = v.body;
+						githubName = v.name;
+					}
+					$(infoTabVersionHistory).append('<li style="display: none"><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon animated jello"><i class="fa fa-github-alt"></i></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
+					size_li = $("#versionHistory li").size();
+					x=2;
+					$('#versionHistory li:lt('+x+')').show();
+				});
+				if(currentVersion < githubVersion){
+					console.log("You Need To Upgrade");
+					parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+
+					$(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
+					$(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\" onsubmit=\"ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/<?php echo GIT_BRANCH; ?>.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+					$( "p[id^='upgrade']" ).toggle();
+				}else if(currentVersion === githubVersion){
+					console.log("You Are on Current Version");
+				}else{
+					console.log("something went wrong");
+				}
+
+				$(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?>");
+			}
+		});
+	}
         </script>
         <script>
         $( document ).ready(function() {
@@ -2647,44 +2704,8 @@ echo buildSettings(
             //Tab save on reload - might need to delete as we changed tab layout
             //rememberTabSelection('#settingsTabs', !localStorage); 
         	//AJAX call to github to get version info	
-        	$.ajax({
-        		type: "GET",
-                url: "https://api.github.com/repos/causefx/Organizr/releases",
-                dataType: "json",
-                success: function(github) {
-                    var currentVersion = "<?php echo INSTALLEDVERSION;?>";
-                    infoTabVersion = $('#about').find('#version');
-                    infoTabVersionHistory = $('#about').find('#versionHistory');
-                    infoTabNew = $('#about').find('#whatsnew');
-                    infoTabDownload = $('#about').find('#downloadnow');
-                    $.each(github, function(i,v) {
-                        if(i === 0){ 
-                            console.log(v.tag_name);
-                            githubVersion = v.tag_name;
-                            githubDescription = v.body;
-                            githubName = v.name;
-                        }
-                        $(infoTabVersionHistory).append('<li style="display: none"><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon animated jello"><i class="fa fa-github-alt"></i></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
-                        size_li = $("#versionHistory li").size();
-                        x=2;
-                        $('#versionHistory li:lt('+x+')').show();
-                    });
-        			if(currentVersion < githubVersion){
-                    	console.log("You Need To Upgrade");
-                        parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+			<?php if (GIT_CHECK) { echo 'checkGithub()'; } ?>
 
-                        $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
-                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\" onsubmit=\"ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
-                        $( "p[id^='upgrade']" ).toggle();
-                    }else if(currentVersion === githubVersion){
-                    	console.log("You Are on Current Version");
-                    }else{
-                    	console.log("something went wrong");
-                    }
-
-                    $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?>");
-                }
-            });
             //Edit Info tab with Github info
             <?php if(file_exists(FAIL_LOG)) : ?>
             goodCount = $('#loginStats').find('#goodCount');

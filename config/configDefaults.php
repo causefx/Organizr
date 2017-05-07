@@ -69,5 +69,6 @@ return array(
 	"homePageAuthNeeded" => false,
 	"homepageCustomHTML1" => "",
 	"homepageCustomHTML1Auth" => false,
-	
+	"git_branch" => "master",
+	"git_check" => true,
 );
