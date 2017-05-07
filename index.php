@@ -117,8 +117,8 @@ if (file_exists('config/config.php')) {
 
         if($USER->authenticated && $USER->role == "admin") :
 
-            $result = $file_db->query('SELECT * FROM tabs WHERE active = "true"');
-            $getsettings = $file_db->query('SELECT * FROM tabs WHERE active = "true"');
+            $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
+            $getsettings = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
 
             foreach($getsettings as $row) :
 
@@ -132,11 +132,11 @@ if (file_exists('config/config.php')) {
 
         elseif($USER->authenticated && $USER->role == "user") :
 
-            $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true"');
+            $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true" ORDER BY `order` asc');
 
         else :
 
-            $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true"');
+            $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true" ORDER BY `order` asc');
 
         endif;
 
@@ -266,6 +266,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         <meta name="theme-color" content="#2d89ef">
         <link rel="stylesheet" type="text/css" href="css/addtohomescreen.css">
         <script src="js/addtohomescreen.js"></script>
+		<!--Other-->
+		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
         <script src="bower_components/respondJs/dest/respond.min.js"></script>

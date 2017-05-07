@@ -31,128 +31,19 @@ foreach(loadAppearance() as $key => $value) {
 	$$key = $value;
 }
 
-
-
-
-
-
-
-
-$action = "";
-if(isset($_POST['action'])) :
-    $action = $_POST['action'];
-endif;
-
-if(!isset($_POST['op'])) :
-
-    $_POST['op'] = "";
-endif; 
-
-if($action == "addTabz") :
-	$file_db->exec("DELETE FROM tabs");
-
-    $addTabName = array();
-    $addTabUrl = array();
-    $addTabIcon = array();
-    $addTabIconUrl = array();
-    $addTabDefault = array();
-    $addTabActive = array();
-    $addTabUser = array();
-    $addTabGuest = array();
-    $addTabWindow = array();
-    $buildArray = array();
-
-    foreach ($_POST as $key => $value) :
-        $trueKey = explode('-', $key);
-        if ($value == "on") :
-            $value = "true";
-        endif;
-        if($trueKey[0] == "name"):
-            array_push($addTabName, $value);
-        endif;
-        if($trueKey[0] == "url"):
-            array_push($addTabUrl, $value);
-        endif;
-        if($trueKey[0] == "icon"):
-            array_push($addTabIcon, $value);
-        endif;
-
-        if($trueKey[0] == "iconurl"):
-            array_push($addTabIconUrl, $value);
-        endif;
-        if($trueKey[0] == "default"):
-            array_push($addTabDefault, $value);
-        endif;
-        if($trueKey[0] == "active"):
-            array_push($addTabActive, $value);
-        endif;
-        if($trueKey[0] == "user"):
-            array_push($addTabUser, $value);
-        endif;
-        if($trueKey[0] == "guest"):
-            array_push($addTabGuest, $value);
-        endif; 
-
-        if($trueKey[0] == "window"):
-            array_push($addTabWindow, $value);
-        endif;  
-    endforeach;
-
-    $tabArray = 0;
-    if(count($addTabName) > 0) : 
-        foreach(range(1,count($addTabName)) as $index) :
-            if(!isset($addTabDefault[$tabArray])) :
-                $tabDefault = "false";
-            else :
-                $tabDefault = $addTabDefault[$tabArray];
-            endif;
-            $buildArray[] = array('name' => $addTabName[$tabArray],
-                  'url' => $addTabUrl[$tabArray],
-                  'defaultz' => $tabDefault,
-                  'active' => $addTabActive[$tabArray],
-                  'user' => $addTabUser[$tabArray],
-                  'guest' => $addTabGuest[$tabArray],
-                  'icon' => $addTabIcon[$tabArray],
-                  'window' => $addTabWindow[$tabArray],
-                  'iconurl' => $addTabIconUrl[$tabArray]);
-
-            $tabArray++;
-        endforeach;
-    endif; 
-    $insert = "INSERT INTO tabs (name, url, defaultz, active, user, guest, icon, iconurl, window) 
-                VALUES (:name, :url, :defaultz, :active, :user, :guest, :icon, :iconurl, :window)";
-    $stmt = $file_db->prepare($insert);
-    $stmt->bindParam(':name', $name);
-    $stmt->bindParam(':url', $url);
-    $stmt->bindParam(':defaultz', $defaultz);
-    $stmt->bindParam(':active', $active);
-    $stmt->bindParam(':user', $user);
-    $stmt->bindParam(':guest', $guest);
-    $stmt->bindParam(':icon', $icon);
-    $stmt->bindParam(':iconurl', $iconurl);
-    $stmt->bindParam(':window', $window);
-    foreach ($buildArray as $t) :
-        $name = $t['name'];
-        $url = $t['url'];
-        $defaultz = $t['defaultz'];
-        $active = $t['active'];
-        $user = $t['user'];
-        $guest = $t['guest'];
-        $icon = $t['icon'];
-        $iconurl = $t['iconurl'];
-        $window = $t['window'];
-
-        $stmt->execute();
-    endforeach;
-endif;
-
-if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
+// Slimbar
+if(SLIMBAR == "true") {
+	$slimBar = "30"; 
+	$userSize = "25";
+} else {
+	$slimBar = "56"; 
+	$userSize = "40"; 
+}
 ?>
 
 <!DOCTYPE html>
 
 <html lang="en" class="no-js">
-
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -216,7 +107,9 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
 
         <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
         <script src="bower_components/numbered/jquery.numberedtextarea.js"></script>
-
+		
+		<!--Other-->
+		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
         <!--Notification-->
         <script src="js/notifications/notificationFx.js"></script>
@@ -229,9 +122,50 @@ if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56
         <script src="bower_components/DataTables/media/js/jquery.dataTables.js"></script>
         <script src="bower_components/datatables.net-responsive/js/dataTables.responsive.js"></script>
         <script src="bower_components/datatables-tabletools/js/dataTables.tableTools.js"></script>
-    </head>
-
-    <body class="scroller-body" style="padding: 0; background: #273238; overflow: hidden">
+		
+		<!--Other-->
+		<script>
+			function addTab() {
+				var idNumber = Math.round(Math.random() * 999999999) + 1000000000;
+				var $element = $('#tab-new').clone();
+				$element.css('display','block');
+				$element.attr('id', $element.attr('id').replace('new',idNumber));
+				$element.find('[value=new]').attr('value', idNumber).val(idNumber);
+				$element.find('[id][name]').each(function () {
+					this.id = this.id.replace('new',idNumber);
+					this.name = this.name.replace('new',idNumber);
+				});
+				$element.find('[for]').each(function () {
+					$(this).attr('for',$(this).attr('for').replace('new',idNumber));
+				});
+				$element.appendTo('#submitTabs ul');
+				$element.find('.icp-auto-pend').iconpicker({placement: 'left', hideOnSelect: false, collision: true}).hide();
+			}
+			function submitTabs(form) {
+				var formData = {};
+				var ids = [];
+				
+				$.each($(form).serializeArray(), function(i,v) {
+					var regmatch = /(\w+)\[((?:new-)?\d+)\]/i.exec(v.name);
+					if (regmatch) {
+						if (ids.indexOf(regmatch[2]) == -1) {
+							ids.push(regmatch[2]);
+							if (typeof formData['order'] !== 'object') { formData['order'] = {}; }
+							formData['order'][regmatch[2]] = ids.length;
+						}
+						if (typeof formData[regmatch[1]] !== 'object') { formData[regmatch[1]] = {}; }
+						formData[regmatch[1]][regmatch[2]] = v.value; 
+					} else {
+						console.log(regmatch);
+					}
+				});
+				console.log(formData);
+				ajax_request('POST', 'submit-tabs', formData);
+				
+				return false;
+			}
+		</script>
+		
         <style>
             @media screen and (max-width:737px){
                 .email-body{width: 100%; overflow: auto;}
@@ -350,6 +284,9 @@ fclose($file_handle);
 echo "\n";
 endif; ?>
         </style>
+    </head>
+
+    <body class="scroller-body" style="padding: 0; background: #273238; overflow: hidden">
         <div id="main-wrapper" class="main-wrapper">
 
             <!--Content-->
@@ -358,22 +295,13 @@ endif; ?>
                 <div id="versionCheck"></div>
                 <div class="row">
                     <div class="col-lg-2">
-                        <?php if($action) : ?>
-
-                        <button id="apply" style="width: 100%" class="btn waves btn-success btn-sm text-uppercase waves-effect waves-float animated tada" type="submit">
-
-                            <?php echo $language->translate("APPLY_CHANGES");?>
-
-                        </button>
-
-                        <?php endif; ?>
+						<button id="apply" style="width: 100%; display: none;" class="btn waves btn-success btn-sm text-uppercase waves-effect waves-float animated tada" type="submit">
+							<?php echo $language->translate("APPLY_CHANGES");?>
+						</button>
                         <div class="content-box profile-sidebar box-shadow">
                             <img src="images/organizr-logo-h-d.png" width="100%" style="margin-top: -10px;">
-
                             <div class="profile-usermenu">
-
                                 <ul class="nav" id="settings-list">
-
                                     <li class=""><a id="open-tabs"><i class="fa fa-list red-orange"></i>Edit Tabs</a></li>
                                     <li class=""><a id="open-colors"><i class="fa fa-paint-brush green"></i>Edit Colors</a></li>
                                     <li><a id="open-users"><i class="fa fa-user red"></i>Manage Users</a></li>
@@ -381,11 +309,8 @@ endif; ?>
                                     <li><a id="open-homepage"><i class=" fa fa-home yellow"></i>Edit Homepage</a></li>
                                     <li><a id="open-advanced"><i class=" fa fa-cog light-blue"></i>Advanced</a></li>
                                     <li><a id="open-info"><i class=" fa fa-info orange"></i>&nbsp; About</a></li>
-
                                 </ul>
-
                             </div>
-
                         </div>
                     </div>
                     <div class="col-lg-10">
@@ -401,245 +326,62 @@ endif; ?>
                         <div class="email-inner small-box">
                             <div class="email-inner-section">
                                 <div class="small-box todo-list fade in" id="tab-tabs">
-
-                                    <div class="sort-todo">
-
-                                        <a class="total-tabs"><?php echo $language->translate("TABS");?> <span class="badge gray-bg"></span></a>
-
-                                        <button id="iconHide" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
-
-                                            <span class="btn-label"><i class="fa fa-upload"></i></span><?php echo $language->translate("UPLOAD_ICONS");?>
-
-                                        </button>
-
-                                        <button id="iconAll" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float">
-
-                                            <span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo $language->translate("VIEW_ICONS");?>
-
-                                        </button>
-
-                                    </div>
-
-                                    <input type="file" name="files[]" id="uploadIcons" multiple="multiple">
-
-                                    <div id="viewAllIcons" style="display: none;">
-
-                                        <h4><strong><?php echo $language->translate("ALL_ICONS");?></strong> [<?php echo $language->translate("CLICK_ICON");?>]</h4>
-
-                                        <div class="row">
-
-                                            <textarea id="copyTarget" class="hideCopy" style="left: -9999px; top: 0; position: absolute;"></textarea>                                           
-                                            <?php
-                                            $dirname = "images/";
-                                            $images = scandir($dirname);
-                                            $ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
-                                            foreach($images as $curimg){
-                                                if(!in_array($curimg, $ignore)) { ?>
-
-                                            <div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
-
-                                                <a data-toggle="tooltip" data-placement="bottom" title="<?=$dirname.$curimg;?>" class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
-
-                                                    <img style="width: 50px; height: 50px;" src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
-
-                                                </a>
-
-                                            </div>
-
-                                            <?php } } ?>
-
-                                        </div>
-
-                                    </div>
-
-                                    <form id="add_tab" method="post">
-
-                                        <div class="form-group add-tab">
-
-                                            <div class="input-group">
-
-                                                <div class="input-group-addon">
-
-                                                    <i class="fa fa-pencil gray"></i>
-
-                                                </div>
-
-                                                <input type="text" class="form-control name-of-todo" placeholder="<?php echo $language->translate("TYPE_HIT_ENTER");?>" style="border-top-left-radius: 0;
-            border-bottom-left-radius: 0;">
-
-                                            </div>
-
-                                        </div>
-
-                                    </form>
-
-                                    <div class="panel">
-
-                                        <form id="submitTabs" method="post">
-
+									<form id="submitTabs" onsubmit="submitTabs(this); return false;">
+										<div class="sort-todo">
+											<button id="newtab" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float" onclick="addTab()">
+												<span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo translate("NEW_TAB");?>
+											</button>
+											<button id="iconHide" type="button" class="btn waves btn-labeled btn-warning btn-sm text-uppercase waves-effect waves-float">
+												<span class="btn-label"><i class="fa fa-upload"></i></span><?php echo $language->translate("UPLOAD_ICONS");?>
+											</button>
+											<button id="iconAll" type="button" class="btn waves btn-labeled btn-info btn-sm text-uppercase waves-effect waves-float">
+												<span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo $language->translate("VIEW_ICONS");?>
+											</button>
+											<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
+												<span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo translate('SAVE_TABS'); ?>
+											</button>
+										</div>
+										<input type="file" name="files[]" id="uploadIcons" multiple="multiple">
+										<div id="viewAllIcons" style="display: none;">
+											<h4><strong><?php echo $language->translate("ALL_ICONS");?></strong> [<?php echo $language->translate("CLICK_ICON");?>]</h4>
+											<div class="row">
+												<textarea id="copyTarget" class="hideCopy" style="left: -9999px; top: 0; position: absolute;"></textarea>                                           
+<?php
+$dirname = "images/";
+$images = scandir($dirname);
+$ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
+foreach($images as $curimg){
+	if(!in_array($curimg, $ignore)) { ?>
+												<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
+													<a data-toggle="tooltip" data-placement="bottom" title="<?=$dirname.$curimg;?>" class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+														<img style="width: 50px; height: 50px;" src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
+													</a>
+												</div>
+<?php 
+	}
+}
+?>
+											</div>
+										</div>
+										<div class="panel">
                                             <div class="panel-body todo">
-
-                                                <input type="hidden" name="action" value="addTabz" />
-
                                                 <ul class="list-group ui-sortable">
-
-                                                    <?php  
-													$tabNum = 1;
-                                                    foreach($file_db->query('SELECT * FROM tabs') as $row) {
-
-                                                    if($row['defaultz'] == "true") : $default = "checked"; else : $default = ""; endif;
-                                                    if($row['active'] == "true") : $activez = "checked"; else : $activez = ""; endif;
-                                                    if($row['guest'] == "true") : $guestz = "checked"; else : $guestz = ""; endif;
-                                                    if($row['user'] == "true") : $userz = "checked"; else : $userz = ""; endif;
-                                                    if($row['window'] == "true") : $windowz = "checked"; else : $windowz = ""; endif;
-                                                    if($row['iconurl'] != "") : $backgroundListImage = "background-image: url('". $row['iconurl'] . "') !important; background-repeat: no-repeat !important; background-position: left !important; background-blend-mode: difference !important; background-size: 50px 50px !important"; else : $backgroundListImage = ""; endif;
-
-                                                    ?>
-                                                    <li id="item-<?=$tabNum;?>" class="list-group-item" style="position: relative; left: 0px; top: 0px;">
-
-                                                        <tab class="content-form form-inline">
-
-                                                            <div class="form-group">
-
-                                                                <div class="action-btns tabIconView" style="width:calc(100%)">
-
-                                                                    <?php if($backgroundListImage == "") : ?>
-                                                                    <a class="" style="margin-left: 0px"><span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a>
-                                                                    <?php endif; ?>
-
-                                                                    <?php if($backgroundListImage != "") : ?>
-                                                                    <a class="" style="margin-left: 0px"><span style="display: none; font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a>
-                                                                    <a class="" style="margin-left: 0px"><span style=""><img style="height: 30px; width: 30px" src="<?=$row['iconurl']?>"></span></a>
-
-                                                                    <?php endif; ?>
-
-                                                                </div>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="name-<?=$tabNum;?>" name="name-<?=$tabNum;?>" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="<?=$row['name'];?>">
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="url-<?=$tabNum;?>" name="url-<?=$tabNum;?>" placeholder="<?php echo $language->translate("TAB_URL");?>" value="<?=$row['url']?>">
-
-                                                            </div>
-
-                                                            <div style="margin-right: 5px;" class="form-group">
-
-                                                                <div class="input-group">
-                                                                    <input data-placement="bottomRight" class="form-control material icp-auto" name="icon-<?=$tabNum;?>" value="<?=$row['icon'];?>" type="text" />
-                                                                    <span class="input-group-addon"></span>
-                                                                </div>
-
-                                                                - <?php echo $language->translate("OR");?> -
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-<?=$tabNum;?>" name="iconurl-<?=$tabNum;?>" placeholder="<?php echo $language->translate("ICON_URL");?>" value="<?=$row['iconurl']?>">
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <div class="radio radio-danger">
-
-
-                                                                    <input type="radio" id="default[<?=$tabNum;?>]" value="true" name="default" <?=$default;?>>
-                                                                    <label for="default[<?=$tabNum;?>]"><?php echo $language->translate("DEFAULT");?></label>
-
-                                                                </div>
-
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <div class="">
-
-                                                                    <input id="" class="switcher switcher-success" value="false" name="active-<?=$tabNum;?>" type="hidden">
-                                                                    <input id="active[<?=$tabNum;?>]" class="switcher switcher-success" name="active-<?=$tabNum;?>" type="checkbox" <?=$activez;?>>
-
-                                                                    <label for="active[<?=$tabNum;?>]"></label>
-
-                                                                </div>
-                                                                <?php echo $language->translate("ACTIVE");?>
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <div class="">
-
-                                                                    <input id="" class="switcher switcher-primary" value="false" name="user-<?=$tabNum;?>" type="hidden">
-                                                                    <input id="user[<?=$tabNum;?>]" class="switcher switcher-primary" name="user-<?=$tabNum;?>" type="checkbox" <?=$userz;?>>
-                                                                    <label for="user[<?=$tabNum;?>]"></label>
-
-                                                                </div>
-                                                                <?php echo $language->translate("USER");?>
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <div class="">
-
-                                                                    <input id="" class="switcher switcher-primary" value="false" name="guest-<?=$tabNum;?>" type="hidden">
-                                                                    <input id="guest[<?=$tabNum;?>]" class="switcher switcher-warning" name="guest-<?=$tabNum;?>" type="checkbox" <?=$guestz;?>>
-                                                                    <label for="guest[<?=$tabNum;?>]"></label>
-
-                                                                </div>
-                                                                <?php echo $language->translate("GUEST");?>
-                                                            </div>
-
-                                                            <div class="form-group">
-
-                                                                <div class="">
-
-                                                                    <input id="" class="switcher switcher-primary" value="false" name="window-<?=$tabNum;?>" type="hidden">
-                                                                    <input id="window[<?=$tabNum;?>]" class="switcher switcher-danger" name="window-<?=$tabNum;?>" type="checkbox" <?=$windowz;?>>
-                                                                    <label for="window[<?=$tabNum;?>]"></label>
-
-                                                                </div>
-                                                                <?php echo $language->translate("NO_IFRAME");?>
-                                                            </div>
-
-                                                            <div class="pull-right action-btns" style="padding-top: 8px;">
-
-                                                                <a class="trash"><span class="fa fa-trash"></span></a>
-
-                                                            </div>
-
-                                                        </tab>
-
-                                                    </li>
-                                                    <?php $tabNum ++; }?>
-
+<?php
+foreach($file_db->query('SELECT * FROM tabs ORDER BY `order` asc') as $key => $row) {
+	if (!isset($row['id'])) { $row['id'] = $key + 1; }
+	echo printTabRow($row);
+}
+?>
                                                 </ul>
-
                                             </div>
-
-                                            <div class="checkbox clear-todo pull-left"></div>
-
-                                            <button style="margin-top: 5px;" class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
-
-                                                <span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo $language->translate("SAVE_TABS");?>
-
-                                            </button>
-
-                                        </form>
-
-                                    </div>
-
+										</div>
+									</form>
+<?php echo printTabRow(false); ?>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
                 <div class="email-content color-box white-bg">
 <?php
 // Build Colour Settings
@@ -648,195 +390,195 @@ echo buildSettings(
 		'title' => 'Appearance Settings',
 		'id' => 'appearance_settings',
 		'submitAction' => 'update-appearance',
-		'onready' => '$("#editCssButton, #backToThemeButton").click(function(){ $("#appearance_settings_form").toggle(); $("#editCssForm").toggle(); });',
-		'customAfterForm' => '                                     
-<form style="display: none" id="editCssForm" method="POST" action="ajax.php">
-	<button class="btn waves btn-labeled btn-warning btn-sm pull-left text-uppercase waves-effect waves-float" type="button" id="backToThemeButton">
-
-	<span class="btn-label"><i class="fa fa-arrow-left"></i></span>'.translate("GO_BACK").'
-	</button>
-
-	<button class="btn waves btn-labeled btn-success btn-sm pull-right text-uppercase waves-effect waves-float" type="submit">
-
-	<span class="btn-label"><i class="fa fa-floppy-o"></i></span>'.translate("SAVE_CSS").'
-	</button>
-	<br><br>
-	<input type="hidden" name="submit" value="editCSS" /> 
-	<h1>'.translate("EDIT_CUSTOM_CSS").'</h1> 
-	<!--<p>Variables Available<code>$topbar - $topbartext - $bottombar - $sidebar - $hoverbg - $activetabBG - $activetabicon - $activetabtext - $inactiveicon - $inactivetext - $loading - $hovertext</code></p>-->
-	<textarea class="form-control" id="css-show" name="css-show" rows="25" style="background: #000; color: #FFF;">'.(file_exists('./custom.css')?file_get_contents('./custom.css'):'').'</textarea>
-</form>',
-		'fields' => array(
+		'tabs' => array(
 			array(
-				array(
-					'type' => 'button',
-					'labelTranslate' => 'CHOOSE_THEME',
-					'icon' => 'css3',
-					'id' => 'themeSelector',
-					'buttonType' => 'dark',
-					'buttonDrop' => '
-<ul class="dropdown-menu gray-bg">
-	<li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
-	<li class="chooseTheme" id="newPlexTheme" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" href="#">New Plex<span><img class="themeImage" src="images/themes/newplex.png"></span></a></li>
-	<li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
-	<li class="chooseTheme" id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook<span><img class="themeImage" src="images/themes/facebook.png"></span></a></li>
-	<li class="chooseTheme" id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa<span><img class="themeImage" src="images/themes/spa.png"></span></a></li>
-	<li class="chooseTheme" id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly<span><img class="themeImage" src="images/themes/darkly.png"></span></a></li>
-	<li class="chooseTheme" id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate<span><img class="themeImage" src="images/themes/slate.png"></span></a></li>
-	<li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
-	<li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
-	<li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
-</ul>
-					',
-				),
-				array(
-					'type' => 'button',
-					'labelTranslate' => 'EDIT_CUSTOM_CSS',
-					'icon' => 'css3',
-					'buttonType' => 'primary',
-					'id' => 'editCssButton',
+				'title' => 'Colours',
+				'id' => 'theme_colours',
+				'image' => 'images/paint.png',
+				'fields' => array(
+					array(
+						array(
+							'type' => 'button',
+							'labelTranslate' => 'CHOOSE_THEME',
+							'icon' => 'css3',
+							'id' => 'themeSelector',
+							'buttonType' => 'dark',
+							'buttonDrop' => '
+		<ul class="dropdown-menu gray-bg">
+			<li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
+			<li class="chooseTheme" id="newPlexTheme" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" href="#">New Plex<span><img class="themeImage" src="images/themes/newplex.png"></span></a></li>
+			<li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
+			<li class="chooseTheme" id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook<span><img class="themeImage" src="images/themes/facebook.png"></span></a></li>
+			<li class="chooseTheme" id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa<span><img class="themeImage" src="images/themes/spa.png"></span></a></li>
+			<li class="chooseTheme" id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly<span><img class="themeImage" src="images/themes/darkly.png"></span></a></li>
+			<li class="chooseTheme" id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate<span><img class="themeImage" src="images/themes/slate.png"></span></a></li>
+			<li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
+			<li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
+			<li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
+		</ul>
+							',
+						),
+					),
+					array(
+						'type' => 'header',
+						'labelTranslate' => 'TITLE',
+					),
+					array(
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'labelTranslate' => 'TITLE',
+							'name' => 'title',
+							'id' => 'title',
+							'value' => $title,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'TITLE_TEXT',
+							'name' => 'topbartext',
+							'id' => 'topbartext',
+							'value' => $topbartext,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'LOADING_COLOR',
+							'name' => 'loading',
+							'id' => 'loading',
+							'value' => $loading,
+						),
+					),
+					array(
+						'type' => 'header',
+						'labelTranslate' => 'NAVIGATION_BARS',
+					),
+					array(
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'TOP_BAR',
+							'name' => 'topbar',
+							'id' => 'topbar',
+							'value' => $topbar,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'BOTTOM_BAR',
+							'name' => 'bottombar',
+							'id' => 'bottombar',
+							'value' => $bottombar,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'SIDE_BAR',
+							'name' => 'sidebar',
+							'id' => 'sidebar',
+							'value' => $sidebar,
+						),
+					),
+					array(
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'HOVER_BG',
+							'name' => 'hoverbg',
+							'id' => 'hoverbg',
+							'value' => $hoverbg,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'HOVER_TEXT',
+							'name' => 'hovertext',
+							'id' => 'hovertext',
+							'value' => $hovertext,
+						),
+					),
+					array(
+						'type' => 'header',
+						'labelTranslate' => 'ACTIVE_TAB',
+					),
+					array(
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'ACTIVE_TAB_BG',
+							'name' => 'activetabBG',
+							'id' => 'activetabBG',
+							'value' => $activetabBG,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'ACTIVE_TAB_ICON',
+							'name' => 'activetabicon',
+							'id' => 'activetabicon',
+							'value' => $activetabicon,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'ACTIVE_TAB_TEXT',
+							'name' => 'activetabtext',
+							'id' => 'activetabtext',
+							'value' => $activetabtext,
+						),
+					),
+					array(
+						'type' => 'header',
+						'labelTranslate' => 'INACTIVE_TAB',
+					),
+					array(
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'INACTIVE_ICON',
+							'name' => 'inactiveicon',
+							'id' => 'inactiveicon',
+							'value' => $inactiveicon,
+						),
+						array(
+							'type' => 'text',
+							'format' => 'colour',
+							'class' => 'jscolor {hash:true}',
+							'labelTranslate' => 'INACTIVE_TEXT',
+							'name' => 'inactivetext',
+							'id' => 'inactivetext',
+							'value' => $inactivetext,
+						),
+					),
 				),
 			),
 			array(
-				'type' => 'header',
-				'labelTranslate' => 'TITLE',
-			),
-			array(
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'labelTranslate' => 'TITLE',
-					'name' => 'title',
-					'id' => 'title',
-					'value' => $title,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'TITLE_TEXT',
-					'name' => 'topbartext',
-					'id' => 'topbartext',
-					'value' => $topbartext,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'LOADING_COLOR',
-					'name' => 'loading',
-					'id' => 'loading',
-					'value' => $loading,
-				),
-			),
-			array(
-				'type' => 'header',
-				'labelTranslate' => 'NAVIGATION_BARS',
-			),
-			array(
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'TOP_BAR',
-					'name' => 'topbar',
-					'id' => 'topbar',
-					'value' => $topbar,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'BOTTOM_BAR',
-					'name' => 'bottombar',
-					'id' => 'bottombar',
-					'value' => $bottombar,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'SIDE_BAR',
-					'name' => 'sidebar',
-					'id' => 'sidebar',
-					'value' => $sidebar,
-				),
-			),
-			array(
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'HOVER_BG',
-					'name' => 'hoverbg',
-					'id' => 'hoverbg',
-					'value' => $hoverbg,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'HOVER_TEXT',
-					'name' => 'hovertext',
-					'id' => 'hovertext',
-					'value' => $hovertext,
-				),
-			),
-			array(
-				'type' => 'header',
-				'labelTranslate' => 'ACTIVE_TAB',
-			),
-			array(
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'ACTIVE_TAB_BG',
-					'name' => 'activetabBG',
-					'id' => 'activetabBG',
-					'value' => $activetabBG,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'ACTIVE_TAB_ICON',
-					'name' => 'activetabicon',
-					'id' => 'activetabicon',
-					'value' => $activetabicon,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'ACTIVE_TAB_TEXT',
-					'name' => 'activetabtext',
-					'id' => 'activetabtext',
-					'value' => $activetabtext,
-				),
-			),
-			array(
-				'type' => 'header',
-				'labelTranslate' => 'INACTIVE_TAB',
-			),
-			array(
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'INACTIVE_ICON',
-					'name' => 'inactiveicon',
-					'id' => 'inactiveicon',
-					'value' => $inactiveicon,
-				),
-				array(
-					'type' => 'text',
-					'format' => 'colour',
-					'class' => 'jscolor {hash:true}',
-					'labelTranslate' => 'INACTIVE_TEXT',
-					'name' => 'inactivetext',
-					'id' => 'inactivetext',
-					'value' => $inactivetext,
+				'title' => 'Custom CSS',
+				'id' => 'theme_css',
+				'image' => 'images/gear.png',
+				'fields' => array(
+					array(
+						'type' => 'header',
+						'label' => 'Custom CSS',
+					),
+					array(
+						'type' => 'textarea',
+						'name' => 'customCSS',
+						'value' => (file_exists('./custom.css')?file_get_contents('./custom.css'):''),
+						'rows' => 25,
+						'style' => 'background: #000; color: #FFF;',
+					),
 				),
 			),
 		),
@@ -862,6 +604,7 @@ echo buildSettings(
 	array(
 		'title' => 'Homepage Settings',
 		'id' => 'homepage_settings',
+		'onready' => '',
 		'tabs' => array(
 			array(
 				'title' => 'General',
@@ -875,6 +618,15 @@ echo buildSettings(
 						'value' => HOMEPAGEAUTHNEEDED,
 						'options' => $userTypes,
 					),
+					/*
+					array(
+						'type' => 'custom',
+						'labelTranslate' => 'SHOW_HOMEPAGE',
+						'html' => 'homePageAuthNeeded',
+						'name' => 'homePagelayout',
+						'value' => '',
+					),
+					*/
 				),
 			),
 			array(
@@ -882,6 +634,13 @@ echo buildSettings(
 				'id' => 'plex',
 				'image' => 'images/plex.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'plexHomeAuth',
+						'value' => PLEXHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:32400',
@@ -900,11 +659,8 @@ echo buildSettings(
 						'value' => PLEXTOKEN,
 					),
 					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'plexHomeAuth',
-						'value' => PLEXHOMEAUTH,
-						'options' => $userTypes,
+						'type' => 'custom',
+						'html' => '<a href="https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token">Plex Token Wiki Article</a>',
 					),
 					array(
 						array(
@@ -940,6 +696,13 @@ echo buildSettings(
 				'image' => 'images/emby.png',
 				'fields' => array(
 					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'embyHomeAuth',
+						'value' => EMBYHOMEAUTH,
+						'options' => $userTypes,
+					),
+					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:8096/emby',
 						'labelTranslate' => 'EMBY_URL',
@@ -952,16 +715,9 @@ echo buildSettings(
 						'type' => 'text',
 						'placeholder' => randString(32),
 						'labelTranslate' => 'EMBY_TOKEN',
-						'name' => 'plexToken',
+						'name' => 'embyToken',
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
-					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'embyHomeAuth',
-						'value' => EMBYHOMEAUTH,
-						'options' => $userTypes,
 					),
 					array(
 						array(
@@ -997,6 +753,13 @@ echo buildSettings(
 				'image' => 'images/sonarr.png',
 				'fields' => array(
 					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sonarrHomeAuth',
+						'value' => SONARRHOMEAUTH,
+						'options' => $userTypes,
+					),
+					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:8989',
 						'labelTranslate' => 'SONARR_URL',
@@ -1013,13 +776,6 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => SONARRKEY,
 					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'sonarrHomeAuth',
-						'value' => SONARRHOMEAUTH,
-						'options' => $userTypes,
-					),
 				),
 			),
 			array(
@@ -1027,6 +783,13 @@ echo buildSettings(
 				'id' => 'radarr',
 				'image' => 'images/radarr.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'radarrHomeAuth',
+						'value' => RADARRHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:7878',
@@ -1044,13 +807,6 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => RADARRKEY,
 					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'radarrHomeAuth',
-						'value' => RADARRHOMEAUTH,
-						'options' => $userTypes,
-					),
 				),
 			),
 			array(
@@ -1058,6 +814,13 @@ echo buildSettings(
 				'id' => 'sick',
 				'image' => 'images/sickrage.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sickrageHomeAuth',
+						'value' => SICKRAGEHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:8081/sick',
@@ -1074,13 +837,6 @@ echo buildSettings(
 						'name' => 'sickrageKey',
 						'value' => SICKRAGEKEY,
 					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'sickrageHomeAuth',
-						'value' => SICKRAGEHOMEAUTH,
-						'options' => $userTypes,
-					),
 				),
 			),
 			array(
@@ -1088,6 +844,13 @@ echo buildSettings(
 				'id' => 'headphones',
 				'image' => 'images/headphones.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'headphonesHomeAuth',
+						'value' => HEADPHONESHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:8181',
@@ -1104,13 +867,6 @@ echo buildSettings(
 						'name' => 'headphonesKey',
 						'value' => HEADPHONESKEY,
 					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'headphonesHomeAuth',
-						'value' => HEADPHONESHOMEAUTH,
-						'options' => $userTypes,
-					),
 				),
 			),
 			array(
@@ -1118,6 +874,13 @@ echo buildSettings(
 				'id' => 'sabnzbd',
 				'image' => 'images/sabnzbd.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'sabnzbdHomeAuth',
+						'value' => SABNZBDHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:8080/sabnzbd',
@@ -1134,13 +897,6 @@ echo buildSettings(
 						'name' => 'sabnzbdKey',
 						'value' => SABNZBDKEY,
 					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'sabnzbdHomeAuth',
-						'value' => SABNZBDHOMEAUTH,
-						'options' => $userTypes,
-					),
 				),
 			),
 			array(
@@ -1148,6 +904,13 @@ echo buildSettings(
 				'id' => 'nzbget',
 				'image' => 'images/nzbget.png',
 				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'nzbgetHomeAuth',
+						'value' => NZBGETHOMEAUTH,
+						'options' => $userTypes,
+					),
 					array(
 						'type' => 'text',
 						'placeholder' => 'http://hostname:6789',
@@ -1168,13 +931,6 @@ echo buildSettings(
 						'labelTranslate' => 'PASSWORD',
 						'name' => 'nzbgetPassword',
 						'value' => (empty(NZBGETPASSWORD)?'':randString(20)),
-					),
-					array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
-						'name' => 'nzbgetHomeAuth',
-						'value' => NZBGETHOMEAUTH,
-						'options' => $userTypes,
 					),
 				),
 			),
@@ -1237,6 +993,28 @@ echo buildSettings(
 						'name' => 'calendarEndDay',
 						'pattern' => '[1-9][0-9]+',
 						'value' => CALENDARENDDAY,
+					),
+				),
+			),
+			array(
+				'title' => 'Custom HTML 1',
+				'id' => 'customhtml1',
+				'image' => 'images/gear.png',
+				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'homepageCustomHTML1Auth',
+						'value' => HOMEPAGECUSTOMHTML1AUTH,
+						'options' => $userTypes,
+					),
+					array(
+						'type' => 'textarea',
+						'labelTranslate' => 'CUSTOMHTML',
+						'name' => 'homepageCustomHTML1',
+						'value' => HOMEPAGECUSTOMHTML1,
+						'rows' => 10,
+						'style' => 'background: #000; color: #FFF;',
 					),
 				),
 			),
@@ -1391,6 +1169,29 @@ echo buildSettings(
 						'labelTranslate' => 'COOKIE_PASSWORD',
 						'name' => 'cookiePassword',
 						'value' => (empty(COOKIEPASSWORD)?'':randString(20)),
+					),
+					array(
+						'type' => 'text',
+						'labelTranslate' => 'GIT_BRANCH',
+						'placeholder' => 'Default: \'master\' - Development: \'develop\' OR \'cero-dev\'',
+						'id' => 'git_branch_id',
+						'name' => 'git_branch',
+						'value' => GIT_BRANCH,
+					),
+					array(
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'GIT_CHECK',
+							'name' => 'git_check',
+							'value' => GIT_CHECK,
+						),
+						array(
+							'type' => 'button',
+							'id' => 'gitForceInstall',
+							'labelTranslate' => 'GIT_FORCE',
+							'icon' => 'gear',
+							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { ajax_request(\'POST\', \'forceBranchInstall\'); } }',
+						),
 					),
 					array(
 						'type' => 'checkbox',
@@ -1795,7 +1596,7 @@ echo buildSettings(
                                         <div class="panel-body">
                                             <div class="">
                                                 <p><?php echo $language->translate("DELETE_WARNING");?></p>
-                                                <form id="deletedb" method="post" onsubmit="$.post(\'ajax.php?a=deleteDB\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;">
+                                                <form id="deletedb" method="post" onsubmit="ajax_request('POST', 'deleteDB'); return false;">
                                                     <button class="btn waves btn-labeled btn-danger pull-right text-uppercase waves-effect waves-float" type="submit">
                                                         <span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("DELETE_DATABASE");?>
                                                     </button>
@@ -2153,32 +1954,6 @@ echo buildSettings(
                 });
             });
         </script>
-        <?php if($_POST['op']) : ?>
-        <script>
-            parent.notify("<?php echo printArray($USER->info_log); ?>","info-circle","notice","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
-            <?php if(!empty($USER->error_log)) : ?>
-            parent.notify("<?php echo printArray($USER->error_log); ?>","exclamation-circle ","error","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
-            <?php endif; ?>
-        </script>
-        <?php endif; ?>
-        <?php if($action == "addTabz") : ?>
-        <script>
-
-            if(!window.location.hash) {
-                window.location = window.location + '#loaded';
-                window.location.reload();
-            }else{
-               parent.notify("<strong><?php echo $language->translate('TABS_SAVED');?></strong> <?php echo $language->translate('APPLY_RELOAD');?>","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>"); 
-            }
-        </script>
-        <?php endif; ?>
-         <?php if($action == "addOptionz") : ?>
-        <script>
-
-            parent.notify("<strong><?php echo $language->translate('COLORS_SAVED');?></strong> <?php echo $language->translate('APPLY_RELOAD');?>","floppy-o","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
-        </script>
-        <?php endif; ?>
-
         <script>
             (function($) {
                 function startTrigger(e,data) {
@@ -2283,7 +2058,8 @@ echo buildSettings(
                 };
 
                 $("#submitTabs").on('submit', function (e) {
-
+					console.log('disabled this func')
+					return false;
                     console.log("submitted");
 
                     $("div.radio").each(function(i) {
@@ -2842,6 +2618,47 @@ echo buildSettings(
                 },600);
                 e.preventDefault();
             });
+			
+	function checkGithub() {
+		$.ajax({
+			type: "GET",
+			url: "https://api.github.com/repos/causefx/Organizr/releases",
+			dataType: "json",
+			success: function(github) {
+				var currentVersion = "<?php echo INSTALLEDVERSION;?>";
+				infoTabVersion = $('#about').find('#version');
+				infoTabVersionHistory = $('#about').find('#versionHistory');
+				infoTabNew = $('#about').find('#whatsnew');
+				infoTabDownload = $('#about').find('#downloadnow');
+				$.each(github, function(i,v) {
+					if(i === 0){ 
+						console.log(v.tag_name);
+						githubVersion = v.tag_name;
+						githubDescription = v.body;
+						githubName = v.name;
+					}
+					$(infoTabVersionHistory).append('<li style="display: none"><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon animated jello"><i class="fa fa-github-alt"></i></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
+					size_li = $("#versionHistory li").size();
+					x=2;
+					$('#versionHistory li:lt('+x+')').show();
+				});
+				if(currentVersion < githubVersion){
+					console.log("You Need To Upgrade");
+					parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+
+					$(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
+					$(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\" onsubmit=\"ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+					$( "p[id^='upgrade']" ).toggle();
+				}else if(currentVersion === githubVersion){
+					console.log("You Are on Current Version");
+				}else{
+					console.log("something went wrong");
+				}
+
+				$(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?>");
+			}
+		});
+	}
         </script>
         <script>
         $( document ).ready(function() {
@@ -2887,51 +2704,15 @@ echo buildSettings(
             //Simulate Edit Tabs Click 
             $("#open-tabs").trigger("click");
             //Append Delete log to User Logs
-            $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post" onsubmit="$.post(\'ajax.php?a=deleteLog\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
+            $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post" onsubmit="ajax_request(\'POST\', \'deleteLog\'); return false;"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
             $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')
             //Enable Tooltips
             $('[data-toggle="tooltip"]').tooltip(); 
             //Tab save on reload - might need to delete as we changed tab layout
             //rememberTabSelection('#settingsTabs', !localStorage); 
         	//AJAX call to github to get version info	
-        	$.ajax({
-        		type: "GET",
-                url: "https://api.github.com/repos/causefx/Organizr/releases",
-                dataType: "json",
-                success: function(github) {
-                    var currentVersion = "<?php echo INSTALLEDVERSION;?>";
-                    infoTabVersion = $('#about').find('#version');
-                    infoTabVersionHistory = $('#about').find('#versionHistory');
-                    infoTabNew = $('#about').find('#whatsnew');
-                    infoTabDownload = $('#about').find('#downloadnow');
-                    $.each(github, function(i,v) {
-                        if(i === 0){ 
-                            console.log(v.tag_name);
-                            githubVersion = v.tag_name;
-                            githubDescription = v.body;
-                            githubName = v.name;
-                        }
-                        $(infoTabVersionHistory).append('<li style="display: none"><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon animated jello"><i class="fa fa-github-alt"></i></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
-                        size_li = $("#versionHistory li").size();
-                        x=2;
-                        $('#versionHistory li:lt('+x+')').show();
-                    });
-        			if(currentVersion < githubVersion){
-                    	console.log("You Need To Upgrade");
-                        parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+			<?php if (GIT_CHECK) { echo 'checkGithub()'; } ?>
 
-                        $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
-                        $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\" onsubmit=\"$.post(\'ajax.php?a=upgradeInstall\', {}, function(data) { parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect); }); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
-                        $( "p[id^='upgrade']" ).toggle();
-                    }else if(currentVersion === githubVersion){
-                    	console.log("You Are on Current Version");
-                    }else{
-                    	console.log("something went wrong");
-                    }
-
-                    $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?>");
-                }
-            });
             //Edit Info tab with Github info
             <?php if(file_exists(FAIL_LOG)) : ?>
             goodCount = $('#loginStats').find('#goodCount');

@@ -67,4 +67,8 @@ return array(
 	"gravatar" => "true",
 	"calTimeFormat" => "h(:mm)t",
 	"homePageAuthNeeded" => false,
+	"homepageCustomHTML1" => "",
+	"homepageCustomHTML1Auth" => false,
+	"git_branch" => "master",
+	"git_check" => true,
 );

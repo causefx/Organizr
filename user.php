@@ -504,6 +504,7 @@ EOT;
 		 */
 		function register_user($username, $email, $sha1, &$registration_callback = false, $settings)
 		{
+			$username = strtolower($username);
 			$dbpassword = $this->token_hash_password($username, $sha1, "");
 			if($dbpassword==$sha1) die("password hashing is not implemented.");
             $newRole = "admin"; 
@@ -566,7 +567,8 @@ EOT;
 		 * Log a user in
 		 */
 		function login_user($username, $sha1, $remember, $password, $surface = true) {
-
+			$username = strtolower($username);
+			
             $buildLog = function($username, $authType) {
                 if(file_exists(FAIL_LOG)) {
                     $getFailLog = str_replace("\r\ndate", "date", file_get_contents(FAIL_LOG));

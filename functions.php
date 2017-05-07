@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.33');
+ define('INSTALLEDVERSION', '1.34');
 // ===================================
 
 // Debugging output functions
@@ -379,7 +379,7 @@ function post_request($url, $data, $headers = array(), $referer='') {
     $urlDigest = parse_url($url);
 
     // extract host and path:
-    $host = $urlDigest['host'].(isset($urlDigest['port'])?':'.$urlDigest['port']:'');
+    $host = $urlDigest['host'];
     $path = $urlDigest['path'];
 	
     if ($urlDigest['scheme'] != 'http') {
@@ -387,7 +387,7 @@ function post_request($url, $data, $headers = array(), $referer='') {
     }
 
     // open a socket connection on port 80 - timeout: 30 sec
-    $fp = fsockopen($host, 80, $errno, $errstr, 30);
+    $fp = fsockopen($host, (isset($urlDigest['port'])?':'.$urlDigest['port']:80), $errno, $errstr, 30);
 
     if ($fp){
 
@@ -445,8 +445,8 @@ function resolveEmbyItem($address, $token, $item) {
 	
 	switch ($itemDetails['Type']) {
 		case 'Episode':
-			$title = $itemDetails['SeriesName'].': '.$itemDetails['Name'].(isset($itemDetails['ParentIndexNumber']) && isset($itemDetails['IndexNumber'])?' (Season '.$itemDetails['ParentIndexNumber'].': Episode '.$itemDetails['IndexNumber'].')':'');
-			$imageId = $itemDetails['SeriesId'];
+			$title = (isset($itemDetails['SeriesName'])?$itemDetails['SeriesName'].': ':'').$itemDetails['Name'].(isset($itemDetails['ParentIndexNumber']) && isset($itemDetails['IndexNumber'])?' (Season '.$itemDetails['ParentIndexNumber'].': Episode '.$itemDetails['IndexNumber'].')':'');
+			$imageId = (isset($itemDetails['SeriesId'])?$itemDetails['SeriesId']:$itemDetails['Id']);
 			$width = 100;
 			$image = 'carousel-image season';
 			$style = '';
@@ -611,6 +611,12 @@ function getPlexStreams($size){
 function getEmbyRecent($type, $size) {
     $address = qualifyURL(EMBYURL);
 	
+	// Currently Logged In User
+	$username = false;
+	if (isset($GLOBALS['USER'])) {
+		$username = strtolower($GLOBALS['USER']->username);
+	}
+	
 	// Resolve Types
 	switch ($type) {
 		case 'movie':
@@ -632,15 +638,20 @@ function getEmbyRecent($type, $size) {
 	
 	// Get A User
 	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
+	$showPlayed = true;
 	foreach ($userIds as $value) { // Scan for admin user
-		$userId = $value['Id'];
 		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+			$userId = $value['Id'];
+		}
+		if ($username && strtolower($value['Name']) == $username) {
+			$userId = $value['Id'];
+			$showPlayed = false;
 			break;
 		}
 	}
 	
 	// Get the latest Items
-	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.EMBYTOKEN),true);
+	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
 	
 	// For Each Item In Category
 	$items = array();
@@ -701,6 +712,7 @@ function getEmbyImage() {
 		$image_src = $embyAddress . '/Items/'.$itemId.'/Images/Primary?'.implode('&', $imgParams);
 		header('Content-type: image/jpeg');
 		readfile($image_src);
+		die();
 	} else {
 		debug_out('Invalid Request',1);
 	}
@@ -718,6 +730,7 @@ function getPlexImage() {
 		$image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . PLEXTOKEN;
 		header('Content-type: image/jpeg');
 		readfile($image_src);
+		die();
 	} else {
 		echo "Invalid Plex Request";	
 	}
@@ -766,7 +779,7 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 				$item = $v;
 				break;
 			case 'string':
-				$item = '"'.addslashes($v).'"';
+				$item = "'".str_replace(array('\\',"'"),array('\\\\',"\'"),$v)."'";
 				break;
 			case 'array':
 				$item = createConfig($v, false, $nest+1);
@@ -776,13 +789,13 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		}
 		
 		if($allowCommit) {
-			$output[] = str_repeat("\t",$nest+1).'"'.$k.'" => '.$item;
+			$output[] = str_repeat("\t",$nest+1)."'$k' => $item";
 		}
 	}
 	
 	if (!$nest && !isset($array['CONFIG_VERSION'])) {
 		// Inject Current Version
-		$output[] = "\t".'"CONFIG_VERSION" => "'.INSTALLEDVERSION.'"';
+		$output[] = "\t'CONFIG_VERSION' => '".INSTALLEDVERSION."'";
 	}
 	
 	// Build output
@@ -1000,8 +1013,18 @@ function upgradeCheck() {
 		// Update Version and Commit
 		$config['CONFIG_VERSION'] = '1.33';
 		$createConfigSuccess = createConfig($config);
+		unset($config);
+	}
+	
+	// Upgrade to 1.33
+	$config = loadConfig();
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.34')) {
+		// Upgrade database to latest version
+		updateSQLiteDB($config['database_Location']);
 		
-		$effectiveVersion = $config['CONFIG_VERSION'];
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.34';
+		$createConfigSuccess = createConfig($config);
 		unset($config);
 	}
 	
@@ -1201,6 +1224,8 @@ function buildSettings($array) {
 	<script>
 		$(document).ready(function() {
 			$(\'#'.$pageID.'_form\').find(\'input, select, textarea\').on(\'change\', function() { $(this).attr(\'data-changed\', \'true\'); });
+			var '.$pageID.'Validate = function() { if (this.value && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { $(this).addClass(\'invalid\'); } else { $(this).removeClass(\'invalid\'); } };
+			$(\'#'.$pageID.'_form\').find(\'input[pattern]\').each('.$pageID.'Validate).on(\'keyup\', '.$pageID.'Validate);
 			$(\'#'.$pageID.'_form\').find(\'select[multiple]\').on(\'click\', function() { $(this).attr(\'data-changed\', \'true\'); });
 			
 			$(\'#'.$pageID.'_form\').submit(function () {
@@ -1224,11 +1249,9 @@ function buildSettings($array) {
 				});
 				if (hasVals) {
 					console.log(newVals);
-					$.post(\'ajax.php?a='.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data) {
-						console.log(data);
+					ajax_request(\'POST\', \''.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data, code) {
 						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
-						parent.notify(data.html, data.icon, data.type, data.length, data.layout, data.effect);
-					}, \'json\');
+					});
 				} else {
 					parent.notify(\'Nothing to update!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
 				}
@@ -1259,8 +1282,11 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 	
 	// Tags
 	$tags = array();
-	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href') as $value) {
-		$tags[] = (isset($params[$value])?$value.'="'.$params[$value].'"':'');
+	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href','onclick') as $value) {
+		if (isset($params[$value])) {
+			if (is_string($params[$value])) { $tags[] = $value.'="'.$params[$value].'"';
+			} else if ($params[$value] === true) { $tags[] = $value; }
+		}
 	}
 	
 	$format = (isset($params['format']) && in_array($params['format'],array(false,'colour','color'))?$params['format']:false);
@@ -1292,15 +1318,21 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 		case 'checkbox':
 		case 'toggle':
 			$checked = ((is_bool($val) && $val) || trim($val) === 'true'?' checked':'');
+			$colour = (isset($params['colour'])?$params['colour']:'success');
 			$labelOut = '<label for="'.$id.'"></label>'.$label;
-			$field = '<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-success'.$class.'" '.implode(' ',$tags).' value="'.$val.'"'.$checked.'>';
+			$field = '<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-'.$colour.' '.$class.'" '.implode(' ',$tags).' data-value="'.$val.'"'.$checked.'>';
+			break;
+		case 'radio':
+			$labelOut = '';
+			$checked = ((is_bool($val) && $val) || ($val && trim($val) !== 'false')?' checked':'');
+			$bType = (isset($params['buttonType'])?$params['buttonType']:'success');
+			$field = '<div class="radio radio-'.$bType.'"><input id="'.$id.'" name="'.$name.'" type="radio" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'"'.$checked.'><label for="'.$id.'">'.$label.'</label></div>';
 			break;
 		case 'date':
 			$field = 'Unsupported, planned.';
 			break;
 		case 'hidden':
-			$labelOut = '';
-			$field = '<input id="'.$id.'" name="'.$name.'" type="hidden" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'">';
+			return '<input id="'.$id.'" name="'.$name.'" type="hidden" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'">';
 			break;
 		case 'header':
 			$labelOut = '';
@@ -1313,6 +1345,28 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 			$bType = (isset($params['buttonType'])?$params['buttonType']:'success');
 			$bDropdown = (isset($params['buttonDrop'])?$params['buttonDrop']:'');
 			$field = ($bDropdown?'<div class="btn-group">':'').'<button id="'.$id.'" type="button" class="btn waves btn-labeled btn-'.$bType.' btn-sm text-uppercase waves-effect waves-float'.$class.''.($bDropdown?' dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':'"').' '.implode(' ',$tags).'><span class="btn-label"><i class="fa fa-'.$icon.'"></i></span>'.$label.'</button>'.($bDropdown?$bDropdown.'</div>':'');
+			break;
+		case 'textarea':
+			$rows = (isset($params['rows'])?$params['rows']:5);
+			$field = '<textarea id="'.$id.'" name="'.$name.'" class="form-control'.$class.'" rows="'.$rows.'" '.implode(' ',$tags).'>'.$val.'</textarea>';
+			break;
+		case 'custom':
+			// Settings
+			$settings = array(
+				'$id' => $id,
+				'$name' => $name,
+				'$val' => $val,
+				'$label' => $label,
+				'$labelOut' => $labelOut,
+			);
+			// Get HTML
+			$html = (isset($params['html'])?$params['html']:'Nothing Specified!');
+			// If LabelOut is in html dont print it twice
+			$labelOut = (strpos($html,'$label')!==false?'':$labelOut);
+			// Replace variables in settings
+			$html = preg_replace_callback('/\$\w+\b/', function ($match) use ($settings) { return (isset($settings[$match[0]])?$settings[$match[0]]:'{'.$match[0].' is undefined}'); }, $html);
+			// Build Field
+			$field = '<div id="'.$id.'_html" class="custom-field">'.$html.'</div>';
 			break;
 		case 'space':
 			$labelOut = '';
@@ -1338,6 +1392,120 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 	}
 	
 	return '<div class="'.$wrapClass.' col-sm-'.$sizeSm.' col-md-'.$sizeMd.' col-lg-'.$sizeLg.'">'.$labelBef.$field.$labelAft.'</div>';
+}
+
+// Tab Settings Generation
+function printTabRow($data) {
+	$hidden = false;
+	if ($data===false) {
+		$hidden = true;
+		$data = array( // New Tab Defaults
+			'id' => 'new',
+			'name' => '',
+			'url' => '',
+			'icon' => 'fa-diamond',
+			'iconurl' => '',
+			'active' => 'true',
+			'user' => 'true',
+			'guest' => 'true',
+			'window' => 'false',
+			'defaultz' => '',
+		);
+	}
+	$image = '<span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span>';
+	
+	$output = '
+		<li id="tab-'.$data['id'].'" class="list-group-item" style="position: relative; left: 0px; top: 0px; '.($hidden?' display: none;':'').'">
+			<tab class="content-form form-inline">
+				<div class="row">
+					'.buildField(array(
+						'type' => 'custom',
+						'html' => '<div class="action-btns tabIconView"><a style="margin-left: 0px">'.($data['iconurl']?'<img src="'.$data['iconurl'].'" height="30" width="30">':'<span style="font: normal normal normal 30px/1 FontAwesome;" class="fa '.($data['icon']?$data['icon']:'hand-paper-o').'"></span>').'</a></div>',
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'hidden',
+						'id' => 'tab-'.$data['id'].'-id',
+						'name' => 'id['.$data['id'].']',
+						'value' => $data['id'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'text',
+						'id' => 'tab-'.$data['id'].'-name',
+						'name' => 'name['.$data['id'].']',
+						'required' => true,
+						'placeholder' => 'Organizr Homepage',
+						'labelTranslate' => 'TAB_NAME',
+						'value' => $data['name'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'text',
+						'id' => 'tab-'.$data['id'].'-url',
+						'name' => 'url['.$data['id'].']',
+						'required' => true,
+						'placeholder' => 'homepage.php',
+						'labelTranslate' => 'TAB_URL',
+						'value' => $data['url'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'text',
+						'id' => 'tab-'.$data['id'].'-iconurl',
+						'name' => 'iconurl['.$data['id'].']',
+						'placeholder' => 'images/organizr.png',
+						'labelTranslate' => 'ICON_URL',
+						'value' => $data['iconurl'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'custom',
+						'id' => 'tab-'.$data['id'].'-icon',
+						'name' => 'icon['.$data['id'].']',
+						'html' => '- '.translate('OR').' - <div class="input-group"><input data-placement="bottomRight" class="form-control material icp-auto'.($hidden?'-pend':'').'" id="$id" name="$name" value="$val" type="text" /><span class="input-group-addon"></span></div>',
+						'value' => $data['icon'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'ACTIVE',
+						'name' => 'active['.$data['id'].']',
+						'value' => $data['active'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'USER',
+						'colour' => 'primary',
+						'name' => 'user['.$data['id'].']',
+						'value' => $data['user'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'GUEST',
+						'colour' => 'warning',
+						'name' => 'guest['.$data['id'].']',
+						'value' => $data['guest'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'NO_IFRAME',
+						'colour' => 'danger',
+						'name' => 'window['.$data['id'].']',
+						'value' => $data['window'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'radio',
+						'labelTranslate' => 'DEFAULT',
+						'name' => 'defaultz['.$data['id'].']',
+						'value' => $data['defaultz'],
+						'onclick' => "$('[type=radio][id!=\''+this.id+'\']').each(function() { this.checked=false; });",
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'button',
+						'icon' => 'trash',
+						'labelTranslate' => 'REMOVE',
+						'onclick' => "$(this).parents('li').remove();",
+					),12,1,1).'
+				</div>
+			</tab>
+		</li>
+	';
+	return $output;
 }
 
 // Timezone array
@@ -1402,6 +1570,7 @@ function createSQLiteDB($path = false) {
 		// Create Tabs
 		$tabs = $GLOBALS['file_db']->query('CREATE TABLE `tabs` (
 			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`order`	INTEGER,
 			`users_id`	INTEGER,
 			`name`	TEXT,
 			`url`	TEXT,
@@ -1516,12 +1685,11 @@ function updateDBOptions($values) {
 }
 
 // Send AJAX notification
-function sendNotification($success, $message = false) {
-	header('Content-Type: application/json');
+function sendNotification($success, $message = false, $send = true) {
 	$notifyExplode = explode("-", NOTIFYEFFECT);
 	if ($success) {
 		$msg = array(
-			'html' => '<strong>'.translate("SETTINGS_SAVED").'</strong>'.($message?'<br>'.$message:''),
+			'html' => ($message?'<br>'.$message:'<strong>'.translate("SETTINGS_SAVED").'</strong>'),
 			'icon' => 'floppy-o',
 			'type' => 'success',
 			'length' => '5000',
@@ -1530,7 +1698,7 @@ function sendNotification($success, $message = false) {
 		);
 	} else {
 		$msg = array(
-			'html' => '<strong>'.translate("SETTINGS_NOT_SAVED").'</strong>'.($message?'<br>'.$message:''),
+			'html' => ($message?'<br>'.$message:'<strong>'.translate("SETTINGS_NOT_SAVED").'</strong>'),
 			'icon' => 'floppy-o',
 			'type' => 'failed',
 			'length' => '5000',
@@ -1538,8 +1706,14 @@ function sendNotification($success, $message = false) {
 			'effect' => $notifyExplode[1],
 		);
 	}
-	echo json_encode($msg);
-	die();
+	
+	// Send and kill script?
+	if ($send) {
+		header('Content-Type: application/json');
+		echo json_encode(array('notify'=>$msg));
+		die();
+	}
+	return $msg;
 }
 
 // Load colours from the database
@@ -1607,7 +1781,7 @@ function deleteDatabase() {
 }
 
 // Upgrade the installation
-function upgradeInstall() {
+function upgradeInstall($branch = 'master') {
     function downloadFile($url, $path){
         $folderPath = "upgrade/";
         if(!mkdir($folderPath)) : echo "can't make dir"; endif;
@@ -1665,10 +1839,10 @@ function upgradeInstall() {
         } else if (file_exists ( $src ))
             copy ( $src, $dst );
     }
-
-    $url = "https://github.com/causefx/Organizr/archive/master.zip";
+	
+    $url = 'https://github.com/causefx/Organizr/archive/'.$branch.'.zip';
     $file = "upgrade.zip";
-    $source = __DIR__ . "/upgrade/Organizr-master/";
+    $source = __DIR__ . '/upgrade/Organizr-'.$branch.'/';
     $cleanup = __DIR__ . "/upgrade/";
     $destination = __DIR__ . "/";
     downloadFile($url, $file);
@@ -1677,6 +1851,120 @@ function upgradeInstall() {
     rrmdir($cleanup);
 	
 	return true;
+}
+
+// NzbGET Items
+function nzbgetConnect($list = 'listgroups') {
+    $url = qualifyURL(NZBGETURL);
+    
+    $api = file_get_contents($url.'/'.NZBGETUSERNAME.':'.NZBGETPASSWORD.'/jsonrpc/'.$list);          
+    $api = json_decode($api, true);
+    
+    $gotNZB = array();
+    
+    foreach ($api['result'] AS $child) {
+        $downloadName = htmlentities($child['NZBName'], ENT_QUOTES);
+        $downloadStatus = $child['Status'];
+        $downloadCategory = $child['Category'];
+        if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
+        if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
+        if($child['Health'] <= "750"){ 
+            $downloadHealth = "danger"; 
+        }elseif($child['Health'] <= "900"){ 
+            $downloadHealth = "warning"; 
+        }elseif($child['Health'] <= "1000"){ 
+            $downloadHealth = "success"; 
+        }
+        
+        $gotNZB[] = '<tr>
+                        <td>'.$downloadName.'</td>
+                        <td>'.$downloadStatus.'</td>
+                        <td>'.$downloadCategory.'</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+                                    <p class="text-center">'.round($downloadPercent).'%</p>
+                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>';
+    }
+    
+	if ($gotNZB) {
+		return implode('',$gotNZB);
+	} else {
+		return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+	}
+}
+
+// Sabnzbd Items
+function sabnzbdConnect($list = 'queue') {
+    $url = qualifyURL(SABNZBDURL);
+	
+    $api = file_get_contents($url.'/api?mode='.$list.'&output=json&apikey='.SABNZBDKEY); 
+    $api = json_decode($api, true);
+    
+    $gotNZB = array();
+    
+    foreach ($api[$list]['slots'] AS $child) {
+        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; } 
+        if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
+        $downloadStatus = $child['status'];
+        
+        $gotNZB[] = '<tr>
+                        <td>'.$downloadName.'</td>
+                        <td>'.$downloadStatus.'</td>
+                        <td>'.$downloadCategory.'</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+                                    <p class="text-center">'.round($downloadPercent).'%</p>
+                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>';
+    }
+    
+	if ($gotNZB) {
+		return implode('',$gotNZB);
+	} else {
+		return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+	}
+}
+
+// Apply new tab settings
+function updateTabs($tabs) {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	// Validate
+	if (!isset($tabs['defaultz'])) { $tabs['defaultz'][current(array_keys($tabs['name']))] = 'true'; }
+	if (isset($tabs['name']) && isset($tabs['url']) && is_array($tabs['name'])) {
+		// Clear Existing Tabs
+		$GLOBALS['file_db']->query("DELETE FROM tabs");
+		// Process New Tabs
+		$totalValid = 0;
+		foreach ($tabs['name'] as $key => $value) {
+			// Qualify
+			if (!$value || !isset($tabs['url']) || !$tabs['url'][$key]) { continue; }
+			$totalValid++;
+			$fields = array();
+			foreach(array('id','name','url','icon','iconurl','order') as $v) {
+				if (isset($tabs[$v]) && isset($tabs[$v][$key])) { $fields[$v] = $tabs[$v][$key]; }
+			}
+			foreach(array('active','user','guest','defaultz','window') as $v) {
+				if (isset($tabs[$v]) && isset($tabs[$v][$key])) { $fields[$v] = ($tabs[$v][$key]!=='false'?'true':'false'); }
+			}
+			$GLOBALS['file_db']->query('INSERT INTO tabs (`'.implode('`,`',array_keys($fields)).'`) VALUES (\''.implode("','",$fields).'\');');
+		}
+		return $totalValid;
+	} else {
+		return false;
+	}
+	return false;
 }
 
 // ==============
@@ -2075,114 +2363,6 @@ function getRadarrCalendar($array){
     }
 
     if ($i != 0){ return $gotCalendar; }
-
-}
-
-function nzbgetConnect($url, $username, $password, $list){
-    $url = qualifyURL(NZBGETURL);
-    
-    $api = file_get_contents("$url/$username:$password/jsonrpc/$list");
-                    
-    $api = json_decode($api, true);
-    
-    $i = 0;
-    
-    $gotNZB = "";
-    
-    foreach ($api['result'] AS $child) {
-        
-        $i++;
-        //echo '<pre>' . var_export($child, true) . '</pre>';
-        $downloadName = htmlentities($child['NZBName'], ENT_QUOTES);
-        $downloadStatus = $child['Status'];
-        $downloadCategory = $child['Category'];
-        if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
-        if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
-        if($child['Health'] <= "750"){ 
-            $downloadHealth = "danger"; 
-        }elseif($child['Health'] <= "900"){ 
-            $downloadHealth = "warning"; 
-        }elseif($child['Health'] <= "1000"){ 
-            $downloadHealth = "success"; 
-        }
-        
-        $gotNZB .= '<tr>
-
-                        <td>'.$downloadName.'</td>
-                        <td>'.$downloadStatus.'</td>
-                        <td>'.$downloadCategory.'</td>
-
-                        <td>
-
-                            <div class="progress">
-
-                                <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
-
-                                    <p class="text-center">'.round($downloadPercent).'%</p>
-                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
-
-                                </div>
-
-                            </div>
-
-                        </td>
-
-                    </tr>';
-        
-        
-    }
-    
-    if($i > 0){ return $gotNZB; }
-    if($i == 0){ echo '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>'; }
-
-}
-
-function sabnzbdConnect($url, $key, $list){
-    $url = qualifyURL(SABNZBDURL);
-
-    $api = file_get_contents("$url/api?mode=$list&output=json&apikey=$key");
-                    
-    $api = json_decode($api, true);
-    
-    $i = 0;
-    
-    $gotNZB = "";
-    
-    foreach ($api[$list]['slots'] AS $child) {
-        
-        $i++;
-        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; } 
-        if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
-        $downloadStatus = $child['status'];
-        
-        $gotNZB .= '<tr>
-
-                        <td>'.$downloadName.'</td>
-                        <td>'.$downloadStatus.'</td>
-                        <td>'.$downloadCategory.'</td>
-
-                        <td>
-
-                            <div class="progress">
-
-                                <div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
-
-                                    <p class="text-center">'.round($downloadPercent).'%</p>
-                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
-
-                                </div>
-
-                            </div>
-
-                        </td>
-
-                    </tr>';
-        
-        
-    }
-    
-    if($i > 0){ return $gotNZB; }
-    if($i == 0){ echo '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>'; }
 
 }
 
