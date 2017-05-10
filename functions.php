@@ -1653,7 +1653,7 @@ function updateSQLiteDB($db_path = false) {
 				reset($tableData);
 				foreach($tableData as $key => $value) {
 					$insertValues[] = '('.implode(',',array_map(function($d) { 
-						return (isset($d)?"'".addslashes($d)."'":'null');
+						return (isset($d)?"'".SQLite3::escapeString($d)."'":'null');
 					}, $value)).')';
 				}
 				$GLOBALS['file_db']->query($queryBase.implode(',',$insertValues).';');
