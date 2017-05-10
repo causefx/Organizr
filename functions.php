@@ -1,5 +1,10 @@
 <?php
 
+// ===================================
+// Define Version
+ define('INSTALLEDVERSION', '1.34');
+// ===================================
+
 // Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
@@ -8,12 +13,23 @@ function debug_out($variable, $die = false) {
 }
 
 // ==== Auth Plugins START ====
-
 if (function_exists('ldap_connect')) :
 	// Pass credentials to LDAP backend
 	function plugin_auth_ldap($username, $password) {
+		$ldapServers = explode(',',AUTHBACKENDHOST);
+		foreach($ldapServers as $key => $value) {
+			// Calculate parts
+			$digest = parse_url(trim($value));
+			$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:'ldap'));
+			$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
+			$port = (isset($digest['port'])?$digest['port']:(strtolower($scheme)=='ldap'?389:636));
+			
+			// Reassign
+			$ldapServers[$key] = $scheme.'://'.$host.':'.$port;
+		}
+		
 		// returns true or false
-		$ldap = ldap_connect(AUTHBACKENDHOST.(AUTHBACKENDPORT?':'.AUTHBACKENDPORT:'389'));
+		$ldap = ldap_connect(implode(' ',$ldapServers));
 		if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
 			return true;
 		} else {
@@ -21,19 +37,36 @@ if (function_exists('ldap_connect')) :
 		}
 		return false;
 	}
+else :
+	// Ldap Auth Missing Dependancy
+	function plugin_auth_ldap_disabled() {
+		return 'LDAP - Disabled (Dependancy: php-ldap missing!)';
+	}
 endif;
 
 // Pass credentials to FTP backend
 function plugin_auth_ftp($username, $password) {
-	// returns true or false
+	// Calculate parts
+	$digest = parse_url(AUTHBACKENDHOST);
+	$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:(function_exists('ftp_ssl_connect')?'ftps':'ftp')));
+	$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
+	$port = (isset($digest['port'])?$digest['port']:21);
 	
-	// Connect to FTP
-	$conn_id = ftp_ssl_connect(AUTHBACKENDHOST, (AUTHBACKENDPORT?AUTHBACKENDPORT:21), 20); // 20 Second Timeout
+	// Determine Connection Type
+	if ($scheme == 'ftps') {
+		$conn_id = ftp_ssl_connect($host, $port, 20);
+	} elseif ($scheme == 'ftp') {
+		$conn_id = ftp_connect($host, $port, 20);
+	} else {
+		debug_out('Invalid FTP scheme. Use ftp or ftps');
+		return false;
+	}
 	
 	// Check if valid FTP connection
 	if ($conn_id) {
 		// Attempt login
 		@$login_result = ftp_login($conn_id, $username, $password);
+		ftp_close($conn_id);
 		
 		// Return Result
 		if ($login_result) {
@@ -49,13 +82,7 @@ function plugin_auth_ftp($username, $password) {
 
 // Pass credentials to Emby Backend
 function plugin_auth_emby_local($username, $password) {
-	$urlCheck = stripos(AUTHBACKENDHOST, "http");
-	if ($urlCheck === false) {
-		$embyAddress = "http://" . AUTHBACKENDHOST;
-	} else {
-		$embyAddress = AUTHBACKENDHOST;	
-	}
-	if(AUTHBACKENDPORT !== ""){ $embyAddress .= ":" . AUTHBACKENDPORT; }
+	$embyAddress = qualifyURL(EMBYURL);
 	
 	$headers = array(
 		'Authorization'=> 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
@@ -86,18 +113,17 @@ function plugin_auth_emby_local($username, $password) {
 if (function_exists('curl_version')) :
 	// Authenticate Against Emby Local (first) and Emby Connect
 	function plugin_auth_emby_all($username, $password) {
-		return plugin_auth_emby_local($username, $password) || plugin_auth_emby_connect($username, $password);
+		$localResult = plugin_auth_emby_local($username, $password);
+		if ($localResult) {
+			return $localResult;
+		} else {
+			return plugin_auth_emby_connect($username, $password);
+		}
 	}
 	
 	// Authenicate against emby connect
 	function plugin_auth_emby_connect($username, $password) {
-		$urlCheck = stripos(AUTHBACKENDHOST, "http");
-		if ($urlCheck === false) {
-			$embyAddress = "http://" . AUTHBACKENDHOST;
-		} else {
-			$embyAddress = AUTHBACKENDHOST;	
-		}
-		if(AUTHBACKENDPORT !== "") { $embyAddress .= ":" . AUTHBACKENDPORT; }
+		$embyAddress = qualifyURL(EMBYURL);
 		
 		// Get A User
 		$connectId = '';
@@ -129,7 +155,10 @@ if (function_exists('curl_version')) :
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
 					if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
-						return true;
+						return array(
+							'email' => $json['User']['Email'],
+							'image' => $json['User']['ImageUrl'],
+						);
 					}
 				}
 			}
@@ -146,7 +175,6 @@ if (function_exists('curl_version')) :
 		}
 		
 		//Get User List
-		$approvedUsers = array();
 		$userURL = 'https://plex.tv/pms/friends/all';
 		$userHeaders = array(
 			'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD), 
@@ -154,7 +182,6 @@ if (function_exists('curl_version')) :
 		$userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
 		
 		if (is_array($userXML) || is_object($userXML)) {
-			//Build User List array
 			$isUser = false;
 			$usernameLower = strtolower($username);
 			foreach($userXML AS $child) {
@@ -181,13 +208,31 @@ if (function_exists('curl_version')) :
 				$result = curl_post($connectURL, $body, $headers);
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
-					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && $json['user']['username'] == $username) {
-						return true;
+					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && strtolower($json['user']['username']) == $usernameLower) {
+                        return array(
+							'email' => $json['user']['email'],
+							'image' => $json['user']['thumb']
+						);
 					}
 				}
 			}
 		}
 		return false;
+	}
+else :
+	// Plex Auth Missing Dependancy
+	function plugin_auth_plex_disabled() {
+		return 'Plex - Disabled (Dependancy: php-curl missing!)';
+	}
+	
+	// Emby Connect Auth Missing Dependancy
+	function plugin_auth_emby_connect_disabled() {
+		return 'Emby Connect - Disabled (Dependancy: php-curl missing!)';
+	}
+	
+	// Emby Both Auth Missing Dependancy
+	function plugin_auth_emby_both_disabled() {
+		return 'Emby Both - Disabled (Dependancy: php-curl missing!)';
 	}
 endif;
 // ==== Auth Plugins END ====
@@ -334,7 +379,7 @@ function post_request($url, $data, $headers = array(), $referer='') {
     $urlDigest = parse_url($url);
 
     // extract host and path:
-    $host = $urlDigest['host'].(isset($urlDigest['port'])?':'.$urlDigest['port']:'');
+    $host = $urlDigest['host'];
     $path = $urlDigest['path'];
 	
     if ($urlDigest['scheme'] != 'http') {
@@ -342,7 +387,7 @@ function post_request($url, $data, $headers = array(), $referer='') {
     }
 
     // open a socket connection on port 80 - timeout: 30 sec
-    $fp = fsockopen($host, 80, $errno, $errstr, 30);
+    $fp = fsockopen($host, (isset($urlDigest['port'])?':'.$urlDigest['port']:80), $errno, $errstr, 30);
 
     if ($fp){
 
@@ -398,24 +443,24 @@ function resolveEmbyItem($address, $token, $item) {
 	// Get Item Details
 	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&Fields=Overview&api_key='.$token),true)['Items'][0];
 	
-	switch ($item['Type']) {
+	switch ($itemDetails['Type']) {
 		case 'Episode':
-			$title = $item['SeriesName'].': '.$item['Name'].' (Season '.$item['ParentIndexNumber'].': Episode '.$item['IndexNumber'].')';
-			$imageId = $itemDetails['SeriesId'];
+			$title = (isset($itemDetails['SeriesName'])?$itemDetails['SeriesName'].': ':'').$itemDetails['Name'].(isset($itemDetails['ParentIndexNumber']) && isset($itemDetails['IndexNumber'])?' (Season '.$itemDetails['ParentIndexNumber'].': Episode '.$itemDetails['IndexNumber'].')':'');
+			$imageId = (isset($itemDetails['SeriesId'])?$itemDetails['SeriesId']:$itemDetails['Id']);
 			$width = 100;
 			$image = 'carousel-image season';
 			$style = '';
 			break;
 		case 'MusicAlbum':
-			$title = $item['Name'];
+			$title = $itemDetails['Name'];
 			$imageId = $itemDetails['Id'];
 			$width = 150;
 			$image = 'music';
 			$style = 'left: 160px !important;';
 			break;
 		default:
-			$title = $item['Name'];
-			$imageId = $item['Id'];
+			$title = $itemDetails['Name'];
+			$imageId = $itemDetails['Id'];
 			$width = 100;
 			$image = 'carousel-image movie';
 			$style = '';
@@ -427,7 +472,7 @@ function resolveEmbyItem($address, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=emby-image&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><a href="'.$address.'/web/itemdetails.html?id='.$item['Id'].'" target="_blank"><h4>'.$title.'</h4></a><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$itemDetails['Id'].'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" src="ajax.php?a=emby-image&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
 }
 
 // Format item from Plex for Carousel
@@ -444,13 +489,24 @@ function resolvePlexItem($server, $token, $item) {
 			$width = 100;
 			$image = 'carousel-image season';
 			$style = '';
+            $thumb = $item['thumb'];
+			break;
+        case 'episode':
+			$title = $item['grandparentTitle'];
+			$summary = $item['title'];
+			$width = 100;
+			$image = 'carousel-image season';
+			$style = '';
+            $thumb = $item['parentThumb'];
 			break;
 		case 'album':
+		case 'track':
 			$title = $item['parentTitle'];
 			$summary = $item['title'];
 			$width = 150;
 			$image = 'album';
 			$style = 'left: 160px !important;';
+            $thumb = $item['thumb'];
 			break;
 		default:
 			$title = $item['title'];
@@ -458,6 +514,7 @@ function resolvePlexItem($server, $token, $item) {
 			$width = 100;
 			$image = 'carousel-image movie';
 			$style = '';
+            $thumb = $item['thumb'];
 	}
 	
 	// If No Overview
@@ -466,7 +523,7 @@ function resolvePlexItem($server, $token, $item) {
 	}
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=plex-image&img='.$item['thumb'].'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><a href="'.$address.'" target="_blank"><h4>'.$title.'</h4></a><small><em>'.$summary.'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
 }
 
 // Create Carousel
@@ -554,6 +611,12 @@ function getPlexStreams($size){
 function getEmbyRecent($type, $size) {
     $address = qualifyURL(EMBYURL);
 	
+	// Currently Logged In User
+	$username = false;
+	if (isset($GLOBALS['USER'])) {
+		$username = strtolower($GLOBALS['USER']->username);
+	}
+	
 	// Resolve Types
 	switch ($type) {
 		case 'movie':
@@ -575,15 +638,20 @@ function getEmbyRecent($type, $size) {
 	
 	// Get A User
 	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
+	$showPlayed = true;
 	foreach ($userIds as $value) { // Scan for admin user
-		$userId = $value['Id'];
 		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+			$userId = $value['Id'];
+		}
+		if ($username && strtolower($value['Name']) == $username) {
+			$userId = $value['Id'];
+			$showPlayed = false;
 			break;
 		}
 	}
 	
 	// Get the latest Items
-	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.EMBYTOKEN),true);
+	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
 	
 	// For Each Item In Category
 	$items = array();
@@ -644,6 +712,7 @@ function getEmbyImage() {
 		$image_src = $embyAddress . '/Items/'.$itemId.'/Images/Primary?'.implode('&', $imgParams);
 		header('Content-type: image/jpeg');
 		readfile($image_src);
+		die();
 	} else {
 		debug_out('Invalid Request',1);
 	}
@@ -661,6 +730,7 @@ function getPlexImage() {
 		$image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . PLEXTOKEN;
 		header('Content-type: image/jpeg');
 		readfile($image_src);
+		die();
 	} else {
 		echo "Invalid Plex Request";	
 	}
@@ -676,9 +746,8 @@ function translate($string) {
 }
 
 // Generate Random string
-function randString($length = 10) {
+function randString($length = 10, $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
 	$tmp = '';
-	$chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
 	for ($i = 0; $i < $length; $i++) {
 		$tmp .= substr(str_shuffle($chars), 0, 1);
 	}
@@ -687,7 +756,16 @@ function randString($length = 10) {
 
 // Create config file in the return syntax
 function createConfig($array, $path = 'config/config.php', $nest = 0) {
+	// Define Initial Value
 	$output = array();
+	
+	// Sort Items
+	ksort($array);
+	
+	// Unset the current version
+	unset($array['CONFIG_VERSION']);
+	
+	// Process Settings
 	foreach ($array as $k => $v) {
 		$allowCommit = true;
 		switch (gettype($v)) {
@@ -701,7 +779,7 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 				$item = $v;
 				break;
 			case 'string':
-				$item = '"'.addslashes($v).'"';
+				$item = "'".str_replace(array('\\',"'"),array('\\\\',"\'"),$v)."'";
 				break;
 			case 'array':
 				$item = createConfig($v, false, $nest+1);
@@ -711,10 +789,16 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		}
 		
 		if($allowCommit) {
-			$output[] = str_repeat("\t",$nest+1).'"'.$k.'" => '.$item;
+			$output[] = str_repeat("\t",$nest+1)."'$k' => $item";
 		}
 	}
 	
+	if (!$nest && !isset($array['CONFIG_VERSION'])) {
+		// Inject Current Version
+		$output[] = "\t'CONFIG_VERSION' => '".INSTALLEDVERSION."'";
+	}
+	
+	// Build output
 	$output = (!$nest?"<?php\nreturn ":'')."array(\n".implode(",\n",$output)."\n".str_repeat("\t",$nest).')'.(!$nest?';':'');
 	
 	if (!$nest && $path) {
@@ -723,14 +807,13 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		@mkdir($pathDigest['dirname'], 0770, true);
 		
 		if (file_exists($path)) {
-			rename($path, $path.'.bak');
+			rename($path, $pathDigest['dirname'].'/'.$pathDigest['filename'].'.bak.php');
 		}
 		
 		$file = fopen($path, 'w');
 		fwrite($file, $output);
 		fclose($file);
 		if (file_exists($path)) {
-			@unlink($path.'.bak');
 			return true;
 		}
 		
@@ -803,8 +886,14 @@ function defineConfig($array, $anyCase = true, $nest_prefix = false) {
 }
 
 // This function exists only because I am lazy
-function configLazy($path) {
-	$config = fillDefaultConfig(loadConfig($path));
+function configLazy($path = 'config/config.php') {
+	// Load config or default
+	if (file_exists($path)) {
+		$config = fillDefaultConfig(loadConfig($path));
+	} else {
+		$config = loadConfig('config/configDefaults.php');
+	}
+	
 	if (is_array($config)) {
 		defineConfig($config);
 	}
@@ -868,7 +957,7 @@ function upgradeCheck() {
 		
 		// Refactor
 		$config['database_Location'] = str_replace('//','/',$config['databaseLocation'].'/');
-		$config['user_home'] = $config['databaseLocation'].'users/';
+		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['databaseLocation']);
 		
 		// Turn Off Emby And Plex Recent
@@ -883,18 +972,60 @@ function upgradeCheck() {
 		$config["headphonesURL"] = $config["headphonesURL"].(!empty($config["headphonesPort"])?':'.$config["headphonesPort"]:'');
 		unset($config["headphonesPort"]);
 		
-		$createConfigSuccess = createConfig($config, 'config/config.php', $nest = 0);
+		// Write config file
+		$config['CONFIG_VERSION'] = '1.32';
+		$createConfigSuccess = createConfig($config);
 		
 		// Create new config
 		if ($createConfigSuccess) {
-			// Make Config Dir (this should never happen as the dir and defaults file should be there);
-			@mkdir('config', 0775, true);
-			
-			// Remove Old ini file
-			unlink('databaseLocation.ini.php');
+			if (file_exists('config/config.php')) {
+				// Remove Old ini file
+				unlink('databaseLocation.ini.php');
+			} else {
+				debug_out('Something is not right here!');
+			}
 		} else {
 			debug_out('Couldn\'t create updated configuration.' ,1);
 		}
+	}
+	
+	// Upgrade to 1.33
+	$config = loadConfig();
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33')) {
+		// Fix User Directory
+		$config['user_home'] = $config['database_Location'].'users/';
+		unset($config['USER_HOME']);
+		
+		// Backend auth merge
+		if (isset($config['authBackendPort']) && !isset(parse_url($config['authBackendHost'])['port'])) {
+			$config['authBackendHost'] .= ':'.$config['authBackendPort'];
+		}
+		unset($config['authBackendPort']);
+		
+		// If auth is being used move it to embyURL as that is now used in auth functions
+		if ((isset($config['authType']) && $config['authType'] == 'true') && (isset($config['authBackendHost']) && $config['authBackendHost'] == 'true') && (isset($config['authBackend']) && in_array($config['authBackend'], array('emby_all','emby_local','emby_connect')))) {
+			$config['embyURL'] = $config['authBackendHost'];
+		}
+		
+		// Upgrade database to latest version
+		updateSQLiteDB($config['database_Location']);
+		
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.33';
+		$createConfigSuccess = createConfig($config);
+		unset($config);
+	}
+	
+	// Upgrade to 1.33
+	$config = loadConfig();
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.34')) {
+		// Upgrade database to latest version
+		updateSQLiteDB($config['database_Location']);
+		
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.34';
+		$createConfigSuccess = createConfig($config);
+		unset($config);
 	}
 	
 	return true;
@@ -946,6 +1077,895 @@ function removeFiles($path) {
 	}
 }
 
+// Lazy select options
+function resolveSelectOptions($array, $selected = '', $multi = false) {
+	$output = array();
+	$selectedArr = ($multi?explode('|', $selected):array());
+	foreach ($array as $key => $value) {
+		if (is_array($value)) {
+			if (isset($value['optgroup'])) {
+				$output[] = '<optgroup label="'.$key.'">';
+				foreach($value['optgroup'] as $k => $v) {
+					$output[] = '<option value="'.$v['value'].'"'.($selected===$v['value']||in_array($v['value'],$selectedArr)?' selected':'').(isset($v['disabled']) && $v['disabled']?' disabled':'').'>'.$k.'</option>';
+				}
+			} else {
+				$output[] = '<option value="'.$value['value'].'"'.($selected===$value['value']||in_array($value['value'],$selectedArr)?' selected':'').(isset($value['disabled']) && $value['disabled']?' disabled':'').'>'.$key.'</option>';
+			}
+		} else {
+			$output[] = '<option value="'.$value.'"'.($selected===$value||in_array($value,$selectedArr)?' selected':'').'>'.$key.'</option>';
+		}
+		
+	}
+	return implode('',$output);
+}
+
+// Check if user is allowed to continue
+function qualifyUser($type, $errOnFail = false) {
+	if (!isset($GLOBALS['USER'])) {
+		require_once("user.php");
+		$GLOBALS['USER'] = new User('registration_callback');
+	}
+	
+	if (is_bool($type)) {
+		if ($type === true) {
+			$authorized = ($GLOBALS['USER']->authenticated == true);
+		} else {
+			$authorized = true;
+		}
+	} elseif (is_string($type) || is_array($type)) {
+		if ($type !== 'false') {
+			if (!is_array($type)) {
+				$type = explode('|',$type);
+			}
+			$authorized = ($GLOBALS['USER']->authenticated && in_array($GLOBALS['USER']->role,$type));
+		} else {
+			$authorized = true;
+		}
+	} else {
+		debug_out('Invalid Syntax!',1);
+	}
+	
+	if (!$authorized && $errOnFail) {
+		if ($GLOBALS['USER']->authenticated) {
+			header('Location: error.php?error=401');
+			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=401\'</script>';
+		} else {
+			header('Location: error.php?error=999');
+			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=999\'</script>';
+		}
+
+		debug_out('Not Authorized' ,1);
+	} else {
+		return $authorized;
+	}
+}
+
+// Build an (optionally) tabbed settings page.
+function buildSettings($array) {
+	/*
+	array(
+		'title' => '',
+		'id' => '',
+		'fields' => array( See buildField() ),
+		'tabs' => array(
+			array(
+				'title' => '',
+				'id' => '',
+				'image' => '',
+				'fields' => array( See buildField() ),
+			),
+		),
+	);
+	*/
+	
+	$fieldFunc = function($fieldArr) {
+		$fields = '<div class="row">';
+		foreach($fieldArr as $key => $value) {
+			$isSingle = isset($value['type']);
+			if ($isSingle) { $value = array($value); }
+			$tmpField = '';
+			$sizeLg = max(floor(12/count($value)),2);
+			$sizeMd = max(floor(($isSingle?12:6)/count($value)),3);
+			foreach($value as $k => $v) {
+				$tmpField .= buildField($v, 12, $sizeMd, $sizeLg);
+			}
+			$fields .= ($isSingle?$tmpField:'<div class="row col-sm-12 content-form">'.$tmpField.'</div>');
+		}
+		$fields .= '</div>';
+		return $fields;
+	};
+	
+	$fields = (isset($array['fields'])?$fieldFunc($array['fields']):'');
+	
+	$tabSelectors = array();
+	$tabContent = array();
+	if (isset($array['tabs'])) {
+		foreach($array['tabs'] as $key => $value) {
+			$id = (isset($value['id'])?$value['id']:randString(32));
+			$tabSelectors[$key] = '<li class="apps'.($tabSelectors?'':' active').'"><a href="#tab-'.$id.'" data-toggle="tab" aria-expanded="true"><img style="height:40px; width:40px;" src="'.(isset($value['image'])?$value['image']:'images/organizr.png').'"></a></li>';
+			$tabContent[$key] = '<div class="tab-pane big-box fade'.($tabContent?'':' active in').'" id="tab-'.$id.'">'.$fieldFunc($value['fields']).'</div>';
+		}
+	}
+	
+	$pageID = (isset($array['id'])?$array['id']:str_replace(array(' ','"',"'"),array('_'),strtolower($array['id'])));
+	
+	return '
+	<div class="email-body">
+		<div class="email-header gray-bg">
+			<button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+			<h1>'.$array['title'].'</h1>
+		</div>
+		<div class="email-inner small-box">
+			<div class="email-inner-section">
+				<div class="small-box fade in" id="'.$pageID.'_frame">
+					<div class="col-lg-12">
+						'.(isset($array['customBeforeForm'])?$array['customBeforeForm']:'').'
+						<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
+							<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
+							<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
+							</button>
+							'.$fields.($tabContent?'
+							<div class="tabbable tabs-with-bg" id="'.$pageID.'_tabs">
+								<ul class="nav nav-tabs apps">
+									'.implode('', $tabSelectors).'
+								</ul>
+								<div class="clearfix"></div>
+								<div class="tab-content">
+									'.implode('', $tabContent).'
+								</div>
+							</div>':'').'
+						</form>
+						'.(isset($array['customAfterForm'])?$array['customAfterForm']:'').'
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			$(\'#'.$pageID.'_form\').find(\'input, select, textarea\').on(\'change\', function() { $(this).attr(\'data-changed\', \'true\'); });
+			var '.$pageID.'Validate = function() { if (this.value && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { $(this).addClass(\'invalid\'); } else { $(this).removeClass(\'invalid\'); } };
+			$(\'#'.$pageID.'_form\').find(\'input[pattern]\').each('.$pageID.'Validate).on(\'keyup\', '.$pageID.'Validate);
+			$(\'#'.$pageID.'_form\').find(\'select[multiple]\').on(\'click\', function() { $(this).attr(\'data-changed\', \'true\'); });
+			
+			$(\'#'.$pageID.'_form\').submit(function () {
+				var newVals = {};
+				var hasVals = false;
+				$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').each(function() {
+					hasVals = true;
+					if (this.type == \'checkbox\') {
+						newVals[this.name] = this.checked;
+					} else {
+						var fieldVal = $(this).val();
+						if (typeof fieldVal == \'object\') {
+							if (typeof fieldVal.join == \'function\') {
+								fieldVal = fieldVal.join(\'|\');
+							} else {
+								fieldVal = JSON.stringify(fieldVal);
+							}
+						}
+						newVals[this.name] = fieldVal;
+					}
+				});
+				if (hasVals) {
+					console.log(newVals);
+					ajax_request(\'POST\', \''.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data, code) {
+						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
+					});
+				} else {
+					parent.notify(\'Nothing to update!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
+				}
+				return false;
+			});
+			'.(isset($array['onready'])?$array['onready']:'').'
+		});
+	</script>
+	';
+}
+
+// Build Settings Fields
+function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
+	/*
+	array(
+		'type' => '',
+		'placeholder' => '',
+		'label' => '',
+		'labelTranslate' => '',
+		'assist' => '',
+		'name' => '',
+		'pattern' => '',
+		'options' => array( // For SELECT only
+			'Display' => 'value',
+		),
+	)
+	*/
+	
+	// Tags
+	$tags = array();
+	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href','onclick') as $value) {
+		if (isset($params[$value])) {
+			if (is_string($params[$value])) { $tags[] = $value.'="'.$params[$value].'"';
+			} else if ($params[$value] === true) { $tags[] = $value; }
+		}
+	}
+	
+	$format = (isset($params['format']) && in_array($params['format'],array(false,'colour','color'))?$params['format']:false);
+	$name = (isset($params['name'])?$params['name']:(isset($params['id'])?$params['id']:''));
+	$id = (isset($params['id'])?$params['id']:(isset($params['name'])?$params['name'].'_id':randString(32)));
+	$val = (isset($params['value'])?$params['value']:'');
+	$class = (isset($params['class'])?' '.$params['class']:'');
+	$wrapClass = (isset($params['wrapClass'])?$params['wrapClass']:'form-content');
+	$assist = (isset($params['assist'])?' - i.e. '.$params['assist']:'');
+	$label = (isset($params['labelTranslate'])?translate($params['labelTranslate']):(isset($params['label'])?$params['label']:''));
+	$labelOut = '<p class="help-text">'.$label.$assist.'</p>';
+	
+	// Field Design
+	switch ($params['type']) {
+		case 'text':
+		case 'number':
+		case 'password':
+			$field = '<input id="'.$id.'" name="'.$name.'" type="'.$params['type'].'" class="form-control material input-sm'.$class.'" '.implode(' ',$tags).' autocorrect="off" autocapitalize="off" value="'.$val.'">';
+			break;
+		case 'select':
+		case 'dropdown':
+			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control material input-sm" '.implode(' ',$tags).'>'.resolveSelectOptions($params['options'], $val).'</select>';
+			break;
+		case 'select-multi':
+		case 'dropdown-multi':
+			$field = '<select id="'.$id.'" name="'.$name.'" class="form-control input-sm" '.implode(' ',$tags).' multiple="multiple">'.resolveSelectOptions($params['options'], $val, true).'</select>';
+			break;
+		case 'check':
+		case 'checkbox':
+		case 'toggle':
+			$checked = ((is_bool($val) && $val) || trim($val) === 'true'?' checked':'');
+			$colour = (isset($params['colour'])?$params['colour']:'success');
+			$labelOut = '<label for="'.$id.'"></label>'.$label;
+			$field = '<input id="'.$id.'" name="'.$name.'" type="checkbox" class="switcher switcher-'.$colour.' '.$class.'" '.implode(' ',$tags).' data-value="'.$val.'"'.$checked.'>';
+			break;
+		case 'radio':
+			$labelOut = '';
+			$checked = ((is_bool($val) && $val) || ($val && trim($val) !== 'false')?' checked':'');
+			$bType = (isset($params['buttonType'])?$params['buttonType']:'success');
+			$field = '<div class="radio radio-'.$bType.'"><input id="'.$id.'" name="'.$name.'" type="radio" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'"'.$checked.'><label for="'.$id.'">'.$label.'</label></div>';
+			break;
+		case 'date':
+			$field = 'Unsupported, planned.';
+			break;
+		case 'hidden':
+			return '<input id="'.$id.'" name="'.$name.'" type="hidden" class="'.$class.'" '.implode(' ',$tags).' value="'.$val.'">';
+			break;
+		case 'header':
+			$labelOut = '';
+			$headType = (isset($params['value'])?$params['value']:3);
+			$field = '<h'.$headType.' class="'.$class.'" '.implode(' ',$tags).'>'.$label.'</h'.$headType.'>';
+			break;
+		case 'button':
+			$labelOut = '';
+			$icon = (isset($params['icon'])?$params['icon']:'flask');
+			$bType = (isset($params['buttonType'])?$params['buttonType']:'success');
+			$bDropdown = (isset($params['buttonDrop'])?$params['buttonDrop']:'');
+			$field = ($bDropdown?'<div class="btn-group">':'').'<button id="'.$id.'" type="button" class="btn waves btn-labeled btn-'.$bType.' btn-sm text-uppercase waves-effect waves-float'.$class.''.($bDropdown?' dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':'"').' '.implode(' ',$tags).'><span class="btn-label"><i class="fa fa-'.$icon.'"></i></span>'.$label.'</button>'.($bDropdown?$bDropdown.'</div>':'');
+			break;
+		case 'textarea':
+			$rows = (isset($params['rows'])?$params['rows']:5);
+			$field = '<textarea id="'.$id.'" name="'.$name.'" class="form-control'.$class.'" rows="'.$rows.'" '.implode(' ',$tags).'>'.$val.'</textarea>';
+			break;
+		case 'custom':
+			// Settings
+			$settings = array(
+				'$id' => $id,
+				'$name' => $name,
+				'$val' => $val,
+				'$label' => $label,
+				'$labelOut' => $labelOut,
+			);
+			// Get HTML
+			$html = (isset($params['html'])?$params['html']:'Nothing Specified!');
+			// If LabelOut is in html dont print it twice
+			$labelOut = (strpos($html,'$label')!==false?'':$labelOut);
+			// Replace variables in settings
+			$html = preg_replace_callback('/\$\w+\b/', function ($match) use ($settings) { return (isset($settings[$match[0]])?$settings[$match[0]]:'{'.$match[0].' is undefined}'); }, $html);
+			// Build Field
+			$field = '<div id="'.$id.'_html" class="custom-field">'.$html.'</div>';
+			break;
+		case 'space':
+			$labelOut = '';
+			$field = str_repeat('<br>', (isset($params['value'])?$params['value']:1));
+			break;
+		default:
+			$field = 'Unsupported field type';
+			break;
+	}
+	
+	// Field Formats
+	switch ($format) {
+		case 'colour': // Fuckin Eh, Canada!
+		case 'color':
+			$labelBef = '<center>'.$label.'</center>';
+			$wrapClass = 'gray-bg colour-field';
+			$labelAft = '';
+			$field = str_replace(' material input-sm','',$field);
+			break;
+		default:
+			$labelBef = '';
+			$labelAft = $labelOut;
+	}
+	
+	return '<div class="'.$wrapClass.' col-sm-'.$sizeSm.' col-md-'.$sizeMd.' col-lg-'.$sizeLg.'">'.$labelBef.$field.$labelAft.'</div>';
+}
+
+// Tab Settings Generation
+function printTabRow($data) {
+	$hidden = false;
+	if ($data===false) {
+		$hidden = true;
+		$data = array( // New Tab Defaults
+			'id' => 'new',
+			'name' => '',
+			'url' => '',
+			'icon' => 'fa-diamond',
+			'iconurl' => '',
+			'active' => 'true',
+			'user' => 'true',
+			'guest' => 'true',
+			'window' => 'false',
+			'defaultz' => '',
+		);
+	}
+	$image = '<span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span>';
+	
+	$output = '
+		<li id="tab-'.$data['id'].'" class="list-group-item" style="position: relative; left: 0px; top: 0px; '.($hidden?' display: none;':'').'">
+			<tab class="content-form form-inline">
+				<div class="row">
+					'.buildField(array(
+						'type' => 'custom',
+						'html' => '<div class="action-btns tabIconView"><a style="margin-left: 0px">'.($data['iconurl']?'<img src="'.$data['iconurl'].'" height="30" width="30">':'<span style="font: normal normal normal 30px/1 FontAwesome;" class="fa '.($data['icon']?$data['icon']:'hand-paper-o').'"></span>').'</a></div>',
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'hidden',
+						'id' => 'tab-'.$data['id'].'-id',
+						'name' => 'id['.$data['id'].']',
+						'value' => $data['id'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'text',
+						'id' => 'tab-'.$data['id'].'-name',
+						'name' => 'name['.$data['id'].']',
+						'required' => true,
+						'placeholder' => 'Organizr Homepage',
+						'labelTranslate' => 'TAB_NAME',
+						'value' => $data['name'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'text',
+						'id' => 'tab-'.$data['id'].'-url',
+						'name' => 'url['.$data['id'].']',
+						'required' => true,
+						'placeholder' => 'homepage.php',
+						'labelTranslate' => 'TAB_URL',
+						'value' => $data['url'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'text',
+						'id' => 'tab-'.$data['id'].'-iconurl',
+						'name' => 'iconurl['.$data['id'].']',
+						'placeholder' => 'images/organizr.png',
+						'labelTranslate' => 'ICON_URL',
+						'value' => $data['iconurl'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'custom',
+						'id' => 'tab-'.$data['id'].'-icon',
+						'name' => 'icon['.$data['id'].']',
+						'html' => '- '.translate('OR').' - <div class="input-group"><input data-placement="bottomRight" class="form-control material icp-auto'.($hidden?'-pend':'').'" id="$id" name="$name" value="$val" type="text" /><span class="input-group-addon"></span></div>',
+						'value' => $data['icon'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'ACTIVE',
+						'name' => 'active['.$data['id'].']',
+						'value' => $data['active'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'USER',
+						'colour' => 'primary',
+						'name' => 'user['.$data['id'].']',
+						'value' => $data['user'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'GUEST',
+						'colour' => 'warning',
+						'name' => 'guest['.$data['id'].']',
+						'value' => $data['guest'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'NO_IFRAME',
+						'colour' => 'danger',
+						'name' => 'window['.$data['id'].']',
+						'value' => $data['window'],
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'radio',
+						'labelTranslate' => 'DEFAULT',
+						'name' => 'defaultz['.$data['id'].']',
+						'value' => $data['defaultz'],
+						'onclick' => "$('[type=radio][id!=\''+this.id+'\']').each(function() { this.checked=false; });",
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'button',
+						'icon' => 'trash',
+						'labelTranslate' => 'REMOVE',
+						'onclick' => "$(this).parents('li').remove();",
+					),12,1,1).'
+				</div>
+			</tab>
+		</li>
+	';
+	return $output;
+}
+
+// Timezone array
+function timezoneOptions() {
+	$output = array();
+	$timezones = array();
+    $regions = array(
+        'Africa' => DateTimeZone::AFRICA,
+        'America' => DateTimeZone::AMERICA,
+        'Antarctica' => DateTimeZone::ANTARCTICA,
+        'Arctic' => DateTimeZone::ARCTIC,
+        'Asia' => DateTimeZone::ASIA,
+        'Atlantic' => DateTimeZone::ATLANTIC,
+        'Australia' => DateTimeZone::AUSTRALIA,
+        'Europe' => DateTimeZone::EUROPE,
+        'Indian' => DateTimeZone::INDIAN,
+        'Pacific' => DateTimeZone::PACIFIC
+    );
+    
+    foreach ($regions as $name => $mask) {
+        $zones = DateTimeZone::listIdentifiers($mask);
+        foreach($zones as $timezone) {
+            $time = new DateTime(NULL, new DateTimeZone($timezone));
+            $ampm = $time->format('H') > 12 ? ' ('. $time->format('g:i a'). ')' : '';
+			
+			$output[$name]['optgroup'][substr($timezone, strlen($name) + 1) . ' - ' . $time->format('H:i') . $ampm]['value'] = $timezone;
+        }
+    }   
+	
+	return $output;
+}
+
+// Build Database
+function createSQLiteDB($path = false) {
+	if ($path === false) {
+		if (defined('DATABASE_LOCATION')) {
+			$path = DATABASE_LOCATION;
+		} else {
+			debug_out('No Path Specified!');
+		}
+	}
+	
+	if (!is_file($path.'users.db') || filesize($path.'users.db') <= 0) {
+		if (!isset($GLOBALS['file_db'])) {
+			$GLOBALS['file_db'] = new PDO('sqlite:'.$path.'users.db');
+			$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		}
+		
+		// Create Users
+		$users = $GLOBALS['file_db']->query('CREATE TABLE `users` (
+			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`username`	TEXT UNIQUE,
+			`password`	TEXT,
+			`email`	TEXT,
+			`token`	TEXT,
+			`role`	TEXT,
+			`active`	TEXT,
+			`last`	TEXT,
+			`auth_service`	TEXT DEFAULT \'internal\'
+		);');
+		
+		// Create Tabs
+		$tabs = $GLOBALS['file_db']->query('CREATE TABLE `tabs` (
+			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`order`	INTEGER,
+			`users_id`	INTEGER,
+			`name`	TEXT,
+			`url`	TEXT,
+			`defaultz`	TEXT,
+			`active`	TEXT,
+			`user`	TEXT,
+			`guest`	TEXT,
+			`icon`	TEXT,
+			`iconurl`	TEXT,
+			`window`	TEXT
+		);');
+		
+		// Create Options
+		$options = $GLOBALS['file_db']->query('CREATE TABLE `options` (
+			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`users_id`	INTEGER UNIQUE,
+			`title`	TEXT UNIQUE,
+			`topbar`	TEXT,
+			`bottombar`	TEXT,
+			`sidebar`	TEXT,
+			`hoverbg`	TEXT,
+			`topbartext`	TEXT,
+			`activetabBG`	TEXT,
+			`activetabicon`	TEXT,
+			`activetabtext`	TEXT,
+			`inactiveicon`	TEXT,
+			`inactivetext`	TEXT,
+			`loading`	TEXT,
+			`hovertext`	TEXT
+		);');
+		
+		return $users && $tabs && $options;
+	} else {
+		return false;
+	}
+}
+
+// Upgrade Database
+function updateSQLiteDB($db_path = false) {
+	if (!$db_path) {
+		if (defined('DATABASE_LOCATION')) {
+			$db_path = DATABASE_LOCATION;
+		} else {
+			debug_out('No Path Specified',1);
+		}
+	}
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.$db_path.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	
+	// Cache current DB
+	$cache = array();
+	foreach($GLOBALS['file_db']->query('SELECT name FROM sqlite_master WHERE type="table";') as $table) {
+		foreach($GLOBALS['file_db']->query('SELECT * FROM '.$table['name'].';') as $key => $row) {
+			foreach($row as $k => $v) {
+				if (is_string($k)) {
+					$cache[$table['name']][$key][$k] = $v;
+				}
+			}
+		}
+	}
+	
+	// Remove Current Database
+	$GLOBALS['file_db'] = null;
+	$pathDigest = pathinfo($db_path.'users.db');
+	if (file_exists($db_path.'users.db')) {
+		rename($db_path.'users.db', $pathDigest['dirname'].'/'.$pathDigest['filename'].'.bak.db');
+	}
+	
+	// Create New Database
+	$success = createSQLiteDB($db_path);
+	
+	// Restore Items
+	if ($success) {
+		foreach($cache as $table => $tableData) {
+			if ($tableData) {
+				$queryBase = 'INSERT INTO '.$table.' (`'.implode('`,`',array_keys(current($tableData))).'`) values ';
+				$insertValues = array();
+				reset($tableData);
+				foreach($tableData as $key => $value) {
+					$insertValues[] = '('.implode(',',array_map(function($d) { 
+						return (isset($d)?"'".addslashes($d)."'":'null');
+					}, $value)).')';
+				}
+				$GLOBALS['file_db']->query($queryBase.implode(',',$insertValues).';');
+			}
+		}
+		return true;
+	} else {
+		return false;
+	}
+}
+
+// Commit colours to database
+function updateDBOptions($values) {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	
+	// Commit new values to database
+	if ($GLOBALS['file_db']->query('UPDATE options SET '.implode(',',array_map(function($d, $k) { 
+		return '`'.$k.'` = '.(isset($d)?"'".addslashes($d)."'":'null');
+	}, $values, array_keys($values))).';')->rowCount()) {
+		return true;
+	} else if ($GLOBALS['file_db']->query('INSERT OR IGNORE INTO options (`'.implode('`,`',array_keys($values)).'`) VALUES (\''.implode("','",$values).'\');')->rowCount()) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+// Send AJAX notification
+function sendNotification($success, $message = false, $send = true) {
+	$notifyExplode = explode("-", NOTIFYEFFECT);
+	if ($success) {
+		$msg = array(
+			'html' => ($message?'<br>'.$message:'<strong>'.translate("SETTINGS_SAVED").'</strong>'),
+			'icon' => 'floppy-o',
+			'type' => 'success',
+			'length' => '5000',
+			'layout' => $notifyExplode[0],
+			'effect' => $notifyExplode[1],
+		);
+	} else {
+		$msg = array(
+			'html' => ($message?'<br>'.$message:'<strong>'.translate("SETTINGS_NOT_SAVED").'</strong>'),
+			'icon' => 'floppy-o',
+			'type' => 'failed',
+			'length' => '5000',
+			'layout' => $notifyExplode[0],
+			'effect' => $notifyExplode[1],
+		);
+	}
+	
+	// Send and kill script?
+	if ($send) {
+		header('Content-Type: application/json');
+		echo json_encode(array('notify'=>$msg));
+		die();
+	}
+	return $msg;
+}
+
+// Load colours from the database
+function loadAppearance() {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	
+	// Defaults
+	$defaults = array(
+		'title' => 'Organizr',
+		'topbartext' => '#66D9EF',
+		'topbar' => '#333333',
+		'bottombar' => '#333333',
+		'sidebar' => '#393939',
+		'hoverbg' => '#AD80FD',
+		'activetabBG' => '#F92671',
+		'activetabicon' => '#FFFFFF',
+		'activetabtext' => '#FFFFFF',
+		'inactiveicon' => '#66D9EF',
+		'inactivetext' => '#66D9EF',
+		'loading' => '#66D9EF',
+		'hovertext' => '#000000',
+	);
+	
+	// Database Lookup
+	$options = $GLOBALS['file_db']->query('SELECT * FROM options');
+	
+	// Replace defaults with filled options
+	foreach($options as $row) {
+		foreach($defaults as $key => $value) {
+			if (isset($row[$key]) && $row[$key]) {
+				$defaults[$key] = $row[$key];
+			}
+		}
+	}
+	
+	// Return the Results
+	return $defaults;
+}
+
+// Delete Database
+function deleteDatabase() {
+    unset($_COOKIE['Organizr']);
+    setcookie('Organizr', '', time() - 3600, '/');
+    unset($_COOKIE['OrganizrU']);
+    setcookie('OrganizrU', '', time() - 3600, '/');
+	
+    $GLOBALS['file_db'] = null;
+
+    unlink(DATABASE_LOCATION.'users.db'); 
+	
+    foreach(glob(substr_replace($userdirpath, "", -1).'/*') as $file) {
+        if(is_dir($file)) {
+            rmdir($file); 
+        } elseif (!is_dir($file)) {
+            unlink($file);
+        }
+	}
+
+    rmdir($userdirpath);
+	
+	return true;
+}
+
+// Upgrade the installation
+function upgradeInstall($branch = 'master') {
+    function downloadFile($url, $path){
+        $folderPath = "upgrade/";
+        if(!mkdir($folderPath)) : echo "can't make dir"; endif;
+        $newfname = $folderPath . $path;
+        $file = fopen ($url, 'rb');
+        if ($file) {
+            $newf = fopen ($newfname, 'wb');
+            if ($newf) {
+                while(!feof($file)) {
+                    fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
+                }
+            }
+        }
+
+        if ($file) {
+            fclose($file);
+        }
+
+        if ($newf) {
+            fclose($newf);
+        }
+    }
+
+    function unzipFile($zipFile){
+        $zip = new ZipArchive;
+        $extractPath = "upgrade/";
+        if($zip->open($extractPath . $zipFile) != "true"){
+            echo "Error :- Unable to open the Zip File";
+        }
+
+        /* Extract Zip File */
+        $zip->extractTo($extractPath);
+        $zip->close();
+    }
+
+    // Function to remove folders and files 
+    function rrmdir($dir) {
+        if (is_dir($dir)) {
+            $files = scandir($dir);
+            foreach ($files as $file)
+                if ($file != "." && $file != "..") rrmdir("$dir/$file");
+            rmdir($dir);
+        }
+        else if (file_exists($dir)) unlink($dir);
+    }
+
+    // Function to Copy folders and files       
+    function rcopy($src, $dst) {
+        if (is_dir ( $src )) {
+            if (!file_exists($dst)) : mkdir ( $dst ); endif;
+            $files = scandir ( $src );
+            foreach ( $files as $file )
+                if ($file != "." && $file != "..")
+                    rcopy ( "$src/$file", "$dst/$file" );
+        } else if (file_exists ( $src ))
+            copy ( $src, $dst );
+    }
+	
+    $url = 'https://github.com/causefx/Organizr/archive/'.$branch.'.zip';
+    $file = "upgrade.zip";
+    $source = __DIR__ . '/upgrade/Organizr-'.$branch.'/';
+    $cleanup = __DIR__ . "/upgrade/";
+    $destination = __DIR__ . "/";
+    downloadFile($url, $file);
+    unzipFile($file);
+    rcopy($source, $destination);
+    rrmdir($cleanup);
+	
+	return true;
+}
+
+// NzbGET Items
+function nzbgetConnect($list = 'listgroups') {
+    $url = qualifyURL(NZBGETURL);
+    
+    $api = file_get_contents($url.'/'.NZBGETUSERNAME.':'.NZBGETPASSWORD.'/jsonrpc/'.$list);          
+    $api = json_decode($api, true);
+    
+    $gotNZB = array();
+    
+    foreach ($api['result'] AS $child) {
+        $downloadName = htmlentities($child['NZBName'], ENT_QUOTES);
+        $downloadStatus = $child['Status'];
+        $downloadCategory = $child['Category'];
+        if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
+        if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
+        if($child['Health'] <= "750"){ 
+            $downloadHealth = "danger"; 
+        }elseif($child['Health'] <= "900"){ 
+            $downloadHealth = "warning"; 
+        }elseif($child['Health'] <= "1000"){ 
+            $downloadHealth = "success"; 
+        }
+        
+        $gotNZB[] = '<tr>
+                        <td>'.$downloadName.'</td>
+                        <td>'.$downloadStatus.'</td>
+                        <td>'.$downloadCategory.'</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+                                    <p class="text-center">'.round($downloadPercent).'%</p>
+                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>';
+    }
+    
+	if ($gotNZB) {
+		return implode('',$gotNZB);
+	} else {
+		return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+	}
+}
+
+// Sabnzbd Items
+function sabnzbdConnect($list = 'queue') {
+    $url = qualifyURL(SABNZBDURL);
+	
+    $api = file_get_contents($url.'/api?mode='.$list.'&output=json&apikey='.SABNZBDKEY); 
+    $api = json_decode($api, true);
+    
+    $gotNZB = array();
+    
+    foreach ($api[$list]['slots'] AS $child) {
+        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; } 
+        if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
+        $downloadStatus = $child['status'];
+        
+        $gotNZB[] = '<tr>
+                        <td>'.$downloadName.'</td>
+                        <td>'.$downloadStatus.'</td>
+                        <td>'.$downloadCategory.'</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+                                    <p class="text-center">'.round($downloadPercent).'%</p>
+                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>';
+    }
+    
+	if ($gotNZB) {
+		return implode('',$gotNZB);
+	} else {
+		return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+	}
+}
+
+// Apply new tab settings
+function updateTabs($tabs) {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	// Validate
+	if (!isset($tabs['defaultz'])) { $tabs['defaultz'][current(array_keys($tabs['name']))] = 'true'; }
+	if (isset($tabs['name']) && isset($tabs['url']) && is_array($tabs['name'])) {
+		// Clear Existing Tabs
+		$GLOBALS['file_db']->query("DELETE FROM tabs");
+		// Process New Tabs
+		$totalValid = 0;
+		foreach ($tabs['name'] as $key => $value) {
+			// Qualify
+			if (!$value || !isset($tabs['url']) || !$tabs['url'][$key]) { continue; }
+			$totalValid++;
+			$fields = array();
+			foreach(array('id','name','url','icon','iconurl','order') as $v) {
+				if (isset($tabs[$v]) && isset($tabs[$v][$key])) { $fields[$v] = $tabs[$v][$key]; }
+			}
+			foreach(array('active','user','guest','defaultz','window') as $v) {
+				if (isset($tabs[$v]) && isset($tabs[$v][$key])) { $fields[$v] = ($tabs[$v][$key]!=='false'?'true':'false'); }
+			}
+			$GLOBALS['file_db']->query('INSERT INTO tabs (`'.implode('`,`',array_keys($fields)).'`) VALUES (\''.implode("','",$fields).'\');');
+		}
+		return $totalValid;
+	} else {
+		return false;
+	}
+	return false;
+}
 
 // ==============
 
@@ -1343,114 +2363,6 @@ function getRadarrCalendar($array){
     }
 
     if ($i != 0){ return $gotCalendar; }
-
-}
-
-function nzbgetConnect($url, $username, $password, $list){
-    $url = qualifyURL(NZBGETURL);
-    
-    $api = file_get_contents("$url/$username:$password/jsonrpc/$list");
-                    
-    $api = json_decode($api, true);
-    
-    $i = 0;
-    
-    $gotNZB = "";
-    
-    foreach ($api['result'] AS $child) {
-        
-        $i++;
-        //echo '<pre>' . var_export($child, true) . '</pre>';
-        $downloadName = htmlentities($child['NZBName'], ENT_QUOTES);
-        $downloadStatus = $child['Status'];
-        $downloadCategory = $child['Category'];
-        if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
-        if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
-        if($child['Health'] <= "750"){ 
-            $downloadHealth = "danger"; 
-        }elseif($child['Health'] <= "900"){ 
-            $downloadHealth = "warning"; 
-        }elseif($child['Health'] <= "1000"){ 
-            $downloadHealth = "success"; 
-        }
-        
-        $gotNZB .= '<tr>
-
-                        <td>'.$downloadName.'</td>
-                        <td>'.$downloadStatus.'</td>
-                        <td>'.$downloadCategory.'</td>
-
-                        <td>
-
-                            <div class="progress">
-
-                                <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
-
-                                    <p class="text-center">'.round($downloadPercent).'%</p>
-                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
-
-                                </div>
-
-                            </div>
-
-                        </td>
-
-                    </tr>';
-        
-        
-    }
-    
-    if($i > 0){ return $gotNZB; }
-    if($i == 0){ echo '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>'; }
-
-}
-
-function sabnzbdConnect($url, $key, $list){
-    $url = qualifyURL(SABNZBDURL);
-
-    $api = file_get_contents("$url/api?mode=$list&output=json&apikey=$key");
-                    
-    $api = json_decode($api, true);
-    
-    $i = 0;
-    
-    $gotNZB = "";
-    
-    foreach ($api[$list]['slots'] AS $child) {
-        
-        $i++;
-        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; } 
-        if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
-        $downloadStatus = $child['status'];
-        
-        $gotNZB .= '<tr>
-
-                        <td>'.$downloadName.'</td>
-                        <td>'.$downloadStatus.'</td>
-                        <td>'.$downloadCategory.'</td>
-
-                        <td>
-
-                            <div class="progress">
-
-                                <div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
-
-                                    <p class="text-center">'.round($downloadPercent).'%</p>
-                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
-
-                                </div>
-
-                            </div>
-
-                        </td>
-
-                    </tr>';
-        
-        
-    }
-    
-    if($i > 0){ return $gotNZB; }
-    if($i == 0){ echo '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>'; }
 
 }
 

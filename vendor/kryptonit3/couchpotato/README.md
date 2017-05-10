@@ -15,7 +15,7 @@ use Kryptonit3\CouchPotato\CouchPotato;
 ```php
 public function addMovie()
 {
-    $couchpotato = new CouchPotato('http://127.0.0.1:8989', 'cf7544f71b6c4efcbb84b49011fc965c'); // URL and API Key
+    $couchpotato = new CouchPotato('http://127.0.0.1:5050', 'cf7544f71b6c4efcbb84b49011fc965c'); // URL and API Key
     
     return $couchpotato->getMovieAdd([
         'identifier' => 'tt0076759' // IMDB ID

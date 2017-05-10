@@ -14,6 +14,9 @@ $radarr = new Sonarr(RADARRURL, RADARRKEY);
 $sickrage = new SickRage(SICKRAGEURL, SICKRAGEKEY);
 $USER = new User("registration_callback");
 
+// Check if connection to homepage is allowed
+qualifyUser(HOMEPAGEAUTHNEEDED, true);
+
 $dbfile = DATABASE_LOCATION.'users.db';
 
 $file_db = new PDO("sqlite:" . $dbfile);
@@ -26,9 +29,7 @@ $hasOptions = "No";
 foreach($dbOptions as $row) :
 
     if (in_array("options", $row)) :
-    
         $hasOptions = "Yes";
-    
     endif;
 
 endforeach;
@@ -54,7 +55,6 @@ endif;
 if($hasOptions == "Yes") :
 
     $resulto = $file_db->query('SELECT * FROM options'); 
-                                    
     foreach($resulto as $row) : 
 
         $title = isset($row['title']) ? $row['title'] : "Organizr";
@@ -85,7 +85,6 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
 <html lang="en" class="no-js">
 
     <head>
-        
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -96,7 +95,6 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css"> 
-        
         <script src="js/menu/modernizr.custom.js"></script>
 
         <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
@@ -105,11 +103,27 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
 
         <link rel="stylesheet" href="css/style.css">
 
+        <!--Scripts-->
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="bower_components/moment/min/moment.min.js"></script>
+        <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
+        <script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
+        <script src="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
+        <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
+        <script src="bower_components/cta/dist/cta.min.js"></script>
+        <script src="bower_components/fullcalendar/dist/fullcalendar.js"></script>
+
+        <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
+	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
+		
+		<!--Other-->
+		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
+		
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
         <![endif]-->
-        
         <style>
             sort {
                 display: none;
@@ -182,249 +196,153 @@ echo fread($file_handle, filesize($template_file));
 fclose($file_handle);
 echo "\n";
 endif; ?>        
-        
         </style>
-        
     </head>
 
     <body class="scroller-body" style="padding: 0px;">
-
         <div class="main-wrapper" style="position: initial;">
-            
             <div id="content" class="container-fluid">
 <!-- <button id="numBnt">Numerical</button> -->
                 <br/>
-                <?php if(($USER->authenticated && $USER->role == "admin") && (NZBGETURL != "" || SABNZBDURL != "" )) : ?>
+                <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
                 <div id="downloadClientRow" class="row">
                     <sort>2</sort>
-
                     <div class="col-xs-12 col-md-12">
-                        
                         <div class="content-box">
-
                             <div class="tabbable panel with-nav-tabs panel-default">
-
                                 <div class="panel-heading">
-
                                     <div class="content-tools i-block pull-right">
-
                                         <a id="getDownloader" class="repeat-btn">
-
                                             <i class="fa fa-repeat"></i>
-
                                         </a>
-
                                         <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                          
                                             <i class="fa fa-chevron-down"></i>
-                                        
                                         </a>
-                                        
+										<!-- Lets Move This To Homepage Settings
                                         <ul id="downloaderSeconds" class="dropdown-menu" style="top: 32px !important">
-
                                             <li data-value="5000"><a>Refresh every 5 seconds</a></li>
                                             <li data-value="10000"><a>Refresh every 10 seconds</a></li>
                                             <li data-value="30000"><a>Refresh every 30 seconds</a></li>
                                             <li data-value="60000"><a>Refresh every 60 seconds</a></li>
-
                                         </ul>
-
+										-->
                                     </div>
-
                                     <h3 class="pull-left"><?php if(NZBGETURL != ""){ echo "NZBGet "; } if(SABNZBDURL != ""){ echo "SABnzbd "; } ?></h3>
-
                                     <ul class="nav nav-tabs pull-right">
-
                                         <li class="active"><a href="#downloadQueue" data-toggle="tab" aria-expanded="true"><?php echo $language->translate("QUEUE");?></a></li>
-
                                         <li class=""><a href="#downloadHistory" data-toggle="tab" aria-expanded="false"><?php echo $language->translate("HISTORY");?></a></li>
-
                                     </ul>
-
                                     <div class="clearfix"></div>
-
                                 </div>
-
                                 <div class="panel-body">
-
                                     <div class="tab-content">
-
                                         <div class="tab-pane fade active in" id="downloadQueue">
-
                                             <div class="table-responsive" style="max-height: 300px">
-
                                                 <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
-
                                                     <thead>
-
                                                         <tr>
-
                                                             <th><?php echo $language->translate("FILE");?></th>
                                                             <th><?php echo $language->translate("STATUS");?></th>
                                                             <th><?php echo $language->translate("CATEGORY");?></th>
                                                             <th><?php echo $language->translate("PROGRESS");?></th>
-
                                                         </tr>
-
                                                     </thead>
-
-                                                    <tbody id="downloaderQueue">                               
-
-                                                    </tbody>
-
+                                                    <tbody class="dl-queue sabnzbd"></tbody>
+                                                    <tbody class="dl-queue nzbget"></tbody>
                                                 </table>
-
                                             </div>
-
                                         </div>
-
                                         <div class="tab-pane fade" id="downloadHistory">
-
                                             <div class="table-responsive" style="max-height: 300px">
-
                                                 <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
-
                                                     <thead>
-
                                                         <tr>
-
-                                                            <th>File</th>
-                                                            <th>Status</th>
-                                                            <th>Category</th>
-                                                            <th>Progress</th>
-
+                                                            <th><?php echo $language->translate("FILE");?></th>
+                                                            <th><?php echo $language->translate("STATUS");?></th>
+                                                            <th><?php echo $language->translate("CATEGORY");?></th>
+                                                            <th><?php echo $language->translate("PROGRESS");?></th>
                                                         </tr>
-
                                                     </thead>
-
-                                                    <tbody id="downloaderHistory">                                      
-
-                                                    </tbody>
-
+                                                    <tbody class="dl-history sabnzbd"></tbody>
+                                                    <tbody class="dl-history nzbget"></tbody>
                                                 </table>
-
                                             </div>
-
                                         </div>
-
                                     </div>
-
                                 </div>
-
                             </div>
-                            
                         </div>
-
                     </div>
-
                 </div>
-                <?php endif; ?>
-
+                <?php } ?>
+				<?php if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) { ?>
                 <div id="plexRow" class="row">
-                    
                     <sort>3</sort>
 
                     <?php
-                    $plexSize = 0;
-                    if(PLEXRECENTMOVIE == "true"){ $plexSize++; }
-                    if(PLEXRECENTTV == "true"){ $plexSize++; }
-                    if(PLEXRECENTMUSIC == "true"){ $plexSize++; }
-                    if(PLEXPLAYINGNOW == "true"){ $plexSize++; }
-                    if($plexSize >= 4){ $plexSize = 3; }elseif($plexSize == 3){ $plexSize = 4; }elseif($plexSize == 2){ $plexSize = 6; }elseif($plexSize == 1){ $plexSize = 12; }
-                    
-                    if(PLEXRECENTMOVIE == "true"){ echo getPlexRecent("movie", $plexSize); }
-                    if(PLEXRECENTTV == "true"){ echo getPlexRecent("season", $plexSize); }
-                    if(PLEXRECENTMUSIC == "true"){ echo getPlexRecent("album", $plexSize); }
-                    if(PLEXPLAYINGNOW == "true"){ echo getPlexStreams($plexSize); }
+                    $plexSize = (PLEXRECENTMOVIE == "true") + (PLEXRECENTTV == "true") + (PLEXRECENTMUSIC == "true") + (PLEXPLAYINGNOW == "true");
+                    if(PLEXRECENTMOVIE == "true"){ echo getPlexRecent("movie", 12/$plexSize); }
+                    if(PLEXRECENTTV == "true"){ echo getPlexRecent("season", 12/$plexSize); }
+                    if(PLEXRECENTMUSIC == "true"){ echo getPlexRecent("album", 12/$plexSize); }
+                    if(PLEXPLAYINGNOW == "true"){ echo getPlexStreams(12/$plexSize); }
                     ?>
 
                 </div>
-                
+				<?php } ?>
+				<?php if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) { ?>
                 <div id="embyRow" class="row">
-                    
                     <sort>3</sort>
 
                     <?php
-                    $embySize = 0;
-                    if(EMBYRECENTMOVIE == "true"){ $embySize++; }
-                    if(EMBYRECENTTV == "true"){ $embySize++; }
-                    if(EMBYRECENTMUSIC == "true"){ $embySize++; }
-                    if(EMBYPLAYINGNOW == "true"){ $embySize++; }
-                    if($embySize >= 4){ $embySize = 3; }elseif($embySize == 3){ $embySize = 4; }elseif($embySize == 2){ $embySize = 6; }elseif($embySize == 1){ $embySize = 12; }
-                    
-                    if(EMBYRECENTMOVIE == "true"){ echo getEmbyRecent("movie", $embySize); }
-                    if(EMBYRECENTTV == "true"){ echo getEmbyRecent("season", $embySize); }
-                    if(EMBYRECENTMUSIC == "true"){ echo getEmbyRecent("album", $embySize); }
-                    if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams($embySize); }
+                    $embySize = (EMBYRECENTMOVIE == "true") + (EMBYRECENTTV == "true") + (EMBYRECENTMUSIC == "true") + (EMBYPLAYINGNOW == "true");
+                    if(EMBYRECENTMOVIE == "true"){ echo getEmbyRecent("movie", 12/$embySize); }
+                    if(EMBYRECENTTV == "true"){ echo getEmbyRecent("season", 12/$embySize); }
+                    if(EMBYRECENTMUSIC == "true"){ echo getEmbyRecent("album", 12/$embySize); }
+                    if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(12/$embySize); }
                     ?>
 
                 </div>
-		    
-                <?php if(SONARRURL != "" || RADARRURL != "" || HEADPHONESURL != "" || SICKRAGEURL != "") : ?>
+				<?php } ?>
+                <?php if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH))) { ?>
                 <div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
-                    
                     <sort>1</sort>
-                    
                     <div class="col-lg-12 content-form form-inline">
-                        
                         <div class="form-group">
-                        
                             <select class="form-control" id="imagetype_selector" style="width: auto !important; display: inline-block">
-
                                 <option value="all">View All</option>
                                 <?php if(RADARRURL != ""){ echo '<option value="film">Movies</option>'; }?>
                                 <?php if(SONARRURL != "" || SICKRAGEURL != ""){ echo '<option value="tv">TV Shows</option>'; }?>
                                 <?php if(HEADPHONESURL != ""){ echo '<option value="music">Music</option>'; }?>
-
                             </select>
 
                             <span class="label label-primary well-sm">Available</span>
                             <span class="label label-danger well-sm">Unavailable</span>
                             <span class="label indigo-bg well-sm">Unreleased</span>
                             <span class="label light-blue-bg well-sm">Premier</span>
-                            
                         </div>
-                    
                     </div>
-                    
                 </div>
-                
                 <div id="calendarRow" class="row">
-                    
                     <sort>1</sort>
-        
                     <div class="col-lg-12">
-                    
                         <div id="calendar" class="fc-calendar box-shadow fc fc-ltr fc-unthemed"></div>
-                                        
                     </div>
-                                        
                 </div>
-                <?php endif; ?>
-
+                <?php } ?>
+				
+                <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { ?>
+				<div>
+					<?php echo HOMEPAGECUSTOMHTML1; ?>
+				</div>
+                <?php } ?>
             </div>    
-                
         </div>
-        
-        <!--Scripts-->
-        <script src="bower_components/jquery/dist/jquery.min.js"></script>
-        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="bower_components/moment/min/moment.min.js"></script>
-        <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
-        <script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
-        <script src="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
-        <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
-        <script src="bower_components/cta/dist/cta.min.js"></script>
-        
-        <script src="bower_components/fullcalendar/dist/fullcalendar.js"></script>
-
-        <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
-	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
-        
         <script>
-        
+		function localStorageSupport() {
+			return (('localStorage' in window) && window['localStorage'] !== null)
+		}
+		
         $( document ).ready(function() {
-            
              $('.repeat-btn').click(function(){
                 var refreshBox = $(this).closest('div.content-box');
                 $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
@@ -443,105 +361,50 @@ endif; ?>
                 scrollspeed: 30,
                 mousescrollstep: 60
             });
-            
             $(".table-responsive").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0},
                 scrollspeed: 30,
                 mousescrollstep: 60
             });
-            
             /*$(".carousel-caption").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0},
                 scrollspeed: 30,
                 mousescrollstep: 60
             });*/
-            
             // check if browser support HTML5 local storage
-            function localStorageSupport() {
-                return (('localStorage' in window) && window['localStorage'] !== null)
-            }
-            
-            <?php if(($USER->authenticated && $USER->role == "admin") && (NZBGETURL != "" || SABNZBDURL != "")){ ?>
-            
-            var downloaderSeconds = localStorage.getItem("downloaderSeconds");
-            var myInterval = undefined;
-            $("ul").find("[data-value='" + downloaderSeconds + "']").addClass("active");
-            
-            if(  downloaderSeconds === null ) {
-                localStorage.setItem("downloaderSeconds",'60000');
-                var downloaderSeconds = "60000";
-            }
-            
-            $('#downloaderSeconds li').click(function() {
-                
-                $('#downloaderSeconds li').removeClass("active");
-                $(this).addClass("active");
-
-                var newDownloaderSeconds = $(this).attr('data-value');
-                console.log('New Time is ' + newDownloaderSeconds + ' Old Time was ' + downloaderSeconds);
-                
-                if (localStorageSupport) {
-                    localStorage.setItem("downloaderSeconds",newDownloaderSeconds);
-                }
-                
-                if(typeof myInterval != 'undefined'){ clearInterval(myInterval); }
-                refreshDownloader(newDownloaderSeconds);
-                
-            });
-            
+			
+            <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>
+			var queueRefresh = 30000;
+			var historyRefresh = 120000; // This really doesn't need to happen that often
+			
+			var queueLoad = function() {
+				<?php if(SABNZBDURL != "") { echo '$("tbody.dl-queue.sabnzbd").load("ajax.php?a=sabnzbd-update&list=queue");'; } ?>
+				<?php if(NZBGETURL != "") { echo '$("tbody.dl-queue.nzbget").load("ajax.php?a=nzbget-update&list=listgroups");'; } ?>
+			};
+			
+			var historyLoad = function() {
+				<?php if(SABNZBDURL != "") { echo '$("tbody.dl-history.sabnzbd").load("ajax.php?a=sabnzbd-update&list=history");'; } ?>
+				<?php if(NZBGETURL != "") { echo '$("tbody.dl-history.nzbget").load("ajax.php?a=nzbget-update&list=history");'; } ?>
+			};
+			
+			// Initial Loads
+			queueLoad();
+			historyLoad();
+			
+			// Interval Loads
+			var queueInterval = setInterval(queueLoad, queueRefresh);
+			var historyInterval = setInterval(historyLoad, historyRefresh);
+			
+			// Manual Load
+			$("#getDownloader").click(function() {
+				queueLoad();
+				historyLoad();
+			});
             <?php } ?>
-            
-            
-            <?php if(($USER->authenticated && $USER->role == "admin") && NZBGETURL != ""){ ?>
-            
-            $("#downloaderHistory").load("downloader.php?downloader=nzbget&list=history");
-            $("#downloaderQueue").load("downloader.php?downloader=nzbget&list=listgroups");
-            
-            refreshDownloader = function(secs){
-                myInterval = setInterval(function(){
-                    $("#downloaderHistory").load("downloader.php?downloader=nzbget&list=history");
-                    $("#downloaderQueue").load("downloader.php?downloader=nzbget&list=listgroups");
-                }, secs);                
-            }
-
-            refreshDownloader(downloaderSeconds);
-
-            $("#getDownloader").click(function(){
-                $("#downloaderHistory").load("downloader.php?downloader=nzbget&list=history");
-                $("#downloaderQueue").load("downloader.php?downloader=nzbget&list=listgroups");
-                console.log('completed'); 
-            });
-
-            <?php } ?>
-            
-            <?php if(($USER->authenticated && $USER->role == "admin") && SABNZBDURL != ""){ ?>
-            
-            $("#downloaderHistory").load("downloader.php?downloader=sabnzbd&list=history");
-            $("#downloaderQueue").load("downloader.php?downloader=sabnzbd&list=queue");
-            
-            refreshDownloader = function(secs){
-                myInterval = setInterval(function(){
-                    $("#downloaderHistory").load("downloader.php?downloader=sabnzbd&list=history");
-                    $("#downloaderQueue").load("downloader.php?downloader=sabnzbd&list=queue");
-                }, secs);                
-            }
-
-            refreshDownloader(downloaderSeconds);
-
-            $("#getDownloader").click(function(){
-                $("#downloaderHistory").load("downloader.php?downloader=sabnzbd&list=history");
-                $("#downloaderQueue").load("downloader.php?downloader=sabnzbd&list=queue");
-                console.log('completed'); 
-            });
-
-            <?php } ?>
-                        
         });
-             
         </script>
-        <?php if(SONARRURL != "" || RADARRURL != "" || HEADPHONESURL != "" || SICKRAGEURL != "") : ?>
+        <?php if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH))) { ?>
         <script>
-            
             $(function () {
 
                 var date = new Date();
@@ -550,52 +413,39 @@ endif; ?>
                 var y = date.getFullYear();
 
                 $('#calendar').fullCalendar({
-                    
                     eventLimit: false, 
                     firstDay: <?php echo CALENDARSTART;?>,
-                  
                     height: "auto",
                     defaultView: '<?php echo CALENDARVIEW;?>',
-                
                     header: {
-                  
                         left: 'prev,next,',
                         center: 'title',
                         right: 'today, month, basicDay,basicWeek,'
-                
                     },
-                
                     views: {
-                    
                         basicDay: { buttonText: '<?php echo $language->translate("DAY");?>', eventLimit: false },
                         basicWeek: { buttonText: '<?php echo $language->translate("WEEK");?>', eventLimit: false },
                         month: { buttonText: '<?php echo $language->translate("MONTH");?>', eventLimit: false },
                         today: { buttonText: '<?php echo $language->translate("TODAY");?>' },
-                
                     },
-                
                     events: [
-<?php if(SICKRAGEURL != ""){ echo getSickrageCalendarWanted($sickrage->future()); echo getSickrageCalendarHistory($sickrage->history("100","downloaded")); } ?>
-<?php if(SONARRURL != ""){ echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); } ?>
-<?php if(RADARRURL != ""){ echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); } ?>                 
-<?php if(HEADPHONESURL != ""){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); } ?>                                
+<?php if (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)){ echo getSickrageCalendarWanted($sickrage->future()); echo getSickrageCalendarHistory($sickrage->history("100","downloaded")); } ?>
+<?php if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){ echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); } ?>
+<?php if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){ echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); } ?>                 
+<?php if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); } ?>                                
                     ],
-                                            
                     eventRender: function eventRender( event, element, view ) {
                         return ['all', event.imagetype].indexOf($('#imagetype_selector').val()) >= 0
                     },
 
                     editable: false,
                     droppable: false,
-
+					timeFormat: '<?php echo CALTIMEFORMAT; ?>',
                 });
-            
             });
-            
             $('#imagetype_selector').on('change',function(){
                 $('#calendar').fullCalendar('rerenderEvents');
             })
-            
             var $divs = $("div.row");
 
             $('#numBnt').on('click', function () {
@@ -604,9 +454,8 @@ endif; ?>
                 });
                 $("#content").html(numericallyOrderedDivs);
             });
-        
         </script>
-        <?php endif; ?>
+        <?php } ?>
 
     </body>
 

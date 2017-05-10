@@ -1,0 +1,57 @@
+div.colour-field {
+    border: 1px solid #cbd3d5;
+    border-radius: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+div.colour-field input {
+	color: #000;
+}
+
+input.invalid {
+	background-color: #ffb5b5 !important;
+}
+
+input.invalid + p.help-text::after {
+	content: " - Does not match pattern!";
+}
+
+
+div.form-content input:not([type=radio]) {
+	width: 100% !important;
+}
+
+tab > div.row {
+	padding: 0px 10px 0px 10px;
+}
+
+tab > div.row > div {
+	padding: 1px 5px !important;
+}
+
+tab > div.row > div:first-child {
+	max-width: 42px;
+}
+
+tab > div.row > div:first-child .tabIconView {
+	width: 100% !important;
+	margin: 7px 0px !important;
+}
+
+tab > div.row button {
+	margin: 9px 0px !important;
+}
+
+tab > div.row div.custom-field {
+	margin: 8px 0px !important;
+}
+
+tab p.help-text {
+	margin: 0px !important;
+}
+
+#submitTabs ul > li {
+	padding: 0px 10px !important;
+}
