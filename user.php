@@ -502,8 +502,7 @@ EOT;
 		 * is profile information that can be set, but in no way
 		 * needs to be, in the user's profile section
 		 */
-		function register_user($username, $email, $sha1, &$registration_callback = false, $settings)
-		{
+		function register_user($username, $email, $sha1, &$registration_callback = false, $settings) {
 			$username = strtolower($username);
 			$dbpassword = $this->token_hash_password($username, $sha1, "");
 			if($dbpassword==$sha1) die("password hashing is not implemented.");
@@ -514,7 +513,7 @@ EOT;
             }
 			// Does user already exist? (see notes on safe reporting)
 			if(User::unsafe_reporting) {
-				$query = "SELECT username FROM users WHERE username LIKE '$username'";
+				$query = "SELECT username FROM users WHERE username LIKE '$username' COLLATE NOCASE";
 				foreach($this->database->query($query) as $data) {
 					$this->info("user account for $username not created.");
 					$this->error = "this user name is already being used by someone else.";
@@ -532,7 +531,7 @@ EOT;
 			}
 			// Is email address already in use? (see notes on safe reporting)
 			if (isset($email) && $email) {
-				$query = "SELECT * FROM users WHERE email = '$email'";
+				$query = "SELECT * FROM users WHERE email = '$email' COLLATE NOCASE";
 				foreach($this->database->query($query) as $data) {
 					$this->info("user account for $username not created.");
 					$this->error = "this email address is already in use by someone else.";
@@ -602,7 +601,7 @@ EOT;
 				default: // Internal
 					if (!$authSuccess) {
 						// perform the internal authentication step
-						$query = "SELECT password FROM users WHERE LOWER(username) = '".strtolower($username)."'";
+						$query = "SELECT password FROM users WHERE username = '".$username."' COLLATE NOCASE";
 						foreach($this->database->query($query) as $data) {
 							if (password_verify($password, $data["password"])) { // Better
 								$authSuccess = true;
@@ -619,7 +618,7 @@ EOT;
 			
 			if ($authSuccess) {
 				// Make sure user exists in database
-				$query = "SELECT username FROM users WHERE LOWER(username) = '".strtolower($username)."'";
+				$query = "SELECT username FROM users WHERE username = '".$username."' COLLATE NOCASE";
 				$userExists = false;
 				foreach($this->database->query($query) as $data) {
 					$userExists = true;
@@ -678,10 +677,10 @@ EOT;
 		function update_user($username, $email, $sha1, $role)
 		{
 			if($email !="") {
-				$update = "UPDATE users SET email = '$email' WHERE username = '$username'";
+				$update = "UPDATE users SET email = '$email' WHERE username = '$username' COLLATE NOCASE";
 				$this->database->exec($update); }
             if($role !="") {
-				$update = "UPDATE users SET role = '$role' WHERE username = '$username'";
+				$update = "UPDATE users SET role = '$role' WHERE username = '$username' COLLATE NOCASE";
 				$this->database->exec($update); }
 			if($sha1 !="") {
 				$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
@@ -694,7 +693,7 @@ EOT;
 		 */
 		function logout_user($username)
 		{
-			$update = "UPDATE users SET active = 'false' WHERE username = '$username'";
+			$update = "UPDATE users SET active = 'false' WHERE username = '$username' COLLATE NOCASE";
 			$this->database->exec($update);
 			$this->resetSession();
 			$this->info("Buh-Bye <strong>$username</strong>!");
@@ -714,7 +713,7 @@ EOT;
 		 */
 		function unregister_user($username)
 		{
-			$delete = "DELETE FROM users WHERE username = '$username'";
+			$delete = "DELETE FROM users WHERE username = '$username' COLLATE NOCASE";
 			$this->database->exec($delete);
 			$this->info("<strong>$username</strong> has been kicked out of Organizr");
 			//$this->resetSession();
@@ -737,7 +736,7 @@ EOT;
 		function get_user_email($username)
 		{
 			if($username && $username !="" && $username !=User::GUEST_USER) {
-				$query = "SELECT email FROM users WHERE username = '$username'";
+				$query = "SELECT email FROM users WHERE username = '$username' COLLATE NOCASE";
 				foreach($this->database->query($query) as $data) { return $data["email"]; }}
 			return "";
 		}
@@ -747,7 +746,7 @@ EOT;
 		function get_user_role($username)
 		{
 			if($username && $username !="" && $username !=User::GUEST_USER) {
-				$query = "SELECT role FROM users WHERE username = '$username'";
+				$query = "SELECT role FROM users WHERE username = '$username' COLLATE NOCASE";
 				foreach($this->database->query($query) as $data) { return $data["role"]; }}
 			return User::GUEST_USER;
 		}
@@ -755,7 +754,7 @@ EOT;
        /* function get_user_group($username)
 		{
 			if($username && $username !="" && $username !=User::GUEST_USER) {
-				$query = "SELECT group FROM users WHERE username = '$username'";
+				$query = "SELECT group FROM users WHERE username = '$username' COLLATE NOCASE";
 				foreach($this->database->query($query) as $data) { return $data["group"]; }}
 			return User::GUEST_USER;
 		}*/
@@ -764,7 +763,7 @@ EOT;
 		 */
 		function get_user_token($username)
 		{
-			$query = "SELECT token FROM users WHERE username = '$username'";
+			$query = "SELECT token FROM users WHERE username = '$username' COLLATE NOCASE";
 			foreach($this->database->query($query) as $data) { return $data["token"]; }
 			return false;
 		}
@@ -775,11 +774,11 @@ EOT;
 		{
 			// update the user's token
 			$token = $this->random_hex_string(32);
-			$update = "UPDATE users SET token = '$token' WHERE username = '$username'";
+			$update = "UPDATE users SET token = '$token' WHERE username = '$username' COLLATE NOCASE";
 			$this->database->exec($update);
 			// update the user's password
 			$newpassword = $this->token_hash_password($username, $sha1, $token);
-			$update = "UPDATE users SET password = '$newpassword' WHERE username = '$username'";
+			$update = "UPDATE users SET password = '$newpassword' WHERE username = '$username' COLLATE NOCASE";
 			$this->database->exec($update);
 			if($noMsg == "false"){
                 $this->info("token and password updated for <strong>$username</strong>");   
@@ -791,7 +790,7 @@ EOT;
 		 */
 		function mark_user_active($username)
 		{
-			$update = "UPDATE users SET active = 'true', last = '" . time() . "' WHERE username = '$username'";
+			$update = "UPDATE users SET active = 'true', last = '" . time() . "' WHERE username = '$username' COLLATE NOCASE";
 			$this->database->exec($update);
 			//$this->info("$username has been marked currently active.");
 			return true;
@@ -803,7 +802,7 @@ EOT;
 		{
 			$last = 0;
 			$active = "false";
-			$query = "SELECT last, active FROM users WHERE username = '$username'";
+			$query = "SELECT last, active FROM users WHERE username = '$username' COLLATE NOCASE";
 			foreach($this->database->query($query) as $data) {
 				$last = intval($data["last"]);
 				$active = $data["active"];
