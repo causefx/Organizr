@@ -1211,7 +1211,7 @@ echo buildSettings(
 						'placeholder' => 'mail.provider.com',
 						'labelTranslate' => 'SMTP_HOST',
 						'name' => 'smtpHost',
-						'pattern' => '([\w\.]{1,250})',
+						'pattern' => '([(\w|\-)\.]{1,250})',
 						'value' => SMTPHOST,
 					),
 					array(
