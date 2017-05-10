@@ -589,7 +589,7 @@ echo buildSettings(
                 <div class="email-content homepage-box white-bg">
 <?php
 // Qualify most typical hostnames prior to form submission
-$urlPattern = '([hH][tT][tT][pP][sS]?):\/\/([\w\.]{1,250})(?::(\d{1,5}))?((?:\/[^?.\s]+))?';
+$urlPattern = '([hH][tT][tT][pP][sS]?):\/\/([\w\.\-]{1,250})(?::(\d{1,5}))?((?:\/[^?.\s]+))?';
 
 // Once configurable user groups is added change to select-multi to allow specific group selection
 $userSelectType = 'select'; 
@@ -1211,7 +1211,7 @@ echo buildSettings(
 						'placeholder' => 'mail.provider.com',
 						'labelTranslate' => 'SMTP_HOST',
 						'name' => 'smtpHost',
-						'pattern' => '([\w\.]{1,250})',
+						'pattern' => '([\w\.\-]{1,250})',
 						'value' => SMTPHOST,
 					),
 					array(
