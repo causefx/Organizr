@@ -2404,5 +2404,12 @@ function getHeadphonesCalendar($url, $key, $list){
 
 }
 
+function checkRootPath($string){
+    if($string == "\\" || $string == "/"){
+        return "/";
+    }else{
+        return str_replace("\\", "/", $string) . "/";
+    }
+}
 
 ?>
