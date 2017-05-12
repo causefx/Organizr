@@ -43,6 +43,6 @@ Do you have quite a bit of services running on your computer or server?  Do you 
 - Quick access tabs [access your tabs quickly e.g. www.example.com/#Sonarr]
 
 Thanks to everyone that helped!  
-Special Shout-out to: [elmerfdz](https://github.com/elmerfdz) & [pyrostic](https://github.com/pyrostic) & [rix1337](https://github.com/rix1337)
+Special Shout-out to: [Cerothen](https://github.com/Cerothen) & [elmerfdz](https://github.com/elmerfdz) & [pyrostic](https://github.com/pyrostic) & [rix1337](https://github.com/rix1337)
 
 Theme Distributed with Extended License from Creative Market

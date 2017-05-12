@@ -838,8 +838,10 @@ function loadConfig($path = 'config/config.php') {
 // Commit new values to the configuration
 function updateConfig($new, $current = false) {
 	// Get config if not supplied
-	if (!$current) {
+	if ($current === false) {
 		$current = loadConfig();
+	} else if (is_string($current) && is_file($current)) {
+		$current = loadConfig($current);
 	}
 	
 	// Inject Parts
@@ -974,6 +976,7 @@ function upgradeCheck() {
 		
 		// Write config file
 		$config['CONFIG_VERSION'] = '1.32';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][pre1.32].bak.php');
 		$createConfigSuccess = createConfig($config);
 		
 		// Create new config
@@ -1008,22 +1011,24 @@ function upgradeCheck() {
 		}
 		
 		// Upgrade database to latest version
-		updateSQLiteDB($config['database_Location']);
+		updateSQLiteDB($config['database_Location'],'1.32');
 		
 		// Update Version and Commit
 		$config['CONFIG_VERSION'] = '1.33';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.32].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
 	}
 	
-	// Upgrade to 1.33
+	// Upgrade to 1.34
 	$config = loadConfig();
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.34')) {
 		// Upgrade database to latest version
-		updateSQLiteDB($config['database_Location']);
+		updateSQLiteDB($config['database_Location'],'1.33');
 		
 		// Update Version and Commit
 		$config['CONFIG_VERSION'] = '1.34';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.33].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
 	}
@@ -1609,7 +1614,7 @@ function createSQLiteDB($path = false) {
 }
 
 // Upgrade Database
-function updateSQLiteDB($db_path = false) {
+function updateSQLiteDB($db_path = false, $oldVerNum = false) {
 	if (!$db_path) {
 		if (defined('DATABASE_LOCATION')) {
 			$db_path = DATABASE_LOCATION;
@@ -1638,7 +1643,7 @@ function updateSQLiteDB($db_path = false) {
 	$GLOBALS['file_db'] = null;
 	$pathDigest = pathinfo($db_path.'users.db');
 	if (file_exists($db_path.'users.db')) {
-		rename($db_path.'users.db', $pathDigest['dirname'].'/'.$pathDigest['filename'].'.bak.db');
+		rename($db_path.'users.db', $pathDigest['dirname'].'/'.$pathDigest['filename'].'['.date('Y-m-d_H-i-s').']'.($oldVerNum?'['.$oldVerNum.']':'').'.bak.db');
 	}
 	
 	// Create New Database
