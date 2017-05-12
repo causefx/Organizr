@@ -64,9 +64,9 @@ $errorImage = $codes[$status][2];
 
         <title><?=$errorTitle;?></title>
 
-        <link rel="stylesheet" href="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/bower_components/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/bower_components/Waves/dist/waves.min.css"> 
-        <link rel="stylesheet" href="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/css/style.css">
+        <link rel="stylesheet" href="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>bower_components/Waves/dist/waves.min.css"> 
+        <link rel="stylesheet" href="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>css/style.css">
     </head>
     <body class="gray-bg" style="padding: 0;">
         <div class="main-wrapper" style="position: initial;">
@@ -80,7 +80,7 @@ $errorImage = $codes[$status][2];
                                         <h1 class="zero-m text-uppercase" style="color:<?=$topbartext;?>; font-size: 40px;"><?=$errorTitle;?></h1>
                                     </div>
                                     <div class="big-box text-left">
-                                        <center><img src="images/<?=$errorImage;?>.png" style="height: 200px;"></center>
+                                        <center><img src="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>images/<?=$errorImage;?>.png" style="height: 200px;"></center>
                                         <h4 style="color: <?=$topbar;?>;" class="text-center"><?php echo $message;?></h4>
                                         <button style="background:<?=$topbar;?>;" onclick="window.history.back();" type="button" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
                                     </div>
