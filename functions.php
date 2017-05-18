@@ -1214,7 +1214,7 @@ function buildSettings($array) {
 					<div class="col-lg-12">
 						'.(isset($array['customBeforeForm'])?$array['customBeforeForm']:'').'
 						<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
-							<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
+							<button id="'.$pageID.'_form_submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
 							<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
 							</button>
 							'.$fields.($tabContent?'
@@ -1239,16 +1239,18 @@ function buildSettings($array) {
 			$(\'#'.$pageID.'_form\').find(\'input, select, textarea\').on(\'change\', function() { $(this).attr(\'data-changed\', \'true\'); });
 			var '.$pageID.'Validate = function() { if (this.value && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { $(this).addClass(\'invalid\'); } else { $(this).removeClass(\'invalid\'); } };
 			$(\'#'.$pageID.'_form\').find(\'input[pattern]\').each('.$pageID.'Validate).on(\'keyup\', '.$pageID.'Validate);
-			$(\'#'.$pageID.'_form\').find(\'select[multiple]\').on(\'click\', function() { $(this).attr(\'data-changed\', \'true\'); });
+			$(\'#'.$pageID.'_form\').find(\'select[multiple]\').on(\'change click\', function() { $(this).attr(\'data-changed\', \'true\'); });
 			
-			$(\'#'.$pageID.'_form\').submit(function () {
+			$(\'#'.$pageID.'_form_submit\').on(\'click\', function () {
 				var newVals = {};
 				var hasVals = false;
+				var errorFields = [];
 				$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').each(function() {
 					hasVals = true;
 					if (this.type == \'checkbox\') {
 						newVals[this.name] = this.checked;
 					} else {
+						if (this.value && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { errorFields.push(this.name); }
 						var fieldVal = $(this).val();
 						if (typeof fieldVal == \'object\') {
 							if (typeof fieldVal.join == \'function\') {
@@ -1260,7 +1262,9 @@ function buildSettings($array) {
 						newVals[this.name] = fieldVal;
 					}
 				});
-				if (hasVals) {
+				if (errorFields.length) {
+					parent.notify(\'Fields have errors: \'+errorFields.join(\', \')+\'!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
+				} else if (hasVals) {
 					console.log(newVals);
 					ajax_request(\'POST\', \''.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data, code) {
 						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
