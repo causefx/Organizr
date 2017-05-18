@@ -728,7 +728,8 @@ EOT;
 		 */
 		function token_hash_password($username, $sha1, $token)
 		{
-			return hash("sha256", $username . $sha1 . $token);
+			
+			return hash("sha256",($this->database->query('SELECT username FROM users WHERE username = \''.$username.'\' COLLATE NOCASE')->fetch()['username']).$sha1.$token);
 		}
 		/**
 		 * Get a user's email address
