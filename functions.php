@@ -762,8 +762,13 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 	// Sort Items
 	ksort($array);
 	
-	// Unset the current version
+	// Update the current config version
+	if (!$nest) {
+		// Inject Current Version
+		$output[] = "\t'CONFIG_VERSION' => '".(isset($array['apply_CONFIG_VERSION'])?$array['apply_CONFIG_VERSION']:INSTALLEDVERSION)."'";
+	}
 	unset($array['CONFIG_VERSION']);
+	unset($array['apply_CONFIG_VERSION']);
 	
 	// Process Settings
 	foreach ($array as $k => $v) {
@@ -791,11 +796,6 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		if($allowCommit) {
 			$output[] = str_repeat("\t",$nest+1)."'$k' => $item";
 		}
-	}
-	
-	if (!$nest && !isset($array['CONFIG_VERSION'])) {
-		// Inject Current Version
-		$output[] = "\t'CONFIG_VERSION' => '".INSTALLEDVERSION."'";
 	}
 	
 	// Build output
@@ -958,7 +958,7 @@ function upgradeCheck() {
 		$config = parse_ini_file('databaseLocation.ini.php', true);
 		
 		// Refactor
-		$config['database_Location'] = str_replace('//','/',$config['databaseLocation'].'/');
+		$config['database_Location'] = preg_replace('/\/\/$/','/',$config['databaseLocation'].'/');
 		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['databaseLocation']);
 		
@@ -996,6 +996,7 @@ function upgradeCheck() {
 	$config = loadConfig();
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33')) {
 		// Fix User Directory
+		$config['database_Location'] = preg_replace('/\/\/$/','/',$config['database_Location'].'/');
 		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['USER_HOME']);
 		
@@ -1014,7 +1015,7 @@ function upgradeCheck() {
 		updateSQLiteDB($config['database_Location'],'1.32');
 		
 		// Update Version and Commit
-		$config['CONFIG_VERSION'] = '1.33';
+		$config['apply_CONFIG_VERSION'] = '1.33';
 		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.32].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
@@ -1038,6 +1039,13 @@ function upgradeCheck() {
 
 // Check if all software dependancies are met
 function dependCheck() {
+	$output = array();
+	if (!extension_loaded('pdo_sqlite')) { $output[] = 'PDO:SQLite not enabled, please add "extension = php_pdo_sqlite.dll" to php.ini'; }
+	//if (!extension_loaded('sqlite3')) { $output[] = 'SQLite3 not enabled, please add "extension = php_sqlite3.dll" to php.ini'; }
+	
+	if ($output) {
+		debug_out($output,1);
+	}
 	return true;
 }
 
@@ -1658,7 +1666,7 @@ function updateSQLiteDB($db_path = false, $oldVerNum = false) {
 				reset($tableData);
 				foreach($tableData as $key => $value) {
 					$insertValues[] = '('.implode(',',array_map(function($d) { 
-						return (isset($d)?"'".SQLite3::escapeString($d)."'":'null');
+						return (isset($d)?$GLOBALS['file_db']->quote($d):'null');
 					}, $value)).')';
 				}
 				$GLOBALS['file_db']->query($queryBase.implode(',',$insertValues).';');
@@ -2417,4 +2425,7 @@ function checkRootPath($string){
     }
 }
 
-?>
+
+
+// Always run this
+dependCheck();
