@@ -52,6 +52,6 @@ Do you have quite a bit of services running on your computer or server?  Do you 
 [![Feature Requests](http://feathub.com/causefx/Organizr?format=svg)](http://feathub.com/causefx/Organizr)
 
 Thanks to everyone that helped!  
-Special Shout-out to: [elmerfdz](https://github.com/elmerfdz) & [pyrostic](https://github.com/pyrostic) & [rix1337](https://github.com/rix1337)
+Special Shout-out to: [Cerothen](https://github.com/Cerothen) & [elmerfdz](https://github.com/elmerfdz) & [pyrostic](https://github.com/pyrostic) & [rix1337](https://github.com/rix1337)
 
 Theme Distributed with Extended License from Creative Market

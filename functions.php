@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.34');
+ define('INSTALLEDVERSION', '1.341');
 // ===================================
 
 // Debugging output functions
@@ -762,8 +762,13 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 	// Sort Items
 	ksort($array);
 	
-	// Unset the current version
+	// Update the current config version
+	if (!$nest) {
+		// Inject Current Version
+		$output[] = "\t'CONFIG_VERSION' => '".(isset($array['apply_CONFIG_VERSION'])?$array['apply_CONFIG_VERSION']:INSTALLEDVERSION)."'";
+	}
 	unset($array['CONFIG_VERSION']);
+	unset($array['apply_CONFIG_VERSION']);
 	
 	// Process Settings
 	foreach ($array as $k => $v) {
@@ -791,11 +796,6 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		if($allowCommit) {
 			$output[] = str_repeat("\t",$nest+1)."'$k' => $item";
 		}
-	}
-	
-	if (!$nest && !isset($array['CONFIG_VERSION'])) {
-		// Inject Current Version
-		$output[] = "\t'CONFIG_VERSION' => '".INSTALLEDVERSION."'";
 	}
 	
 	// Build output
@@ -838,8 +838,10 @@ function loadConfig($path = 'config/config.php') {
 // Commit new values to the configuration
 function updateConfig($new, $current = false) {
 	// Get config if not supplied
-	if (!$current) {
+	if ($current === false) {
 		$current = loadConfig();
+	} else if (is_string($current) && is_file($current)) {
+		$current = loadConfig($current);
 	}
 	
 	// Inject Parts
@@ -956,7 +958,7 @@ function upgradeCheck() {
 		$config = parse_ini_file('databaseLocation.ini.php', true);
 		
 		// Refactor
-		$config['database_Location'] = str_replace('//','/',$config['databaseLocation'].'/');
+		$config['database_Location'] = preg_replace('/\/\/$/','/',$config['databaseLocation'].'/');
 		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['databaseLocation']);
 		
@@ -974,6 +976,7 @@ function upgradeCheck() {
 		
 		// Write config file
 		$config['CONFIG_VERSION'] = '1.32';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][pre1.32].bak.php');
 		$createConfigSuccess = createConfig($config);
 		
 		// Create new config
@@ -993,6 +996,7 @@ function upgradeCheck() {
 	$config = loadConfig();
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33')) {
 		// Fix User Directory
+		$config['database_Location'] = preg_replace('/\/\/$/','/',$config['database_Location'].'/');
 		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['USER_HOME']);
 		
@@ -1008,22 +1012,24 @@ function upgradeCheck() {
 		}
 		
 		// Upgrade database to latest version
-		updateSQLiteDB($config['database_Location']);
+		updateSQLiteDB($config['database_Location'],'1.32');
 		
 		// Update Version and Commit
-		$config['CONFIG_VERSION'] = '1.33';
+		$config['apply_CONFIG_VERSION'] = '1.33';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.32].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
 	}
 	
-	// Upgrade to 1.33
+	// Upgrade to 1.34
 	$config = loadConfig();
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.34')) {
 		// Upgrade database to latest version
-		updateSQLiteDB($config['database_Location']);
+		updateSQLiteDB($config['database_Location'],'1.33');
 		
 		// Update Version and Commit
 		$config['CONFIG_VERSION'] = '1.34';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.33].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
 	}
@@ -1033,6 +1039,13 @@ function upgradeCheck() {
 
 // Check if all software dependancies are met
 function dependCheck() {
+	$output = array();
+	if (!extension_loaded('pdo_sqlite')) { $output[] = 'PDO:SQLite not enabled, please add "extension = php_pdo_sqlite.dll" to php.ini'; }
+	//if (!extension_loaded('sqlite3')) { $output[] = 'SQLite3 not enabled, please add "extension = php_sqlite3.dll" to php.ini'; }
+	
+	if ($output) {
+		debug_out($output,1);
+	}
 	return true;
 }
 
@@ -1201,7 +1214,7 @@ function buildSettings($array) {
 					<div class="col-lg-12">
 						'.(isset($array['customBeforeForm'])?$array['customBeforeForm']:'').'
 						<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
-							<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
+							<button id="'.$pageID.'_form_submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
 							<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
 							</button>
 							'.$fields.($tabContent?'
@@ -1226,16 +1239,18 @@ function buildSettings($array) {
 			$(\'#'.$pageID.'_form\').find(\'input, select, textarea\').on(\'change\', function() { $(this).attr(\'data-changed\', \'true\'); });
 			var '.$pageID.'Validate = function() { if (this.value && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { $(this).addClass(\'invalid\'); } else { $(this).removeClass(\'invalid\'); } };
 			$(\'#'.$pageID.'_form\').find(\'input[pattern]\').each('.$pageID.'Validate).on(\'keyup\', '.$pageID.'Validate);
-			$(\'#'.$pageID.'_form\').find(\'select[multiple]\').on(\'click\', function() { $(this).attr(\'data-changed\', \'true\'); });
+			$(\'#'.$pageID.'_form\').find(\'select[multiple]\').on(\'change click\', function() { $(this).attr(\'data-changed\', \'true\'); });
 			
-			$(\'#'.$pageID.'_form\').submit(function () {
+			$(\'#'.$pageID.'_form_submit\').on(\'click\', function () {
 				var newVals = {};
 				var hasVals = false;
+				var errorFields = [];
 				$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').each(function() {
 					hasVals = true;
 					if (this.type == \'checkbox\') {
 						newVals[this.name] = this.checked;
 					} else {
+						if (this.value && this.pattern && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { errorFields.push(this.name); }
 						var fieldVal = $(this).val();
 						if (typeof fieldVal == \'object\') {
 							if (typeof fieldVal.join == \'function\') {
@@ -1247,7 +1262,9 @@ function buildSettings($array) {
 						newVals[this.name] = fieldVal;
 					}
 				});
-				if (hasVals) {
+				if (errorFields.length) {
+					parent.notify(\'Fields have errors: \'+errorFields.join(\', \')+\'!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
+				} else if (hasVals) {
 					console.log(newVals);
 					ajax_request(\'POST\', \''.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data, code) {
 						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
@@ -1609,7 +1626,7 @@ function createSQLiteDB($path = false) {
 }
 
 // Upgrade Database
-function updateSQLiteDB($db_path = false) {
+function updateSQLiteDB($db_path = false, $oldVerNum = false) {
 	if (!$db_path) {
 		if (defined('DATABASE_LOCATION')) {
 			$db_path = DATABASE_LOCATION;
@@ -1638,7 +1655,7 @@ function updateSQLiteDB($db_path = false) {
 	$GLOBALS['file_db'] = null;
 	$pathDigest = pathinfo($db_path.'users.db');
 	if (file_exists($db_path.'users.db')) {
-		rename($db_path.'users.db', $pathDigest['dirname'].'/'.$pathDigest['filename'].'.bak.db');
+		rename($db_path.'users.db', $pathDigest['dirname'].'/'.$pathDigest['filename'].'['.date('Y-m-d_H-i-s').']'.($oldVerNum?'['.$oldVerNum.']':'').'.bak.db');
 	}
 	
 	// Create New Database
@@ -1653,7 +1670,7 @@ function updateSQLiteDB($db_path = false) {
 				reset($tableData);
 				foreach($tableData as $key => $value) {
 					$insertValues[] = '('.implode(',',array_map(function($d) { 
-						return (isset($d)?"'".addslashes($d)."'":'null');
+						return (isset($d)?$GLOBALS['file_db']->quote($d):'null');
 					}, $value)).')';
 				}
 				$GLOBALS['file_db']->query($queryBase.implode(',',$insertValues).';');
@@ -2404,5 +2421,15 @@ function getHeadphonesCalendar($url, $key, $list){
 
 }
 
+function checkRootPath($string){
+    if($string == "\\" || $string == "/"){
+        return "/";
+    }else{
+        return str_replace("\\", "/", $string) . "/";
+    }
+}
 
-?>
+
+
+// Always run this
+dependCheck();
