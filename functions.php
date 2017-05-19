@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.341');
+ define('INSTALLEDVERSION', '1.342');
 // ===================================
 
 // Debugging output functions
@@ -1255,7 +1255,7 @@ function buildSettings($array) {
 					if (this.type == \'checkbox\') {
 						newVals[this.name] = this.checked;
 					} else {
-						if (this.value && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { errorFields.push(this.name); }
+						if (this.value && this.pattern && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { errorFields.push(this.name); }
 						var fieldVal = $(this).val();
 						if (typeof fieldVal == \'object\') {
 							if (typeof fieldVal.join == \'function\') {
