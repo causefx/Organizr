@@ -227,6 +227,12 @@ endif; ?>
             <div id="content" class="container-fluid">
 <!-- <button id="numBnt">Numerical</button> -->
                 <br/>
+
+				 <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { ?>
+				<div>
+					<?php echo HOMEPAGECUSTOMHTML1; ?>
+				</div>
+                <?php } ?>
                 <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
                 <div id="downloadClientRow" class="row">
                     <sort>2</sort>
@@ -351,12 +357,6 @@ endif; ?>
                         <div id="calendar" class="fc-calendar box-shadow fc fc-ltr fc-unthemed"></div>
                     </div>
                 </div>
-                <?php } ?>
-				
-                <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { ?>
-				<div>
-					<?php echo HOMEPAGECUSTOMHTML1; ?>
-				</div>
                 <?php } ?>
             </div>    
         </div>
