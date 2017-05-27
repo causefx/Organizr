@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.342');
+ define('INSTALLEDVERSION', '1.343');
 // ===================================
 
 // Debugging output functions
@@ -1520,6 +1520,7 @@ function printTabRow($data) {
 					'.buildField(array(
 						'type' => 'button',
 						'icon' => 'trash',
+                        'buttonType' => 'danger',
 						'labelTranslate' => 'REMOVE',
 						'onclick' => "$(this).parents('li').remove();",
 					),12,1,1).'

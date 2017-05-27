@@ -273,8 +273,10 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         <![endif]-->
     </head>
     <style>
-
-        .bottom-bnts a {
+        .TabOpened {
+            -webkit-filter: drop-shadow(0px 0px 5px <?=$topbartext;?>);
+            filter: drop-shadow(0px 0px 5px <?=$topbartext;?>);
+        }.bottom-bnts a {
 
             background: <?=$bottombar;?> !important;
             color: <?=$topbartext;?> !important;
@@ -1246,12 +1248,14 @@ endif; ?>
                 event.preventDefault();
             });
             defaultTab = $("li[class^='tab-item active']").attr("id");
+            $("li[class^='tab-item active']").first().find("img").addClass("TabOpened");
             if (defaultTab){
                 defaultTab = defaultTab.substr(0, defaultTab.length-1);
             }else{
                 defaultTabNone = $("li[class^='tab-item']").attr("id");
                 if (defaultTabNone){
                     $("li[class^='tab-item']").first().attr("class", "tab-item active");
+                    $("li[class^='tab-item']").first().find("img").addClass("TabOpened");
                     defaultTab = defaultTabNone.substr(0, defaultTabNone.length-1);
                 }
             }
@@ -1377,13 +1381,13 @@ endif; ?>
         <?php if($iconRotate == "true") : ?>   
         $("li[id^='settings.phpx']").on('click tap', function(){
 
-            $("img[id^='settings-icon']").attr("class", "fa-spin");
-            $("i[id^='settings-icon']").attr("class", "fa fa-cog fa-spin");
+            $("img[id^='settings-icon']").addClass("fa-spin");
+            $("i[id^='settings-icon']").addClass("fa-spin");
 
             setTimeout(function(){
 
-                $("img[id^='settings-icon']").attr("class", "");
-                $("i[id^='settings-icon']").attr("class", "fa fa-cog");
+                $("img[id^='settings-icon']").removeClass("fa-spin");
+                $("i[id^='settings-icon']").removeClass("fa-spin");
 
             },1000);
 
@@ -1446,6 +1450,8 @@ endif; ?>
                     $("li[class^='tab-item active']").attr("class", "tab-item");
 
                     $(this).attr("class", "tab-item active");
+                    jQuery(this).find("img").addClass("TabOpened");
+                    
                 }
 
             }
@@ -1499,6 +1505,7 @@ endif; ?>
                     $("li[class^='tab-item rightActive']").attr("class", "tab-item");
 
                     $(this).attr("class", "tab-item rightActive");
+                    jQuery(this).find("img").addClass("TabOpened");
                 }
 
             }
