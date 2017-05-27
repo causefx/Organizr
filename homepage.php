@@ -189,7 +189,30 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 text-align: left;
                 padding-bottom: 2px !important;
                 overflow: hidden !important;
-            }<?php if(CUSTOMCSS == "true") : 
+            } @media screen and (max-width: 576px) {
+				.nzbtable {
+					padding-left: 5px !important;
+					padding-right: 2px !important;
+					font-size: 10px !important;
+					word-break: break-word !important;
+				}
+				.nzbtable-file-row {
+					padding-left: 5px !important;
+					padding-right: 2px !important;
+					font-size: 10px !important;
+					white-space: normal !important;
+					word-break: break-all !important;
+					width: 0% !important;
+				}
+            } .nzbtable-file-row {
+				white-space: normal !important;
+				word-break: break-all !important;
+				width: 0% !important;
+			}.nzbtable-row {
+				white-space: normal !important;
+				width: 0% !important;
+				font-size: 12px; !important;
+			}<?php if(CUSTOMCSS == "true") : 
 $template_file = "custom.css";
 $file_handle = fopen($template_file, "rb");
 echo fread($file_handle, filesize($template_file));
@@ -204,6 +227,12 @@ endif; ?>
             <div id="content" class="container-fluid">
 <!-- <button id="numBnt">Numerical</button> -->
                 <br/>
+
+				 <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { ?>
+				<div>
+					<?php echo HOMEPAGECUSTOMHTML1; ?>
+				</div>
+                <?php } ?>
                 <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
                 <div id="downloadClientRow" class="row">
                     <sort>2</sort>
@@ -241,10 +270,10 @@ endif; ?>
                                                 <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
                                                     <thead>
                                                         <tr>
-                                                            <th><?php echo $language->translate("FILE");?></th>
-                                                            <th><?php echo $language->translate("STATUS");?></th>
-                                                            <th><?php echo $language->translate("CATEGORY");?></th>
-                                                            <th><?php echo $language->translate("PROGRESS");?></th>
+                                                            <th class="col-xs-7 nzbtable-file-row"><?php echo $language->translate("FILE");?></th>
+                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("STATUS");?></th>
+                                                            <th class="col-xs-1 nzbtable"><?php echo $language->translate("CATEGORY");?></th>
+                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("PROGRESS");?></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="dl-queue sabnzbd"></tbody>
@@ -257,10 +286,10 @@ endif; ?>
                                                 <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
                                                     <thead>
                                                         <tr>
-                                                            <th><?php echo $language->translate("FILE");?></th>
-                                                            <th><?php echo $language->translate("STATUS");?></th>
-                                                            <th><?php echo $language->translate("CATEGORY");?></th>
-                                                            <th><?php echo $language->translate("PROGRESS");?></th>
+                                                            <th class="col-xs-7 nzbtable-file-row"><?php echo $language->translate("FILE");?></th>
+                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("STATUS");?></th>
+                                                            <th class="col-xs-1 nzbtable"><?php echo $language->translate("CATEGORY");?></th>
+                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("PROGRESS");?></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="dl-history sabnzbd"></tbody>
@@ -328,12 +357,6 @@ endif; ?>
                         <div id="calendar" class="fc-calendar box-shadow fc fc-ltr fc-unthemed"></div>
                     </div>
                 </div>
-                <?php } ?>
-				
-                <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { ?>
-				<div>
-					<?php echo HOMEPAGECUSTOMHTML1; ?>
-				</div>
                 <?php } ?>
             </div>    
         </div>

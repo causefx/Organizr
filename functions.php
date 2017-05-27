@@ -1900,10 +1900,10 @@ function nzbgetConnect($list = 'listgroups') {
         }
         
         $gotNZB[] = '<tr>
-                        <td>'.$downloadName.'</td>
-                        <td>'.$downloadStatus.'</td>
-                        <td>'.$downloadCategory.'</td>
-                        <td>
+                        <td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
+                        <td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
+                        <td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
+                        <td class="col-xs-2 nzbtable nzbtable-row">
                             <div class="progress">
                                 <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
                                     <p class="text-center">'.round($downloadPercent).'%</p>
