@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.342');
+ define('INSTALLEDVERSION', '1.343');
 // ===================================
 
 // Debugging output functions
@@ -557,7 +557,8 @@ function outputCarousel($header, $size, $type, $items, $script = false) {
 function getEmbyStreams($size) {
 	$address = qualifyURL(EMBYURL);
 	
-	$api = json_decode(file_get_contents($address.'/Sessions?api_key='.EMBYTOKEN),true);
+	$api = json_decode(@file_get_contents($address.'/Sessions?api_key='.EMBYTOKEN),true);
+	if (!is_array($api)) { return 'Could not load!'; }
 	
 	$playingItems = array();
 	foreach($api as $key => $value) {
@@ -585,8 +586,9 @@ function getPlexStreams($size){
 	// Perform API requests
     $api = file_get_contents($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
-    
+    $getServer = simplexml_load_string(@file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
+    if (!is_array($getServer)) { return 'Could not load!'; }
+	
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
 	
@@ -637,7 +639,9 @@ function getEmbyRecent($type, $size) {
 	}
 	
 	// Get A User
-	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
+	$userIds = json_decode(@file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
+	if (!is_array($userIds)) { return 'Could not load!'; }
+	
 	$showPlayed = true;
 	foreach ($userIds as $value) { // Scan for admin user
 		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
@@ -684,7 +688,8 @@ function getPlexRecent($type, $size){
 	// Perform Requests
     $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
+    $getServer = simplexml_load_string(@file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
+	if (!is_array($getServer)) { return 'Could not load!'; }
 	
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
@@ -711,7 +716,7 @@ function getEmbyImage() {
 	if(isset($itemId)) {
 		$image_src = $embyAddress . '/Items/'.$itemId.'/Images/Primary?'.implode('&', $imgParams);
 		header('Content-type: image/jpeg');
-		readfile($image_src);
+		@readfile($image_src);
 		die();
 	} else {
 		debug_out('Invalid Request',1);
@@ -729,7 +734,7 @@ function getPlexImage() {
 	if(isset($image_url) && isset($image_height) && isset($image_width)) {
 		$image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . PLEXTOKEN;
 		header('Content-type: image/jpeg');
-		readfile($image_src);
+		@readfile($image_src);
 		die();
 	} else {
 		echo "Invalid Plex Request";	
@@ -1515,6 +1520,7 @@ function printTabRow($data) {
 					'.buildField(array(
 						'type' => 'button',
 						'icon' => 'trash',
+                        'buttonType' => 'danger',
 						'labelTranslate' => 'REMOVE',
 						'onclick' => "$(this).parents('li').remove();",
 					),12,1,1).'
@@ -1894,10 +1900,10 @@ function nzbgetConnect($list = 'listgroups') {
         }
         
         $gotNZB[] = '<tr>
-                        <td>'.$downloadName.'</td>
-                        <td>'.$downloadStatus.'</td>
-                        <td>'.$downloadCategory.'</td>
-                        <td>
+                        <td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
+                        <td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
+                        <td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
+                        <td class="col-xs-2 nzbtable nzbtable-row">
                             <div class="progress">
                                 <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
                                     <p class="text-center">'.round($downloadPercent).'%</p>

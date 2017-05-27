@@ -329,7 +329,7 @@ endif; ?>
 									<form id="submitTabs" onsubmit="submitTabs(this); return false;">
 										<div class="sort-todo">
 											<button id="newtab" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float" onclick="addTab()">
-												<span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo translate("NEW_TAB");?>
+												<span class="btn-label"><i class="fa fa-plus"></i></span><?php echo translate("NEW_TAB");?>
 											</button>
 											<button id="iconHide" type="button" class="btn waves btn-labeled btn-warning btn-sm text-uppercase waves-effect waves-float">
 												<span class="btn-label"><i class="fa fa-upload"></i></span><?php echo $language->translate("UPLOAD_ICONS");?>

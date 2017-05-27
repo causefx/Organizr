@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 /*
  *
  *   ADVANTAGE - Responsive Admin Theme
@@ -5700,7 +5700,7 @@ label {
 
 .progress-widget tr td, .progress-widget tr th {
   vertical-align: middle !important;
-  padding: 8px 20px !important;
+  padding: 8px 20px;
 }
 
 .progress-widget tr td + td {
