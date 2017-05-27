@@ -584,10 +584,10 @@ function getPlexStreams($size){
     $address = qualifyURL(PLEXURL);
     
 	// Perform API requests
-    $api = file_get_contents($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
+    $api = @file_get_contents($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
     $getServer = simplexml_load_string(@file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
-    if (!is_array($getServer)) { return 'Could not load!'; }
+    if (!$getServer) { return 'Could not load!'; }
 	
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
@@ -686,10 +686,10 @@ function getPlexRecent($type, $size){
 	}
 	
 	// Perform Requests
-    $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".PLEXTOKEN);
+    $api = @file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
     $getServer = simplexml_load_string(@file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
-	if (!is_array($getServer)) { return 'Could not load!'; }
+	if (!$getServer) { return 'Could not load!'; }
 	
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
