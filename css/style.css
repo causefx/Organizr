@@ -1,4 +1,4 @@
-﻿@charset "UTF-8";
+@charset "UTF-8";
 /*
  *
  *   ADVANTAGE - Responsive Admin Theme
@@ -3977,12 +3977,12 @@ body .ns-effect-loadingcircle {
 .chat .chat-double {
   margin-bottom: 0;
   list-style: none;
-  padding: 20px 0 20px;
+  padding: 20px 10px 20px;
   position: relative;
 }
 
 .chat .chat-double li {
-  margin-bottom: 20px;
+  margin-bottom: 2px;
   position: relative;
 }
 
@@ -4002,7 +4002,7 @@ body .ns-effect-loadingcircle {
   -webkit-border-radius: 3px;
           border-radius: 3px;
   background: #fff;
-  padding: 20px;
+  padding: 8px;
   position: relative;
   -webkit-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
           box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
@@ -4137,7 +4137,7 @@ body .ns-effect-loadingcircle {
 }
 
 .chat .chat-panel {
-  width: 47% !important;
+  width: 80% !important;
   float: right !important;
 }
 
