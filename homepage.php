@@ -102,6 +102,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         <link rel="stylesheet" href="bower_components/fullcalendar/dist/fullcalendar.css">
 
         <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css?v=<?php echo INSTALLEDVERSION; ?>">
 
         <!--Scripts-->
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -189,7 +190,30 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 text-align: left;
                 padding-bottom: 2px !important;
                 overflow: hidden !important;
-            }<?php if(CUSTOMCSS == "true") : 
+            } @media screen and (max-width: 576px) {
+				.nzbtable {
+					padding-left: 5px !important;
+					padding-right: 2px !important;
+					font-size: 10px !important;
+					word-break: break-word !important;
+				}
+				.nzbtable-file-row {
+					padding-left: 5px !important;
+					padding-right: 2px !important;
+					font-size: 10px !important;
+					white-space: normal !important;
+					word-break: break-all !important;
+					width: 0% !important;
+				}
+            } .nzbtable-file-row {
+				white-space: normal !important;
+				word-break: break-all !important;
+				width: 0% !important;
+			}.nzbtable-row {
+				white-space: normal !important;
+				width: 0% !important;
+				font-size: 12px; !important;
+			}<?php if(CUSTOMCSS == "true") : 
 $template_file = "custom.css";
 $file_handle = fopen($template_file, "rb");
 echo fread($file_handle, filesize($template_file));
@@ -204,6 +228,148 @@ endif; ?>
             <div id="content" class="container-fluid">
 <!-- <button id="numBnt">Numerical</button> -->
                 <br/>
+
+				 <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { ?>
+				<div>
+					<?php echo HOMEPAGECUSTOMHTML1; ?>
+				</div>
+                <?php } ?>
+                <?php if(SPEEDTEST == "true"){ ?>
+                <style type="text/css">
+
+                    .flash {
+                        animation: flash 0.6s linear infinite;
+                    }
+
+                    @keyframes flash {
+                        0% { opacity: 0.6; }
+                        50% { opacity: 1; }
+                    }
+
+                </style>
+                <script type="text/javascript">
+                    var w = null
+                    function runTest() {
+                        document.getElementById('startBtn').style.display = 'none'
+                        document.getElementById('testArea').style.display = ''
+                        document.getElementById('abortBtn').style.display = ''
+                        w = new Worker('bower_components/speed/speedtest_worker.min.js')
+                        var interval = setInterval(function () { w.postMessage('status') }, 100)
+                        w.onmessage = function (event) {
+                            var data = event.data.split(';')
+                            var status = Number(data[0])
+                            var dl = document.getElementById('download')
+                            var ul = document.getElementById('upload')
+                            var ping = document.getElementById('ping')
+                            var jitter = document.getElementById('jitter')
+                            dl.className = status === 1 ? 'flash' : ''
+                            ping.className = status === 2 ? 'flash' : ''
+                            jitter.className = ul.className = status === 3 ? 'flash' : ''
+                            if (status >= 4) {
+                                clearInterval(interval)
+                                document.getElementById('abortBtn').style.display = 'none'
+                                document.getElementById('startBtn').style.display = ''
+                                w = null
+                            }
+                            if (status === 5) {
+                                document.getElementById('testArea').style.display = 'none'
+                            }
+                            dl.textContent = data[1] + " Mbit/s";
+                            $("#downloadpercent").attr("style", "width: " + data[1] + "%;");
+                            $("#uploadpercent").attr("style", "width: " + data[2] + "%;");
+                            $("#pingpercent").attr("style", "width: " + data[3] + "%;");
+                            $("#jitterpercent").attr("style", "width: " + data[5] + "%;");
+                            ul.textContent = data[2] + " Mbit/s";
+                            ping.textContent = data[3] + " ms";
+                            jitter.textContent = data[5] + " ms";
+                        }
+                        w.postMessage('start')
+                    }
+                    function abortTest() {
+                        if (w) w.postMessage('abort')
+                    }
+                </script>
+
+                <div class="row" id="testArea" style="display:none">
+
+                    <div class="test col-sm-3 col-lg-3">
+                        <div class="content-box ultra-widget green-bg" data-counter="">
+                            <div id="downloadpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+                            <div class="w-content">
+                                <div class="w-icon right pull-right"><i class="mdi mdi-cloud-download"></i></div>
+                                <div class="w-descr left pull-left text-center">
+                                    <span class="testName text-uppercase w-name">Download</span>
+                                    <br>
+                                    <span class="w-amount counter" id="download" ></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="test col-sm-3 col-lg-3">
+                        <div class="content-box ultra-widget red-bg" data-counter="">
+                            <div id="uploadpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+                            <div class="w-content">
+                                <div class="w-icon right pull-right"><i class="mdi mdi-cloud-upload"></i></div>
+                                <div class="w-descr left pull-left text-center">
+                                    <span class="testName text-uppercase w-name">Upload</span>
+                                    <br>
+                                    <span class="w-amount counter" id="upload" ></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="test col-sm-3 col-lg-3">
+                        <div class="content-box ultra-widget yellow-bg" data-counter="">
+                            <div id="pingpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+                            <div class="w-content">
+                                <div class="w-icon right pull-right"><i class="mdi mdi-timer"></i></div>
+                                <div class="w-descr left pull-left text-center">
+                                    <span class="testName text-uppercase w-name">Latency</span>
+                                    <br>
+                                    <span class="w-amount counter" id="ping" ></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="test col-sm-3 col-lg-3">
+                        <div class="content-box ultra-widget blue-bg" data-counter="">
+                            <div id="jitterpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+                            <div class="w-content">
+                                <div class="w-icon right pull-right"><i class="mdi mdi-pulse"></i></div>
+                                <div class="w-descr left pull-left text-center">
+                                    <span class="testName text-uppercase w-name">Jitter</span>
+                                    <br>
+                                    <span class="w-amount counter" id="jitter" ></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br/>
+
+                </div>
+
+                <div id="abortBtn" class="row" style="display: none" onclick="javascript:abortTest()">
+                    <div class="col-lg-12">
+                        <div class="content-box red-bg" style="cursor: pointer;">
+                            <h1 style="margin: 10px" class="text-uppercase text-center">Abort Speed Test</h1>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="startBtn" class="row" onclick="javascript:runTest()">
+                    <div class="col-lg-12">
+                        <div class="content-box green-bg" style="cursor: pointer;">
+                            <h1 style="margin: 10px" class="text-uppercase text-center">Run Speed Test</h1>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
                 <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
                 <div id="downloadClientRow" class="row">
                     <sort>2</sort>
@@ -241,10 +407,10 @@ endif; ?>
                                                 <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
                                                     <thead>
                                                         <tr>
-                                                            <th><?php echo $language->translate("FILE");?></th>
-                                                            <th><?php echo $language->translate("STATUS");?></th>
-                                                            <th><?php echo $language->translate("CATEGORY");?></th>
-                                                            <th><?php echo $language->translate("PROGRESS");?></th>
+                                                            <th class="col-xs-7 nzbtable-file-row"><?php echo $language->translate("FILE");?></th>
+                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("STATUS");?></th>
+                                                            <th class="col-xs-1 nzbtable"><?php echo $language->translate("CATEGORY");?></th>
+                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("PROGRESS");?></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="dl-queue sabnzbd"></tbody>
@@ -257,10 +423,10 @@ endif; ?>
                                                 <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
                                                     <thead>
                                                         <tr>
-                                                            <th><?php echo $language->translate("FILE");?></th>
-                                                            <th><?php echo $language->translate("STATUS");?></th>
-                                                            <th><?php echo $language->translate("CATEGORY");?></th>
-                                                            <th><?php echo $language->translate("PROGRESS");?></th>
+                                                            <th class="col-xs-7 nzbtable-file-row"><?php echo $language->translate("FILE");?></th>
+                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("STATUS");?></th>
+                                                            <th class="col-xs-1 nzbtable"><?php echo $language->translate("CATEGORY");?></th>
+                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("PROGRESS");?></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="dl-history sabnzbd"></tbody>
@@ -328,12 +494,6 @@ endif; ?>
                         <div id="calendar" class="fc-calendar box-shadow fc fc-ltr fc-unthemed"></div>
                     </div>
                 </div>
-                <?php } ?>
-				
-                <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { ?>
-				<div>
-					<?php echo HOMEPAGECUSTOMHTML1; ?>
-				</div>
                 <?php } ?>
             </div>    
         </div>

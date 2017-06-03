@@ -309,6 +309,7 @@ endif; ?>
                                     <li><a id="open-homepage"><i class=" fa fa-home yellow"></i>Edit Homepage</a></li>
                                     <li><a id="open-advanced"><i class=" fa fa-cog light-blue"></i>Advanced</a></li>
                                     <li><a id="open-info"><i class=" fa fa-info orange"></i>&nbsp; About</a></li>
+                                    <li><a href="https://paypal.me/causefx" target="_blank"><i class=" fa fa-money red"></i>Donate</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -329,7 +330,7 @@ endif; ?>
 									<form id="submitTabs" onsubmit="submitTabs(this); return false;">
 										<div class="sort-todo">
 											<button id="newtab" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float" onclick="addTab()">
-												<span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo translate("NEW_TAB");?>
+												<span class="btn-label"><i class="fa fa-plus"></i></span><?php echo translate("NEW_TAB");?>
 											</button>
 											<button id="iconHide" type="button" class="btn waves btn-labeled btn-warning btn-sm text-uppercase waves-effect waves-float">
 												<span class="btn-label"><i class="fa fa-upload"></i></span><?php echo $language->translate("UPLOAD_ICONS");?>
@@ -618,6 +619,12 @@ echo buildSettings(
 						'value' => HOMEPAGEAUTHNEEDED,
 						'options' => $userTypes,
 					),
+                    array(
+                        'type' => 'checkbox',
+                        'labelTranslate' => 'SPEED_TEST',
+                        'name' => 'speedTest',
+                        'value' => SPEEDTEST,
+                    ),
 					/*
 					array(
 						'type' => 'custom',
@@ -2702,7 +2709,7 @@ echo buildSettings(
             authTypeFunc();
 			} else { console.log() }
             //Simulate Edit Tabs Click 
-            $("#open-tabs").trigger("click");
+            //$("#open-tabs").trigger("click");
             //Append Delete log to User Logs
             $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post" onsubmit="ajax_request(\'POST\', \'deleteLog\'); return false;"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
             $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')

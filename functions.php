@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.34');
+ define('INSTALLEDVERSION', '1.35');
 // ===================================
 
 // Debugging output functions
@@ -557,7 +557,8 @@ function outputCarousel($header, $size, $type, $items, $script = false) {
 function getEmbyStreams($size) {
 	$address = qualifyURL(EMBYURL);
 	
-	$api = json_decode(file_get_contents($address.'/Sessions?api_key='.EMBYTOKEN),true);
+	$api = json_decode(@file_get_contents($address.'/Sessions?api_key='.EMBYTOKEN),true);
+	if (!is_array($api)) { return 'Could not load!'; }
 	
 	$playingItems = array();
 	foreach($api as $key => $value) {
@@ -583,10 +584,11 @@ function getPlexStreams($size){
     $address = qualifyURL(PLEXURL);
     
 	// Perform API requests
-    $api = file_get_contents($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
+    $api = @file_get_contents($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
-    
+    $getServer = simplexml_load_string(@file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
+    if (!$getServer) { return 'Could not load!'; }
+	
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
 	
@@ -637,7 +639,9 @@ function getEmbyRecent($type, $size) {
 	}
 	
 	// Get A User
-	$userIds = json_decode(file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
+	$userIds = json_decode(@file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
+	if (!is_array($userIds)) { return 'Could not load!'; }
+	
 	$showPlayed = true;
 	foreach ($userIds as $value) { // Scan for admin user
 		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
@@ -682,9 +686,10 @@ function getPlexRecent($type, $size){
 	}
 	
 	// Perform Requests
-    $api = file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".PLEXTOKEN);
+    $api = @file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
+    $getServer = simplexml_load_string(@file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
+	if (!$getServer) { return 'Could not load!'; }
 	
 	// Identify the local machine
     $gotServer = $getServer['machineIdentifier'];
@@ -711,7 +716,7 @@ function getEmbyImage() {
 	if(isset($itemId)) {
 		$image_src = $embyAddress . '/Items/'.$itemId.'/Images/Primary?'.implode('&', $imgParams);
 		header('Content-type: image/jpeg');
-		readfile($image_src);
+		@readfile($image_src);
 		die();
 	} else {
 		debug_out('Invalid Request',1);
@@ -729,7 +734,7 @@ function getPlexImage() {
 	if(isset($image_url) && isset($image_height) && isset($image_width)) {
 		$image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . PLEXTOKEN;
 		header('Content-type: image/jpeg');
-		readfile($image_src);
+		@readfile($image_src);
 		die();
 	} else {
 		echo "Invalid Plex Request";	
@@ -762,8 +767,13 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 	// Sort Items
 	ksort($array);
 	
-	// Unset the current version
+	// Update the current config version
+	if (!$nest) {
+		// Inject Current Version
+		$output[] = "\t'CONFIG_VERSION' => '".(isset($array['apply_CONFIG_VERSION'])?$array['apply_CONFIG_VERSION']:INSTALLEDVERSION)."'";
+	}
 	unset($array['CONFIG_VERSION']);
+	unset($array['apply_CONFIG_VERSION']);
 	
 	// Process Settings
 	foreach ($array as $k => $v) {
@@ -791,11 +801,6 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		if($allowCommit) {
 			$output[] = str_repeat("\t",$nest+1)."'$k' => $item";
 		}
-	}
-	
-	if (!$nest && !isset($array['CONFIG_VERSION'])) {
-		// Inject Current Version
-		$output[] = "\t'CONFIG_VERSION' => '".INSTALLEDVERSION."'";
 	}
 	
 	// Build output
@@ -958,7 +963,7 @@ function upgradeCheck() {
 		$config = parse_ini_file('databaseLocation.ini.php', true);
 		
 		// Refactor
-		$config['database_Location'] = str_replace('//','/',$config['databaseLocation'].'/');
+		$config['database_Location'] = preg_replace('/\/\/$/','/',$config['databaseLocation'].'/');
 		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['databaseLocation']);
 		
@@ -996,6 +1001,7 @@ function upgradeCheck() {
 	$config = loadConfig();
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33')) {
 		// Fix User Directory
+		$config['database_Location'] = preg_replace('/\/\/$/','/',$config['database_Location'].'/');
 		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['USER_HOME']);
 		
@@ -1014,7 +1020,7 @@ function upgradeCheck() {
 		updateSQLiteDB($config['database_Location'],'1.32');
 		
 		// Update Version and Commit
-		$config['CONFIG_VERSION'] = '1.33';
+		$config['apply_CONFIG_VERSION'] = '1.33';
 		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.32].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
@@ -1038,6 +1044,13 @@ function upgradeCheck() {
 
 // Check if all software dependancies are met
 function dependCheck() {
+	$output = array();
+	if (!extension_loaded('pdo_sqlite')) { $output[] = 'PDO:SQLite not enabled, please add "extension = php_pdo_sqlite.dll" to php.ini'; }
+	//if (!extension_loaded('sqlite3')) { $output[] = 'SQLite3 not enabled, please add "extension = php_sqlite3.dll" to php.ini'; }
+	
+	if ($output) {
+		debug_out($output,1);
+	}
 	return true;
 }
 
@@ -1206,7 +1219,7 @@ function buildSettings($array) {
 					<div class="col-lg-12">
 						'.(isset($array['customBeforeForm'])?$array['customBeforeForm']:'').'
 						<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
-							<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
+							<button id="'.$pageID.'_form_submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
 							<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
 							</button>
 							'.$fields.($tabContent?'
@@ -1231,16 +1244,18 @@ function buildSettings($array) {
 			$(\'#'.$pageID.'_form\').find(\'input, select, textarea\').on(\'change\', function() { $(this).attr(\'data-changed\', \'true\'); });
 			var '.$pageID.'Validate = function() { if (this.value && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { $(this).addClass(\'invalid\'); } else { $(this).removeClass(\'invalid\'); } };
 			$(\'#'.$pageID.'_form\').find(\'input[pattern]\').each('.$pageID.'Validate).on(\'keyup\', '.$pageID.'Validate);
-			$(\'#'.$pageID.'_form\').find(\'select[multiple]\').on(\'click\', function() { $(this).attr(\'data-changed\', \'true\'); });
+			$(\'#'.$pageID.'_form\').find(\'select[multiple]\').on(\'change click\', function() { $(this).attr(\'data-changed\', \'true\'); });
 			
-			$(\'#'.$pageID.'_form\').submit(function () {
+			$(\'#'.$pageID.'_form_submit\').on(\'click\', function () {
 				var newVals = {};
 				var hasVals = false;
+				var errorFields = [];
 				$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').each(function() {
 					hasVals = true;
 					if (this.type == \'checkbox\') {
 						newVals[this.name] = this.checked;
 					} else {
+						if (this.value && this.pattern && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { errorFields.push(this.name); }
 						var fieldVal = $(this).val();
 						if (typeof fieldVal == \'object\') {
 							if (typeof fieldVal.join == \'function\') {
@@ -1252,7 +1267,9 @@ function buildSettings($array) {
 						newVals[this.name] = fieldVal;
 					}
 				});
-				if (hasVals) {
+				if (errorFields.length) {
+					parent.notify(\'Fields have errors: \'+errorFields.join(\', \')+\'!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
+				} else if (hasVals) {
 					console.log(newVals);
 					ajax_request(\'POST\', \''.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data, code) {
 						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
@@ -1503,6 +1520,7 @@ function printTabRow($data) {
 					'.buildField(array(
 						'type' => 'button',
 						'icon' => 'trash',
+                        'buttonType' => 'danger',
 						'labelTranslate' => 'REMOVE',
 						'onclick' => "$(this).parents('li').remove();",
 					),12,1,1).'
@@ -1658,7 +1676,7 @@ function updateSQLiteDB($db_path = false, $oldVerNum = false) {
 				reset($tableData);
 				foreach($tableData as $key => $value) {
 					$insertValues[] = '('.implode(',',array_map(function($d) { 
-						return (isset($d)?"'".SQLite3::escapeString($d)."'":'null');
+						return (isset($d)?$GLOBALS['file_db']->quote($d):'null');
 					}, $value)).')';
 				}
 				$GLOBALS['file_db']->query($queryBase.implode(',',$insertValues).';');
@@ -1882,10 +1900,10 @@ function nzbgetConnect($list = 'listgroups') {
         }
         
         $gotNZB[] = '<tr>
-                        <td>'.$downloadName.'</td>
-                        <td>'.$downloadStatus.'</td>
-                        <td>'.$downloadCategory.'</td>
-                        <td>
+                        <td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
+                        <td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
+                        <td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
+                        <td class="col-xs-2 nzbtable nzbtable-row">
                             <div class="progress">
                                 <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
                                     <p class="text-center">'.round($downloadPercent).'%</p>
@@ -2417,4 +2435,7 @@ function checkRootPath($string){
     }
 }
 
-?>
+
+
+// Always run this
+dependCheck();
