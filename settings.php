@@ -619,6 +619,12 @@ echo buildSettings(
 						'value' => HOMEPAGEAUTHNEEDED,
 						'options' => $userTypes,
 					),
+                    array(
+                        'type' => 'checkbox',
+                        'labelTranslate' => 'SPEED_TEST',
+                        'name' => 'speedTest',
+                        'value' => SPEEDTEST,
+                    ),
 					/*
 					array(
 						'type' => 'custom',
