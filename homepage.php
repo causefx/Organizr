@@ -102,6 +102,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         <link rel="stylesheet" href="bower_components/fullcalendar/dist/fullcalendar.css">
 
         <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/mdi/css/materialdesignicons.min.css?v=<?php echo INSTALLEDVERSION; ?>">
 
         <!--Scripts-->
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
