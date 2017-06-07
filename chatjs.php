@@ -4,6 +4,10 @@ $USER = new User("registration_callback");
 $userpic = md5( strtolower( trim( $USER->email ) ) );
 header("Content-type: application/javascript");
 ?>
+var isMobile = false; //initiate as false
+// device detection
+if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent) 
+    || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent.substr(0,4))) isMobile = true;
 /*
  * JavaScript MD5
  * https://github.com/blueimp/JavaScript-MD5
@@ -286,101 +290,459 @@ header("Content-type: application/javascript");
   }
 }(this));
 
-var last_time=0;		
-function sendText(){
-    $('#writehere')[0].onkeydown=function(e){
-        if (e.keyCode==13){
-            e.preventDefault();
-            if (this.value){
-                var datatosend={"text":this.value,"user":"<?=$USER->username;?>","email":"<?=$USER->email;?>"};
-                $.ajax({
-                    type:"POST",
-                    url:"chatAJAX.php",
-                    data:datatosend,
-                    datatype:"json",
-                    success:function(data){}
-                })
-                this.value='';
-                $("#writehere").attr('placeholder', "Sending");
-                $("#writehere").prop('disabled', true);
-                
+$(document).ready(function()
+{
+    // init
+    
+    $(window).focus();
+    var tabinfocus = true;
+    $("#chat").hide();
+    $("#username").val("");
+    $("#username").focus();
+    
+    // allowed characters in username
+    
+    $("#username").keyup(function()
+    {
+        var text = $(this).val();
+        $(this).val(text.replace(/[^a-zA-Z0-9 ]/g, ""));
+    });
+    
+    // enter username
+    
+    var user = "";
+    
+    user = "<?php echo $USER->username; ?>";
+    
+    // choose avatar, check username, start chat
+    
+    var avatar = "";
+    avatar = "https://www.gravatar.com/avatar/" + md5('<?php echo $USER->email; ?>') + "?d=mm";
+
+    startchat();
+    
+    // start chat
+    
+    function startchat()
+    {
+        // zoom chat to fit viewport
+        
+        if( $(window).innerWidth() > 630 )  // if not mobile
+        {
+            var ratio = $(window).innerHeight() / 660;  // browser viewport by chat height
+        
+            //$("#chat").css("zoom", ratio);
+            //$("#chat").css("-moz-transform-origin", "0 0");
+            //$("#chat").css("-moz-transform", "scale(" + ratio + ")");      
+        }
+        
+        // update favicon to user avatar
+        
+        //$("#favicon").remove();
+        //var userfavicon = "<link id=\"favicon\" type=\"image/x-icon\"" + 
+                          " rel=\"shortcut icon\" href=\"img/" + avatar + ".ico\">";
+        //$(userfavicon).appendTo("head");
+        
+        // start chat
+        
+        $("#createuser").hide();
+        $("#chat").show();
+        $("#message").focus();
+        
+        refresh();
+    }
+    
+    // allowed characters in message
+    
+    $("#message").keyup(function()
+    {
+        var text = $(this).val();
+        $(this).val(text.replace("'", "`")
+                        .replace("###", "#"));
+    });
+    
+    // log message
+    
+    $("#message").focus().keypress(function(event)
+    {
+        if( event.keyCode === 13 )
+        {
+            event.preventDefault();
+            
+            if( $("#content").is(":visible") )
+            {
+                var message = $("#message").val();
+                message = encodeURIComponent(message);
+                var data = "messagedata=" + message + "###" + user + "###" + avatar;
+                $(this).val("");
+
+                $.ajax
+                ({
+                    type: "POST",
+                    url: "chat/logmessage.php",
+                    data: data,
+                    cache: false
+                });    
             }
         }
-    }
-}
-		
-function checkText(){
-    $.ajax({
-        type:"POST",
-        url:"chatAJAX.php",
-        data:{time:last_time},
-        datatype:"json",
-        success:function(data){
-            if (data){
-                data=JSON.parse(data);
-                for (var i=0; i<data.length; i++){
-                    if(data[i].USER === "<?=$USER->username;?>"){                        
-                        $('#messages').append(
-                            '<li><img src="https://www.gravatar.com/avatar/'+ md5(data[i].EMAIL) +'?s=100&d=mm" class="img-circle user-avatar" alt="user"><div class="chat-panel blue-bg"><div class="chat-heading clearfix"><h4 class="pull-left zero-m">' + data[i].USER + '</h4><p class="pull-right"><i class="fa fa-clock-o"></i>'+ (setDateTime(data[i].TIME)) + '</p></div><div class="chat-body">' + data[i].MESSAGE + '</div></div></li>'
-                        );
-                        $(".box").animate({ scrollTop: $('.box').prop("scrollHeight")}, 0);
-                    }else{
-                        $('#messages').append(
-                            '<li class="chat-inverted"><img src="https://www.gravatar.com/avatar/'+ md5(data[i].EMAIL) +'?s=100&d=mm" class="img-circle user-avatar" alt="user"><div class="chat-panel red-bg"><div class="chat-heading clearfix"><h4 class="pull-left zero-m">' + data[i].USER + '</h4><p class="pull-right"><i class="fa fa-clock-o"></i>'+ (setDateTime(data[i].TIME)) + '</p></div><div class="chat-body">' + data[i].MESSAGE + '</div></div></li>'
-                        );
-                        $(".box").animate({ scrollTop: $('.box').prop("scrollHeight")}, 0);                     
+    });
+    
+    // log emoticon
+    
+    $(".emoticonimg").click(function()
+    {
+        var emoticonselected = $(this);
+        emoticonselected.hide();
+        var emoticonid = $(this).attr("id");
+        var data = "messagedata=" + "specialchar" + emoticonid + "###" + user + "###" + avatar;
+        
+        $.ajax
+        ({
+            type: "POST",
+            url: "chat/logmessage.php",
+            data: data,
+            cache: false,
+            success: function(result)
+            {
+                emoticonselected.show();
+            }
+        });
+    });
+    
+    // show upload form
+    
+    $("#showuploadform").click(function()
+    {
+        $("#showuploadform").hide();
+        $("#showemoticons").show();
+        $("#uploadform").show();
+        $("#emoticons").hide();
+        $("#loadingwrapper").hide();
+        
+        var r = Math.floor((Math.random() * 14) + 1);
+        var randomemoticon = "chat/img/emoticon" + r + ".png";
+        $("#showemoticonsimg").attr("src", randomemoticon);
+        
+        refresh();  // also use as manual content refresh
+    });
+    
+    // upload image
+    
+    $("#form").submit(function(event)
+    {
+        event.preventDefault();
+        
+        $("#uploadform").hide();
+        $("#showemoticons").hide();
+        $("#loadingwrapper").show();
+        
+        var filedata = $("#uploadimage").prop("files")[0];
+        var formdata = new FormData();             
+        formdata.append("image", filedata);
+        var datavars = user + "###" + avatar;
+        formdata.append("datavars", datavars);
+        
+        $.ajax
+        ({
+            type: "POST",
+            url: "chat/uploadimage.php",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: formdata,
+            success: function(result)
+            {
+                $("#uploadimage").val("");
+                $("#showuploadform").show();
+                $("#showemoticons").hide();
+                $("#uploadform").hide();
+                $("#loadingwrapper").hide();
+                $("#content").show();
+                $("#emoticons").show();
+            }
+        }); 
+    });
+    
+    // show emoticons
+    
+    $("#showemoticons").click(function()
+    {
+        $("#showuploadform").show();
+        $("#showemoticons").hide();
+        $("#uploadform").hide();
+        $("#loadingwrapper").hide();
+        $("#content").show();
+        $("#emoticons").show();
+    });
+    
+    // refresh content
+    
+    var content = $("#messages");
+    var newcontent = content.html();
+    
+    function refresh()
+    {   
+        setTimeout(function()
+        {
+            var data = "user=" + user;
+            
+            $.ajax
+            ({
+                type: "POST",
+                url: "chat/refreshmessages.php",
+                data: data,
+                cache: false,
+                success: function(result)
+                {   
+                    // check who is still online
+                                    
+                    var datetoday = new Date();
+                    var timenow = datetoday.getTime() / 1000;   
+
+                    $(".img-circle").each(function()
+                    {
+                        var timestamp = this.id;
+                        var avauser = $(this).attr("alt");
+                        var avatarsrc = $(this).attr("src");
+                        
+                        // set user offline avatar
+
+                        if( timestamp < timenow - 2700 )
+                        {
+                            $(this).addClass("offline");
+                            $(this).removeClass("online");
+                            
+                        }
+                        else  // set user online avatar
+                        {
+
+                            $(this).addClass("online");
+                            $(this).removeClass("offline");
+                           
+                        }
+                    });
+                    
+                    // new messages
+                    
+                    var newmessages = result.split("###endofmessage###");
+
+                    for( var i=0; i<newmessages.length; i++ )
+                    {
+                        var message = newmessages[i];
+                        
+                        if( message != "" )
+                        {
+                            var messagekeypos = message.indexOf("avatarandtext");
+                            var messagekey = message.substr(messagekeypos + 19, 32);
+                            var contentdom = document.getElementById("messages");
+                            var messagedom = document.getElementById(messagekey);
+                            
+                            if( $.contains(contentdom, messagedom) == false )
+                            {
+                                // append new message
+
+                                content.append(message).promise().done(function()
+                                {
+                                    // scroll to bottom
+
+                                    if( newcontent != content.html() )
+                                    {
+                                        var toscroll = document.getElementById("messages");
+                                        toscroll.scrollTop = toscroll.scrollHeight;
+                                        $(".box").animate({ scrollTop: $('.box').prop("scrollHeight")}, 0);
+                                        newcontent = content.html();
+                                    }
+                                    
+                                    // new message tab alert
+
+                                    var userwriting = user + "writing";
+
+                                    if( message.lastIndexOf(userwriting) == -1 )
+                                    {
+                                        newmessagealert();
+                                    }
+                                    
+                                    // refresh eventlisteners of messages to set likes
+                        
+                                    $(".messagelike").unbind().click(function()
+                                    {
+                                        if( this.innerHTML.indexOf("target=") == -1 &&
+                                            this.innerHTML.indexOf("_blank") == -1 )
+                                        {
+                                            likemessage(this.id);
+                                        }
+                                    });
+                                });
+                            }
+                        }
                     }
+                    
+                    // get and show likes
+                    
+                    $.ajax
+                    ({
+                        url: "chat/getlikes.php",
+                        cache: false,
+                        success: function(result)
+                        {
+                            var likesandunlikes = result.split("#");
+                            var likedmessages = likesandunlikes[0];
+                            var unlikedmessages = likesandunlikes[1];
+                            var likes = JSON.parse(likedmessages);
+                            var unlikes = JSON.parse(unlikedmessages);
+                            
+                            for( var i=0; i<likes.length; i++ )
+                            {
+                                var likeid = "#like" + likes[i];
+                                $(likeid).show();
+                            }
+                            
+                            for( var i=0; i<unlikes.length; i++ )
+                            {
+                                var unlikeid = "#like" + unlikes[i];
+                                $(unlikeid).hide();
+                            }
+                        }
+                    });
+                    
+                    // hide intro
+                    
+                    if( result != "" )
+                    {
+                        $("#intro").hide();        
+                    }
+                    
+                    // loop
+                    
+                    refresh();
                 }
-                last_time=Date.now()/1000;
-                $('#messages').scrollTop($('#messages')[0].scrollHeight);
+            });
+            
+            // update if current user is typing
+            
+            if( $("#message").val() != "" )
+            {
+                istyping(user, 1);      
             }
-            checkText();
-            $("#writehere").attr('placeholder', "Enter your text");
-            $("#writehere").prop('disabled', false);
-            $("#writehere").focus();
+            else if( $("#message").val() == "" )
+            {
+                istyping(user, 0);     
+            }
+            
+        }, 500);
+    }
+    
+    // tab focus
+    
+    window.onfocus = function()
+    {
+        tabinfocus = true;
+        parent.document.title = "Organzir Chat";
+        window.parent.$("span[id^='chat.phps']").html("");
+    };
+    
+    window.onblur = function()
+    {
+        tabinfocus = false;
+    };
+    
+    // new message tab alert
+    
+    function newmessagealert()
+    {   
+        if( !tabinfocus )
+        {
+            // title marker
+            i = parseInt(parent.document.title);
+            if(isNaN(i)){
+                i = 1;
+             }else{
+                i++
+             }
+
+            parent.document.title = i + " Organzir Chat";
+            //window.parent.$("#chat.phpx").addClass("gottem");
+            window.parent.$("span[id^='chat.phps']").html(i);
+                        
+            // sound
+                        
+            var audio = $("#tabalert")[0];
+            audio.play();
         }
-    });					
-}	
-                                                     
-function datecompare(date1, sign, date2) {
-    var day1 = date1.getDate();
-    var mon1 = date1.getMonth();
-    var year1 = date1.getFullYear();
-    var day2 = date2.getDate();
-    var mon2 = date2.getMonth();
-    var year2 = date2.getFullYear();
-    if (sign === '===') {
-        if (day1 === day2 && mon1 === mon2 && year1 === year2) return true;
-        else return false;
     }
-    else if (sign === '>') {
-        if (year1 > year2) return true;
-        else if (year1 === year2 && mon1 > mon2) return true;
-        else if (year1 === year2 && mon1 === mon2 && day1 > day2) return true;
-        else return false;
-    }    
-}                                             
-		
-function setDateTime(timedate){
-    var tempdate=new Date(timedate*1000),
-    date=TwoDigits(tempdate.getDate()),
-    month=TwoDigits(tempdate.getMonth()+1),
-    year=tempdate.getFullYear(),
-    hours=TwoDigits(tempdate.getHours()),
-    mins=TwoDigits(tempdate.getMinutes()),
-    sec=TwoDigits(tempdate.getSeconds());
-    var Today = new Date();
-    if(datecompare(Today, ">", tempdate)){
-        return (month+'-'+date+' '+hours+':'+mins );                
+    
+    // like message
+    
+    function likemessage(messageid)
+    {
+        var data = "messageid=" + messageid;
+        
+        $.ajax
+        ({
+            type: "POST",
+            url: "chat/setlike.php",
+            data: data,
+            cache: false
+        });
     }
-    if(datecompare(Today, "===", tempdate)){
-        return (hours+':'+mins );
+    
+    // update which users are typing
+    
+    function istyping(u, t)
+    {
+        // set typing user
+        
+        var data = "datavars=" + u + "###" + t;
+                
+        $.ajax
+        ({
+            type: "POST",
+            url: "chat/settyping.php",
+            data: data,
+            cache: false,
+            success: function(result)
+            {
+                // get typing users
+                
+                $.ajax
+                ({
+                    url: "chat/gettyping.php",
+                    cache: false,
+                    success: function(result)
+                    {
+                        var typingusers = JSON.parse(result);
+                        
+                        if( typingusers.length == 0 )  // no user typing
+                        {
+                            $("#istyping").html("");
+                        }
+                        else
+                        {   //$("#istyping").html("<li class=\"chat-inverted\"><img src=\"images/ellipsis.png\" class=\"dont img-circle user-avatar online\" alt=\"user\"><div class=\"chat-panel red-bg\"><div class=\"chat-body\">" + typingusers[0] + "...</div></div></li>");
+                            if( typingusers.length == 1 )  // one user typing
+                            {
+                                $("#istyping").html(typingusers[0] + " is typing...");
+                                //$(".box").animate({ scrollTop: $('.box').prop("scrollHeight")}, 0);
+                            }
+                            else if( typingusers.length == 2 )  // two users typing
+                            {
+                                var whoistyping = typingusers[0] +
+                                                  " and " + typingusers[1] +
+                                                  " are typing...";
+                                $("#istyping").html(whoistyping);
+                                //$(".box").animate({ scrollTop: $('.box').prop("scrollHeight")}, 0);
+                            }
+                            else if( typingusers.length > 2 )  // more than two users typing
+                            {
+                                var whoistyping = typingusers[0] +
+                                                  " and " + typingusers[1] +
+                                                  " and others are typing...";
+                                $("#istyping").html(whoistyping);
+                                //$(".box").animate({ scrollTop: $('.box').prop("scrollHeight")}, 0);
+                            }
+                        }
+                    }
+                });
+            }
+        });
     }
-}
-		
-function TwoDigits(number){
-    return (number<10 ? '0' : '') + number;
-}
-                      
-sendText();
-checkText();
+});
