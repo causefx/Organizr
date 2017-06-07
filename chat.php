@@ -1,5 +1,6 @@
 <?php
 
+
 $data = false;
 
 ini_set("display_errors", 1);
@@ -113,6 +114,10 @@ endif;
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
         <![endif]-->
         <style>
+            .offline{
+                -webkit-filter: grayscale; /*sepia, hue-rotate, invert....*/
+                -webkit-filter: brightness(25%);
+            }
             <?php if(CUSTOMCSS == "true") : 
 $template_file = "custom.css";
 $file_handle = fopen($template_file, "rb");
@@ -123,7 +128,74 @@ endif; ?>
         </style>
     </head>
 
-    <body class="scroller-body" style="padding: 0px;">
+    <body id="chat" class="scroller-body" style="padding: 0px;">
+        
+        <!-- D A T A B A S E -->
+        
+        <?php
+        
+            $dbcreated = false;
+        
+            if( $db = new SQLite3("chatpack.db") )
+            {
+                if( $db->busyTimeout(5000) )
+                {
+                    if( $db->exec("PRAGMA journal_mode = wal;") )
+                    {
+                        $logtable = "CREATE TABLE IF NOT EXISTS chatpack_log
+                                     (id INTEGER PRIMARY KEY,
+                                     timestamp INTEGER NOT NULL,
+                                     user TEXT NOT NULL,
+                                     avatar TEXT NOT NULL,
+                                     message TEXT NOT NULL,
+                                     liked INTEGER DEFAULT 0)";
+
+                        if( $db->exec($logtable) )
+                        {
+                            $usertable = "CREATE TABLE IF NOT EXISTS chatpack_typing
+                                          (id INTEGER PRIMARY KEY,
+                                          timestamp INTEGER NOT NULL,
+                                          user TEXT NOT NULL)";
+
+                            if( $db->exec($usertable) )
+                            {
+                                $dbcreated = true;
+                            }
+                            else
+                            {
+                                errormessage("creating database table for typing");
+                            }
+                        }
+                        else
+                        {
+                            errormessage("creating database table for messages");
+                        }
+
+                        if( !$db->close() )
+                        {
+                            errormessage("closing database connection");
+                        }
+                    }
+                    else
+                    {
+                        errormessage("setting journal mode");
+                    }
+                }
+                else
+                {
+                    errormessage("setting busy timeout");
+                }
+            }
+            else
+            {
+                errormessage("using SQLite");
+            }
+        
+            if( $dbcreated )
+            {
+
+        ?>
+        
         <div class="main-wrapper" style="position: initial;">
             <div id="content" class="container-fluid">
                 <br>
@@ -133,26 +205,47 @@ endif; ?>
                             <div class="content-title i-block">
                                 <h4 class="zero-m">Welcome To The Chat <?php echo $USER->username;?></h4>
                             </div>
-                            <div class="box" style="overflow: hidden; width: auto; height: 500px;">
+                            <div class="box" style="overflow: hidden; width: auto; height: calc(100vh - 130px);">
+                                <div id="intro">
+                                    <center><img class="logo" alt="logo" src="images/organizr-logo-h-d.png">
+                                    <br><br>start chatting...</center>
+                                </div>
                                 <ul id="messages" class="chat-double chat-container"></ul>
+                                <ul class="chat-double chat-container" style="padding: 0px;"><li id="istyping"></li></ul>
                             </div>
-                            <form id="message_form">             
-                                <input id="writehere" type="text" class="form-control" placeholder="Enter your text">
-                            </form>
+            
+                            <input id="message" autofocus type="text" class="form-control" placeholder="Enter your text" autocomplete="off"/>
+                            <audio id="tabalert" preload="auto">
+                                <source src="chat/audio/newmessage.mp3" type="audio/mpeg">
+                            </audio>
+
                         </div>
                     </div>
                 </div>
             </div>    
         </div>
+        
+        <?php
+            
+            }
+        
+            function errormessage($msg)
+            {
+                echo "<div style=\"margin-top: 50px;\">";
+                echo "<span style=\"color:#d89334;\">error </span>";
+                echo $msg;
+                echo "</div>";
+            }
+                
+        ?>
     </body>
-    
-      <script>
 
-          $(".box").niceScroll({
-                railpadding: {top:0,right:0,left:0,bottom:0},
-                scrollspeed: 30,
-                mousescrollstep: 60
-            });
-  </script>
+    <script>
+        $(".box").niceScroll({
+            railpadding: {top:0,right:0,left:0,bottom:0},
+            scrollspeed: 30,
+            mousescrollstep: 60
+        });
+    </script>
 
 </html>

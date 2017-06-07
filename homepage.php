@@ -262,9 +262,9 @@ endif; ?>
                             var ul = document.getElementById('upload')
                             var ping = document.getElementById('ping')
                             var jitter = document.getElementById('jitter')
-                            dl.className = status === 1 ? 'flash' : ''
-                            ping.className = status === 2 ? 'flash' : ''
-                            jitter.className = ul.className = status === 3 ? 'flash' : ''
+                            dl.className = status === 1 ? 'w-amount flash' : 'w-amount'
+                            ping.className = status === 2 ? 'w-amount flash' : 'w-amount'
+                            jitter.className = ul.className = status === 3 ? 'w-amount flash' : 'w-amount'
                             if (status >= 4) {
                                 clearInterval(interval)
                                 document.getElementById('abortBtn').style.display = 'none'

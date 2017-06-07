@@ -265,6 +265,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         <meta name="theme-color" content="#2d89ef">
         <link rel="stylesheet" type="text/css" href="css/addtohomescreen.css">
         <script src="js/addtohomescreen.js"></script>
+        <script src="push.js"></script>
 		<!--Other-->
 		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <!--[if lt IE 9]>
@@ -552,10 +553,11 @@ endif; ?>
                                     <a class="tab-link">
                                         <?php if($row['iconurl']) : ?>
                                             <i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
+                                                <span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
                                                 <img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
                                             </i>
                                         <?php else : ?>
-                                            <i class="fa <?=$row['icon'];?> fa-lg"></i>
+                                            <i class="fa <?=$row['icon'];?> fa-lg"><span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span></i>
                                         <?php endif; ?>
                                         <?=$row['name'];?>
                                     </a>
@@ -1342,7 +1344,6 @@ endif; ?>
                 });
 
             },500);
-
         });
         $('#reload').on('contextmenu', function(e){
 
