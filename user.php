@@ -21,6 +21,14 @@
     $notifyExplode = explode("-", NOTIFYEFFECT);
     define('FAIL_LOG', 'loginLog.json');
     @date_default_timezone_set(TIMEZONE);
+    function guestHash($start, $end){
+        $ip   = $_SERVER['REMOTE_ADDR'];
+        $ip    = md5($ip);
+        return substr($ip, $start, $end);
+    }
+
+
+    define('GUEST_HASH', "guest-".guestHash(0, 5));
 	
 	class User
 	{
@@ -104,7 +112,7 @@
 		// this will tell us whether the client that requested the page is authenticated or not.
 		var $authenticated = false;
 		// the guest user name
-		const GUEST_USER  = "guest user";
+		const GUEST_USER  = GUEST_HASH;
 		// this will contain the user name for the user doing the page request
 		var $username = User::GUEST_USER;
 		// if this is a properly logged in user, this will contain the data directory location for this user
