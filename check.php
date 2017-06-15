@@ -162,6 +162,7 @@ $folder = USER_HOME;
                 
                 check("PDO_SQLITE");
                 check("PDO");
+                check("SQLITE3");
                 check("Zip");
                 check("openssl");
                 check("session");
