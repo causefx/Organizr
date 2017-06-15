@@ -22,6 +22,8 @@ if( strlen($message) > 0 )
 
     $db->exec("INSERT INTO chatpack_log (timestamp, user, avatar, message)
                VALUES ('$timestamp', '$user', '$avatar', '$message')");
+    $db->exec("REPLACE INTO chatpack_last_message (timestamp, user, avatar)
+               VALUES ('$timestamp', '$user', '$avatar')");
 }
 
 function encryptmessage($msg)

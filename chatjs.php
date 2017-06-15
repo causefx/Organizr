@@ -354,12 +354,7 @@ $(document).ready(function()
     
     // allowed characters in message
     
-    $("#message").keyup(function()
-    {
-        var text = $(this).val();
-        $(this).val(text.replace("'", "`")
-                        .replace("###", "#"));
-    });
+
     
     // log message
     
@@ -497,30 +492,79 @@ $(document).ready(function()
                     // check who is still online
                                     
                     var datetoday = new Date();
-                    var timenow = datetoday.getTime() / 1000;   
+                    var timenow = datetoday.getTime() / 1000;  
 
-                    $(".img-circle").each(function()
+                    $.ajax
+                ({
+                    url: "chat/getonline.php",
+                    cache: false,
+                    success: function(result)
                     {
-                        var timestamp = this.id;
-                        var avauser = $(this).attr("alt");
-                        var avatarsrc = $(this).attr("src");
+                        var onlineusers = JSON.parse(result);
+                        var oldonlineusers = $("#onlineusers").html();
+                        var newonlineusers = '';
                         
-                        // set user offline avatar
-
-                        if( timestamp < timenow - 2700 )
+                        if( onlineusers.length <= 0 )  // no user typing
                         {
-                            $(this).addClass("offline");
-                            $(this).removeClass("online");
-                            
+                            newonlineusers += "No Users Online";
                         }
-                        else  // set user online avatar
-                        {
+                        else
+                        {   
+                            if( onlineusers.length >= 1 )  // one user typing
+                            {
+                                jQuery.each( onlineusers, function( i, val ) {
+                                    var timecheck = val[1];
+                                    var status = "";
+                                    var color = "";
+                                    if( timecheck < timenow - 1800 )
+                                    {
+                                        status = '<span style="min-height: 14px;margin-top: 10px;" class="pull-right badge badge-danger animated pulse"> </span>';
+                                        color = "red";
+                                    }else{
+                                        status = '<span style="min-height: 14px;margin-top: 10px;" class="pull-right badge badge-success animated flash"> </span>';                       
+                                        color = "blue";                       
+                                    }
+                                    if( timecheck < timenow - 3600 )
+                                    {
+                                        newonlineusers += '';      
+                                    }else{
+                                        newonlineusers += '<div class="member-info"><img style="height:40px" src="'+val[2]+'" alt="admin" class="img-circle"><span class="member-name">'+val[0]+'</span>'+status+'</div>'; 
+                                        i++;
+                                    }
+                                    
+                                    $("img[alt^='"+val[0]+"']").each(function()
+                                    {
+                                        var timestamp = val[1];
 
-                            $(this).addClass("online");
-                            $(this).removeClass("offline");
-                           
+                                        // set user offline avatar
+
+                                        if( timestamp < timenow - 1800 )
+                                        {
+                                            $(this).addClass("offline");
+                                            $(this).removeClass("online");
+
+                                        }
+                                        else  // set user online avatar
+                                        {
+
+                                            $(this).addClass("online");
+                                            $(this).removeClass("offline");
+
+                                        }
+                                    });
+                                    
+                                });
+                            }
                         }
-                    });
+                        if(newonlineusers === ''){ newonlineusers = "No Users Online";}
+                        if( newonlineusers != oldonlineusers )
+                        {
+                            $("#onlineusers").html(newonlineusers);
+                        }
+                    }
+                });
+
+                    
                     
                     // new messages
                     
@@ -559,7 +603,7 @@ $(document).ready(function()
 
                                     if( message.lastIndexOf(userwriting) == -1 )
                                     {
-                                        newmessagealert();
+                                        newmessagealert(message);
                                     }
                                     
                                     // refresh eventlisteners of messages to set likes
@@ -637,7 +681,7 @@ $(document).ready(function()
     window.onfocus = function()
     {
         tabinfocus = true;
-        parent.document.title = "Organzir Chat";
+        parent.document.title = "Chat";
         window.parent.$("span[id^='chat.phps']").html("");
     };
     
@@ -648,7 +692,7 @@ $(document).ready(function()
     
     // new message tab alert
     
-    function newmessagealert()
+    function newmessagealert(message)
     {   
         if( !tabinfocus )
         {
@@ -660,9 +704,24 @@ $(document).ready(function()
                 i++
              }
 
-            parent.document.title = i + " Organzir Chat";
+            parent.document.title = i + " Chat";
             //window.parent.$("#chat.phpx").addClass("gottem");
             window.parent.$("span[id^='chat.phps']").html(i);
+            var $jQueryObject = $($.parseHTML(message));
+            var alertMessage = $jQueryObject.find(".chat-body").html();
+            var alertUsername = $jQueryObject.find("h4[class^='pull-left zero-m']").html();
+            var alertIcon = $jQueryObject.find("img").attr("src");;
+            if(isMobile === false){
+                parent.Push.create(alertUsername, {
+                    body: alertMessage,
+                    icon: alertIcon,
+                    timeout: 4000,
+                    onClick: function () {
+                        window.parent.focus();
+                        this.close();
+                    }
+                });
+            }
                         
             // sound
                         

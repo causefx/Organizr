@@ -136,6 +136,20 @@ endif; ?>
         
             $dbcreated = false;
         
+            if (!extension_loaded("SQLITE3")){ 
+
+                echo '<div class="row" style="margin: 0"><div class="panel panel-danger" style="margin: 10px";>';
+                echo '<div class="panel-heading">';
+                echo '<h3 class="panel-title">SQLITE3</h3>';
+                echo '</div>';
+                echo '<div style="color: gray" class="panel-body">';
+                echo 'SQLITE3 is NOT loaded!  Please install it before proceeding';
+
+                echo '</div></div></div>';
+                die();
+
+            }  
+        
             if( $db = new SQLite3("chatpack.db") )
             {
                 if( $db->busyTimeout(5000) )
@@ -156,8 +170,14 @@ endif; ?>
                                           (id INTEGER PRIMARY KEY,
                                           timestamp INTEGER NOT NULL,
                                           user TEXT NOT NULL)";
+                            
+                            $onlinetable = "CREATE TABLE IF NOT EXISTS chatpack_last_message
+                                          (
+                                          user TEXT PRIMARY KEY NOT NULL,
+                                          timestamp INTEGER NOT NULL,
+                                          avatar TEXT NOT NULL)";
 
-                            if( $db->exec($usertable) )
+                            if( $db->exec($usertable) && $db->exec($onlinetable) )
                             {
                                 $dbcreated = true;
                             }
@@ -200,28 +220,35 @@ endif; ?>
             <div id="content" class="container-fluid">
                 <br>
                 <div class="row">
-                    <div class="col-lg-12">
-                        <div class="content-box big-box chat">
-                            <div class="content-title i-block">
-                                <h4 class="zero-m">Welcome To The Chat <?php echo $USER->username;?></h4>
-                            </div>
-                            <div class="box" style="overflow: hidden; width: auto; height: calc(100vh - 130px);">
+                    <div class="col-lg-10">
+                        <div class="content-box big-box chat gray-bg">
+                            <div class="box" style="overflow: hidden; width: auto; height: 550px;">
                                 <div id="intro">
-                                    <center><img class="logo" alt="logo" src="images/organizr-logo-h-d.png">
+                                    <center><img class="logo" alt="logo" src="images/organizr-logo-h.png">
                                     <br><br>start chatting...</center>
                                 </div>
                                 <ul id="messages" class="chat-double chat-container"></ul>
                                 <ul class="chat-double chat-container" style="padding: 0px;"><li id="istyping"></li></ul>
                             </div>
-            
-                            <input id="message" autofocus type="text" class="form-control" placeholder="Enter your text" autocomplete="off"/>
+                            <br/>
+                            <input id="message" autofocus type="text" class="form-control gray-bg" placeholder="Enter your text" autocomplete="off"/>
                             <audio id="tabalert" preload="auto">
                                 <source src="chat/audio/newmessage.mp3" type="audio/mpeg">
                             </audio>
 
                         </div>
                     </div>
+                    <div class="col-lg-2">
+                        <div class="content-box">
+                            <div class="content-title big-box i-block gray-bg">
+                                <h4 class="zero-m">Online</h4>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div id="onlineusers" class="big-box"></div>
+                        </div>
+                    </div>
                 </div>
+
             </div>    
         </div>
         
@@ -242,6 +269,11 @@ endif; ?>
 
     <script>
         $(".box").niceScroll({
+            railpadding: {top:0,right:0,left:0,bottom:0},
+            scrollspeed: 30,
+            mousescrollstep: 60
+        });
+        $("#onlineusers").niceScroll({
             railpadding: {top:0,right:0,left:0,bottom:0},
             scrollspeed: 30,
             mousescrollstep: 60

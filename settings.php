@@ -350,7 +350,7 @@ endif; ?>
 <?php
 $dirname = "images/";
 $images = scandir($dirname);
-$ignore = Array(".", "..", "favicon/", "favicon", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
+$ignore = Array(".", "..", "favicon", "cache", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
 foreach($images as $curimg){
 	if(!in_array($curimg, $ignore)) { ?>
 												<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
@@ -1251,6 +1251,16 @@ echo buildSettings(
 						'labelTranslate' => 'SMTP_HOST_SENDER_EMAIL',
 						'name' => 'smtpHostSenderEmail',
 						'value' => SMTPHOSTSENDEREMAIL,
+					),
+                    array(
+						'type' => 'select',
+						'labelTranslate' => 'SMTP_HOST_AUTH',
+						'name' => 'smtpHostType',
+						'value' => SMTPHOSTTYPE,
+						'options' => array(
+							'ssl' => 'ssl',
+							'tls' => 'tls',
+						),
 					),
 					array(
 						array(

@@ -262,9 +262,9 @@ endif; ?>
                             var ul = document.getElementById('upload')
                             var ping = document.getElementById('ping')
                             var jitter = document.getElementById('jitter')
-                            dl.className = status === 1 ? 'w-amount flash' : 'w-amount'
-                            ping.className = status === 2 ? 'w-amount flash' : 'w-amount'
-                            jitter.className = ul.className = status === 3 ? 'w-amount flash' : 'w-amount'
+                            dl.className = status === 1 ? 'w-name flash' : 'w-name'
+                            ping.className = status === 2 ? 'w-name flash' : 'w-name'
+                            jitter.className = ul.className = status === 3 ? 'w-name flash' : 'w-name'
                             if (status >= 4) {
                                 clearInterval(interval)
                                 document.getElementById('abortBtn').style.display = 'none'
@@ -300,7 +300,7 @@ endif; ?>
                                 <div class="w-descr left pull-left text-center">
                                     <span class="testName text-uppercase w-name">Download</span>
                                     <br>
-                                    <span class="w-amount counter" id="download" ></span>
+                                    <span class="w-name counter" id="download" ></span>
                                 </div>
                             </div>
                         </div>
@@ -314,7 +314,7 @@ endif; ?>
                                 <div class="w-descr left pull-left text-center">
                                     <span class="testName text-uppercase w-name">Upload</span>
                                     <br>
-                                    <span class="w-amount counter" id="upload" ></span>
+                                    <span class="w-name counter" id="upload" ></span>
                                 </div>
                             </div>
                         </div>
@@ -328,7 +328,7 @@ endif; ?>
                                 <div class="w-descr left pull-left text-center">
                                     <span class="testName text-uppercase w-name">Latency</span>
                                     <br>
-                                    <span class="w-amount counter" id="ping" ></span>
+                                    <span class="w-name counter" id="ping" ></span>
                                 </div>
                             </div>
                         </div>
@@ -342,7 +342,7 @@ endif; ?>
                                 <div class="w-descr left pull-left text-center">
                                     <span class="testName text-uppercase w-name">Jitter</span>
                                     <br>
-                                    <span class="w-amount counter" id="jitter" ></span>
+                                    <span class="w-name counter" id="jitter" ></span>
                                 </div>
                             </div>
                         </div>
