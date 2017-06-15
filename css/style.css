@@ -3265,7 +3265,7 @@ ul.inbox-pagination li {
   /*padding: 22px;*/
   padding: 19px 22px 19px 22px;
   line-height: 1.4;
-  z-index: 4000;
+  z-index: 10000;
   pointer-events: none;
   color: #fff;
   font-size: 80%;

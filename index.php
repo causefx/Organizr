@@ -265,7 +265,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         <meta name="theme-color" content="#2d89ef">
         <link rel="stylesheet" type="text/css" href="css/addtohomescreen.css">
         <script src="js/addtohomescreen.js"></script>
-        <script src="push.js"></script>
+        <script src="js/push.js"></script>
 		<!--Other-->
 		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <!--[if lt IE 9]>
@@ -1427,7 +1427,7 @@ endif; ?>
 
                 currentframe.attr("class", "iframe active");
                 document.title = thistitle;
-                window.location.href = '#' + thisname;
+                //window.location.href = '#' + thisname;
                 setHeight();
 
                 $("li[class^='tab-item active']").attr("class", "tab-item");
@@ -1444,7 +1444,7 @@ endif; ?>
 
                     $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
                     document.title = thistitle;
-                    window.location.href = '#' + thisname;
+                   // window.location.href = '#' + thisname;
 
                     setHeight();
 

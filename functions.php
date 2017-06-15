@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.36');
+ define('INSTALLEDVERSION', '1.37');
 // ===================================
 
 // Debugging output functions
@@ -490,6 +490,7 @@ function resolvePlexItem($server, $token, $item) {
 			$image = 'carousel-image season';
 			$style = '';
             $thumb = $item['thumb'];
+            $key = $item['ratingKey'];
 			break;
         case 'episode':
 			$title = $item['grandparentTitle'];
@@ -498,6 +499,16 @@ function resolvePlexItem($server, $token, $item) {
 			$image = 'carousel-image season';
 			$style = '';
             $thumb = $item['parentThumb'];
+            $key = $item['ratingKey'];
+			break;
+        case 'clip':
+			$title = $item['title'];
+			$summary = $item['summary'];
+			$width = 100;
+			$image = 'carousel-image movie';
+			$style = '';
+            $thumb = $item['thumb'];
+            $key = "clip";
 			break;
 		case 'album':
 		case 'track':
@@ -507,6 +518,7 @@ function resolvePlexItem($server, $token, $item) {
 			$image = 'album';
 			$style = 'left: 160px !important;';
             $thumb = $item['thumb'];
+            $key = $item['ratingKey'];
 			break;
 		default:
 			$title = $item['title'];
@@ -515,15 +527,20 @@ function resolvePlexItem($server, $token, $item) {
 			$image = 'carousel-image movie';
 			$style = '';
             $thumb = $item['thumb'];
+            $key = $item['ratingKey'];
 	}
 	
 	// If No Overview
 	if (!isset($itemDetails['Overview'])) {
 		$itemDetails['Overview'] = '';
 	}
+    $image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'';
+    if (file_exists('images/cache/'.$key.'.jpg')){
+        $image_url = 'images/cache/'.$key.'.jpg';
+    }
 	
 	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="'.$image_url.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
 }
 
 // Create Carousel
@@ -726,15 +743,33 @@ function getEmbyImage() {
 // Get Image From Plex
 function getPlexImage() {
 	$plexAddress = qualifyURL(PLEXURL);
+    if (!file_exists('images/cache')) {
+        mkdir('images/cache', 0777, true);
+    }
 	
 	$image_url = $_GET['img'];
+	$key = $_GET['key'];
 	$image_height = $_GET['height'];
 	$image_width = $_GET['width'];
 	
 	if(isset($image_url) && isset($image_height) && isset($image_width)) {
 		$image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . PLEXTOKEN;
-		header('Content-type: image/jpeg');
+        $cachefile = 'images/cache/'.$key.'.jpg';
+        $cachetime = 604800;
+        // Serve from the cache if it is younger than $cachetime
+        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
+            header("Content-type: image/jpeg");
+            @readfile($cachefile);
+            exit;
+        }
+		ob_start(); // Start the output buffer
+        header('Content-type: image/jpeg');
 		@readfile($image_src);
+        // Cache the output to a file
+        $fp = fopen($cachefile, 'wb');
+        fwrite($fp, ob_get_contents());
+        fclose($fp);
+        ob_end_flush(); // Send the output to the browser
 		die();
 	} else {
 		echo "Invalid Plex Request";	

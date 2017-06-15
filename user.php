@@ -134,7 +134,7 @@
             $mail->SMTPAuth = SMTPHOSTAUTH;
             $mail->Username = SMTPHOSTUSERNAME;
             $mail->Password = SMTPHOSTPASSWORD;
-            $mail->SMTPSecure = 'tls';
+            $mail->SMTPSecure = SMTPHOSTTYPE;
             $mail->Port = SMTPHOSTPORT;
             $mail->setFrom(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
             $mail->addReplyTo(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
@@ -142,7 +142,13 @@
             $mail->addAddress($email, $username);
             $mail->Subject = $subject;
             $mail->Body    = $body;
-            $mail->send();
+            //$mail->send();
+            if(!$mail->send()) {
+                $this->error('Mailer Error: ' . $mail->ErrorInfo);
+                $this->error = 'Mailer Error: ' . $mail->ErrorInfo;
+            } else {
+                $this->info('E-Mail sent!');
+            }
             
         }
        
@@ -352,7 +358,7 @@ EOT;
 			$dbpassword = $this->token_hash_password($username, $sha1, $token);
 			$update = "UPDATE users SET password = '$dbpassword' WHERE email= '$email'";
 			$this->database->exec($update);
-            $this->info("Email has been sent with new password");
+            //$this->info("Email has been sent with new password");
 			// step 3: notify the user of the new password
 			$from = User::MAILER_NAME;
 			$replyto = User::MAILER_REPLYTO;

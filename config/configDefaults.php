@@ -72,4 +72,5 @@ return array(
 	"git_branch" => "master",
 	"git_check" => true,
     "speedTest" => false,
+    "smtpHostType" => "tls",
 );

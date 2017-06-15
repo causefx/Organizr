@@ -8,7 +8,7 @@ include("connect.php");
 
 if( $result = $db->query("SELECT * FROM
                          (SELECT id, timestamp, user, avatar, message
-                          FROM chatpack_log ORDER BY id DESC LIMIT 250)
+                          FROM chatpack_log ORDER BY id DESC LIMIT 125)
                           ORDER BY id ASC") )
 {   
     $newmessages = array();
@@ -22,7 +22,7 @@ if( $result = $db->query("SELECT * FROM
         $message = $row["message"];
         
         $timenow = time();
-        $messagetime = date("h:i", intval($timestamp));
+        $messagetime = date("h:iA", intval($timestamp));
         $messagedate = date("m-d", intval($timestamp));
         $message = utf8_encode($message);
         
