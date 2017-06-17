@@ -1267,6 +1267,7 @@ body {
 .member-info {
   font-weight: 400;
   margin-top: 10px;
+  overflow: hidden;
 }
 
 .member-info img {
@@ -2154,6 +2155,13 @@ table.dataTable.no-footer, table.dataTable thead th, table.dataTable thead td {
     -webkit-background-clip: padding-box;
     -moz-background-clip: padding;
     background-clip: padding-box;
+}
+@media (min-width: 768px) {
+    .fc-title {
+     text-overflow: ellipsis;
+     white-space: nowrap;
+     overflow: hidden;   
+    }
 }
 
 .fc-calendar .fc-toolbar {
@@ -6146,6 +6154,9 @@ label {
   }.mdi-fullscreen {
     display: none !important;
   }
+  .mdi-window-restore {
+    display: none !important;
+  }    
   /*Remove margins from content block*/
   .content {
     margin: 0;
