@@ -619,12 +619,12 @@ echo buildSettings(
 						'value' => HOMEPAGEAUTHNEEDED,
 						'options' => $userTypes,
 					),
-                    array(
-                        'type' => 'checkbox',
-                        'labelTranslate' => 'SPEED_TEST',
-                        'name' => 'speedTest',
-                        'value' => SPEEDTEST,
-                    ),
+    array(
+        'type' => 'checkbox',
+        'labelTranslate' => 'SPEED_TEST',
+        'name' => 'speedTest',
+        'value' => SPEEDTEST,
+    ),
 					/*
 					array(
 						'type' => 'custom',
@@ -1000,6 +1000,48 @@ echo buildSettings(
 						'name' => 'calendarEndDay',
 						'pattern' => '[1-9][0-9]+',
 						'value' => CALENDARENDDAY,
+					),
+				),
+			),
+   array(
+				'title' => 'Notice',
+				'id' => 'notice',
+				'image' => 'images/pin.png',
+				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'homepageNoticeAuth',
+						'value' => HOMEPAGENOTICEAUTH,
+						'options' => $userTypes,
+					),
+     array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'NOTICE_COLOR',
+						'name' => 'homepageNoticeType',
+						'value' => HOMEPAGENOTICETYPE,
+						'options' => array(
+         'Green' => 'success',
+         'Blue' => 'primary',
+         'Gray' => 'gray',
+         'Red' => 'danger',
+         'Yellow' => 'warning',
+         'Light Blue' => 'info',
+        ),
+					),
+     array(
+						'type' => 'text',
+						'labelTranslate' => 'NOTICE_TITLE',
+						'name' => 'homepageNoticeTitle',
+						'value' => HOMEPAGENOTICETITLE,
+					),
+					array(
+						'type' => 'textarea',
+						'labelTranslate' => 'NOTICE_MESSAGE',
+						'name' => 'homepageNoticeMessage',
+						'value' => HOMEPAGENOTICEMESSAGE,
+      'rows' => 5,
+						'style' => 'background: #000; color: #FFF;',
 					),
 				),
 			),

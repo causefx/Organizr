@@ -71,6 +71,10 @@ return array(
 	"homepageCustomHTML1Auth" => false,
 	"git_branch" => "master",
 	"git_check" => true,
-    "speedTest" => false,
-    "smtpHostType" => "tls",
+ "speedTest" => false,
+ "smtpHostType" => "tls",
+ "homepageNoticeTitle" => "",
+ "homepageNoticeMessage" => "",
+ "homepageNoticeType" => "",
+ "homepageNoticeAuth" => "false",
 );

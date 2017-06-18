@@ -228,12 +228,27 @@ endif; ?>
             <div id="content" class="container-fluid">
 <!-- <button id="numBnt">Numerical</button> -->
                 <br/>
-
-				 <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { ?>
-				<div>
-					<?php echo HOMEPAGECUSTOMHTML1; ?>
-				</div>
+ 
+                <?php if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE) { ?>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="content-box big-box box-shadow panel-box panel-<?php echo HOMEPAGENOTICETYPE; ?>">
+                            <div class="content-title i-block">
+                                <h4 class="zero-m"><strong><?php echo HOMEPAGENOTICETITLE; ?></strong></h4>
+                                <div class="content-tools i-block pull-right">
+                                    <a class="close-btn">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <p><?php echo HOMEPAGENOTICEMESSAGE; ?></p>
+                        </div>
+                    </div>
+                </div>
                 <?php } ?>
+                
+                <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { echo "<div>" . HOMEPAGECUSTOMHTML1 . "</div>"; } ?>
+
                 <?php if(SPEEDTEST == "true"){ ?>
                 <style type="text/css">
 
@@ -498,23 +513,26 @@ endif; ?>
             </div>    
         </div>
         <script>
-		function localStorageSupport() {
-			return (('localStorage' in window) && window['localStorage'] !== null)
-		}
+        $('.close-btn').click(function(e){
+            var closedBox = $(this).closest('div.content-box').remove();
+            e.preventDefault();
+        });
+
+        function localStorageSupport() {
+            return (('localStorage' in window) && window['localStorage'] !== null)
+        }
 		
         $( document ).ready(function() {
-             $('.repeat-btn').click(function(){
+            $('.repeat-btn').click(function(){
                 var refreshBox = $(this).closest('div.content-box');
                 $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
-
                 setTimeout(function(){
-                  var refreshPreloader = refreshBox.find('.refresh-preloader'),
-                      deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
-                      refreshPreloader.remove();
-                  });
+                    var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                    deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+                        refreshPreloader.remove();
+                    });
                 },1500);
-
-              });
+            });
 
             $("body").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0},
@@ -534,32 +552,32 @@ endif; ?>
             // check if browser support HTML5 local storage
 			
             <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>
-			var queueRefresh = 30000;
-			var historyRefresh = 120000; // This really doesn't need to happen that often
-			
-			var queueLoad = function() {
-				<?php if(SABNZBDURL != "") { echo '$("tbody.dl-queue.sabnzbd").load("ajax.php?a=sabnzbd-update&list=queue");'; } ?>
-				<?php if(NZBGETURL != "") { echo '$("tbody.dl-queue.nzbget").load("ajax.php?a=nzbget-update&list=listgroups");'; } ?>
-			};
-			
-			var historyLoad = function() {
-				<?php if(SABNZBDURL != "") { echo '$("tbody.dl-history.sabnzbd").load("ajax.php?a=sabnzbd-update&list=history");'; } ?>
-				<?php if(NZBGETURL != "") { echo '$("tbody.dl-history.nzbget").load("ajax.php?a=nzbget-update&list=history");'; } ?>
-			};
-			
-			// Initial Loads
-			queueLoad();
-			historyLoad();
-			
-			// Interval Loads
-			var queueInterval = setInterval(queueLoad, queueRefresh);
-			var historyInterval = setInterval(historyLoad, historyRefresh);
-			
-			// Manual Load
-			$("#getDownloader").click(function() {
-				queueLoad();
-				historyLoad();
-			});
+            var queueRefresh = 30000;
+            var historyRefresh = 120000; // This really doesn't need to happen that often
+
+            var queueLoad = function() {
+            <?php if(SABNZBDURL != "") { echo '$("tbody.dl-queue.sabnzbd").load("ajax.php?a=sabnzbd-update&list=queue");'; } ?>
+            <?php if(NZBGETURL != "") { echo '$("tbody.dl-queue.nzbget").load("ajax.php?a=nzbget-update&list=listgroups");'; } ?>
+            };
+
+            var historyLoad = function() {
+            <?php if(SABNZBDURL != "") { echo '$("tbody.dl-history.sabnzbd").load("ajax.php?a=sabnzbd-update&list=history");'; } ?>
+            <?php if(NZBGETURL != "") { echo '$("tbody.dl-history.nzbget").load("ajax.php?a=nzbget-update&list=history");'; } ?>
+            };
+
+            // Initial Loads
+            queueLoad();
+			         historyLoad();
+
+            // Interval Loads
+            var queueInterval = setInterval(queueLoad, queueRefresh);
+            var historyInterval = setInterval(historyLoad, historyRefresh);
+
+            // Manual Load
+            $("#getDownloader").click(function() {
+                queueLoad();
+                historyLoad();
+            });
             <?php } ?>
         });
         </script>
@@ -600,7 +618,7 @@ endif; ?>
 
                     editable: false,
                     droppable: false,
-					timeFormat: '<?php echo CALTIMEFORMAT; ?>',
+					               timeFormat: '<?php echo CALTIMEFORMAT; ?>',
                 });
             });
             $('#imagetype_selector').on('change',function(){
