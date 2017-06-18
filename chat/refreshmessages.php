@@ -1,4 +1,11 @@
 <?php
+// Load USER
+require_once("../user.php");
+$USER = new User("registration_callback");
+
+// Some PHP config stuff
+ini_set("display_errors", 1);
+ini_set("error_reporting", E_ALL | E_STRICT);
 
 $currentuser = $_POST["user"];
 
@@ -64,7 +71,7 @@ if( $result = $db->query("SELECT * FROM
             
             // catch URLs
 
-            $message = str_replace("https://", "http://", $message);
+            /*$message = str_replace("https://", "http://", $message);
 
             if( !stristr($message, "http://www.") )
             {
@@ -73,7 +80,7 @@ if( $result = $db->query("SELECT * FROM
 
             $message = preg_replace("!((http|ftp)(s)?:\/\/)(www\.)?[a-zA-Z0-9.?&_/=\-\%\:,\#\+]+!",
                                     "<a href=\"$0\" target=\"_blank\">$0</a>", $message);
-            $message = str_replace("target=\"_blank\">http://", "target=\"_blank\">", $message);
+            $message = str_replace("target=\"_blank\">http://", "target=\"_blank\">", $message); */
 
             // catch highlightings
 
@@ -94,11 +101,9 @@ if( $result = $db->query("SELECT * FROM
 
             // show user avatar and message
             if($user == $currentuser){
-                $msgstr = $msgstr . "<p class=\"avatarandtext\" id=\"$messagekey\"><li><img src=\"$avatar\" id=\"$timestamp\" class=\"img-circle user-avatar $user\" alt=\"$user\"><div class=\"chat-panel blue-bg\"><div class=\"chat-heading clearfix\"><h4 class=\"pull-left zero-m\">$user</h4><p class=\"pull-right\"><i class=\"fa fa-clock-o\"></i>$messagedate $messagetime </p></div><div class=\"chat-body\">$message</div></div><div class=\"messagelike\" id=\"$id\"><img class=\"liked\" id=\"like$id\" src=\"chat/img/like.png\"" . 
-                                " alt=\"like\" width=\"15\" height=\"15\"></div></li></p>";//class="chat-inverted"
+                $msgstr = $msgstr . "<p class=\"avatarandtext\" id=\"$messagekey\"><li><img src=\"$avatar\" id=\"$timestamp\" class=\"img-circle user-avatar $user\" alt=\"$user\"><div class=\"chat-panel blue-bg messagelike\" id=\"$id\"><div class=\"chat-heading clearfix\"><h4 class=\"pull-left zero-m\">$user</h4><p class=\"pull-right\"><i class=\"fa fa-clock-o\"></i>$messagedate $messagetime </p></div><div class=\"chat-body\">$message</div><span class=\"readed\"><i class=\"fa fa-heart red\" id=\"like$id\"></i></span></div></li></p>";//class="chat-inverted"
             }else{
-                $msgstr = $msgstr . "<p class=\"avatarandtext\" id=\"$messagekey\"><li class=\"chat-inverted\"><img src=\"$avatar\" id=\"$timestamp\" class=\"img-circle user-avatar $user\" alt=\"$user\"><div class=\"chat-panel red-bg\"><div class=\"chat-heading clearfix\"><h4 class=\"pull-left zero-m\">$user</h4><p class=\"pull-right\"><i class=\"fa fa-clock-o\"></i>$messagedate $messagetime </p></div><div class=\"chat-body\">$message</div></div><div class=\"messagelike\" id=\"$id\"><img class=\"liked\" id=\"like$id\" src=\"chat/img/like.png\"" . 
-                                " alt=\"like\" width=\"15\" height=\"15\"></div></li></p>";//class="chat-inverted"
+                $msgstr = $msgstr . "<p class=\"avatarandtext\" id=\"$messagekey\"><li class=\"chat-inverted\"><img src=\"$avatar\" id=\"$timestamp\" class=\"img-circle user-avatar $user\" alt=\"$user\"><div class=\"chat-panel red-bg messagelike\" id=\"$id\"><div class=\"chat-heading clearfix\"><h4 class=\"pull-left zero-m\">$user</h4><p class=\"pull-right\"><i class=\"fa fa-clock-o\"></i>$messagedate $messagetime </p></div><div class=\"chat-body\">$message</div><span class=\"readed\"><i class=\"fa fa-heart red liked\" id=\"like$id\"></i></span></div></li></p>";//class="chat-inverted"
             }
 
             array_push($newmessages, $msgstr);
