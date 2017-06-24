@@ -399,7 +399,6 @@ endif; ?>
                 <?php } ?>
                 <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
                 <div id="downloadClientRow" class="row">
-                    <sort>2</sort>
                     <div class="col-xs-12 col-md-12">
                         <div class="content-box">
                             <div class="tabbable panel with-nav-tabs panel-default">
@@ -474,8 +473,6 @@ endif; ?>
                 </div>
                 <div id="plexRow" class="row">
                     <div class="col-lg-12">
-                        <sort>3</sort>
-
                     <?php
                     if(PLEXRECENTMOVIE || PLEXRECENTTV || PLEXRECENTMUSIC){  
                         $plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
@@ -487,8 +484,6 @@ endif; ?>
 				<?php } ?>
 				<?php if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) { ?>
                 <div id="embyRow" class="row">
-                    <sort>3</sort>
-
                     <?php
                     $embySize = (EMBYRECENTMOVIE == "true") + (EMBYRECENTTV == "true") + (EMBYRECENTMUSIC == "true") + (EMBYPLAYINGNOW == "true");
                     if(EMBYRECENTMOVIE == "true"){ echo getEmbyRecent("movie", 12/$embySize); }
@@ -501,7 +496,6 @@ endif; ?>
 				<?php } ?>
                 <?php if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH))) { ?>
                 <div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
-                    <sort>1</sort>
                     <div class="col-lg-12 content-form form-inline">
                         <div class="form-group">
                             <select class="form-control" id="imagetype_selector" style="width: auto !important; display: inline-block">
@@ -519,7 +513,6 @@ endif; ?>
                     </div>
                 </div>
                 <div id="calendarRow" class="row">
-                    <sort>1</sort>
                     <div class="col-lg-12">
                         <div id="calendar" class="fc-calendar box-shadow fc fc-ltr fc-unthemed"></div>
                     </div>
