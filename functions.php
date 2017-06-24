@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.375');
+ define('INSTALLEDVERSION', '1.38');
 // ===================================
 
 // Debugging output functions
@@ -721,7 +721,7 @@ function outputRecentAdded($header, $items, $script = false, $array) {
     if (!count($items)) {
         return '<div id=recentMedia><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
     }else{
-        return '<div id=recentMedia><h5 style="margin-bottom: -25px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination">'.$hideMenu.'</div><br/><div class="recentItems">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+        return '<div id=recentMedia><h5 style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination">'.$hideMenu.'</div><br/><div class="recentItems">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
     
 }
@@ -2781,6 +2781,59 @@ function sendResult($result, $icon = "floppy-o", $message = false, $success = "W
 		die();
 	}
 	return $msg;
+}
+
+function buildHomepageNotice($layout, $type, $title, $message){
+    switch ($layout) {
+		      case 'elegant':
+            return '
+            <div id="homepageNotice" class="row">
+                <div class="col-lg-12">
+                    <div class="content-box big-box box-shadow panel-box panel-'.$type.'">
+                        <div class="content-title i-block">
+                            <h4 class="zero-m"><strong>'.$title.'</strong></h4>
+                            <div class="content-tools i-block pull-right">
+                                <a class="close-btn">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <p>'.$message.'</p>
+                    </div>
+                </div>
+            </div>
+            ';
+            break;
+        case 'basic':
+            return '
+            <div id="homepageNotice" class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-'.$type.'">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">'.$title.'</h3>
+                        </div>
+                        <div class="panel-body">
+                            '.$message.'
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ';
+            break;
+        case 'jumbotron';
+            return '
+            <div id="homepageNotice" class="row">
+                <div class="col-lg-12">
+                    <div class="jumbotron">
+                        <div class="container">
+                            <h1>'.$title.'</h1>
+                            <p>'.$message.'</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ';
+    }
 }
 
 // Always run this
