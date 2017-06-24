@@ -1103,7 +1103,7 @@ echo buildSettings(
 						'labelTranslate' => 'CUSTOMHTML',
 						'name' => 'homepageCustomHTML1',
 						'value' => HOMEPAGECUSTOMHTML1,
-						'rows' => 10,
+						'rows' => 15,
 						'style' => 'background: #000; color: #FFF;',
 					),
 				),
@@ -2658,6 +2658,9 @@ echo buildSettings(
                 railpadding: {top:0,right:0,left:0,bottom:0}
             });
             $(".email-content").niceScroll({
+                railpadding: {top:0,right:0,left:0,bottom:0}
+            });
+            $("textarea").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0}
             });
             //Stop Div behind From Scrolling
