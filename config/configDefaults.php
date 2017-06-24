@@ -9,6 +9,7 @@ return array(
 	"plexRecentTV" => "false",
 	"plexRecentMusic" => "false",
 	"plexPlayingNow" => "false",
+ "plexShowNames" => false,
 	"plexHomeAuth" => false,
 	"embyURL" => "",
 	"embyToken" => "",
