@@ -31,10 +31,13 @@ if (function_exists('ldap_connect')) :
 		// returns true or false
 		$ldap = ldap_connect(implode(' ',$ldapServers));
 		if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
+   writeLog("success", "LDAP authentication success"); 
 			return true;
 		} else {
+   writeLog("error", "LDPA could not authenticate"); 
 			return false;
 		}
+  writeLog("error", "LDPA could not authenticate");      
 		return false;
 	}
 else :
@@ -59,6 +62,7 @@ function plugin_auth_ftp($username, $password) {
 		$conn_id = ftp_connect($host, $port, 20);
 	} else {
 		debug_out('Invalid FTP scheme. Use ftp or ftps');
+  writeLog("error", "invalid FTP scheme"); 
 		return false;
 	}
 	
@@ -70,8 +74,10 @@ function plugin_auth_ftp($username, $password) {
 		
 		// Return Result
 		if ($login_result) {
+   writeLog("success", "$username authenticated");       
 			return true;
 		} else {
+   writeLog("error", "$username could not authenticate");      
 			return false;
 		}
 	} else {
@@ -171,6 +177,7 @@ if (function_exists('curl_version')) :
 	function plugin_auth_plex($username, $password) {
 		// Quick out
 		if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
+   writeLog("success", $username." authenticated by plex");
 			return true;
 		}
 		
@@ -187,6 +194,7 @@ if (function_exists('curl_version')) :
 			foreach($userXML AS $child) {
 				if(isset($child['username']) && strtolower($child['username']) == $usernameLower) {
 					$isUser = true;
+     writeLog("success", $usernameLower." was found in plex friends list");
 					break;
 				}
 			}
@@ -209,6 +217,7 @@ if (function_exists('curl_version')) :
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
 					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && strtolower($json['user']['username']) == $usernameLower) {
+         writeLog("success", $json['user']['username']." was logged into plex and pulled credentials");
                         return array(
 							'email' => $json['user']['email'],
 							'image' => $json['user']['thumb']
@@ -217,6 +226,7 @@ if (function_exists('curl_version')) :
 				}
 			}
 		}
+  writeLog("error", "error occured logging into plex might want to check curl.cainfo=/path/to/downloaded/cacert.pem in php.ini");   
 		return false;
 	}
 else :
@@ -271,7 +281,7 @@ class setLanguage {
 
         $translatedWord = isset($this->language[$originalWord]) ? $this->language[$originalWord] : null;
         if (!$translatedWord) {
-            echo ("Translation not found for: $originalWord");
+            return ucwords(str_replace("_", " ", strtolower($originalWord)));
         }
 
         $translatedWord = htmlspecialchars($translatedWord, ENT_QUOTES);
@@ -476,71 +486,195 @@ function resolveEmbyItem($address, $token, $item) {
 }
 
 // Format item from Plex for Carousel
-function resolvePlexItem($server, $token, $item) {
-	// Static Height
-	$height = 150;
-	
-	$address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
-	
-	switch ($item['type']) {
-		case 'season':
-			$title = $item['parentTitle'];
-			$summary = $item['parentSummary'];
-			$width = 100;
-			$image = 'carousel-image season';
-			$style = '';
-            $thumb = $item['thumb'];
-            $key = $item['ratingKey'];
-			break;
+function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames = false) {
+    // Static Height
+    $height = 444;
+
+    $address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
+
+    switch ($item['type']) {
+        case 'season':
+            $title = $item['parentTitle'];
+            $summary = $item['parentSummary'];
+            $width = 300;
+            $image = 'slick-image-tall';
+            $style = '';
+            if(!$nowPlaying){ 
+                $thumb = $item['thumb'];
+                $key = $item['ratingKey'] . "-list";
+            }else { 
+                $height = 281;
+                $width = 500;
+                $thumb = $item['art'];
+                $key = $item['ratingKey'] . "-np";
+                $elapsed = $item['viewOffset'];
+                $duration = $item['duration'];
+                $watched = floor(($elapsed / $duration) * 100);
+                $transcoded = floor($item->TranscodeSession['progress']- $watched);
+                $stream = $item->Media->Part->Stream['decision'];
+                $user = $item->User['title'];
+                $id = $item->Session['id'];
+                $streamInfo = buildStream(array(
+                    'platform' => (string) $item->Player['platform'],
+                    'device' => (string) $item->Player['device'],
+                    'stream' => "&nbsp;".streamType($item->Media->Part['decision']),
+                    'video' => streamType($item->Media->Part->Stream[0]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['width']."x".$item->Media->Part->Stream[0]['height'].")",
+                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[1]['decision'])." (".$item->Media->Part->Stream[1]['codec'].") (".$item->Media->Part->Stream[1]['channels']."ch)",
+                ));
+                $state = (($item->Player['state'] == "paused") ? "pause" : "play");
+            }
+            break;
         case 'episode':
-			$title = $item['grandparentTitle'];
-			$summary = $item['title'];
-			$width = 100;
-			$image = 'carousel-image season';
-			$style = '';
-            $thumb = $item['parentThumb'];
-            $key = $item['ratingKey'];
-			break;
+            $title = $item['grandparentTitle'];
+            $summary = $item['title'];
+            $width = 300;
+            $image = 'slick-image-tall';
+            $style = '';
+            if(!$nowPlaying){ 
+                $thumb = $item['parentThumb'];
+                $key = $item['ratingKey'] . "-list";
+            }else { 
+                $height = 281;
+                $width = 500;
+                $thumb = $item['art'];
+                $key = $item['ratingKey'] . "-np";
+                $elapsed = $item['viewOffset'];
+                $duration = $item['duration'];
+                $watched = floor(($elapsed / $duration) * 100);
+                $transcoded = floor($item->TranscodeSession['progress']- $watched);
+                $stream = $item->Media->Part->Stream['decision'];
+                $user = $item->User['title'];
+                $id = $item->Session['id'];
+                $streamInfo = buildStream(array(
+                    'platform' => (string) $item->Player['platform'],
+                    'device' => (string) $item->Player['device'],
+                    'stream' => "&nbsp;".streamType($item->Media->Part['decision']),
+                    'video' => streamType($item->Media->Part->Stream[0]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['width']."x".$item->Media->Part->Stream[0]['height'].")",
+                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[1]['decision'])." (".$item->Media->Part->Stream[1]['codec'].") (".$item->Media->Part->Stream[1]['channels']."ch)",
+                ));
+                $state = (($item->Player['state'] == "paused") ? "pause" : "play");
+                $topTitle = '<h5 class="text-center zero-m elip">'.$title.' - '.$item['title'].'</h5>';
+                $bottomTitle = '<small class="zero-m">S'.$item['parentIndex'].' · E'.$item['index'].'</small>';
+                if($showNames){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+            }
+            break;
         case 'clip':
-			$title = $item['title'];
-			$summary = $item['summary'];
-			$width = 100;
-			$image = 'carousel-image movie';
-			$style = '';
-            $thumb = $item['thumb'];
-            $key = "clip";
-			break;
-		case 'album':
-		case 'track':
-			$title = $item['parentTitle'];
-			$summary = $item['title'];
-			$width = 150;
-			$image = 'album';
-			$style = 'left: 160px !important;';
-            $thumb = $item['thumb'];
-            $key = $item['ratingKey'];
-			break;
-		default:
-			$title = $item['title'];
-			$summary = $item['summary'];
-			$width = 100;
-			$image = 'carousel-image movie';
-			$style = '';
-            $thumb = $item['thumb'];
-            $key = $item['ratingKey'];
-	}
-	
-	// If No Overview
-	if (!isset($itemDetails['Overview'])) {
-		$itemDetails['Overview'] = '';
-	}
-    $image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'';
-    if (file_exists('images/cache/'.$key.'.jpg')){
-        $image_url = 'images/cache/'.$key.'.jpg';
+            $title = $item['title'];
+            $summary = $item['summary'];
+            $width = 300;
+            $image = 'slick-image-tall';
+            $style = '';
+            if(!$nowPlaying){ 
+                $thumb = $item['thumb'];
+                $key = $item['ratingKey'] . "-list";
+            }else { 
+                $height = 281;
+                $width = 500;
+                $thumb = $item['art'];
+                $key = $item['ratingKey'] . "-np";
+                $elapsed = $item['viewOffset'];
+                $duration = $item['duration'];
+                $watched = floor(($elapsed / $duration) * 100);
+                $transcoded = floor($item->TranscodeSession['progress']- $watched);
+                $stream = $item->Media->Part->Stream['decision'];
+                $user = $item->User['title'];
+                $id = $item->Session['id'];
+                $streamInfo = buildStream(array(
+                    'platform' => (string) $item->Player['platform'],
+                    'device' => (string) $item->Player['device'],
+                    'stream' => "&nbsp;".streamType($item->Media->Part['decision']),
+                    'video' => streamType($item->Media->Part->Stream[0]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['width']."x".$item->Media->Part->Stream[0]['height'].")",
+                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[1]['decision'])." (".$item->Media->Part->Stream[1]['codec'].") (".$item->Media->Part->Stream[1]['channels']."ch)",
+                ));
+                $state = (($item->Player['state'] == "paused") ? "pause" : "play");
+                $topTitle = '<h5 class="text-center zero-m elip">'.$title.' [Trailer/Clip]</h5>';
+                $bottomTitle = '<small class="zero-m">'.$item['year'].'</small>';
+                if($showNames){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
+            }
+            break;
+        case 'album':
+        case 'track':
+            $title = $item['parentTitle'];
+            $summary = $item['title'];
+            $image = 'slick-image-short';
+            $style = 'left: 160px !important;';
+            if(!$nowPlaying){ 
+                $width = 444;
+                $thumb = $item['thumb'];
+                $key = $item['ratingKey'] . "-list";
+            }else { 
+                $height = 281;
+                $width = 500;
+                $thumb = $item['art'];
+                $key = $item['ratingKey'] . "-np";
+                $elapsed = $item['viewOffset'];
+                $duration = $item['duration'];
+                $watched = floor(($elapsed / $duration) * 100);
+                $transcoded = floor($item->TranscodeSession['progress']- $watched);
+                $stream = $item->Media->Part->Stream['decision'];
+                $user = $item->User['title'];
+                $id = $item->Session['id'];
+                $streamInfo = buildStream(array(
+                    'platform' => (string) $item->Player['platform'],
+                    'device' => (string) $item->Player['device'],
+                    'stream' => "&nbsp;".streamType($item->Media->Part['decision']),
+                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[1]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['channels']."ch)",
+                ));
+                $state = (($item->Player['state'] == "paused") ? "pause" : "play");
+                $topTitle = '<h5 class="text-center zero-m elip">'.$item['grandparentTitle'].' - '.$item['title'].'</h5>';
+                $bottomTitle = '<small class="zero-m">'.$title.'</small>';
+                if($showNames){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
+            }
+            break;
+        default:
+            $title = $item['title'];
+            $summary = $item['summary'];
+            $image = 'slick-image-tall';
+            $style = '';
+            if(!$nowPlaying){ 
+                $width = 300;
+                $thumb = $item['thumb'];
+                $key = $item['ratingKey'] . "-list";
+            }else { 
+                $height = 281;
+                $width = 500;
+                $thumb = $item['art'];
+                $key = $item['ratingKey'] . "-np";
+                $elapsed = $item['viewOffset'];
+                $duration = $item['duration'];
+                $watched = floor(($elapsed / $duration) * 100);
+                $transcoded = floor($item->TranscodeSession['progress']- $watched);
+                $stream = $item->Media->Part->Stream['decision'];
+                $user = $item->User['title'];
+                $id = $item->Session['id'];
+                $streamInfo = buildStream(array(
+                    'platform' => (string) $item->Player['platform'],
+                    'device' => (string) $item->Player['device'],
+                    'stream' => "&nbsp;".streamType($item->Media->Part['decision']),
+                    'video' => streamType($item->Media->Part->Stream[0]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['width']."x".$item->Media->Part->Stream[0]['height'].")",
+                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[1]['decision'])." (".$item->Media->Part->Stream[1]['codec'].") (".$item->Media->Part->Stream[1]['channels']."ch)",
+                ));
+                $state = (($item->Player['state'] == "paused") ? "pause" : "play");
+                $topTitle = '<h5 class="text-center zero-m elip">'.$title.'</h5>';
+                $bottomTitle = '<small class="zero-m">'.$item['year'].'</small>';
+                if($showNames){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
+            }
+	   }
+
+    // If No Overview
+    if (!isset($itemDetails['Overview'])) { $itemDetails['Overview'] = ''; }
+
+    if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key.'.jpg'; }
+    if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
+        $image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'';        
     }
-	
-	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="'.$image_url.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+    if(!$thumb){ $image_url = "images/no-np.png"; $key = "no-np"; }
+    // Assemble Item And Cache Into Array 
+    if($nowPlaying){
+        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$address.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+    }else{
+        return '<div class="item-'.$item['type'].'"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+    }
 }
 
 // Create Carousel
@@ -570,6 +704,39 @@ function outputCarousel($header, $size, $type, $items, $script = false) {
 	</div></div>'.($script?'<script>'.$script.'</script>':''); 
 }
 
+//Recent Added
+function outputRecentAdded($header, $items, $script = false, $array) {
+    $hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu">';
+    if($array["movie"] == "true"){
+        $hideMenu .= '<li><a class="js-filter-movie" href="javascript:void(0)">Hide Movies</a></li>';
+    }
+    if($array["season"] == "true"){
+        $hideMenu .= '<li><a class="js-filter-season" href="javascript:void(0)">Hide Show</a></li>';
+    }
+    if($array["album"] == "true"){
+        $hideMenu .= '<li><a class="js-filter-album" href="javascript:void(0)">Hide Music</a></li>';
+    }
+    $hideMenu .= '</ul></div></div>';
+    // If None Populate Empty Item
+    if (!count($items)) {
+        return '<div id=recentMedia><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
+    }else{
+        return '<div id=recentMedia><h5 style="margin-bottom: -25px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination">'.$hideMenu.'</div><br/><div class="recentItems">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+    }
+    
+}
+
+// Create Carousel
+function outputPlexNowPlaying($header, $size, $type, $items, $script = false) {
+	// If None Populate Empty Item
+	if (!count($items)) {
+		return '<div id=streamz></div>'.($script?'<script>'.$script.'</script>':'');
+	}else{
+	   return '<div id=streamz><h5 class="text-center">'.$header.'</h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
+ }
+    
+}
+
 // Get Now Playing Streams From Emby
 function getEmbyStreams($size) {
 	$address = qualifyURL(EMBYURL);
@@ -597,7 +764,7 @@ function getEmbyStreams($size) {
 }
 
 // Get Now Playing Streams From Plex
-function getPlexStreams($size){
+function getPlexStreams($size, $showNames){
     $address = qualifyURL(PLEXURL);
     
 	// Perform API requests
@@ -611,10 +778,10 @@ function getPlexStreams($size){
 	
 	$items = array();
 	foreach($api AS $child) {
-		$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child);
+		$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames);
 	}
 	
-	return outputCarousel(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
+	return outputPlexNowPlaying(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
 		setInterval(function() {
 			$('<div></div>').load('ajax.php?a=plex-streams',function() {
 				var element = $(this).find('[id]');
@@ -622,7 +789,7 @@ function getPlexStreams($size){
 				$('#'+loadedID).replaceWith(element);
 				console.log('Loaded updated: '+loadedID);
 			});
-		}, 10000);
+		}, 15000);
 	");
 }
 
@@ -684,26 +851,12 @@ function getEmbyRecent($type, $size) {
 }
 
 // Get Recent Content From Plex
-function getPlexRecent($type, $size){
+function getPlexRecent($array){
     $address = qualifyURL(PLEXURL);
-    
-	// Resolve Types
-	switch ($type) {
-		case 'movie':
-			$header = translate('MOVIES');
-			break;
-		case 'season':
-			$header = translate('TV_SHOWS');
-			break;
-		case 'album':
-			$header = translate('MUSIC');
-			break;
-		default:
-			$header = translate('RECENT_CONTENT');
-	}
+			 $header = translate('RECENT_CONTENT');
 	
 	// Perform Requests
-    $api = @file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".PLEXTOKEN);
+    $api = @file_get_contents($address."/library/recentlyAdded?limit=100&X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
     $getServer = simplexml_load_string(@file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
 	if (!$getServer) { return 'Could not load!'; }
@@ -713,12 +866,13 @@ function getPlexRecent($type, $size){
 	
 	$items = array();
 	foreach($api AS $child) {
-		if($child['type'] == $type){
-			$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child);
+     $type = (string) $child['type'];
+		if($array[$type] == "true"){
+			$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, false, false);
 		}
 	}
 	
-	return outputCarousel($header, $size, $type.'-plex', $items);
+	return outputRecentAdded($header, $items, "", $array);
 }
 
 // Get Image From Emby
@@ -757,7 +911,7 @@ function getPlexImage() {
         $cachefile = 'images/cache/'.$key.'.jpg';
         $cachetime = 604800;
         // Serve from the cache if it is younger than $cachetime
-        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
+        if (file_exists($cachefile) && time() - $cachetime > filemtime($cachefile)) {
             header("Content-type: image/jpeg");
             @readfile($cachefile);
             exit;
@@ -856,9 +1010,10 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		if (file_exists($path)) {
 			return true;
 		}
-		
+		writeLog("error", "config was unable to write");
 		return false;
 	} else {
+  writeLog("success", "config was updated with new values");
 		return $output;
 	}
 }
@@ -944,6 +1099,15 @@ function configLazy($path = 'config/config.php') {
 
 // Qualify URL
 function qualifyURL($url) {
+ //local address?
+ if(substr($url, 0,1) == "/"){
+     if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
+        $protocol = "https://"; 
+    } else {  
+        $protocol = "http://"; 
+    }
+     $url = $protocol.getServer().$url;
+ }
 	// Get Digest
 	$digest = parse_url($url);
 	
@@ -1108,15 +1272,17 @@ function uploadFiles($path, $ext_mask = null) {
 
 		if($data['isComplete']){
 			$files = $data['data'];
-
+   writeLog("success", $files['metas'][0]['name']." was uploaded");
 			echo json_encode($files['metas'][0]['name']);
 		}
 
 		if($data['hasErrors']){
 			$errors = $data['errors'];
+   writeLog("error", $files['metas'][0]['name']." was not able to upload");
 			echo json_encode($errors);
 		}
-	} else {
+	} else { 
+  writeLog("error", "image was not uploaded");
 		echo json_encode('No files submitted!');
 	}
 }
@@ -1124,8 +1290,10 @@ function uploadFiles($path, $ext_mask = null) {
 // Remove file
 function removeFiles($path) {
     if(is_file($path)) {
+        writeLog("success", "image was removed");
         unlink($path);
     } else {
+  writeLog("error", "image was not removed");
 		echo json_encode('No file specified for removal!');
 	}
 }
@@ -1659,9 +1827,10 @@ function createSQLiteDB($path = false) {
 			`loading`	TEXT,
 			`hovertext`	TEXT
 		);');
-		
+		writeLog("success", "database created/saved");
 		return $users && $tabs && $options;
 	} else {
+  writeLog("error", "database was unable to be created/saved");
 		return false;
 	}
 }
@@ -1717,8 +1886,10 @@ function updateSQLiteDB($db_path = false, $oldVerNum = false) {
 				$GLOBALS['file_db']->query($queryBase.implode(',',$insertValues).';');
 			}
 		}
+  writeLog("success", "database values have been updated");
 		return true;
 	} else {
+  writeLog("error", "database values unable to be updated");
 		return false;
 	}
 }
@@ -1736,8 +1907,10 @@ function updateDBOptions($values) {
 	}, $values, array_keys($values))).';')->rowCount()) {
 		return true;
 	} else if ($GLOBALS['file_db']->query('INSERT OR IGNORE INTO options (`'.implode('`,`',array_keys($values)).'`) VALUES (\''.implode("','",$values).'\');')->rowCount()) {
+  writeLog("success", "database values for options table have been updated");
 		return true;
 	} else {
+  writeLog("error", "database values for options table unable to be updated");
 		return false;
 	}
 }
@@ -1747,7 +1920,7 @@ function sendNotification($success, $message = false, $send = true) {
 	$notifyExplode = explode("-", NOTIFYEFFECT);
 	if ($success) {
 		$msg = array(
-			'html' => ($message?'<br>'.$message:'<strong>'.translate("SETTINGS_SAVED").'</strong>'),
+			'html' => ($message?''.$message:'<strong>'.translate("SETTINGS_SAVED").'</strong>'),
 			'icon' => 'floppy-o',
 			'type' => 'success',
 			'length' => '5000',
@@ -1756,7 +1929,7 @@ function sendNotification($success, $message = false, $send = true) {
 		);
 	} else {
 		$msg = array(
-			'html' => ($message?'<br>'.$message:'<strong>'.translate("SETTINGS_NOT_SAVED").'</strong>'),
+			'html' => ($message?''.$message:'<strong>'.translate("SETTINGS_NOT_SAVED").'</strong>'),
 			'icon' => 'floppy-o',
 			'type' => 'failed',
 			'length' => '5000',
@@ -1834,7 +2007,7 @@ function deleteDatabase() {
 	}
 
     rmdir($userdirpath);
-	
+	writeLog("success", "database has been deleted");
 	return true;
 }
 
@@ -1907,7 +2080,7 @@ function upgradeInstall($branch = 'master') {
     unzipFile($file);
     rcopy($source, $destination);
     rrmdir($cleanup);
-	
+	writeLog("success", "organizr has been updated");
 	return true;
 }
 
@@ -2018,10 +2191,13 @@ function updateTabs($tabs) {
 			}
 			$GLOBALS['file_db']->query('INSERT INTO tabs (`'.implode('`,`',array_keys($fields)).'`) VALUES (\''.implode("','",$fields).'\');');
 		}
+  writeLog("success", "tabs successfully saved");     
 		return $totalValid;
 	} else {
+  writeLog("error", "tabs could not save");     
 		return false;
 	}
+ writeLog("error", "tabs could not save");     
 	return false;
 }
 
@@ -2470,7 +2646,142 @@ function checkRootPath($string){
     }
 }
 
+function writeLog($type, $message){
+    $message = date("Y-m-d H:i:s")."|".$type."|".$message."\n";
+    file_put_contents("org.log", $message, FILE_APPEND | LOCK_EX);
+}
 
+function readLog(){
+    $log = file("org.log");
+    $log = array_reverse($log);
+    foreach($log as $line){
+        $line = explode("|", $line);
+        $line[1] = ($line[1] == "error") ? '<span class="label label-danger">Error</span>' : '<span class="label label-primary">Success</span>';
+        echo "<tr><td>".$line[0]."</td><td>".$line[2]."</td><td>".$line[1]."</td></tr>";
+    }
+}
+
+function buildStream($array){
+    $result = "";
+    if (array_key_exists('platform', $array)) {
+        $result .= '<div class="reg-info" style="margin-top:0; padding-left:0; position: absolute; bottom: 10px; left: 10px;"><div style="margin-right: 0;" class="item pull-left text-center"><img class="img-circle" height="55px" src="images/platforms/'.getPlatform($array['platform']).'"></div></div><div class="clearfix"></div>';
+    }
+    if (array_key_exists('device', $array)) {
+        $result .= '<div class="reg-info" style="margin-top:0; padding-left:5%;"><div style="margin-right: 0;" class="item pull-left text-center"><span style="font-size: 15px;" class="block text-center"><i class="fa fa-laptop"></i>'.$array['device'].'</span></div></div><div class="clearfix"></div>';
+    }
+    if (array_key_exists('stream', $array)) {
+        $result .= '<div class="reg-info" style="margin-top:0; padding-left:5%;"><div style="margin-right: 0;" class="item pull-left text-center"><span style="font-size: 15px;" class="block text-center"><i class="fa fa-play"></i>'.$array['stream'].'</span></div></div><div class="clearfix"></div>';
+    }
+    if (array_key_exists('video', $array)) {
+        $result .= '<div class="reg-info" style="margin-top:0; padding-left:5%;"><div style="margin-right: 0;" class="item pull-left text-center"><span style="font-size: 15px;" class="block text-center"><i class="fa fa-film"></i>'.$array['video'].'</span></div></div><div class="clearfix"></div>';
+    }
+    if (array_key_exists('audio', $array)) {
+        $result .= '<div class="reg-info" style="margin-top:0; padding-left:5%;"><div style="margin-right: 0;" class="item pull-left text-center"><span style="font-size: 15px;" class="block text-center"><i class="fa fa-volume-up"></i>'.$array['audio'].'</span></div></div><div class="clearfix"></div>';
+    }
+    return $result;
+}
+
+function streamType($value){
+    if($value == "transcode"){
+        return "Transcode";
+    }elseif($value == "copy"){
+        return "Direct Stream";
+    }elseif($value == "directplay"){
+        return "Direct Play";
+    }else{
+        return "Direct Play";
+    }
+}
+
+function getPlatform($platform){
+    $allPlatforms = array(
+        "Chrome" => "chrome.png",
+        "tvOS" => "atv.png",
+        "iOS" => "ios.png",
+        "Xbox One" => "xbox.png",
+        "Mystery 4" => "playstation.png",
+        "Samsung" => "samsung.png",
+    );
+    if (array_key_exists($platform, $allPlatforms)) {
+        return $allPlatforms[$platform];
+    }else{
+        return "pmp.png";
+    }
+}
+
+function getServer(){
+    $server = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"];
+    return $server;    
+}
+
+function prettyPrint($a) {
+    echo "HEADERS: <pre>";
+    print_r($a);
+    echo "</pre>";
+    echo "<br/>";
+}
+
+function checkFrame($array, $url){
+    if(array_key_exists("x-frame-options", $array)){
+        if($array['x-frame-options'] == "deny"){
+            return false;
+        }elseif($array['x-frame-options'] == "sameorgin"){
+            $digest = parse_url($url);
+            $host = (isset($digest['host'])?$digest['host']:'');
+            if(getServer() == $host){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }else{
+        if(!$array){
+            return false;
+        }
+        return true;
+    }    
+}
+
+function frameTest($url){
+    $array = array_change_key_case(get_headers(qualifyURL($url), 1));
+    $url = qualifyURL($url);
+    if(checkFrame($array, $url)){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+function sendResult($result, $icon = "floppy-o", $message = false, $success = "WAS_SUCCESSFUL", $fail = "HAS_FAILED", $send = true) {
+	$notifyExplode = explode("-", NOTIFYEFFECT);
+	if ($result) {
+		$msg = array(
+			'html' => ($message?''.$message.' <strong>'.translate($success).'</strong>':'<strong>'.translate($success).'</strong>'),
+			'icon' => $icon,
+			'type' => 'success',
+			'length' => '5000',
+			'layout' => $notifyExplode[0],
+			'effect' => $notifyExplode[1],
+		);
+	} else {
+		$msg = array(
+			'html' => ($message?''.$message.' <strong>'.translate($fail).'</strong>':'<strong>'.translate($fail).'</strong>'),
+			'icon' => $icon,
+			'type' => 'error',
+			'length' => '5000',
+			'layout' => $notifyExplode[0],
+			'effect' => $notifyExplode[1],
+		);
+	}
+	
+	// Send and kill script?
+	if ($send) {
+		header('Content-Type: application/json');
+		echo json_encode(array('notify'=>$msg));
+		die();
+	}
+	return $msg;
+}
 
 // Always run this
 dependCheck();
