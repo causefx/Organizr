@@ -117,8 +117,8 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         <script src="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
         <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
         <script src="bower_components/cta/dist/cta.min.js"></script>
-        <script src="bower_components/fullcalendar/dist/fullcalendar.js?v=<?php echo INSTALLEDVERSION; ?>">
-        <script src="bower_components/slick/slick.js?v=<?php echo INSTALLEDVERSION; ?>">
+        <script src="bower_components/fullcalendar/dist/fullcalendar.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
+        <script src="bower_components/slick/slick.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
 	       <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
