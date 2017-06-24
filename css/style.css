@@ -6,13 +6,18 @@
  *
 */
 /*@import url(https://fonts.googleapis.com/css?family=Roboto:100,400,500,300,700);*/
+.elip{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+}
 .preloader {
   z-index: 99999;
   position: fixed !important;
   height: 100%;
   width: 100%;
 }
-
 /*!
  * Load Awesome v1.1.0 (http://github.danielcardoso.net/load-awesome/)
  * Copyright 2015 Daniel Cardoso <@DanielCardoso>
