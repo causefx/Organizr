@@ -912,6 +912,9 @@ button::-moz-focus-inner {
 html, body {
   height: 100%;
 }
+::-webkit-scrollbar { 
+   display: none;
+}
 
 body {
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -922,6 +925,10 @@ body {
   position: relative;
   background: #F1F4F5;
   overflow-x: hidden;
+  overflow-x:hidden; 
+  /*MS Edge */
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  -ms-overflow-style: none; 
 }
 
 .main-wrapper {

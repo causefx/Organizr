@@ -140,6 +140,7 @@ if(SLIMBAR == "true") {
 				});
 				$element.appendTo('#submitTabs ul');
 				$element.find('.icp-auto-pend').iconpicker({placement: 'left', hideOnSelect: false, collision: true}).hide();
+    $('.tab-box').scrollTop($('.tab-box')[0].scrollHeight);
 			}
 			function submitTabs(form) {
 				var formData = {};
@@ -1043,6 +1044,17 @@ echo buildSettings(
 						'name' => 'homepageNoticeAuth',
 						'value' => HOMEPAGENOTICEAUTH,
 						'options' => $userTypes,
+					),
+     array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'NOTICE_LAYOUT',
+						'name' => 'homepageNoticeLayout',
+						'value' => HOMEPAGENOTICELAYOUT,
+						'options' => array(
+         'Elegant' => 'elegant',
+         'Basic' => 'basic',
+         'Jumbotron' => 'jumbotron',
+        ),
 					),
      array(
 						'type' => $userSelectType,
@@ -2189,93 +2201,9 @@ echo buildSettings(
                     'opacity': 0.9,
                 });
 
-                $("#add_tab").on('submit', function (e) {
-                    e.preventDefault();
-
-                    var $toDo = $(this).find('.name-of-todo');
-                    toDo_name = $toDo.val();
-
-                    if (toDo_name.length >= 3) {
-
-                        var newid = $('.list-group-item').length + 1;
-
-                        $(".todo ul").append(
-                        '<li id="item-' + newid + '" class="list-group-item animated zoomInDown" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="<?php echo $language->translate("TAB_URL");?>"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - <?php echo $language->translate("OR");?> -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="<?php echo $language->translate("ICON_URL");?>" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']"><?php echo $language->translate("DEFAULT");?></label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> <?php echo $language->translate("ACTIVE");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> <?php echo $language->translate("USER");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> <?php echo $language->translate("GUEST");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-danger" type="checkbox"><label for="window[' + newid + ']"></label></div> <?php echo $language->translate("NO_IFRAME");?></div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-trash"></span></a></div></tab></li>'
-                        );
-
-                        $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
-
-                        var eventObject = {
-
-                            title: $.trim($("#" + newid).text()),
-                            className: $("#" + newid).attr("data-bg"),
-                            stick: true
-
-                        };
-
-                        $("#" + newid).data('eventObject', eventObject);
-
-                        $toDo.val('').focus();
-
-                    } else {
-
-                        $toDo.focus();
-                    }
-
-                });
-
-                count();
-
-                $(".list-group-item").addClass("list-item");
-
-                //Remove one completed item
-                $(document).on('click', '.trash', function (e) {
-
-                    var listItemRemove = $(this).closest(".list-group-item");
-                    var animation = "zoomOutRight";
-                    var container = $(this).closest(".list-group-item");
-
-                    //container.attr('class', 'list-group-item gray-bg animation-container');
-                    container.addClass('animated ' + animation);
-
-                    setTimeout(function() {
-                        var clearedCompItem = listItemRemove.remove();
-                        console.log("removed");
-                        e.preventDefault();
-                        count();
-                    }, 800);
-
-                });
-
-                //Count items
-                function count() {
-
-                    var active = $('.list-group-item').length;
-
-                    $('.total-tabs span').text(active);
-
-                };
-
                 $("#submitTabs").on('submit', function (e) {
-					console.log('disabled this func')
-					return false;
-                    console.log("submitted");
-
-                    $("div.radio").each(function(i) {
-
-                        $(this).find('input').attr('name', 'default-' + i);
-
-                        console.log(i);
-
-                    });
-
-                    $('form input[type="radio"]').not(':checked').each(function() {
-
-                        $(this).prop('checked', true);
-                        $(this).prop('value', "false");
-                        console.log("found unchecked");
-
-                    });
+                 console.log('disabled this func')
+                 return false;
 
                 });
 
@@ -2290,40 +2218,6 @@ echo buildSettings(
         </script>
 
         <script>
-            function rememberTabSelection(tabPaneSelector, useHash) {
-                var key = 'selectedTabFor' + tabPaneSelector;
-
-                if(get(key)) 
-
-                $(tabPaneSelector).find('a[href=' + get(key) + ']').tab('show');
-
-                $(tabPaneSelector).on("click", 'a[data-toggle]', function(event) {
-                    set(key, this.getAttribute('href'));
-                }); 
-
-                function get(key) {
-
-                    return useHash ? location.hash: localStorage.getItem(key);
-
-                }
-
-                function set(key, value){
-
-                    if(useHash)
-
-                        location.hash = value;
-
-                    else
-
-                        localStorage.setItem(key, value);
-                }
-            }
-            $("#notifyTest").click(function(){
-
-                var notifySplit = $("#notifyValue").val().split("-");
-                console.log(notifySplit[0]);
-                parent.notify("<?php echo $language->translate('TEST_MESSAGE');?>","flask","notice","5000", notifySplit[0], notifySplit[1]);
-            });
             $("#iconHide").click(function(){
 
                 $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).toggle();
@@ -2804,8 +2698,6 @@ echo buildSettings(
             $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')
             //Enable Tooltips
             $('[data-toggle="tooltip"]').tooltip(); 
-            //Tab save on reload - might need to delete as we changed tab layout
-            //rememberTabSelection('#settingsTabs', !localStorage); 
         	   //AJAX call to github to get version info	
 			         <?php if (GIT_CHECK) { echo 'checkGithub()'; } ?>
 

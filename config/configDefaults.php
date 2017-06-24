@@ -78,4 +78,5 @@ return array(
  "homepageNoticeMessage" => "",
  "homepageNoticeType" => "",
  "homepageNoticeAuth" => "false",
+ "homepageNoticeLayout" => "",
 );

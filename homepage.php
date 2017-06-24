@@ -257,23 +257,7 @@ endif; ?>
 <!-- <button id="numBnt">Numerical</button> -->
                 <br/>
  
-                <?php if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE) { ?>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="content-box big-box box-shadow panel-box panel-<?php echo HOMEPAGENOTICETYPE; ?>">
-                            <div class="content-title i-block">
-                                <h4 class="zero-m"><strong><?php echo HOMEPAGENOTICETITLE; ?></strong></h4>
-                                <div class="content-tools i-block pull-right">
-                                    <a class="close-btn">
-                                        <i class="fa fa-times"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <p><?php echo HOMEPAGENOTICEMESSAGE; ?></p>
-                        </div>
-                    </div>
-                </div>
-                <?php } ?>
+                <?php if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) { echo buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE); } ?>
                 
                 <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { echo "<div>" . HOMEPAGECUSTOMHTML1 . "</div>"; } ?>
 
