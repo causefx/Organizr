@@ -1,10 +1,43 @@
 <?php
+// Load USER
+require_once("../user.php");
+$USER = new User("registration_callback");
 
-$data = $_POST["messagedata"];
-$dataarray = explode("###", $data);
-$message = $dataarray[0];
-$user = $dataarray[1];
-$avatar = $dataarray[2];
+// Some PHP config stuff
+ini_set("display_errors", 1);
+ini_set("error_reporting", E_ALL | E_STRICT);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = $_POST["messagedata"];
+    $dataarray = explode("###", $data);
+    $message = $dataarray[0];
+    $user = $dataarray[1];
+    $avatar = $dataarray[2];
+}elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if(count($_GET) > 0){
+        if(isset($_GET["type"])){
+            $image = $_GET["image"];
+            $title = $_GET["title"];
+            $summary = $_GET["summary"];
+            if($_GET["type"] === 'movie' || $_GET["type"] === 'episode' ){
+                $message = '<div class="thumbnail"><div class="member-info zero-m"><img src="'.$image.'" alt="admin" class="img pull-left" style="
+    width: 100px;"><span class="text-muted zero-m"><strong>'.$title.'</strong></span><p class="text-muted zero-m">'.$summary.'</p></div></div>';
+            }elseif($_GET["type"] === 'track'){
+                $message = "";
+            }else{
+                $message = "";
+            }
+        }else{
+           $message = $_GET["message"]; 
+        }
+        $user = $_GET["user"];
+        $avatar = $_GET["avatar"];
+    }else{
+        die("no access");
+    }
+}else{
+    die("no access");
+}
 
 include("connect.php");
 

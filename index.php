@@ -635,6 +635,11 @@ endif; ?>
                                 <i class="mdi mdi-refresh"></i>
                             </a>
                         </li>
+                        <li class="dropdown some-btn">
+                            <a id="popout" class="popout">
+                                <i class="mdi mdi-window-restore"></i>
+                            </a>
+                        </li>
                         <li style="display: none" id="splitView" class="dropdown some-btn">
                             <a class="spltView">
                                 <i class="mdi mdi-window-close"></i>
@@ -1345,6 +1350,11 @@ endif; ?>
 
             },500);
         });
+        $('#popout').on('click tap', function(){
+            var activeFrame = $('#content').find('.active').children('iframe');
+            console.log(activeFrame.attr('src'));
+            window.open(activeFrame.attr('src'), '_blank');
+        });    
         $('#reload').on('contextmenu', function(e){
 
             $("i[class^='mdi mdi-refresh']").attr("class", "mdi mdi-refresh fa-spin");

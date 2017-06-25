@@ -140,6 +140,7 @@ if(SLIMBAR == "true") {
 				});
 				$element.appendTo('#submitTabs ul');
 				$element.find('.icp-auto-pend').iconpicker({placement: 'left', hideOnSelect: false, collision: true}).hide();
+    $('.tab-box').scrollTop($('.tab-box')[0].scrollHeight);
 			}
 			function submitTabs(form) {
 				var formData = {};
@@ -167,6 +168,12 @@ if(SLIMBAR == "true") {
 		</script>
 		
         <style>
+            .loop-animation {
+                animation-iteration-count: infinite;
+                -webkit-animation-iteration-count: infinite;
+                -moz-animation-iteration-count: infinite;
+                -o-animation-iteration-count: infinite;
+            }
             @media screen and (max-width:737px){
                 .email-body{width: 100%; overflow: auto;}
                 .email-content, .email-new {
@@ -291,6 +298,26 @@ endif; ?>
 
             <!--Content-->
             <div id="content"  style="margin:0 10px; overflow:hidden">
+                <div class="modal fade checkFrame" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">Check iFrame Compatability</h4>
+                            </div>
+                            <form id="urlTestForm" onsubmit="return false;">
+                                <div class="modal-body">
+                                    Let's Check this URL
+                                    <input type="text" class="form-control material" name="url-test" placeholder="<?php echo translate("URL"); ?>" autocorrect="off" autocapitalize="off" value="">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default waves" data-dismiss="modal">Close</button>
+                                    <button id="urlTestForm_submit" class="btn btn-primary waves" data-dismiss="modal">Check Frame URL</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 <br/>
                 <div id="versionCheck"></div>
                 <div class="row">
@@ -302,14 +329,14 @@ endif; ?>
                             <img src="images/organizr-logo-h-d.png" width="100%" style="margin-top: -10px;">
                             <div class="profile-usermenu">
                                 <ul class="nav" id="settings-list">
-                                    <li class=""><a id="open-tabs"><i class="fa fa-list red-orange"></i>Edit Tabs</a></li>
-                                    <li class=""><a id="open-colors"><i class="fa fa-paint-brush green"></i>Edit Colors</a></li>
-                                    <li><a id="open-users"><i class="fa fa-user red"></i>Manage Users</a></li>
-                                    <li><a id="open-logs"><i class="fa fa-file-text-o blue"></i>View Logs</a></li>
-                                    <li><a id="open-homepage"><i class=" fa fa-home yellow"></i>Edit Homepage</a></li>
-                                    <li><a id="open-advanced"><i class=" fa fa-cog light-blue"></i>Advanced</a></li>
-                                    <li><a id="open-info"><i class=" fa fa-info orange"></i>&nbsp; About</a></li>
-                                    <li><a href="https://paypal.me/causefx" target="_blank"><i class=" fa fa-money red"></i>Donate</a></li>
+                                    <li><a id="open-tabs" box="tab-box"><i class="fa fa-list red-orange pull-right"></i>Edit Tabs</a></li>
+                                    <li><a id="open-colors" box="color-box"><i class="fa fa-paint-brush green pull-right"></i>Edit Colors</a></li>
+                                    <li><a id="open-users" box="users-box"><i class="fa fa-user red pull-right"></i>Manage Users</a></li>
+                                    <li><a id="open-logs" box="logs-box"><i class="fa fa-file-text-o blue pull-right"></i>View Logs</a></li>
+                                    <li><a id="open-homepage" box="homepage-box"><i class=" fa fa-home yellow pull-right"></i>Edit Homepage</a></li>
+                                    <li><a id="open-advanced" box="advanced-box"><i class=" fa fa-cog light-blue pull-right"></i>Advanced</a></li>
+                                    <li><a id="open-info" box="info-box"><i class=" fa fa-info-circle orange pull-right"></i>About</a></li>
+                                    <li><a id="open-donate" box="donate-box"><i class=" fa fa-money red pull-right"></i>Donate</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -338,6 +365,9 @@ endif; ?>
 											<button id="iconAll" type="button" class="btn waves btn-labeled btn-info btn-sm text-uppercase waves-effect waves-float">
 												<span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo $language->translate("VIEW_ICONS");?>
 											</button>
+           <button id="checkFrame" data-toggle="modal" data-target=".checkFrame" type="button" class="btn waves btn-labeled btn-gray btn-sm text-uppercase waves-effect waves-float">
+												<span class="btn-label"><i class="fa fa-check"></i></span><?php echo $language->translate("CHECK_FRAME");?>
+											</button>
 											<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
 												<span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo translate('SAVE_TABS'); ?>
 											</button>
@@ -350,7 +380,7 @@ endif; ?>
 <?php
 $dirname = "images/";
 $images = scandir($dirname);
-$ignore = Array(".", "..", "favicon", "cache", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
+$ignore = Array(".", "..", "favicon", "cache", "platforms", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "no-np.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
 foreach($images as $curimg){
 	if(!in_array($curimg, $ignore)) { ?>
 												<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
@@ -619,12 +649,12 @@ echo buildSettings(
 						'value' => HOMEPAGEAUTHNEEDED,
 						'options' => $userTypes,
 					),
-                    array(
-                        'type' => 'checkbox',
-                        'labelTranslate' => 'SPEED_TEST',
-                        'name' => 'speedTest',
-                        'value' => SPEEDTEST,
-                    ),
+    array(
+        'type' => 'checkbox',
+        'labelTranslate' => 'SPEED_TEST',
+        'name' => 'speedTest',
+        'value' => SPEEDTEST,
+    ),
 					/*
 					array(
 						'type' => 'custom',
@@ -693,6 +723,12 @@ echo buildSettings(
 							'labelTranslate' => 'PLAYING_NOW',
 							'name' => 'plexPlayingNow',
 							'value' => PLEXPLAYINGNOW,
+						),
+      array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'SHOW_NAMES',
+							'name' => 'plexShowNames',
+							'value' => PLEXSHOWNAMES,
 						),
 					),
 				),
@@ -1003,6 +1039,59 @@ echo buildSettings(
 					),
 				),
 			),
+   array(
+				'title' => 'Notice',
+				'id' => 'notice',
+				'image' => 'images/pin.png',
+				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'homepageNoticeAuth',
+						'value' => HOMEPAGENOTICEAUTH,
+						'options' => $userTypes,
+					),
+     array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'NOTICE_LAYOUT',
+						'name' => 'homepageNoticeLayout',
+						'value' => HOMEPAGENOTICELAYOUT,
+						'options' => array(
+         'Elegant' => 'elegant',
+         'Basic' => 'basic',
+         'Jumbotron' => 'jumbotron',
+        ),
+					),
+     array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'NOTICE_COLOR',
+						'name' => 'homepageNoticeType',
+						'value' => HOMEPAGENOTICETYPE,
+						'options' => array(
+         'Green' => 'success',
+         'Blue' => 'primary',
+         'Gray' => 'gray',
+         'Red' => 'danger',
+         'Yellow' => 'warning',
+         'Light Blue' => 'info',
+        ),
+					),
+     array(
+						'type' => 'text',
+						'labelTranslate' => 'NOTICE_TITLE',
+						'name' => 'homepageNoticeTitle',
+						'value' => HOMEPAGENOTICETITLE,
+					),
+					array(
+						'type' => 'textarea',
+						'labelTranslate' => 'NOTICE_MESSAGE',
+						'name' => 'homepageNoticeMessage',
+						'value' => HOMEPAGENOTICEMESSAGE,
+      'rows' => 5,
+						'class' => 'material no-code',
+					),
+				),
+			),
 			array(
 				'title' => 'Custom HTML 1',
 				'id' => 'customhtml1',
@@ -1020,7 +1109,7 @@ echo buildSettings(
 						'labelTranslate' => 'CUSTOMHTML',
 						'name' => 'homepageCustomHTML1',
 						'value' => HOMEPAGECUSTOMHTML1,
-						'rows' => 10,
+						'rows' => 15,
 						'style' => 'background: #000; color: #FFF;',
 					),
 				),
@@ -1342,6 +1431,73 @@ echo buildSettings(
 	)
 );
 ?>
+                </div>
+                <div class="email-content donate-box white-bg">
+                    <div class="email-body">
+                        <div class="email-header gray-bg">
+                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+                            <h1>Donate To Organizr</h1>
+                        </div>
+                        <div class="email-inner small-box">
+                            <div class="email-inner-section">
+                                <div class="small-box fade in" id="donate-org">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="big-box">
+                                                <div class="jumbotron">
+                                                    <div class="container">
+                                                        <h2><strong>Hey There <em class="gray"><?php echo ucwords($USER->username);?></em>,</strong></h2>
+                                                        <br/>
+                                                        <small>I had always said that I wouldn't take any donations for my work but some situations have changed in my life.  By no means does anyone need to donate but if you choose to help out and show appreciation I would surely appreciate that very much.  I do all of this for everyone and because I'm happy when i do it :)</small>
+                                                        <br/><br/>
+                                                        <small>I just want to take this time to thank you for even visiting this section of Organizr.  Just by you clicking into this area makes me happy.  Even the fact that you are still reading this makes me happy.  I bet now you are wondering, why am I even still reading this...  LOL, don't worry, I'm kinda laughing as I am typing this.  Anywho, thank you for reading along and I hope you enjoy the rest of your day.</small>
+                                                        <br/><br/>
+                                                        <p class="pull-right"><i class="fa fa-heart fa-1x red loop-animation animated pulse" aria-hidden="true"></i> CauseFX</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6 col-lg-6">
+                                            <div class="content-box ultra-widget blue-bg" style="cursor: pointer;" onclick="window.open('https://paypal.me/causefx', '_blank')">
+                                                <div class="w-content big-box">
+                                                    <div class="w-progress">
+                                                        <span class="w-amount">PayPal</span>
+                                                        <br>
+                                                        <span class="text-uppercase w-name">Donate with PayPal</span>
+                                                    </div>
+                                                    <span class="w-refresh w-p-icon">
+                                                        <span class="fa-stack fa-lg">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-paypal blue fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-lg-6">
+                                            <div class="content-box ultra-widget green-bg" style="cursor: pointer;" onclick="window.open('https://cash.me/$causefx', '_blank')">
+                                                <div class="w-content big-box">
+                                                    <div class="w-progress">
+                                                        <span class="w-amount">Square</span>
+                                                        <br>
+                                                        <span class="text-uppercase w-name">Donate with Square Cash</span>
+                                                    </div>
+                                                    <span class="w-refresh w-p-icon">
+                                                        <span class="fa-stack fa-lg">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-dollar green fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="email-content info-box white-bg">
                     <div class="email-body">
@@ -1812,10 +1968,34 @@ echo buildSettings(
                         <div class="email-inner small-box">
                             <div class="email-inner-section">
                                 <div class="small-box" id="loginlog">
+                                    <div>
+                                        <?php if(file_exists("org.log")){ ?>
+                                        <button id="viewOrgLogs" class="btn waves btn-labeled gray-bg text-uppercase waves-effect waves-float" type="button"><span class="btn-label"><i class="fa fa-terminal"></i></span>Organizr Log </button>
+                                        <?php } if(file_exists(FAIL_LOG)){ ?>
+                                        <button id="viewLoginLogs" class="btn waves btn-labeled grayish-blue-bg text-uppercase waves-effect waves-float" type="button" style="display: none"><span class="btn-label"><i class="fa fa-user"></i></span>Login Log </button>
+                                        <?php } ?>
+                                    </div>
+                                    
+                                    <?php if(file_exists("org.log")){ ?>
+                                    <div id="orgLogTable" class="table-responsive" style="display: none">
+                                        <table id="orgLogs" class="display">
+                                            <thead>
+                                                <tr>
+                                                    <th><?php echo $language->translate("DATE");?></th>
+                                                    <th><?php echo $language->translate("STATUS");?></th>
+                                                    <th><?php echo $language->translate("TYPE");?></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                 <?php readLog(); ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <?php } ?>
 
-                                    <div class="table-responsive">
+                                    <div id="loginTable" class="table-responsive">
 
-                                        <?php if(file_exists(FAIL_LOG)) : ?>
+                                        <?php if(file_exists(FAIL_LOG)){ ?>
 
                                         <div id="loginStats">
 
@@ -1924,13 +2104,13 @@ echo buildSettings(
                                         $goodPercent = round(($goodLogin / $totalLogin) * 100);
                                         $badPercent = round(($badLogin / $totalLogin) * 100);
 
-                                        endif;
+                                        };
 
-                                        if(!file_exists(FAIL_LOG)) :
+                                        if(!file_exists(FAIL_LOG)){
 
                                             echo $language->translate("NOTHING_LOG");
 
-                                        endif;
+                                        }
 
                                         ?>
 
@@ -1970,6 +2150,30 @@ echo buildSettings(
 			         }
                 });
             });
+              
+          $(function () {
+            //Data Tables
+            $('#orgLogs').DataTable({
+                displayLength: 10,
+                dom: 'T<"clear">lfrtip',
+                responsive: true,
+                "order": [[ 0, 'desc' ]],
+                "language": {
+                    "info": "<?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 0);?> _START_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 1);?> _END_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 2);?> _TOTAL_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 3);?>",
+                    "infoEmpty": "<?php echo $language->translate('NO_ENTRIES');?>",
+                    "infoFiltered": "<?php echo explosion($language->translate('FILTERED'), 0);?> _MAX_ <?php echo explosion($language->translate('FILTERED'), 1);?>",
+                    "lengthMenu": "<?php echo $language->translate('SHOW');?> _MENU_ <?php echo $language->translate('ENTRIES');?>",
+                    "search": "",
+                    "searchPlaceholder": "<?php echo $language->translate('SEARCH');?>",
+                    "searchClass": "<?php echo $language->translate('SEARCH');?>",
+                    "zeroRecords": "<?php echo $language->translate('NO_MATCHING');?>",
+                    "paginate": {
+            "next": "<?php echo $language->translate('NEXT');?>",
+                        "previous": "<?php echo $language->translate('PREVIOUS');?>",
+           }
+        }
+            });
+        });
         </script>
         <script>
             (function($) {
@@ -2007,93 +2211,9 @@ echo buildSettings(
                     'opacity': 0.9,
                 });
 
-                $("#add_tab").on('submit', function (e) {
-                    e.preventDefault();
-
-                    var $toDo = $(this).find('.name-of-todo');
-                    toDo_name = $toDo.val();
-
-                    if (toDo_name.length >= 3) {
-
-                        var newid = $('.list-group-item').length + 1;
-
-                        $(".todo ul").append(
-                        '<li id="item-' + newid + '" class="list-group-item animated zoomInDown" style="position: relative; left: 0px; top: 0px;"><tab class="content-form form-inline"> <div class="form-group"><div class="action-btns" style="width:calc(100%)"><a class="" style="margin-left: 0px"><span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span></a></div></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="name-' + newid + '" id="name[' + newid + ']" placeholder="<?php echo $language->translate("NEW_TAB_NAME");?>" value="' + toDo_name + '"></div> <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" name="url-' + newid + '" id="url[' + newid + ']" placeholder="<?php echo $language->translate("TAB_URL");?>"></div> <div style="margin-right: 5px;" class="form-group"><div class="input-group"><input style="width: 100%;" name="icon-' + newid + '" data-placement="bottomRight" class="form-control material icp-auto" value="fa-diamond" type="text" /><span class="input-group-addon"></span></div> - <?php echo $language->translate("OR");?> -</div>  <div class="form-group"><input style="width: 100%;" type="text" class="form-control material input-sm" id="iconurl-' + newid + '" name="iconurl-' + newid + '" placeholder="<?php echo $language->translate("ICON_URL");?>" value=""></div>  <div class="form-group"> <div class="radio radio-danger"> <input type="radio" name="default" id="default[' + newid + ']" name="default"> <label for="default[' + newid + ']"><?php echo $language->translate("DEFAULT");?></label></div></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-success" value="false" name="active-' + newid + '" type="hidden"><input name="active-' + newid + '" id="active[' + newid + ']" class="switcher switcher-success" type="checkbox" checked=""><label for="active[' + newid + ']"></label></div> <?php echo $language->translate("ACTIVE");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="user-' + newid + '" type="hidden"><input id="user[' + newid + ']" name="user-' + newid + '" class="switcher switcher-primary" type="checkbox" checked=""><label for="user[' + newid + ']"></label></div> <?php echo $language->translate("USER");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="guest-' + newid + '" type="hidden"><input name="guest-' + newid + '" id="guest[' + newid + ']" class="switcher switcher-warning" type="checkbox" checked=""><label for="guest[' + newid + ']"></label></div> <?php echo $language->translate("GUEST");?></div> <div class="form-group"><div class=""><input id="" class="switcher switcher-primary" value="false" name="window-' + newid + '" type="hidden"><input name="window-' + newid + '" id="window[' + newid + ']" class="switcher switcher-danger" type="checkbox"><label for="window[' + newid + ']"></label></div> <?php echo $language->translate("NO_IFRAME");?></div><div class="pull-right action-btns" style="padding-top: 8px;"><a class="trash"><span class="fa fa-trash"></span></a></div></tab></li>'
-                        );
-
-                        $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
-
-                        var eventObject = {
-
-                            title: $.trim($("#" + newid).text()),
-                            className: $("#" + newid).attr("data-bg"),
-                            stick: true
-
-                        };
-
-                        $("#" + newid).data('eventObject', eventObject);
-
-                        $toDo.val('').focus();
-
-                    } else {
-
-                        $toDo.focus();
-                    }
-
-                });
-
-                count();
-
-                $(".list-group-item").addClass("list-item");
-
-                //Remove one completed item
-                $(document).on('click', '.trash', function (e) {
-
-                    var listItemRemove = $(this).closest(".list-group-item");
-                    var animation = "zoomOutRight";
-                    var container = $(this).closest(".list-group-item");
-
-                    //container.attr('class', 'list-group-item gray-bg animation-container');
-                    container.addClass('animated ' + animation);
-
-                    setTimeout(function() {
-                        var clearedCompItem = listItemRemove.remove();
-                        console.log("removed");
-                        e.preventDefault();
-                        count();
-                    }, 800);
-
-                });
-
-                //Count items
-                function count() {
-
-                    var active = $('.list-group-item').length;
-
-                    $('.total-tabs span').text(active);
-
-                };
-
                 $("#submitTabs").on('submit', function (e) {
-					console.log('disabled this func')
-					return false;
-                    console.log("submitted");
-
-                    $("div.radio").each(function(i) {
-
-                        $(this).find('input').attr('name', 'default-' + i);
-
-                        console.log(i);
-
-                    });
-
-                    $('form input[type="radio"]').not(':checked').each(function() {
-
-                        $(this).prop('checked', true);
-                        $(this).prop('value', "false");
-                        console.log("found unchecked");
-
-                    });
+                 console.log('disabled this func')
+                 return false;
 
                 });
 
@@ -2108,40 +2228,6 @@ echo buildSettings(
         </script>
 
         <script>
-            function rememberTabSelection(tabPaneSelector, useHash) {
-                var key = 'selectedTabFor' + tabPaneSelector;
-
-                if(get(key)) 
-
-                $(tabPaneSelector).find('a[href=' + get(key) + ']').tab('show');
-
-                $(tabPaneSelector).on("click", 'a[data-toggle]', function(event) {
-                    set(key, this.getAttribute('href'));
-                }); 
-
-                function get(key) {
-
-                    return useHash ? location.hash: localStorage.getItem(key);
-
-                }
-
-                function set(key, value){
-
-                    if(useHash)
-
-                        location.hash = value;
-
-                    else
-
-                        localStorage.setItem(key, value);
-                }
-            }
-            $("#notifyTest").click(function(){
-
-                var notifySplit = $("#notifyValue").val().split("-");
-                console.log(notifySplit[0]);
-                parent.notify("<?php echo $language->translate('TEST_MESSAGE');?>","flask","notice","5000", notifySplit[0], notifySplit[1]);
-            });
             $("#iconHide").click(function(){
 
                 $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).toggle();
@@ -2171,6 +2257,12 @@ echo buildSettings(
                 var parent_idz = $(this).parent().attr('id');
                 editUsername = $('#unregister').find('#inputUsername');
                 $(editUsername).html('<input type="hidden" name="op" value="update"/><input type="hidden" name="role" value="user"/><input type="hidden" name="username"value="' + parent_idz + '" />');
+            });
+            $("#viewOrgLogs, #viewLoginLogs").click(function(){
+                $('#orgLogTable').toggle();
+                $('#loginTable').toggle();
+                $('#viewOrgLogs').toggle();
+                $('#viewLoginLogs').toggle();
             });
             $('#showLess').hide();
             $('#loadMore').click(function () {
@@ -2445,8 +2537,8 @@ echo buildSettings(
                 changeColor("loading", "#E5A00D");
                 changeColor("hovertext", "#E0E3E6");
 
-            });
-            $('textarea').numberedtextarea({
+            });//$( "div" ).not( ".green, #blueone" )
+            $('textarea').not( ".no-code" ).numberedtextarea({
 
               // font color for line numbers
               color: null,
@@ -2468,7 +2560,7 @@ echo buildSettings(
             });
              $(document).mouseup(function (e)
 {
-                var container = $(".email-content");
+                var container = $(".email-content, .checkFrame, #content");
 
                 if (!container.is(e.target) && container.has(e.target).length === 0) {
                     $(".email-content").removeClass("email-active");
@@ -2488,15 +2580,19 @@ echo buildSettings(
                 }
             });
 
-            $("#open-tabs").on("click",function (e) {
+        
+     
+            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate ").on("click",function (e) {
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
                 if($(window).width() < 768){
                     $('html').addClass("overhid");
                 }
 
-                var settingsBox = $('.tab-box');
+                var settingsBox = $('.'+$(this).attr("box"));
+                console.log($(this).attr("box"))
                 settingsBox.addClass("email-active");
+                $("#settings-list").find("li").removeClass("active");
                 $(this).parent().addClass("active");
 
                 $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(settingsBox).show();
@@ -2509,176 +2605,62 @@ echo buildSettings(
                 },600);
                 e.preventDefault();
             });
-            $("#open-colors").on("click",function (e) {
-                $(".email-content").removeClass("email-active");
-                $('html').removeClass("overhid");
-                if($(window).width() < 768){
-                    $('html').addClass("overhid");
-                }
-
-                var settingsBox = $('.color-box');
-                settingsBox.addClass("email-active");
-                $(this).parent().addClass("active");
-
-                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(settingsBox).show();
-
-                setTimeout(function(){
-                    var refreshMailPreloader = settingsBox.find('.refresh-preloader'),
-                    deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
-                    refreshMailPreloader.remove();
-                });
-                },600);
-                e.preventDefault();
-            });
-            $("#open-homepage").on("click",function (e) {
-                $(".email-content").removeClass("email-active");
-                $('html').removeClass("overhid");
-                if($(window).width() < 768){
-                    $('html').addClass("overhid");
-                }
-
-                var settingsBox = $('.homepage-box');
-                settingsBox.addClass("email-active");
-                $(this).parent().addClass("active");
-
-                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(settingsBox).show();
-
-                setTimeout(function(){
-                    var refreshMailPreloader = settingsBox.find('.refresh-preloader'),
-                    deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
-                    refreshMailPreloader.remove();
-                });
-                },600);
-                e.preventDefault();
-            });
-            $("#open-advanced").on("click",function (e) {
-                $(".email-content").removeClass("email-active");
-                $('html').removeClass("overhid");
-                if($(window).width() < 768){
-                    $('html').addClass("overhid");
-                }
-
-                var settingsBox = $('.advanced-box');
-                settingsBox.addClass("email-active");
-                $(this).parent().addClass("active");
-
-                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(settingsBox).show();
-
-                setTimeout(function(){
-                    var refreshMailPreloader = settingsBox.find('.refresh-preloader'),
-                    deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
-                    refreshMailPreloader.remove();
-                });
-                },600);
-                e.preventDefault();
-            });
-            $("#open-info").on("click",function (e) {
-                $(".email-content").removeClass("email-active");
-                $('html').removeClass("overhid");
-                if($(window).width() < 768){
-                    $('html').addClass("overhid");
-                }
-
-                var settingsBox = $('.info-box');
-                settingsBox.addClass("email-active");
-                $(this).parent().addClass("active");
-
-                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(settingsBox).show();
-
-                setTimeout(function(){
-                    var refreshMailPreloader = settingsBox.find('.refresh-preloader'),
-                    deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
-                    refreshMailPreloader.remove();
-                });
-                },600);
-                e.preventDefault();
-            });
-            $("#open-users").on("click",function (e) {
-                $(".email-content").removeClass("email-active");
-                $('html').removeClass("overhid");
-                if($(window).width() < 768){
-                    $('html').addClass("overhid");
-                }
-
-                var settingsBox = $('.users-box');
-                settingsBox.addClass("email-active");
-                $(this).parent().addClass("active");
-
-                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(settingsBox).show();
-
-                setTimeout(function(){
-                    var refreshMailPreloader = settingsBox.find('.refresh-preloader'),
-                    deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
-                    refreshMailPreloader.remove();
-                });
-                },600);
-                e.preventDefault();
-            });
-            $("#open-logs").on("click",function (e) {
-                $(".email-content").removeClass("email-active");
-                $('html').removeClass("overhid");
-                if($(window).width() < 768){
-                    $('html').addClass("overhid");
-                }
-
-                var settingsBox = $('.logs-box');
-                settingsBox.addClass("email-active");
-                $(this).parent().addClass("active");
-
-                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(settingsBox).show();
-
-                setTimeout(function(){
-                    var refreshMailPreloader = settingsBox.find('.refresh-preloader'),
-                    deletedMailBox = refreshMailPreloader.fadeOut(300, function(){
-                    refreshMailPreloader.remove();
-                });
-                },600);
-                e.preventDefault();
-            });
+          
+         
 			
-	function checkGithub() {
-		$.ajax({
-			type: "GET",
-			url: "https://api.github.com/repos/causefx/Organizr/releases",
-			dataType: "json",
-			success: function(github) {
-				var currentVersion = "<?php echo INSTALLEDVERSION;?>";
-				infoTabVersion = $('#about').find('#version');
-				infoTabVersionHistory = $('#about').find('#versionHistory');
-				infoTabNew = $('#about').find('#whatsnew');
-				infoTabDownload = $('#about').find('#downloadnow');
-				$.each(github, function(i,v) {
-					if(i === 0){ 
-						console.log(v.tag_name);
-						githubVersion = v.tag_name;
-						githubDescription = v.body;
-						githubName = v.name;
-					}
-					$(infoTabVersionHistory).append('<li style="display: none"><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon animated jello"><i class="fa fa-github-alt"></i></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
-					size_li = $("#versionHistory li").size();
-					x=2;
-					$('#versionHistory li:lt('+x+')').show();
-				});
-				if(currentVersion < githubVersion){
-					console.log("You Need To Upgrade");
-					parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+            function checkGithub() {
+                $.ajax({
+                    type: "GET",
+                    url: "https://api.github.com/repos/causefx/Organizr/releases",
+                    dataType: "json",
+                    success: function(github) {
+                        var currentVersion = "<?php echo INSTALLEDVERSION;?>";
+                        infoTabVersion = $('#about').find('#version');
+                        infoTabVersionHistory = $('#about').find('#versionHistory');
+                        infoTabNew = $('#about').find('#whatsnew');
+                        infoTabDownload = $('#about').find('#downloadnow');
+                        $.each(github, function(i,v) {
+                            if(i === 0){ 
+                                console.log(v.tag_name);
+                                githubVersion = v.tag_name;
+                                githubDescription = v.body;
+                                githubName = v.name;
+                            }
+                            $(infoTabVersionHistory).append('<li style="display: none"><time class="cbp_tmtime" datetime="' + v.published_at + '"><span>' + v.published_at.substring(0,10) + '</span> <span>' + v.tag_name + '</span></time><div class="cbp_tmicon animated jello"><i class="fa fa-github-alt"></i></div><div class="cbp_tmlabel"><h2 class="text-uppercase">' + v.name + '</h2><p>' + v.body + '</p></div></li>');
+                            size_li = $("#versionHistory li").size();
+                            x=2;
+                            $('#versionHistory li:lt('+x+')').show();
+                        });
+                        if(currentVersion < githubVersion){
+                            console.log("You Need To Upgrade");
+                            parent.notify("<strong><?php echo $language->translate("NEW_VERSION");?></strong> <?php echo $language->translate("CLICK_INFO");?>","arrow-circle-o-down","warning","50000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
 
-					$(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
-					$(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"deletedb\" method=\"post\" onsubmit=\"ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
-					$( "p[id^='upgrade']" ).toggle();
-				}else if(currentVersion === githubVersion){
-					console.log("You Are on Current Version");
-				}else{
-					console.log("something went wrong");
-				}
-
-				$(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?>");
-			}
-		});
-	}
+                            $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
+                            <?php if (extension_loaded("ZIP")){?>
+                            $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"upgradeOrg\" method=\"post\" onsubmit=\"ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+                            $( "p[id^='upgrade']" ).toggle();
+                            <?php }else{ ?>
+                            $(infoTabDownload).html("<br/><a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+                            $( "p[id^='upgrade']" ).toggle();
+                            <?php } ?>
+                        }else if(currentVersion === githubVersion){
+                            console.log("You Are on Current Version");
+                        }else{
+                            console.log("something went wrong");
+                        }
+                        $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?>");
+                    }
+                });
+            }
         </script>
         <script>
         $( document ).ready(function() {
+            //AJAX Submit for URL Check
+            $('#urlTestForm_submit').on('click', function () {
+                ajax_request('POST', 'check-url', {
+                    checkurl: $('#urlTestForm [name=url-test]').val(),
+                });
+            });
             //Hide Icon box on load
             $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
             //Set Some Scrollbars
@@ -2688,47 +2670,49 @@ echo buildSettings(
             $(".email-content").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0}
             });
+            $("textarea").niceScroll({
+                railpadding: {top:0,right:0,left:0,bottom:0}
+            });
             //Stop Div behind From Scrolling
             $( '.email-content' ).on( 'mousewheel', function ( e ) {
                 e.preventDefault();
             }, false);  
             //Set Hide Function
-			if (0) {
-            var authTypeFunc = function() {
-                // Hide Everything
-                $('#host-selected, #host-other, #host-plex, #host-emby, #host-ldap').hide();
-                // Qualify Auth Type
-                if($('#authType').val() !== "internal"){
-                    $( '#host-selected' ).show();
+			         if (0) {
+                var authTypeFunc = function() {
+                    // Hide Everything
+                    $('#host-selected, #host-other, #host-plex, #host-emby, #host-ldap').hide();
+                    // Qualify Auth Type
+                    if($('#authType').val() !== "internal"){
+                        $( '#host-selected' ).show();
 
-                    // Qualify aithBackend
-                    if($('#authBackend').val() === "plex"){
-                        $('#host-selected, #host-plex').show();
-                    }else if($('#authBackend').val().indexOf("emby")>=0){
-                        $('#host-selected, #host-other, #host-emby').show();
-                    }else if($('#authBackend').val() === "ldap"){
-                        $('#host-selected, #host-other, #host-ldap').show();
-                    }else {
-                        $('#host-selected, #host-other').show();
+                        // Qualify aithBackend
+                        if($('#authBackend').val() === "plex"){
+                            $('#host-selected, #host-plex').show();
+                        }else if($('#authBackend').val().indexOf("emby")>=0){
+                            $('#host-selected, #host-other, #host-emby').show();
+                        }else if($('#authBackend').val() === "ldap"){
+                            $('#host-selected, #host-other, #host-ldap').show();
+                        }else {
+                            $('#host-selected, #host-other').show();
+                        }
                     }
                 }
-            }
-            //Hide Settings on selection
-            $('#authType, #authBackend').on('change', authTypeFunc);
-            //Hide Settings on Load
-            authTypeFunc();
-			} else { console.log() }
+                //Hide Settings on selection
+                $('#authType, #authBackend').on('change', authTypeFunc);
+                //Hide Settings on Load
+                authTypeFunc();
+			         } else { console.log() }
             //Simulate Edit Tabs Click 
             //$("#open-tabs").trigger("click");
-            //Append Delete log to User Logs
-            $("div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post" onsubmit="ajax_request(\'POST\', \'deleteLog\'); return false;"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
+            //Append Delete log to User Logs and Org Logs
+            $("#datatable_wrapper > div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deletelog" method="post" onsubmit="ajax_request(\'POST\', \'deleteLog\'); return false;"><input type="hidden" name="action" value="deleteLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>');
+            $("#orgLogs_wrapper > div[class^='DTTT_container']").append('<form style="display: inline; margin-left: 3px;" id="deleteOrglog" method="post" onsubmit="ajax_request(\'POST\', \'deleteOrgLog\'); return false;"><input type="hidden" name="action" value="deleteOrgLog" /><button class="btn waves btn-labeled btn-danger text-uppercase waves-effect waves-float" type="submit"><span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("PURGE_LOG");?> </button></form>')
             $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')
             //Enable Tooltips
             $('[data-toggle="tooltip"]').tooltip(); 
-            //Tab save on reload - might need to delete as we changed tab layout
-            //rememberTabSelection('#settingsTabs', !localStorage); 
-        	//AJAX call to github to get version info	
-			<?php if (GIT_CHECK) { echo 'checkGithub()'; } ?>
+        	   //AJAX call to github to get version info	
+			         <?php if (GIT_CHECK) { echo 'checkGithub()'; } ?>
 
             //Edit Info tab with Github info
             <?php if(file_exists(FAIL_LOG)) : ?>

@@ -6,13 +6,24 @@
  *
 */
 /*@import url(https://fonts.googleapis.com/css?family=Roboto:100,400,500,300,700);*/
+.loop-animation {
+    animation-iteration-count: infinite;
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    -o-animation-iteration-count: infinite;
+}
+.elip{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+}
 .preloader {
   z-index: 99999;
   position: fixed !important;
   height: 100%;
   width: 100%;
 }
-
 /*!
  * Load Awesome v1.1.0 (http://github.danielcardoso.net/load-awesome/)
  * Copyright 2015 Daniel Cardoso <@DanielCardoso>
@@ -907,6 +918,9 @@ button::-moz-focus-inner {
 html, body {
   height: 100%;
 }
+::-webkit-scrollbar { 
+   display: none;
+}
 
 body {
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -917,6 +931,10 @@ body {
   position: relative;
   background: #F1F4F5;
   overflow-x: hidden;
+  overflow-x:hidden; 
+  /*MS Edge */
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  -ms-overflow-style: none; 
 }
 
 .main-wrapper {
@@ -1267,6 +1285,7 @@ body {
 .member-info {
   font-weight: 400;
   margin-top: 10px;
+  overflow: hidden;
 }
 
 .member-info img {
@@ -2154,6 +2173,13 @@ table.dataTable.no-footer, table.dataTable thead th, table.dataTable thead td {
     -webkit-background-clip: padding-box;
     -moz-background-clip: padding;
     background-clip: padding-box;
+}
+@media (min-width: 768px) {
+    .fc-title {
+     text-overflow: ellipsis;
+     white-space: nowrap;
+     overflow: hidden;   
+    }
 }
 
 .fc-calendar .fc-toolbar {
@@ -6146,6 +6172,9 @@ label {
   }.mdi-fullscreen {
     display: none !important;
   }
+  .mdi-window-restore {
+    display: none !important;
+  }    
   /*Remove margins from content block*/
   .content {
     margin: 0;
