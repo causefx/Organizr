@@ -168,6 +168,12 @@ if(SLIMBAR == "true") {
 		</script>
 		
         <style>
+            .loop-animation {
+                animation-iteration-count: infinite;
+                -webkit-animation-iteration-count: infinite;
+                -moz-animation-iteration-count: infinite;
+                -o-animation-iteration-count: infinite;
+            }
             @media screen and (max-width:737px){
                 .email-body{width: 100%; overflow: auto;}
                 .email-content, .email-new {
@@ -1437,12 +1443,16 @@ echo buildSettings(
                                 <div class="small-box fade in" id="donate-org">
                                     <div class="row">
                                         <div class="col-lg-12">
-                                            <div class="content-box big-box">
+                                            <div class="big-box">
                                                 <div class="jumbotron">
                                                     <div class="container">
-                                                        <h3>Hey There <?php echo ucwords($USER->username);?>,</h3>
-                                                        <p>Organizr if fed by the people :)</p>
-                                                        <p>By no means does anyone need to donate but if you choose to help out and show appreciation I would surely appreciate that very much.</p>
+                                                        <h2><strong>Hey There <em class="gray"><?php echo ucwords($USER->username);?></em>,</strong></h2>
+                                                        <br/>
+                                                        <small>I had always said that I wouldn't take any donations for my work but some situations have changed in my life.  By no means does anyone need to donate but if you choose to help out and show appreciation I would surely appreciate that very much.  I do all of this for everyone and because I'm happy when i do it :)</small>
+                                                        <br/><br/>
+                                                        <small>I just want to take this time to thank you for even visiting this section of Organizr.  Just by you clicking into this area makes me happy.  Even the fact that you are still reading this makes me happy.  I bet now you are wondering, why am I even still reading this...  LOL, don't worry, I'm kinda laughing as I am typing this.  Anywho, thank you for reading along and I hope you enjoy the rest of your day.</small>
+                                                        <br/><br/>
+                                                        <p class="pull-right"><i class="fa fa-heart fa-1x red loop-animation animated pulse" aria-hidden="true"></i> CauseFX</p>
                                                     </div>
                                                 </div>
                                             </div>
