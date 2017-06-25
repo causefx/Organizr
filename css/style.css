@@ -6,6 +6,12 @@
  *
 */
 /*@import url(https://fonts.googleapis.com/css?family=Roboto:100,400,500,300,700);*/
+.loop-animation {
+    animation-iteration-count: infinite;
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    -o-animation-iteration-count: infinite;
+}
 .elip{
     white-space: nowrap;
     text-overflow: ellipsis;
