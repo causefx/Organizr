@@ -76,7 +76,7 @@ return array(
  "smtpHostType" => "tls",
  "homepageNoticeTitle" => "",
  "homepageNoticeMessage" => "",
- "homepageNoticeType" => "",
+ "homepageNoticeType" => "success",
  "homepageNoticeAuth" => "false",
- "homepageNoticeLayout" => "",
+ "homepageNoticeLayout" => "elegant",
 );
