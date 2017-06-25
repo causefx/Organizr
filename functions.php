@@ -555,7 +555,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $state = (($item->Player['state'] == "paused") ? "pause" : "play");
                 $topTitle = '<h5 class="text-center zero-m elip">'.$title.' - '.$item['title'].'</h5>';
                 $bottomTitle = '<small class="zero-m">S'.$item['parentIndex'].' · E'.$item['index'].'</small>';
-                if($showNames){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+                if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
             }
             break;
         case 'clip':
@@ -589,7 +589,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $state = (($item->Player['state'] == "paused") ? "pause" : "play");
                 $topTitle = '<h5 class="text-center zero-m elip">'.$title.' [Trailer/Clip]</h5>';
                 $bottomTitle = '<small class="zero-m">'.$item['year'].'</small>';
-                if($showNames){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
+                if($showNames == "true"){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
             }
             break;
         case 'album':
@@ -623,7 +623,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $state = (($item->Player['state'] == "paused") ? "pause" : "play");
                 $topTitle = '<h5 class="text-center zero-m elip">'.$item['grandparentTitle'].' - '.$item['title'].'</h5>';
                 $bottomTitle = '<small class="zero-m">'.$title.'</small>';
-                if($showNames){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
+                if($showNames == "true"){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
             }
             break;
         default:
@@ -657,7 +657,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $state = (($item->Player['state'] == "paused") ? "pause" : "play");
                 $topTitle = '<h5 class="text-center zero-m elip">'.$title.'</h5>';
                 $bottomTitle = '<small class="zero-m">'.$item['year'].'</small>';
-                if($showNames){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
+                if($showNames == "true"){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
             }
 	   }
 
