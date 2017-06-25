@@ -486,7 +486,7 @@ function resolveEmbyItem($address, $token, $item) {
 }
 
 // Format item from Plex for Carousel
-function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames = false) {
+function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames = false, $role = false) {
     // Static Height
     $height = 444;
 
@@ -512,7 +512,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $watched = floor(($elapsed / $duration) * 100);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
-                $user = $item->User['title'];
+                $user = $role == "admin" ? $item->User['title'] : "";
                 $id = $item->Session['id'];
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
@@ -543,7 +543,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $watched = floor(($elapsed / $duration) * 100);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
-                $user = $item->User['title'];
+                $user = $role == "admin" ? $item->User['title'] : "";
                 $id = $item->Session['id'];
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
@@ -577,7 +577,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $watched = floor(($elapsed / $duration) * 100);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
-                $user = $item->User['title'];
+                $user = $role == "admin" ? $item->User['title'] : "";
                 $id = $item->Session['id'];
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
@@ -612,7 +612,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $watched = floor(($elapsed / $duration) * 100);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
-                $user = $item->User['title'];
+                $user = $role == "admin" ? $item->User['title'] : "";
                 $id = $item->Session['id'];
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
@@ -645,7 +645,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $watched = floor(($elapsed / $duration) * 100);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
-                $user = $item->User['title'];
+                $user = $role == "admin" ? $item->User['title'] : "";
                 $id = $item->Session['id'];
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
@@ -764,7 +764,7 @@ function getEmbyStreams($size) {
 }
 
 // Get Now Playing Streams From Plex
-function getPlexStreams($size, $showNames){
+function getPlexStreams($size, $showNames, $role){
     $address = qualifyURL(PLEXURL);
     
 	// Perform API requests
@@ -778,7 +778,7 @@ function getPlexStreams($size, $showNames){
 	
 	$items = array();
 	foreach($api AS $child) {
-		$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames);
+		$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames, $role);
 	}
 	
 	return outputPlexNowPlaying(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
@@ -868,7 +868,7 @@ function getPlexRecent($array){
 	foreach($api AS $child) {
      $type = (string) $child['type'];
 		if($array[$type] == "true"){
-			$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, false, false);
+			$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, false, false, false);
 		}
 	}
 	

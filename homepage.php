@@ -469,7 +469,7 @@ endif; ?>
                 <?php } ?>
 				<?php if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) { ?>
                 <div id="plexRowNowPlaying" class="row">
-                    <?php if(PLEXPLAYINGNOW == "true"){ echo getPlexStreams(12, PLEXSHOWNAMES); } ?>
+                    <?php if(PLEXPLAYINGNOW == "true"){ echo getPlexStreams(12, PLEXSHOWNAMES, $USER->role); } ?>
                 </div>
                 <div id="plexRow" class="row">
                     <div class="col-lg-12">
