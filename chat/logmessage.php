@@ -1,7 +1,7 @@
 <?php
 // Load USER
-require_once("../user.php");
-$USER = new User("registration_callback");
+//require_once("../user.php");
+//$USER = new User("registration_callback");
 
 // Some PHP config stuff
 ini_set("display_errors", 1);
