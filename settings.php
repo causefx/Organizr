@@ -787,6 +787,12 @@ echo buildSettings(
 							'name' => 'embyPlayingNow',
 							'value' => EMBYPLAYINGNOW,
 						),
+      array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'SHOW_NAMES',
+							'name' => 'embyShowNames',
+							'value' => EMBYSHOWNAMES,
+						),
 					),
 				),
 			),

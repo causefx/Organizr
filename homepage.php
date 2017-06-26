@@ -474,7 +474,7 @@ endif; ?>
                 <div id="plexRow" class="row">
                     <div class="col-lg-12">
                     <?php
-                    if(PLEXRECENTMOVIE || PLEXRECENTTV || PLEXRECENTMUSIC){  
+                    if(PLEXRECENTMOVIE == "true" || PLEXRECENTTV == "true" || PLEXRECENTMUSIC == "true"){  
                         $plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
                         echo getPlexRecent($plexArray);
                     } 
@@ -483,14 +483,19 @@ endif; ?>
                 </div>
 				<?php } ?>
 				<?php if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) { ?>
+                <div id="embyRowNowPlaying" class="row">
+                    <?php if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(12, EMBYSHOWNAMES, $USER->role); } ?>
+                </div>
                 <div id="embyRow" class="row">
+                    <div class="col-lg-12">
                     <?php
-                    $embySize = (EMBYRECENTMOVIE == "true") + (EMBYRECENTTV == "true") + (EMBYRECENTMUSIC == "true") + (EMBYPLAYINGNOW == "true");
-                    if(EMBYRECENTMOVIE == "true"){ echo getEmbyRecent("movie", 12/$embySize); }
-                    if(EMBYRECENTTV == "true"){ echo getEmbyRecent("season", 12/$embySize); }
-                    if(EMBYRECENTMUSIC == "true"){ echo getEmbyRecent("album", 12/$embySize); }
-                    if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(12/$embySize); }
+                    if(EMBYRECENTMOVIE == "true" || EMBYRECENTTV == "true" || EMBYRECENTMUSIC == "true"){  
+                        $embyArray = array("Movie" => EMBYRECENTMOVIE, "Episode" => EMBYRECENTTV, "MusicAlbum" => EMBYRECENTMUSIC, "Series" => EMBYRECENTTV);
+                        echo getEmbyRecent($embyArray);
+                    } 
+    
                     ?>
+                    </div>
 
                 </div>
 				<?php } ?>
@@ -550,20 +555,7 @@ endif; ?>
                     console.log(id);
                     //console.log(moreInfo);
             });
-            var windowSize = window.innerWidth;
-            var nowPlaying = "";
-            if(windowSize >= 1000){
-                nowPlaying = 8;
-            }else if(windowSize <= 400){
-                nowPlaying = 2;
-            }else if(windowSize <= 600){
-                nowPlaying = 3;
-            }else if(windowSize <= 849){
-                nowPlaying = 6;
-            }else if(windowSize <= 999){
-                nowPlaying = 7;
-            }
-            console.log(windowSize+" - " +nowPlaying);
+     
             $('.recentItems').slick({
               
                 slidesToShow: 13,
