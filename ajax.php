@@ -39,7 +39,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				break;
 			case 'emby-streams':
 				qualifyUser(EMBYHOMEAUTH, true);
-				echo getEmbyStreams(12);
+				echo getEmbyStreams(12, EMBYSHOWNAMES, $GLOBALS['USER']->role);
 				die();
 				break;
 			case 'plex-streams':

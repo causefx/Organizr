@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.38');
+ define('INSTALLEDVERSION', '1.39');
 // ===================================
 
 // Debugging output functions
@@ -249,22 +249,28 @@ endif;
 // ==== General Class Definitions START ====
 class setLanguage { 
     private $language = null;
-	private $langCode = null;
-	
-    function __construct($language = false) {
-		// Default
-		if (!$language) {
-			$language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : "en"; 
-		}
-		
-		$this->langCode = $language;
-		
-        if (file_exists("lang/{$language}.ini")) {
-            $this->language = parse_ini_file("lang/{$language}.ini", false, INI_SCANNER_RAW);
-        } else {
-            $this->language = parse_ini_file("lang/en.ini", false, INI_SCANNER_RAW);
+	   private $langCode = null;
+    
+	   function __construct($language = false) {
+        // Default
+        if (!$language) {
+            $language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : "en"; 
+        }
+
+        if (!file_exists("lang/{$language}.ini")) {
+            $language = 'en';
+        }
+
+        $this->langCode = $language;
+
+        $this->language = parse_ini_file("lang/{$language}.ini", false, INI_SCANNER_RAW);
+        if (file_exists("lang/{$language}.cust.ini")) {
+            foreach($tmp = parse_ini_file("lang/{$language}.cust.ini", false, INI_SCANNER_RAW) as $k => $v) {
+                $this->language[$k] = $v;
+            }
         }
     }
+    
 	
 	public function getLang() {
 		return $this->langCode;
@@ -344,6 +350,7 @@ if (function_exists('curl_version')) :
 		// As post request
 		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "GET"); 
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
 		// Format Headers
 		$cHeaders = array();
 		foreach ($headers as $k => $v) {
@@ -446,43 +453,169 @@ function post_request($url, $data, $headers = array(), $referer='') {
 }
 
 // Format item from Emby for Carousel
-function resolveEmbyItem($address, $token, $item) {
+function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showNames = false, $role = false, $moreInfo = false) {
 	// Static Height
-	$height = 150;
+	$height = 444;
 	
 	// Get Item Details
-	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&Fields=Overview&api_key='.$token),true)['Items'][0];
+	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&api_key='.$token),true)['Items'][0];
 	
 	switch ($itemDetails['Type']) {
-		case 'Episode':
-			$title = (isset($itemDetails['SeriesName'])?$itemDetails['SeriesName'].': ':'').$itemDetails['Name'].(isset($itemDetails['ParentIndexNumber']) && isset($itemDetails['IndexNumber'])?' (Season '.$itemDetails['ParentIndexNumber'].': Episode '.$itemDetails['IndexNumber'].')':'');
-			$imageId = (isset($itemDetails['SeriesId'])?$itemDetails['SeriesId']:$itemDetails['Id']);
-			$width = 100;
-			$image = 'carousel-image season';
-			$style = '';
-			break;
+    case 'Episode':
+        $title = (isset($itemDetails['SeriesName'])?$itemDetails['SeriesName']:"");
+        $imageId = (isset($itemDetails['SeriesId'])?$itemDetails['SeriesId']:$itemDetails['Id']);
+        $width = 300;
+        $style = '';
+        $image = 'slick-image-tall';
+        if(!$nowPlaying){ 
+            $imageType = "Primary";
+            $key = $itemDetails['Id'] . "-list";
+        }else{
+            $height = 281;
+            $width = 500;
+            $imageType = "Thumb";
+            $key = $itemDetails['Id'] . "-np";
+            $elapsed = $moreInfo['PlayState']['PositionTicks'];
+            $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
+            $watched = floor(($elapsed / $duration) * 100);
+            //$transcoded = floor($item->TranscodeSession['progress']- $watched);
+            $stream = $moreInfo['PlayState']['PlayMethod'];
+            $user = $role == "admin" ? $moreInfo['UserName'] : "";
+            $id = $moreInfo['DeviceId'];
+            $streamInfo = buildStream(array(
+                'platform' => (string) $moreInfo['Client'],
+                'device' => (string) $moreInfo['DeviceName'],
+                'stream' => "&nbsp;".streamType($stream),
+                'video' => streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "video"),
+                'audio' => "&nbsp;".streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "audio"),
+            ));
+            $state = (($moreInfo['PlayState']['IsPaused'] == "1") ? "pause" : "play");
+            $topTitle = '<h5 class="text-center zero-m elip">'.$title.'</h5>';
+            $bottomTitle = '<small class="zero-m">'.$moreInfo['NowPlayingItem']['ProductionYear'].'</small>';
+            if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+        }
+    break;
 		case 'MusicAlbum':
+		case 'Audio':
 			$title = $itemDetails['Name'];
 			$imageId = $itemDetails['Id'];
-			$width = 150;
-			$image = 'music';
-			$style = 'left: 160px !important;';
+			$width = 444;
+    $style = '';
+    $image = 'slick-image-short';
+    if(!$nowPlaying){ 
+        $imageType = "Primary";
+        $key = $itemDetails['Id'] . "-list";
+    }else{
+        $height = 281;
+        $width = 500;
+        $imageId = $itemDetails['ParentBackdropItemId'];
+        $imageType = "Backdrop";
+        $key = $itemDetails['ParentBackdropItemId'] . "-np";
+        $elapsed = $moreInfo['PlayState']['PositionTicks'];
+        $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
+        $watched = floor(($elapsed / $duration) * 100);
+        //$transcoded = floor($item->TranscodeSession['progress']- $watched);
+        $stream = $moreInfo['PlayState']['PlayMethod'];
+        $user = $role == "admin" ? $moreInfo['UserName'] : "";
+        $id = $moreInfo['DeviceId'];
+        $streamInfo = buildStream(array(
+            'platform' => (string) $moreInfo['Client'],
+            'device' => (string) $moreInfo['DeviceName'],
+            'stream' => "&nbsp;".streamType($stream),
+            'audio' => "&nbsp;".streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "audio"),
+        ));
+        $state = (($moreInfo['PlayState']['IsPaused'] == "1") ? "pause" : "play");
+        $topTitle = '<h5 class="text-center zero-m elip">'.$itemDetails['AlbumArtist'].' - '.$itemDetails['Album'].'</h5>';
+        $bottomTitle = '<small class="zero-m">'.$title.'</small>';
+        if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+    }
 			break;
+  case 'TvChannel':
+			$title = $itemDetails['CurrentProgram']['Name'];
+			$imageId = $itemDetails['Id'];
+			$width = 300;
+    $style = '';
+    $image = 'slick-image-tall';
+    if(!$nowPlaying){ 
+        $imageType = "Primary";
+        $key = $itemDetails['Id'] . "-list";
+    }else{
+        $height = 281;
+        $width = 500;
+        $imageType = "Thumb";
+        $key = $itemDetails['Id'] . "-np";
+        $useImage = "images/livetv.png";
+        $watched = "0";
+        $stream = $moreInfo['PlayState']['PlayMethod'];
+        $user = $role == "admin" ? $moreInfo['UserName'] : "";
+        $id = $moreInfo['DeviceId'];
+        $streamInfo = buildStream(array(
+            'platform' => (string) $moreInfo['Client'],
+            'device' => (string) $moreInfo['DeviceName'],
+            'stream' => "&nbsp;".streamType($stream),
+            'video' => streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "video"),
+            'audio' => "&nbsp;".streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "audio"),
+        ));
+        $state = (($moreInfo['PlayState']['IsPaused'] == "1") ? "pause" : "play");
+        $topTitle = '<h5 class="text-center zero-m elip">'.$title.'</h5>';
+        $bottomTitle = '<small class="zero-m">'.$itemDetails['Name'].' - '.$itemDetails['ChannelNumber'].'</small>';
+        if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+    }
+   break;
 		default:
 			$title = $itemDetails['Name'];
 			$imageId = $itemDetails['Id'];
-			$width = 100;
-			$image = 'carousel-image movie';
-			$style = '';
+			$width = 300;
+    $style = '';
+    $image = 'slick-image-tall';
+    if(!$nowPlaying){ 
+        $imageType = "Primary";
+        $key = $itemDetails['Id'] . "-list";
+    }else{
+        $height = 281;
+        $width = 500;
+        $imageType = "Thumb";
+        $key = $itemDetails['Id'] . "-np";
+        $elapsed = $moreInfo['PlayState']['PositionTicks'];
+        $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
+        $watched = floor(($elapsed / $duration) * 100);
+        //$transcoded = floor($item->TranscodeSession['progress']- $watched);
+        $stream = $moreInfo['PlayState']['PlayMethod'];
+        $user = $role == "admin" ? $moreInfo['UserName'] : "";
+        $id = $moreInfo['DeviceId'];
+        $streamInfo = buildStream(array(
+            'platform' => (string) $moreInfo['Client'],
+            'device' => (string) $moreInfo['DeviceName'],
+            'stream' => "&nbsp;".streamType($stream),
+            'video' => streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "video"),
+            'audio' => "&nbsp;".streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "audio"),
+        ));
+        $state = (($moreInfo['PlayState']['IsPaused'] == "1") ? "pause" : "play");
+        $topTitle = '<h5 class="text-center zero-m elip">'.$title.'</h5>';
+        $bottomTitle = '<small class="zero-m">'.$moreInfo['NowPlayingItem']['ProductionYear'].'</small>';
+        if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+    }
 	}
 	
 	// If No Overview
 	if (!isset($itemDetails['Overview'])) {
 		$itemDetails['Overview'] = '';
 	}
+    
+if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key.'.jpg'; }
+    if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
+        $image_url = 'ajax.php?a=emby-image&type='.$imageType.'&img='.$imageId.'&height='.$height.'&width='.$width.'&key='.$key.'';        
+    }
+    if(!$itemDetails['Id']){ $image_url = "images/no-np.png"; $key = "no-np"; }
+    if(isset($useImage)){ $image_url = $useImage; }
 	
-	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$itemDetails['Id'].'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" src="ajax.php?a=emby-image&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
+	// Assemble Item And Cache Into Array     
+if($nowPlaying){
+    //prettyPrint($moreInfo);
+    return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$address.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+    }else{
+ return '<div class="item-'.$itemDetails['Type'].'"><a href="'.$address.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+}
 }
 
 // Format item from Plex for Carousel
@@ -677,33 +810,6 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
     }
 }
 
-// Create Carousel
-function outputCarousel($header, $size, $type, $items, $script = false) {
-	// If None Populate Empty Item
-	if (!count($items)) {
-		$items = array('<div class="item"><img alt="nada" class="carousel-image movie" src="images/nadaplaying.jpg"><div class="carousel-caption"><h4>Nothing To Show</h4><small><em>Get Some Stuff Going!</em></small></div></div>');
-	}
-	
-	// Set First As Active
-	$items[0] = preg_replace('/^<div class="item ?">/','<div class="item active">', $items[0]);
-	
-	// Add Buttons
-	$buttons = '';
-	if (count($items) > 1) {
-		$buttons = '
-			<a class="left carousel-control '.$type.'" href="#carousel-'.$type.'" role="button" data-slide="prev"><span class="fa fa-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a>
-			<a class="right carousel-control '.$type.'" href="#carousel-'.$type.'" role="button" data-slide="next"><span class="fa fa-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a>';
-	}
-	
-	return '
-	<div class="col-lg-'.$size.'">
-		<h5 class="text-center">'.$header.'</h5>
-		<div id="carousel-'.$type.'" class="carousel slide box-shadow white-bg" data-ride="carousel"><div class="carousel-inner" role="listbox">
-			'.implode('',$items).'
-		</div>'.$buttons.'
-	</div></div>'.($script?'<script>'.$script.'</script>':''); 
-}
-
 //Recent Added
 function outputRecentAdded($header, $items, $script = false, $array) {
     $hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu">';
@@ -736,9 +842,18 @@ function outputPlexNowPlaying($header, $size, $type, $items, $script = false) {
  }
     
 }
+function outputEmbyNowPlaying($header, $size, $type, $items, $script = false) {
+	// If None Populate Empty Item
+	if (!count($items)) {
+		return '<div id=streamz></div>'.($script?'<script>'.$script.'</script>':'');
+	}else{
+	   return '<div id=streamz><h5 class="text-center">'.$header.'</h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
+ }
+    
+}
 
 // Get Now Playing Streams From Emby
-function getEmbyStreams($size) {
+function getEmbyStreams($size, $showNames, $role) {
 	$address = qualifyURL(EMBYURL);
 	
 	$api = json_decode(@file_get_contents($address.'/Sessions?api_key='.EMBYTOKEN),true);
@@ -747,11 +862,11 @@ function getEmbyStreams($size) {
 	$playingItems = array();
 	foreach($api as $key => $value) {
 		if (isset($value['NowPlayingItem'])) {
-			$playingItems[] = resolveEmbyItem($address, EMBYTOKEN, $value['NowPlayingItem']);
+			$playingItems[] = resolveEmbyItem($address, EMBYTOKEN, $value['NowPlayingItem'], true, $showNames, $role, $value);
 		}
 	}
 	
-	return outputCarousel(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems, "
+	return outputEmbyNowPlaying(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems, "
 		setInterval(function() {
 			$('<div></div>').load('ajax.php?a=emby-streams',function() {
 				var element = $(this).find('[id]');
@@ -768,9 +883,9 @@ function getPlexStreams($size, $showNames, $role){
     $address = qualifyURL(PLEXURL);
     
 	// Perform API requests
-    $api = @file_get_contents($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
+    $api = @curl_get($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(@file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
+    $getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
     if (!$getServer) { return 'Could not load!'; }
 	
 	// Identify the local machine
@@ -794,60 +909,52 @@ function getPlexStreams($size, $showNames, $role){
 }
 
 // Get Recent Content From Emby
-function getEmbyRecent($type, $size) {
+function getEmbyRecent($array) {
     $address = qualifyURL(EMBYURL);
+    $header = translate('RECENT_CONTENT');
+    // Currently Logged In User
+    $username = false;
+    if (isset($GLOBALS['USER'])) {
+        $username = strtolower($GLOBALS['USER']->username);
+    }
+
+    // Get A User
+    $userIds = json_decode(@file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
+    if (!is_array($userIds)) { return 'Could not load!'; }
+
+    $showPlayed = true;
+    foreach ($userIds as $value) { // Scan for admin user
+        if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+            $userId = $value['Id'];
+        }
+        if ($username && strtolower($value['Name']) == $username) {
+            $userId = $value['Id'];
+            $showPlayed = false;
+            break;
+        }
+    }
+
+    // Get the latest Items
+    $latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?EnableImages=false&&Limit=100&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
 	
-	// Currently Logged In User
-	$username = false;
-	if (isset($GLOBALS['USER'])) {
-		$username = strtolower($GLOBALS['USER']->username);
-	}
-	
-	// Resolve Types
-	switch ($type) {
-		case 'movie':
-			$embyTypeQuery = 'IncludeItemTypes=Movie&';
-			$header = translate('MOVIES');
-			break;
-		case 'season':
-			$embyTypeQuery = 'IncludeItemTypes=Episode&';
-			$header = translate('TV_SHOWS');
-			break;
-		case 'album':
-			$embyTypeQuery = 'IncludeItemTypes=MusicAlbum&';
-			$header = translate('MUSIC');
-			break;
-		default:
-			$embyTypeQuery = '';
-			$header = translate('RECENT_CONTENT');
-	}
-	
-	// Get A User
-	$userIds = json_decode(@file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
-	if (!is_array($userIds)) { return 'Could not load!'; }
-	
-	$showPlayed = true;
-	foreach ($userIds as $value) { // Scan for admin user
-		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
-			$userId = $value['Id'];
-		}
-		if ($username && strtolower($value['Name']) == $username) {
-			$userId = $value['Id'];
-			$showPlayed = false;
-			break;
-		}
-	}
-	
-	// Get the latest Items
-	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
-	
-	// For Each Item In Category
-	$items = array();
-	foreach ($latest as $k => $v) {
-		$items[] = resolveEmbyItem($address, EMBYTOKEN, $v);
-	}
-	
-	return outputCarousel($header, $size, $type.'-emby', $items);
+    // For Each Item In Category
+    $items = array();
+    foreach ($latest as $k => $v) {
+        $type = (string) $v['Type'];
+        if(@$array[$type] == "true"){
+            $items[] = resolveEmbyItem($address, EMBYTOKEN, $v, false, false, false);
+        }
+    }
+
+    $array["movie"] = $array["Movie"];
+    $array["season"] = $array["Episode"];
+    $array["album"] = $array["MusicAlbum"];
+    unset($array["Movie"]);
+    unset($array["Episode"]);
+    unset($array["MusicAlbum"]);
+    unset($array["Series"]);
+
+    return outputRecentAdded($header, $items, "", $array);
 }
 
 // Get Recent Content From Plex
@@ -856,9 +963,9 @@ function getPlexRecent($array){
 			 $header = translate('RECENT_CONTENT');
 	
 	// Perform Requests
-    $api = @file_get_contents($address."/library/recentlyAdded?limit=100&X-Plex-Token=".PLEXTOKEN);
+    $api = @curl_get($address."/library/recentlyAdded?limit=100&X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(@file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
+    $getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
 	if (!$getServer) { return 'Could not load!'; }
 	
 	// Identify the local machine
@@ -880,15 +987,31 @@ function getEmbyImage() {
 	$embyAddress = qualifyURL(EMBYURL);
 	
 	$itemId = $_GET['img'];
+ $key = $_GET['key'];
+	$itemType = $_GET['type'];
 	$imgParams = array();
 	if (isset($_GET['height'])) { $imgParams['height'] = 'maxHeight='.$_GET['height']; }
 	if (isset($_GET['width'])) { $imgParams['width'] = 'maxWidth='.$_GET['width']; }
 
 	if(isset($itemId)) {
-		$image_src = $embyAddress . '/Items/'.$itemId.'/Images/Primary?'.implode('&', $imgParams);
-		header('Content-type: image/jpeg');
-		@readfile($image_src);
-		die();
+     $image_src = $embyAddress . '/Items/'.$itemId.'/Images/'.$itemType.'?'.implode('&', $imgParams);
+    $cachefile = 'images/cache/'.$key.'.jpg';
+    $cachetime = 604800;
+    // Serve from the cache if it is younger than $cachetime
+    if (file_exists($cachefile) && time() - $cachetime > filemtime($cachefile)) {
+        header("Content-type: image/jpeg");
+        @readfile($cachefile);
+        exit;
+    }
+        ob_start(); // Start the output buffer
+        header('Content-type: image/jpeg');
+        @readfile($image_src);
+        // Cache the output to a file
+        $fp = fopen($cachefile, 'wb');
+        fwrite($fp, ob_get_contents());
+        fclose($fp);
+        ob_end_flush(); // Send the output to the browser
+        die();
 	} else {
 		debug_out('Invalid Request',1);
 	}
@@ -2088,7 +2211,7 @@ function upgradeInstall($branch = 'master') {
 function nzbgetConnect($list = 'listgroups') {
     $url = qualifyURL(NZBGETURL);
     
-    $api = file_get_contents($url.'/'.NZBGETUSERNAME.':'.NZBGETPASSWORD.'/jsonrpc/'.$list);          
+    $api = curl_get($url.'/'.NZBGETUSERNAME.':'.NZBGETPASSWORD.'/jsonrpc/'.$list);          
     $api = json_decode($api, true);
     
     $gotNZB = array();
@@ -2603,7 +2726,7 @@ function getRadarrCalendar($array){
 function getHeadphonesCalendar($url, $key, $list){
 	$url = qualifyURL(HEADPHONESURL);
     
-    $api = file_get_contents($url."/api?apikey=".$key."&cmd=$list");
+    $api = curl_get($url."/api?apikey=".$key."&cmd=$list");
     
     $api = json_decode($api, true);
     
@@ -2664,7 +2787,7 @@ function readLog(){
 function buildStream($array){
     $result = "";
     if (array_key_exists('platform', $array)) {
-        $result .= '<div class="reg-info" style="margin-top:0; padding-left:0; position: absolute; bottom: 10px; left: 10px;"><div style="margin-right: 0;" class="item pull-left text-center"><img class="img-circle" height="55px" src="images/platforms/'.getPlatform($array['platform']).'"></div></div><div class="clearfix"></div>';
+        $result .= '<div class="reg-info" style="margin-top:0; padding-left:0; position: absolute; bottom: 10px; left: 10px;"><div style="margin-right: 0;" class="item pull-left text-center"><img alt="'.$array['platform'].'" class="img-circle" height="55px" src="images/platforms/'.getPlatform($array['platform']).'"></div></div><div class="clearfix"></div>';
     }
     if (array_key_exists('device', $array)) {
         $result .= '<div class="reg-info" style="margin-top:0; padding-left:5%;"><div style="margin-right: 0;" class="item pull-left text-center"><span style="font-size: 15px;" class="block text-center"><i class="fa fa-laptop"></i>'.$array['device'].'</span></div></div><div class="clearfix"></div>';
@@ -2682,9 +2805,9 @@ function buildStream($array){
 }
 
 function streamType($value){
-    if($value == "transcode"){
+    if($value == "transcode" || $value == "Transcode"){
         return "Transcode";
-    }elseif($value == "copy"){
+    }elseif($value == "copy" || $value == "DirectStream"){
         return "Direct Stream";
     }elseif($value == "directplay"){
         return "Direct Play";
@@ -2701,6 +2824,9 @@ function getPlatform($platform){
         "Xbox One" => "xbox.png",
         "Mystery 4" => "playstation.png",
         "Samsung" => "samsung.png",
+        "Roku" => "roku.png",
+        "Emby for iOS" => "ios.png",
+        "Emby Mobile" => "emby.png",
     );
     if (array_key_exists($platform, $allPlatforms)) {
         return $allPlatforms[$platform];
@@ -2833,6 +2959,30 @@ function buildHomepageNotice($layout, $type, $title, $message){
                 </div>
             </div>
             ';
+    }
+}
+
+function embyArray($array, $type) {
+    $key = ($type == "video" ? "Height" : "Channels");
+    if (array_key_exists($key, $array)) {
+        switch ($type) {
+            case "video":
+                $codec = $array["Codec"];
+                $height = $array["Height"];
+                $width = $array["Width"];
+            break;
+            default:
+                $codec = $array["Codec"];
+                $channels = $array["Channels"];
+        }
+        return ($type == "video" ?  "(".$codec.") (".$width."x".$height.")" : "(".$codec.") (".$channels."ch)");        
+    }
+    foreach ($array as $element) {
+        if (is_array($element)) {
+            if (embyArray($element, $type)) {
+                return embyArray($element, $type);
+            }
+        }
     }
 }
 
