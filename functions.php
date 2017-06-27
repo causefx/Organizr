@@ -473,8 +473,9 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
         }else{
             $height = 281;
             $width = 500;
-            $imageType = (isset($itemDetails['ImageTags']['Thumb']) ? "Thumb" : !empty($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
-            $key = $itemDetails['Id'] . "-np";
+            $imageId = $itemDetails['ParentThumbItemId'];
+            $imageType = isset($itemDetails['ParentThumbItemId']) ?	"Thumb" : (isset($itemDetails['ParentBackdropItemId']) ? "Backdrop" : false);
+            $key = $itemDetails['ParentThumbItemId'] . "-np";
             $elapsed = $moreInfo['PlayState']['PositionTicks'];
             $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
             $watched = floor(($elapsed / $duration) * 100);
@@ -574,7 +575,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
     }else{
         $height = 281;
         $width = 500;
-        $imageType = (isset($itemDetails['ImageTags']['Thumb']) ? "Thumb" : !empty($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
+        $imageType = isset($itemDetails['ImageTags']['Thumb']) ?	"Thumb" : (isset($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
         $key = $itemDetails['Id'] . "-np";
         $elapsed = $moreInfo['PlayState']['PositionTicks'];
         $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
