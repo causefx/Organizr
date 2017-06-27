@@ -468,12 +468,12 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
         $style = '';
         $image = 'slick-image-tall';
         if(!$nowPlaying){ 
-            $imageType = "Primary";
+            $imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
             $key = $itemDetails['Id'] . "-list";
         }else{
             $height = 281;
             $width = 500;
-            $imageType = (isset($itemDetails['ImageTags']['Thumb']) ? "Thumb" : isset($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
+            $imageType = (isset($itemDetails['ImageTags']['Thumb']) ? "Thumb" : !empty($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
             $key = $itemDetails['Id'] . "-np";
             $elapsed = $moreInfo['PlayState']['PositionTicks'];
             $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
@@ -503,7 +503,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
     $style = '';
     $image = 'slick-image-short';
     if(!$nowPlaying){ 
-        $imageType = "Primary";
+        $imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
         $key = $itemDetails['Id'] . "-list";
     }else{
         $height = 281;
@@ -569,12 +569,12 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
     $style = '';
     $image = 'slick-image-tall';
     if(!$nowPlaying){ 
-        $imageType = "Primary";
+        $imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
         $key = $itemDetails['Id'] . "-list";
     }else{
         $height = 281;
         $width = 500;
-        $imageType = (isset($itemDetails['ImageTags']['Thumb']) ? "Thumb" : isset($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
+        $imageType = (isset($itemDetails['ImageTags']['Thumb']) ? "Thumb" : !empty($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
         $key = $itemDetails['Id'] . "-np";
         $elapsed = $moreInfo['PlayState']['PositionTicks'];
         $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
@@ -606,7 +606,14 @@ if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key
     if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
         $image_url = 'ajax.php?a=emby-image&type='.$imageType.'&img='.$imageId.'&height='.$height.'&width='.$width.'&key='.$key.'';        
     }
-    if(!$imageId){ $image_url = "images/no-np.png"; $key = "no-np"; }
+    
+    if($nowPlaying){
+        if(!$imageType){ $image_url = "images/no-np.png"; $key = "no-np"; }
+        if(!$imageId){ $image_url = "images/no-np.png"; $key = "no-np"; }
+    }else{
+        if(!$imageType){ $image_url = "images/no-list.png"; $key = "no-list"; }
+        if(!$imageId){ $image_url = "images/no-list.png"; $key = "no-list"; }
+    }
     if(isset($useImage)){ $image_url = $useImage; }
 	
 	// Assemble Item And Cache Into Array     
@@ -2818,6 +2825,7 @@ function getPlatform($platform){
         "Roku" => "roku.png",
         "Emby for iOS" => "ios.png",
         "Emby Mobile" => "emby.png",
+        "Emby Theater" => "emby.png",
     );
     if (array_key_exists($platform, $allPlatforms)) {
         return $allPlatforms[$platform];
