@@ -17,6 +17,7 @@ return array(
 	"embyRecentTV" => "false",
 	"embyRecentMusic" => "false",
 	"embyPlayingNow" => "false",
+ "embyShowNames" => false,
 	"embyHomeAuth" => false,
 	"sonarrURL" => "",
 	"sonarrKey" => "",
