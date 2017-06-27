@@ -648,7 +648,7 @@ endif; ?>
 
             $('.js-filter-movie').on('click', function(){
               if (movieFiltered === false) {
-                $('.recentItems').slick('slickFilter','.item-season, .item-album');
+                $('.recentItems').slick('slickFilter','.item-season, .item-album, .item-Series, .item-Episode, .item-MusicAlbum');
                 $(this).text('Show Movies');
                 movieFiltered = true;
               } else {
@@ -660,7 +660,7 @@ endif; ?>
             
             $('.js-filter-season').on('click', function(){
               if (seasonFiltered === false) {
-                $('.recentItems').slick('slickFilter','.item-movie, .item-album');
+                $('.recentItems').slick('slickFilter','.item-movie, .item-album, .item-Movie, .item-MusicAlbum');
                 $(this).text('Show TV');
                 seasonFiltered = true;
               } else {
@@ -672,7 +672,7 @@ endif; ?>
             
             $('.js-filter-album').on('click', function(){
               if (albumFiltered === false) {
-                $('.recentItems').slick('slickFilter','.item-season, .item-movie');
+                $('.recentItems').slick('slickFilter','.item-season, .item-movie, .item-Series, .item-Episode, .item-Movie');
                 $(this).text('Show Music');
                 albumFiltered = true;
               } else {

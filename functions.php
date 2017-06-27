@@ -833,16 +833,7 @@ function outputRecentAdded($header, $items, $script = false, $array) {
 }
 
 // Create Carousel
-function outputPlexNowPlaying($header, $size, $type, $items, $script = false) {
-	// If None Populate Empty Item
-	if (!count($items)) {
-		return '<div id=streamz></div>'.($script?'<script>'.$script.'</script>':'');
-	}else{
-	   return '<div id=streamz><h5 class="text-center">'.$header.'</h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
- }
-    
-}
-function outputEmbyNowPlaying($header, $size, $type, $items, $script = false) {
+function outputNowPlaying($header, $size, $type, $items, $script = false) {
 	// If None Populate Empty Item
 	if (!count($items)) {
 		return '<div id=streamz></div>'.($script?'<script>'.$script.'</script>':'');
@@ -866,7 +857,7 @@ function getEmbyStreams($size, $showNames, $role) {
 		}
 	}
 	
-	return outputEmbyNowPlaying(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems, "
+	return outputNowPlaying(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems, "
 		setInterval(function() {
 			$('<div></div>').load('ajax.php?a=emby-streams',function() {
 				var element = $(this).find('[id]');
@@ -874,7 +865,7 @@ function getEmbyStreams($size, $showNames, $role) {
 				$('#'+loadedID).replaceWith(element);
 				console.log('Loaded updated: '+loadedID);
 			});
-		}, 10000);
+		}, 15000);
 	");
 }
 
@@ -896,7 +887,7 @@ function getPlexStreams($size, $showNames, $role){
 		$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames, $role);
 	}
 	
-	return outputPlexNowPlaying(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
+	return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
 		setInterval(function() {
 			$('<div></div>').load('ajax.php?a=plex-streams',function() {
 				var element = $(this).find('[id]');
