@@ -473,7 +473,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
         }else{
             $height = 281;
             $width = 500;
-            $imageType = "Thumb";
+            $imageType = (isset($itemDetails['ImageTags']['Thumb']) ? "Thumb" : isset($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
             $key = $itemDetails['Id'] . "-np";
             $elapsed = $moreInfo['PlayState']['PositionTicks'];
             $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
@@ -508,9 +508,9 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
     }else{
         $height = 281;
         $width = 500;
-        $imageId = $itemDetails['ParentBackdropItemId'];
-        $imageType = "Backdrop";
-        $key = $itemDetails['ParentBackdropItemId'] . "-np";
+        $imageId = (isset($itemDetails['ParentBackdropItemId']) ? $itemDetails['ParentBackdropItemId'] : false);
+        $imageType = (isset($itemDetails['ParentBackdropItemId']) ? "Backdrop" : false);
+        $key = (isset($itemDetails['ParentBackdropItemId']) ? $itemDetails['ParentBackdropItemId'] : "no-np") . "-np";
         $elapsed = $moreInfo['PlayState']['PositionTicks'];
         $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
         $watched = floor(($elapsed / $duration) * 100);
@@ -574,7 +574,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
     }else{
         $height = 281;
         $width = 500;
-        $imageType = "Thumb";
+        $imageType = (isset($itemDetails['ImageTags']['Thumb']) ? "Thumb" : isset($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
         $key = $itemDetails['Id'] . "-np";
         $elapsed = $moreInfo['PlayState']['PositionTicks'];
         $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
@@ -606,12 +606,12 @@ if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key
     if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
         $image_url = 'ajax.php?a=emby-image&type='.$imageType.'&img='.$imageId.'&height='.$height.'&width='.$width.'&key='.$key.'';        
     }
-    if(!$itemDetails['Id']){ $image_url = "images/no-np.png"; $key = "no-np"; }
+    if(!$imageId){ $image_url = "images/no-np.png"; $key = "no-np"; }
     if(isset($useImage)){ $image_url = $useImage; }
 	
 	// Assemble Item And Cache Into Array     
 if($nowPlaying){
-    //prettyPrint($moreInfo);
+    //prettyPrint($itemDetails);//
     return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$address.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
  return '<div class="item-'.$itemDetails['Type'].'"><a href="'.$address.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
