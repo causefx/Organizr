@@ -1578,10 +1578,12 @@ function buildSettings($array) {
 				var newVals = {};
 				var hasVals = false;
 				var errorFields = [];
-				$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').each(function() {
+				$(\'#'.$pageID.'_form\').find(\'[data-changed=true][name]\').each(function() {
 					hasVals = true;
 					if (this.type == \'checkbox\') {
 						newVals[this.name] = this.checked;
+					} else if ($(this).hasClass(\'summernote\')) {
+						newVals[$(this).attr(\'name\')] = $(this).siblings(\'.note-editor\').find(\'.panel-body\').html();
 					} else {
 						if (this.value && this.pattern && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { errorFields.push(this.name); }
 						var fieldVal = $(this).val();
@@ -1593,13 +1595,6 @@ function buildSettings($array) {
 							}
 						}
 						newVals[this.name] = fieldVal;
-        if ( $( ".note-editable panel-body" ).length ) {
-
-            newVals["homepageNoticeMessage"] = $( ".note-editable panel-body" ).html();
-            console.log("gothomepage");
-        }else{
-            console.log("not set homepage");
-        }
 					}
 				});
 				if (errorFields.length) {
@@ -1607,7 +1602,7 @@ function buildSettings($array) {
 				} else if (hasVals) {
 					console.log(newVals);
 					ajax_request(\'POST\', \''.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data, code) {
-						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
+						$(\'#'.$pageID.'_form\').find(\'[data-changed=true][name]\').removeAttr(\'data-changed\');
 					});
 				} else {
 					parent.notify(\'Nothing to update!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');

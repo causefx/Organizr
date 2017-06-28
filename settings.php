@@ -1123,7 +1123,7 @@ echo buildSettings(
 					),*/
         array(
 						'type' => 'custom',
-						'html' => '<div id="summernote">'.HOMEPAGENOTICEMESSAGE.'</div>',
+						'html' => '<div class="summernote" name="homepageNoticeMessage">'.HOMEPAGENOTICEMESSAGE.'</div>',
 					),
 				),
 			),
@@ -2241,12 +2241,7 @@ echo buildSettings(
 
             $(function () {
                 
-                $('#summernote').summernote({
-                    callbacks: {
-                        onChange: function(contents, $editable) {
-                            console.log('onChange:', contents, $editable);
-                        }
-                    },
+                $('.summernote').summernote({
                     height: 120,
                     toolbar: [
                       //[groupname, [button list]]
@@ -2261,10 +2256,8 @@ echo buildSettings(
                   });
 
                 // summernote.change
-                $('#summernote').on('summernote.change', function(we, contents, $editable) {
-                    console.log(contents);
-                    $(this).parents('.note-editable panel-body').first().attr('data-changed', 'true');
-                    //$('.note-editable panel-body').attr('data-changed', true);
+                $('.summernote').on('summernote.change', function(we, contents, $editable) {
+                    $(this).attr('data-changed', 'true');
                 });
 
 
