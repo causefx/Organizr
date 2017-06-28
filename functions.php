@@ -1593,6 +1593,13 @@ function buildSettings($array) {
 							}
 						}
 						newVals[this.name] = fieldVal;
+        if ( $( ".note-editable panel-body" ).length ) {
+
+            newVals["homepageNoticeMessage"] = $( ".note-editable panel-body" ).html();
+            console.log("gothomepage");
+        }else{
+            console.log("not set homepage");
+        }
 					}
 				});
 				if (errorFields.length) {
@@ -2139,8 +2146,11 @@ function deleteDatabase() {
 // Upgrade the installation
 function upgradeInstall($branch = 'master') {
     function downloadFile($url, $path){
+        ini_set('max_execution_time',0);
         $folderPath = "upgrade/";
-        if(!mkdir($folderPath)) : echo "can't make dir"; endif;
+        if(!mkdir($folderPath)){
+            writeLog("error", "organizr could not create upgrade folder");
+        }
         $newfname = $folderPath . $path;
         $file = fopen ($url, 'rb');
         if ($file) {
@@ -2150,14 +2160,22 @@ function upgradeInstall($branch = 'master') {
                     fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
                 }
             }
+        }else{
+            writeLog("error", "organizr could not download $url");
         }
 
         if ($file) {
             fclose($file);
+            writeLog("success", "organizr finished downloading the github zip file");
+        }else{
+            writeLog("error", "organizr could not download the github zip file");
         }
 
         if ($newf) {
             fclose($newf);
+            writeLog("success", "organizr created upgrade zip file from github zip file");
+        }else{
+            writeLog("error", "organizr could not create upgrade zip file from github zip file");
         }
     }
 
@@ -2165,7 +2183,9 @@ function upgradeInstall($branch = 'master') {
         $zip = new ZipArchive;
         $extractPath = "upgrade/";
         if($zip->open($extractPath . $zipFile) != "true"){
-            echo "Error :- Unable to open the Zip File";
+            writeLog("error", "organizr could not unzip upgrade.zip");
+        }else{
+            writeLog("success", "organizr unzipped upgrade.zip");
         }
 
         /* Extract Zip File */
@@ -2204,8 +2224,10 @@ function upgradeInstall($branch = 'master') {
     downloadFile($url, $file);
     unzipFile($file);
     rcopy($source, $destination);
+    writeLog("success", "new organizr files copied");
     rrmdir($cleanup);
-	writeLog("success", "organizr has been updated");
+    writeLog("success", "organizr upgrade folder removed");
+	   writeLog("success", "organizr has been updated");
 	return true;
 }
 
@@ -3032,17 +3054,23 @@ function searchPlex($query){
             $items .= '<tr>
             <th scope="row"><img src="ajax.php?a=plex-image&img='.$results['image'].'&height=100&width=50&key='.$results['key'].'"></th>
             <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
-            <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['genre'].'</td>
-            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['year'].'</td>
-            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['type'].'</td>
-            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['added'].'</td>
+            <td class="col-xs-4 nzbtable nzbtable-row"'.$style.'>'.$results['genre'].'</td>
+            <td class="col-xs-1 nzbtable nzbtable-row"'.$style.'>'.$results['year'].'</td>
+            <td class="col-xs-1 nzbtable nzbtable-row"'.$style.'>'.$results['type'].'</td>
+            <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['added'].'</td>
             </tr>';
         }
     }
     $totals = '<div style="margin: 10px;" class="sort-todo pull-right">
-              Movies <span class="badge green-bg">'.$movies.'</span>
-              Shows <span class="badge blue-bg">'.$shows.'</span>
-              Albums <span class="badge gray-bg">'.$albums.'</span>
+              <span class="badge gray-bg"><i class="fa fa-film fa-2x white"></i><strong style="
+    font-size: 23px;
+">&nbsp;'.$movies.'</strong></span>
+              <span class="badge gray-bg"><i class="fa fa-tv fa-2x white"></i><strong style="
+    font-size: 23px;
+">&nbsp;'.$shows.'</strong></span>
+              <span class="badge gray-bg"><i class="fa fa-music fa-2x white"></i><strong style="
+    font-size: 23px;
+">&nbsp;'.$albums.'</strong></span>
             </div>';
     return (!empty($items) ? $totals.$pre.$items."</div></table>" : "<h2 class='text-center'>No Results for $query</h2>" );
 }
