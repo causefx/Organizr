@@ -397,6 +397,25 @@ endif; ?>
                     </div>
                 </div>
                 <?php } ?>
+                <?php if((PLEXSEARCH == "true" && qualifyUser(PLEXHOMEAUTH))) { ?>
+                <div id="searchPlexRow" class="row">
+                    <div class="col-lg-12">
+                        <div class="content-box box-shadow big-box todo-list">                        
+                            <form id="plexSearchForm" onsubmit="return false;" autocomplete="off">
+                                <div class="">
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-search gray"></i></div>
+                                        <input type="text" autocomplete="off" name="search-title" class="form-control name-of-todo" placeholder="Media Search">
+                                        <button style="display:none" id="plexSearchForm_submit" class="btn btn-primary waves"></button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div id="resultshere" class="table-responsive"></div>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+                
                 <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
                 <div id="downloadClientRow" class="row">
                     <div class="col-xs-12 col-md-12">
@@ -538,6 +557,12 @@ endif; ?>
         }
 		
         $( document ).ready(function() {
+            $('#plexSearchForm_submit').on('click', function () {
+                ajax_request('POST', 'search-plex', {
+                    searchtitle: $('#plexSearchForm [name=search-title]').val(),
+                }).done(function(data){ $('#resultshere').html(data); console.log("done"); });;
+
+            });
             $('.repeat-btn').click(function(){
                 var refreshBox = $(this).closest('div.content-box');
                 $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
@@ -549,11 +574,8 @@ endif; ?>
                 },1500);
             });
             $(document).on('click', '.w-refresh', function(){
-                //Your code
                 var id = $(this).attr("link");
                 $("div[np^='"+id+"']").toggle();
-                    console.log(id);
-                    //console.log(moreInfo);
             });
      
             $('.recentItems').slick({

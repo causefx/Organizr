@@ -695,11 +695,25 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{20}',
 						'value' => PLEXTOKEN,
 					),
+     array(
+						'type' => 'text',
+						'placeholder' => "",
+						'labelTranslate' => 'RECENT_ITEMS_LIMIT',
+						'name' => 'plexRecentItems',
+						'pattern' => '[0-9]+',
+						'value' => PLEXRECENTITEMS,
+					),
 					array(
 						'type' => 'custom',
 						'html' => '<a href="https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token">Plex Token Wiki Article</a>',
 					),
 					array(
+      array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'ALLOW_SEARCH',
+							'name' => 'plexSearch',
+							'value' => PLEXSEARCH,
+						),
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'RECENT_MOVIES',
@@ -761,6 +775,14 @@ echo buildSettings(
 						'name' => 'embyToken',
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
+					),
+     array(
+						'type' => 'text',
+						'placeholder' => "",
+						'labelTranslate' => 'RECENT_ITEMS_LIMIT',
+						'name' => 'embyRecentItems',
+						'pattern' => '[0-9]+',
+						'value' => EMBYRECENTITEMS,
 					),
 					array(
 						array(
