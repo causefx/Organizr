@@ -459,7 +459,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 	
 	// Get Item Details
 	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&api_key='.$token),true)['Items'][0];
-	
+	$URL = "http://app.emby.media/itemdetails.html?id=".$itemDetails['Id'];
 	switch ($itemDetails['Type']) {
     case 'Episode':
         $title = (isset($itemDetails['SeriesName'])?$itemDetails['SeriesName']:"");
@@ -473,9 +473,9 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
         }else{
             $height = 281;
             $width = 500;
-            $imageId = $itemDetails['ParentThumbItemId'];
+            $imageId = isset($itemDetails['ParentThumbItemId']) ?	$itemDetails['ParentThumbItemId'] : (isset($itemDetails['ParentBackdropItemId']) ? $itemDetails['ParentBackdropItemId'] : false);
             $imageType = isset($itemDetails['ParentThumbItemId']) ?	"Thumb" : (isset($itemDetails['ParentBackdropItemId']) ? "Backdrop" : false);
-            $key = $itemDetails['ParentThumbItemId'] . "-np";
+            $key = (isset($itemDetails['ParentThumbItemId']) ? $itemDetails['ParentThumbItemId']."-np" : "none-np");
             $elapsed = $moreInfo['PlayState']['PositionTicks'];
             $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
             $watched = floor(($elapsed / $duration) * 100);
@@ -620,9 +620,9 @@ if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key
 	// Assemble Item And Cache Into Array     
 if($nowPlaying){
     //prettyPrint($itemDetails);
-    return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$address.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+    return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$URL.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
- return '<div class="item-'.$itemDetails['Type'].'"><a href="'.$address.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+ return '<div class="item-'.$itemDetails['Type'].'"><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
 }
 }
 
@@ -934,7 +934,7 @@ function getEmbyRecent($array) {
     }
 
     // Get the latest Items
-    $latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?EnableImages=false&&Limit=100&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
+    $latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?EnableImages=false&Limit='.EMBYRECENTITEMS.'&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
 	
     // For Each Item In Category
     $items = array();
@@ -962,7 +962,7 @@ function getPlexRecent($array){
 			 $header = translate('RECENT_CONTENT');
 	
 	// Perform Requests
-    $api = @curl_get($address."/library/recentlyAdded?limit=100&X-Plex-Token=".PLEXTOKEN);
+    $api = @curl_get($address."/library/recentlyAdded?limit=".PLEXRECENTITEMS."&X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
     $getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
 	if (!$getServer) { return 'Could not load!'; }
@@ -984,7 +984,10 @@ function getPlexRecent($array){
 // Get Image From Emby
 function getEmbyImage() {
 	$embyAddress = qualifyURL(EMBYURL);
-	
+    if (!file_exists('images/cache')) {
+        mkdir('images/cache', 0777, true);
+    }
+
 	$itemId = $_GET['img'];
  $key = $_GET['key'];
 	$itemType = $_GET['type'];
@@ -2984,6 +2987,64 @@ function embyArray($array, $type) {
             }
         }
     }
+}
+
+// Get Now Playing Streams From Plex
+function searchPlex($query){
+    $address = qualifyURL(PLEXURL);
+
+    // Perform API requests
+    $api = @curl_get($address."/search?query=".rawurlencode($query)."&X-Plex-Token=".PLEXTOKEN);
+    $api = simplexml_load_string($api);
+    $pre = "<table  class=\"table table-hover table-stripped\"><thead><tr><th>Cover</th><th>Title</th><th>Genre</th><th>Year</th><th>Type</th><th>Added</th></tr></thead><tbody>";
+    $items = "";
+    $albums = $movies = $shows = 0;
+    
+    $style = 'style="vertical-align: middle"';
+    foreach($api AS $child) {
+        if($child['type'] != "artist" && $child['type'] != "episode" && isset($child['librarySectionID'])){
+            $time = (string)$child['addedAt'];
+            $time = new DateTime("@$time");
+            $results = array(
+                "title" => (string)$child['title'],
+                "image" => (string)$child['thumb'],
+                "type" => (string)ucwords($child['type']),
+                "year" => (string)$child['year'],
+                "key" => (string)$child['key'],
+                "genre" => (string)$child->Genre['tag'],
+                "added" => $time->format('Y-m-d'),
+            );
+            switch ($child['type']){
+                case "album":
+                    $push = array(
+                        "title" => (string)$child['parentTitle']." - ".(string)$child['title'],
+                    );  
+                    $results = array_replace($results,$push);
+                    $albums++;
+                    break;
+                case "movie":
+                    $movies++;
+                    break;
+                case "show":
+                    $shows++;
+                    break;
+            }
+            $items .= '<tr>
+            <th scope="row"><img src="ajax.php?a=plex-image&img='.$results['image'].'&height=100&width=50&key='.$results['key'].'"></th>
+            <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
+            <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['genre'].'</td>
+            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['year'].'</td>
+            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['type'].'</td>
+            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['added'].'</td>
+            </tr>';
+        }
+    }
+    $totals = '<div style="margin: 10px;" class="sort-todo pull-right">
+              Movies <span class="badge green-bg">'.$movies.'</span>
+              Shows <span class="badge blue-bg">'.$shows.'</span>
+              Albums <span class="badge gray-bg">'.$albums.'</span>
+            </div>';
+    return (!empty($items) ? $totals.$pre.$items."</div></table>" : "<h2 class='text-center'>No Results for $query</h2>" );
 }
 
 // Always run this

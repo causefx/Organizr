@@ -75,6 +75,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		// Check if the user is an admin and is allowed to commit values
 		qualifyUser('admin', true);
 		switch ($action) {
+   case 'search-plex':
+    $response = searchPlex($_POST['searchtitle']);
+    break;
    case 'check-url':
 				sendResult(frameTest($_POST['checkurl']), "flask", $_POST['checkurl'], "IFRAME_CAN_BE_FRAMED", "IFRAME_CANNOT_BE_FRAMED");
 				break;
