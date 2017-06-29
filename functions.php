@@ -762,7 +762,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                     'platform' => (string) $item->Player['platform'],
                     'device' => (string) $item->Player['device'],
                     'stream' => "&nbsp;".streamType($item->Media->Part['decision']),
-                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[1]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['channels']."ch)",
+                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[0]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['channels']."ch)",
                 ));
                 $state = (($item->Player['state'] == "paused") ? "pause" : "play");
                 $topTitle = '<h5 class="text-center zero-m elip">'.$item['grandparentTitle'].' - '.$item['title'].'</h5>';
@@ -2831,7 +2831,7 @@ function streamType($value){
         return "Transcode";
     }elseif($value == "copy" || $value == "DirectStream"){
         return "Direct Stream";
-    }elseif($value == "directplay"){
+    }elseif($value == "directplay" || $value == "DirectPlay"){
         return "Direct Play";
     }else{
         return "Direct Play";
