@@ -76,8 +76,9 @@ if(SLIMBAR == "true") {
 
         <link rel="stylesheet" href="css/style.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="css/settings.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="bower_components/summernote/dist/summernote.css">
         <link href="css/jquery.filer.css" rel="stylesheet">
-	    <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
+	       <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
 
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
@@ -108,20 +109,22 @@ if(SLIMBAR == "true") {
         <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
         <script src="bower_components/numbered/jquery.numberedtextarea.js"></script>
 		
-		<!--Other-->
-		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
+        <!--Other-->
+        <script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
         <!--Notification-->
         <script src="js/notifications/notificationFx.js"></script>
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
         <script src="js/jquery.filer.min.js" type="text/javascript"></script>
-	    <script src="js/custom.js?v=<?php echo INSTALLEDVERSION; ?>" type="text/javascript"></script>
-	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
+        <script src="js/custom.js?v=<?php echo INSTALLEDVERSION; ?>" type="text/javascript"></script>
+        <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
         <!--Data Tables-->
         <script src="bower_components/DataTables/media/js/jquery.dataTables.js"></script>
         <script src="bower_components/datatables.net-responsive/js/dataTables.responsive.js"></script>
         <script src="bower_components/datatables-tabletools/js/dataTables.tableTools.js"></script>
+         <!--Summernote-->
+        <script src="bower_components/summernote/dist/summernote.min.js"></script>
 		
 		<!--Other-->
 		<script>
@@ -1110,13 +1113,18 @@ echo buildSettings(
 						'name' => 'homepageNoticeTitle',
 						'value' => HOMEPAGENOTICETITLE,
 					),
-					array(
+					/*array(
 						'type' => 'textarea',
 						'labelTranslate' => 'NOTICE_MESSAGE',
 						'name' => 'homepageNoticeMessage',
 						'value' => HOMEPAGENOTICEMESSAGE,
       'rows' => 5,
 						'class' => 'material no-code',
+					),*/
+        array(
+						'type' => 'custom',
+		 				'labelTranslate' => 'NOTICE_MESSAGE',
+						'html' => '<div class="summernote" name="homepageNoticeMessage">'.HOMEPAGENOTICEMESSAGE.'</div>',
 					),
 				),
 			),
@@ -2233,6 +2241,22 @@ echo buildSettings(
             })(jQuery);
 
             $(function () {
+                
+                $('.summernote').summernote({
+                    height: 120,
+                    codemirror: { // codemirror options
+						mode: 'text/html',
+						htmlMode: true,
+						lineNumbers: true,
+						theme: 'monokai'
+					}
+				});		
+
+                // summernote.change
+                $('.summernote').on('summernote.change', function(we, contents, $editable) {
+                    $(this).attr('data-changed', 'true');
+                });
+
 
                 //$(".todo ul").sortable();
                 $(".todo ul").sortable({
@@ -2588,7 +2612,7 @@ echo buildSettings(
             });
              $(document).mouseup(function (e)
 {
-                var container = $(".email-content, .checkFrame, #content");
+                var container = $(".email-content, .checkFrame, .scroller-body");
 
                 if (!container.is(e.target) && container.has(e.target).length === 0) {
                     $(".email-content").removeClass("email-active");
@@ -2692,6 +2716,9 @@ echo buildSettings(
             //Hide Icon box on load
             $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
             //Set Some Scrollbars
+			$(".note-editable panel-body").niceScroll({
+                railpadding: {top:0,right:0,left:0,bottom:0}
+            });
             $(".scroller-body").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0}
             });

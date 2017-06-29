@@ -404,8 +404,8 @@ endif; ?>
                             <form id="plexSearchForm" onsubmit="return false;" autocomplete="off">
                                 <div class="">
                                     <div class="input-group">
-                                        <div class="input-group-addon"><i class="fa fa-search gray"></i></div>
-                                        <input type="text" autocomplete="off" name="search-title" class="form-control name-of-todo" placeholder="Media Search">
+                                        <div style="border-radius: 25px 0 0 25px; border:0" class="input-group-addon gray-bg"><i class="fa fa-search white"></i></div>
+                                        <input type="text" style="border-radius: 0 25px 25px 0;" autocomplete="off" name="search-title" class="form-control input-group-addon gray-bg" placeholder="Media Search">
                                         <button style="display:none" id="plexSearchForm_submit" class="btn btn-primary waves"></button>
                                     </div>
                                 </div>
@@ -560,7 +560,7 @@ endif; ?>
             $('#plexSearchForm_submit').on('click', function () {
                 ajax_request('POST', 'search-plex', {
                     searchtitle: $('#plexSearchForm [name=search-title]').val(),
-                }).done(function(data){ $('#resultshere').html(data); console.log("done"); });;
+                }).done(function(data){ $('#resultshere').html(data);});
 
             });
             $('.repeat-btn').click(function(){

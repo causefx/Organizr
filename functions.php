@@ -177,7 +177,7 @@ if (function_exists('curl_version')) :
 	function plugin_auth_plex($username, $password) {
 		// Quick out
 		if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
-   writeLog("success", $username." authenticated by plex");
+   			writeLog("success", $username." authenticated by plex");
 			return true;
 		}
 		
@@ -194,7 +194,7 @@ if (function_exists('curl_version')) :
 			foreach($userXML AS $child) {
 				if(isset($child['username']) && strtolower($child['username']) == $usernameLower) {
 					$isUser = true;
-     writeLog("success", $usernameLower." was found in plex friends list");
+     				writeLog("success", $usernameLower." was found in plex friends list");
 					break;
 				}
 			}
@@ -217,16 +217,19 @@ if (function_exists('curl_version')) :
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
 					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && strtolower($json['user']['username']) == $usernameLower) {
-         writeLog("success", $json['user']['username']." was logged into plex and pulled credentials");
+						writeLog("success", $json['user']['username']." was logged into organizr using plex credentials");
                         return array(
 							'email' => $json['user']['email'],
 							'image' => $json['user']['thumb']
 						);
 					}
 				}
+			}else{
+				writeLog("error", "$username is not an authorized user or entered invalid password");
 			}
+		}else{
+  			writeLog("error", "error occured logging into plex might want to check curl.cainfo=/path/to/downloaded/cacert.pem in php.ini");   
 		}
-  writeLog("error", "error occured logging into plex might want to check curl.cainfo=/path/to/downloaded/cacert.pem in php.ini");   
 		return false;
 	}
 else :
@@ -1578,10 +1581,12 @@ function buildSettings($array) {
 				var newVals = {};
 				var hasVals = false;
 				var errorFields = [];
-				$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').each(function() {
+				$(\'#'.$pageID.'_form\').find(\'[data-changed=true][name]\').each(function() {
 					hasVals = true;
 					if (this.type == \'checkbox\') {
 						newVals[this.name] = this.checked;
+					} else if ($(this).hasClass(\'summernote\')) {
+						newVals[$(this).attr(\'name\')] = $(this).siblings(\'.note-editor\').find(\'.panel-body\').html();
 					} else {
 						if (this.value && this.pattern && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { errorFields.push(this.name); }
 						var fieldVal = $(this).val();
@@ -1600,7 +1605,7 @@ function buildSettings($array) {
 				} else if (hasVals) {
 					console.log(newVals);
 					ajax_request(\'POST\', \''.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data, code) {
-						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
+						$(\'#'.$pageID.'_form\').find(\'[data-changed=true][name]\').removeAttr(\'data-changed\');
 					});
 				} else {
 					parent.notify(\'Nothing to update!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
@@ -2139,8 +2144,11 @@ function deleteDatabase() {
 // Upgrade the installation
 function upgradeInstall($branch = 'master') {
     function downloadFile($url, $path){
+        ini_set('max_execution_time',0);
         $folderPath = "upgrade/";
-        if(!mkdir($folderPath)) : echo "can't make dir"; endif;
+        if(!mkdir($folderPath)){
+            writeLog("error", "organizr could not create upgrade folder");
+        }
         $newfname = $folderPath . $path;
         $file = fopen ($url, 'rb');
         if ($file) {
@@ -2150,14 +2158,22 @@ function upgradeInstall($branch = 'master') {
                     fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
                 }
             }
+        }else{
+            writeLog("error", "organizr could not download $url");
         }
 
         if ($file) {
             fclose($file);
+            writeLog("success", "organizr finished downloading the github zip file");
+        }else{
+            writeLog("error", "organizr could not download the github zip file");
         }
 
         if ($newf) {
             fclose($newf);
+            writeLog("success", "organizr created upgrade zip file from github zip file");
+        }else{
+            writeLog("error", "organizr could not create upgrade zip file from github zip file");
         }
     }
 
@@ -2165,7 +2181,9 @@ function upgradeInstall($branch = 'master') {
         $zip = new ZipArchive;
         $extractPath = "upgrade/";
         if($zip->open($extractPath . $zipFile) != "true"){
-            echo "Error :- Unable to open the Zip File";
+            writeLog("error", "organizr could not unzip upgrade.zip");
+        }else{
+            writeLog("success", "organizr unzipped upgrade.zip");
         }
 
         /* Extract Zip File */
@@ -2204,8 +2222,10 @@ function upgradeInstall($branch = 'master') {
     downloadFile($url, $file);
     unzipFile($file);
     rcopy($source, $destination);
+    writeLog("success", "new organizr files copied");
     rrmdir($cleanup);
-	writeLog("success", "organizr has been updated");
+    writeLog("success", "organizr upgrade folder removed");
+	   writeLog("success", "organizr has been updated");
 	return true;
 }
 
@@ -2996,7 +3016,7 @@ function searchPlex($query){
     // Perform API requests
     $api = @curl_get($address."/search?query=".rawurlencode($query)."&X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $pre = "<table  class=\"table table-hover table-stripped\"><thead><tr><th>Cover</th><th>Title</th><th>Genre</th><th>Year</th><th>Type</th><th>Added</th></tr></thead><tbody>";
+    $pre = "<table  class=\"table table-hover table-stripped\"><thead><tr><th>Cover</th><th>Title</th><th>Genre</th><th>Year</th><th>Type</th><th>Added</th><th>Extra Info</th></tr></thead><tbody>";
     $items = "";
     $albums = $movies = $shows = 0;
     
@@ -3013,6 +3033,7 @@ function searchPlex($query){
                 "key" => (string)$child['key'],
                 "genre" => (string)$child->Genre['tag'],
                 "added" => $time->format('Y-m-d'),
+                "extra" => "",
             );
             switch ($child['type']){
                 case "album":
@@ -3023,26 +3044,41 @@ function searchPlex($query){
                     $albums++;
                     break;
                 case "movie":
+					$push = array(
+                        "extra" => "Content Rating: ".(string)$child['contentRating']."<br/>Movie Rating: ".(string)$child['rating'],
+                    ); 
+			  		$results = array_replace($results,$push);
                     $movies++;
                     break;
                 case "show":
+			  		$push = array(
+                        "extra" => "Seasons: ".(string)$child['childCount']."<br/>Episodes: ".(string)$child['leafCount'],
+                    ); 
+			  		$results = array_replace($results,$push);
                     $shows++;
                     break;
             }
             $items .= '<tr>
             <th scope="row"><img src="ajax.php?a=plex-image&img='.$results['image'].'&height=100&width=50&key='.$results['key'].'"></th>
-            <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
+            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
             <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['genre'].'</td>
-            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['year'].'</td>
-            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['type'].'</td>
-            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['added'].'</td>
+            <td class="col-xs-1 nzbtable nzbtable-row"'.$style.'>'.$results['year'].'</td>
+            <td class="col-xs-1 nzbtable nzbtable-row"'.$style.'>'.$results['type'].'</td>
+            <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['added'].'</td>
+            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['extra'].'</td>
             </tr>';
         }
     }
     $totals = '<div style="margin: 10px;" class="sort-todo pull-right">
-              Movies <span class="badge green-bg">'.$movies.'</span>
-              Shows <span class="badge blue-bg">'.$shows.'</span>
-              Albums <span class="badge gray-bg">'.$albums.'</span>
+              <span class="badge gray-bg"><i class="fa fa-film fa-2x white"></i><strong style="
+    font-size: 23px;
+">&nbsp;'.$movies.'</strong></span>
+              <span class="badge gray-bg"><i class="fa fa-tv fa-2x white"></i><strong style="
+    font-size: 23px;
+">&nbsp;'.$shows.'</strong></span>
+              <span class="badge gray-bg"><i class="fa fa-music fa-2x white"></i><strong style="
+    font-size: 23px;
+">&nbsp;'.$albums.'</strong></span>
             </div>';
     return (!empty($items) ? $totals.$pre.$items."</div></table>" : "<h2 class='text-center'>No Results for $query</h2>" );
 }
