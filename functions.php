@@ -2947,7 +2947,7 @@ function buildHomepageNotice($layout, $type, $title, $message){
                                 </a>
                             </div>
                         </div>
-                        <p>'.$message.'</p>
+                        '.$message.'
                     </div>
                 </div>
             </div>
@@ -3030,7 +3030,7 @@ function searchPlex($query){
                 "image" => (string)$child['thumb'],
                 "type" => (string)ucwords($child['type']),
                 "year" => (string)$child['year'],
-                "key" => (string)$child['key'],
+                "key" => (string)$child['ratingKey']."-search",
                 "genre" => (string)$child->Genre['tag'],
                 "added" => $time->format('Y-m-d'),
                 "extra" => "",
@@ -3058,8 +3058,14 @@ function searchPlex($query){
                     $shows++;
                     break;
             }
+			if (file_exists('images/cache/'.$results['key'].'.jpg')){ $image_url = 'images/cache/'.$results['key'].'.jpg'; }
+    		if (file_exists('images/cache/'.$results['key'].'.jpg') && (time() - 604800) > filemtime('images/cache/'.$results['key'].'.jpg') || !file_exists('images/cache/'.$results['key'].'.jpg')) {       
+        		$image_url = 'ajax.php?a=plex-image&img='.$results['image'].'&height=150&width=100&key='.$results['key'];        
+    		}
+    		if(!$results['image']){ $image_url = "images/no-search.png"; $key = "no-search"; }
+			
             $items .= '<tr>
-            <th scope="row"><img src="ajax.php?a=plex-image&img='.$results['image'].'&height=100&width=50&key='.$results['key'].'"></th>
+            <th scope="row"><img src="'.$image_url.'"></th>
             <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
             <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['genre'].'</td>
             <td class="col-xs-1 nzbtable nzbtable-row"'.$style.'>'.$results['year'].'</td>
