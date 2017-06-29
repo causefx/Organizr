@@ -44,7 +44,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				break;
 			case 'plex-streams':
 				qualifyUser(PLEXHOMEAUTH, true);
-				echo getPlexStreams(12);
+				echo getPlexStreams(12, PLEXSHOWNAMES, $GLOBALS['USER']->role);
 				die();
 				break;
 			case 'emby-recent':
@@ -54,7 +54,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				break;
 			case 'plex-recent':
 				qualifyUser(PLEXHOMEAUTH, true);
-				echo getPlexRecent($_GET['type'], 12);
+				echo getPlexRecent(array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC));
 				die();
 				break;
 			case 'sabnzbd-update':
@@ -75,6 +75,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		// Check if the user is an admin and is allowed to commit values
 		qualifyUser('admin', true);
 		switch ($action) {
+   case 'check-url':
+				sendResult(frameTest($_POST['checkurl']), "flask", $_POST['checkurl'], "IFRAME_CAN_BE_FRAMED", "IFRAME_CANNOT_BE_FRAMED");
+				break;
 			case 'upload-images':
 				uploadFiles('images/', array('jpg', 'png', 'svg', 'jpeg', 'bmp'));
 				sendNotification(true);
@@ -116,6 +119,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				break;
 			case 'deleteLog':
 				sendNotification(unlink(FAIL_LOG));
+				break;
+   case 'deleteOrgLog':
+				sendNotification(unlink("org.log"));
 				break;
 			case 'submit-tabs':
 				$response['notify'] = sendNotification(updateTabs($_POST) , false, false);

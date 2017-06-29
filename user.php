@@ -357,6 +357,7 @@ EOT;
 			// step 2b: if there was a user to reset a password for, reset it.
 			$dbpassword = $this->token_hash_password($username, $sha1, $token);
 			$update = "UPDATE users SET password = '$dbpassword' WHERE email= '$email'";
+   writeLog("success", "$username has reset their password");
 			$this->database->exec($update);
             //$this->info("Email has been sent with new password");
 			// step 3: notify the user of the new password
@@ -563,6 +564,7 @@ EOT;
 			$query = "SELECT * FROM users WHERE username = '$username'";
 			foreach($this->database->query($query) as $data) {
 				$this->info("created user account for $username");
+    writeLog("success", "$username has just registered");
 				$this->update_user_token($username, $sha1, false);
 				// make the user's data directory
 				$dir = USER_HOME . $username;
@@ -653,6 +655,7 @@ EOT;
 					file_put_contents(FAIL_LOG, $buildLog($username, "good_auth"));
 					chmod(FAIL_LOG, 0660);
 					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
+     writeLog("success", "$username has logged in");
 					return true; 
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
 					// Create User
@@ -670,6 +673,7 @@ EOT;
 			} else if (!$authSuccess) {
 				// authentication failed
 				//$this->info("password mismatch for $username");
+    writeLog("error", "$username tried to sign-in with the wrong password");
 				file_put_contents(FAIL_LOG, $buildLog($username, "bad_auth"));
 				chmod(FAIL_LOG, 0660);
 				if(User::unsafe_reporting) { $this->error = "incorrect password for $username."; $this->error("incorrect password for $username."); }
@@ -700,6 +704,7 @@ EOT;
 				$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
 				$update = "UPDATE users SET password = '$dbpassword' WHERE username = '$username'";
 				$this->database->exec($update); }
+   writeLog("success", "information for $username has been updated");
 			$this->info("updated the information for <strong>$username</strong>");
 		}
 		/**
@@ -720,6 +725,7 @@ EOT;
             unset($_COOKIE['cookiePassword']);
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
             setcookie("cookiePassword", '', time() - 3600, '/');
+   writeLog("success", "$username has signed out");
 			return true;
 		}
 		/**
@@ -731,9 +737,10 @@ EOT;
 			$this->database->exec($delete);
 			$this->info("<strong>$username</strong> has been kicked out of Organizr");
 			//$this->resetSession();
-            $dir = USER_HOME . $username;
-            if(!rmdir($dir)) { $this->error("could not delete user directory $dir"); }
-            $this->info("and we deleted user directory $dir");
+    $dir = USER_HOME . $username;
+    if(!rmdir($dir)) { $this->error("could not delete user directory $dir"); }
+    $this->info("and we deleted user directory $dir");
+    writeLog("success", "$username has been deleted");
 			return true;
 		}
 		/**
