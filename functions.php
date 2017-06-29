@@ -177,7 +177,7 @@ if (function_exists('curl_version')) :
 	function plugin_auth_plex($username, $password) {
 		// Quick out
 		if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
-   writeLog("success", $username." authenticated by plex");
+   			writeLog("success", $username." authenticated by plex");
 			return true;
 		}
 		
@@ -194,7 +194,7 @@ if (function_exists('curl_version')) :
 			foreach($userXML AS $child) {
 				if(isset($child['username']) && strtolower($child['username']) == $usernameLower) {
 					$isUser = true;
-     writeLog("success", $usernameLower." was found in plex friends list");
+     				writeLog("success", $usernameLower." was found in plex friends list");
 					break;
 				}
 			}
@@ -217,16 +217,19 @@ if (function_exists('curl_version')) :
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
 					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && strtolower($json['user']['username']) == $usernameLower) {
-         writeLog("success", $json['user']['username']." was logged into plex and pulled credentials");
+						writeLog("success", $json['user']['username']." was logged into organizr using plex credentials");
                         return array(
 							'email' => $json['user']['email'],
 							'image' => $json['user']['thumb']
 						);
 					}
 				}
+			}else{
+				writeLog("error", "$username is not an authorized user or entered invalid password");
 			}
+		}else{
+  			writeLog("error", "error occured logging into plex might want to check curl.cainfo=/path/to/downloaded/cacert.pem in php.ini");   
 		}
-  writeLog("error", "error occured logging into plex might want to check curl.cainfo=/path/to/downloaded/cacert.pem in php.ini");   
 		return false;
 	}
 else :
@@ -3013,7 +3016,7 @@ function searchPlex($query){
     // Perform API requests
     $api = @curl_get($address."/search?query=".rawurlencode($query)."&X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $pre = "<table  class=\"table table-hover table-stripped\"><thead><tr><th>Cover</th><th>Title</th><th>Genre</th><th>Year</th><th>Type</th><th>Added</th></tr></thead><tbody>";
+    $pre = "<table  class=\"table table-hover table-stripped\"><thead><tr><th>Cover</th><th>Title</th><th>Genre</th><th>Year</th><th>Type</th><th>Added</th><th>Extra Info</th></tr></thead><tbody>";
     $items = "";
     $albums = $movies = $shows = 0;
     
@@ -3030,6 +3033,7 @@ function searchPlex($query){
                 "key" => (string)$child['key'],
                 "genre" => (string)$child->Genre['tag'],
                 "added" => $time->format('Y-m-d'),
+                "extra" => "",
             );
             switch ($child['type']){
                 case "album":
@@ -3040,19 +3044,28 @@ function searchPlex($query){
                     $albums++;
                     break;
                 case "movie":
+					$push = array(
+                        "extra" => "Content Rating: ".(string)$child['contentRating']."<br/>Movie Rating: ".(string)$child['rating'],
+                    ); 
+			  		$results = array_replace($results,$push);
                     $movies++;
                     break;
                 case "show":
+			  		$push = array(
+                        "extra" => "Seasons: ".(string)$child['childCount']."<br/>Episodes: ".(string)$child['leafCount'],
+                    ); 
+			  		$results = array_replace($results,$push);
                     $shows++;
                     break;
             }
             $items .= '<tr>
             <th scope="row"><img src="ajax.php?a=plex-image&img='.$results['image'].'&height=100&width=50&key='.$results['key'].'"></th>
-            <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
-            <td class="col-xs-4 nzbtable nzbtable-row"'.$style.'>'.$results['genre'].'</td>
+            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
+            <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['genre'].'</td>
             <td class="col-xs-1 nzbtable nzbtable-row"'.$style.'>'.$results['year'].'</td>
             <td class="col-xs-1 nzbtable nzbtable-row"'.$style.'>'.$results['type'].'</td>
             <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['added'].'</td>
+            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['extra'].'</td>
             </tr>';
         }
     }

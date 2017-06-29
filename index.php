@@ -640,7 +640,7 @@ endif; ?>
                                 <i class="mdi mdi-window-restore"></i>
                             </a>
                         </li>
-                        <li style="display: none" id="splitView" class="dropdown some-btn">
+                        <li style="display: block" id="splitView" class="dropdown some-btn">
                             <a class="spltView">
                                 <i class="mdi mdi-window-close"></i>
                             </a>
@@ -1381,13 +1381,21 @@ endif; ?>
             return false;
 
         });
-        $('#splitView').on('click tap', function(){
-
-            $('#splitView').hide();
+        $('#splitView').on('contextmenu', function(e){
+			e.stopPropagation();
+            //$('#splitView').hide();
             $("#content").attr("class", "content");
             $("li[class^='tab-item rightActive']").attr("class", "tab-item");
             $("#contentRight").html('');
-
+			return false;
+        });
+		$('#splitView').on('click tap', function(){
+			var activeFrame = $('#content').find('.active');
+			var getCurrentTab = $("li[class^='tab-item active']");
+			getCurrentTab.removeClass('active');
+			getCurrentTab.find('img').removeClass('TabOpened');
+			$("img[class^='TabOpened']").parents("li").trigger("click");
+			activeFrame.remove();
         });
         <?php if($iconRotate == "true") : ?>   
         $("li[id^='settings.phpx']").on('click tap', function(){

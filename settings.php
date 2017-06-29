@@ -1123,6 +1123,7 @@ echo buildSettings(
 					),*/
         array(
 						'type' => 'custom',
+		 				'labelTranslate' => 'NOTICE_MESSAGE',
 						'html' => '<div class="summernote" name="homepageNoticeMessage">'.HOMEPAGENOTICEMESSAGE.'</div>',
 					),
 				),
@@ -2243,17 +2244,13 @@ echo buildSettings(
                 
                 $('.summernote').summernote({
                     height: 120,
-                    toolbar: [
-                      //[groupname, [button list]]
-
-                      ['style', ['bold', 'italic', 'underline', 'clear']],
-                      ['font', ['strikethrough', 'superscript', 'subscript']],
-                      ['fontsize', ['fontsize']],
-                      ['color', ['color']],
-                      ['para', ['ul', 'ol', 'paragraph']],
-                      ['height', ['height']],
-                    ]
-                  });
+                    codemirror: { // codemirror options
+						mode: 'text/html',
+						htmlMode: true,
+						lineNumbers: true,
+						theme: 'monokai'
+					}
+				});		
 
                 // summernote.change
                 $('.summernote').on('summernote.change', function(we, contents, $editable) {
@@ -2615,7 +2612,7 @@ echo buildSettings(
             });
              $(document).mouseup(function (e)
 {
-                var container = $(".email-content, .checkFrame, #content");
+                var container = $(".email-content, .checkFrame, .scroller-body");
 
                 if (!container.is(e.target) && container.has(e.target).length === 0) {
                     $(".email-content").removeClass("email-active");
@@ -2719,6 +2716,9 @@ echo buildSettings(
             //Hide Icon box on load
             $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
             //Set Some Scrollbars
+			$(".note-editable panel-body").niceScroll({
+                railpadding: {top:0,right:0,left:0,bottom:0}
+            });
             $(".scroller-body").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0}
             });
