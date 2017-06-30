@@ -549,7 +549,7 @@ endif; ?>
             e.preventDefault();
         });
         
-		$('.openTab').click(function(e){
+		$(document).on("click", ".openTab", function(e) {
 			if($(this).attr("openTab") === "true") {
 				var isActive = parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']");
 				var activeFrame = isActive.children('iframe');
@@ -573,7 +573,7 @@ endif; ?>
         }
 		
         $( document ).ready(function() {
-            $('#plexSearchForm_submit').on('click', function () {
+            $('#plexSearchForm').on('submit', function () {
                 ajax_request('POST', 'search-plex', {
                     searchtitle: $('#plexSearchForm [name=search-title]').val(),
                 }).done(function(data){ $('#resultshere').html(data);});

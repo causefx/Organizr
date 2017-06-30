@@ -301,6 +301,29 @@ endif; ?>
 
             <!--Content-->
             <div id="content"  style="margin:0 10px; overflow:hidden">
+				<!-- Update -->
+				<div id="updateStatus" class="row" style="display: none;z-index: 10000;position: relative;">
+        			<div class="col-lg-12">
+          				<div class="content-box box-shadow">
+            				<div class="table-responsive">
+              					<table class="table table-striped progress-widget zero-m">
+                					<thead><tr><th>Updating</th></tr></thead>
+                					<tbody>
+										<tr>
+											<td>
+												<div class="progress">
+													<div id="updateStausBar" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 85%">
+													</div>
+												</div>
+											</td>
+                  						</tr>
+									</tbody>
+              					</table>
+            				</div>
+						</div>
+        			</div>
+				</div>
+				<!-- Check Frame Modal -->
                 <div class="modal fade checkFrame" tabindex="-1" role="dialog">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
