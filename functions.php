@@ -632,12 +632,10 @@ if($nowPlaying){
 // Format item from Plex for Carousel
 function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames = false, $role = false) {
     // Static Height
-    $height = 444;
-
-    $address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
+    $height = 444;    
 
     switch ($item['type']) {
-        case 'season':
+    	case 'season':
             $title = $item['parentTitle'];
             $summary = $item['parentSummary'];
             $width = 300;
@@ -657,7 +655,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
-                $id = $item->Session['id'];
+                $id = $item->Player['machineIdentifier'];
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
                     'device' => (string) $item->Player['device'],
@@ -688,7 +686,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
-                $id = $item->Session['id'];
+                $id = $item->Player['machineIdentifier'];
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
                     'device' => (string) $item->Player['device'],
@@ -722,7 +720,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
-                $id = $item->Session['id'];
+                $id = $item->Player['machineIdentifier'];
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
                     'device' => (string) $item->Player['device'],
@@ -742,6 +740,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
             $summary = $item['title'];
             $image = 'slick-image-short';
             $style = 'left: 160px !important;';
+			$item['ratingKey'] = $item['parentRatingKey'];
             if(!$nowPlaying){ 
                 $width = 444;
                 $thumb = $item['thumb'];
@@ -757,7 +756,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
-                $id = $item->Session['id'];
+                $id = $item->Player['machineIdentifier'];
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
                     'device' => (string) $item->Player['device'],
@@ -790,7 +789,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
-                $id = $item->Session['id'];
+                $id = $item->Player['machineIdentifier'];
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
                     'device' => (string) $item->Player['device'],
@@ -803,7 +802,13 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $bottomTitle = '<small class="zero-m">'.$item['year'].'</small>';
                 if($showNames == "true"){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
             }
-	   }
+		}
+	
+		if (substr_count(PLEXURL, ':') == 2) {
+			$address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
+		}else{
+			$address = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
+		}
 
     // If No Overview
     if (!isset($itemDetails['Overview'])) { $itemDetails['Overview'] = ''; }
@@ -813,11 +818,12 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
         $image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'';        
     }
     if(!$thumb){ $image_url = "images/no-np.png"; $key = "no-np"; }
+	$openTab = (PLEXTABNAME) ? "true" : "false";
     // Assemble Item And Cache Into Array 
     if($nowPlaying){
-        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$address.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a class="openTab" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
-        return '<div class="item-'.$item['type'].'"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+        return '<div class="item-'.$item['type'].'"><a class="openTab" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
     }
 }
 
@@ -3087,6 +3093,46 @@ function searchPlex($query){
 ">&nbsp;'.$albums.'</strong></span>
             </div>';
     return (!empty($items) ? $totals.$pre.$items."</div></table>" : "<h2 class='text-center'>No Results for $query</h2>" );
+}
+
+function getBannedUsers($string){
+    if (strpos($string, ',') !== false) {
+        $banned = explode(",", $string);     
+    }else{
+        $banned = array($string);  
+    }
+    return $banned;
+}
+
+function getWhitelist($string){
+    if (strpos($string, ',') !== false) {
+        $whitelist = explode(",", $string); 
+    }else{
+        $whitelist = array($string);
+    }
+    foreach($whitelist as &$ip){
+        $ip = is_numeric(substr($ip, 0, 1)) ? $ip : gethostbyname($ip);
+    }
+    return $whitelist;
+}
+
+function get_client_ip() {
+    $ipaddress = '';
+    if (isset($_SERVER['HTTP_CLIENT_IP']))
+        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+    else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    else if(isset($_SERVER['HTTP_X_FORWARDED']))
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+    else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
+        $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+    else if(isset($_SERVER['HTTP_FORWARDED']))
+        $ipaddress = $_SERVER['HTTP_FORWARDED'];
+    else if(isset($_SERVER['REMOTE_ADDR']))
+        $ipaddress = $_SERVER['REMOTE_ADDR'];
+    else
+        $ipaddress = 'UNKNOWN';
+    return $ipaddress;
 }
 
 // Always run this

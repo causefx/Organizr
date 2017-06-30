@@ -698,7 +698,7 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{20}',
 						'value' => PLEXTOKEN,
 					),
-     array(
+     				array(
 						'type' => 'text',
 						'placeholder' => "",
 						'labelTranslate' => 'RECENT_ITEMS_LIMIT',
@@ -707,11 +707,18 @@ echo buildSettings(
 						'value' => PLEXRECENTITEMS,
 					),
 					array(
+						'type' => 'text',
+						'placeholder' => "plex",
+						'labelTranslate' => 'PLEX_TAB_NAME',
+						'name' => 'plexTabName',
+						'value' => PLEXTABNAME,
+					),
+					array(
 						'type' => 'custom',
 						'html' => '<a href="https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token">Plex Token Wiki Article</a>',
 					),
 					array(
-      array(
+      					array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'ALLOW_SEARCH',
 							'name' => 'plexSearch',
@@ -741,7 +748,7 @@ echo buildSettings(
 							'name' => 'plexPlayingNow',
 							'value' => PLEXPLAYINGNOW,
 						),
-      array(
+      					array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'SHOW_NAMES',
 							'name' => 'plexShowNames',
@@ -779,7 +786,7 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
 					),
-     array(
+     				array(
 						'type' => 'text',
 						'placeholder' => "",
 						'labelTranslate' => 'RECENT_ITEMS_LIMIT',
@@ -812,7 +819,7 @@ echo buildSettings(
 							'name' => 'embyPlayingNow',
 							'value' => EMBYPLAYINGNOW,
 						),
-      array(
+      					array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'SHOW_NAMES',
 							'name' => 'embyShowNames',
