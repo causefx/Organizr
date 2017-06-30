@@ -303,16 +303,16 @@ endif; ?>
             <div id="content"  style="margin:0 10px; overflow:hidden">
 				<!-- Update -->
 				<div id="updateStatus" class="row" style="display: none;z-index: 10000;position: relative;">
-        			<div class="col-lg-12">
-          				<div class="content-box box-shadow">
+        			<div class="col-lg-2">
+          				<div class="content-box box-shadow animated rubberBand">
             				<div class="table-responsive">
               					<table class="table table-striped progress-widget zero-m">
-                					<thead><tr><th>Updating</th></tr></thead>
-                					<tbody>
+                					<thead class="yellow-bg"><tr><th>Updating</th></tr></thead>
+                					<tbody >
 										<tr>
 											<td>
 												<div class="progress">
-													<div id="updateStausBar" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 85%">
+													<div id="updateStatusBar" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
 													</div>
 												</div>
 											</td>
@@ -1352,8 +1352,8 @@ echo buildSettings(
 							'id' => 'gitForceInstall',
 							'labelTranslate' => 'GIT_FORCE',
 							'icon' => 'gear',
-							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { ajax_request(\'POST\', \'forceBranchInstall\'); } }',
-						),
+							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { performUpdate(); } }',
+						),//ajax_request(\'POST\', \'forceBranchInstall\')
 					),
 					array(
 						'type' => 'checkbox',
@@ -2192,7 +2192,34 @@ echo buildSettings(
 
         </div>
 
-          <script>
+		<script>
+			function performUpdate(){
+				$('#updateStatus').show();
+				setTimeout(function(){
+					$('#updateStatusBar').attr("style", "width: 15%");
+					setTimeout(function(){
+						$('#updateStatusBar').attr("style", "width: 30%");
+						setTimeout(function(){
+							$('#updateStatusBar').attr("style", "width: 45%");
+							setTimeout(function(){
+								$('#updateStatusBar').attr("style", "width: 60%");
+								setTimeout(function(){
+									$('#updateStatusBar').attr("style", "width: 75%");
+									setTimeout(function(){
+										$('#updateStatusBar').attr("style", "width: 85%");
+										setTimeout(function(){
+											$('#updateStatusBar').attr("style", "width: 95%");
+											setTimeout(function(){
+												$('#updateStatusBar').attr("style", "width: 100%");
+											}, 500);
+										}, 1000);
+									}, 1500);
+								}, 2000);
+							}, 2500);
+						}, 3000);
+					}, 3500);
+				}, 4000);
+			}
             $(function () {
                 //Data Tables
                 $('#datatable').DataTable({
