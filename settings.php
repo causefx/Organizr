@@ -2211,7 +2211,7 @@ echo buildSettings(
 											$('#updateStatusBar').attr("style", "width: 95%");
 											setTimeout(function(){
 												$('#updateStatusBar').attr("style", "width: 100%");
-											}, 500);
+											}, 100);
 										}, 1000);
 									}, 1500);
 								}, 2000);
@@ -2746,7 +2746,7 @@ echo buildSettings(
 
                             $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
                             <?php if (extension_loaded("ZIP")){?>
-                            $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"upgradeOrg\" method=\"post\" onsubmit=\"ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+                            $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"upgradeOrg\" method=\"post\" onsubmit=\"performUpdate(); ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
                             $( "p[id^='upgrade']" ).toggle();
                             <?php }else{ ?>
                             $(infoTabDownload).html("<br/><a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
