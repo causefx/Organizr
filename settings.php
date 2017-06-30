@@ -2211,14 +2211,14 @@ echo buildSettings(
 											$('#updateStatusBar').attr("style", "width: 95%");
 											setTimeout(function(){
 												$('#updateStatusBar').attr("style", "width: 100%");
-											}, 100);
-										}, 1000);
-									}, 1500);
-								}, 2000);
-							}, 2500);
-						}, 3000);
-					}, 3500);
-				}, 4000);
+											}, 4000);
+										}, 3500);
+									}, 3000);
+								}, 2500);
+							}, 2000);
+						}, 1500);
+					}, 1000);
+				}, 100);
 			}
             $(function () {
                 //Data Tables
