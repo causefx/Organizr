@@ -1147,7 +1147,7 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		writeLog("error", "config was unable to write");
 		return false;
 	} else {
-  writeLog("success", "config was updated with new values");
+  		writeLog("success", "config was updated with new values");
 		return $output;
 	}
 }
@@ -2234,7 +2234,7 @@ function upgradeInstall($branch = 'master') {
     writeLog("success", "new organizr files copied");
     rrmdir($cleanup);
     writeLog("success", "organizr upgrade folder removed");
-	   writeLog("success", "organizr has been updated");
+	writeLog("success", "organizr has been updated");
 	return true;
 }
 
