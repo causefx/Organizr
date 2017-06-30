@@ -2196,17 +2196,17 @@ echo buildSettings(
 			function performUpdate(){
 				$('#updateStatus').show();
 				setTimeout(function(){
-					$('#updateStatusBar').attr("style", "width: 15%");
+					$('#updateStatusBar').attr("style", "width: 1%");
 					setTimeout(function(){
-						$('#updateStatusBar').attr("style", "width: 30%");
+						$('#updateStatusBar').attr("style", "width: 20%");
 						setTimeout(function(){
-							$('#updateStatusBar').attr("style", "width: 45%");
+							$('#updateStatusBar').attr("style", "width: 35%");
 							setTimeout(function(){
-								$('#updateStatusBar').attr("style", "width: 60%");
+								$('#updateStatusBar').attr("style", "width: 50%");
 								setTimeout(function(){
-									$('#updateStatusBar').attr("style", "width: 75%");
+									$('#updateStatusBar').attr("style", "width: 65%");
 									setTimeout(function(){
-										$('#updateStatusBar').attr("style", "width: 85%");
+										$('#updateStatusBar').attr("style", "width: 80%");
 										setTimeout(function(){
 											$('#updateStatusBar').attr("style", "width: 95%");
 											setTimeout(function(){
