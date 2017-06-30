@@ -1352,8 +1352,8 @@ echo buildSettings(
 							'id' => 'gitForceInstall',
 							'labelTranslate' => 'GIT_FORCE',
 							'icon' => 'gear',
-							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { performUpdate(); } }',
-						),//ajax_request(\'POST\', \'forceBranchInstall\')
+							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { performUpdate(); ajax_request(\'POST\', \'forceBranchInstall\'); } }',
+						),
 					),
 					array(
 						'type' => 'checkbox',
