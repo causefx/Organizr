@@ -82,7 +82,7 @@ $errorImage = $codes[$status][2];
                                     <div class="big-box text-left">
                                         <center><img src="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>images/<?=$errorImage;?>.png" style="height: 200px;"></center>
                                         <h4 style="color: <?=$topbar;?>;" class="text-center"><?php echo $message;?></h4>
-                                        <button style="background:<?=$topbar;?>;" onclick="window.history.back();" type="button" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
+                                        <button style="background:<?=$topbar;?>;" onclick="parent.location='../'" type="button" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
                                     </div>
                                 </div>
                             </div>

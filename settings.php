@@ -652,12 +652,12 @@ echo buildSettings(
 						'value' => HOMEPAGEAUTHNEEDED,
 						'options' => $userTypes,
 					),
-    array(
-        'type' => 'checkbox',
-        'labelTranslate' => 'SPEED_TEST',
-        'name' => 'speedTest',
-        'value' => SPEEDTEST,
-    ),
+					array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'SPEED_TEST',
+						'name' => 'speedTest',
+						'value' => SPEEDTEST,
+					),
 					/*
 					array(
 						'type' => 'custom',
@@ -698,7 +698,7 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{20}',
 						'value' => PLEXTOKEN,
 					),
-     array(
+     				array(
 						'type' => 'text',
 						'placeholder' => "",
 						'labelTranslate' => 'RECENT_ITEMS_LIMIT',
@@ -707,11 +707,18 @@ echo buildSettings(
 						'value' => PLEXRECENTITEMS,
 					),
 					array(
+						'type' => 'text',
+						'placeholder' => "plex",
+						'labelTranslate' => 'PLEX_TAB_NAME',
+						'name' => 'plexTabName',
+						'value' => PLEXTABNAME,
+					),
+					array(
 						'type' => 'custom',
 						'html' => '<a href="https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token">Plex Token Wiki Article</a>',
 					),
 					array(
-      array(
+      					array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'ALLOW_SEARCH',
 							'name' => 'plexSearch',
@@ -741,7 +748,7 @@ echo buildSettings(
 							'name' => 'plexPlayingNow',
 							'value' => PLEXPLAYINGNOW,
 						),
-      array(
+      					array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'SHOW_NAMES',
 							'name' => 'plexShowNames',
@@ -779,7 +786,7 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
 					),
-     array(
+     				array(
 						'type' => 'text',
 						'placeholder' => "",
 						'labelTranslate' => 'RECENT_ITEMS_LIMIT',
@@ -812,7 +819,7 @@ echo buildSettings(
 							'name' => 'embyPlayingNow',
 							'value' => EMBYPLAYINGNOW,
 						),
-      array(
+      					array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'SHOW_NAMES',
 							'name' => 'embyShowNames',
@@ -1082,32 +1089,32 @@ echo buildSettings(
 						'value' => HOMEPAGENOTICEAUTH,
 						'options' => $userTypes,
 					),
-     array(
+     				array(
 						'type' => $userSelectType,
 						'labelTranslate' => 'NOTICE_LAYOUT',
 						'name' => 'homepageNoticeLayout',
 						'value' => HOMEPAGENOTICELAYOUT,
 						'options' => array(
-         'Elegant' => 'elegant',
-         'Basic' => 'basic',
-         'Jumbotron' => 'jumbotron',
-        ),
+							'Elegant' => 'elegant',
+							'Basic' => 'basic',
+							'Jumbotron' => 'jumbotron',
+						),
 					),
-     array(
+     				array(
 						'type' => $userSelectType,
 						'labelTranslate' => 'NOTICE_COLOR',
 						'name' => 'homepageNoticeType',
 						'value' => HOMEPAGENOTICETYPE,
 						'options' => array(
-         'Green' => 'success',
-         'Blue' => 'primary',
-         'Gray' => 'gray',
-         'Red' => 'danger',
-         'Yellow' => 'warning',
-         'Light Blue' => 'info',
-        ),
+							'Green' => 'success',
+							'Blue' => 'primary',
+							'Gray' => 'gray',
+							'Red' => 'danger',
+							'Yellow' => 'warning',
+							'Light Blue' => 'info',
+						),
 					),
-     array(
+     				array(
 						'type' => 'text',
 						'labelTranslate' => 'NOTICE_TITLE',
 						'name' => 'homepageNoticeTitle',
@@ -1118,10 +1125,10 @@ echo buildSettings(
 						'labelTranslate' => 'NOTICE_MESSAGE',
 						'name' => 'homepageNoticeMessage',
 						'value' => HOMEPAGENOTICEMESSAGE,
-      'rows' => 5,
+      					'rows' => 5,
 						'class' => 'material no-code',
 					),*/
-        array(
+        			array(
 						'type' => 'custom',
 		 				'labelTranslate' => 'NOTICE_MESSAGE',
 						'html' => '<div class="summernote" name="homepageNoticeMessage">'.HOMEPAGENOTICEMESSAGE.'</div>',

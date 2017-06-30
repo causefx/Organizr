@@ -254,7 +254,6 @@ endif; ?>
     <body class="scroller-body" style="padding: 0px;">
         <div class="main-wrapper" style="position: initial;">
             <div id="content" class="container-fluid">
-<!-- <button id="numBnt">Numerical</button> -->
                 <br/>
  
                 <?php if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) { echo buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE); } ?>
@@ -549,7 +548,24 @@ endif; ?>
             var closedBox = $(this).closest('div.content-box').remove();
             e.preventDefault();
         });
-            
+        
+		$('.openTab').click(function(e){
+			if($(this).attr("openTab") === "true") {
+				var isActive = parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']");
+				var activeFrame = isActive.children('iframe');
+				if(isActive.length === 1){
+					activeFrame.attr("src", $(this).attr("href"));
+					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
+				}else{
+					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
+					parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']").children('iframe').attr("src", $(this).attr("href"));
+				}
+				e.preventDefault();
+			}else{
+				console.log("nope");
+			}
+
+        });
         
             
         function localStorageSupport() {
