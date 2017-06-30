@@ -652,12 +652,12 @@ echo buildSettings(
 						'value' => HOMEPAGEAUTHNEEDED,
 						'options' => $userTypes,
 					),
-    array(
-        'type' => 'checkbox',
-        'labelTranslate' => 'SPEED_TEST',
-        'name' => 'speedTest',
-        'value' => SPEEDTEST,
-    ),
+					array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'SPEED_TEST',
+						'name' => 'speedTest',
+						'value' => SPEEDTEST,
+					),
 					/*
 					array(
 						'type' => 'custom',
@@ -1089,32 +1089,32 @@ echo buildSettings(
 						'value' => HOMEPAGENOTICEAUTH,
 						'options' => $userTypes,
 					),
-     array(
+     				array(
 						'type' => $userSelectType,
 						'labelTranslate' => 'NOTICE_LAYOUT',
 						'name' => 'homepageNoticeLayout',
 						'value' => HOMEPAGENOTICELAYOUT,
 						'options' => array(
-         'Elegant' => 'elegant',
-         'Basic' => 'basic',
-         'Jumbotron' => 'jumbotron',
-        ),
+							'Elegant' => 'elegant',
+							'Basic' => 'basic',
+							'Jumbotron' => 'jumbotron',
+						),
 					),
-     array(
+     				array(
 						'type' => $userSelectType,
 						'labelTranslate' => 'NOTICE_COLOR',
 						'name' => 'homepageNoticeType',
 						'value' => HOMEPAGENOTICETYPE,
 						'options' => array(
-         'Green' => 'success',
-         'Blue' => 'primary',
-         'Gray' => 'gray',
-         'Red' => 'danger',
-         'Yellow' => 'warning',
-         'Light Blue' => 'info',
-        ),
+							'Green' => 'success',
+							'Blue' => 'primary',
+							'Gray' => 'gray',
+							'Red' => 'danger',
+							'Yellow' => 'warning',
+							'Light Blue' => 'info',
+						),
 					),
-     array(
+     				array(
 						'type' => 'text',
 						'labelTranslate' => 'NOTICE_TITLE',
 						'name' => 'homepageNoticeTitle',
@@ -1125,10 +1125,10 @@ echo buildSettings(
 						'labelTranslate' => 'NOTICE_MESSAGE',
 						'name' => 'homepageNoticeMessage',
 						'value' => HOMEPAGENOTICEMESSAGE,
-      'rows' => 5,
+      					'rows' => 5,
 						'class' => 'material no-code',
 					),*/
-        array(
+        			array(
 						'type' => 'custom',
 		 				'labelTranslate' => 'NOTICE_MESSAGE',
 						'html' => '<div class="summernote" name="homepageNoticeMessage">'.HOMEPAGENOTICEMESSAGE.'</div>',

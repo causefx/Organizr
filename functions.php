@@ -2856,6 +2856,7 @@ function getPlatform($platform){
         "Emby for iOS" => "ios.png",
         "Emby Mobile" => "emby.png",
         "Emby Theater" => "emby.png",
+        "Safari" => "safari.png",
     );
     if (array_key_exists($platform, $allPlatforms)) {
         return $allPlatforms[$platform];

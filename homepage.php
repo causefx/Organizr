@@ -551,14 +551,14 @@ endif; ?>
         
 		$('.openTab').click(function(e){
 			if($(this).attr("openTab") === "true") {
-				var isActive = parent.$("div[data-content-name^='<?php echo PLEXTABNAME;?>']");
+				var isActive = parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']");
 				var activeFrame = isActive.children('iframe');
 				if(isActive.length === 1){
 					activeFrame.attr("src", $(this).attr("href"));
-					parent.$("li[name='<?php echo PLEXTABNAME;?>']").trigger("click");
+					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
 				}else{
-					parent.$("li[name='<?php echo PLEXTABNAME;?>']").trigger("click");
-					parent.$("div[data-content-name^='<?php echo PLEXTABNAME;?>']").children('iframe').attr("src", $(this).attr("href"));
+					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
+					parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']").children('iframe').attr("src", $(this).attr("href"));
 				}
 				e.preventDefault();
 			}else{
