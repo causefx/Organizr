@@ -655,7 +655,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
-                $id = $item->Player['machineIdentifier'];
+                $id = str_replace('"', '', $item->Player['machineIdentifier']);
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
                     'device' => (string) $item->Player['device'],
@@ -686,7 +686,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
-                $id = $item->Player['machineIdentifier'];
+                $id = str_replace('"', '', $item->Player['machineIdentifier']);
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
                     'device' => (string) $item->Player['device'],
@@ -720,7 +720,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
-                $id = $item->Player['machineIdentifier'];
+                $id = str_replace('"', '', $item->Player['machineIdentifier']);
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
                     'device' => (string) $item->Player['device'],
@@ -756,7 +756,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
-                $id = $item->Player['machineIdentifier'];
+                $id = str_replace('"', '', $item->Player['machineIdentifier']);
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
                     'device' => (string) $item->Player['device'],
@@ -789,7 +789,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
-                $id = $item->Player['machineIdentifier'];
+                $id = str_replace('"', '', $item->Player['machineIdentifier']);
                 $streamInfo = buildStream(array(
                     'platform' => (string) $item->Player['platform'],
                     'device' => (string) $item->Player['device'],
@@ -1513,6 +1513,8 @@ function buildSettings($array) {
 	);
 	*/
 	
+	$notifyExplode = explode("-", NOTIFYEFFECT);
+	
 	$fieldFunc = function($fieldArr) {
 		$fields = '<div class="row">';
 		foreach($fieldArr as $key => $value) {
@@ -1607,14 +1609,14 @@ function buildSettings($array) {
 					}
 				});
 				if (errorFields.length) {
-					parent.notify(\'Fields have errors: \'+errorFields.join(\', \')+\'!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
+					parent.notify(\'Fields have errors: \'+errorFields.join(\', \')+\'!\', \'bullhorn\', \'error\', 5000, \''.$notifyExplode[0].'\', \''.$notifyExplode[1].'\');
 				} else if (hasVals) {
 					console.log(newVals);
 					ajax_request(\'POST\', \''.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data, code) {
 						$(\'#'.$pageID.'_form\').find(\'[data-changed=true][name]\').removeAttr(\'data-changed\');
 					});
 				} else {
-					parent.notify(\'Nothing to update!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
+					parent.notify(\'Nothing to update!\', \'bullhorn\', \'error\', 5000, \''.$notifyExplode[0].'\', \''.$notifyExplode[1].'\');
 				}
 				return false;
 			});
@@ -2225,6 +2227,7 @@ function upgradeInstall($branch = 'master') {
     $source = __DIR__ . '/upgrade/Organizr-'.$branch.'/';
     $cleanup = __DIR__ . "/upgrade/";
     $destination = __DIR__ . "/";
+	writeLog("success", "starting organizr upgrade process");
     downloadFile($url, $file);
     unzipFile($file);
     rcopy($source, $destination);
