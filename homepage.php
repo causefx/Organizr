@@ -528,10 +528,10 @@ endif; ?>
                                 <?php if(HEADPHONESURL != ""){ echo '<option value="music">Music</option>'; }?>
                             </select>
 
-                            <span class="label label-primary well-sm pull-right">Available</span>
-                            <span class="label label-danger well-sm pull-right">Unavailable</span>
-                            <span class="label indigo-bg well-sm pull-right">Unreleased</span>
-                            <span class="label light-blue-bg well-sm pull-right">Premier</span>
+                            <span class="label label-primary well-sm">Available</span>
+                            <span class="label label-danger well-sm">Unavailable</span>
+                            <span class="label indigo-bg well-sm">Unreleased</span>
+                            <span class="label light-blue-bg well-sm">Premier</span>
                         </div>
                     </div>
                 </div>
