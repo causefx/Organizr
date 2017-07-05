@@ -353,7 +353,7 @@ if (function_exists('curl_version')) :
 		// As post request
 		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "GET"); 
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
+  		curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
 		// Format Headers
 		$cHeaders = array();
 		foreach ($headers as $k => $v) {
@@ -3022,10 +3022,16 @@ function embyArray($array, $type) {
 // Get Now Playing Streams From Plex
 function searchPlex($query){
     $address = qualifyURL(PLEXURL);
+	$openTab = (PLEXTABNAME) ? "true" : "false";
 
     // Perform API requests
     $api = @curl_get($address."/search?query=".rawurlencode($query)."&X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
+	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+    if (!$getServer) { return 'Could not load!'; }
+	
+	// Identify the local machine
+    $server = $getServer['machineIdentifier'];
     $pre = "<table  class=\"table table-hover table-stripped\"><thead><tr><th>Cover</th><th>Title</th><th>Genre</th><th>Year</th><th>Type</th><th>Added</th><th>Extra Info</th></tr></thead><tbody>";
     $items = "";
     $albums = $movies = $shows = 0;
@@ -3041,6 +3047,7 @@ function searchPlex($query){
                 "type" => (string)ucwords($child['type']),
                 "year" => (string)$child['year'],
                 "key" => (string)$child['ratingKey']."-search",
+                "ratingkey" => (string)$child['ratingKey'],
                 "genre" => (string)$child->Genre['tag'],
                 "added" => $time->format('Y-m-d'),
                 "extra" => "",
@@ -3074,8 +3081,14 @@ function searchPlex($query){
     		}
     		if(!$results['image']){ $image_url = "images/no-search.png"; $key = "no-search"; }
 			
+			if (substr_count(PLEXURL, ':') == 2) {
+				$link = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
+			}else{
+				$link = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
+			}
+			
             $items .= '<tr>
-            <th scope="row"><img src="'.$image_url.'"></th>
+            <th scope="row"><a class="openTab" openTab="'.$openTab.'" href="'.$link.'"><img src="'.$image_url.'"></th></a>
             <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
             <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['genre'].'</td>
             <td class="col-xs-1 nzbtable nzbtable-row"'.$style.'>'.$results['year'].'</td>
