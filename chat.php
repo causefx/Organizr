@@ -117,13 +117,7 @@ endif;
                 -webkit-filter: grayscale; /*sepia, hue-rotate, invert....*/
                 -webkit-filter: brightness(25%);
             }
-            <?php if(CUSTOMCSS == "true") : 
-$template_file = "custom.css";
-$file_handle = fopen($template_file, "rb");
-echo fread($file_handle, filesize($template_file));
-fclose($file_handle);
-echo "\n";
-endif; ?>        
+            <?php customCSS(); ?>      
         </style>
     </head>
 

@@ -241,20 +241,13 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
 				white-space: normal !important;
 				width: 0% !important;
 				font-size: 12px; !important;
-			}<?php if(CUSTOMCSS == "true") : 
-$template_file = "custom.css";
-$file_handle = fopen($template_file, "rb");
-echo fread($file_handle, filesize($template_file));
-fclose($file_handle);
-echo "\n";
-endif; ?>        
+			}<?php customCSS(); ?>       
         </style>
     </head>
 
     <body class="scroller-body" style="padding: 0px;">
         <div class="main-wrapper" style="position: initial;">
             <div id="content" class="container-fluid">
-<!-- <button id="numBnt">Numerical</button> -->
                 <br/>
  
                 <?php if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) { echo buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE); } ?>
@@ -397,6 +390,25 @@ endif; ?>
                     </div>
                 </div>
                 <?php } ?>
+                <?php if((PLEXSEARCH == "true" && qualifyUser(PLEXHOMEAUTH))) { ?>
+                <div id="searchPlexRow" class="row">
+                    <div class="col-lg-12">
+                        <div class="content-box box-shadow big-box todo-list">                        
+                            <form id="plexSearchForm" onsubmit="return false;" autocomplete="off">
+                                <div class="">
+                                    <div class="input-group">
+                                        <div style="border-radius: 25px 0 0 25px; border:0" class="input-group-addon gray-bg"><i class="fa fa-search white"></i></div>
+                                        <input type="text" style="border-radius: 0 25px 25px 0;" autocomplete="off" name="search-title" class="form-control input-group-addon gray-bg" placeholder="Media Search">
+                                        <button style="display:none" id="plexSearchForm_submit" class="btn btn-primary waves"></button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div id="resultshere" class="table-responsive"></div>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+                
                 <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
                 <div id="downloadClientRow" class="row">
                     <div class="col-xs-12 col-md-12">
@@ -474,7 +486,7 @@ endif; ?>
                 <div id="plexRow" class="row">
                     <div class="col-lg-12">
                     <?php
-                    if(PLEXRECENTMOVIE || PLEXRECENTTV || PLEXRECENTMUSIC){  
+                    if(PLEXRECENTMOVIE == "true" || PLEXRECENTTV == "true" || PLEXRECENTMUSIC == "true"){  
                         $plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
                         echo getPlexRecent($plexArray);
                     } 
@@ -483,14 +495,19 @@ endif; ?>
                 </div>
 				<?php } ?>
 				<?php if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) { ?>
+                <div id="embyRowNowPlaying" class="row">
+                    <?php if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(12, EMBYSHOWNAMES, $USER->role); } ?>
+                </div>
                 <div id="embyRow" class="row">
+                    <div class="col-lg-12">
                     <?php
-                    $embySize = (EMBYRECENTMOVIE == "true") + (EMBYRECENTTV == "true") + (EMBYRECENTMUSIC == "true") + (EMBYPLAYINGNOW == "true");
-                    if(EMBYRECENTMOVIE == "true"){ echo getEmbyRecent("movie", 12/$embySize); }
-                    if(EMBYRECENTTV == "true"){ echo getEmbyRecent("season", 12/$embySize); }
-                    if(EMBYRECENTMUSIC == "true"){ echo getEmbyRecent("album", 12/$embySize); }
-                    if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(12/$embySize); }
+                    if(EMBYRECENTMOVIE == "true" || EMBYRECENTTV == "true" || EMBYRECENTMUSIC == "true"){  
+                        $embyArray = array("Movie" => EMBYRECENTMOVIE, "Episode" => EMBYRECENTTV, "MusicAlbum" => EMBYRECENTMUSIC, "Series" => EMBYRECENTTV);
+                        echo getEmbyRecent($embyArray);
+                    } 
+    
                     ?>
+                    </div>
 
                 </div>
 				<?php } ?>
@@ -525,7 +542,24 @@ endif; ?>
             var closedBox = $(this).closest('div.content-box').remove();
             e.preventDefault();
         });
-            
+        
+		$(document).on("click", ".openTab", function(e) {
+			if($(this).attr("openTab") === "true") {
+				var isActive = parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']");
+				var activeFrame = isActive.children('iframe');
+				if(isActive.length === 1){
+					activeFrame.attr("src", $(this).attr("href"));
+					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
+				}else{
+					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
+					parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']").children('iframe').attr("src", $(this).attr("href"));
+				}
+				e.preventDefault();
+			}else{
+				console.log("nope");
+			}
+
+        });
         
             
         function localStorageSupport() {
@@ -533,6 +567,12 @@ endif; ?>
         }
 		
         $( document ).ready(function() {
+            $('#plexSearchForm').on('submit', function () {
+                ajax_request('POST', 'search-plex', {
+                    searchtitle: $('#plexSearchForm [name=search-title]').val(),
+                }).done(function(data){ $('#resultshere').html(data);});
+
+            });
             $('.repeat-btn').click(function(){
                 var refreshBox = $(this).closest('div.content-box');
                 $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
@@ -544,26 +584,10 @@ endif; ?>
                 },1500);
             });
             $(document).on('click', '.w-refresh', function(){
-                //Your code
                 var id = $(this).attr("link");
                 $("div[np^='"+id+"']").toggle();
-                    console.log(id);
-                    //console.log(moreInfo);
             });
-            var windowSize = window.innerWidth;
-            var nowPlaying = "";
-            if(windowSize >= 1000){
-                nowPlaying = 8;
-            }else if(windowSize <= 400){
-                nowPlaying = 2;
-            }else if(windowSize <= 600){
-                nowPlaying = 3;
-            }else if(windowSize <= 849){
-                nowPlaying = 6;
-            }else if(windowSize <= 999){
-                nowPlaying = 7;
-            }
-            console.log(windowSize+" - " +nowPlaying);
+     
             $('.recentItems').slick({
               
                 slidesToShow: 13,
@@ -656,7 +680,7 @@ endif; ?>
 
             $('.js-filter-movie').on('click', function(){
               if (movieFiltered === false) {
-                $('.recentItems').slick('slickFilter','.item-season, .item-album');
+                $('.recentItems').slick('slickFilter','.item-season, .item-album, .item-Series, .item-Episode, .item-MusicAlbum');
                 $(this).text('Show Movies');
                 movieFiltered = true;
               } else {
@@ -668,7 +692,7 @@ endif; ?>
             
             $('.js-filter-season').on('click', function(){
               if (seasonFiltered === false) {
-                $('.recentItems').slick('slickFilter','.item-movie, .item-album');
+                $('.recentItems').slick('slickFilter','.item-movie, .item-album, .item-Movie, .item-MusicAlbum');
                 $(this).text('Show TV');
                 seasonFiltered = true;
               } else {
@@ -680,7 +704,7 @@ endif; ?>
             
             $('.js-filter-album').on('click', function(){
               if (albumFiltered === false) {
-                $('.recentItems').slick('slickFilter','.item-season, .item-movie');
+                $('.recentItems').slick('slickFilter','.item-season, .item-movie, .item-Series, .item-Episode, .item-Movie');
                 $(this).text('Show Music');
                 albumFiltered = true;
               } else {

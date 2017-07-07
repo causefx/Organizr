@@ -26,6 +26,9 @@ qualifyUser('admin', true);
 // Load User List
 $gotUsers = $file_db->query('SELECT * FROM users');
 
+// Load Invite List
+$gotInvites = $file_db->query('SELECT * FROM invites');
+
 // Load Colours/Appearance
 foreach(loadAppearance() as $key => $value) {
 	$$key = $value;
@@ -76,8 +79,9 @@ if(SLIMBAR == "true") {
 
         <link rel="stylesheet" href="css/style.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="css/settings.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="bower_components/summernote/dist/summernote.css">
         <link href="css/jquery.filer.css" rel="stylesheet">
-	    <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
+	       <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
 
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
@@ -108,20 +112,22 @@ if(SLIMBAR == "true") {
         <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
         <script src="bower_components/numbered/jquery.numberedtextarea.js"></script>
 		
-		<!--Other-->
-		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
+        <!--Other-->
+        <script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
         <!--Notification-->
         <script src="js/notifications/notificationFx.js"></script>
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
         <script src="js/jquery.filer.min.js" type="text/javascript"></script>
-	    <script src="js/custom.js?v=<?php echo INSTALLEDVERSION; ?>" type="text/javascript"></script>
-	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
+        <script src="js/custom.js?v=<?php echo INSTALLEDVERSION; ?>" type="text/javascript"></script>
+        <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
         <!--Data Tables-->
         <script src="bower_components/DataTables/media/js/jquery.dataTables.js"></script>
         <script src="bower_components/datatables.net-responsive/js/dataTables.responsive.js"></script>
         <script src="bower_components/datatables-tabletools/js/dataTables.tableTools.js"></script>
+         <!--Summernote-->
+        <script src="bower_components/summernote/dist/summernote.min.js"></script>
 		
 		<!--Other-->
 		<script>
@@ -283,13 +289,7 @@ if(SLIMBAR == "true") {
                 border-bottom: 0;
                 border-radius: 5px;
                 top: 3px;
-}<?php if(CUSTOMCSS == "true") : 
-$template_file = "custom.css";
-$file_handle = fopen($template_file, "rb");
-echo fread($file_handle, filesize($template_file));
-fclose($file_handle);
-echo "\n";
-endif; ?>
+}<?php customCSS(); ?>
         </style>
     </head>
 
@@ -298,6 +298,29 @@ endif; ?>
 
             <!--Content-->
             <div id="content"  style="margin:0 10px; overflow:hidden">
+				<!-- Update -->
+				<div id="updateStatus" class="row" style="display: none;z-index: 10000;position: relative;">
+        			<div class="col-lg-2">
+          				<div class="content-box box-shadow animated rubberBand">
+            				<div class="table-responsive">
+              					<table class="table table-striped progress-widget zero-m">
+                					<thead class="yellow-bg"><tr><th>Updating</th></tr></thead>
+                					<tbody >
+										<tr>
+											<td>
+												<div class="progress">
+													<div id="updateStatusBar" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+													</div>
+												</div>
+											</td>
+                  						</tr>
+									</tbody>
+              					</table>
+            				</div>
+						</div>
+        			</div>
+				</div>
+				<!-- Check Frame Modal -->
                 <div class="modal fade checkFrame" tabindex="-1" role="dialog">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
@@ -335,6 +358,7 @@ endif; ?>
                                     <li><a id="open-logs" box="logs-box"><i class="fa fa-file-text-o blue pull-right"></i>View Logs</a></li>
                                     <li><a id="open-homepage" box="homepage-box"><i class=" fa fa-home yellow pull-right"></i>Edit Homepage</a></li>
                                     <li><a id="open-advanced" box="advanced-box"><i class=" fa fa-cog light-blue pull-right"></i>Advanced</a></li>
+                                    <li><a id="open-invites" box="invites-box"><i class=" fa fa-user-plus gray pull-right"></i>Plex Invites</a></li>
                                     <li><a id="open-info" box="info-box"><i class=" fa fa-info-circle orange pull-right"></i>About</a></li>
                                     <li><a id="open-donate" box="donate-box"><i class=" fa fa-money red pull-right"></i>Donate</a></li>
                                 </ul>
@@ -365,7 +389,7 @@ endif; ?>
 											<button id="iconAll" type="button" class="btn waves btn-labeled btn-info btn-sm text-uppercase waves-effect waves-float">
 												<span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo $language->translate("VIEW_ICONS");?>
 											</button>
-           <button id="checkFrame" data-toggle="modal" data-target=".checkFrame" type="button" class="btn waves btn-labeled btn-gray btn-sm text-uppercase waves-effect waves-float">
+           									<button id="checkFrame" data-toggle="modal" data-target=".checkFrame" type="button" class="btn waves btn-labeled btn-gray btn-sm text-uppercase waves-effect waves-float">
 												<span class="btn-label"><i class="fa fa-check"></i></span><?php echo $language->translate("CHECK_FRAME");?>
 											</button>
 											<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
@@ -380,7 +404,7 @@ endif; ?>
 <?php
 $dirname = "images/";
 $images = scandir($dirname);
-$ignore = Array(".", "..", "favicon", "cache", "platforms", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "no-np.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
+$ignore = Array(".", "..", "favicon", "cache", "platforms", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "no-np.png", "no-list.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
 foreach($images as $curimg){
 	if(!in_array($curimg, $ignore)) { ?>
 												<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
@@ -597,7 +621,7 @@ echo buildSettings(
 			array(
 				'title' => 'Custom CSS',
 				'id' => 'theme_css',
-				'image' => 'images/gear.png',
+				'image' => 'images/css.png',
 				'fields' => array(
 					array(
 						'type' => 'header',
@@ -649,12 +673,12 @@ echo buildSettings(
 						'value' => HOMEPAGEAUTHNEEDED,
 						'options' => $userTypes,
 					),
-    array(
-        'type' => 'checkbox',
-        'labelTranslate' => 'SPEED_TEST',
-        'name' => 'speedTest',
-        'value' => SPEEDTEST,
-    ),
+					array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'SPEED_TEST',
+						'name' => 'speedTest',
+						'value' => SPEEDTEST,
+					),
 					/*
 					array(
 						'type' => 'custom',
@@ -695,11 +719,32 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{20}',
 						'value' => PLEXTOKEN,
 					),
+     				array(
+						'type' => 'text',
+						'placeholder' => "",
+						'labelTranslate' => 'RECENT_ITEMS_LIMIT',
+						'name' => 'plexRecentItems',
+						'pattern' => '[0-9]+',
+						'value' => PLEXRECENTITEMS,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => "plex",
+						'labelTranslate' => 'PLEX_TAB_NAME',
+						'name' => 'plexTabName',
+						'value' => PLEXTABNAME,
+					),
 					array(
 						'type' => 'custom',
 						'html' => '<a href="https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token">Plex Token Wiki Article</a>',
 					),
 					array(
+      					array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'ALLOW_SEARCH',
+							'name' => 'plexSearch',
+							'value' => PLEXSEARCH,
+						),
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'RECENT_MOVIES',
@@ -724,7 +769,7 @@ echo buildSettings(
 							'name' => 'plexPlayingNow',
 							'value' => PLEXPLAYINGNOW,
 						),
-      array(
+      					array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'SHOW_NAMES',
 							'name' => 'plexShowNames',
@@ -762,6 +807,14 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
 					),
+     				array(
+						'type' => 'text',
+						'placeholder' => "",
+						'labelTranslate' => 'RECENT_ITEMS_LIMIT',
+						'name' => 'embyRecentItems',
+						'pattern' => '[0-9]+',
+						'value' => EMBYRECENTITEMS,
+					),
 					array(
 						array(
 							'type' => 'checkbox',
@@ -786,6 +839,12 @@ echo buildSettings(
 							'labelTranslate' => 'PLAYING_NOW',
 							'name' => 'embyPlayingNow',
 							'value' => EMBYPLAYINGNOW,
+						),
+      					array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'SHOW_NAMES',
+							'name' => 'embyShowNames',
+							'value' => EMBYSHOWNAMES,
 						),
 					),
 				),
@@ -1051,51 +1110,56 @@ echo buildSettings(
 						'value' => HOMEPAGENOTICEAUTH,
 						'options' => $userTypes,
 					),
-     array(
+     				array(
 						'type' => $userSelectType,
 						'labelTranslate' => 'NOTICE_LAYOUT',
 						'name' => 'homepageNoticeLayout',
 						'value' => HOMEPAGENOTICELAYOUT,
 						'options' => array(
-         'Elegant' => 'elegant',
-         'Basic' => 'basic',
-         'Jumbotron' => 'jumbotron',
-        ),
+							'Elegant' => 'elegant',
+							'Basic' => 'basic',
+							'Jumbotron' => 'jumbotron',
+						),
 					),
-     array(
+     				array(
 						'type' => $userSelectType,
 						'labelTranslate' => 'NOTICE_COLOR',
 						'name' => 'homepageNoticeType',
 						'value' => HOMEPAGENOTICETYPE,
 						'options' => array(
-         'Green' => 'success',
-         'Blue' => 'primary',
-         'Gray' => 'gray',
-         'Red' => 'danger',
-         'Yellow' => 'warning',
-         'Light Blue' => 'info',
-        ),
+							'Green' => 'success',
+							'Blue' => 'primary',
+							'Gray' => 'gray',
+							'Red' => 'danger',
+							'Yellow' => 'warning',
+							'Light Blue' => 'info',
+						),
 					),
-     array(
+     				array(
 						'type' => 'text',
 						'labelTranslate' => 'NOTICE_TITLE',
 						'name' => 'homepageNoticeTitle',
 						'value' => HOMEPAGENOTICETITLE,
 					),
-					array(
+					/*array(
 						'type' => 'textarea',
 						'labelTranslate' => 'NOTICE_MESSAGE',
 						'name' => 'homepageNoticeMessage',
 						'value' => HOMEPAGENOTICEMESSAGE,
-      'rows' => 5,
+      					'rows' => 5,
 						'class' => 'material no-code',
+					),*/
+        			array(
+						'type' => 'custom',
+		 				'labelTranslate' => 'NOTICE_MESSAGE',
+						'html' => '<div class="summernote" name="homepageNoticeMessage">'.HOMEPAGENOTICEMESSAGE.'</div>',
 					),
 				),
 			),
 			array(
 				'title' => 'Custom HTML 1',
 				'id' => 'customhtml1',
-				'image' => 'images/gear.png',
+				'image' => 'images/html.png',
 				'fields' => array(
 					array(
 						'type' => $userSelectType,
@@ -1286,7 +1350,7 @@ echo buildSettings(
 							'id' => 'gitForceInstall',
 							'labelTranslate' => 'GIT_FORCE',
 							'icon' => 'gear',
-							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { ajax_request(\'POST\', \'forceBranchInstall\'); } }',
+							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { performUpdate(); ajax_request(\'POST\', \'forceBranchInstall\'); } }',
 						),
 					),
 					array(
@@ -1459,7 +1523,7 @@ echo buildSettings(
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-6 col-lg-6">
+                                        <div class="col-sm-4 col-lg-4">
                                             <div class="content-box ultra-widget blue-bg" style="cursor: pointer;" onclick="window.open('https://paypal.me/causefx', '_blank')">
                                                 <div class="w-content big-box">
                                                     <div class="w-progress">
@@ -1476,7 +1540,7 @@ echo buildSettings(
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-sm-6 col-lg-6">
+                                        <div class="col-sm-4 col-lg-4">
                                             <div class="content-box ultra-widget green-bg" style="cursor: pointer;" onclick="window.open('https://cash.me/$causefx', '_blank')">
                                                 <div class="w-content big-box">
                                                     <div class="w-progress">
@@ -1488,6 +1552,22 @@ echo buildSettings(
                                                         <span class="fa-stack fa-lg">
                                                             <i class="fa fa-square fa-stack-2x"></i>
                                                             <i class="fa fa-dollar green fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+										 <div class="col-sm-4 col-lg-4">
+                                            <div class="content-box ultra-widget red-bg">
+                                                <div class="w-content big-box">
+                                                    <div class="w-progress">
+                                                        <span class="w-amount">BitCoin</span>
+                                                        <small class="text-uppercase">1NDy1Su6izmwkcFZaZuMWDYrFFUNv3FQCN</small>
+                                                    </div>
+                                                    <span class="w-refresh w-p-icon">
+                                                        <span class="fa-stack fa-lg">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-btc red fa-stack-1x fa-inverse"></i>
                                                         </span>
                                                     </span>
                                                 </div>
@@ -1959,6 +2039,132 @@ echo buildSettings(
                         </div>
                     </div>
                 </div>
+				<div class="email-content invites-box white-bg">
+                    <div class="email-body">
+                        <div class="email-header gray-bg">
+                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+                            <h1>Invite Management</h1>
+                        </div>
+                        <div class="email-inner small-box">
+                            <div class="email-inner-section">
+                                <div class="small-box fade in" id="useredit">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="small-box">
+                                                <form class="content-form form-inline" name="inviteNewUser" id="inviteNewUser" action="" method="POST">
+                                                    <input type="hidden" name="op" value="invite"/>
+                                                    <input type="hidden" name="server" value="plex"/>
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control material" name="username" placeholder="<?php echo $language->translate("USERNAME_NAME");?>" autocorrect="off" autocapitalize="off" value="">
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="email" class="form-control material" name="email" placeholder="<?php echo $language->translate("EMAIL");?>" required>
+
+                                                    </div>
+
+                                                    <button type="submit" class="btn waves btn-labeled btn-primary btn btn-sm text-uppercase waves-effect waves-float">
+
+                                                        <span class="btn-label"><i class="fa fa-user-plus"></i></span><?php echo $language->translate("SEND_INVITE");?>
+
+                                                    </button>
+
+                                                </form>               
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="small-box">
+                                        
+										<form class="content-form form-inline" name="deleteInviteForm" id="deleteInviteForm" action="" method="POST">
+                                            
+											<p id="inputInvite"></p>
+
+                                            <div class="table-responsive">
+
+                                                <table class="table table-striped">
+
+                                                    <thead>
+
+                                                        <tr>
+
+                                                            <th>#</th>
+
+                                                            <th><?php echo $language->translate("USERNAME");?></th>
+                                                            <th><?php echo $language->translate("EMAIL");?></th>
+                                                            <th><?php echo $language->translate("INVITE_CODE");?></th>
+                                                            <th><?php echo $language->translate("DATE_SENT");?></th>
+                                                            <th><?php echo $language->translate("DATE_USED");?></th>
+                                                            <th><?php echo $language->translate("USED_BY");?></th>
+                                                            <th><?php echo $language->translate("IP_ADDRESS");?></th>
+                                                            <th><?php echo $language->translate("VALID");?></th>
+                                                            <th><?php echo $language->translate("DELETE");?></th>
+
+                                                        </tr>
+
+                                                    </thead>
+
+                                                    <tbody><!-- onsubmit="return false;" -->
+														
+
+                                                        <?php
+                                                        foreach($gotInvites as $row) :
+															$validColor = ($row['valid'] == "Yes" ? "primary" : "danger");
+															$inviteUser = ($row['username'] != "" ? $row['username'] : "N/A");
+															$dateInviteUsed = ($row['dateused'] != "" ? $row['dateused'] : "Not Used");
+															$ipUsed = ($row['ip'] != "" ? $row['ip'] : "Not Used");
+															$usedBy = ($row['usedby'] != "" ? $row['usedby'] : "Not Used");
+              
+                                                        ?>
+
+															<tr id="<?=$row['id'];?>">
+
+																<th scope="row"><?=$row['id'];?></th>
+
+																<td><?=$inviteUser;?></td>
+																<td><?=$row['email'];?></td>
+
+																<td><span style="font-size: 100%;" class="label label-<?=$validColor;?>"><?=$row['code'];?></span></td>
+
+																<td><?=$row['date'];?></td>
+
+																<td><?=$dateInviteUsed;?></td>
+																<td><?=$usedBy;?></td>
+																<td><?=$ipUsed;?></td>
+
+																<td><span style="font-size: 100%;" class="label label-<?=$validColor;?>"><?=$row['valid'];?></span></td>
+
+																<td id="<?=$row['id'];?>">
+																	<button class="btn waves btn-labeled btn-danger btn btn-sm text-uppercase waves-effect waves-float deleteInvite">
+
+																		<span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("DELETE");?>
+
+																	</button>
+																</td>
+
+															</tr>
+
+                                                        <?php endforeach; ?>
+														
+
+                                                    </tbody>
+
+                                                </table>
+
+                                            </div>
+											
+										</form>
+                                        
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="email-content logs-box white-bg">
                     <div class="email-body">
                         <div class="email-header gray-bg">
@@ -2125,8 +2331,48 @@ echo buildSettings(
             <!--End Content-->
 
         </div>
+		 <?php if(isset($_POST['op'])) : ?>
+        <script>
+            
+            parent.notify("<?php echo printArray($USER->info_log); ?>","info-circle","notice","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+            
+            <?php if(!empty($USER->error_log)) : ?>
+            
+            parent.notify("<?php echo printArray($USER->error_log); ?>","exclamation-circle ","error","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+            
+            <?php endif; ?>
+            
+        </script>
+        <?php endif; ?>
 
-          <script>
+		<script>
+			function performUpdate(){
+				$('#updateStatus').show();
+				setTimeout(function(){
+					$('#updateStatusBar').attr("style", "width: 1%");
+					setTimeout(function(){
+						$('#updateStatusBar').attr("style", "width: 20%");
+						setTimeout(function(){
+							$('#updateStatusBar').attr("style", "width: 35%");
+							setTimeout(function(){
+								$('#updateStatusBar').attr("style", "width: 50%");
+								setTimeout(function(){
+									$('#updateStatusBar').attr("style", "width: 65%");
+									setTimeout(function(){
+										$('#updateStatusBar').attr("style", "width: 80%");
+										setTimeout(function(){
+											$('#updateStatusBar').attr("style", "width: 95%");
+											setTimeout(function(){
+												$('#updateStatusBar').attr("style", "width: 100%");
+											}, 4000);
+										}, 3500);
+									}, 3000);
+								}, 2500);
+							}, 2000);
+						}, 1500);
+					}, 1000);
+				}, 100);
+			}
             $(function () {
                 //Data Tables
                 $('#datatable').DataTable({
@@ -2205,6 +2451,22 @@ echo buildSettings(
             })(jQuery);
 
             $(function () {
+                
+                $('.summernote').summernote({
+                    height: 120,
+                    codemirror: { // codemirror options
+						mode: 'text/html',
+						htmlMode: true,
+						lineNumbers: true,
+						theme: 'monokai'
+					}
+				});		
+
+                // summernote.change
+                $('.summernote').on('summernote.change', function(we, contents, $editable) {
+                    $(this).attr('data-changed', 'true');
+                });
+
 
                 //$(".todo ul").sortable();
                 $(".todo ul").sortable({
@@ -2239,6 +2501,12 @@ echo buildSettings(
             $("#deleteToggle").click(function(){
 
                 $( "#deleteDiv" ).toggle();
+            });
+			$(".deleteInvite").click(function(){
+
+                var parent_id = $(this).parent().attr('id');
+                editUsername = $('#deleteInviteForm').find('#inputInvite');
+                $(editUsername).html('<input type="hidden" name="op" value="deleteinvite"/><input type="hidden" name="id"value="' + parent_id + '" />');
             });
             $(".deleteUser").click(function(){
 
@@ -2560,7 +2828,7 @@ echo buildSettings(
             });
              $(document).mouseup(function (e)
 {
-                var container = $(".email-content, .checkFrame, #content");
+                var container = $(".email-content, .checkFrame, .scroller-body");
 
                 if (!container.is(e.target) && container.has(e.target).length === 0) {
                     $(".email-content").removeClass("email-active");
@@ -2582,7 +2850,7 @@ echo buildSettings(
 
         
      
-            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate ").on("click",function (e) {
+            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites ").on("click",function (e) {
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
                 if($(window).width() < 768){
@@ -2637,7 +2905,7 @@ echo buildSettings(
 
                             $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
                             <?php if (extension_loaded("ZIP")){?>
-                            $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"upgradeOrg\" method=\"post\" onsubmit=\"ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+                            $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"upgradeOrg\" method=\"post\" onsubmit=\"performUpdate(); ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
                             $( "p[id^='upgrade']" ).toggle();
                             <?php }else{ ?>
                             $(infoTabDownload).html("<br/><a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
@@ -2664,6 +2932,9 @@ echo buildSettings(
             //Hide Icon box on load
             $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
             //Set Some Scrollbars
+			$(".note-editable panel-body").niceScroll({
+                railpadding: {top:0,right:0,left:0,bottom:0}
+            });
             $(".scroller-body").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0}
             });

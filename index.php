@@ -40,6 +40,8 @@ if(isset($_POST['action'])) {
     $action = $_POST['action'];
 	unset($_POST['action']);
 }
+//Get Invite Code
+$inviteCode = isset($_GET['inviteCode']) ? $_GET['inviteCode'] : null;
 
 // Check for config file
 if(!file_exists('config/config.php')) {
@@ -499,13 +501,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             padding: 5px 22px;
         }
         <?php endif; ?>
-        <?php if(CUSTOMCSS == "true") : 
-$template_file = "custom.css";
-$file_handle = fopen($template_file, "rb");
-echo fread($file_handle, filesize($template_file));
-fclose($file_handle);
-echo "\n";
-endif; ?>
+        <?php customCSS(); ?>
 
     </style>
 
@@ -640,7 +636,7 @@ endif; ?>
                                 <i class="mdi mdi-window-restore"></i>
                             </a>
                         </li>
-                        <li style="display: none" id="splitView" class="dropdown some-btn">
+                        <li style="display: block" id="splitView" class="dropdown some-btn">
                             <a class="spltView">
                                 <i class="mdi mdi-window-close"></i>
                             </a>
@@ -652,7 +648,7 @@ endif; ?>
             <!--Content-->
             <div id="content" class="content" style="">
                 <script>addToHomescreen();</script>
-
+				
                 <!--Load Framed Content-->
                 <?php if($needSetup == "Yes" && $configReady == "Yes") : ?>
                 <div class="table-wrapper" style="background:<?=$sidebar;?>;">
@@ -742,13 +738,13 @@ endif; ?>
                                     <div class="big-box text-left">
 
                                         <h3 class="text-center"><?php echo $language->translate("SPECIFY_LOCATION");?></h3>
-                                        <h5 class="text-left"><strong><?php echo $language->translate("CURRENT_DIRECTORY");?>: <?php echo __DIR__; ?> <br><?php echo $language->translate("PARENT_DIRECTORY");?>: <?php echo dirname(__DIR__); ?></strong></h5>
+                                        <h5 class="text-left"><strong><?php echo $language->translate("CURRENT_DIRECTORY");?>: <?php echo str_replace("\\","/",__DIR__); ?> <br><?php echo $language->translate("PARENT_DIRECTORY");?>: <?php echo str_replace("\\","/",dirname(__DIR__)); ?></strong></h5>
                                         <form class="controlbox" name="setupDatabase" id="setupDatabase" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                             <input type="hidden" name="action" value="createLocation" />
 
                                             <div class="form-group">
 
-                                                <input type="text" class="form-control material" name="database_Location" autofocus value="<?php echo dirname(__DIR__);?>" autocorrect="off" autocapitalize="off" required>
+                                                <input type="text" class="form-control material" name="database_Location" autofocus value="<?php echo str_replace("\\","/",dirname(__DIR__));?>" autocorrect="off" autocapitalize="off" required>
                                                 <h5><?php echo $language->translate("SET_DATABASE_LOCATION");?></h5>
                                                 <?php echo getTimezone();?>
                                                 <h5><?php echo $language->translate("SET_TIMEZONE");?></h5>
@@ -895,7 +891,7 @@ endif; ?>
             </div>
 
         </div>
-        <?php if($configReady == "Yes") : if(!$USER->authenticated && $configReady == "Yes") : ?>
+        <?php if($configReady == "Yes") : if(!$USER->authenticated && $configReady == "Yes") : if(!$inviteCode) : ?>
         <div class="login-modal modal fade">
             <div style="background:<?=$sidebar;?>;" class="table-wrapper">
                 <div class="table-row">
@@ -915,7 +911,7 @@ endif; ?>
                                     <?php if($USER->error!="") : ?>
                                     <p class="error">Error: <?php echo $USER->error; ?></p>
                                     <?php endif; ?>
-                                    <form name="log in" id="login" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
+                                    <form name="log in" id="login" action="" method="POST">
                                         <h4 class="text-center"><?php echo $language->translate("LOGIN");?></h4>
                                         <div class="form-group">
                                             <input type="hidden" name="op" value="login">
@@ -1013,7 +1009,7 @@ endif; ?>
                 </div>
             </div>
         </div>
-        <?php endif; endif;?>
+        <?php endif; endif; endif;?>
         <?php if($configReady == "Yes") : if($USER->authenticated) : ?>
         <div style="background:<?=$topbar;?>;" class="logout-modal modal fade">
             <div class="table-wrapper" style="background: <?=$sidebar;?>">
@@ -1041,6 +1037,78 @@ endif; ?>
             </div>
         </div>
         <?php endif; endif;?>
+		<?php if ($inviteCode){ ?>
+		<div id="inviteSet" class="login-modal modal fade">
+			<div style="background:<?=$sidebar;?>;" class="table-wrapper">
+				<div class="table-row">
+					<div class="table-cell text-center">
+						<button style="color:<?=$topbartext;?>;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<div class="login i-block">
+							<div class="content-box">
+								<div style="background:<?=$topbar;?>;" class="biggest-box">
+
+									<h1 style="color:<?=$topbartext;?>;" class="zero-m text-uppercase"><?php echo $language->translate("WELCOME");?></h1>
+
+								</div>
+								<div class="big-box text-left login-form">
+
+									<?php if($USER->error!="") : ?>
+									<p class="error">Error: <?php echo $USER->error; ?></p>
+									<?php endif; ?>
+									<form name="checkInviteForm" id="checkInviteForm" onsubmit="return false;" data-smk-icon="glyphicon-remove-sign">
+										<h4 class="text-center"><?php echo $language->translate("CHECK_INVITE");?></h4>
+										<div class="form-group">
+											<input style="font-size: 400%; height: 100%" type="text" class="form-control yellow-bg text-center text-uppercase" name="inviteCode" placeholder="<?php echo $language->translate("CODE");?>" autocomplete="off" autocorrect="off" autocapitalize="off" value="<?=$inviteCode;?>" maxlength="6" spellcheck="false" autofocus required>
+										</div>
+
+										<button id="checkInviteForm_submit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="checkInvite"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("SUBMIT_CODE");?></text></button>
+
+									</form> 
+									
+									<div style="display: none" id="chooseMethod">
+										<h4 class="text-center"><?php echo $language->translate("HAVE_ACCOUNT");?></h4>
+										<button id="yesPlexButton" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("YES");?></text></button>
+										<button id="noPlexButton" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("NO");?></text></button>
+									</div>
+									
+									<form style="display:none" name="useInviteForm" id="useInviteForm" onsubmit="return false;" data-smk-icon="glyphicon-remove-sign">
+										<h4 class="text-center"><?php echo $language->translate("ENTER_PLEX_NAME");?></h4>
+										<h4 id="accountMade" style="display: none" class="text-center">
+											<span class="label label-primary"><?php echo $language->translate("ACCOUNT_MADE");?></span>
+										</h4>
+										<div class="form-group">
+											<input style="font-size: 400%; height: 100%" type="hidden" class="form-control yellow-bg text-center text-uppercase" name="inviteCode" placeholder="<?php echo $language->translate("CODE");?>" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?=$inviteCode;?>" maxlength="6" required>
+											<input type="text" class="form-control material" name="inviteUser" placeholder="<?php echo $language->translate("USERNAME_EMAIL");?>" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="" autofocus required>
+										</div>
+
+										<button id="useInviteForm_submit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="useInvite"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("JOIN");?></text></button>
+										<button id="plexYesGoBack" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
+
+									</form>
+
+									<form style="display:none" name="joinPlexForm" id="joinPlexForm" onsubmit="return false;" data-smk-icon="glyphicon-remove-sign">
+										<h4 class="text-center"><?php echo $language->translate("CREATE_PLEX");?></h4>
+										<div class="form-group">
+											<input type="text" class="form-control material" name="joinUser" placeholder="<?php echo $language->translate("USERNAME");?>" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" value="" autofocus required>
+											<input type="text" class="form-control material" name="joinEmail" placeholder="<?php echo $language->translate("EMAIL");?>" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" value="" required>
+											<input type="password" class="form-control material" name="joinPassword" placeholder="<?php echo $language->translate("PASSWORD");?>" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" value="" required>
+										</div>
+
+										<button id="joinPlexForm_submit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="useInvite"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("SIGN_UP");?></text></button>
+										<button id="plexNoGoBack" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
+
+									</form> 
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php } ?>
 
         <!--Scripts-->
         <script src="<?=$baseURL;?>bower_components/jquery/dist/jquery.min.js"></script>
@@ -1124,10 +1192,10 @@ endif; ?>
 
         }
         $('#loginSubmit').click(function() {
-            if ($('#login').smkValidate()) {
+            /*if ($('#login').smkValidate()) {
                 console.log("validated");
             }
-            console.log("didnt validate");
+            console.log("didnt validate");*/
         });
         $('#registerSubmit').click(function() {
             if ($('#registration').smkValidate()) {
@@ -1153,6 +1221,14 @@ endif; ?>
             $("#switchCreateUser").toggle();
             $("#welcomeGoBack").toggle();
         });
+		$("#plexNoGoBack").click(function(){
+            $("#joinPlexForm").toggle();
+            $("#chooseMethod").toggle();
+        });
+		$("#plexYesGoBack").click(function(){
+            $("#useInviteForm").toggle();
+            $("#chooseMethod").toggle();
+        });	
         $("#welcomeGoBack2").click(function(){
             $( "form[id^='login']" ).toggle();
             $("#userPassForm").toggle();
@@ -1187,12 +1263,16 @@ endif; ?>
         $(".log-in").click(function(e){
             var e1 = document.querySelector(".log-in"),
                 e2 = document.querySelector(".login-modal");
-            cta(e1, e2, {relativeToWindow: true}, function () {
+            	cta(e1, e2, {relativeToWindow: true}, function () {
                 $('.login-modal').modal("show");
             });
 
             e.preventDefault();
         });
+		//InviteCode
+		<?php if($inviteCode){ ?>
+		$('#inviteSet').modal("show");	
+		<?php } ?>
 
         //Logout
         $(".logout").click(function(e){
@@ -1222,6 +1302,60 @@ endif; ?>
         });
 
         $(document).ready(function(){
+			//PLEX INVITE SHIT
+			$('#checkInviteForm').on('submit', function () {
+                ajax_request('POST', 'validate-invite', {
+                    invitecode: $('#checkInviteForm [name=inviteCode]').val(),
+                }).done(function(data){ 
+					var result = JSON.stringify(data).includes("success");
+					if(result === true){
+						$('#checkInviteForm').hide();
+						$('#chooseMethod').show();
+						console.log(result);
+					}
+				});
+
+            });
+			$('#useInviteForm').on('submit', function () {
+                ajax_request('POST', 'use-invite', {
+                    invitecode: $('#useInviteForm [name=inviteCode]').val(),
+                    inviteuser: $('#useInviteForm [name=inviteUser]').val(),
+                }).done(function(data){ 
+					var result = JSON.stringify(data).includes("success");
+					console.log(result);
+					if(result === true){
+						//$('#checkInviteForm').hide();
+						//$('#chooseMethod').show();
+						console.log(result);
+					}
+				});
+
+            });
+			$('#joinPlexForm').on('submit', function () {
+                ajax_request('POST', 'join-plex', {
+                    joinuser: $('#joinPlexForm [name=joinUser]').val(),
+                    joinemail: $('#joinPlexForm [name=joinEmail]').val(),
+                    joinpassword: $('#joinPlexForm [name=joinPassword]').val(),
+                }).done(function(data){ 
+					var result = JSON.stringify(data).includes("success");
+					if(result === true){
+						$('#joinPlexForm').hide();
+						$('#useInviteForm').show();
+						$('#accountMade').show();
+						$('input[name=inviteUser]').val($('input[name=joinUser]').val());
+						console.log(result);
+					}
+				});
+
+            });
+			$("#yesPlexButton").click(function(){
+				$('#chooseMethod').hide();
+				$('#useInviteForm').show();
+			});
+			$("#noPlexButton").click(function(){
+				$('#chooseMethod').hide();
+				$('#joinPlexForm').show();
+			});
             $('#userCreateForm').submit(function(event) {
 
                 var formData = {
@@ -1381,13 +1515,21 @@ endif; ?>
             return false;
 
         });
-        $('#splitView').on('click tap', function(){
-
-            $('#splitView').hide();
+        $('#splitView').on('contextmenu', function(e){
+			e.stopPropagation();
+            //$('#splitView').hide();
             $("#content").attr("class", "content");
             $("li[class^='tab-item rightActive']").attr("class", "tab-item");
             $("#contentRight").html('');
-
+			return false;
+        });
+		$('#splitView').on('click tap', function(){
+			var activeFrame = $('#content').find('.active');
+			var getCurrentTab = $("li[class^='tab-item active']");
+			getCurrentTab.removeClass('active');
+			getCurrentTab.find('img').removeClass('TabOpened');
+			$("img[class^='TabOpened']").parents("li").trigger("click");
+			activeFrame.remove();
         });
         <?php if($iconRotate == "true") : ?>   
         $("li[id^='settings.phpx']").on('click tap', function(){
@@ -1452,7 +1594,7 @@ endif; ?>
 
                     $("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
-                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
+                    $( '<div class="iframe active" data-content-name="'+thisname+'" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
                     document.title = thistitle;
                    // window.location.href = '#' + thisname;
 
@@ -1507,7 +1649,7 @@ endif; ?>
 
                     $("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
 
-                    $( '<div class="iframe active" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
+                    $( '<div class="iframe active" data-content-name="'+thisname+'" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
                     document.title = thistitle;
                     window.location.href = '#' + thisname;
 

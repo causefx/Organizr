@@ -29,6 +29,236 @@
 
 
     define('GUEST_HASH', "guest-".guestHash(0, 5));
+    define('EMAIL_CSS', "
+	/* ------------------------------------- 
+		GLOBAL 
+------------------------------------- */
+* { 
+	margin:0;
+	padding:0;
+}
+* { font-family: \"Helvetica Neue\", \"Helvetica\", Helvetica, Arial, sans-serif; }
+
+img { 
+	max-width: 100%; 
+}
+.collapse {
+	margin:0;
+	padding:0;
+}
+html {
+  height: 100%;
+}
+body {
+	-webkit-font-smoothing:antialiased; 
+	-webkit-text-size-adjust:none; 
+	width: 100%!important; 
+	min-height: 100%;
+}
+
+
+/* ------------------------------------- 
+		ELEMENTS 
+------------------------------------- */
+a { color: #2BA6CB;}
+
+.btn {
+	text-decoration:none;
+	color: #FFF;
+	background-color: #666;
+	padding:10px 16px;
+	font-weight:bold;
+	margin-right:10px;
+	text-align:center;
+	cursor:pointer;
+	display: inline-block;
+}
+
+p.callout {
+	padding:15px;
+	background-color:#ECF8FF;
+	margin-bottom: 15px;
+}
+.callout a {
+	font-weight:bold;
+	color: #2BA6CB;
+}
+
+table.social {
+/* 	padding:15px; */
+	background-color: #ebebeb;
+	
+}
+.social .soc-btn {
+	padding: 3px 7px;
+	font-size:12px;
+	margin-bottom:10px;
+	text-decoration:none;
+	color: #FFF;font-weight:bold;
+	display:block;
+	text-align:center;
+}
+a.fb { background-color: #3B5998!important; }
+a.tw { background-color: #1daced!important; }
+a.gp { background-color: #DB4A39!important; }
+a.ms { background-color: #000!important; }
+
+.sidebar .soc-btn { 
+	display:block;
+	width:100%;
+}
+
+/* ------------------------------------- 
+		HEADER 
+------------------------------------- */
+table.head-wrap { width: 100%;}
+
+.header.container table td.logo { padding: 15px; }
+.header.container table td.label { padding: 15px; padding-left:0px;}
+
+
+/* ------------------------------------- 
+		BODY 
+------------------------------------- */
+table.body-wrap { width: 100%;}
+
+
+/* ------------------------------------- 
+		FOOTER 
+------------------------------------- */
+table.footer-wrap { width: 100%;	clear:both!important;
+}
+.footer-wrap .container td.content  p { border-top: 1px solid rgb(215,215,215); padding-top:15px;}
+.footer-wrap .container td.content p {
+	font-size:10px;
+	font-weight: bold;
+	
+}
+
+
+/* ------------------------------------- 
+		TYPOGRAPHY 
+------------------------------------- */
+h1,h2,h3,h4,h5,h6 {
+font-family: \"HelveticaNeue-Light\", \"Helvetica Neue Light\", \"Helvetica Neue\", Helvetica, Arial, \"Lucida Grande\", sans-serif; line-height: 1.1; margin-bottom:15px; color:#000;
+}
+h1 small, h2 small, h3 small, h4 small, h5 small, h6 small { font-size: 60%; color: #6f6f6f; line-height: 0; text-transform: none; }
+
+h1 { font-weight:200; font-size: 44px;}
+h2 { font-weight:200; font-size: 37px;}
+h3 { font-weight:500; font-size: 27px;}
+h4 { font-weight:500; font-size: 23px;}
+h5 { font-weight:900; font-size: 17px;}
+h6 { font-weight:900; font-size: 14px; text-transform: uppercase; color:#FFFFFF;}
+
+.collapse { margin:0!important;}
+
+p, ul { 
+	margin-bottom: 10px; 
+	font-weight: normal; 
+	font-size:14px; 
+	line-height:1.6;
+}
+p.lead { font-size:17px; }
+p.last { margin-bottom:0px;}
+
+ul li {
+	margin-left:5px;
+	list-style-position: inside;
+}
+
+/* ------------------------------------- 
+		SIDEBAR 
+------------------------------------- */
+ul.sidebar {
+	background:#ebebeb;
+	display:block;
+	list-style-type: none;
+}
+ul.sidebar li { display: block; margin:0;}
+ul.sidebar li a {
+	text-decoration:none;
+	color: #666;
+	padding:10px 16px;
+/* 	font-weight:bold; */
+	margin-right:10px;
+/* 	text-align:center; */
+	cursor:pointer;
+	border-bottom: 1px solid #777777;
+	border-top: 1px solid #FFFFFF;
+	display:block;
+	margin:0;
+}
+ul.sidebar li a.last { border-bottom-width:0px;}
+ul.sidebar li a h1,ul.sidebar li a h2,ul.sidebar li a h3,ul.sidebar li a h4,ul.sidebar li a h5,ul.sidebar li a h6,ul.sidebar li a p { margin-bottom:0!important;}
+
+
+
+/* --------------------------------------------------- 
+		RESPONSIVENESS
+		Nuke it from orbit. It's the only way to be sure. 
+------------------------------------------------------ */
+
+/* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
+.container {
+	display:block!important;
+	max-width:600px!important;
+	margin:0 auto!important; /* makes it centered */
+	clear:both!important;
+}
+
+/* This should also be a block element, so that it will fill 100% of the .container */
+.content {
+	padding:15px;
+	max-width:600px;
+	margin:0 auto;
+	display:block; 
+	border-radius: 10px;
+}
+
+/* Let's make sure tables in the content area are 100% wide */
+.content table { width: 100%; }
+
+
+/* Odds and ends */
+.column {
+	width: 300px;
+	float:left;
+}
+.column tr td { padding: 15px; }
+.column-wrap { 
+	padding:0!important; 
+	margin:0 auto; 
+	max-width:600px!important;
+}
+.column table { width:100%;}
+.social .column {
+	width: 280px;
+	min-width: 279px;
+	float:left;
+}
+
+/* Be sure to place a .clear element after each set of columns, just to be safe */
+.clear { display: block; clear: both; }
+
+
+/* ------------------------------------------- 
+		PHONE
+		For clients that support media queries.
+		Nothing fancy. 
+-------------------------------------------- */
+@media only screen and (max-width: 600px) {
+	
+	a[class=\"btn\"] { display:block!important; margin-bottom:10px!important; background-image:none!important; margin-right:0!important;}
+
+	div[class=\"column\"] { width: auto!important; float:none!important;}
+	
+	table.social div[class=\"column\"] {
+		width:auto!important;
+	}
+
+}
+	");
 	
 	class User
 	{
@@ -197,6 +427,8 @@
 				// anything else won't change authentication status.
 				elseif($operation == "register") { $this->register($registration_callback); }
 				elseif($operation == "update") { $this->update(); }
+				elseif($operation == "invite") { $this->invite(); }
+				elseif($operation == "deleteinvite") { $this->deleteInvite(); }
 				// we only allow password resetting if we can send notification mails
 				elseif($operation == "reset" && User::use_mail) { $this->reset_password(); }
 			}
@@ -335,6 +567,25 @@ EOT;
 			return $this->update_user($username, $email, $sha1, $role);
 		}
 		/**
+		 * Called when the requested POST operation is "invite"
+		 */
+		function invite()
+		{
+			// get relevant values
+            @$username = trim($_POST["username"]);
+			@$email = trim($_POST["email"]);
+			@$server = trim($_POST["server"]);
+			// step 1: someone could have bypassed the javascript validation, so validate again.
+			if($email !="" && preg_match(User::emailregexp, $email)==0) {
+				$this->info("<strong>invite error:</strong> email address did not pass validation");
+				writeLog("error", "$email didn't pass validation");
+				return false; 
+			}
+			// step 2: if validation passed, send the user's information for invite
+			return $this->invite_user($username, $email, $server);
+			writeLog("success", "passing invite info for $email");
+		}
+		/**
 		 * Reset a user's password
 		 */
 		function reset_password()
@@ -357,7 +608,7 @@ EOT;
 			// step 2b: if there was a user to reset a password for, reset it.
 			$dbpassword = $this->token_hash_password($username, $sha1, $token);
 			$update = "UPDATE users SET password = '$dbpassword' WHERE email= '$email'";
-   writeLog("success", "$username has reset their password");
+   			writeLog("success", "$username has reset their password");
 			$this->database->exec($update);
             //$this->info("Email has been sent with new password");
 			// step 3: notify the user of the new password
@@ -564,7 +815,7 @@ EOT;
 			$query = "SELECT * FROM users WHERE username = '$username'";
 			foreach($this->database->query($query) as $data) {
 				$this->info("created user account for $username");
-    writeLog("success", "$username has just registered");
+    			writeLog("success", "$username has just registered");
 				$this->update_user_token($username, $sha1, false);
 				// make the user's data directory
 				$dir = USER_HOME . $username;
@@ -655,7 +906,7 @@ EOT;
 					file_put_contents(FAIL_LOG, $buildLog($username, "good_auth"));
 					chmod(FAIL_LOG, 0660);
 					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
-     writeLog("success", "$username has logged in");
+     				writeLog("success", "$username has logged in");
 					return true; 
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
 					// Create User
@@ -673,7 +924,7 @@ EOT;
 			} else if (!$authSuccess) {
 				// authentication failed
 				//$this->info("password mismatch for $username");
-    writeLog("error", "$username tried to sign-in with the wrong password");
+    			writeLog("error", "$username tried to sign-in with the wrong password");
 				file_put_contents(FAIL_LOG, $buildLog($username, "bad_auth"));
 				chmod(FAIL_LOG, 0660);
 				if(User::unsafe_reporting) { $this->error = "incorrect password for $username."; $this->error("incorrect password for $username."); }
@@ -704,8 +955,98 @@ EOT;
 				$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
 				$update = "UPDATE users SET password = '$dbpassword' WHERE username = '$username'";
 				$this->database->exec($update); }
-   writeLog("success", "information for $username has been updated");
+   			writeLog("success", "information for $username has been updated");
 			$this->info("updated the information for <strong>$username</strong>");
+		}
+		/**
+		 * Drop a invite from the system
+		 */
+		function deleteInvite()
+		{
+			@$id = trim($_POST["id"]);
+			$delete = "DELETE FROM invites WHERE id = '$id' COLLATE NOCASE";
+			$this->database->exec($delete);
+			$this->info("Plex Invite: <strong>$id</strong> has been deleted out of Organizr");
+    		writeLog("success", "PLEX INVITE: $id has been deleted");
+			return true;
+		}
+		
+		/**
+		 * Invite using a user's information
+		 */
+		function invite_user($username = "none", $email, $server)
+		{
+			$emailCSS = constant('EMAIL_CSS');
+			$domain = getServerPath();
+			$topImage = $domain."images/organizr-logo-h.png";
+			$uServer = strtoupper($server);
+			$now = date("Y-m-d H:i:s");
+			$inviteCode = randomCode(6);
+			$username = (!empty($username) ? $username : strtoupper($server) . " User");
+			$link = getServerPath()."?inviteCode=".$inviteCode;
+			if($email !="") {
+				$insert = "INSERT INTO invites (username, email, code, valid, date) ";
+				$insert .= "VALUES ('".strtolower($username)."', '$email', '$inviteCode', 'Yes', '$now') ";
+				$this->database->exec($insert);
+			}
+   			writeLog("success", "$email has been invited to the $server server");
+			$this->info("$email has been invited to the $server server");
+			if($insert && User::use_mail)
+			{
+				// send email notification
+				$subject = DOMAIN . " $uServer invite!";
+				$body = <<<EOT
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta name="viewport" content="width=device-width"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<title>Organizr Email</title>
+		<style>$emailCSS</style>
+	</head>
+	<body bgcolor="#333333">
+		<table class="head-wrap" bgcolor="#333333">
+			<tr>
+				<td></td>
+				<td class="header container">
+					<table bgcolor="#333333">
+						<tr>
+							<td><img src="$topImage"/></td>
+							<td align="right"><h6 class="collapse">Join My $server Server</h6></td>
+						</tr>
+					</table>
+				</td>
+				<td></td>
+			</tr>
+		</table>  
+		<table class="body-wrap">
+			<tr>
+				<td></td>
+				<td class="container" bgcolor="#FFFFFF">
+					<div class="content">
+						<table>
+							<tr>
+								<td>
+									<h3>Hi $username,</h3>
+									<p class="lead">Here is an invite to my $server server.  The code to join is $inviteCode.</p>
+
+									<p class="callout">Click this <a class="btn" href="$link">LINK</a> to automatically fill in the info and join.</a></p> 
+									<p>You could also head over to my website to join by going here: <a href="$domain">$domain</a> and clicking Join My Server.</p>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+				<td></td>
+			</tr>
+		</table> 
+		<br/><br/><br/><br/> 
+	</body>
+</html>
+EOT;
+				
+                $this->startEmail($email, $username, $subject, $body);
+			}
 		}
 		/**
 		 * Log a user out.
@@ -725,7 +1066,7 @@ EOT;
             unset($_COOKIE['cookiePassword']);
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
             setcookie("cookiePassword", '', time() - 3600, '/');
-   writeLog("success", "$username has signed out");
+   			writeLog("success", "$username has signed out");
 			return true;
 		}
 		/**
@@ -737,10 +1078,10 @@ EOT;
 			$this->database->exec($delete);
 			$this->info("<strong>$username</strong> has been kicked out of Organizr");
 			//$this->resetSession();
-    $dir = USER_HOME . $username;
-    if(!rmdir($dir)) { $this->error("could not delete user directory $dir"); }
-    $this->info("and we deleted user directory $dir");
-    writeLog("success", "$username has been deleted");
+    		$dir = USER_HOME . $username;
+    		if(!rmdir($dir)) { $this->error("could not delete user directory $dir"); }
+    		$this->info("and we deleted user directory $dir");
+    		writeLog("success", "$username has been deleted");
 			return true;
 		}
 		/**
