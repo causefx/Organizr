@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.39');
+ define('INSTALLEDVERSION', '1.40');
 // ===================================
 
 // Debugging output functions
@@ -31,13 +31,13 @@ if (function_exists('ldap_connect')) :
 		// returns true or false
 		$ldap = ldap_connect(implode(' ',$ldapServers));
 		if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
-   writeLog("success", "LDAP authentication success"); 
+   			writeLog("success", "LDAP authentication success"); 
 			return true;
 		} else {
-   writeLog("error", "LDPA could not authenticate"); 
+   			writeLog("error", "LDPA could not authenticate"); 
 			return false;
 		}
-  writeLog("error", "LDPA could not authenticate");      
+  		writeLog("error", "LDPA could not authenticate");      
 		return false;
 	}
 else :
@@ -62,7 +62,7 @@ function plugin_auth_ftp($username, $password) {
 		$conn_id = ftp_connect($host, $port, 20);
 	} else {
 		debug_out('Invalid FTP scheme. Use ftp or ftps');
-  writeLog("error", "invalid FTP scheme"); 
+  		writeLog("error", "invalid FTP scheme"); 
 		return false;
 	}
 	
@@ -74,10 +74,10 @@ function plugin_auth_ftp($username, $password) {
 		
 		// Return Result
 		if ($login_result) {
-   writeLog("success", "$username authenticated");       
+   			writeLog("success", "$username authenticated");       
 			return true;
 		} else {
-   writeLog("error", "$username could not authenticate");      
+   			writeLog("error", "$username could not authenticate");      
 			return false;
 		}
 	} else {
@@ -340,10 +340,11 @@ if (function_exists('curl_version')) :
 		}
 		// Execute
 		$result = curl_exec($curlReq);
+		$httpcode = curl_getinfo($curlReq);
 		// Close
 		curl_close($curlReq);
 		// Return
-		return array('content'=>$result);
+		return array('content'=>$result, 'http_code'=>$httpcode);
 	}
 
 	//Curl Get Function
@@ -368,6 +369,31 @@ if (function_exists('curl_version')) :
 		curl_close($curlReq);
 		// Return
 		return $result;
+	}
+	
+	//Curl Delete Function
+	function curl_delete($url, $headers = array()) {
+		// Initiate cURL
+		$curlReq = curl_init($url);
+		// As post request
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "DELETE"); 
+		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+  		curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
+		// Format Headers
+		$cHeaders = array();
+		foreach ($headers as $k => $v) {
+			$cHeaders[] = $k.': '.$v;
+		}
+		if (count($cHeaders)) {
+			curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+		}
+		// Execute
+		$result = curl_exec($curlReq);
+		$httpcode = curl_getinfo($curlReq);
+		// Close
+		curl_close($curlReq);
+		// Return
+		return array('content'=>$result, 'http_code'=>$httpcode);
 	}
 endif;
 
@@ -462,7 +488,12 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 	
 	// Get Item Details
 	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&api_key='.$token),true)['Items'][0];
-	$URL = "http://app.emby.media/itemdetails.html?id=".$itemDetails['Id'];
+	if (substr_count(EMBYURL, ':') == 2) {
+		$URL = "http://app.emby.media/itemdetails.html?id=".$itemDetails['Id'];
+	}else{
+		$URL = EMBYURL."/web/itemdetails.html?id=".$itemDetails['Id'];
+	}
+	//$URL = "http://app.emby.media/itemdetails.html?id=".$itemDetails['Id'];
 	switch ($itemDetails['Type']) {
     case 'Episode':
         $title = (isset($itemDetails['SeriesName'])?$itemDetails['SeriesName']:"");
@@ -998,7 +1029,7 @@ function getEmbyImage() {
     }
 
 	$itemId = $_GET['img'];
- $key = $_GET['key'];
+ 	$key = $_GET['key'];
 	$itemType = $_GET['type'];
 	$imgParams = array();
 	if (isset($_GET['height'])) { $imgParams['height'] = 'maxHeight='.$_GET['height']; }
@@ -1372,6 +1403,19 @@ function upgradeCheck() {
 		unset($config);
 	}
 	
+	// Upgrade to 1.40
+	$config = loadConfig();
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.40')) {
+		// Upgrade database to latest version
+		updateSQLiteDB($config['database_Location'],'1.38');
+		
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.40';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.38].bak.php');
+		$createConfigSuccess = createConfig($config);
+		unset($config);
+	}
+	
 	return true;
 }
 
@@ -1406,17 +1450,17 @@ function uploadFiles($path, $ext_mask = null) {
 
 		if($data['isComplete']){
 			$files = $data['data'];
-   writeLog("success", $files['metas'][0]['name']." was uploaded");
+   			writeLog("success", $files['metas'][0]['name']." was uploaded");
 			echo json_encode($files['metas'][0]['name']);
 		}
 
 		if($data['hasErrors']){
 			$errors = $data['errors'];
-   writeLog("error", $files['metas'][0]['name']." was not able to upload");
+   			writeLog("error", $files['metas'][0]['name']." was not able to upload");
 			echo json_encode($errors);
 		}
 	} else { 
-  writeLog("error", "image was not uploaded");
+  		writeLog("error", "image was not uploaded");
 		echo json_encode('No files submitted!');
 	}
 }
@@ -1427,7 +1471,7 @@ function removeFiles($path) {
         writeLog("success", "image was removed");
         unlink($path);
     } else {
-  writeLog("error", "image was not removed");
+  		writeLog("error", "image was not removed");
 		echo json_encode('No file specified for removal!');
 	}
 }
@@ -1965,10 +2009,24 @@ function createSQLiteDB($path = false) {
 			`loading`	TEXT,
 			`hovertext`	TEXT
 		);');
+		
+		// Create Invites
+		$invites = $GLOBALS['file_db']->query('CREATE TABLE `invites` (
+			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`code`	TEXT UNIQUE,
+			`date`	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			`email`	TEXT,
+			`username`	TEXT,
+			`dateused`	TIMESTAMP,
+			`usedby`	TEXT,
+			`ip`	TEXT,
+			`valid`	TEXT
+		);');
+		
 		writeLog("success", "database created/saved");
-		return $users && $tabs && $options;
+		return $users && $tabs && $options && $invites;
 	} else {
-  writeLog("error", "database was unable to be created/saved");
+  		writeLog("error", "database was unable to be created/saved");
 		return false;
 	}
 }
@@ -2345,13 +2403,13 @@ function updateTabs($tabs) {
 			}
 			$GLOBALS['file_db']->query('INSERT INTO tabs (`'.implode('`,`',array_keys($fields)).'`) VALUES (\''.implode("','",$fields).'\');');
 		}
-  writeLog("success", "tabs successfully saved");     
+  		writeLog("success", "tabs successfully saved");     
 		return $totalValid;
 	} else {
-  writeLog("error", "tabs could not save");     
+  		writeLog("error", "tabs could not save");     
 		return false;
 	}
- writeLog("error", "tabs could not save");     
+ 	writeLog("error", "tabs could not save");     
 	return false;
 }
 
@@ -2859,7 +2917,15 @@ function getPlatform($platform){
         "Emby for iOS" => "ios.png",
         "Emby Mobile" => "emby.png",
         "Emby Theater" => "emby.png",
+        "Emby Classic" => "emby.png",
         "Safari" => "safari.png",
+        "Android" => "android.png",
+        "Chromecast" => "chromecast.png",
+        "Dashboard" => "emby.png",
+        "Dlna" => "dlna.png",
+        "Windows Phone" => "wp.png",
+        "Windows RT" => "win8.png",
+        "Kodi" => "koid.png",
     );
     if (array_key_exists($platform, $allPlatforms)) {
         return $allPlatforms[$platform];
@@ -2873,9 +2939,9 @@ function getServer(){
     return $server;    
 }
 
-function prettyPrint($a) {
-    echo "HEADERS: <pre>";
-    print_r($a);
+function prettyPrint($array) {
+    echo "<pre>";
+    print_r($array);
     echo "</pre>";
     echo "<br/>";
 }
@@ -3150,6 +3216,250 @@ function get_client_ip() {
     else
         $ipaddress = 'UNKNOWN';
     return $ipaddress;
+}
+
+//EMAIL SHIT
+function sendEmail($email, $username = "Organizr User", $subject, $body, $cc = null){
+
+	$mail = new PHPMailer;
+	$mail->isSMTP();
+	$mail->Host = SMTPHOST;
+	$mail->SMTPAuth = SMTPHOSTAUTH;
+	$mail->Username = SMTPHOSTUSERNAME;
+	$mail->Password = SMTPHOSTPASSWORD;
+	$mail->SMTPSecure = SMTPHOSTTYPE;
+	$mail->Port = SMTPHOSTPORT;
+	$mail->setFrom(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
+	$mail->addReplyTo(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
+	$mail->isHTML(true);
+	$mail->addAddress($email, $username);
+	$mail->Subject = $subject;
+	$mail->Body    = $body;
+	//$mail->send();
+	if(!$mail->send()) {
+		writeLog("error", "mail failed to send");
+	} else {
+		writeLog("success", "mail has been sent");
+	}
+
+}
+
+function libraryList(){
+    $address = qualifyURL(PLEXURL);
+	$headers = array(
+		"Accept" => "application/json", 
+		"X-Plex-Token" => PLEXTOKEN
+	);
+	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+    if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
+	
+	$api = simplexml_load_string(@curl_get("https://plex.tv/api/servers/$gotServer/shared_servers", $headers));
+	$libraryList = array();
+    foreach($api->SharedServer->Section AS $child) {
+		$libraryList['libraries'][(string)$child['title']] = (string)$child['id'];
+    }
+	foreach($api->SharedServer AS $child) {
+		if(!empty($child['username'])){
+			$username = (string)strtolower($child['username']);
+			$libraryList['users'][$username] = (string)$child['id'];
+		}
+    }
+    return (!empty($libraryList) ? array_change_key_case($libraryList,CASE_LOWER) : null );
+}
+
+function plexUserShare($username){
+    $address = qualifyURL(PLEXURL);
+	$headers = array(
+		"Accept" => "application/json", 
+		"Content-Type" => "application/json", 
+		"X-Plex-Token" => PLEXTOKEN
+	);
+	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+    if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
+	
+	$json = array(
+		"server_id" => $gotServer,
+		"shared_server" => array(
+			//"library_section_ids" => "[26527637]",
+			"invited_email" => $username
+		)
+	);
+	
+	$api = curl_post("https://plex.tv/api/servers/$gotServer/shared_servers/", $json, $headers);
+	
+	switch ($api['http_code']['http_code']){
+		case 400:
+			writeLog("error", "PLEX INVITE: $username already has access to the shared libraries");
+			$result = "$username already has access to the shared libraries";
+			break;
+		case 401:
+			writeLog("error", "PLEX INVITE: Invalid Plex Token");
+			$result = "Invalid Plex Token";
+			break;
+		case 200:
+			writeLog("success", "PLEX INVITE: $username now has access to your Plex Library");
+			$result = "$username now has access to your Plex Library";
+			break;
+		default:
+			writeLog("error", "PLEX INVITE: unknown error");
+			$result = false;
+	}
+    return (!empty($result) ? $result : null );
+}
+
+function plexUserDelete($username){
+    $address = qualifyURL(PLEXURL);
+	$headers = array(
+		"Accept" => "application/json", 
+		"Content-Type" => "application/json", 
+		"X-Plex-Token" => PLEXTOKEN
+	);
+	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+    if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
+	$id = convertPlexName($username, "id");
+	
+	$api = curl_delete("https://plex.tv/api/servers/$gotServer/shared_servers/$id", $headers);
+	
+	switch ($api['http_code']['http_code']){
+		case 401:
+			writeLog("error", "PLEX INVITE: Invalid Plex Token");
+			$result = "Invalid Plex Token";
+			break;
+		case 200:
+			writeLog("success", "PLEX INVITE: $username doesn't have access to your Plex Library anymore");
+			$result = "$username doesn't have access to your Plex Library anymore";
+			break;
+		default:
+			writeLog("error", "PLEX INVITE: unknown error");
+			$result = false;
+	}
+    return (!empty($result) ? $result : null );
+}
+
+function convertPlexName($user, $type){
+	$array = libraryList();
+	switch ($type){
+		case "username":
+			$plexUser = array_search ($user, $array['users']);
+			break;
+		case "id":
+			if (array_key_exists(strtolower($user), $array['users'])) {
+				$plexUser = $array['users'][strtolower($user)];
+			}
+			break;
+		default:
+			$plexUser = false;
+	}
+	return (!empty($plexUser) ? $plexUser : null );
+}
+
+function randomCode($length = 5, $type = null) {
+	switch ($type){
+		case "alpha":
+			$legend = array_merge(range('A', 'Z'));
+			break;
+		case "numeric":
+			$legend = array_merge(range(0,9));
+			break;
+		default:
+			$legend = array_merge(range(0,9),range('A', 'Z'));
+	}
+    $code = "";
+    for($i=0; $i < $length; $i++) {
+        $code .= $legend[mt_rand(0, count($legend) - 1)];
+    }
+    return $code;
+}
+
+function inviteCodes($action, $code = null, $usedBy = null) {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	$now = date("Y-m-d H:i:s");
+	
+	switch ($action) {
+		case "get":
+			// Start Array
+			$result = array();
+			// Database Lookup
+			$invites = $GLOBALS['file_db']->query('SELECT * FROM invites WHERE valid = "Yes"');
+			// Get Codes
+			foreach($invites as $row) {
+				array_push($result, $row['code']);
+			}
+			// Return the Results
+			return (!empty($result) ? $result : false );
+			break;
+		case "check":
+			// Start Array
+			$result = array();
+			// Database Lookup
+			$invites = $GLOBALS['file_db']->query('SELECT * FROM invites WHERE valid = "Yes" AND code = "'.$code.'"');
+			// Get Codes
+			foreach($invites as $row) {
+				$result = $row['code'];
+			}
+			// Return the Results
+			return (!empty($result) ? $result : false );
+			break;
+		case "use":
+			$currentIP = get_client_ip();
+			$invites = $GLOBALS['file_db']->query('UPDATE invites SET valid = "No", usedby = "'.$usedBy.'", dateused = "'.$now.'", ip = "'.$currentIP.'" WHERE code = "'.$code.'"');
+			return (!empty($invites) ? true : false );
+			break;
+	}
+	
+}
+
+function plexJoin($username, $email, $password){
+	$connectURL = 'https://plex.tv/users.json';
+	$headers = array(
+		'Accept'=> 'application/json',
+		'Content-Type' => 'application/x-www-form-urlencoded',
+		'X-Plex-Product' => 'Organizr',
+		'X-Plex-Version' => '1.0',
+		'X-Plex-Client-Identifier' => '01010101-10101010',
+	);
+	$body = array(
+		'user[email]' => $email,
+		'user[username]' => $username,
+		'user[password]' => $password,
+	);
+	
+	$api = curl_post($connectURL, $body, $headers);
+	$json = json_decode($api['content'], true);
+	$errors = (!empty($json['errors']) ? true : false);
+	$success = (!empty($json['user']) ? true : false);
+	//Use This for later
+	$usernameError = (!empty($json['errors']['username']) ? $json['errors']['username'][0] : false);
+	$emailError = (!empty($json['errors']['email']) ? $json['errors']['email'][0] : false);
+	$passwordError = (!empty($json['errors']['password']) ? $json['errors']['password'][0] : false);
+	
+	switch ($api['http_code']['http_code']){
+		case 400:
+			writeLog("error", "PLEX JOIN: $username already has access to the shared libraries");
+			break;
+		case 401:
+			writeLog("error", "PLEX JOIN: invalid Plex Token");
+			break;
+		case 422:
+			writeLog("error", "PLEX JOIN: user info error");
+			break;
+		case 429:
+			writeLog("error", "PLEX JOIN: too many requests to plex.tv please try later");
+			break;
+		case 200:
+		case 201:
+			writeLog("success", "PLEX JOIN: $username now has access to your Plex Library");
+			break;
+		default:
+			writeLog("error", "PLEX JOIN: unknown error, Error: ".$api['http_code']['http_code']);
+	}
+	//prettyPrint($api);
+	//prettyPrint(json_decode($api['content'], true));
+    return (!empty($success) && empty($errors) ? true : false );
+	
 }
 
 // Always run this
