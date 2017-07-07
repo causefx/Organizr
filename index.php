@@ -744,13 +744,13 @@ endif; ?>
                                     <div class="big-box text-left">
 
                                         <h3 class="text-center"><?php echo $language->translate("SPECIFY_LOCATION");?></h3>
-                                        <h5 class="text-left"><strong><?php echo $language->translate("CURRENT_DIRECTORY");?>: <?php echo __DIR__; ?> <br><?php echo $language->translate("PARENT_DIRECTORY");?>: <?php echo dirname(__DIR__); ?></strong></h5>
+                                        <h5 class="text-left"><strong><?php echo $language->translate("CURRENT_DIRECTORY");?>: <?php echo str_replace("\\","/",__DIR__); ?> <br><?php echo $language->translate("PARENT_DIRECTORY");?>: <?php echo str_replace("\\","/",dirname(__DIR__)); ?></strong></h5>
                                         <form class="controlbox" name="setupDatabase" id="setupDatabase" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
                                             <input type="hidden" name="action" value="createLocation" />
 
                                             <div class="form-group">
 
-                                                <input type="text" class="form-control material" name="database_Location" autofocus value="<?php echo dirname(__DIR__);?>" autocorrect="off" autocapitalize="off" required>
+                                                <input type="text" class="form-control material" name="database_Location" autofocus value="<?php echo str_replace("\\","/",dirname(__DIR__));?>" autocorrect="off" autocapitalize="off" required>
                                                 <h5><?php echo $language->translate("SET_DATABASE_LOCATION");?></h5>
                                                 <?php echo getTimezone();?>
                                                 <h5><?php echo $language->translate("SET_TIMEZONE");?></h5>
