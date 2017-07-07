@@ -1529,7 +1529,7 @@ echo buildSettings(
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-6 col-lg-6">
+                                        <div class="col-sm-4 col-lg-4">
                                             <div class="content-box ultra-widget blue-bg" style="cursor: pointer;" onclick="window.open('https://paypal.me/causefx', '_blank')">
                                                 <div class="w-content big-box">
                                                     <div class="w-progress">
@@ -1546,7 +1546,7 @@ echo buildSettings(
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-sm-6 col-lg-6">
+                                        <div class="col-sm-4 col-lg-4">
                                             <div class="content-box ultra-widget green-bg" style="cursor: pointer;" onclick="window.open('https://cash.me/$causefx', '_blank')">
                                                 <div class="w-content big-box">
                                                     <div class="w-progress">
@@ -1558,6 +1558,22 @@ echo buildSettings(
                                                         <span class="fa-stack fa-lg">
                                                             <i class="fa fa-square fa-stack-2x"></i>
                                                             <i class="fa fa-dollar green fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+										 <div class="col-sm-4 col-lg-4">
+                                            <div class="content-box ultra-widget red-bg">
+                                                <div class="w-content big-box">
+                                                    <div class="w-progress">
+                                                        <span class="w-amount">BitCoin</span>
+                                                        <small class="text-uppercase">1NDy1Su6izmwkcFZaZuMWDYrFFUNv3FQCN</small>
+                                                    </div>
+                                                    <span class="w-refresh w-p-icon">
+                                                        <span class="fa-stack fa-lg">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-btc red fa-stack-1x fa-inverse"></i>
                                                         </span>
                                                     </span>
                                                 </div>
