@@ -2057,7 +2057,7 @@ echo buildSettings(
 
                                                     <div class="form-group">
 
-                                                        <input type="text" class="form-control material" name="username" placeholder="<?php echo $language->translate("USERNAME");?>" autocorrect="off" autocapitalize="off" value="">
+                                                        <input type="text" class="form-control material" name="username" placeholder="<?php echo $language->translate("USERNAME_NAME");?>" autocorrect="off" autocapitalize="off" value="">
 
                                                     </div>
 
