@@ -911,7 +911,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
                                     <?php if($USER->error!="") : ?>
                                     <p class="error">Error: <?php echo $USER->error; ?></p>
                                     <?php endif; ?>
-                                    <form name="log in" id="login" action="" method="POST" data-smk-icon="glyphicon-remove-sign">
+                                    <form name="log in" id="login" action="" method="POST">
                                         <h4 class="text-center"><?php echo $language->translate("LOGIN");?></h4>
                                         <div class="form-group">
                                             <input type="hidden" name="op" value="login">
@@ -1190,10 +1190,10 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
         }
         $('#loginSubmit').click(function() {
-            if ($('#login').smkValidate()) {
+            /*if ($('#login').smkValidate()) {
                 console.log("validated");
             }
-            console.log("didnt validate");
+            console.log("didnt validate");*/
         });
         $('#registerSubmit').click(function() {
             if ($('#registration').smkValidate()) {

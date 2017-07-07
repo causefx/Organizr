@@ -621,7 +621,7 @@ echo buildSettings(
 			array(
 				'title' => 'Custom CSS',
 				'id' => 'theme_css',
-				'image' => 'images/gear.png',
+				'image' => 'images/css.png',
 				'fields' => array(
 					array(
 						'type' => 'header',
@@ -1159,7 +1159,7 @@ echo buildSettings(
 			array(
 				'title' => 'Custom HTML 1',
 				'id' => 'customhtml1',
-				'image' => 'images/gear.png',
+				'image' => 'images/html.png',
 				'fields' => array(
 					array(
 						'type' => $userSelectType,
