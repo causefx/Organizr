@@ -2068,8 +2068,10 @@ echo buildSettings(
                                         </div>
                                     </div>
                                     <div class="small-box">
+                                        
+										<form class="content-form form-inline" name="deleteInviteForm" id="deleteInviteForm" action="" method="POST">
                                             
-                                            <p id="inputUsername"></p>
+											<p id="inputInvite"></p>
 
                                             <div class="table-responsive">
 
@@ -2089,12 +2091,14 @@ echo buildSettings(
                                                             <th><?php echo $language->translate("USED_BY");?></th>
                                                             <th><?php echo $language->translate("IP_ADDRESS");?></th>
                                                             <th><?php echo $language->translate("VALID");?></th>
+                                                            <th><?php echo $language->translate("DELETE");?></th>
 
                                                         </tr>
 
                                                     </thead>
 
-                                                    <tbody>
+                                                    <tbody><!-- onsubmit="return false;" -->
+														
 
                                                         <?php
                                                         foreach($gotInvites as $row) :
@@ -2106,32 +2110,43 @@ echo buildSettings(
               
                                                         ?>
 
-                                                        <tr id="<?=$row['id'];?>">
+															<tr id="<?=$row['id'];?>">
 
-                                                            <th scope="row"><?=$row['id'];?></th>
+																<th scope="row"><?=$row['id'];?></th>
 
-                                                            <td><?=$inviteUser;?></td>
-                                                            <td><?=$row['email'];?></td>
+																<td><?=$inviteUser;?></td>
+																<td><?=$row['email'];?></td>
 
-                                                            <td><span style="font-size: 100%;" class="label label-<?=$validColor;?>"><?=$row['code'];?></span></td>
+																<td><span style="font-size: 100%;" class="label label-<?=$validColor;?>"><?=$row['code'];?></span></td>
 
-                                                            <td><?=$row['date'];?></td>
+																<td><?=$row['date'];?></td>
 
-                                                            <td><?=$dateInviteUsed;?></td>
-                                                            <td><?=$usedBy;?></td>
-                                                            <td><?=$ipUsed;?></td>
+																<td><?=$dateInviteUsed;?></td>
+																<td><?=$usedBy;?></td>
+																<td><?=$ipUsed;?></td>
 
-                                                            <td><span style="font-size: 100%;" class="label label-<?=$validColor;?>"><?=$row['valid'];?></span></td>
+																<td><span style="font-size: 100%;" class="label label-<?=$validColor;?>"><?=$row['valid'];?></span></td>
 
-                                                        </tr>
+																<td id="<?=$row['id'];?>">
+																	<button class="btn waves btn-labeled btn-danger btn btn-sm text-uppercase waves-effect waves-float deleteInvite">
+
+																		<span class="btn-label"><i class="fa fa-trash"></i></span><?php echo $language->translate("DELETE");?>
+
+																	</button>
+																</td>
+
+															</tr>
 
                                                         <?php endforeach; ?>
+														
 
                                                     </tbody>
 
                                                 </table>
 
                                             </div>
+											
+										</form>
                                         
                                     </div>
 
@@ -2476,6 +2491,12 @@ echo buildSettings(
             $("#deleteToggle").click(function(){
 
                 $( "#deleteDiv" ).toggle();
+            });
+			$(".deleteInvite").click(function(){
+
+                var parent_id = $(this).parent().attr('id');
+                editUsername = $('#deleteInviteForm').find('#inputInvite');
+                $(editUsername).html('<input type="hidden" name="op" value="deleteinvite"/><input type="hidden" name="id"value="' + parent_id + '" />');
             });
             $(".deleteUser").click(function(){
 
