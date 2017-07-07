@@ -67,6 +67,7 @@ $errorImage = $codes[$status][2];
         <link rel="stylesheet" href="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>bower_components/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>bower_components/Waves/dist/waves.min.css"> 
         <link rel="stylesheet" href="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>css/style.css">
+		<style><?php customCSS(); ?></style>
     </head>
     <body class="gray-bg" style="padding: 0;">
         <div class="main-wrapper" style="position: initial;">

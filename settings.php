@@ -289,13 +289,7 @@ if(SLIMBAR == "true") {
                 border-bottom: 0;
                 border-radius: 5px;
                 top: 3px;
-}<?php if(CUSTOMCSS == "true") : 
-$template_file = "custom.css";
-$file_handle = fopen($template_file, "rb");
-echo fread($file_handle, filesize($template_file));
-fclose($file_handle);
-echo "\n";
-endif; ?>
+}<?php customCSS(); ?>
         </style>
     </head>
 

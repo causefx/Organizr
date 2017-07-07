@@ -501,13 +501,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             padding: 5px 22px;
         }
         <?php endif; ?>
-        <?php if(CUSTOMCSS == "true") : 
-$template_file = "custom.css";
-$file_handle = fopen($template_file, "rb");
-echo fread($file_handle, filesize($template_file));
-fclose($file_handle);
-echo "\n";
-endif; ?>
+        <?php customCSS(); ?>
 
     </style>
 
