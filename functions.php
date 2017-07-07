@@ -515,7 +515,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
             $key = (isset($itemDetails['ParentThumbItemId']) ? $itemDetails['ParentThumbItemId']."-np" : "none-np");
             $elapsed = $moreInfo['PlayState']['PositionTicks'];
             $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
-            $watched = floor(($elapsed / $duration) * 100);
+            $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
             //$transcoded = floor($item->TranscodeSession['progress']- $watched);
             $stream = $moreInfo['PlayState']['PlayMethod'];
             $user = $role == "admin" ? $moreInfo['UserName'] : "";
@@ -551,7 +551,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
         $key = (isset($itemDetails['ParentBackdropItemId']) ? $itemDetails['ParentBackdropItemId'] : "no-np") . "-np";
         $elapsed = $moreInfo['PlayState']['PositionTicks'];
         $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
-        $watched = floor(($elapsed / $duration) * 100);
+        $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
         //$transcoded = floor($item->TranscodeSession['progress']- $watched);
         $stream = $moreInfo['PlayState']['PlayMethod'];
         $user = $role == "admin" ? $moreInfo['UserName'] : "";
@@ -612,11 +612,11 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
     }else{
         $height = 281;
         $width = 500;
-        $imageType = isset($itemDetails['ImageTags']['Thumb']) ?	"Thumb" : (isset($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
+        $imageType = isset($itemDetails['ImageTags']['Thumb']) ? "Thumb" : (isset($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
         $key = $itemDetails['Id'] . "-np";
         $elapsed = $moreInfo['PlayState']['PositionTicks'];
         $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
-        $watched = floor(($elapsed / $duration) * 100);
+        $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
         //$transcoded = floor($item->TranscodeSession['progress']- $watched);
         $stream = $moreInfo['PlayState']['PlayMethod'];
         $user = $role == "admin" ? $moreInfo['UserName'] : "";
@@ -685,7 +685,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $key = $item['ratingKey'] . "-np";
                 $elapsed = $item['viewOffset'];
                 $duration = $item['duration'];
-                $watched = floor(($elapsed / $duration) * 100);
+                $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
@@ -716,7 +716,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $key = $item['ratingKey'] . "-np";
                 $elapsed = $item['viewOffset'];
                 $duration = $item['duration'];
-                $watched = floor(($elapsed / $duration) * 100);
+                $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
@@ -748,9 +748,10 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $width = 500;
                 $thumb = $item['art'];
                 $key = $item['ratingKey'] . "-np";
+				$extraInfo = isset($item['extraType']) ? "Trailer" : (isset($item['live']) ? "Live TV" : ":)");
                 $elapsed = $item['viewOffset'];
                 $duration = $item['duration'];
-                $watched = floor(($elapsed / $duration) * 100);
+                $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
@@ -763,8 +764,8 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                     'audio' => "&nbsp;".streamType($item->Media->Part->Stream[1]['decision'])." (".$item->Media->Part->Stream[1]['codec'].") (".$item->Media->Part->Stream[1]['channels']."ch)",
                 ));
                 $state = (($item->Player['state'] == "paused") ? "pause" : "play");
-                $topTitle = '<h5 class="text-center zero-m elip">'.$title.' [Trailer/Clip]</h5>';
-                $bottomTitle = '<small class="zero-m">'.$item['year'].'</small>';
+                $topTitle = '<h5 class="text-center zero-m elip">'.$title.'</h5>';
+                $bottomTitle = '<small class="zero-m">'.$extraInfo.'</small>';
                 if($showNames == "true"){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
             }
             break;
@@ -786,7 +787,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $key = $item['ratingKey'] . "-np";
                 $elapsed = $item['viewOffset'];
                 $duration = $item['duration'];
-                $watched = floor(($elapsed / $duration) * 100);
+                $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";
@@ -819,7 +820,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $key = $item['ratingKey'] . "-np";
                 $elapsed = $item['viewOffset'];
                 $duration = $item['duration'];
-                $watched = floor(($elapsed / $duration) * 100);
+                $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
                 $user = $role == "admin" ? $item->User['title'] : "";

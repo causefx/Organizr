@@ -1084,6 +1084,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 										</div>
 
 										<button id="useInviteForm_submit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="useInvite"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("JOIN");?></text></button>
+										<button id="plexYesGoBack" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
 
 									</form>
 
@@ -1096,6 +1097,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 										</div>
 
 										<button id="joinPlexForm_submit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="useInvite"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("SIGN_UP");?></text></button>
+										<button id="plexNoGoBack" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
 
 									</form> 
 
@@ -1219,6 +1221,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             $("#switchCreateUser").toggle();
             $("#welcomeGoBack").toggle();
         });
+		$("#plexNoGoBack").click(function(){
+            $("#joinPlexForm").toggle();
+            $("#chooseMethod").toggle();
+        });
+		$("#plexYesGoBack").click(function(){
+            $("#useInviteForm").toggle();
+            $("#chooseMethod").toggle();
+        });	
         $("#welcomeGoBack2").click(function(){
             $( "form[id^='login']" ).toggle();
             $("#userPassForm").toggle();
