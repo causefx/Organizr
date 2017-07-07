@@ -197,6 +197,7 @@
 				// anything else won't change authentication status.
 				elseif($operation == "register") { $this->register($registration_callback); }
 				elseif($operation == "update") { $this->update(); }
+				elseif($operation == "invite") { $this->invite(); }
 				// we only allow password resetting if we can send notification mails
 				elseif($operation == "reset" && User::use_mail) { $this->reset_password(); }
 			}
@@ -335,6 +336,25 @@ EOT;
 			return $this->update_user($username, $email, $sha1, $role);
 		}
 		/**
+		 * Called when the requested POST operation is "update"
+		 */
+		function invite()
+		{
+			// get relevant values
+            @$username = trim($_POST["username"]);
+			@$email = trim($_POST["email"]);
+			@$server = trim($_POST["server"]);
+			// step 1: someone could have bypassed the javascript validation, so validate again.
+			if($email !="" && preg_match(User::emailregexp, $email)==0) {
+				$this->info("<strong>invite error:</strong> email address did not pass validation");
+				writeLog("error", "$email didn't pass validation");
+				return false; 
+			}
+			// step 2: if validation passed, send the user's information for invite
+			return $this->invite_user($username, $email, $server);
+			writeLog("success", "passing invite info for $email");
+		}
+		/**
 		 * Reset a user's password
 		 */
 		function reset_password()
@@ -357,7 +377,7 @@ EOT;
 			// step 2b: if there was a user to reset a password for, reset it.
 			$dbpassword = $this->token_hash_password($username, $sha1, $token);
 			$update = "UPDATE users SET password = '$dbpassword' WHERE email= '$email'";
-   writeLog("success", "$username has reset their password");
+   			writeLog("success", "$username has reset their password");
 			$this->database->exec($update);
             //$this->info("Email has been sent with new password");
 			// step 3: notify the user of the new password
@@ -564,7 +584,7 @@ EOT;
 			$query = "SELECT * FROM users WHERE username = '$username'";
 			foreach($this->database->query($query) as $data) {
 				$this->info("created user account for $username");
-    writeLog("success", "$username has just registered");
+    			writeLog("success", "$username has just registered");
 				$this->update_user_token($username, $sha1, false);
 				// make the user's data directory
 				$dir = USER_HOME . $username;
@@ -655,7 +675,7 @@ EOT;
 					file_put_contents(FAIL_LOG, $buildLog($username, "good_auth"));
 					chmod(FAIL_LOG, 0660);
 					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
-     writeLog("success", "$username has logged in");
+     				writeLog("success", "$username has logged in");
 					return true; 
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
 					// Create User
@@ -673,7 +693,7 @@ EOT;
 			} else if (!$authSuccess) {
 				// authentication failed
 				//$this->info("password mismatch for $username");
-    writeLog("error", "$username tried to sign-in with the wrong password");
+    			writeLog("error", "$username tried to sign-in with the wrong password");
 				file_put_contents(FAIL_LOG, $buildLog($username, "bad_auth"));
 				chmod(FAIL_LOG, 0660);
 				if(User::unsafe_reporting) { $this->error = "incorrect password for $username."; $this->error("incorrect password for $username."); }
@@ -704,8 +724,38 @@ EOT;
 				$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
 				$update = "UPDATE users SET password = '$dbpassword' WHERE username = '$username'";
 				$this->database->exec($update); }
-   writeLog("success", "information for $username has been updated");
+   			writeLog("success", "information for $username has been updated");
 			$this->info("updated the information for <strong>$username</strong>");
+		}
+		/**
+		 * Invite using a user's information
+		 */
+		function invite_user($username = "none", $email, $server)
+		{
+			$now = date("Y-m-d H:i:s");
+			$inviteCode = randomCode(6);
+			$username = (!empty($username) ? $username : $server . " User");
+			$domain = getServerPath();
+			$link = getServerPath()."?inviteCode=".$inviteCode;
+			if($email !="") {
+				$insert = "INSERT INTO invites (username, email, code, valid, date) ";
+				$insert .= "VALUES ('".strtolower($username)."', '$email', '$inviteCode', 'Yes', '$now') ";
+				$this->database->exec($insert);
+			}
+   			writeLog("success", "$email has been invited to the $server server");
+			$this->info("$email has been invited to the $server server");
+			if($insert && User::use_mail)
+			{
+				// send email notification
+				$subject = User::DOMAIN_NAME . " $server invite!";
+				$body = <<<EOT
+	Hi $username,
+	Here is an invite to my $server server.  The code to join is $inviteCode.  You can head over to my website to join by going here: <a href="$domain">$domain</a> and clicking Join My Server.  You could also just click this <a href="$link">Link</a> to automatically fill in the info and join.
+	- the $domain_name team
+EOT;
+
+                $this->startEmail($email, $username, $subject, $body);
+			}
 		}
 		/**
 		 * Log a user out.
@@ -725,7 +775,7 @@ EOT;
             unset($_COOKIE['cookiePassword']);
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
             setcookie("cookiePassword", '', time() - 3600, '/');
-   writeLog("success", "$username has signed out");
+   			writeLog("success", "$username has signed out");
 			return true;
 		}
 		/**
@@ -737,10 +787,10 @@ EOT;
 			$this->database->exec($delete);
 			$this->info("<strong>$username</strong> has been kicked out of Organizr");
 			//$this->resetSession();
-    $dir = USER_HOME . $username;
-    if(!rmdir($dir)) { $this->error("could not delete user directory $dir"); }
-    $this->info("and we deleted user directory $dir");
-    writeLog("success", "$username has been deleted");
+    		$dir = USER_HOME . $username;
+    		if(!rmdir($dir)) { $this->error("could not delete user directory $dir"); }
+    		$this->info("and we deleted user directory $dir");
+    		writeLog("success", "$username has been deleted");
 			return true;
 		}
 		/**

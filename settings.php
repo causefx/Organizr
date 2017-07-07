@@ -26,6 +26,9 @@ qualifyUser('admin', true);
 // Load User List
 $gotUsers = $file_db->query('SELECT * FROM users');
 
+// Load Invite List
+$gotInvites = $file_db->query('SELECT * FROM invites');
+
 // Load Colours/Appearance
 foreach(loadAppearance() as $key => $value) {
 	$$key = $value;
@@ -361,6 +364,7 @@ endif; ?>
                                     <li><a id="open-logs" box="logs-box"><i class="fa fa-file-text-o blue pull-right"></i>View Logs</a></li>
                                     <li><a id="open-homepage" box="homepage-box"><i class=" fa fa-home yellow pull-right"></i>Edit Homepage</a></li>
                                     <li><a id="open-advanced" box="advanced-box"><i class=" fa fa-cog light-blue pull-right"></i>Advanced</a></li>
+                                    <li><a id="open-invites" box="invites-box"><i class=" fa fa-user-plus gray pull-right"></i>Plex Invites</a></li>
                                     <li><a id="open-info" box="info-box"><i class=" fa fa-info-circle orange pull-right"></i>About</a></li>
                                     <li><a id="open-donate" box="donate-box"><i class=" fa fa-money red pull-right"></i>Donate</a></li>
                                 </ul>
@@ -391,7 +395,7 @@ endif; ?>
 											<button id="iconAll" type="button" class="btn waves btn-labeled btn-info btn-sm text-uppercase waves-effect waves-float">
 												<span class="btn-label"><i class="fa fa-picture-o"></i></span><?php echo $language->translate("VIEW_ICONS");?>
 											</button>
-           <button id="checkFrame" data-toggle="modal" data-target=".checkFrame" type="button" class="btn waves btn-labeled btn-gray btn-sm text-uppercase waves-effect waves-float">
+           									<button id="checkFrame" data-toggle="modal" data-target=".checkFrame" type="button" class="btn waves btn-labeled btn-gray btn-sm text-uppercase waves-effect waves-float">
 												<span class="btn-label"><i class="fa fa-check"></i></span><?php echo $language->translate("CHECK_FRAME");?>
 											</button>
 											<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
@@ -2025,6 +2029,117 @@ echo buildSettings(
                         </div>
                     </div>
                 </div>
+				<div class="email-content invites-box white-bg">
+                    <div class="email-body">
+                        <div class="email-header gray-bg">
+                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+                            <h1>Invite Management</h1>
+                        </div>
+                        <div class="email-inner small-box">
+                            <div class="email-inner-section">
+                                <div class="small-box fade in" id="useredit">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="small-box">
+                                                <form class="content-form form-inline" name="inviteNewUser" id="inviteNewUser" action="" method="POST">
+                                                    <input type="hidden" name="op" value="invite"/>
+                                                    <input type="hidden" name="server" value="plex"/>
+
+                                                    <div class="form-group">
+
+                                                        <input type="text" class="form-control material" name="username" placeholder="<?php echo $language->translate("USERNAME");?>" autocorrect="off" autocapitalize="off" value="">
+
+                                                    </div>
+
+                                                    <div class="form-group">
+
+                                                        <input type="email" class="form-control material" name="email" placeholder="<?php echo $language->translate("EMAIL");?>" required>
+
+                                                    </div>
+
+                                                    <button type="submit" class="btn waves btn-labeled btn-primary btn btn-sm text-uppercase waves-effect waves-float">
+
+                                                        <span class="btn-label"><i class="fa fa-user-plus"></i></span><?php echo $language->translate("SEND_INVITE");?>
+
+                                                    </button>
+
+                                                </form>               
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="small-box">
+                                            
+                                            <p id="inputUsername"></p>
+
+                                            <div class="table-responsive">
+
+                                                <table class="table table-striped">
+
+                                                    <thead>
+
+                                                        <tr>
+
+                                                            <th>#</th>
+
+                                                            <th><?php echo $language->translate("USERNAME");?></th>
+                                                            <th><?php echo $language->translate("EMAIL");?></th>
+                                                            <th><?php echo $language->translate("INVITE_CODE");?></th>
+                                                            <th><?php echo $language->translate("DATE_SENT");?></th>
+                                                            <th><?php echo $language->translate("DATE_USED");?></th>
+                                                            <th><?php echo $language->translate("USED_BY");?></th>
+                                                            <th><?php echo $language->translate("IP_ADDRESS");?></th>
+                                                            <th><?php echo $language->translate("VALID");?></th>
+
+                                                        </tr>
+
+                                                    </thead>
+
+                                                    <tbody>
+
+                                                        <?php
+                                                        foreach($gotInvites as $row) :
+															$validColor = ($row['valid'] == "Yes" ? "primary" : "danger");
+															$inviteUser = ($row['username'] != "" ? $row['username'] : "N/A");
+															$dateInviteUsed = ($row['dateused'] != "" ? $row['dateused'] : "Not Used");
+															$ipUsed = ($row['ip'] != "" ? $row['ip'] : "Not Used");
+															$usedBy = ($row['usedby'] != "" ? $row['usedby'] : "Not Used");
+              
+                                                        ?>
+
+                                                        <tr id="<?=$row['id'];?>">
+
+                                                            <th scope="row"><?=$row['id'];?></th>
+
+                                                            <td><?=$inviteUser;?></td>
+                                                            <td><?=$row['email'];?></td>
+
+                                                            <td><span style="font-size: 100%;" class="label label-<?=$validColor;?>"><?=$row['code'];?></span></td>
+
+                                                            <td><?=$row['date'];?></td>
+
+                                                            <td><?=$dateInviteUsed;?></td>
+                                                            <td><?=$usedBy;?></td>
+                                                            <td><?=$ipUsed;?></td>
+
+                                                            <td><span style="font-size: 100%;" class="label label-<?=$validColor;?>"><?=$row['valid'];?></span></td>
+
+                                                        </tr>
+
+                                                        <?php endforeach; ?>
+
+                                                    </tbody>
+
+                                                </table>
+
+                                            </div>
+                                        
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="email-content logs-box white-bg">
                     <div class="email-body">
                         <div class="email-header gray-bg">
@@ -2191,6 +2306,19 @@ echo buildSettings(
             <!--End Content-->
 
         </div>
+		 <?php if(isset($_POST['op'])) : ?>
+        <script>
+            
+            parent.notify("<?php echo printArray($USER->info_log); ?>","info-circle","notice","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+            
+            <?php if(!empty($USER->error_log)) : ?>
+            
+            parent.notify("<?php echo printArray($USER->error_log); ?>","exclamation-circle ","error","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
+            
+            <?php endif; ?>
+            
+        </script>
+        <?php endif; ?>
 
 		<script>
 			function performUpdate(){
@@ -2691,7 +2819,7 @@ echo buildSettings(
 
         
      
-            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate ").on("click",function (e) {
+            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites ").on("click",function (e) {
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
                 if($(window).width() < 768){

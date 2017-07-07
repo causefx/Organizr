@@ -77,6 +77,22 @@ switch ($_SERVER['REQUEST_METHOD']) {
             case 'search-plex':
 			 	$response = searchPlex($_POST['searchtitle']);
 			 	break;
+			case 'validate-invite':
+				$response = inviteCodes("check", $_POST['invitecode']);
+				$response['notify'] = sendResult($response, "check", $_POST['checkurl'], "CODE_SUCCESS", "CODE_ERROR");
+				break;
+			case 'use-invite':
+				//$response = inviteCodes("check", $_POST['invitecode']);
+				//$response = inviteCodes("use", $_POST['invitecode']);
+				if(inviteCodes("check", $_POST['invitecode'])){
+					$response = inviteCodes("use", $_POST['invitecode'], $_POST['inviteuser']);
+					$response['notify'] = sendResult(plexUserShare($_POST['inviteuser']), "check", $_POST['checkurl'], "INVITE_SUCCESS", "INVITE_ERROR");
+				}
+				break;
+			case 'join-plex':
+				$response = plexJoin($_POST['joinuser'], $_POST['joinemail'], $_POST['joinpassword']);
+				$response['notify'] = sendResult($response, "check", $_POST['checkurl'], "JOIN_SUCCESS", "JOIN_ERROR");
+				break;
             default: // Stuff that you need admin for
                 qualifyUser('admin', true);
                 switch ($action) {
