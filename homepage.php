@@ -241,13 +241,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
 				white-space: normal !important;
 				width: 0% !important;
 				font-size: 12px; !important;
-			}<?php if(CUSTOMCSS == "true") : 
-$template_file = "custom.css";
-$file_handle = fopen($template_file, "rb");
-echo fread($file_handle, filesize($template_file));
-fclose($file_handle);
-echo "\n";
-endif; ?>        
+			}<?php customCSS(); ?>       
         </style>
     </head>
 

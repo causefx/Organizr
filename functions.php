@@ -3479,5 +3479,16 @@ function getCert(){
 	return $file;
 }
 
+function customCSS(){
+	if(CUSTOMCSS == "true") {
+		$template_file = "custom.css";
+		$file_handle = fopen($template_file, "rb");
+		echo "\n";
+		echo fread($file_handle, filesize($template_file));
+		fclose($file_handle);
+		echo "\n";
+	}
+}
+
 // Always run this
 dependCheck();
