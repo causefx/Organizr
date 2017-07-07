@@ -3156,8 +3156,8 @@ function searchPlex($query){
 				$link = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
 			}
 			
-            $items .= '<tr>
-            <th scope="row"><a class="openTab" openTab="'.$openTab.'" href="'.$link.'"><img src="'.$image_url.'"></th></a>
+            $items .= '<tr style="cursor: pointer;" class="openTab" openTab="'.$openTab.'" href="'.$link.'">
+            <th scope="row"><img src="'.$image_url.'"></th>
             <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
             <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['genre'].'</td>
             <td class="col-xs-1 nzbtable nzbtable-row"'.$style.'>'.$results['year'].'</td>
