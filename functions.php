@@ -318,6 +318,7 @@ if (function_exists('curl_version')) :
 		// As post request
 		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
 		// Format Data
 		switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
 			case 'application/json': 
@@ -354,6 +355,7 @@ if (function_exists('curl_version')) :
 		// As post request
 		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "GET"); 
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
   		curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
 		// Format Headers
 		$cHeaders = array();
@@ -379,6 +381,7 @@ if (function_exists('curl_version')) :
 		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "DELETE"); 
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
   		curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
+		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
 		// Format Headers
 		$cHeaders = array();
 		foreach ($headers as $k => $v) {
@@ -3460,6 +3463,20 @@ function plexJoin($username, $email, $password){
 	//prettyPrint(json_decode($api['content'], true));
     return (!empty($success) && empty($errors) ? true : false );
 	
+}
+
+function getCert(){
+	$url = "http://curl.haxx.se/ca/cacert.pem";
+	$file = getcwd()."/config/cacert.pem";
+	$directory = getcwd()."/config/";
+	@mkdir($directory, 0770, true);
+	if(!file_exists($file)){
+    	file_put_contents( $file, fopen($url, 'r'));
+		writeLog("success", "CERT PEM: pem file created");
+	}elseif (file_exists($file) && time() - 2592000 > filemtime($file)) {
+		writeLog("success", "CERT PEM: downloaded new pem file");
+	}
+	return $file;
 }
 
 // Always run this
