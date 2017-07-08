@@ -8,6 +8,11 @@ upgradeCheck();
 // Lazyload settings
 $databaseConfig = configLazy('config/config.php');
 
+// Load Colours/Appearance
+foreach(loadAppearance() as $key => $value) {
+	$$key = $value;
+}
+
 //Set some variables
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
@@ -19,7 +24,7 @@ $hasOptions = "No";
 $settingsicon = "No";
 $settingsActive = "";
 $action = "";
-$title = "Organizr";
+/*$title = "Organizr";
 $topbar = "#333333"; 
 $topbartext = "#66D9EF";
 $bottombar = "#333333";
@@ -31,7 +36,7 @@ $activetabtext = "#FFFFFF";
 $inactiveicon = "#66D9EF";
 $inactivetext = "#66D9EF";
 $loading = "#66D9EF";
-$hovertext = "#000000";
+$hovertext = "#000000";*/
 $loadingIcon = "images/organizr-load-w-thick.gif";
 $baseURL = "";
 
@@ -143,7 +148,7 @@ if (file_exists('config/config.php')) {
 
     endif;
 
-    if($hasOptions == "Yes") :
+    /*if($hasOptions == "Yes") :
 
         $resulto = $file_db->query('SELECT * FROM options');
 
@@ -165,7 +170,7 @@ if (file_exists('config/config.php')) {
 
         endforeach;
 
-    endif;
+    endif;*/
 
     $userpic = md5( strtolower( trim( $USER->email ) ) );
     if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;

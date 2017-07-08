@@ -8,7 +8,7 @@
 // Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
-	echo '<pre style="background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
+	echo '<pre style="white-space: pre-line; background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
 	if ($die) { http_response_code(503); die(); }
 }
 
@@ -747,7 +747,8 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $height = 281;
                 $width = 500;
                 $thumb = $item['art'];
-                $key = $item['ratingKey'] . "-np";
+                $key = isset($item['ratingKey']) ? $item['ratingKey'] . "-np" : (isset($item['live']) ? "livetv.png" : ":)");
+				$useImage = (isset($item['live']) ? "images/livetv.png" : null);
 				$extraInfo = isset($item['extraType']) ? "Trailer" : (isset($item['live']) ? "Live TV" : ":)");
                 $elapsed = $item['viewOffset'];
                 $duration = $item['duration'];
@@ -853,6 +854,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
         $image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'';        
     }
     if(!$thumb){ $image_url = "images/no-np.png"; $key = "no-np"; }
+	if(isset($useImage)){ $image_url = $useImage; }
 	$openTab = (PLEXTABNAME) ? "true" : "false";
     // Assemble Item And Cache Into Array 
     if($nowPlaying){
@@ -928,27 +930,35 @@ function getPlexStreams($size, $showNames, $role){
 	// Perform API requests
     $api = @curl_get($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
-    if (!$getServer) { return 'Could not load!'; }
-	
-	// Identify the local machine
-    $gotServer = $getServer['machineIdentifier'];
-	
-	$items = array();
-	foreach($api AS $child) {
-		$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames, $role);
+	if (is_array($api) || is_object($api)){
+		if (!$api->head->title){
+			$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+			if (!$getServer) { return 'Could not load!'; }
+
+			// Identify the local machine
+			$gotServer = $getServer['machineIdentifier'];
+
+			$items = array();
+			foreach($api AS $child) {
+				$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames, $role);
+			}
+
+			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
+				setInterval(function() {
+					$('<div></div>').load('ajax.php?a=plex-streams',function() {
+						var element = $(this).find('[id]');
+						var loadedID = 	element.attr('id');
+						$('#'+loadedID).replaceWith(element);
+						console.log('Loaded updated: '+loadedID);
+					});
+				}, 15000);
+			");
+		}else{
+			writeLog("error", "PLEX STREAM ERROR: could not connect - check token - if HTTPS, is cert valid");
+		}
+	}else{
+		writeLog("error", "PLEX STREAM ERROR: could not connect - check URL - if HTTPS, is cert valid");
 	}
-	
-	return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
-		setInterval(function() {
-			$('<div></div>').load('ajax.php?a=plex-streams',function() {
-				var element = $(this).find('[id]');
-				var loadedID = 	element.attr('id');
-				$('#'+loadedID).replaceWith(element);
-				console.log('Loaded updated: '+loadedID);
-			});
-		}, 15000);
-	");
 }
 
 // Get Recent Content From Emby
@@ -1008,21 +1018,29 @@ function getPlexRecent($array){
 	// Perform Requests
     $api = @curl_get($address."/library/recentlyAdded?limit=".PLEXRECENTITEMS."&X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
-	if (!$getServer) { return 'Could not load!'; }
-	
-	// Identify the local machine
-    $gotServer = $getServer['machineIdentifier'];
-	
-	$items = array();
-	foreach($api AS $child) {
-     $type = (string) $child['type'];
-		if($array[$type] == "true"){
-			$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, false, false, false);
+	if (is_array($api) || is_object($api)){
+		if (!$api->head->title){
+			$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+			if (!$getServer) { return 'Could not load!'; }
+
+			// Identify the local machine
+			$gotServer = $getServer['machineIdentifier'];
+
+			$items = array();
+			foreach($api AS $child) {
+			 $type = (string) $child['type'];
+				if($array[$type] == "true"){
+					$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, false, false, false);
+				}
+			}
+
+			return outputRecentAdded($header, $items, "", $array);
+		}else{
+			writeLog("error", "PLEX STREAM ERROR: could not connect - check token - if HTTPS, is cert valid");
 		}
+	}else{
+		writeLog("error", "PLEX STREAM ERROR: could not connect - check URL - if HTTPS, is cert valid");
 	}
-	
-	return outputRecentAdded($header, $items, "", $array);
 }
 
 // Get Image From Emby
@@ -1044,7 +1062,7 @@ function getEmbyImage() {
     $cachefile = 'images/cache/'.$key.'.jpg';
     $cachetime = 604800;
     // Serve from the cache if it is younger than $cachetime
-    if (file_exists($cachefile) && time() - $cachetime > filemtime($cachefile)) {
+    if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
         header("Content-type: image/jpeg");
         @readfile($cachefile);
         exit;
@@ -1080,7 +1098,7 @@ function getPlexImage() {
         $cachefile = 'images/cache/'.$key.'.jpg';
         $cachetime = 604800;
         // Serve from the cache if it is younger than $cachetime
-        if (file_exists($cachefile) && time() - $cachetime > filemtime($cachefile)) {
+        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
             header("Content-type: image/jpeg");
             @readfile($cachefile);
             exit;
@@ -1423,13 +1441,51 @@ function upgradeCheck() {
 	return true;
 }
 
+// Get OS from server
+function getOS(){
+	if(PHP_SHLIB_SUFFIX == "dll"){
+		return "win";
+	}else{
+		return "nix";
+	}
+}
+
+//Get Error by Server OS
+function getError($os, $error){
+	$ini = (!empty(php_ini_loaded_file()) ? php_ini_loaded_file() : "php.ini");
+	$ext = (!empty(ini_get('extension_dir')) ? "uncomment ;extension_dir = and make sure it says -> extension_dir = '".ini_get('extension_dir')."'" : "uncomment ;extension_dir = and add path to 'ext' to make it like extension_dir = 'C:\nginx\php\ext'");
+	$errors = array(
+		'pdo_sqlite' => array(
+			'win' => '<b>PDO:SQLite</b> not enabled, uncomment ;extension=php_pdo_sqlite.dll in the file php.ini | '.$ext,
+			'nix' => '<b>PDO:SQLite</b> not enabled, PHP7 -> run sudo apt-get install php7.0-sqlite | PHP5 -> run sudo apt-get install php5-sqlite',
+		),
+		'sqlite3' => array(
+			'win' => '<b>SQLite3</b> not enabled, uncomment ;extension=php_sqlite3.dll in the file php.ini | uncomment ;sqlite3.extension_dir = and add "ext" to make it sqlite3.extension_dir = ext',
+			'nix' => '<b>SQLite3</b> not enabled, run sudo apt-get install php-sqlite3',
+		),
+		'curl' => array(
+			'win' => '<b>cURL</b> not enabled, uncomment ;extension=php_curl.dll in the file php.ini | '.$ext,
+			'nix' => '<b>cURL</b> not enabled, PHP7 -> sudo apt-get install php-7.0 | PHP5 -> run sudo apt-get install php5-curl',
+		),
+		'zip' => array(
+			'win' => '<b>PHP Zip</b> not enabled, uncomment ;extension=php_zip.dll in the file php.ini, if that doesn\'t work remove that line',
+			'nix' => '<b>PHP Zip</b> not enabled, PHP7 -> run sudo apt-get install php7.0-zip | PHP5 -> run sudo apt-get install php5.6-zip',
+		),
+		
+	);
+	return (isset($errors[$error][$os]) ? $errors[$error][$os] : 'No Error Info Found');
+}
+
 // Check if all software dependancies are met
 function dependCheck() {
 	$output = array();
-	if (!extension_loaded('pdo_sqlite')) { $output[] = 'PDO:SQLite not enabled, please add "extension = php_pdo_sqlite.dll" to php.ini'; }
-	//if (!extension_loaded('sqlite3')) { $output[] = 'SQLite3 not enabled, please add "extension = php_sqlite3.dll" to php.ini'; }
+	if (!extension_loaded('pdo_sqlite')) { $output[] = getError(getOS(),'pdo_sqlite'); }
+	if (!extension_loaded('curl')) { $output[] = getError(getOS(),'curl'); }
+	if (!extension_loaded('zip')) { $output[] = getError(getOS(),'zip'); }
+	//if (!extension_loaded('sqlite3')) { $output[] = getError(getOS(),'sqlite3'); }
 	
 	if ($output) {
+		$output[] = "<b>Please visit here to also check status of necessary components after you fix them: <a href='check.php'>check.php<a/></b>";
 		debug_out($output,1);
 	}
 	return true;
@@ -2306,42 +2362,44 @@ function nzbgetConnect($list = 'listgroups') {
     
     $api = curl_get($url.'/'.NZBGETUSERNAME.':'.NZBGETPASSWORD.'/jsonrpc/'.$list);          
     $api = json_decode($api, true);
-    
     $gotNZB = array();
-    
-    foreach ($api['result'] AS $child) {
-        $downloadName = htmlentities($child['NZBName'], ENT_QUOTES);
-        $downloadStatus = $child['Status'];
-        $downloadCategory = $child['Category'];
-        if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
-        if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
-        if($child['Health'] <= "750"){ 
-            $downloadHealth = "danger"; 
-        }elseif($child['Health'] <= "900"){ 
-            $downloadHealth = "warning"; 
-        }elseif($child['Health'] <= "1000"){ 
-            $downloadHealth = "success"; 
-        }
-        
-        $gotNZB[] = '<tr>
-                        <td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
-                        <td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
-                        <td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
-                        <td class="col-xs-2 nzbtable nzbtable-row">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
-                                    <p class="text-center">'.round($downloadPercent).'%</p>
-                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>';
-    }
-    
-	if ($gotNZB) {
-		return implode('',$gotNZB);
-	} else {
-		return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+    if (is_array($api) || is_object($api)){
+		foreach ($api['result'] AS $child) {
+			$downloadName = htmlentities($child['NZBName'], ENT_QUOTES);
+			$downloadStatus = $child['Status'];
+			$downloadCategory = $child['Category'];
+			if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
+			if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
+			if($child['Health'] <= "750"){ 
+				$downloadHealth = "danger"; 
+			}elseif($child['Health'] <= "900"){ 
+				$downloadHealth = "warning"; 
+			}elseif($child['Health'] <= "1000"){ 
+				$downloadHealth = "success"; 
+			}
+
+			$gotNZB[] = '<tr>
+							<td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
+							<td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
+							<td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
+							<td class="col-xs-2 nzbtable nzbtable-row">
+								<div class="progress">
+									<div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+										<p class="text-center">'.round($downloadPercent).'%</p>
+										<span class="sr-only">'.$downloadPercent.'% Complete</span>
+									</div>
+								</div>
+							</td>
+						</tr>';
+		}
+
+		if ($gotNZB) {
+			return implode('',$gotNZB);
+		} else {
+			return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+		}
+	}else{
+		writeLog("error", "NZBGET ERROR: could not connect - check URL and/or check token and/or Usernamd and Password - if HTTPS, is cert valid");
 	}
 }
 
@@ -2817,41 +2875,34 @@ function getRadarrCalendar($array){
 }
 
 function getHeadphonesCalendar($url, $key, $list){
-	$url = qualifyURL(HEADPHONESURL);
-    
+	$url = qualifyURL(HEADPHONESURL);    
     $api = curl_get($url."/api?apikey=".$key."&cmd=$list");
-    
     $api = json_decode($api, true);
-    
     $i = 0;
-    
     $gotCalendar = "";
-	
-    foreach($api AS $child) {
+	if (is_array($api) || is_object($api)){
+		foreach($api AS $child) {
+			if($child['Status'] == "Wanted"){
+				$i++;
+				$albumName = addslashes($child['AlbumTitle']);
+				$albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
+				$albumDate = $child['ReleaseDate'];
+				$albumID = $child['AlbumID'];
+				$albumDate = strtotime($albumDate);
+				$albumDate = date("Y-m-d", $albumDate);
+				$albumStatus = $child['Status'];
 
-        if($child['Status'] == "Wanted"){
-        
-            $i++;
-            $albumName = addslashes($child['AlbumTitle']);
-            $albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
-            $albumDate = $child['ReleaseDate'];
-            $albumID = $child['AlbumID'];
-            $albumDate = strtotime($albumDate);
-            $albumDate = date("Y-m-d", $albumDate);
-            $albumStatus = $child['Status'];
-            
-            if (new DateTime() < new DateTime($albumDate)) {  $notReleased = "true"; }else{ $notReleased = "false"; }
+				if (new DateTime() < new DateTime($albumDate)) {  $notReleased = "true"; }else{ $notReleased = "false"; }
 
-            if($albumStatus == "Wanted" && $notReleased == "true"){ $albumStatusColor = "indigo-bg"; }elseif($albumStatus == "Downloaded"){ $albumStatusColor = "green-bg"; }else{ $albumStatusColor = "red-bg"; }
+				if($albumStatus == "Wanted" && $notReleased == "true"){ $albumStatusColor = "indigo-bg"; }elseif($albumStatus == "Downloaded"){ $albumStatusColor = "green-bg"; }else{ $albumStatusColor = "red-bg"; }
 
-            $gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
-            
-        }
-        
-    }
-
-    if ($i != 0){ return $gotCalendar; }
-
+				$gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
+			}
+		}
+    	if ($i != 0){ return $gotCalendar; }
+	}else{
+		writeLog("error", "HEADPHONES $list ERROR: could not connect - check URL and/or check API key - if HTTPS, is cert valid");
+	}
 }
 
 function checkRootPath($string){
@@ -2860,6 +2911,10 @@ function checkRootPath($string){
     }else{
         return str_replace("\\", "/", $string) . "/";
     }
+}
+
+function strip($string){
+	return str_replace(array("\r","\n","\t"),"",$string);
 }
 
 function writeLog($type, $message){
