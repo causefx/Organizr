@@ -8,7 +8,7 @@
 // Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
-	echo '<pre style="background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
+	echo '<pre style="white-space: pre-line; background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
 	if ($die) { http_response_code(503); die(); }
 }
 
@@ -1452,22 +1452,24 @@ function getOS(){
 
 //Get Error by Server OS
 function getError($os, $error){
+	$ini = (!empty(php_ini_loaded_file()) ? php_ini_loaded_file() : "php.ini");
+	$ext = (!empty(ini_get('extension_dir')) ? "uncomment ;extension_dir = and make sure it says -> extension_dir = '".ini_get('extension_dir')."'" : "uncomment ;extension_dir = and add path to 'ext' to make it like extension_dir = 'C:\nginx\php\ext'");
 	$errors = array(
 		'pdo_sqlite' => array(
-			'win' => 'PDO:SQLite not enabled, uncomment ;extension=php_pdo_sqlite.dll in the file php.ini',
-			'nix' => 'PDO:SQLite not enabled, PHP7 -> run sudo apt-get install php7.0-sqlite | PHP5 -> run sudo apt-get install php5-sqlite',
+			'win' => '<b>PDO:SQLite</b> not enabled, uncomment ;extension=php_pdo_sqlite.dll in the file php.ini | '.$ext,
+			'nix' => '<b>PDO:SQLite</b> not enabled, PHP7 -> run sudo apt-get install php7.0-sqlite | PHP5 -> run sudo apt-get install php5-sqlite',
 		),
 		'sqlite3' => array(
-			'win' => 'SQLite3 not enabled, uncomment ;extension=php_sqlite3.dll in the file php.ini',
-			'nix' => 'SQLite3 not enabled, run sudo apt-get install php-sqlite3',
+			'win' => '<b>SQLite3</b> not enabled, uncomment ;extension=php_sqlite3.dll in the file php.ini | uncomment ;sqlite3.extension_dir = and add "ext" to make it sqlite3.extension_dir = ext',
+			'nix' => '<b>SQLite3</b> not enabled, run sudo apt-get install php-sqlite3',
 		),
 		'curl' => array(
-			'win' => 'cURL not enabled, uncomment ;extension=php_curl.dll in the file php.ini',
-			'nix' => 'cURL not enabled, PHP7 -> sudo apt-get install php-7.0 | PHP5 -> run sudo apt-get install php5-curl',
+			'win' => '<b>cURL</b> not enabled, uncomment ;extension=php_curl.dll in the file php.ini | '.$ext,
+			'nix' => '<b>cURL</b> not enabled, PHP7 -> sudo apt-get install php-7.0 | PHP5 -> run sudo apt-get install php5-curl',
 		),
 		'zip' => array(
-			'win' => 'PHP Zip not enabled, uncomment ;extension=php_zip.dll in the file php.ini, if that doesn\'t work remove that line',
-			'nix' => 'PHP Zip not enabled, PHP7 -> run sudo apt-get install php7.0-zip | PHP5 -> run sudo apt-get install php5.6-zip',
+			'win' => '<b>PHP Zip</b> not enabled, uncomment ;extension=php_zip.dll in the file php.ini, if that doesn\'t work remove that line',
+			'nix' => '<b>PHP Zip</b> not enabled, PHP7 -> run sudo apt-get install php7.0-zip | PHP5 -> run sudo apt-get install php5.6-zip',
 		),
 		
 	);
@@ -1483,6 +1485,7 @@ function dependCheck() {
 	//if (!extension_loaded('sqlite3')) { $output[] = getError(getOS(),'sqlite3'); }
 	
 	if ($output) {
+		$output[] = "<b>Please visit here to also check status of necessary components after you fix them: <a href='check.php'>check.php<a/></b>";
 		debug_out($output,1);
 	}
 	return true;

@@ -17,63 +17,10 @@ $USER = new User("registration_callback");
 // Check if connection to homepage is allowed
 qualifyUser(HOMEPAGEAUTHNEEDED, true);
 
-$dbfile = DATABASE_LOCATION.'users.db';
-
-$file_db = new PDO("sqlite:" . $dbfile);
-$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-$dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
-
-$hasOptions = "No";
-
-foreach($dbOptions as $row) :
-
-    if (in_array("options", $row)) :
-        $hasOptions = "Yes";
-    endif;
-
-endforeach;
-
-if($hasOptions == "No") :
-
-    $title = "Organizr";
-    $topbar = "#333333"; 
-    $topbartext = "#66D9EF";
-    $bottombar = "#333333";
-    $sidebar = "#393939";
-    $hoverbg = "#AD80FD";
-    $activetabBG = "#F92671";
-    $activetabicon = "#FFFFFF";
-    $activetabtext = "#FFFFFF";
-    $inactiveicon = "#66D9EF";
-    $inactivetext = "#66D9EF";
-    $loading = "#66D9EF";
-    $hovertext = "#000000";
-
-endif;
-
-if($hasOptions == "Yes") :
-
-    $resulto = $file_db->query('SELECT * FROM options'); 
-    foreach($resulto as $row) : 
-
-        $title = isset($row['title']) ? $row['title'] : "Organizr";
-        $topbartext = isset($row['topbartext']) ? $row['topbartext'] : "#66D9EF";
-        $topbar = isset($row['topbar']) ? $row['topbar'] : "#333333";
-        $bottombar = isset($row['bottombar']) ? $row['bottombar'] : "#333333";
-        $sidebar = isset($row['sidebar']) ? $row['sidebar'] : "#393939";
-        $hoverbg = isset($row['hoverbg']) ? $row['hoverbg'] : "#AD80FD";
-        $activetabBG = isset($row['activetabBG']) ? $row['activetabBG'] : "#F92671";
-        $activetabicon = isset($row['activetabicon']) ? $row['activetabicon'] : "#FFFFFF";
-        $activetabtext = isset($row['activetabtext']) ? $row['activetabtext'] : "#FFFFFF";
-        $inactiveicon = isset($row['inactiveicon']) ? $row['inactiveicon'] : "#66D9EF";
-        $inactivetext = isset($row['inactivetext']) ? $row['inactivetext'] : "#66D9EF";
-        $loading = isset($row['loading']) ? $row['loading'] : "#66D9EF";
-        $hovertext = isset($row['hovertext']) ? $row['hovertext'] : "#000000";
-
-    endforeach;
-
-endif;
+// Load Colours/Appearance
+foreach(loadAppearance() as $key => $value) {
+	$$key = $value;
+}
 
 $startDate = date('Y-m-d',strtotime("-".CALENDARSTARTDAY." days"));
 $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days")); 
