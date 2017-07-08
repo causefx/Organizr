@@ -800,10 +800,37 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                         today: { buttonText: '<?php echo $language->translate("TODAY");?>' },
                     },
                     events: [
-<?php if (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)){ echo getSickrageCalendarWanted($sickrage->future()); echo getSickrageCalendarHistory($sickrage->history("100","downloaded")); } ?>
-<?php if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){ echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); } ?>
-<?php if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){ echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); } ?>                 
-<?php if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); } ?>                                
+<?php 
+if (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)){
+	try { 
+		echo getSickrageCalendarWanted($sickrage->future());
+	} catch (Exception $e) { 
+		writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
+	} try { 
+		echo getSickrageCalendarHistory($sickrage->history("100","downloaded"));
+	} catch (Exception $e) { 
+		writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
+	}
+}
+if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){
+	try {
+		echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); 
+	} catch (Exception $e) { 
+		writeLog("error", "SONARR ERROR: ".strip($e->getMessage())); 
+	}
+}
+if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){ 
+	try { 
+		echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); 
+	} catch (Exception $e) { 
+		writeLog("error", "RADARR ERROR: ".strip($e->getMessage())); 
+	}
+}
+if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
+	echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); 
+	echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); 
+
+}?>                                
                     ],
                     eventRender: function eventRender( event, element, view ) {
                         return ['all', event.imagetype].indexOf($('#imagetype_selector').val()) >= 0

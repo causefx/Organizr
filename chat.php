@@ -136,7 +136,7 @@ endif;
                 echo '<h3 class="panel-title">SQLITE3</h3>';
                 echo '</div>';
                 echo '<div style="color: gray" class="panel-body">';
-                echo 'SQLITE3 is NOT loaded!  Please install it before proceeding';
+				echo getError(getOS(),'sqlite3');
 
                 echo '</div></div></div>';
                 die();
