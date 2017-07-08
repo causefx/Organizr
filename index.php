@@ -891,7 +891,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             </div>
 
         </div>
-        <?php if($configReady == "Yes") : if(!$USER->authenticated && $configReady == "Yes") : if(!$inviteCode) : ?>
+        <?php if($configReady == "Yes") : if(!$USER->authenticated && $configReady == "Yes") : ?>
         <div class="login-modal modal fade">
             <div style="background:<?=$sidebar;?>;" class="table-wrapper">
                 <div class="table-row">
@@ -1009,7 +1009,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
                 </div>
             </div>
         </div>
-        <?php endif; endif; endif;?>
+        <?php endif; endif; ?>
         <?php if($configReady == "Yes") : if($USER->authenticated) : ?>
         <div style="background:<?=$topbar;?>;" class="logout-modal modal fade">
             <div class="table-wrapper" style="background: <?=$sidebar;?>">
@@ -1078,6 +1078,16 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 										<h4 id="accountMade" style="display: none" class="text-center">
 											<span class="label label-primary"><?php echo $language->translate("ACCOUNT_MADE");?></span>
 										</h4>
+										<div id="accountSubmitted" style="display: none" class="panel panel-success">
+											<div class="panel-heading">
+												<h3 class="panel-title"><?php echo explosion($language->translate('ACCOUNT_SUBMITTED'), 0);?></h3>
+											</div>
+											<div class="panel-body">
+												<?php echo explosion($language->translate('ACCOUNT_SUBMITTED'), 1);?><br/>
+												<?php echo explosion($language->translate('ACCOUNT_SUBMITTED'), 2);?><br/>
+												<?php echo explosion($language->translate('ACCOUNT_SUBMITTED'), 3);?>
+											</div>
+										</div>
 										<div class="form-group">
 											<input style="font-size: 400%; height: 100%" type="hidden" class="form-control yellow-bg text-center text-uppercase" name="inviteCode" placeholder="<?php echo $language->translate("CODE");?>" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?=$inviteCode;?>" maxlength="6" required>
 											<input type="text" class="form-control material" name="inviteUser" placeholder="<?php echo $language->translate("USERNAME_EMAIL");?>" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="" autofocus required>
@@ -1326,6 +1336,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 					if(result === true){
 						//$('#checkInviteForm').hide();
 						//$('#chooseMethod').show();
+						$('#accountSubmitted').show();
 						console.log(result);
 					}
 				});
