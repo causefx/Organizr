@@ -92,9 +92,9 @@
 		// dismiss after [options.ttl]ms
 		var self = this;
 		this.dismissttl = setTimeout( function() {
-			if( self.active ) {
+			//if( self.active ) {
 				self.dismiss();
-			}
+			//}
 		}, this.options.ttl );
 
 		// init events

@@ -398,7 +398,8 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                                 <div class="">
                                     <div class="input-group">
                                         <div style="border-radius: 25px 0 0 25px; border:0" class="input-group-addon gray-bg"><i class="fa fa-search white"></i></div>
-                                        <input type="text" style="border-radius: 0 25px 25px 0;" autocomplete="off" name="search-title" class="form-control input-group-addon gray-bg" placeholder="Media Search">
+                                        <input id="searchInput" type="text" style="border-radius: 0;" autocomplete="off" name="search-title" class="form-control input-group-addon gray-bg" placeholder="Media Search">
+										<div id="clearSearch" style="border-radius: 0 25px 25px 0;border:0; cursor: pointer;" class="input-group-addon gray-bg"><i class="fa fa-close white"></i></div>
                                         <button style="display:none" id="plexSearchForm_submit" class="btn btn-primary waves"></button>
                                     </div>
                                 </div>
@@ -540,6 +541,11 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         <script>
         $('.close-btn').click(function(e){
             var closedBox = $(this).closest('div.content-box').remove();
+            e.preventDefault();
+        });
+		$('#clearSearch').click(function(e){
+            $('#searchInput').val("");
+            $('#searchInput').focus();
             e.preventDefault();
         });
         
