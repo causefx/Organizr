@@ -747,7 +747,8 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $height = 281;
                 $width = 500;
                 $thumb = $item['art'];
-                $key = $item['ratingKey'] . "-np";
+                $key = isset($item['ratingKey']) ? $item['ratingKey'] . "-np" : (isset($item['live']) ? "livetv.png" : ":)");
+				$useImage = (isset($item['live']) ? "images/livetv.png" : null);
 				$extraInfo = isset($item['extraType']) ? "Trailer" : (isset($item['live']) ? "Live TV" : ":)");
                 $elapsed = $item['viewOffset'];
                 $duration = $item['duration'];
@@ -853,6 +854,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
         $image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'';        
     }
     if(!$thumb){ $image_url = "images/no-np.png"; $key = "no-np"; }
+	if(isset($useImage)){ $image_url = $useImage; }
 	$openTab = (PLEXTABNAME) ? "true" : "false";
     // Assemble Item And Cache Into Array 
     if($nowPlaying){
@@ -1044,7 +1046,7 @@ function getEmbyImage() {
     $cachefile = 'images/cache/'.$key.'.jpg';
     $cachetime = 604800;
     // Serve from the cache if it is younger than $cachetime
-    if (file_exists($cachefile) && time() - $cachetime > filemtime($cachefile)) {
+    if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
         header("Content-type: image/jpeg");
         @readfile($cachefile);
         exit;
@@ -1080,7 +1082,7 @@ function getPlexImage() {
         $cachefile = 'images/cache/'.$key.'.jpg';
         $cachetime = 604800;
         // Serve from the cache if it is younger than $cachetime
-        if (file_exists($cachefile) && time() - $cachetime > filemtime($cachefile)) {
+        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
             header("Content-type: image/jpeg");
             @readfile($cachefile);
             exit;
