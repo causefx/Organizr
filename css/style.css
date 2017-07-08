@@ -2541,7 +2541,7 @@ a.thumbnail.active, a.thumbnail:focus, a.thumbnail:hover {
 }
 
 .input-group-addon {
-  border: solid 1px #C0C0C0 !important;
+  border: solid 0px #C0C0C0 !important;
 }
 
 .form-inline .form-group {
