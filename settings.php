@@ -2944,6 +2944,9 @@ echo buildSettings(
             $("textarea").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0}
             });
+			 $(".iconpicker-items").niceScroll({
+                railpadding: {top:0,right:0,left:0,bottom:0}
+            });
             //Stop Div behind From Scrolling
             $( '.email-content' ).on( 'mousewheel', function ( e ) {
                 e.preventDefault();

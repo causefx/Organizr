@@ -1132,7 +1132,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         <script src="<?=$baseURL;?>bower_components/smoke/dist/js/smoke.min.js"></script>
 
         <!--Notification-->
-        <script src="<?=$baseURL;?>js/notifications/notificationFx.js"></script>
+        <script src="<?=$baseURL;?>js/notifications/notificationFx.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
         <!--Custom Scripts-->
         <script src="<?=$baseURL;?>js/common.js"></script>
@@ -1181,7 +1181,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
                     type: notifyType,
                     onClose: function () {
-                        $(".ns-box.ns-effect-thumbslider").fadeOut(400);
+                        $(".ns-box").fadeOut(400);
                     }
 
                 });
