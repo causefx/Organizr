@@ -30,234 +30,131 @@
 
     define('GUEST_HASH', "guest-".guestHash(0, 5));
     define('EMAIL_CSS', "
-	/* ------------------------------------- 
-		GLOBAL 
-------------------------------------- */
-* { 
-	margin:0;
-	padding:0;
-}
-* { font-family: \"Helvetica Neue\", \"Helvetica\", Helvetica, Arial, sans-serif; }
+    <style type=\"text/css\" id=\"media-query\">
+      body {
+  margin: 0;
+  padding: 0; }
 
-img { 
-	max-width: 100%; 
-}
-.collapse {
-	margin:0;
-	padding:0;
-}
-html {
-  height: 100%;
-}
-body {
-	-webkit-font-smoothing:antialiased; 
-	-webkit-text-size-adjust:none; 
-	width: 100%!important; 
-	min-height: 100%;
-}
+table, tr, td {
+  vertical-align: top;
+  border-collapse: collapse; }
 
+.ie-browser table, .mso-container table {
+  table-layout: fixed; }
 
-/* ------------------------------------- 
-		ELEMENTS 
-------------------------------------- */
-a { color: #2BA6CB;}
+* {
+  line-height: inherit; }
 
-.btn {
-	text-decoration:none;
-	color: #FFF;
-	background-color: #666;
-	padding:10px 16px;
-	font-weight:bold;
-	margin-right:10px;
-	text-align:center;
-	cursor:pointer;
-	display: inline-block;
-}
+a[x-apple-data-detectors=true] {
+  color: inherit !important;
+  text-decoration: none !important; }
 
-p.callout {
-	padding:15px;
-	background-color:#ECF8FF;
-	margin-bottom: 15px;
-}
-.callout a {
-	font-weight:bold;
-	color: #2BA6CB;
-}
+[owa] .img-container div, [owa] .img-container button {
+  display: block !important; }
 
-table.social {
-/* 	padding:15px; */
-	background-color: #ebebeb;
-	
-}
-.social .soc-btn {
-	padding: 3px 7px;
-	font-size:12px;
-	margin-bottom:10px;
-	text-decoration:none;
-	color: #FFF;font-weight:bold;
-	display:block;
-	text-align:center;
-}
-a.fb { background-color: #3B5998!important; }
-a.tw { background-color: #1daced!important; }
-a.gp { background-color: #DB4A39!important; }
-a.ms { background-color: #000!important; }
+[owa] .fullwidth button {
+  width: 100% !important; }
 
-.sidebar .soc-btn { 
-	display:block;
-	width:100%;
-}
+[owa] .block-grid .col {
+  display: table-cell;
+  float: none !important;
+  vertical-align: top; }
 
-/* ------------------------------------- 
-		HEADER 
-------------------------------------- */
-table.head-wrap { width: 100%;}
+.ie-browser .num12, .ie-browser .block-grid, [owa] .num12, [owa] .block-grid {
+  width: 615px !important; }
 
-.header.container table td.logo { padding: 15px; }
-.header.container table td.label { padding: 15px; padding-left:0px;}
+.ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {
+  line-height: 100%; }
 
+.ie-browser .mixed-two-up .num4, [owa] .mixed-two-up .num4 {
+  width: 204px !important; }
 
-/* ------------------------------------- 
-		BODY 
-------------------------------------- */
-table.body-wrap { width: 100%;}
+.ie-browser .mixed-two-up .num8, [owa] .mixed-two-up .num8 {
+  width: 408px !important; }
 
+.ie-browser .block-grid.two-up .col, [owa] .block-grid.two-up .col {
+  width: 307px !important; }
 
-/* ------------------------------------- 
-		FOOTER 
-------------------------------------- */
-table.footer-wrap { width: 100%;	clear:both!important;
-}
-.footer-wrap .container td.content  p { border-top: 1px solid rgb(215,215,215); padding-top:15px;}
-.footer-wrap .container td.content p {
-	font-size:10px;
-	font-weight: bold;
-	
-}
+.ie-browser .block-grid.three-up .col, [owa] .block-grid.three-up .col {
+  width: 205px !important; }
 
+.ie-browser .block-grid.four-up .col, [owa] .block-grid.four-up .col {
+  width: 153px !important; }
 
-/* ------------------------------------- 
-		TYPOGRAPHY 
-------------------------------------- */
-h1,h2,h3,h4,h5,h6 {
-font-family: \"HelveticaNeue-Light\", \"Helvetica Neue Light\", \"Helvetica Neue\", Helvetica, Arial, \"Lucida Grande\", sans-serif; line-height: 1.1; margin-bottom:15px; color:#000;
-}
-h1 small, h2 small, h3 small, h4 small, h5 small, h6 small { font-size: 60%; color: #6f6f6f; line-height: 0; text-transform: none; }
+.ie-browser .block-grid.five-up .col, [owa] .block-grid.five-up .col {
+  width: 123px !important; }
 
-h1 { font-weight:200; font-size: 44px;}
-h2 { font-weight:200; font-size: 37px;}
-h3 { font-weight:500; font-size: 27px;}
-h4 { font-weight:500; font-size: 23px;}
-h5 { font-weight:900; font-size: 17px;}
-h6 { font-weight:900; font-size: 14px; text-transform: uppercase; color:#FFFFFF;}
+.ie-browser .block-grid.six-up .col, [owa] .block-grid.six-up .col {
+  width: 102px !important; }
 
-.collapse { margin:0!important;}
+.ie-browser .block-grid.seven-up .col, [owa] .block-grid.seven-up .col {
+  width: 87px !important; }
 
-p, ul { 
-	margin-bottom: 10px; 
-	font-weight: normal; 
-	font-size:14px; 
-	line-height:1.6;
-}
-p.lead { font-size:17px; }
-p.last { margin-bottom:0px;}
+.ie-browser .block-grid.eight-up .col, [owa] .block-grid.eight-up .col {
+  width: 76px !important; }
 
-ul li {
-	margin-left:5px;
-	list-style-position: inside;
-}
+.ie-browser .block-grid.nine-up .col, [owa] .block-grid.nine-up .col {
+  width: 68px !important; }
 
-/* ------------------------------------- 
-		SIDEBAR 
-------------------------------------- */
-ul.sidebar {
-	background:#ebebeb;
-	display:block;
-	list-style-type: none;
-}
-ul.sidebar li { display: block; margin:0;}
-ul.sidebar li a {
-	text-decoration:none;
-	color: #666;
-	padding:10px 16px;
-/* 	font-weight:bold; */
-	margin-right:10px;
-/* 	text-align:center; */
-	cursor:pointer;
-	border-bottom: 1px solid #777777;
-	border-top: 1px solid #FFFFFF;
-	display:block;
-	margin:0;
-}
-ul.sidebar li a.last { border-bottom-width:0px;}
-ul.sidebar li a h1,ul.sidebar li a h2,ul.sidebar li a h3,ul.sidebar li a h4,ul.sidebar li a h5,ul.sidebar li a h6,ul.sidebar li a p { margin-bottom:0!important;}
+.ie-browser .block-grid.ten-up .col, [owa] .block-grid.ten-up .col {
+  width: 61px !important; }
 
+.ie-browser .block-grid.eleven-up .col, [owa] .block-grid.eleven-up .col {
+  width: 55px !important; }
 
+.ie-browser .block-grid.twelve-up .col, [owa] .block-grid.twelve-up .col {
+  width: 51px !important; }
 
-/* --------------------------------------------------- 
-		RESPONSIVENESS
-		Nuke it from orbit. It's the only way to be sure. 
------------------------------------------------------- */
+@media only screen and (min-width: 635px) {
+  .block-grid {
+    width: 615px !important; }
+  .block-grid .col {
+    display: table-cell;
+    Float: none !important;
+    vertical-align: top; }
+    .block-grid .col.num12 {
+      width: 615px !important; }
+  .block-grid.mixed-two-up .col.num4 {
+    width: 204px !important; }
+  .block-grid.mixed-two-up .col.num8 {
+    width: 408px !important; }
+  .block-grid.two-up .col {
+    width: 307px !important; }
+  .block-grid.three-up .col {
+    width: 205px !important; }
+  .block-grid.four-up .col {
+    width: 153px !important; }
+  .block-grid.five-up .col {
+    width: 123px !important; }
+  .block-grid.six-up .col {
+    width: 102px !important; }
+  .block-grid.seven-up .col {
+    width: 87px !important; }
+  .block-grid.eight-up .col {
+    width: 76px !important; }
+  .block-grid.nine-up .col {
+    width: 68px !important; }
+  .block-grid.ten-up .col {
+    width: 61px !important; }
+  .block-grid.eleven-up .col {
+    width: 55px !important; }
+  .block-grid.twelve-up .col {
+    width: 51px !important; } }
 
-/* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
-.container {
-	display:block!important;
-	max-width:600px!important;
-	margin:0 auto!important; /* makes it centered */
-	clear:both!important;
-}
+@media (max-width: 635px) {
+  .block-grid, .col {
+    min-width: 320px !important;
+    max-width: 100% !important; }
+  .block-grid {
+    width: calc(100% - 40px) !important; }
+  .col {
+    width: 100% !important; }
+    .col > div {
+      margin: 0 auto; }
+  img.fullwidth {
+    max-width: 100% !important; } }
 
-/* This should also be a block element, so that it will fill 100% of the .container */
-.content {
-	padding:15px;
-	max-width:600px;
-	margin:0 auto;
-	display:block; 
-	border-radius: 10px;
-}
-
-/* Let's make sure tables in the content area are 100% wide */
-.content table { width: 100%; }
-
-
-/* Odds and ends */
-.column {
-	width: 300px;
-	float:left;
-}
-.column tr td { padding: 15px; }
-.column-wrap { 
-	padding:0!important; 
-	margin:0 auto; 
-	max-width:600px!important;
-}
-.column table { width:100%;}
-.social .column {
-	width: 280px;
-	min-width: 279px;
-	float:left;
-}
-
-/* Be sure to place a .clear element after each set of columns, just to be safe */
-.clear { display: block; clear: both; }
-
-
-/* ------------------------------------------- 
-		PHONE
-		For clients that support media queries.
-		Nothing fancy. 
--------------------------------------------- */
-@media only screen and (max-width: 600px) {
-	
-	a[class=\"btn\"] { display:block!important; margin-bottom:10px!important; background-image:none!important; margin-right:0!important;}
-
-	div[class=\"column\"] { width: auto!important; float:none!important;}
-	
-	table.social div[class=\"column\"] {
-		width:auto!important;
-	}
-
-}
+    </style>	
 	");
 	
 	class User
@@ -996,52 +893,219 @@ EOT;
 				// send email notification
 				$subject = DOMAIN . " $uServer invite!";
 				$body = <<<EOT
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta name="viewport" content="width=device-width"/>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-		<title>Organizr Email</title>
-		<style>$emailCSS</style>
-	</head>
-	<body bgcolor="#333333">
-		<table class="head-wrap" bgcolor="#333333">
-			<tr>
-				<td></td>
-				<td class="header container">
-					<table bgcolor="#333333">
-						<tr>
-							<td><img src="$topImage"/></td>
-							<td align="right"><h6 class="collapse">Join My $server Server</h6></td>
-						</tr>
-					</table>
-				</td>
-				<td></td>
-			</tr>
-		</table>  
-		<table class="body-wrap">
-			<tr>
-				<td></td>
-				<td class="container" bgcolor="#FFFFFF">
-					<div class="content">
-						<table>
-							<tr>
-								<td>
-									<h3>Hi $username,</h3>
-									<p class="lead">Here is an invite to my $server server.  The code to join is $inviteCode.</p>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <!--[if gte mso 9]><xml>
+<o:OfficeDocumentSettings>
+<o:AllowPNG/>
+<o:PixelsPerInch>96</o:PixelsPerInch>
+</o:OfficeDocumentSettings>
+</xml><![endif]-->
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width">
+  <!--[if !mso]><!-->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!--<![endif]-->
+  <title></title>
+  <!--[if !mso]><!-- -->
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+  <!--<![endif]-->
+</head>
+<body class="clean-body" style="margin: 0;padding: 0;-webkit-text-size-adjust: 100%;background-color: #FFFFFF">
+  <!--[if IE]><div class="ie-browser"><![endif]-->
+  <!--[if mso]><div class="mso-container"><![endif]-->
+  <div class="nl-container" style="min-width: 320px;Margin: 0 auto;background-color: #FFFFFF">
+    <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="background-color: #FFFFFF;"><![endif]-->
+    <div style="background-color:#333333;">
+      <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+        class="block-grid ">
+        <div style="border-collapse: collapse;display: table;width: 100%;">
+          <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#333333;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+          <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:0px; padding-bottom:0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+          <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+            <div style="background-color: transparent; width: 100% !important;">
+              <!--[if (!mso)&(!IE)]><!-->
+              <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:0px; padding-bottom:0px; padding-right: 0px; padding-left: 0px;">
+                <!--<![endif]-->
+                <div align="left" class="img-container left fullwidth" style="padding-right: 30px;  padding-left: 30px;">
+                  <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 30px; padding-left: 30px;" align="left"><![endif]-->
+                  <img class="left fullwidth" align="left" border="0" src="https://sonflix.com/images/organizr-logo-h.png" alt="Image" title="Image"
+                    style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: 0;height: auto;float: none;width: 100%;max-width: 555px"
+                    width="555">
+                  <!--[if mso]></td></tr></table><![endif]-->
+                </div>
+                <!--[if (!mso)&(!IE)]><!-->
+              </div>
+              <!--<![endif]-->
+            </div>
+          </div>
+          <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+        </div>
+      </div>
+    </div>
+    <div style="background-color:#333333;">
+      <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+        class="block-grid ">
+        <div style="border-collapse: collapse;display: table;width: 100%;">
+          <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#333333;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+          <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:0px; padding-bottom:0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+          <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+            <div style="background-color: transparent; width: 100% !important;">
+              <!--[if (!mso)&(!IE)]><!-->
+              <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:0px; padding-bottom:0px; padding-right: 0px; padding-left: 0px;">
+                <!--<![endif]-->
+                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;"><![endif]-->
+                <div style="font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#FFFFFF; padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;">
+                  <div style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                    <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center"><span style="font-size: 16px; line-height: 19px;"><strong><span style="line-height: 19px; font-size: 16px;">Join My $uServer Server</span></strong>
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <!--[if mso]></td></tr></table><![endif]-->
+                <!--[if (!mso)&(!IE)]><!-->
+              </div>
+              <!--<![endif]-->
+            </div>
+          </div>
+          <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+        </div>
+      </div>
+    </div>
+    <div style="background-color:#393939;">
+      <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+        class="block-grid ">
+        <div style="border-collapse: collapse;display: table;width: 100%;">
+          <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#393939;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+          <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+          <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+            <div style="background-color: transparent; width: 100% !important;">
+              <!--[if (!mso)&(!IE)]><!-->
+              <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 0px; padding-left: 0px;">
+                <!--<![endif]-->
+                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 30px; padding-left: 30px; padding-top: 0px; padding-bottom: 0px;"><![endif]-->
+                <div style="font-family:'Ubuntu', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#FFFFFF; padding-right: 30px; padding-left: 30px; padding-top: 0px; padding-bottom: 0px;">
+                  <div style="font-family:Ubuntu, Tahoma, Verdana, Segoe, sans-serif;font-size:12px;line-height:14px;color:#FFFFFF;text-align:left;">
+                    <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center"><span style="font-size: 16px; line-height: 19px;"><strong>LOOK WHO JUST GOT AN INVITE</strong></span></p>
+                  </div>
+                </div>
+                <!--[if mso]></td></tr></table><![endif]-->
+                <div style="padding-right: 5px; padding-left: 5px; padding-top: 5px; padding-bottom: 5px;">
+                  <!--[if (mso)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 5px;padding-left: 5px; padding-top: 5px; padding-bottom: 5px;"><table width="55%" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+                  <div align="center">
+                    <div style="border-top: 2px solid #66D9EF; width:55%; line-height:2px; height:2px; font-size:2px;">&#160;</div>
+                  </div>
+                  <!--[if (mso)]></td></tr></table></td></tr></table><![endif]-->
+                </div>
+                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 30px; padding-left: 30px; padding-top: 15px; padding-bottom: 10px;"><![endif]-->
+                <div style="font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#FFFFFF; padding-right: 30px; padding-left: 30px; padding-top: 15px; padding-bottom: 10px;">
+                  <div style="font-family:'Lato',Tahoma,Verdana,Segoe,sans-serif;font-size:12px;line-height:14px;color:#FFFFFF;text-align:left;">
+                    <p style="margin: 0;font-size: 12px;line-height: 14px"><span style="font-size: 28px; line-height: 33px;">Hey $username,</span></p>
+                  </div>
+                </div>
+                <!--[if mso]></td></tr></table><![endif]-->
+                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 15px; padding-left: 30px; padding-top: 10px; padding-bottom: 25px;"><![endif]-->
+                <div style="font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:180%;color:#FFFFFF; padding-right: 15px; padding-left: 30px; padding-top: 10px; padding-bottom: 25px;">
+                  <div style="font-size:12px;line-height:22px;font-family:'Lato',Tahoma,Verdana,Segoe,sans-serif;color:#FFFFFF;text-align:left;">
+                    <p style="margin: 0;font-size: 14px;line-height: 25px"><span style="font-size: 18px; line-height: 32px;"><em><span style="line-height: 32px; font-size: 18px;">Here is an invite to my $uServer server.  The code to join is $inviteCode.</span></em>
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <!--[if mso]></td></tr></table><![endif]-->
 
-									<p class="callout">Click this <a class="btn" href="$link">LINK</a> to automatically fill in the info and join.</a></p> 
-									<p>You could also head over to my website to join by going here: <a href="$domain">$domain</a> and clicking Join My Server.</p>
-								</td>
-							</tr>
-						</table>
-					</div>
-				</td>
-				<td></td>
-			</tr>
-		</table> 
-		<br/><br/><br/><br/> 
-	</body>
+                <div align="center" class="button-container center" style="padding-right: 30px; padding-left: 30px; padding-top:15px; padding-bottom:15px;">
+                  <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"><tr><td style="padding-right: 30px; padding-left: 30px; padding-top:15px; padding-bottom:15px;" align="center"><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://sonflix.com" style="height:48px; v-text-anchor:middle; width:194px;" arcsize="53%" strokecolor="" fillcolor="#66D9EF"><w:anchorlock/><center style="color:#000; font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif; font-size:18px;"><![endif]-->
+                  <a href="$link" target="_blank" style="display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #000; background-color: #66D9EF; border-radius: 25px; -webkit-border-radius: 25px; -moz-border-radius: 25px; max-width: 180px; width: 114px; width: auto; border-top: 3px solid transparent; border-right: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 3px solid transparent; padding-top: 5px; padding-right: 30px; padding-bottom: 5px; padding-left: 30px; font-family: 'Lato', Tahoma, Verdana, Segoe, sans-serif;mso-border-alt: none">
+<span style="font-size:12px;line-height:21px;"><span style="font-size: 18px; line-height: 32px;" data-mce-style="font-size: 18px; line-height: 44px;">JOIN MY SERVER</span></span></a>
+                  <!--[if mso]></center></v:roundrect></td></tr></table><![endif]-->
+                </div>
+                  <!--[if mso]></center></v:roundrect></td></tr></table><![endif]-->
+                </div>
+                <!--[if (!mso)&(!IE)]><!-->
+              </div>
+              <!--<![endif]-->
+            </div>
+          </div>
+          <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+        </div>
+      </div>
+    </div>
+    <div style="background-color:#ffffff;">
+      <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+        class="block-grid ">
+        <div style="border-collapse: collapse;display: table;width: 100%;">
+          <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#ffffff;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+          <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:30px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+          <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+            <div style="background-color: transparent; width: 100% !important;">
+              <!--[if (!mso)&(!IE)]><!-->
+              <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:30px; padding-right: 0px; padding-left: 0px;">
+                <!--<![endif]-->
+                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 10px;"><![endif]-->
+                <div style="font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#555555; padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 10px;">
+                  <div style="font-size:12px;line-height:14px;color:#555555;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                    <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: center"><strong><span style="font-size: 26px; line-height: 31px;">What&#160;do I do?<br></span></strong></p>
+                  </div>
+                </div>
+                <!--[if mso]></td></tr></table><![endif]-->
+                <div style="padding-right: 20px; padding-left: 20px; padding-top: 15px; padding-bottom: 20px;">
+                  <!--[if (mso)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 20px;padding-left: 20px; padding-top: 15px; padding-bottom: 20px;"><table width="40%" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+                  <div align="center">
+                    <div style="border-top: 3px solid #66D9EF; width:40%; line-height:3px; height:3px; font-size:3px;">&#160;</div>
+                  </div>
+                  <!--[if (mso)]></td></tr></table></td></tr></table><![endif]-->
+                </div>
+                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 0px;"><![endif]-->
+                <div style="font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:180%;color:#7E7D7D; padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 0px;">
+                  <div style="font-size:12px;line-height:22px;color:#7E7D7D;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                    <p style="margin: 0;font-size: 14px;line-height: 25px;text-align: center"><em><span style="font-size: 18px; line-height: 32px;">You can click the link above - You could also head over to my website to join by going here: <a href="$domain">$domain</a> and clicking Join My Server</span></em></p>
+                  </div>
+                </div>
+                <!--[if mso]></td></tr></table><![endif]-->
+                <!--[if (!mso)&(!IE)]><!-->
+              </div>
+              <!--<![endif]-->
+            </div>
+          </div>
+          <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+        </div>
+      </div>
+    </div>
+    <div style="background-color:#333333;">
+      <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+        class="block-grid ">
+        <div style="border-collapse: collapse;display: table;width: 100%;">
+          <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#333333;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+          <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+          <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+            <div style="background-color: transparent; width: 100% !important;">
+              <!--[if (!mso)&(!IE)]><!-->
+              <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 0px; padding-left: 0px;">
+                <!--<![endif]-->
+                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;"><![endif]-->
+                <div style="font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#959595; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
+                  <div style="font-size:12px;line-height:14px;color:#959595;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                    <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: center">This&#160;email was sent by <a style="color:#AD80FD;text-decoration: underline;" title="Organizr" href="https://github.com/causefx/Organizr"
+                        target="_blank" rel="noopener noreferrer">Organizr</a><strong><br></strong></p>
+                  </div>
+                </div>
+                <!--[if mso]></td></tr></table><![endif]-->
+                <!--[if (!mso)&(!IE)]><!-->
+              </div>
+              <!--<![endif]-->
+            </div>
+          </div>
+          <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+        </div>
+      </div>
+    </div>
+    <!--[if (mso)|(IE)]></td></tr></table><![endif]-->
+  </div>
+  <!--[if (mso)|(IE)]></div><![endif]-->
+</body>
 </html>
 EOT;
 				

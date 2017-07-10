@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.40');
+ define('INSTALLEDVERSION', '1.401');
 // ===================================
 
 // Debugging output functions
@@ -892,7 +892,7 @@ function outputNowPlaying($header, $size, $type, $items, $script = false) {
 	if (!count($items)) {
 		return '<div id=streamz></div>'.($script?'<script>'.$script.'</script>':'');
 	}else{
-	   return '<div id=streamz><h5 class="text-center">'.$header.'</h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
+	   return '<div id=streamz><h5 class="zero-m big-box"><strong>'.$header.'</strong></h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
  }
     
 }
@@ -3320,7 +3320,9 @@ function libraryList(){
 	foreach($api->SharedServer AS $child) {
 		if(!empty($child['username'])){
 			$username = (string)strtolower($child['username']);
+			$email = (string)strtolower($child['email']);
 			$libraryList['users'][$username] = (string)$child['id'];
+			$libraryList['emails'][$email] = (string)$child['id'];
 		}
     }
     return (!empty($libraryList) ? array_change_key_case($libraryList,CASE_LOWER) : null );
@@ -3375,7 +3377,7 @@ function plexUserDelete($username){
 	);
 	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
     if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
-	$id = convertPlexName($username, "id");
+	$id = (is_numeric($username) ? $id : convertPlexName($username, "id"));
 	
 	$api = curl_delete("https://plex.tv/api/servers/$gotServer/shared_servers/$id", $headers);
 	

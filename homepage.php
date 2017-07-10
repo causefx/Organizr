@@ -68,7 +68,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         <script src="bower_components/slick/slick.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
-	       <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
+	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
 		
 		<!--Other-->
 		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
