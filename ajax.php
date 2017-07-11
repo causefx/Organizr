@@ -44,7 +44,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				break;
 			case 'plex-streams':
 				qualifyUser(PLEXHOMEAUTH, true);
-				echo getPlexStreams(12, PLEXSHOWNAMES);
+				echo getPlexStreams(12, PLEXSHOWNAMES, $GLOBALS['USER']->role);
 				die();
 				break;
 			case 'emby-recent':
