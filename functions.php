@@ -225,7 +225,7 @@ if (function_exists('curl_version')) :
 					}
 				}
 			}else{
-				writeLog("error", "$username is not an authorized user or entered invalid password");
+				writeLog("error", "$username is not an authorized PLEX user or entered invalid password");
 			}
 		}else{
   			writeLog("error", "error occured logging into plex might want to check curl.cainfo=/path/to/downloaded/cacert.pem in php.ini");   
