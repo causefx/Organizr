@@ -1042,7 +1042,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             </div>
         </div>
         <?php endif; endif;?>
-		<?php if ($inviteCode){ ?>
+		<?php if(isset($_GET['inviteCode'])){ ?>
 		<div id="inviteSet" class="login-modal modal fade">
 			<div style="background:<?=$sidebar;?>;" class="table-wrapper">
 				<div class="table-row">
@@ -1220,7 +1220,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             User.processRegistration();
         });
         $("#editInfo").click(function(){
-
             $( "div[id^='editInfoDiv']" ).toggle();
             $( "div[id^='buttonsDiv']" ).toggle();
         });
@@ -1281,11 +1280,10 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             	cta(e1, e2, {relativeToWindow: true}, function () {
                 $('.login-modal').modal("show");
             });
-
             e.preventDefault();
         });
 		//InviteCode
-		<?php if($inviteCode){ ?>
+		<?php if(isset($_GET['inviteCode'])){ ?>
 		$('#inviteSet').modal("show");	
 		<?php } ?>
 
