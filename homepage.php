@@ -492,6 +492,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         });
 		$('#clearSearch').click(function(e){
             $('#searchInput').val("");
+            $('#resultshere').html("");
             $('#searchInput').focus();
             e.preventDefault();
         });

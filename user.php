@@ -27,7 +27,6 @@
         return substr($ip, $start, $end);
     }
 
-
     define('GUEST_HASH', "guest-".guestHash(0, 5));
 
 	class User
@@ -296,9 +295,9 @@
 			{
 				// send email notification
 				$subject = "Welcome to ".DOMAIN;
-			$language = new setLanguage;
-			$domain = getServerPath();
-			$body = orgEmail(
+				$language = new setLanguage;
+				$domain = getServerPath();
+				$body = orgEmail(
 					$header = $language->translate('EMAIL_NEWUSER_HEADER'),
 					$title = $language->translate('EMAIL_NEWUSER_TITLE'), 
 					$user = $username, 
