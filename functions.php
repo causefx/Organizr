@@ -2674,19 +2674,30 @@ function explosion($string, $position){
 }
 
 function getServerPath() {
-    
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
-        
+	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https"){
+		$protocol = "https://";
+	}elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
         $protocol = "https://"; 
-    
     } else {  
-        
         $protocol = "http://"; 
-    
     }
-    
-    return $protocol . $_SERVER['SERVER_NAME'] . dirname($_SERVER['REQUEST_URI']);
-      
+	$domain = '';
+    if (isset($_SERVER['SERVER_NAME']) && $_SERVER['SERVER_NAME'] != "_"){
+        $domain = $_SERVER['SERVER_NAME'];
+	}elseif(isset($_SERVER['HTTP_HOST'])){
+		if (strpos($_SERVER['HTTP_HOST'], ':') !== false) {
+			$domain = explode(':', $_SERVER['HTTP_HOST'])[0];
+			$port = explode(':', $_SERVER['HTTP_HOST'])[1];
+			if ($port == "80" || $port == "443"){
+				$domain = $domain;
+			}else{
+				$domain = $_SERVER['HTTP_HOST'];
+			}
+		}else{
+        	$domain = $_SERVER['HTTP_HOST'];
+		}
+	}
+    return $protocol . $domain . dirname($_SERVER['REQUEST_URI']);
 }
 
 function get_browser_name() {
