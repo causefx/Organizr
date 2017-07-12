@@ -117,13 +117,7 @@ endif;
                 -webkit-filter: grayscale; /*sepia, hue-rotate, invert....*/
                 -webkit-filter: brightness(25%);
             }
-            <?php if(CUSTOMCSS == "true") : 
-$template_file = "custom.css";
-$file_handle = fopen($template_file, "rb");
-echo fread($file_handle, filesize($template_file));
-fclose($file_handle);
-echo "\n";
-endif; ?>        
+            <?php customCSS(); ?>      
         </style>
     </head>
 
@@ -142,7 +136,7 @@ endif; ?>
                 echo '<h3 class="panel-title">SQLITE3</h3>';
                 echo '</div>';
                 echo '<div style="color: gray" class="panel-body">';
-                echo 'SQLITE3 is NOT loaded!  Please install it before proceeding';
+				echo getError(getOS(),'sqlite3');
 
                 echo '</div></div></div>';
                 die();

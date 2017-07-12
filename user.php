@@ -27,9 +27,8 @@
         return substr($ip, $start, $end);
     }
 
-
     define('GUEST_HASH', "guest-".guestHash(0, 5));
-	
+
 	class User
 	{
 		// =======================================================================
@@ -197,6 +196,8 @@
 				// anything else won't change authentication status.
 				elseif($operation == "register") { $this->register($registration_callback); }
 				elseif($operation == "update") { $this->update(); }
+				elseif($operation == "invite") { $this->invite(); }
+				elseif($operation == "deleteinvite") { $this->deleteInvite(); }
 				// we only allow password resetting if we can send notification mails
 				elseif($operation == "reset" && User::use_mail) { $this->reset_password(); }
 			}
@@ -293,23 +294,19 @@
 			if($registered && User::use_mail)
 			{
 				// send email notification
-				$from = User::MAILER_NAME;
-				$replyto = User::MAILER_REPLYTO;
-				$domain_name = User::DOMAIN_NAME;
-				$subject = User::DOMAIN_NAME . " registration";
-				$body = <<<EOT
-	Hi,
-	this is an automated message to let you know that someone signed up at $domain_name with the user name "$username", using this email address as mailing address.
-	Because of the way our user registration works, we have no idea which password was used to register this account (it gets one-way hashed by the browser before it is sent to our user registration system, so that we don't know your password either), so if you registered this account, hopefully you wrote your password down somewhere.
-	However, if you ever forget your password, you can click the "I forgot my password" link in the log-in section for $domain_name and you will be sent an email containing a new, ridiculously long and complicated password that you can use to log in. You can change your password after logging in, but that's up to you. No one's going to guess it, or brute force it, but if other people can read your emails, it's generally a good idea to change passwords.
-	If you were not the one to register this account, you can either contact us the normal way or —much easier— you can ask the system to reset the password for the account, after which you can simply log in with the temporary password and delete the account. That'll teach whoever pretended to be you not to mess with you!
-	Of course, if you did register it yourself, welcome to $domain_name!
-	- the $domain_name team
-EOT;
-				$headers = "From: $from\r\n";
-				$headers .= "Reply-To: $replyto\r\n";
-				$headers .= "X-Mailer: PHP/" . phpversion();
-				//mail($email, $subject, $body, $headers);
+				$subject = "Welcome to ".DOMAIN;
+				$language = new setLanguage;
+				$domain = getServerPath();
+				$body = orgEmail(
+					$header = $language->translate('EMAIL_NEWUSER_HEADER'),
+					$title = $language->translate('EMAIL_NEWUSER_TITLE'), 
+					$user = $username, 
+					$mainMessage =$language->translate('EMAIL_NEWUSER_MESSAGE'),
+					$button = $language->translate('EMAIL_NEWUSER_BUTTON'),
+					$buttonURL = $domain, 
+					$subTitle = $language->translate('EMAIL_NEWUSER_SUBTITLE'), 
+					$subMessage = $language->translate('EMAIL_NEWUSER_SUBMESSAGE')
+					);
                 $this->startEmail($email, $username, $subject, $body);
 			}
 			return $registered;
@@ -335,6 +332,25 @@ EOT;
 			return $this->update_user($username, $email, $sha1, $role);
 		}
 		/**
+		 * Called when the requested POST operation is "invite"
+		 */
+		function invite()
+		{
+			// get relevant values
+            @$username = trim($_POST["username"]);
+			@$email = trim($_POST["email"]);
+			@$server = trim($_POST["server"]);
+			// step 1: someone could have bypassed the javascript validation, so validate again.
+			if($email !="" && preg_match(User::emailregexp, $email)==0) {
+				$this->info("<strong>invite error:</strong> email address did not pass validation");
+				writeLog("error", "$email didn't pass validation");
+				return false; 
+			}
+			// step 2: if validation passed, send the user's information for invite
+			return $this->invite_user($username, $email, $server);
+			writeLog("success", "passing invite info for $email");
+		}
+		/**
 		 * Reset a user's password
 		 */
 		function reset_password()
@@ -346,7 +362,7 @@ EOT;
 				$this->info("email address did not pass validation");
 				return false; }
 			// step 2: if validation passed, see if there is a matching user, and reset the password if there is
-			$newpassword = $this->random_ascii_string(64);
+			$newpassword = $this->random_ascii_string(20);
 			$sha1 = sha1($newpassword);
 			$query = "SELECT username, token FROM users WHERE email = '$email'";
 			$username = "";
@@ -357,27 +373,23 @@ EOT;
 			// step 2b: if there was a user to reset a password for, reset it.
 			$dbpassword = $this->token_hash_password($username, $sha1, $token);
 			$update = "UPDATE users SET password = '$dbpassword' WHERE email= '$email'";
-   writeLog("success", "$username has reset their password");
+   			writeLog("success", "$username has reset their password");
 			$this->database->exec($update);
             //$this->info("Email has been sent with new password");
 			// step 3: notify the user of the new password
-			$from = User::MAILER_NAME;
-			$replyto = User::MAILER_REPLYTO;
-			$domain_name = User::DOMAIN_NAME;
-			$subject = User::DOMAIN_NAME . " password reset request";
-			$body = <<<EOT
-	Hi,
-	this is an automated message to let you know that someone requested a password reset for the $domain_name user account with user name "$username", which is linked to this email address.
-	We've reset the password to the following 64 character string, so make sure to copy/paste it without any leading or trailing spaces:
-	$newpassword
-	If you didn't even know this account existed, now is the time to log in and delete it. How dare people use your email address to register accounts! Of course, if you did register it yourself, but you didn't request the reset, some jerk is apparently reset-spamming. We hope he gets run over by a steam shovel driven by rabid ocelots or something.
-	Then again, it's far more likely that you did register this account, and you simply forgot the password so you asked for the reset yourself, in which case: here's your new password, and thank you for your patronage at $domain_name!
-	- the $domain_name team
-EOT;
-			$headers = "From: $from\r\n";
-			$headers .= "Reply-To: $replyto\r\n";
-			$headers .= "X-Mailer: PHP/" . phpversion();
-			//mail($email, $subject, $body, $headers);
+			$subject = DOMAIN . " Password Reset";
+			$language = new setLanguage;
+			$domain = getServerPath();
+			$body = orgEmail(
+					$header = $language->translate('EMAIL_RESET_HEADER'),
+					$title = $language->translate('EMAIL_RESET_TITLE'), 
+					$user = $username, 
+					$mainMessage =$language->translate('EMAIL_RESET_MESSAGE')."<br/>".$newpassword,
+					$button = $language->translate('EMAIL_RESET_BUTTON'),
+					$buttonURL = $domain, 
+					$subTitle = $language->translate('EMAIL_RESET_SUBTITLE'), 
+					$subMessage = $language->translate('EMAIL_RESET_SUBMESSAGE')
+					);
             $this->startEmail($email, $username, $subject, $body);
 		}
 	// ------------------
@@ -564,7 +576,7 @@ EOT;
 			$query = "SELECT * FROM users WHERE username = '$username'";
 			foreach($this->database->query($query) as $data) {
 				$this->info("created user account for $username");
-    writeLog("success", "$username has just registered");
+    			writeLog("success", "$username has just registered");
 				$this->update_user_token($username, $sha1, false);
 				// make the user's data directory
 				$dir = USER_HOME . $username;
@@ -655,7 +667,7 @@ EOT;
 					file_put_contents(FAIL_LOG, $buildLog($username, "good_auth"));
 					chmod(FAIL_LOG, 0660);
 					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
-     writeLog("success", "$username has logged in");
+     				writeLog("success", "$username has logged in");
 					return true; 
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
 					// Create User
@@ -673,7 +685,7 @@ EOT;
 			} else if (!$authSuccess) {
 				// authentication failed
 				//$this->info("password mismatch for $username");
-    writeLog("error", "$username tried to sign-in with the wrong password");
+    			writeLog("error", "$username tried to sign-in with the wrong password");
 				file_put_contents(FAIL_LOG, $buildLog($username, "bad_auth"));
 				chmod(FAIL_LOG, 0660);
 				if(User::unsafe_reporting) { $this->error = "incorrect password for $username."; $this->error("incorrect password for $username."); }
@@ -704,8 +716,59 @@ EOT;
 				$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
 				$update = "UPDATE users SET password = '$dbpassword' WHERE username = '$username'";
 				$this->database->exec($update); }
-   writeLog("success", "information for $username has been updated");
+   			writeLog("success", "information for $username has been updated");
 			$this->info("updated the information for <strong>$username</strong>");
+		}
+		/**
+		 * Drop a invite from the system
+		 */
+		function deleteInvite()
+		{
+			@$id = trim($_POST["id"]);
+			$delete = "DELETE FROM invites WHERE id = '$id' COLLATE NOCASE";
+			$this->database->exec($delete);
+			$this->info("Plex Invite: <strong>$id</strong> has been deleted out of Organizr");
+    		writeLog("success", "PLEX INVITE: $id has been deleted");
+			return true;
+		}
+		
+		/**
+		 * Invite using a user's information
+		 */
+		function invite_user($username = "none", $email, $server)
+		{
+			//lang shit
+			$language = new setLanguage;
+			$domain = getServerPath();
+			$topImage = $domain."images/organizr-logo-h.png";
+			$uServer = strtoupper($server);
+			$now = date("Y-m-d H:i:s");
+			$inviteCode = randomCode(6);
+			$username = (!empty($username) ? $username : strtoupper($server) . " User");
+			$link = getServerPath()."?inviteCode=".$inviteCode;
+			if($email !="") {
+				$insert = "INSERT INTO invites (username, email, code, valid, date) ";
+				$insert .= "VALUES ('".strtolower($username)."', '$email', '$inviteCode', 'Yes', '$now') ";
+				$this->database->exec($insert);
+			}
+   			writeLog("success", "$email has been invited to the $server server");
+			$this->info("$email has been invited to the $server server");
+			if($insert && User::use_mail)
+			{
+				// send email notification
+				$subject = DOMAIN . " $uServer ".$language->translate('INVITE_CODE');
+				$body = orgEmail(
+					$header = explosion($language->translate('EMAIL_INVITE_HEADER'), 0)." ".$uServer." ".explosion($language->translate('EMAIL_INVITE_HEADER'), 1),
+					$title = $language->translate('EMAIL_INVITE_TITLE'), 
+					$user = $username, 
+					$mainMessage = explosion($language->translate('EMAIL_INVITE_MESSAGE'), 0)." ".$uServer." ".explosion($language->translate('EMAIL_INVITE_MESSAGE'), 1)." ".$inviteCode,
+					$button = explosion($language->translate('EMAIL_INVITE_BUTTON'), 0)." ".$uServer." ".explosion($language->translate('EMAIL_INVITE_BUTTON'), 1),
+					$buttonURL = $link, 
+					$subTitle = $language->translate('EMAIL_INVITE_SUBTITLE'), 
+					$subMessage = explosion($language->translate('EMAIL_INVITE_SUBMESSAGE'), 0)." <a href='".$domain."?inviteCode'>".$domain."</a> ".explosion($language->translate('EMAIL_INVITE_SUBMESSAGE'), 1)
+					);
+                $this->startEmail($email, $username, $subject, $body);
+			}
 		}
 		/**
 		 * Log a user out.
@@ -725,7 +788,7 @@ EOT;
             unset($_COOKIE['cookiePassword']);
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
             setcookie("cookiePassword", '', time() - 3600, '/');
-   writeLog("success", "$username has signed out");
+   			writeLog("success", "$username has signed out");
 			return true;
 		}
 		/**
@@ -737,10 +800,10 @@ EOT;
 			$this->database->exec($delete);
 			$this->info("<strong>$username</strong> has been kicked out of Organizr");
 			//$this->resetSession();
-    $dir = USER_HOME . $username;
-    if(!rmdir($dir)) { $this->error("could not delete user directory $dir"); }
-    $this->info("and we deleted user directory $dir");
-    writeLog("success", "$username has been deleted");
+    		$dir = USER_HOME . $username;
+    		if(!rmdir($dir)) { $this->error("could not delete user directory $dir"); }
+    		$this->info("and we deleted user directory $dir");
+    		writeLog("success", "$username has been deleted");
 			return true;
 		}
 		/**
