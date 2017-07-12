@@ -25,7 +25,7 @@ function check($extension) {
         
         if($extension == "PDO_SQLITE") :
             
-            echo '<br/> If you are on Windows, please uncomment this line in php.ini: ;extension=php_pdo_sqlite.dll';
+            echo '<br/> If you are on Windows, please uncomment this line in php.ini: ;extension=php_pdo_sqlite.dll<br/>If you are on Ununtu, please install php5.3-sqlite or php7-sqlite depending on your version of PHP, then restart PHP service';
         
         endif;
     
