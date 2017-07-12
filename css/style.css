@@ -6,13 +6,24 @@
  *
 */
 /*@import url(https://fonts.googleapis.com/css?family=Roboto:100,400,500,300,700);*/
+.loop-animation {
+    animation-iteration-count: infinite;
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    -o-animation-iteration-count: infinite;
+}
+.elip{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+}
 .preloader {
   z-index: 99999;
   position: fixed !important;
   height: 100%;
   width: 100%;
 }
-
 /*!
  * Load Awesome v1.1.0 (http://github.danielcardoso.net/load-awesome/)
  * Copyright 2015 Daniel Cardoso <@DanielCardoso>
@@ -907,6 +918,9 @@ button::-moz-focus-inner {
 html, body {
   height: 100%;
 }
+::-webkit-scrollbar { 
+   display: none;
+}
 
 body {
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -917,6 +931,10 @@ body {
   position: relative;
   background: #F1F4F5;
   overflow-x: hidden;
+  overflow-x:hidden; 
+  /*MS Edge */
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  -ms-overflow-style: none; 
 }
 
 .main-wrapper {
@@ -1267,6 +1285,7 @@ body {
 .member-info {
   font-weight: 400;
   margin-top: 10px;
+  overflow: hidden;
 }
 
 .member-info img {
@@ -2155,6 +2174,13 @@ table.dataTable.no-footer, table.dataTable thead th, table.dataTable thead td {
     -moz-background-clip: padding;
     background-clip: padding-box;
 }
+@media (min-width: 768px) {
+    .fc-title {
+     text-overflow: ellipsis;
+     white-space: nowrap;
+     overflow: hidden;   
+    }
+}
 
 .fc-calendar .fc-toolbar {
   background: #63A8EB;
@@ -2515,7 +2541,7 @@ a.thumbnail.active, a.thumbnail:focus, a.thumbnail:hover {
 }
 
 .input-group-addon {
-  border: solid 1px #C0C0C0 !important;
+  border: solid 0px #C0C0C0 !important;
 }
 
 .form-inline .form-group {
@@ -3265,7 +3291,7 @@ ul.inbox-pagination li {
   /*padding: 22px;*/
   padding: 19px 22px 19px 22px;
   line-height: 1.4;
-  z-index: 4000;
+  z-index: 10000;
   pointer-events: none;
   color: #fff;
   font-size: 80%;
@@ -3737,8 +3763,8 @@ ul.inbox-pagination li {
 .ns-effect-exploader.ns-show {
   -webkit-animation-name: animLoad;
           animation-name: animLoad;
-  -webkit-animation-duration: 2.5s;
-          animation-duration: 2.5s;
+  -webkit-animation-duration: 1.0s;
+          animation-duration: 1.0s;
 }
 
 @-webkit-keyframes animLoad {
@@ -3810,8 +3836,8 @@ ul.inbox-pagination li {
 
 .ns-effect-exploader.ns-show .ns-box-inner,
 .ns-effect-exploader.ns-show .ns-close {
-  -webkit-animation-delay: 2.4s;
-          animation-delay: 2.4s;
+  -webkit-animation-delay: .9s;
+          animation-delay: .9s;
   -webkit-animation-duration: 0.3s;
           animation-duration: 0.3s;
   -webkit-animation-fill-mode: both;
@@ -6146,6 +6172,9 @@ label {
   }.mdi-fullscreen {
     display: none !important;
   }
+  .mdi-window-restore {
+    display: none !important;
+  }    
   /*Remove margins from content block*/
   .content {
     margin: 0;

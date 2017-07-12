@@ -2,13 +2,13 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.35');
+ define('INSTALLEDVERSION', '1.401');
 // ===================================
 
 // Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
-	echo '<pre style="background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
+	echo '<pre style="white-space: pre-line; background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
 	if ($die) { http_response_code(503); die(); }
 }
 
@@ -31,10 +31,13 @@ if (function_exists('ldap_connect')) :
 		// returns true or false
 		$ldap = ldap_connect(implode(' ',$ldapServers));
 		if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
+   			writeLog("success", "LDAP authentication success"); 
 			return true;
 		} else {
+   			writeLog("error", "LDPA could not authenticate"); 
 			return false;
 		}
+  		writeLog("error", "LDPA could not authenticate");      
 		return false;
 	}
 else :
@@ -59,6 +62,7 @@ function plugin_auth_ftp($username, $password) {
 		$conn_id = ftp_connect($host, $port, 20);
 	} else {
 		debug_out('Invalid FTP scheme. Use ftp or ftps');
+  		writeLog("error", "invalid FTP scheme"); 
 		return false;
 	}
 	
@@ -70,8 +74,10 @@ function plugin_auth_ftp($username, $password) {
 		
 		// Return Result
 		if ($login_result) {
+   			writeLog("success", "$username authenticated");       
 			return true;
 		} else {
+   			writeLog("error", "$username could not authenticate");      
 			return false;
 		}
 	} else {
@@ -171,6 +177,7 @@ if (function_exists('curl_version')) :
 	function plugin_auth_plex($username, $password) {
 		// Quick out
 		if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
+   			writeLog("success", $username." authenticated by plex");
 			return true;
 		}
 		
@@ -187,6 +194,7 @@ if (function_exists('curl_version')) :
 			foreach($userXML AS $child) {
 				if(isset($child['username']) && strtolower($child['username']) == $usernameLower) {
 					$isUser = true;
+     				writeLog("success", $usernameLower." was found in plex friends list");
 					break;
 				}
 			}
@@ -209,13 +217,18 @@ if (function_exists('curl_version')) :
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
 					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && strtolower($json['user']['username']) == $usernameLower) {
+						writeLog("success", $json['user']['username']." was logged into organizr using plex credentials");
                         return array(
 							'email' => $json['user']['email'],
 							'image' => $json['user']['thumb']
 						);
 					}
 				}
+			}else{
+				writeLog("error", "$username is not an authorized PLEX user or entered invalid password");
 			}
+		}else{
+  			writeLog("error", "error occured logging into plex might want to check curl.cainfo=/path/to/downloaded/cacert.pem in php.ini");   
 		}
 		return false;
 	}
@@ -239,22 +252,28 @@ endif;
 // ==== General Class Definitions START ====
 class setLanguage { 
     private $language = null;
-	private $langCode = null;
-	
-    function __construct($language = false) {
-		// Default
-		if (!$language) {
-			$language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : "en"; 
-		}
-		
-		$this->langCode = $language;
-		
-        if (file_exists("lang/{$language}.ini")) {
-            $this->language = parse_ini_file("lang/{$language}.ini", false, INI_SCANNER_RAW);
-        } else {
-            $this->language = parse_ini_file("lang/en.ini", false, INI_SCANNER_RAW);
+	   private $langCode = null;
+    
+	   function __construct($language = false) {
+        // Default
+        if (!$language) {
+            $language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : "en"; 
+        }
+
+        if (!file_exists("lang/{$language}.ini")) {
+            $language = 'en';
+        }
+
+        $this->langCode = $language;
+
+        $this->language = parse_ini_file("lang/{$language}.ini", false, INI_SCANNER_RAW);
+        if (file_exists("lang/{$language}.cust.ini")) {
+            foreach($tmp = parse_ini_file("lang/{$language}.cust.ini", false, INI_SCANNER_RAW) as $k => $v) {
+                $this->language[$k] = $v;
+            }
         }
     }
+    
 	
 	public function getLang() {
 		return $this->langCode;
@@ -271,7 +290,7 @@ class setLanguage {
 
         $translatedWord = isset($this->language[$originalWord]) ? $this->language[$originalWord] : null;
         if (!$translatedWord) {
-            echo ("Translation not found for: $originalWord");
+            return ucwords(str_replace("_", " ", strtolower($originalWord)));
         }
 
         $translatedWord = htmlspecialchars($translatedWord, ENT_QUOTES);
@@ -299,6 +318,7 @@ if (function_exists('curl_version')) :
 		// As post request
 		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
 		// Format Data
 		switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
 			case 'application/json': 
@@ -321,10 +341,11 @@ if (function_exists('curl_version')) :
 		}
 		// Execute
 		$result = curl_exec($curlReq);
+		$httpcode = curl_getinfo($curlReq);
 		// Close
 		curl_close($curlReq);
 		// Return
-		return array('content'=>$result);
+		return array('content'=>$result, 'http_code'=>$httpcode);
 	}
 
 	//Curl Get Function
@@ -334,6 +355,8 @@ if (function_exists('curl_version')) :
 		// As post request
 		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "GET"); 
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
+  		curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
 		// Format Headers
 		$cHeaders = array();
 		foreach ($headers as $k => $v) {
@@ -348,6 +371,32 @@ if (function_exists('curl_version')) :
 		curl_close($curlReq);
 		// Return
 		return $result;
+	}
+	
+	//Curl Delete Function
+	function curl_delete($url, $headers = array()) {
+		// Initiate cURL
+		$curlReq = curl_init($url);
+		// As post request
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "DELETE"); 
+		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+  		curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
+		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
+		// Format Headers
+		$cHeaders = array();
+		foreach ($headers as $k => $v) {
+			$cHeaders[] = $k.': '.$v;
+		}
+		if (count($cHeaders)) {
+			curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+		}
+		// Execute
+		$result = curl_exec($curlReq);
+		$httpcode = curl_getinfo($curlReq);
+		// Close
+		curl_close($curlReq);
+		// Return
+		return array('content'=>$result, 'http_code'=>$httpcode);
 	}
 endif;
 
@@ -436,125 +485,420 @@ function post_request($url, $data, $headers = array(), $referer='') {
 }
 
 // Format item from Emby for Carousel
-function resolveEmbyItem($address, $token, $item) {
+function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showNames = false, $role = false, $moreInfo = false) {
 	// Static Height
-	$height = 150;
+	$height = 444;
 	
 	// Get Item Details
-	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&Fields=Overview&api_key='.$token),true)['Items'][0];
-	
+	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&api_key='.$token),true)['Items'][0];
+	if (substr_count(EMBYURL, ':') == 2) {
+		$URL = "http://app.emby.media/itemdetails.html?id=".$itemDetails['Id'];
+	}else{
+		$URL = EMBYURL."/web/itemdetails.html?id=".$itemDetails['Id'];
+	}
+	//$URL = "http://app.emby.media/itemdetails.html?id=".$itemDetails['Id'];
 	switch ($itemDetails['Type']) {
-		case 'Episode':
-			$title = (isset($itemDetails['SeriesName'])?$itemDetails['SeriesName'].': ':'').$itemDetails['Name'].(isset($itemDetails['ParentIndexNumber']) && isset($itemDetails['IndexNumber'])?' (Season '.$itemDetails['ParentIndexNumber'].': Episode '.$itemDetails['IndexNumber'].')':'');
-			$imageId = (isset($itemDetails['SeriesId'])?$itemDetails['SeriesId']:$itemDetails['Id']);
-			$width = 100;
-			$image = 'carousel-image season';
-			$style = '';
-			break;
+    case 'Episode':
+        $title = (isset($itemDetails['SeriesName'])?$itemDetails['SeriesName']:"");
+        $imageId = (isset($itemDetails['SeriesId'])?$itemDetails['SeriesId']:$itemDetails['Id']);
+        $width = 300;
+        $style = '';
+        $image = 'slick-image-tall';
+        if(!$nowPlaying){ 
+            $imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
+            $key = $itemDetails['Id'] . "-list";
+        }else{
+            $height = 281;
+            $width = 500;
+            $imageId = isset($itemDetails['ParentThumbItemId']) ?	$itemDetails['ParentThumbItemId'] : (isset($itemDetails['ParentBackdropItemId']) ? $itemDetails['ParentBackdropItemId'] : false);
+            $imageType = isset($itemDetails['ParentThumbItemId']) ?	"Thumb" : (isset($itemDetails['ParentBackdropItemId']) ? "Backdrop" : false);
+            $key = (isset($itemDetails['ParentThumbItemId']) ? $itemDetails['ParentThumbItemId']."-np" : "none-np");
+            $elapsed = $moreInfo['PlayState']['PositionTicks'];
+            $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
+            $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
+            //$transcoded = floor($item->TranscodeSession['progress']- $watched);
+            $stream = $moreInfo['PlayState']['PlayMethod'];
+            $user = $role == "admin" ? $moreInfo['UserName'] : "";
+            $id = $moreInfo['DeviceId'];
+            $streamInfo = buildStream(array(
+                'platform' => (string) $moreInfo['Client'],
+                'device' => (string) $moreInfo['DeviceName'],
+                'stream' => "&nbsp;".streamType($stream),
+                'video' => streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "video"),
+                'audio' => "&nbsp;".streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "audio"),
+            ));
+            $state = (($moreInfo['PlayState']['IsPaused'] == "1") ? "pause" : "play");
+            $topTitle = '<h5 class="text-center zero-m elip">'.$title.' - '.$itemDetails['Name'].'</h5>';
+            $bottomTitle = '<small class="zero-m">S'.$itemDetails['ParentIndexNumber'].' · E'.$itemDetails['IndexNumber'].'</small>';
+            if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+        }
+    break;
 		case 'MusicAlbum':
+		case 'Audio':
 			$title = $itemDetails['Name'];
 			$imageId = $itemDetails['Id'];
-			$width = 150;
-			$image = 'music';
-			$style = 'left: 160px !important;';
+			$width = 444;
+    $style = '';
+    $image = 'slick-image-short';
+    if(!$nowPlaying){ 
+        $imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
+        $key = $itemDetails['Id'] . "-list";
+    }else{
+        $height = 281;
+        $width = 500;
+        $imageId = (isset($itemDetails['ParentBackdropItemId']) ? $itemDetails['ParentBackdropItemId'] : false);
+        $imageType = (isset($itemDetails['ParentBackdropItemId']) ? "Backdrop" : false);
+        $key = (isset($itemDetails['ParentBackdropItemId']) ? $itemDetails['ParentBackdropItemId'] : "no-np") . "-np";
+        $elapsed = $moreInfo['PlayState']['PositionTicks'];
+        $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
+        $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
+        //$transcoded = floor($item->TranscodeSession['progress']- $watched);
+        $stream = $moreInfo['PlayState']['PlayMethod'];
+        $user = $role == "admin" ? $moreInfo['UserName'] : "";
+        $id = $moreInfo['DeviceId'];
+        $streamInfo = buildStream(array(
+            'platform' => (string) $moreInfo['Client'],
+            'device' => (string) $moreInfo['DeviceName'],
+            'stream' => "&nbsp;".streamType($stream),
+            'audio' => "&nbsp;".streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "audio"),
+        ));
+        $state = (($moreInfo['PlayState']['IsPaused'] == "1") ? "pause" : "play");
+        $topTitle = '<h5 class="text-center zero-m elip">'.$itemDetails['AlbumArtist'].' - '.$itemDetails['Album'].'</h5>';
+        $bottomTitle = '<small class="zero-m">'.$title.'</small>';
+        if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+    }
 			break;
+  case 'TvChannel':
+			$title = $itemDetails['CurrentProgram']['Name'];
+			$imageId = $itemDetails['Id'];
+			$width = 300;
+    $style = '';
+    $image = 'slick-image-tall';
+    if(!$nowPlaying){ 
+        $imageType = "Primary";
+        $key = $itemDetails['Id'] . "-list";
+    }else{
+        $height = 281;
+        $width = 500;
+        $imageType = "Thumb";
+        $key = $itemDetails['Id'] . "-np";
+        $useImage = "images/livetv.png";
+        $watched = "0";
+        $stream = $moreInfo['PlayState']['PlayMethod'];
+        $user = $role == "admin" ? $moreInfo['UserName'] : "";
+        $id = $moreInfo['DeviceId'];
+        $streamInfo = buildStream(array(
+            'platform' => (string) $moreInfo['Client'],
+            'device' => (string) $moreInfo['DeviceName'],
+            'stream' => "&nbsp;".streamType($stream),
+            'video' => streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "video"),
+            'audio' => "&nbsp;".streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "audio"),
+        ));
+        $state = (($moreInfo['PlayState']['IsPaused'] == "1") ? "pause" : "play");
+        $topTitle = '<h5 class="text-center zero-m elip">'.$title.'</h5>';
+        $bottomTitle = '<small class="zero-m">'.$itemDetails['Name'].' - '.$itemDetails['ChannelNumber'].'</small>';
+        if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+    }
+   break;
 		default:
 			$title = $itemDetails['Name'];
 			$imageId = $itemDetails['Id'];
-			$width = 100;
-			$image = 'carousel-image movie';
-			$style = '';
+			$width = 300;
+    $style = '';
+    $image = 'slick-image-tall';
+    if(!$nowPlaying){ 
+        $imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
+        $key = $itemDetails['Id'] . "-list";
+    }else{
+        $height = 281;
+        $width = 500;
+        $imageType = isset($itemDetails['ImageTags']['Thumb']) ? "Thumb" : (isset($itemDetails['BackdropImageTags']) ? "Backdrop" : false);
+        $key = $itemDetails['Id'] . "-np";
+        $elapsed = $moreInfo['PlayState']['PositionTicks'];
+        $duration = $moreInfo['NowPlayingItem']['RunTimeTicks'];
+        $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
+        //$transcoded = floor($item->TranscodeSession['progress']- $watched);
+        $stream = $moreInfo['PlayState']['PlayMethod'];
+        $user = $role == "admin" ? $moreInfo['UserName'] : "";
+        $id = $moreInfo['DeviceId'];
+        $streamInfo = buildStream(array(
+            'platform' => (string) $moreInfo['Client'],
+            'device' => (string) $moreInfo['DeviceName'],
+            'stream' => "&nbsp;".streamType($stream),
+            'video' => streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "video"),
+            'audio' => "&nbsp;".streamType($stream)." ".embyArray($moreInfo['NowPlayingItem']['MediaStreams'], "audio"),
+        ));
+        $state = (($moreInfo['PlayState']['IsPaused'] == "1") ? "pause" : "play");
+        $topTitle = '<h5 class="text-center zero-m elip">'.$title.'</h5>';
+        $bottomTitle = '<small class="zero-m">'.$moreInfo['NowPlayingItem']['ProductionYear'].'</small>';
+        if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+    }
 	}
 	
 	// If No Overview
 	if (!isset($itemDetails['Overview'])) {
 		$itemDetails['Overview'] = '';
 	}
+    
+if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key.'.jpg'; }
+    if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
+        $image_url = 'ajax.php?a=emby-image&type='.$imageType.'&img='.$imageId.'&height='.$height.'&width='.$width.'&key='.$key.'';        
+    }
+    
+    if($nowPlaying){
+        if(!$imageType){ $image_url = "images/no-np.png"; $key = "no-np"; }
+        if(!$imageId){ $image_url = "images/no-np.png"; $key = "no-np"; }
+    }else{
+        if(!$imageType){ $image_url = "images/no-list.png"; $key = "no-list"; }
+        if(!$imageId){ $image_url = "images/no-list.png"; $key = "no-list"; }
+    }
+    if(isset($useImage)){ $image_url = $useImage; }
 	
-	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'/web/itemdetails.html?id='.$itemDetails['Id'].'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" src="ajax.php?a=emby-image&img='.$imageId.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$itemDetails['Overview'].'</em></small></div></div>';
+	// Assemble Item And Cache Into Array     
+if($nowPlaying){
+    //prettyPrint($itemDetails);
+    return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$URL.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+    }else{
+ return '<div class="item-'.$itemDetails['Type'].'"><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+}
 }
 
 // Format item from Plex for Carousel
-function resolvePlexItem($server, $token, $item) {
-	// Static Height
-	$height = 150;
-	
-	$address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
-	
-	switch ($item['type']) {
-		case 'season':
-			$title = $item['parentTitle'];
-			$summary = $item['parentSummary'];
-			$width = 100;
-			$image = 'carousel-image season';
-			$style = '';
-            $thumb = $item['thumb'];
-			break;
+function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames = false, $role = false) {
+    // Static Height
+    $height = 444;    
+
+    switch ($item['type']) {
+    	case 'season':
+            $title = $item['parentTitle'];
+            $summary = $item['parentSummary'];
+            $width = 300;
+            $image = 'slick-image-tall';
+            $style = '';
+            if(!$nowPlaying){ 
+                $thumb = $item['thumb'];
+                $key = $item['ratingKey'] . "-list";
+            }else { 
+                $height = 281;
+                $width = 500;
+                $thumb = $item['art'];
+                $key = $item['ratingKey'] . "-np";
+                $elapsed = $item['viewOffset'];
+                $duration = $item['duration'];
+                $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
+                $transcoded = floor($item->TranscodeSession['progress']- $watched);
+                $stream = $item->Media->Part->Stream['decision'];
+                $user = $role == "admin" ? $item->User['title'] : "";
+                $id = str_replace('"', '', $item->Player['machineIdentifier']);
+                $streamInfo = buildStream(array(
+                    'platform' => (string) $item->Player['platform'],
+                    'device' => (string) $item->Player['device'],
+                    'stream' => "&nbsp;".streamType($item->Media->Part['decision']),
+                    'video' => streamType($item->Media->Part->Stream[0]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['width']."x".$item->Media->Part->Stream[0]['height'].")",
+                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[1]['decision'])." (".$item->Media->Part->Stream[1]['codec'].") (".$item->Media->Part->Stream[1]['channels']."ch)",
+                ));
+                $state = (($item->Player['state'] == "paused") ? "pause" : "play");
+            }
+            break;
         case 'episode':
-			$title = $item['grandparentTitle'];
-			$summary = $item['title'];
-			$width = 100;
-			$image = 'carousel-image season';
-			$style = '';
-            $thumb = $item['parentThumb'];
-			break;
-		case 'album':
-		case 'track':
-			$title = $item['parentTitle'];
-			$summary = $item['title'];
-			$width = 150;
-			$image = 'album';
-			$style = 'left: 160px !important;';
-            $thumb = $item['thumb'];
-			break;
-		default:
-			$title = $item['title'];
-			$summary = $item['summary'];
-			$width = 100;
-			$image = 'carousel-image movie';
-			$style = '';
-            $thumb = $item['thumb'];
-	}
+            $title = $item['grandparentTitle'];
+            $summary = $item['title'];
+            $width = 300;
+            $image = 'slick-image-tall';
+            $style = '';
+            if(!$nowPlaying){ 
+                $thumb = $item['parentThumb'];
+                $key = $item['ratingKey'] . "-list";
+            }else { 
+                $height = 281;
+                $width = 500;
+                $thumb = $item['art'];
+                $key = $item['ratingKey'] . "-np";
+                $elapsed = $item['viewOffset'];
+                $duration = $item['duration'];
+                $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
+                $transcoded = floor($item->TranscodeSession['progress']- $watched);
+                $stream = $item->Media->Part->Stream['decision'];
+                $user = $role == "admin" ? $item->User['title'] : "";
+                $id = str_replace('"', '', $item->Player['machineIdentifier']);
+                $streamInfo = buildStream(array(
+                    'platform' => (string) $item->Player['platform'],
+                    'device' => (string) $item->Player['device'],
+                    'stream' => "&nbsp;".streamType($item->Media->Part['decision']),
+                    'video' => streamType($item->Media->Part->Stream[0]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['width']."x".$item->Media->Part->Stream[0]['height'].")",
+                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[1]['decision'])." (".$item->Media->Part->Stream[1]['codec'].") (".$item->Media->Part->Stream[1]['channels']."ch)",
+                ));
+                $state = (($item->Player['state'] == "paused") ? "pause" : "play");
+                $topTitle = '<h5 class="text-center zero-m elip">'.$title.' - '.$item['title'].'</h5>';
+                $bottomTitle = '<small class="zero-m">S'.$item['parentIndex'].' · E'.$item['index'].'</small>';
+                if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+            }
+            break;
+        case 'clip':
+            $title = $item['title'];
+            $summary = $item['summary'];
+            $width = 300;
+            $image = 'slick-image-tall';
+            $style = '';
+            if(!$nowPlaying){ 
+                $thumb = $item['thumb'];
+                $key = $item['ratingKey'] . "-list";
+            }else { 
+                $height = 281;
+                $width = 500;
+                $thumb = $item['art'];
+                $key = isset($item['ratingKey']) ? $item['ratingKey'] . "-np" : (isset($item['live']) ? "livetv.png" : ":)");
+				$useImage = (isset($item['live']) ? "images/livetv.png" : null);
+				$extraInfo = isset($item['extraType']) ? "Trailer" : (isset($item['live']) ? "Live TV" : ":)");
+                $elapsed = $item['viewOffset'];
+                $duration = $item['duration'];
+                $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
+                $transcoded = floor($item->TranscodeSession['progress']- $watched);
+                $stream = $item->Media->Part->Stream['decision'];
+                $user = $role == "admin" ? $item->User['title'] : "";
+                $id = str_replace('"', '', $item->Player['machineIdentifier']);
+                $streamInfo = buildStream(array(
+                    'platform' => (string) $item->Player['platform'],
+                    'device' => (string) $item->Player['device'],
+                    'stream' => "&nbsp;".streamType($item->Media->Part['decision']),
+                    'video' => streamType($item->Media->Part->Stream[0]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['width']."x".$item->Media->Part->Stream[0]['height'].")",
+                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[1]['decision'])." (".$item->Media->Part->Stream[1]['codec'].") (".$item->Media->Part->Stream[1]['channels']."ch)",
+                ));
+                $state = (($item->Player['state'] == "paused") ? "pause" : "play");
+                $topTitle = '<h5 class="text-center zero-m elip">'.$title.'</h5>';
+                $bottomTitle = '<small class="zero-m">'.$extraInfo.'</small>';
+                if($showNames == "true"){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
+            }
+            break;
+        case 'album':
+        case 'track':
+            $title = $item['parentTitle'];
+            $summary = $item['title'];
+            $image = 'slick-image-short';
+            $style = 'left: 160px !important;';
+			$item['ratingKey'] = $item['parentRatingKey'];
+            if(!$nowPlaying){ 
+                $width = 444;
+                $thumb = $item['thumb'];
+                $key = $item['ratingKey'] . "-list";
+            }else { 
+                $height = 281;
+                $width = 500;
+                $thumb = $item['art'];
+                $key = $item['ratingKey'] . "-np";
+                $elapsed = $item['viewOffset'];
+                $duration = $item['duration'];
+                $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
+                $transcoded = floor($item->TranscodeSession['progress']- $watched);
+                $stream = $item->Media->Part->Stream['decision'];
+                $user = $role == "admin" ? $item->User['title'] : "";
+                $id = str_replace('"', '', $item->Player['machineIdentifier']);
+                $streamInfo = buildStream(array(
+                    'platform' => (string) $item->Player['platform'],
+                    'device' => (string) $item->Player['device'],
+                    'stream' => "&nbsp;".streamType($item->Media->Part['decision']),
+                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[0]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['channels']."ch)",
+                ));
+                $state = (($item->Player['state'] == "paused") ? "pause" : "play");
+                $topTitle = '<h5 class="text-center zero-m elip">'.$item['grandparentTitle'].' - '.$item['title'].'</h5>';
+                $bottomTitle = '<small class="zero-m">'.$title.'</small>';
+                if($showNames == "true"){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
+            }
+            break;
+        default:
+            $title = $item['title'];
+            $summary = $item['summary'];
+            $image = 'slick-image-tall';
+            $style = '';
+            if(!$nowPlaying){ 
+                $width = 300;
+                $thumb = $item['thumb'];
+                $key = $item['ratingKey'] . "-list";
+            }else { 
+                $height = 281;
+                $width = 500;
+                $thumb = $item['art'];
+                $key = $item['ratingKey'] . "-np";
+                $elapsed = $item['viewOffset'];
+                $duration = $item['duration'];
+                $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
+                $transcoded = floor($item->TranscodeSession['progress']- $watched);
+                $stream = $item->Media->Part->Stream['decision'];
+                $user = $role == "admin" ? $item->User['title'] : "";
+                $id = str_replace('"', '', $item->Player['machineIdentifier']);
+                $streamInfo = buildStream(array(
+                    'platform' => (string) $item->Player['platform'],
+                    'device' => (string) $item->Player['device'],
+                    'stream' => "&nbsp;".streamType($item->Media->Part['decision']),
+                    'video' => streamType($item->Media->Part->Stream[0]['decision'])." (".$item->Media->Part->Stream[0]['codec'].") (".$item->Media->Part->Stream[0]['width']."x".$item->Media->Part->Stream[0]['height'].")",
+                    'audio' => "&nbsp;".streamType($item->Media->Part->Stream[1]['decision'])." (".$item->Media->Part->Stream[1]['codec'].") (".$item->Media->Part->Stream[1]['channels']."ch)",
+                ));
+                $state = (($item->Player['state'] == "paused") ? "pause" : "play");
+                $topTitle = '<h5 class="text-center zero-m elip">'.$title.'</h5>';
+                $bottomTitle = '<small class="zero-m">'.$item['year'].'</small>';
+                if($showNames == "true"){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
+            }
+		}
 	
-	// If No Overview
-	if (!isset($itemDetails['Overview'])) {
-		$itemDetails['Overview'] = '';
-	}
-	
-	// Assemble Item And Cache Into Array 
-	return '<div class="item"><a href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" src="ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'"></a><div class="carousel-caption" style="'.$style.'"><h4>'.$title.'</h4><small><em>'.$summary.'</em></small></div></div>';
+		if (substr_count(PLEXURL, ':') == 2) {
+			$address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
+		}else{
+			$address = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
+		}
+
+    // If No Overview
+    if (!isset($itemDetails['Overview'])) { $itemDetails['Overview'] = ''; }
+
+    if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key.'.jpg'; }
+    if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
+        $image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'';        
+    }
+    if(!$thumb){ $image_url = "images/no-np.png"; $key = "no-np"; }
+	if(isset($useImage)){ $image_url = $useImage; }
+	$openTab = (PLEXTABNAME) ? "true" : "false";
+    // Assemble Item And Cache Into Array 
+    if($nowPlaying){
+        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a class="openTab" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+    }else{
+        return '<div class="item-'.$item['type'].'"><a class="openTab" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+    }
+}
+
+//Recent Added
+function outputRecentAdded($header, $items, $script = false, $array) {
+    $hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu">';
+    if($array["movie"] == "true"){
+        $hideMenu .= '<li><a class="js-filter-movie" href="javascript:void(0)">Hide Movies</a></li>';
+    }
+    if($array["season"] == "true"){
+        $hideMenu .= '<li><a class="js-filter-season" href="javascript:void(0)">Hide Show</a></li>';
+    }
+    if($array["album"] == "true"){
+        $hideMenu .= '<li><a class="js-filter-album" href="javascript:void(0)">Hide Music</a></li>';
+    }
+    $hideMenu .= '</ul></div></div>';
+    // If None Populate Empty Item
+    if (!count($items)) {
+        return '<div id=recentMedia><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
+    }else{
+        return '<div id=recentMedia><h5 style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination">'.$hideMenu.'</div><br/><div class="recentItems">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+    }
+    
 }
 
 // Create Carousel
-function outputCarousel($header, $size, $type, $items, $script = false) {
+function outputNowPlaying($header, $size, $type, $items, $script = false) {
 	// If None Populate Empty Item
 	if (!count($items)) {
-		$items = array('<div class="item"><img alt="nada" class="carousel-image movie" src="images/nadaplaying.jpg"><div class="carousel-caption"><h4>Nothing To Show</h4><small><em>Get Some Stuff Going!</em></small></div></div>');
-	}
-	
-	// Set First As Active
-	$items[0] = preg_replace('/^<div class="item ?">/','<div class="item active">', $items[0]);
-	
-	// Add Buttons
-	$buttons = '';
-	if (count($items) > 1) {
-		$buttons = '
-			<a class="left carousel-control '.$type.'" href="#carousel-'.$type.'" role="button" data-slide="prev"><span class="fa fa-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a>
-			<a class="right carousel-control '.$type.'" href="#carousel-'.$type.'" role="button" data-slide="next"><span class="fa fa-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a>';
-	}
-	
-	return '
-	<div class="col-lg-'.$size.'">
-		<h5 class="text-center">'.$header.'</h5>
-		<div id="carousel-'.$type.'" class="carousel slide box-shadow white-bg" data-ride="carousel"><div class="carousel-inner" role="listbox">
-			'.implode('',$items).'
-		</div>'.$buttons.'
-	</div></div>'.($script?'<script>'.$script.'</script>':''); 
+		return '<div id=streamz></div>'.($script?'<script>'.$script.'</script>':'');
+	}else{
+	   return '<div id=streamz><h5 class="zero-m big-box"><strong>'.$header.'</strong></h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
+ }
+    
 }
 
 // Get Now Playing Streams From Emby
-function getEmbyStreams($size) {
+function getEmbyStreams($size, $showNames, $role) {
 	$address = qualifyURL(EMBYURL);
 	
 	$api = json_decode(@file_get_contents($address.'/Sessions?api_key='.EMBYTOKEN),true);
@@ -563,11 +907,11 @@ function getEmbyStreams($size) {
 	$playingItems = array();
 	foreach($api as $key => $value) {
 		if (isset($value['NowPlayingItem'])) {
-			$playingItems[] = resolveEmbyItem($address, EMBYTOKEN, $value['NowPlayingItem']);
+			$playingItems[] = resolveEmbyItem($address, EMBYTOKEN, $value['NowPlayingItem'], true, $showNames, $role, $value);
 		}
 	}
 	
-	return outputCarousel(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems, "
+	return outputNowPlaying(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems, "
 		setInterval(function() {
 			$('<div></div>').load('ajax.php?a=emby-streams',function() {
 				var element = $(this).find('[id]');
@@ -575,149 +919,163 @@ function getEmbyStreams($size) {
 				$('#'+loadedID).replaceWith(element);
 				console.log('Loaded updated: '+loadedID);
 			});
-		}, 10000);
+		}, 15000);
 	");
 }
 
 // Get Now Playing Streams From Plex
-function getPlexStreams($size){
+function getPlexStreams($size, $showNames, $role){
     $address = qualifyURL(PLEXURL);
     
 	// Perform API requests
-    $api = @file_get_contents($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
+    $api = @curl_get($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(@file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
-    if (!$getServer) { return 'Could not load!'; }
-	
-	// Identify the local machine
-    $gotServer = $getServer['machineIdentifier'];
-	
-	$items = array();
-	foreach($api AS $child) {
-		$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child);
+	if (is_array($api) || is_object($api)){
+		if (!$api->head->title){
+			$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+			if (!$getServer) { return 'Could not load!'; }
+
+			// Identify the local machine
+			$gotServer = $getServer['machineIdentifier'];
+
+			$items = array();
+			foreach($api AS $child) {
+				$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames, $role);
+			}
+
+			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
+				setInterval(function() {
+					$('<div></div>').load('ajax.php?a=plex-streams',function() {
+						var element = $(this).find('[id]');
+						var loadedID = 	element.attr('id');
+						$('#'+loadedID).replaceWith(element);
+						console.log('Loaded updated: '+loadedID);
+					});
+				}, 15000);
+			");
+		}else{
+			writeLog("error", "PLEX STREAM ERROR: could not connect - check token - if HTTPS, is cert valid");
+		}
+	}else{
+		writeLog("error", "PLEX STREAM ERROR: could not connect - check URL - if HTTPS, is cert valid");
 	}
-	
-	return outputCarousel(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
-		setInterval(function() {
-			$('<div></div>').load('ajax.php?a=plex-streams',function() {
-				var element = $(this).find('[id]');
-				var loadedID = 	element.attr('id');
-				$('#'+loadedID).replaceWith(element);
-				console.log('Loaded updated: '+loadedID);
-			});
-		}, 10000);
-	");
 }
 
 // Get Recent Content From Emby
-function getEmbyRecent($type, $size) {
+function getEmbyRecent($array) {
     $address = qualifyURL(EMBYURL);
+    $header = translate('RECENT_CONTENT');
+    // Currently Logged In User
+    $username = false;
+    if (isset($GLOBALS['USER'])) {
+        $username = strtolower($GLOBALS['USER']->username);
+    }
+
+    // Get A User
+    $userIds = json_decode(@file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
+    if (!is_array($userIds)) { return 'Could not load!'; }
+
+    $showPlayed = true;
+    foreach ($userIds as $value) { // Scan for admin user
+        if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+            $userId = $value['Id'];
+        }
+        if ($username && strtolower($value['Name']) == $username) {
+            $userId = $value['Id'];
+            $showPlayed = false;
+            break;
+        }
+    }
+
+    // Get the latest Items
+    $latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?EnableImages=false&Limit='.EMBYRECENTITEMS.'&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
 	
-	// Currently Logged In User
-	$username = false;
-	if (isset($GLOBALS['USER'])) {
-		$username = strtolower($GLOBALS['USER']->username);
-	}
-	
-	// Resolve Types
-	switch ($type) {
-		case 'movie':
-			$embyTypeQuery = 'IncludeItemTypes=Movie&';
-			$header = translate('MOVIES');
-			break;
-		case 'season':
-			$embyTypeQuery = 'IncludeItemTypes=Episode&';
-			$header = translate('TV_SHOWS');
-			break;
-		case 'album':
-			$embyTypeQuery = 'IncludeItemTypes=MusicAlbum&';
-			$header = translate('MUSIC');
-			break;
-		default:
-			$embyTypeQuery = '';
-			$header = translate('RECENT_CONTENT');
-	}
-	
-	// Get A User
-	$userIds = json_decode(@file_get_contents($address.'/Users?api_key='.EMBYTOKEN),true);
-	if (!is_array($userIds)) { return 'Could not load!'; }
-	
-	$showPlayed = true;
-	foreach ($userIds as $value) { // Scan for admin user
-		if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
-			$userId = $value['Id'];
-		}
-		if ($username && strtolower($value['Name']) == $username) {
-			$userId = $value['Id'];
-			$showPlayed = false;
-			break;
-		}
-	}
-	
-	// Get the latest Items
-	$latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?'.$embyTypeQuery.'EnableImages=false&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
-	
-	// For Each Item In Category
-	$items = array();
-	foreach ($latest as $k => $v) {
-		$items[] = resolveEmbyItem($address, EMBYTOKEN, $v);
-	}
-	
-	return outputCarousel($header, $size, $type.'-emby', $items);
+    // For Each Item In Category
+    $items = array();
+    foreach ($latest as $k => $v) {
+        $type = (string) $v['Type'];
+        if(@$array[$type] == "true"){
+            $items[] = resolveEmbyItem($address, EMBYTOKEN, $v, false, false, false);
+        }
+    }
+
+    $array["movie"] = $array["Movie"];
+    $array["season"] = $array["Episode"];
+    $array["album"] = $array["MusicAlbum"];
+    unset($array["Movie"]);
+    unset($array["Episode"]);
+    unset($array["MusicAlbum"]);
+    unset($array["Series"]);
+
+    return outputRecentAdded($header, $items, "", $array);
 }
 
 // Get Recent Content From Plex
-function getPlexRecent($type, $size){
+function getPlexRecent($array){
     $address = qualifyURL(PLEXURL);
-    
-	// Resolve Types
-	switch ($type) {
-		case 'movie':
-			$header = translate('MOVIES');
-			break;
-		case 'season':
-			$header = translate('TV_SHOWS');
-			break;
-		case 'album':
-			$header = translate('MUSIC');
-			break;
-		default:
-			$header = translate('RECENT_CONTENT');
-	}
+			 $header = translate('RECENT_CONTENT');
 	
 	// Perform Requests
-    $api = @file_get_contents($address."/library/recentlyAdded?X-Plex-Token=".PLEXTOKEN);
+    $api = @curl_get($address."/library/recentlyAdded?limit=".PLEXRECENTITEMS."&X-Plex-Token=".PLEXTOKEN);
     $api = simplexml_load_string($api);
-    $getServer = simplexml_load_string(@file_get_contents($address."/?X-Plex-Token=".PLEXTOKEN));
-	if (!$getServer) { return 'Could not load!'; }
-	
-	// Identify the local machine
-    $gotServer = $getServer['machineIdentifier'];
-	
-	$items = array();
-	foreach($api AS $child) {
-		if($child['type'] == $type){
-			$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child);
+	if (is_array($api) || is_object($api)){
+		if (!$api->head->title){
+			$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+			if (!$getServer) { return 'Could not load!'; }
+
+			// Identify the local machine
+			$gotServer = $getServer['machineIdentifier'];
+
+			$items = array();
+			foreach($api AS $child) {
+			 $type = (string) $child['type'];
+				if($array[$type] == "true"){
+					$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, false, false, false);
+				}
+			}
+
+			return outputRecentAdded($header, $items, "", $array);
+		}else{
+			writeLog("error", "PLEX STREAM ERROR: could not connect - check token - if HTTPS, is cert valid");
 		}
+	}else{
+		writeLog("error", "PLEX STREAM ERROR: could not connect - check URL - if HTTPS, is cert valid");
 	}
-	
-	return outputCarousel($header, $size, $type.'-plex', $items);
 }
 
 // Get Image From Emby
 function getEmbyImage() {
 	$embyAddress = qualifyURL(EMBYURL);
-	
+    if (!file_exists('images/cache')) {
+        mkdir('images/cache', 0777, true);
+    }
+
 	$itemId = $_GET['img'];
+ 	$key = $_GET['key'];
+	$itemType = $_GET['type'];
 	$imgParams = array();
 	if (isset($_GET['height'])) { $imgParams['height'] = 'maxHeight='.$_GET['height']; }
 	if (isset($_GET['width'])) { $imgParams['width'] = 'maxWidth='.$_GET['width']; }
 
 	if(isset($itemId)) {
-		$image_src = $embyAddress . '/Items/'.$itemId.'/Images/Primary?'.implode('&', $imgParams);
-		header('Content-type: image/jpeg');
-		@readfile($image_src);
-		die();
+     $image_src = $embyAddress . '/Items/'.$itemId.'/Images/'.$itemType.'?'.implode('&', $imgParams);
+    $cachefile = 'images/cache/'.$key.'.jpg';
+    $cachetime = 604800;
+    // Serve from the cache if it is younger than $cachetime
+    if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
+        header("Content-type: image/jpeg");
+        @readfile($cachefile);
+        exit;
+    }
+        ob_start(); // Start the output buffer
+        header('Content-type: image/jpeg');
+        @readfile($image_src);
+        // Cache the output to a file
+        $fp = fopen($cachefile, 'wb');
+        fwrite($fp, ob_get_contents());
+        fclose($fp);
+        ob_end_flush(); // Send the output to the browser
+        die();
 	} else {
 		debug_out('Invalid Request',1);
 	}
@@ -726,15 +1084,33 @@ function getEmbyImage() {
 // Get Image From Plex
 function getPlexImage() {
 	$plexAddress = qualifyURL(PLEXURL);
+    if (!file_exists('images/cache')) {
+        mkdir('images/cache', 0777, true);
+    }
 	
 	$image_url = $_GET['img'];
+	$key = $_GET['key'];
 	$image_height = $_GET['height'];
 	$image_width = $_GET['width'];
 	
 	if(isset($image_url) && isset($image_height) && isset($image_width)) {
 		$image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . PLEXTOKEN;
-		header('Content-type: image/jpeg');
+        $cachefile = 'images/cache/'.$key.'.jpg';
+        $cachetime = 604800;
+        // Serve from the cache if it is younger than $cachetime
+        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
+            header("Content-type: image/jpeg");
+            @readfile($cachefile);
+            exit;
+        }
+		ob_start(); // Start the output buffer
+        header('Content-type: image/jpeg');
 		@readfile($image_src);
+        // Cache the output to a file
+        $fp = fopen($cachefile, 'wb');
+        fwrite($fp, ob_get_contents());
+        fclose($fp);
+        ob_end_flush(); // Send the output to the browser
 		die();
 	} else {
 		echo "Invalid Plex Request";	
@@ -821,9 +1197,10 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 		if (file_exists($path)) {
 			return true;
 		}
-		
+		writeLog("error", "config was unable to write");
 		return false;
 	} else {
+  		writeLog("success", "config was updated with new values");
 		return $output;
 	}
 }
@@ -909,6 +1286,15 @@ function configLazy($path = 'config/config.php') {
 
 // Qualify URL
 function qualifyURL($url) {
+ //local address?
+ if(substr($url, 0,1) == "/"){
+     if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
+        $protocol = "https://"; 
+    } else {  
+        $protocol = "http://"; 
+    }
+     $url = $protocol.getServer().$url;
+ }
 	// Get Digest
 	$digest = parse_url($url);
 	
@@ -1039,16 +1425,67 @@ function upgradeCheck() {
 		unset($config);
 	}
 	
+	// Upgrade to 1.40
+	$config = loadConfig();
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.40')) {
+		// Upgrade database to latest version
+		updateSQLiteDB($config['database_Location'],'1.38');
+		
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.40';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.38].bak.php');
+		$createConfigSuccess = createConfig($config);
+		unset($config);
+	}
+	
 	return true;
+}
+
+// Get OS from server
+function getOS(){
+	if(PHP_SHLIB_SUFFIX == "dll"){
+		return "win";
+	}else{
+		return "nix";
+	}
+}
+
+//Get Error by Server OS
+function getError($os, $error){
+	$ini = (!empty(php_ini_loaded_file()) ? php_ini_loaded_file() : "php.ini");
+	$ext = (!empty(ini_get('extension_dir')) ? "uncomment ;extension_dir = and make sure it says -> extension_dir = '".ini_get('extension_dir')."'" : "uncomment ;extension_dir = and add path to 'ext' to make it like extension_dir = 'C:\nginx\php\ext'");
+	$errors = array(
+		'pdo_sqlite' => array(
+			'win' => '<b>PDO:SQLite</b> not enabled, uncomment ;extension=php_pdo_sqlite.dll in the file php.ini | '.$ext,
+			'nix' => '<b>PDO:SQLite</b> not enabled, PHP7 -> run sudo apt-get install php7.0-sqlite | PHP5 -> run sudo apt-get install php5-sqlite',
+		),
+		'sqlite3' => array(
+			'win' => '<b>SQLite3</b> not enabled, uncomment ;extension=php_sqlite3.dll in the file php.ini | uncomment ;sqlite3.extension_dir = and add "ext" to make it sqlite3.extension_dir = ext',
+			'nix' => '<b>SQLite3</b> not enabled, run sudo apt-get install php-sqlite3',
+		),
+		'curl' => array(
+			'win' => '<b>cURL</b> not enabled, uncomment ;extension=php_curl.dll in the file php.ini | '.$ext,
+			'nix' => '<b>cURL</b> not enabled, PHP7 -> sudo apt-get install php-7.0 | PHP5 -> run sudo apt-get install php5-curl',
+		),
+		'zip' => array(
+			'win' => '<b>PHP Zip</b> not enabled, uncomment ;extension=php_zip.dll in the file php.ini, if that doesn\'t work remove that line',
+			'nix' => '<b>PHP Zip</b> not enabled, PHP7 -> run sudo apt-get install php7.0-zip | PHP5 -> run sudo apt-get install php5.6-zip',
+		),
+		
+	);
+	return (isset($errors[$error][$os]) ? $errors[$error][$os] : 'No Error Info Found');
 }
 
 // Check if all software dependancies are met
 function dependCheck() {
 	$output = array();
-	if (!extension_loaded('pdo_sqlite')) { $output[] = 'PDO:SQLite not enabled, please add "extension = php_pdo_sqlite.dll" to php.ini'; }
-	//if (!extension_loaded('sqlite3')) { $output[] = 'SQLite3 not enabled, please add "extension = php_sqlite3.dll" to php.ini'; }
+	if (!extension_loaded('pdo_sqlite')) { $output[] = getError(getOS(),'pdo_sqlite'); }
+	if (!extension_loaded('curl')) { $output[] = getError(getOS(),'curl'); }
+	if (!extension_loaded('zip')) { $output[] = getError(getOS(),'zip'); }
+	//if (!extension_loaded('sqlite3')) { $output[] = getError(getOS(),'sqlite3'); }
 	
 	if ($output) {
+		$output[] = "<b>Please visit here to also check status of necessary components after you fix them: <a href='check.php'>check.php<a/></b>";
 		debug_out($output,1);
 	}
 	return true;
@@ -1073,15 +1510,17 @@ function uploadFiles($path, $ext_mask = null) {
 
 		if($data['isComplete']){
 			$files = $data['data'];
-
+   			writeLog("success", $files['metas'][0]['name']." was uploaded");
 			echo json_encode($files['metas'][0]['name']);
 		}
 
 		if($data['hasErrors']){
 			$errors = $data['errors'];
+   			writeLog("error", $files['metas'][0]['name']." was not able to upload");
 			echo json_encode($errors);
 		}
-	} else {
+	} else { 
+  		writeLog("error", "image was not uploaded");
 		echo json_encode('No files submitted!');
 	}
 }
@@ -1089,8 +1528,10 @@ function uploadFiles($path, $ext_mask = null) {
 // Remove file
 function removeFiles($path) {
     if(is_file($path)) {
+        writeLog("success", "image was removed");
         unlink($path);
     } else {
+  		writeLog("error", "image was not removed");
 		echo json_encode('No file specified for removal!');
 	}
 }
@@ -1176,6 +1617,8 @@ function buildSettings($array) {
 	);
 	*/
 	
+	$notifyExplode = explode("-", NOTIFYEFFECT);
+	
 	$fieldFunc = function($fieldArr) {
 		$fields = '<div class="row">';
 		foreach($fieldArr as $key => $value) {
@@ -1250,10 +1693,12 @@ function buildSettings($array) {
 				var newVals = {};
 				var hasVals = false;
 				var errorFields = [];
-				$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').each(function() {
+				$(\'#'.$pageID.'_form\').find(\'[data-changed=true][name]\').each(function() {
 					hasVals = true;
 					if (this.type == \'checkbox\') {
 						newVals[this.name] = this.checked;
+					} else if ($(this).hasClass(\'summernote\')) {
+						newVals[$(this).attr(\'name\')] = $(this).siblings(\'.note-editor\').find(\'.panel-body\').html();
 					} else {
 						if (this.value && this.pattern && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { errorFields.push(this.name); }
 						var fieldVal = $(this).val();
@@ -1268,14 +1713,14 @@ function buildSettings($array) {
 					}
 				});
 				if (errorFields.length) {
-					parent.notify(\'Fields have errors: \'+errorFields.join(\', \')+\'!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
+					parent.notify(\'Fields have errors: \'+errorFields.join(\', \')+\'!\', \'bullhorn\', \'error\', 5000, \''.$notifyExplode[0].'\', \''.$notifyExplode[1].'\');
 				} else if (hasVals) {
 					console.log(newVals);
 					ajax_request(\'POST\', \''.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data, code) {
-						$(\'#'.$pageID.'_form\').find(\'[data-changed=true]\').removeAttr(\'data-changed\');
+						$(\'#'.$pageID.'_form\').find(\'[data-changed=true][name]\').removeAttr(\'data-changed\');
 					});
 				} else {
-					parent.notify(\'Nothing to update!\', \'bullhorn\', \'success\', 5000, \'bar\', \'slidetop\');
+					parent.notify(\'Nothing to update!\', \'bullhorn\', \'error\', 5000, \''.$notifyExplode[0].'\', \''.$notifyExplode[1].'\');
 				}
 				return false;
 			});
@@ -1625,8 +2070,23 @@ function createSQLiteDB($path = false) {
 			`hovertext`	TEXT
 		);');
 		
-		return $users && $tabs && $options;
+		// Create Invites
+		$invites = $GLOBALS['file_db']->query('CREATE TABLE `invites` (
+			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`code`	TEXT UNIQUE,
+			`date`	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			`email`	TEXT,
+			`username`	TEXT,
+			`dateused`	TIMESTAMP,
+			`usedby`	TEXT,
+			`ip`	TEXT,
+			`valid`	TEXT
+		);');
+		
+		writeLog("success", "database created/saved");
+		return $users && $tabs && $options && $invites;
 	} else {
+  		writeLog("error", "database was unable to be created/saved");
 		return false;
 	}
 }
@@ -1682,8 +2142,10 @@ function updateSQLiteDB($db_path = false, $oldVerNum = false) {
 				$GLOBALS['file_db']->query($queryBase.implode(',',$insertValues).';');
 			}
 		}
+  writeLog("success", "database values have been updated");
 		return true;
 	} else {
+  writeLog("error", "database values unable to be updated");
 		return false;
 	}
 }
@@ -1701,8 +2163,10 @@ function updateDBOptions($values) {
 	}, $values, array_keys($values))).';')->rowCount()) {
 		return true;
 	} else if ($GLOBALS['file_db']->query('INSERT OR IGNORE INTO options (`'.implode('`,`',array_keys($values)).'`) VALUES (\''.implode("','",$values).'\');')->rowCount()) {
+  writeLog("success", "database values for options table have been updated");
 		return true;
 	} else {
+  writeLog("error", "database values for options table unable to be updated");
 		return false;
 	}
 }
@@ -1712,7 +2176,7 @@ function sendNotification($success, $message = false, $send = true) {
 	$notifyExplode = explode("-", NOTIFYEFFECT);
 	if ($success) {
 		$msg = array(
-			'html' => ($message?'<br>'.$message:'<strong>'.translate("SETTINGS_SAVED").'</strong>'),
+			'html' => ($message?''.$message:'<strong>'.translate("SETTINGS_SAVED").'</strong>'),
 			'icon' => 'floppy-o',
 			'type' => 'success',
 			'length' => '5000',
@@ -1721,7 +2185,7 @@ function sendNotification($success, $message = false, $send = true) {
 		);
 	} else {
 		$msg = array(
-			'html' => ($message?'<br>'.$message:'<strong>'.translate("SETTINGS_NOT_SAVED").'</strong>'),
+			'html' => ($message?''.$message:'<strong>'.translate("SETTINGS_NOT_SAVED").'</strong>'),
 			'icon' => 'floppy-o',
 			'type' => 'failed',
 			'length' => '5000',
@@ -1799,15 +2263,18 @@ function deleteDatabase() {
 	}
 
     rmdir($userdirpath);
-	
+	writeLog("success", "database has been deleted");
 	return true;
 }
 
 // Upgrade the installation
 function upgradeInstall($branch = 'master') {
     function downloadFile($url, $path){
+        ini_set('max_execution_time',0);
         $folderPath = "upgrade/";
-        if(!mkdir($folderPath)) : echo "can't make dir"; endif;
+        if(!mkdir($folderPath)){
+            writeLog("error", "organizr could not create upgrade folder");
+        }
         $newfname = $folderPath . $path;
         $file = fopen ($url, 'rb');
         if ($file) {
@@ -1817,14 +2284,22 @@ function upgradeInstall($branch = 'master') {
                     fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
                 }
             }
+        }else{
+            writeLog("error", "organizr could not download $url");
         }
 
         if ($file) {
             fclose($file);
+            writeLog("success", "organizr finished downloading the github zip file");
+        }else{
+            writeLog("error", "organizr could not download the github zip file");
         }
 
         if ($newf) {
             fclose($newf);
+            writeLog("success", "organizr created upgrade zip file from github zip file");
+        }else{
+            writeLog("error", "organizr could not create upgrade zip file from github zip file");
         }
     }
 
@@ -1832,7 +2307,9 @@ function upgradeInstall($branch = 'master') {
         $zip = new ZipArchive;
         $extractPath = "upgrade/";
         if($zip->open($extractPath . $zipFile) != "true"){
-            echo "Error :- Unable to open the Zip File";
+            writeLog("error", "organizr could not unzip upgrade.zip");
+        }else{
+            writeLog("success", "organizr unzipped upgrade.zip");
         }
 
         /* Extract Zip File */
@@ -1868,11 +2345,14 @@ function upgradeInstall($branch = 'master') {
     $source = __DIR__ . '/upgrade/Organizr-'.$branch.'/';
     $cleanup = __DIR__ . "/upgrade/";
     $destination = __DIR__ . "/";
+	writeLog("success", "starting organizr upgrade process");
     downloadFile($url, $file);
     unzipFile($file);
     rcopy($source, $destination);
+    writeLog("success", "new organizr files copied");
     rrmdir($cleanup);
-	
+    writeLog("success", "organizr upgrade folder removed");
+	writeLog("success", "organizr has been updated");
 	return true;
 }
 
@@ -1880,44 +2360,46 @@ function upgradeInstall($branch = 'master') {
 function nzbgetConnect($list = 'listgroups') {
     $url = qualifyURL(NZBGETURL);
     
-    $api = file_get_contents($url.'/'.NZBGETUSERNAME.':'.NZBGETPASSWORD.'/jsonrpc/'.$list);          
+    $api = curl_get($url.'/'.NZBGETUSERNAME.':'.NZBGETPASSWORD.'/jsonrpc/'.$list);          
     $api = json_decode($api, true);
-    
     $gotNZB = array();
-    
-    foreach ($api['result'] AS $child) {
-        $downloadName = htmlentities($child['NZBName'], ENT_QUOTES);
-        $downloadStatus = $child['Status'];
-        $downloadCategory = $child['Category'];
-        if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
-        if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
-        if($child['Health'] <= "750"){ 
-            $downloadHealth = "danger"; 
-        }elseif($child['Health'] <= "900"){ 
-            $downloadHealth = "warning"; 
-        }elseif($child['Health'] <= "1000"){ 
-            $downloadHealth = "success"; 
-        }
-        
-        $gotNZB[] = '<tr>
-                        <td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
-                        <td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
-                        <td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
-                        <td class="col-xs-2 nzbtable nzbtable-row">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
-                                    <p class="text-center">'.round($downloadPercent).'%</p>
-                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>';
-    }
-    
-	if ($gotNZB) {
-		return implode('',$gotNZB);
-	} else {
-		return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+    if (is_array($api) || is_object($api)){
+		foreach ($api['result'] AS $child) {
+			$downloadName = htmlentities($child['NZBName'], ENT_QUOTES);
+			$downloadStatus = $child['Status'];
+			$downloadCategory = $child['Category'];
+			if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
+			if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
+			if($child['Health'] <= "750"){ 
+				$downloadHealth = "danger"; 
+			}elseif($child['Health'] <= "900"){ 
+				$downloadHealth = "warning"; 
+			}elseif($child['Health'] <= "1000"){ 
+				$downloadHealth = "success"; 
+			}
+
+			$gotNZB[] = '<tr>
+							<td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
+							<td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
+							<td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
+							<td class="col-xs-2 nzbtable nzbtable-row">
+								<div class="progress">
+									<div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+										<p class="text-center">'.round($downloadPercent).'%</p>
+										<span class="sr-only">'.$downloadPercent.'% Complete</span>
+									</div>
+								</div>
+							</td>
+						</tr>';
+		}
+
+		if ($gotNZB) {
+			return implode('',$gotNZB);
+		} else {
+			return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+		}
+	}else{
+		writeLog("error", "NZBGET ERROR: could not connect - check URL and/or check token and/or Usernamd and Password - if HTTPS, is cert valid");
 	}
 }
 
@@ -1983,10 +2465,13 @@ function updateTabs($tabs) {
 			}
 			$GLOBALS['file_db']->query('INSERT INTO tabs (`'.implode('`,`',array_keys($fields)).'`) VALUES (\''.implode("','",$fields).'\');');
 		}
+  		writeLog("success", "tabs successfully saved");     
 		return $totalValid;
 	} else {
+  		writeLog("error", "tabs could not save");     
 		return false;
 	}
+ 	writeLog("error", "tabs could not save");     
 	return false;
 }
 
@@ -2189,19 +2674,30 @@ function explosion($string, $position){
 }
 
 function getServerPath() {
-    
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
-        
+	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https"){
+		$protocol = "https://";
+	}elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
         $protocol = "https://"; 
-    
     } else {  
-        
         $protocol = "http://"; 
-    
     }
-    
-    return $protocol . $_SERVER['SERVER_NAME'] . dirname($_SERVER['REQUEST_URI']);
-      
+	$domain = '';
+    if (isset($_SERVER['SERVER_NAME']) && $_SERVER['SERVER_NAME'] != "_"){
+        $domain = $_SERVER['SERVER_NAME'];
+	}elseif(isset($_SERVER['HTTP_HOST'])){
+		if (strpos($_SERVER['HTTP_HOST'], ':') !== false) {
+			$domain = explode(':', $_SERVER['HTTP_HOST'])[0];
+			$port = explode(':', $_SERVER['HTTP_HOST'])[1];
+			if ($port == "80" || $port == "443"){
+				$domain = $domain;
+			}else{
+				$domain = $_SERVER['HTTP_HOST'];
+			}
+		}else{
+        	$domain = $_SERVER['HTTP_HOST'];
+		}
+	}
+    return $protocol . $domain . dirname($_SERVER['REQUEST_URI']);
 }
 
 function get_browser_name() {
@@ -2390,41 +2886,34 @@ function getRadarrCalendar($array){
 }
 
 function getHeadphonesCalendar($url, $key, $list){
-	$url = qualifyURL(HEADPHONESURL);
-    
-    $api = file_get_contents($url."/api?apikey=".$key."&cmd=$list");
-    
+	$url = qualifyURL(HEADPHONESURL);    
+    $api = curl_get($url."/api?apikey=".$key."&cmd=$list");
     $api = json_decode($api, true);
-    
     $i = 0;
-    
     $gotCalendar = "";
-	
-    foreach($api AS $child) {
+	if (is_array($api) || is_object($api)){
+		foreach($api AS $child) {
+			if($child['Status'] == "Wanted"){
+				$i++;
+				$albumName = addslashes($child['AlbumTitle']);
+				$albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
+				$albumDate = $child['ReleaseDate'];
+				$albumID = $child['AlbumID'];
+				$albumDate = strtotime($albumDate);
+				$albumDate = date("Y-m-d", $albumDate);
+				$albumStatus = $child['Status'];
 
-        if($child['Status'] == "Wanted"){
-        
-            $i++;
-            $albumName = addslashes($child['AlbumTitle']);
-            $albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
-            $albumDate = $child['ReleaseDate'];
-            $albumID = $child['AlbumID'];
-            $albumDate = strtotime($albumDate);
-            $albumDate = date("Y-m-d", $albumDate);
-            $albumStatus = $child['Status'];
-            
-            if (new DateTime() < new DateTime($albumDate)) {  $notReleased = "true"; }else{ $notReleased = "false"; }
+				if (new DateTime() < new DateTime($albumDate)) {  $notReleased = "true"; }else{ $notReleased = "false"; }
 
-            if($albumStatus == "Wanted" && $notReleased == "true"){ $albumStatusColor = "indigo-bg"; }elseif($albumStatus == "Downloaded"){ $albumStatusColor = "green-bg"; }else{ $albumStatusColor = "red-bg"; }
+				if($albumStatus == "Wanted" && $notReleased == "true"){ $albumStatusColor = "indigo-bg"; }elseif($albumStatus == "Downloaded"){ $albumStatusColor = "green-bg"; }else{ $albumStatusColor = "red-bg"; }
 
-            $gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
-            
-        }
-        
-    }
-
-    if ($i != 0){ return $gotCalendar; }
-
+				$gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
+			}
+		}
+    	if ($i != 0){ return $gotCalendar; }
+	}else{
+		writeLog("error", "HEADPHONES $list ERROR: could not connect - check URL and/or check API key - if HTTPS, is cert valid");
+	}
 }
 
 function checkRootPath($string){
@@ -2435,7 +2924,1030 @@ function checkRootPath($string){
     }
 }
 
+function strip($string){
+	return str_replace(array("\r","\n","\t"),"",$string);
+}
 
+function writeLog($type, $message){
+    $message = date("Y-m-d H:i:s")."|".$type."|".$message."\n";
+    file_put_contents("org.log", $message, FILE_APPEND | LOCK_EX);
+}
+
+function readLog(){
+    $log = file("org.log");
+    $log = array_reverse($log);
+    foreach($log as $line){
+        $line = explode("|", $line);
+        $line[1] = ($line[1] == "error") ? '<span class="label label-danger">Error</span>' : '<span class="label label-primary">Success</span>';
+        echo "<tr><td>".$line[0]."</td><td>".$line[2]."</td><td>".$line[1]."</td></tr>";
+    }
+}
+
+function buildStream($array){
+    $result = "";
+    if (array_key_exists('platform', $array)) {
+        $result .= '<div class="reg-info" style="margin-top:0; padding-left:0; position: absolute; bottom: 10px; left: 10px;"><div style="margin-right: 0;" class="item pull-left text-center"><img alt="'.$array['platform'].'" class="img-circle" height="55px" src="images/platforms/'.getPlatform($array['platform']).'"></div></div><div class="clearfix"></div>';
+    }
+    if (array_key_exists('device', $array)) {
+        $result .= '<div class="reg-info" style="margin-top:0; padding-left:5%;"><div style="margin-right: 0;" class="item pull-left text-center"><span style="font-size: 15px;" class="block text-center"><i class="fa fa-laptop"></i>'.$array['device'].'</span></div></div><div class="clearfix"></div>';
+    }
+    if (array_key_exists('stream', $array)) {
+        $result .= '<div class="reg-info" style="margin-top:0; padding-left:5%;"><div style="margin-right: 0;" class="item pull-left text-center"><span style="font-size: 15px;" class="block text-center"><i class="fa fa-play"></i>'.$array['stream'].'</span></div></div><div class="clearfix"></div>';
+    }
+    if (array_key_exists('video', $array)) {
+        $result .= '<div class="reg-info" style="margin-top:0; padding-left:5%;"><div style="margin-right: 0;" class="item pull-left text-center"><span style="font-size: 15px;" class="block text-center"><i class="fa fa-film"></i>'.$array['video'].'</span></div></div><div class="clearfix"></div>';
+    }
+    if (array_key_exists('audio', $array)) {
+        $result .= '<div class="reg-info" style="margin-top:0; padding-left:5%;"><div style="margin-right: 0;" class="item pull-left text-center"><span style="font-size: 15px;" class="block text-center"><i class="fa fa-volume-up"></i>'.$array['audio'].'</span></div></div><div class="clearfix"></div>';
+    }
+    return $result;
+}
+
+function streamType($value){
+    if($value == "transcode" || $value == "Transcode"){
+        return "Transcode";
+    }elseif($value == "copy" || $value == "DirectStream"){
+        return "Direct Stream";
+    }elseif($value == "directplay" || $value == "DirectPlay"){
+        return "Direct Play";
+    }else{
+        return "Direct Play";
+    }
+}
+
+function getPlatform($platform){
+    $allPlatforms = array(
+        "Chrome" => "chrome.png",
+        "tvOS" => "atv.png",
+        "iOS" => "ios.png",
+        "Xbox One" => "xbox.png",
+        "Mystery 4" => "playstation.png",
+        "Samsung" => "samsung.png",
+        "Roku" => "roku.png",
+        "Emby for iOS" => "ios.png",
+        "Emby Mobile" => "emby.png",
+        "Emby Theater" => "emby.png",
+        "Emby Classic" => "emby.png",
+        "Safari" => "safari.png",
+        "Android" => "android.png",
+        "Chromecast" => "chromecast.png",
+        "Dashboard" => "emby.png",
+        "Dlna" => "dlna.png",
+        "Windows Phone" => "wp.png",
+        "Windows RT" => "win8.png",
+        "Kodi" => "koid.png",
+    );
+    if (array_key_exists($platform, $allPlatforms)) {
+        return $allPlatforms[$platform];
+    }else{
+        return "pmp.png";
+    }
+}
+
+function getServer(){
+    $server = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"];
+    return $server;    
+}
+
+function prettyPrint($array) {
+    echo "<pre>";
+    print_r($array);
+    echo "</pre>";
+    echo "<br/>";
+}
+
+function checkFrame($array, $url){
+    if(array_key_exists("x-frame-options", $array)){
+        if($array['x-frame-options'] == "deny"){
+            return false;
+        }elseif($array['x-frame-options'] == "sameorgin"){
+            $digest = parse_url($url);
+            $host = (isset($digest['host'])?$digest['host']:'');
+            if(getServer() == $host){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }else{
+        if(!$array){
+            return false;
+        }
+        return true;
+    }    
+}
+
+function frameTest($url){
+    $array = array_change_key_case(get_headers(qualifyURL($url), 1));
+    $url = qualifyURL($url);
+    if(checkFrame($array, $url)){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+function sendResult($result, $icon = "floppy-o", $message = false, $success = "WAS_SUCCESSFUL", $fail = "HAS_FAILED", $send = true) {
+	$notifyExplode = explode("-", NOTIFYEFFECT);
+	if ($result) {
+		$msg = array(
+			'html' => ($message?''.$message.' <strong>'.translate($success).'</strong>':'<strong>'.translate($success).'</strong>'),
+			'icon' => $icon,
+			'type' => 'success',
+			'length' => '5000',
+			'layout' => $notifyExplode[0],
+			'effect' => $notifyExplode[1],
+		);
+	} else {
+		$msg = array(
+			'html' => ($message?''.$message.' <strong>'.translate($fail).'</strong>':'<strong>'.translate($fail).'</strong>'),
+			'icon' => $icon,
+			'type' => 'error',
+			'length' => '5000',
+			'layout' => $notifyExplode[0],
+			'effect' => $notifyExplode[1],
+		);
+	}
+	
+	// Send and kill script?
+	if ($send) {
+		header('Content-Type: application/json');
+		echo json_encode(array('notify'=>$msg));
+		die();
+	}
+	return $msg;
+}
+
+function buildHomepageNotice($layout, $type, $title, $message){
+    switch ($layout) {
+		      case 'elegant':
+            return '
+            <div id="homepageNotice" class="row">
+                <div class="col-lg-12">
+                    <div class="content-box big-box box-shadow panel-box panel-'.$type.'">
+                        <div class="content-title i-block">
+                            <h4 class="zero-m"><strong>'.$title.'</strong></h4>
+                            <div class="content-tools i-block pull-right">
+                                <a class="close-btn">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        '.$message.'
+                    </div>
+                </div>
+            </div>
+            ';
+            break;
+        case 'basic':
+            return '
+            <div id="homepageNotice" class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-'.$type.'">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">'.$title.'</h3>
+                        </div>
+                        <div class="panel-body">
+                            '.$message.'
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ';
+            break;
+        case 'jumbotron';
+            return '
+            <div id="homepageNotice" class="row">
+                <div class="col-lg-12">
+                    <div class="jumbotron">
+                        <div class="container">
+                            <h1>'.$title.'</h1>
+                            <p>'.$message.'</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ';
+    }
+}
+
+function embyArray($array, $type) {
+    $key = ($type == "video" ? "Height" : "Channels");
+    if (array_key_exists($key, $array)) {
+        switch ($type) {
+            case "video":
+                $codec = $array["Codec"];
+                $height = $array["Height"];
+                $width = $array["Width"];
+            break;
+            default:
+                $codec = $array["Codec"];
+                $channels = $array["Channels"];
+        }
+        return ($type == "video" ?  "(".$codec.") (".$width."x".$height.")" : "(".$codec.") (".$channels."ch)");        
+    }
+    foreach ($array as $element) {
+        if (is_array($element)) {
+            if (embyArray($element, $type)) {
+                return embyArray($element, $type);
+            }
+        }
+    }
+}
+
+// Get Now Playing Streams From Plex
+function searchPlex($query){
+    $address = qualifyURL(PLEXURL);
+	$openTab = (PLEXTABNAME) ? "true" : "false";
+
+    // Perform API requests
+    $api = @curl_get($address."/search?query=".rawurlencode($query)."&X-Plex-Token=".PLEXTOKEN);
+    $api = simplexml_load_string($api);
+	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+    if (!$getServer) { return 'Could not load!'; }
+	
+	// Identify the local machine
+    $server = $getServer['machineIdentifier'];
+    $pre = "<table  class=\"table table-hover table-stripped\"><thead><tr><th>Cover</th><th>Title</th><th>Genre</th><th>Year</th><th>Type</th><th>Added</th><th>Extra Info</th></tr></thead><tbody>";
+    $items = "";
+    $albums = $movies = $shows = 0;
+    
+    $style = 'style="vertical-align: middle"';
+    foreach($api AS $child) {
+        if($child['type'] != "artist" && $child['type'] != "episode" && isset($child['librarySectionID'])){
+            $time = (string)$child['addedAt'];
+            $time = new DateTime("@$time");
+            $results = array(
+                "title" => (string)$child['title'],
+                "image" => (string)$child['thumb'],
+                "type" => (string)ucwords($child['type']),
+                "year" => (string)$child['year'],
+                "key" => (string)$child['ratingKey']."-search",
+                "ratingkey" => (string)$child['ratingKey'],
+                "genre" => (string)$child->Genre['tag'],
+                "added" => $time->format('Y-m-d'),
+                "extra" => "",
+            );
+            switch ($child['type']){
+                case "album":
+                    $push = array(
+                        "title" => (string)$child['parentTitle']." - ".(string)$child['title'],
+                    );  
+                    $results = array_replace($results,$push);
+                    $albums++;
+                    break;
+                case "movie":
+					$push = array(
+                        "extra" => "Content Rating: ".(string)$child['contentRating']."<br/>Movie Rating: ".(string)$child['rating'],
+                    ); 
+			  		$results = array_replace($results,$push);
+                    $movies++;
+                    break;
+                case "show":
+			  		$push = array(
+                        "extra" => "Seasons: ".(string)$child['childCount']."<br/>Episodes: ".(string)$child['leafCount'],
+                    ); 
+			  		$results = array_replace($results,$push);
+                    $shows++;
+                    break;
+            }
+			if (file_exists('images/cache/'.$results['key'].'.jpg')){ $image_url = 'images/cache/'.$results['key'].'.jpg'; }
+    		if (file_exists('images/cache/'.$results['key'].'.jpg') && (time() - 604800) > filemtime('images/cache/'.$results['key'].'.jpg') || !file_exists('images/cache/'.$results['key'].'.jpg')) {       
+        		$image_url = 'ajax.php?a=plex-image&img='.$results['image'].'&height=150&width=100&key='.$results['key'];        
+    		}
+    		if(!$results['image']){ $image_url = "images/no-search.png"; $key = "no-search"; }
+			
+			if (substr_count(PLEXURL, ':') == 2) {
+				$link = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
+			}else{
+				$link = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
+			}
+			
+            $items .= '<tr style="cursor: pointer;" class="openTab" openTab="'.$openTab.'" href="'.$link.'">
+            <th scope="row"><img src="'.$image_url.'"></th>
+            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
+            <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['genre'].'</td>
+            <td class="col-xs-1 nzbtable nzbtable-row"'.$style.'>'.$results['year'].'</td>
+            <td class="col-xs-1 nzbtable nzbtable-row"'.$style.'>'.$results['type'].'</td>
+            <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['added'].'</td>
+            <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['extra'].'</td>
+            </tr>';
+        }
+    }
+    $totals = '<div style="margin: 10px;" class="sort-todo pull-right">
+              <span class="badge gray-bg"><i class="fa fa-film fa-2x white"></i><strong style="
+    font-size: 23px;
+">&nbsp;'.$movies.'</strong></span>
+              <span class="badge gray-bg"><i class="fa fa-tv fa-2x white"></i><strong style="
+    font-size: 23px;
+">&nbsp;'.$shows.'</strong></span>
+              <span class="badge gray-bg"><i class="fa fa-music fa-2x white"></i><strong style="
+    font-size: 23px;
+">&nbsp;'.$albums.'</strong></span>
+            </div>';
+    return (!empty($items) ? $totals.$pre.$items."</div></table>" : "<h2 class='text-center'>No Results for $query</h2>" );
+}
+
+function getBannedUsers($string){
+    if (strpos($string, ',') !== false) {
+        $banned = explode(",", $string);     
+    }else{
+        $banned = array($string);  
+    }
+    return $banned;
+}
+
+function getWhitelist($string){
+    if (strpos($string, ',') !== false) {
+        $whitelist = explode(",", $string); 
+    }else{
+        $whitelist = array($string);
+    }
+    foreach($whitelist as &$ip){
+        $ip = is_numeric(substr($ip, 0, 1)) ? $ip : gethostbyname($ip);
+    }
+    return $whitelist;
+}
+
+function get_client_ip() {
+    $ipaddress = '';
+    if (isset($_SERVER['HTTP_CLIENT_IP']))
+        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+    else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    else if(isset($_SERVER['HTTP_X_FORWARDED']))
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+    else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
+        $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+    else if(isset($_SERVER['HTTP_FORWARDED']))
+        $ipaddress = $_SERVER['HTTP_FORWARDED'];
+    else if(isset($_SERVER['REMOTE_ADDR']))
+        $ipaddress = $_SERVER['REMOTE_ADDR'];
+    else
+        $ipaddress = 'UNKNOWN';
+    return $ipaddress;
+}
+
+//EMAIL SHIT
+function sendEmail($email, $username = "Organizr User", $subject, $body, $cc = null){
+
+	$mail = new PHPMailer;
+	$mail->isSMTP();
+	$mail->Host = SMTPHOST;
+	$mail->SMTPAuth = SMTPHOSTAUTH;
+	$mail->Username = SMTPHOSTUSERNAME;
+	$mail->Password = SMTPHOSTPASSWORD;
+	$mail->SMTPSecure = SMTPHOSTTYPE;
+	$mail->Port = SMTPHOSTPORT;
+	$mail->setFrom(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
+	$mail->addReplyTo(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
+	$mail->isHTML(true);
+	$mail->addAddress($email, $username);
+	$mail->Subject = $subject;
+	$mail->Body    = $body;
+	//$mail->send();
+	if(!$mail->send()) {
+		writeLog("error", "mail failed to send");
+	} else {
+		writeLog("success", "mail has been sent");
+	}
+
+}
+
+function libraryList(){
+    $address = qualifyURL(PLEXURL);
+	$headers = array(
+		"Accept" => "application/json", 
+		"X-Plex-Token" => PLEXTOKEN
+	);
+	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+    if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
+	
+	$api = simplexml_load_string(@curl_get("https://plex.tv/api/servers/$gotServer/shared_servers", $headers));
+	$libraryList = array();
+    foreach($api->SharedServer->Section AS $child) {
+		$libraryList['libraries'][(string)$child['title']] = (string)$child['id'];
+    }
+	foreach($api->SharedServer AS $child) {
+		if(!empty($child['username'])){
+			$username = (string)strtolower($child['username']);
+			$email = (string)strtolower($child['email']);
+			$libraryList['users'][$username] = (string)$child['id'];
+			$libraryList['emails'][$email] = (string)$child['id'];
+		}
+    }
+    return (!empty($libraryList) ? array_change_key_case($libraryList,CASE_LOWER) : null );
+}
+
+function plexUserShare($username){
+    $address = qualifyURL(PLEXURL);
+	$headers = array(
+		"Accept" => "application/json", 
+		"Content-Type" => "application/json", 
+		"X-Plex-Token" => PLEXTOKEN
+	);
+	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+    if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
+	
+	$json = array(
+		"server_id" => $gotServer,
+		"shared_server" => array(
+			//"library_section_ids" => "[26527637]",
+			"invited_email" => $username
+		)
+	);
+	
+	$api = curl_post("https://plex.tv/api/servers/$gotServer/shared_servers/", $json, $headers);
+	
+	switch ($api['http_code']['http_code']){
+		case 400:
+			writeLog("error", "PLEX INVITE: $username already has access to the shared libraries");
+			$result = "$username already has access to the shared libraries";
+			break;
+		case 401:
+			writeLog("error", "PLEX INVITE: Invalid Plex Token");
+			$result = "Invalid Plex Token";
+			break;
+		case 200:
+			writeLog("success", "PLEX INVITE: $username now has access to your Plex Library");
+			$result = "$username now has access to your Plex Library";
+			break;
+		default:
+			writeLog("error", "PLEX INVITE: unknown error");
+			$result = false;
+	}
+    return (!empty($result) ? $result : null );
+}
+
+function plexUserDelete($username){
+    $address = qualifyURL(PLEXURL);
+	$headers = array(
+		"Accept" => "application/json", 
+		"Content-Type" => "application/json", 
+		"X-Plex-Token" => PLEXTOKEN
+	);
+	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+    if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
+	$id = (is_numeric($username) ? $id : convertPlexName($username, "id"));
+	
+	$api = curl_delete("https://plex.tv/api/servers/$gotServer/shared_servers/$id", $headers);
+	
+	switch ($api['http_code']['http_code']){
+		case 401:
+			writeLog("error", "PLEX INVITE: Invalid Plex Token");
+			$result = "Invalid Plex Token";
+			break;
+		case 200:
+			writeLog("success", "PLEX INVITE: $username doesn't have access to your Plex Library anymore");
+			$result = "$username doesn't have access to your Plex Library anymore";
+			break;
+		default:
+			writeLog("error", "PLEX INVITE: unknown error");
+			$result = false;
+	}
+    return (!empty($result) ? $result : null );
+}
+
+function convertPlexName($user, $type){
+	$array = libraryList();
+	switch ($type){
+		case "username":
+			$plexUser = array_search ($user, $array['users']);
+			break;
+		case "id":
+			if (array_key_exists(strtolower($user), $array['users'])) {
+				$plexUser = $array['users'][strtolower($user)];
+			}
+			break;
+		default:
+			$plexUser = false;
+	}
+	return (!empty($plexUser) ? $plexUser : null );
+}
+
+function randomCode($length = 5, $type = null) {
+	switch ($type){
+		case "alpha":
+			$legend = array_merge(range('A', 'Z'));
+			break;
+		case "numeric":
+			$legend = array_merge(range(0,9));
+			break;
+		default:
+			$legend = array_merge(range(0,9),range('A', 'Z'));
+	}
+    $code = "";
+    for($i=0; $i < $length; $i++) {
+        $code .= $legend[mt_rand(0, count($legend) - 1)];
+    }
+    return $code;
+}
+
+function inviteCodes($action, $code = null, $usedBy = null) {
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	$now = date("Y-m-d H:i:s");
+	
+	switch ($action) {
+		case "get":
+			// Start Array
+			$result = array();
+			// Database Lookup
+			$invites = $GLOBALS['file_db']->query('SELECT * FROM invites WHERE valid = "Yes"');
+			// Get Codes
+			foreach($invites as $row) {
+				array_push($result, $row['code']);
+			}
+			// Return the Results
+			return (!empty($result) ? $result : false );
+			break;
+		case "check":
+			// Start Array
+			$result = array();
+			// Database Lookup
+			$invites = $GLOBALS['file_db']->query('SELECT * FROM invites WHERE valid = "Yes" AND code = "'.$code.'"');
+			// Get Codes
+			foreach($invites as $row) {
+				$result = $row['code'];
+			}
+			// Return the Results
+			return (!empty($result) ? $result : false );
+			break;
+		case "use":
+			$currentIP = get_client_ip();
+			$invites = $GLOBALS['file_db']->query('UPDATE invites SET valid = "No", usedby = "'.$usedBy.'", dateused = "'.$now.'", ip = "'.$currentIP.'" WHERE code = "'.$code.'"');
+			return (!empty($invites) ? true : false );
+			break;
+	}
+	
+}
+
+function plexJoin($username, $email, $password){
+	$connectURL = 'https://plex.tv/users.json';
+	$headers = array(
+		'Accept'=> 'application/json',
+		'Content-Type' => 'application/x-www-form-urlencoded',
+		'X-Plex-Product' => 'Organizr',
+		'X-Plex-Version' => '1.0',
+		'X-Plex-Client-Identifier' => '01010101-10101010',
+	);
+	$body = array(
+		'user[email]' => $email,
+		'user[username]' => $username,
+		'user[password]' => $password,
+	);
+	
+	$api = curl_post($connectURL, $body, $headers);
+	$json = json_decode($api['content'], true);
+	$errors = (!empty($json['errors']) ? true : false);
+	$success = (!empty($json['user']) ? true : false);
+	//Use This for later
+	$usernameError = (!empty($json['errors']['username']) ? $json['errors']['username'][0] : false);
+	$emailError = (!empty($json['errors']['email']) ? $json['errors']['email'][0] : false);
+	$passwordError = (!empty($json['errors']['password']) ? $json['errors']['password'][0] : false);
+	
+	switch ($api['http_code']['http_code']){
+		case 400:
+			writeLog("error", "PLEX JOIN: $username already has access to the shared libraries");
+			break;
+		case 401:
+			writeLog("error", "PLEX JOIN: invalid Plex Token");
+			break;
+		case 422:
+			writeLog("error", "PLEX JOIN: user info error");
+			break;
+		case 429:
+			writeLog("error", "PLEX JOIN: too many requests to plex.tv please try later");
+			break;
+		case 200:
+		case 201:
+			writeLog("success", "PLEX JOIN: $username now has access to your Plex Library");
+			break;
+		default:
+			writeLog("error", "PLEX JOIN: unknown error, Error: ".$api['http_code']['http_code']);
+	}
+	//prettyPrint($api);
+	//prettyPrint(json_decode($api['content'], true));
+    return (!empty($success) && empty($errors) ? true : false );
+	
+}
+
+function getCert(){
+	$url = "http://curl.haxx.se/ca/cacert.pem";
+	$file = getcwd()."/config/cacert.pem";
+	$directory = getcwd()."/config/";
+	@mkdir($directory, 0770, true);
+	if(!file_exists($file)){
+    	file_put_contents( $file, fopen($url, 'r'));
+		writeLog("success", "CERT PEM: pem file created");
+	}elseif (file_exists($file) && time() - 2592000 > filemtime($file)) {
+		writeLog("success", "CERT PEM: downloaded new pem file");
+	}
+	return $file;
+}
+
+function customCSS(){
+	if(CUSTOMCSS == "true") {
+		$template_file = "custom.css";
+		$file_handle = fopen($template_file, "rb");
+		echo "\n";
+		echo fread($file_handle, filesize($template_file));
+		fclose($file_handle);
+		echo "\n";
+	}
+}
+
+function orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){
+	return '
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <!--[if gte mso 9]><xml>
+<o:OfficeDocumentSettings>
+<o:AllowPNG/>
+<o:PixelsPerInch>96</o:PixelsPerInch>
+</o:OfficeDocumentSettings>
+</xml><![endif]-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width">
+    <!--[if !mso]><!-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<![endif]-->
+    <title></title>
+    <!--[if !mso]><!-- -->
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+    <!--<![endif]-->
+    <style type="text/css" id="media-query">
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        table,
+        tr,
+        td {
+            vertical-align: top;
+            border-collapse: collapse;
+        }
+        .ie-browser table,
+        .mso-container table {
+            table-layout: fixed;
+        }
+        * {
+            line-height: inherit;
+        }
+        a[x-apple-data-detectors=true] {
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+        [owa] .img-container div,
+        [owa] .img-container button {
+            display: block !important;
+        }
+        [owa] .fullwidth button {
+            width: 100% !important;
+        }
+        [owa] .block-grid .col {
+            display: table-cell;
+            float: none !important;
+            vertical-align: top;
+        }
+        .ie-browser .num12,
+        .ie-browser .block-grid,
+        [owa] .num12,
+        [owa] .block-grid {
+            width: 615px !important;
+        }
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+        .ie-browser .mixed-two-up .num4,
+        [owa] .mixed-two-up .num4 {
+            width: 204px !important;
+        }
+        .ie-browser .mixed-two-up .num8,
+        [owa] .mixed-two-up .num8 {
+            width: 408px !important;
+        }
+        .ie-browser .block-grid.two-up .col,
+        [owa] .block-grid.two-up .col {
+            width: 307px !important;
+        }
+        .ie-browser .block-grid.three-up .col,
+        [owa] .block-grid.three-up .col {
+            width: 205px !important;
+        }
+        .ie-browser .block-grid.four-up .col,
+        [owa] .block-grid.four-up .col {
+            width: 153px !important;
+        }
+        .ie-browser .block-grid.five-up .col,
+        [owa] .block-grid.five-up .col {
+            width: 123px !important;
+        }
+        .ie-browser .block-grid.six-up .col,
+        [owa] .block-grid.six-up .col {
+            width: 102px !important;
+        }
+        .ie-browser .block-grid.seven-up .col,
+        [owa] .block-grid.seven-up .col {
+            width: 87px !important;
+        }
+        .ie-browser .block-grid.eight-up .col,
+        [owa] .block-grid.eight-up .col {
+            width: 76px !important;
+        }
+        .ie-browser .block-grid.nine-up .col,
+        [owa] .block-grid.nine-up .col {
+            width: 68px !important;
+        }
+        .ie-browser .block-grid.ten-up .col,
+        [owa] .block-grid.ten-up .col {
+            width: 61px !important;
+        }
+        .ie-browser .block-grid.eleven-up .col,
+        [owa] .block-grid.eleven-up .col {
+            width: 55px !important;
+        }
+        .ie-browser .block-grid.twelve-up .col,
+        [owa] .block-grid.twelve-up .col {
+            width: 51px !important;
+        }
+        @media only screen and (min-width: 635px) {
+            .block-grid {
+                width: 615px !important;
+            }
+            .block-grid .col {
+                display: table-cell;
+                Float: none !important;
+                vertical-align: top;
+            }
+            .block-grid .col.num12 {
+                width: 615px !important;
+            }
+            .block-grid.mixed-two-up .col.num4 {
+                width: 204px !important;
+            }
+            .block-grid.mixed-two-up .col.num8 {
+                width: 408px !important;
+            }
+            .block-grid.two-up .col {
+                width: 307px !important;
+            }
+            .block-grid.three-up .col {
+                width: 205px !important;
+            }
+            .block-grid.four-up .col {
+                width: 153px !important;
+            }
+            .block-grid.five-up .col {
+                width: 123px !important;
+            }
+            .block-grid.six-up .col {
+                width: 102px !important;
+            }
+            .block-grid.seven-up .col {
+                width: 87px !important;
+            }
+            .block-grid.eight-up .col {
+                width: 76px !important;
+            }
+            .block-grid.nine-up .col {
+                width: 68px !important;
+            }
+            .block-grid.ten-up .col {
+                width: 61px !important;
+            }
+            .block-grid.eleven-up .col {
+                width: 55px !important;
+            }
+            .block-grid.twelve-up .col {
+                width: 51px !important;
+            }
+        }
+        @media (max-width: 635px) {
+            .block-grid,
+            .col {
+                min-width: 320px !important;
+                max-width: 100% !important;
+            }
+            .block-grid {
+                width: calc(100% - 40px) !important;
+            }
+            .col {
+                width: 100% !important;
+            }
+            .col>div {
+                margin: 0 auto;
+            }
+            img.fullwidth {
+                max-width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body class="clean-body" style="margin: 0;padding: 0;-webkit-text-size-adjust: 100%;background-color: #FFFFFF">
+    <!--[if IE]><div class="ie-browser"><![endif]-->
+    <!--[if mso]><div class="mso-container"><![endif]-->
+    <div class="nl-container" style="min-width: 320px;Margin: 0 auto;background-color: #FFFFFF">
+        <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="background-color: #FFFFFF;"><![endif]-->
+        <div style="background-color:#333333;">
+            <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+                class="block-grid ">
+                <div style="border-collapse: collapse;display: table;width: 100%;">
+                    <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#333333;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+                    <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:0px; padding-bottom:0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+                    <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+                        <div style="background-color: transparent; width: 100% !important;">
+                            <!--[if (!mso)&(!IE)]><!-->
+                            <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:0px; padding-bottom:0px; padding-right: 0px; padding-left: 0px;">
+                                <!--<![endif]-->
+                                <div align="left" class="img-container left fullwidth" style="padding-right: 30px;	padding-left: 30px;">
+                                    <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 30px; padding-left: 30px;" align="left"><![endif]-->
+                                    <img class="left fullwidth" align="left" border="0" src="https://sonflix.com/images/organizr-logo-h.png" alt="Image" title="Image"
+                                        style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: 0;height: auto;float: none;width: 100%;max-width: 555px"
+                                        width="555">
+                                    <!--[if mso]></td></tr></table><![endif]-->
+                                </div>
+                                <!--[if (!mso)&(!IE)]><!-->
+                            </div>
+                            <!--<![endif]-->
+                        </div>
+                    </div>
+                    <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+                </div>
+            </div>
+        </div>
+        <div style="background-color:#333333;">
+            <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+                class="block-grid ">
+                <div style="border-collapse: collapse;display: table;width: 100%;">
+                    <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#333333;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+                    <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:0px; padding-bottom:0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+                    <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+                        <div style="background-color: transparent; width: 100% !important;">
+                            <!--[if (!mso)&(!IE)]><!-->
+                            <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:0px; padding-bottom:0px; padding-right: 0px; padding-left: 0px;">
+                                <!--<![endif]-->
+                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;"><![endif]-->
+                                <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#FFFFFF; padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;">
+                                    <div style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                                        <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center"><span style="font-size: 16px; line-height: 19px;"><strong><span style="line-height: 19px; font-size: 16px;">'.$header.'</span></strong>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <!--[if mso]></td></tr></table><![endif]-->
+                                <!--[if (!mso)&(!IE)]><!-->
+                            </div>
+                            <!--<![endif]-->
+                        </div>
+                    </div>
+                    <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+                </div>
+            </div>
+        </div>
+        <div style="background-color:#393939;">
+            <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+                class="block-grid ">
+                <div style="border-collapse: collapse;display: table;width: 100%;">
+                    <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#393939;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+                    <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+                    <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+                        <div style="background-color: transparent; width: 100% !important;">
+                            <!--[if (!mso)&(!IE)]><!-->
+                            <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 0px; padding-left: 0px;">
+                                <!--<![endif]-->
+                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 30px; padding-left: 30px; padding-top: 0px; padding-bottom: 0px;"><![endif]-->
+                                <div style="font-family:\'Ubuntu\', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#FFFFFF; padding-right: 30px; padding-left: 30px; padding-top: 0px; padding-bottom: 0px;">
+                                    <div style="font-family:Ubuntu, Tahoma, Verdana, Segoe, sans-serif;font-size:12px;line-height:14px;color:#FFFFFF;text-align:left;">
+                                        <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center"><span style="font-size: 16px; line-height: 19px;"><strong>'.$title.'</strong></span></p>
+                                    </div>
+                                </div>
+                                <!--[if mso]></td></tr></table><![endif]-->
+                                <div style="padding-right: 5px; padding-left: 5px; padding-top: 5px; padding-bottom: 5px;">
+                                    <!--[if (mso)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 5px;padding-left: 5px; padding-top: 5px; padding-bottom: 5px;"><table width="55%" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+                                    <div align="center">
+                                        <div style="border-top: 2px solid #66D9EF; width:55%; line-height:2px; height:2px; font-size:2px;">&#160;</div>
+                                    </div>
+                                    <!--[if (mso)]></td></tr></table></td></tr></table><![endif]-->
+                                </div>
+                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 30px; padding-left: 30px; padding-top: 15px; padding-bottom: 10px;"><![endif]-->
+                                <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#FFFFFF; padding-right: 30px; padding-left: 30px; padding-top: 15px; padding-bottom: 10px;">
+                                    <div style="font-family:\'Lato\',Tahoma,Verdana,Segoe,sans-serif;font-size:12px;line-height:14px;color:#FFFFFF;text-align:left;">
+                                        <p style="margin: 0;font-size: 12px;line-height: 14px"><span style="font-size: 28px; line-height: 33px;">Hey '.$user.',</span></p>
+                                    </div>
+                                </div>
+                                <!--[if mso]></td></tr></table><![endif]-->
+                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 15px; padding-left: 30px; padding-top: 10px; padding-bottom: 25px;"><![endif]-->
+                                <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:180%;color:#FFFFFF; padding-right: 15px; padding-left: 30px; padding-top: 10px; padding-bottom: 25px;">
+                                    <div style="font-size:12px;line-height:22px;font-family:\'Lato\',Tahoma,Verdana,Segoe,sans-serif;color:#FFFFFF;text-align:left;">
+                                        <p style="margin: 0;font-size: 14px;line-height: 25px"><span style="font-size: 18px; line-height: 32px;"><em><span style="line-height: 32px; font-size: 18px;">'.$mainMessage.'</span></em>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <!--[if mso]></td></tr></table><![endif]-->
+                                <div align="center" class="button-container center" style="padding-right: 30px; padding-left: 30px; padding-top:15px; padding-bottom:15px;">
+                                    <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"><tr><td style="padding-right: 30px; padding-left: 30px; padding-top:15px; padding-bottom:15px;" align="center"><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://sonflix.com" style="height:48px; v-text-anchor:middle; width:194px;" arcsize="53%" strokecolor="" fillcolor="#66D9EF"><w:anchorlock/><center style="color:#000; font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif; font-size:18px;"><![endif]-->
+                                    <a href="'.$buttonURL.'" target="_blank" style="display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #000; background-color: #66D9EF; border-radius: 25px; -webkit-border-radius: 25px; -moz-border-radius: 25px; max-width: 180px; width: 114px; width: auto; border-top: 3px solid transparent; border-right: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 3px solid transparent; padding-top: 5px; padding-right: 30px; padding-bottom: 5px; padding-left: 30px; font-family: \'Lato\', Tahoma, Verdana, Segoe, sans-serif;mso-border-alt: none">
+<span style="font-size:12px;line-height:21px;"><span style="font-size: 18px; line-height: 32px;" data-mce-style="font-size: 18px; line-height: 44px;">'.$button.'</span></span></a>
+                                    <!--[if mso]></center></v:roundrect></td></tr></table><![endif]-->
+                                </div>
+                                <!--[if mso]></center></v:roundrect></td></tr></table><![endif]-->
+                            </div>
+                            <!--[if (!mso)&(!IE)]><!-->
+                        </div>
+                        <!--<![endif]-->
+                    </div>
+                </div>
+                <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+            </div>
+        </div>
+    </div>
+    <div style="background-color:#ffffff;">
+        <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+            class="block-grid ">
+            <div style="border-collapse: collapse;display: table;width: 100%;">
+                <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#ffffff;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+                <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:30px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+                <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+                    <div style="background-color: transparent; width: 100% !important;">
+                        <!--[if (!mso)&(!IE)]><!-->
+                        <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:30px; padding-right: 0px; padding-left: 0px;">
+                            <!--<![endif]-->
+                            <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 10px;"><![endif]-->
+                            <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#555555; padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 10px;">
+                                <div style="font-size:12px;line-height:14px;color:#555555;font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                                    <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: center"><strong><span style="font-size: 26px; line-height: 31px;">'.$subTitle.'<br></span></strong></p>
+                                </div>
+                            </div>
+                            <!--[if mso]></td></tr></table><![endif]-->
+                            <div style="padding-right: 20px; padding-left: 20px; padding-top: 15px; padding-bottom: 20px;">
+                                <!--[if (mso)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 20px;padding-left: 20px; padding-top: 15px; padding-bottom: 20px;"><table width="40%" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+                                <div align="center">
+                                    <div style="border-top: 3px solid #66D9EF; width:40%; line-height:3px; height:3px; font-size:3px;">&#160;</div>
+                                </div>
+                                <!--[if (mso)]></td></tr></table></td></tr></table><![endif]-->
+                            </div>
+                            <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 0px;"><![endif]-->
+                            <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:180%;color:#7E7D7D; padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 0px;">
+                                <div style="font-size:12px;line-height:22px;color:#7E7D7D;font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                                    <p style="margin: 0;font-size: 14px;line-height: 25px;text-align: center"><em><span style="font-size: 18px; line-height: 32px;">'.$subMessage.'</span></em></p>
+                                </div>
+                            </div>
+                            <!--[if mso]></td></tr></table><![endif]-->
+                            <!--[if (!mso)&(!IE)]><!-->
+                        </div>
+                        <!--<![endif]-->
+                    </div>
+                </div>
+                <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+            </div>
+        </div>
+    </div>
+    <div style="background-color:#333333;">
+        <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+            class="block-grid ">
+            <div style="border-collapse: collapse;display: table;width: 100%;">
+                <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#333333;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+                <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+                <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+                    <div style="background-color: transparent; width: 100% !important;">
+                        <!--[if (!mso)&(!IE)]><!-->
+                        <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 0px; padding-left: 0px;">
+                            <!--<![endif]-->
+                            <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;"><![endif]-->
+                            <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#959595; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
+                                <div style="font-size:12px;line-height:14px;color:#959595;font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                                    <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: center">This&#160;email was sent by <a style="color:#AD80FD;text-decoration: underline;" title="Organizr"
+                                            href="https://github.com/causefx/Organizr" target="_blank" rel="noopener noreferrer">Organizr</a><strong><br></strong></p>
+                                </div>
+                            </div>
+                            <!--[if mso]></td></tr></table><![endif]-->
+                            <!--[if (!mso)&(!IE)]><!-->
+                        </div>
+                        <!--<![endif]-->
+                    </div>
+                </div>
+                <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+            </div>
+        </div>
+    </div>
+    <!--[if (mso)|(IE)]></td></tr></table><![endif]-->
+    </div>
+    <!--[if (mso)|(IE)]></div><![endif]-->
+</body>
+</html>
+	';
+}
 
 // Always run this
 dependCheck();
