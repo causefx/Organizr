@@ -1418,7 +1418,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
             if (defaultTab){
                 defaultTabName = $("li[class^='tab-item active']").attr("name");
-                $("#content").html('<div class="iframe active" data-content-name="'+defaultTabName+'" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
+                $("#content").html('<div class="iframe active" data-content-name="'+defaultTabName+'" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
                 document.getElementById('main-wrapper').focus();
             }
             if (defaultTab == null){
@@ -1609,7 +1609,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
                     $("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
-                    $( '<div class="iframe active" data-content-name="'+thisname+'" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
+                    $( '<div class="iframe active" data-content-name="'+thisname+'" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
                     document.title = thistitle;
                    // window.location.href = '#' + thisname;
 
@@ -1664,7 +1664,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
                     $("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
 
-                    $( '<div class="iframe active" data-content-name="'+thisname+'" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
+                    $( '<div class="iframe active" data-content-name="'+thisname+'" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
                     document.title = thistitle;
                     window.location.href = '#' + thisname;
 
