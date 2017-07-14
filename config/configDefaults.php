@@ -85,4 +85,5 @@ return array(
 	"homepageNoticeType" => "success",
 	"homepageNoticeAuth" => "false",
 	"homepageNoticeLayout" => "elegant",
+	"ipInfoToken" => "ddd0c072ad5021",
 );

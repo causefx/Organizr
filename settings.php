@@ -358,7 +358,7 @@ if(SLIMBAR == "true") {
                                     <li><a id="open-logs" box="logs-box"><i class="fa fa-file-text-o blue pull-right"></i>View Logs</a></li>
                                     <li><a id="open-homepage" box="homepage-box"><i class=" fa fa-home yellow pull-right"></i>Edit Homepage</a></li>
                                     <li><a id="open-advanced" box="advanced-box"><i class=" fa fa-cog light-blue pull-right"></i>Advanced</a></li>
-                                    <li><a id="open-invites" box="invites-box"><i class=" fa fa-user-plus gray pull-right"></i>Plex Invites</a></li>
+                                    <?php if(!empty(PLEXURL)){?><li><a id="open-invites" box="invites-box"><i class=" fa fa-user-plus gray pull-right"></i>Plex Invites</a></li><?php }?>
                                     <li><a id="open-info" box="info-box"><i class=" fa fa-info-circle orange pull-right"></i>About</a></li>
                                     <li><a id="open-donate" box="donate-box"><i class=" fa fa-money red pull-right"></i>Donate</a></li>
                                 </ul>
@@ -719,6 +719,10 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{20}',
 						'value' => PLEXTOKEN,
 					),
+                    array(
+						'type' => 'custom',
+						'html' => '<button id="openPlexModal" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float"> <span class="btn-label"><i class="fa fa-ticket"></i></span>'.translate("GET_PLEX_TOKEN").'</button>',
+					),
      				array(
 						'type' => 'text',
 						'placeholder' => "",
@@ -733,10 +737,6 @@ echo buildSettings(
 						'labelTranslate' => 'PLEX_TAB_NAME',
 						'name' => 'plexTabName',
 						'value' => PLEXTABNAME,
-					),
-					array(
-						'type' => 'custom',
-						'html' => '<a href="https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token">Plex Token Wiki Article</a>',
 					),
 					array(
       					array(
@@ -1329,6 +1329,12 @@ echo buildSettings(
 						'labelTranslate' => 'COOKIE_PASSWORD',
 						'name' => 'cookiePassword',
 						'value' => (empty(COOKIEPASSWORD)?'':randString(20)),
+					),
+                    array(
+						'type' => 'text',
+						'labelTranslate' => 'IPINFO_TOKEN',
+						'name' => 'ipInfoToken',
+						'value' => IPINFOTOKEN,
 					),
 					array(
 						'type' => 'text',
@@ -2133,7 +2139,7 @@ echo buildSettings(
 
 																<td><?=$dateInviteUsed;?></td>
 																<td><?=$usedBy;?></td>
-																<td><?=$ipUsed;?></td>
+																<td style="cursor: pointer" class="ipInfo"><?=$ipUsed;?></td>
 
 																<td><span style="font-size: 100%;" class="label label-<?=$validColor;?>"><?=$row['valid'];?></span></td>
 
@@ -2293,7 +2299,7 @@ echo buildSettings(
 
                                                     <td><?=$val["username"];?></td>
 
-                                                    <td><?=$val["ip"];?></td>
+                                                    <td style="cursor: pointer" class="ipInfo"><?=$val["ip"];?></td>
 
                                                     <td><span class="label label-<?php getColor($val["auth_type"]);?>"><?=$val["auth_type"];?></span></td>
 
@@ -2329,6 +2335,51 @@ echo buildSettings(
                 </div>
             </div>
             <!--End Content-->
+            <!-- Modal for IP -->
+            <div id="ipModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="ipIp">Modal title</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h3>Hostname: <small id="ipHostname"></small></h3>
+                            <h3>Location: <small id="ipLocation"></small></h3>
+                            <h3>Org: <small id="ipOrg"></small></h3>
+                            <h3>City: <small id="ipCity"></small></h3>
+                            <h3>Region: <small id="ipRegion"></small></h3>
+                            <h3>Country: <small id="ipCountry"></small></h3>
+                            <h3>Phone: <small id="ipPhone"></small></h3>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END IP Modal -->
+             <!-- Modal for Plex Token -->
+            <div id="plexModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title"><?php echo translate("GET_PLEX_TOKEN"); ?></h4>
+                        </div>
+                        <div class="modal-body">
+                            <div style="display:none" id="plexError" class=""></div>
+                            <input class="form-control material" placeholder="<?php echo translate("USERNAME"); ?>" type="text" name="plex_username" id="plex_username" value="<?php echo PLEXUSERNAME;?>">
+                            <input class="form-control material" placeholder="<?php echo translate("PASSWORD"); ?>" type="password" name="plex_password" id="plex_password" value="<?php echo PLEXPASSWORD;?>">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves" data-dismiss="modal"><?php echo translate("CLOSE"); ?></button>
+                            <button id="getPlexToken" type="button" class="btn btn-success waves waves-effect waves-float"><?php echo translate("GET_PLEX_TOKEN"); ?></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END IP Modal -->
 
         </div>
 		 <?php if(isset($_POST['op'])) : ?>
@@ -2346,6 +2397,69 @@ echo buildSettings(
         <?php endif; ?>
 
 		<script>
+            //IP INFO
+            $(".ipInfo").click(function(){
+                $.getJSON("https://ipinfo.io/"+$(this).text()+"/?token=<?php echo IPINFOTOKEN;?>", function (response) {
+                    $('#ipModal').modal('show');
+                    $('#ipIp').text("IP Info for: "+response.ip);
+                    $('#ipHostname').text(response.hostname);
+                    $('#ipLocation').text(response.loc);
+                    $('#ipOrg').text(response.org);
+                    $('#ipCity').text(response.city);
+                    $('#ipRegion').text(response.region);
+                    $('#ipCountry').text(response.country);
+                    $('#ipPhone').text(response.phone);
+                    console.log(response);
+                });
+            });
+            // Plex.tv auth token fetch
+            $("#openPlexModal").click(function() {
+                $('#plexModal').modal('show');
+            });
+            $("#getPlexToken").click(function() {
+                $('#plexError').show();
+                $('#plexError').addClass("well well-sm yellow-bg");
+                $('#plexError').text("Grabbing Token");
+                var plex_username = $("#plex_username").val().trim();
+                var plex_password = $("#plex_password").val().trim();
+                if ((plex_password !== '') && (plex_password !== '')) {
+                    $.ajax({
+                        type: 'POST',
+                        headers: {
+                            'X-Plex-Product':'Organizr',
+                            'X-Plex-Version':'1.0',
+                            'X-Plex-Client-Identifier':'01010101-10101010'
+                        },
+                        url: 'https://plex.tv/users/sign_in.json',
+                        data: {
+                            'user[login]': plex_username,
+                            'user[password]': plex_password,
+                            force: true
+                        },
+                        cache: false,
+                        async: true,
+                        complete: function(xhr, status) {
+                            var result = $.parseJSON(xhr.responseText);
+                            if (xhr.status === 201) {
+                                $('#plexError').removeClass();
+                                $('#plexError').addClass("well well-sm green-bg");
+                                $('#plexError').show();
+                                $('#plexError').text(xhr.statusText);
+                                $("#plexToken_id").val(result.user.authToken);
+                                $("#plexToken_id").attr('data-changed', 'true');
+                                $('#plexModal').modal('hide');
+                            } else {
+                                $('#plexError').removeClass();
+                                $('#plexError').addClass("well well-sm red-bg");
+                                $('#plexError').show();
+                                $('#plexError').text(xhr.statusText);
+                            }
+                        }
+                    });
+                } else {
+                    $('#plexError').text("Enter Username and Password");
+                }
+            });
 			function performUpdate(){
 				$('#updateStatus').show();
 				setTimeout(function(){
@@ -2985,8 +3099,8 @@ echo buildSettings(
             $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')
             //Enable Tooltips
             $('[data-toggle="tooltip"]').tooltip(); 
-        	   //AJAX call to github to get version info	
-			         <?php if (GIT_CHECK) { echo 'checkGithub()'; } ?>
+            //AJAX call to github to get version info	
+			<?php if (GIT_CHECK) { echo 'checkGithub()'; } ?>
 
             //Edit Info tab with Github info
             <?php if(file_exists(FAIL_LOG)) : ?>

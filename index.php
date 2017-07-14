@@ -291,12 +291,12 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
         }.bottom-bnts {
 
-            background-color: <?=$bottombar;?> !important;
+            background: <?=$bottombar;?> !important;
 
         }.gn-menu-main {
 
 
-            background-color: <?=$topbar;?>;
+            background: <?=$topbar;?>;
 
         }.gn-menu-main ul.gn-menu {
 
@@ -369,7 +369,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             background-size: 0 2px,100% 1px;
             background-repeat: no-repeat;
             background-position: center bottom,center calc(100% - 1px);
-            background-color: transparent;
+            background: transparent;
             box-shadow: none;
 
         }.gn-menu li.active i.fa {
@@ -398,7 +398,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
         }div#preloader {
 
-            background-color: <?=$loading;?>;
+            background: <?=$loading;?>;
 
         }.iframe {
 
@@ -1042,7 +1042,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             </div>
         </div>
         <?php endif; endif;?>
-		<?php if ($inviteCode){ ?>
+		<?php if(isset($_GET['inviteCode'])){ ?>
 		<div id="inviteSet" class="login-modal modal fade">
 			<div style="background:<?=$sidebar;?>;" class="table-wrapper">
 				<div class="table-row">
@@ -1220,7 +1220,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             User.processRegistration();
         });
         $("#editInfo").click(function(){
-
             $( "div[id^='editInfoDiv']" ).toggle();
             $( "div[id^='buttonsDiv']" ).toggle();
         });
@@ -1281,11 +1280,10 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             	cta(e1, e2, {relativeToWindow: true}, function () {
                 $('.login-modal').modal("show");
             });
-
             e.preventDefault();
         });
 		//InviteCode
-		<?php if($inviteCode){ ?>
+		<?php if(isset($_GET['inviteCode'])){ ?>
 		$('#inviteSet').modal("show");	
 		<?php } ?>
 
@@ -1408,6 +1406,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             $("li[class^='tab-item active']").first().find("img").addClass("TabOpened");
             if (defaultTab){
                 defaultTab = defaultTab.substr(0, defaultTab.length-1);
+                console.log(defaultTab);
             }else{
                 defaultTabNone = $("li[class^='tab-item']").attr("id");
                 if (defaultTabNone){
@@ -1418,8 +1417,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             }
 
             if (defaultTab){
-
-                $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
+                defaultTabName = $("li[class^='tab-item active']").attr("name");
+                $("#content").html('<div class="iframe active" data-content-name="'+defaultTabName+'" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
                 document.getElementById('main-wrapper').focus();
             }
             if (defaultTab == null){

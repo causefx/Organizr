@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.40');
+ define('INSTALLEDVERSION', '1.401');
 // ===================================
 
 // Debugging output functions
@@ -225,7 +225,7 @@ if (function_exists('curl_version')) :
 					}
 				}
 			}else{
-				writeLog("error", "$username is not an authorized user or entered invalid password");
+				writeLog("error", "$username is not an authorized PLEX user or entered invalid password");
 			}
 		}else{
   			writeLog("error", "error occured logging into plex might want to check curl.cainfo=/path/to/downloaded/cacert.pem in php.ini");   
@@ -892,7 +892,7 @@ function outputNowPlaying($header, $size, $type, $items, $script = false) {
 	if (!count($items)) {
 		return '<div id=streamz></div>'.($script?'<script>'.$script.'</script>':'');
 	}else{
-	   return '<div id=streamz><h5 class="text-center">'.$header.'</h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
+	   return '<div id=streamz><h5 class="zero-m big-box"><strong>'.$header.'</strong></h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
  }
     
 }
@@ -2674,19 +2674,30 @@ function explosion($string, $position){
 }
 
 function getServerPath() {
-    
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
-        
+	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https"){
+		$protocol = "https://";
+	}elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
         $protocol = "https://"; 
-    
     } else {  
-        
         $protocol = "http://"; 
-    
     }
-    
-    return $protocol . $_SERVER['SERVER_NAME'] . dirname($_SERVER['REQUEST_URI']);
-      
+	$domain = '';
+    if (isset($_SERVER['SERVER_NAME']) && $_SERVER['SERVER_NAME'] != "_"){
+        $domain = $_SERVER['SERVER_NAME'];
+	}elseif(isset($_SERVER['HTTP_HOST'])){
+		if (strpos($_SERVER['HTTP_HOST'], ':') !== false) {
+			$domain = explode(':', $_SERVER['HTTP_HOST'])[0];
+			$port = explode(':', $_SERVER['HTTP_HOST'])[1];
+			if ($port == "80" || $port == "443"){
+				$domain = $domain;
+			}else{
+				$domain = $_SERVER['HTTP_HOST'];
+			}
+		}else{
+        	$domain = $_SERVER['HTTP_HOST'];
+		}
+	}
+    return $protocol . $domain . dirname($_SERVER['REQUEST_URI']);
 }
 
 function get_browser_name() {
@@ -2723,7 +2734,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
     
@@ -2740,7 +2751,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
     
@@ -2757,7 +2768,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
     
@@ -2774,7 +2785,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
 
@@ -2795,7 +2806,7 @@ function getSickrageCalendarHistory($array){
             $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['date'];
             $downloaded = "green-bg";
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
 
@@ -2825,7 +2836,7 @@ function getSonarrCalendar($array){
         $downloaded = $child['hasFile'];
         if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "light-blue-bg"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
         
-        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
 
@@ -2865,7 +2876,7 @@ function getRadarrCalendar($array){
             
             }
                         
-            $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded\", imagetype: \"film\", url: \"https://www.themoviedb.org/movie/$movieID\" }, \n";
+            $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded movieID--$movieID\", imagetype: \"film\" }, \n";
         }
         
     }
@@ -3320,7 +3331,9 @@ function libraryList(){
 	foreach($api->SharedServer AS $child) {
 		if(!empty($child['username'])){
 			$username = (string)strtolower($child['username']);
+			$email = (string)strtolower($child['email']);
 			$libraryList['users'][$username] = (string)$child['id'];
+			$libraryList['emails'][$email] = (string)$child['id'];
 		}
     }
     return (!empty($libraryList) ? array_change_key_case($libraryList,CASE_LOWER) : null );
@@ -3375,7 +3388,7 @@ function plexUserDelete($username){
 	);
 	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
     if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
-	$id = convertPlexName($username, "id");
+	$id = (is_numeric($username) ? $id : convertPlexName($username, "id"));
 	
 	$api = curl_delete("https://plex.tv/api/servers/$gotServer/shared_servers/$id", $headers);
 	
@@ -3544,6 +3557,426 @@ function customCSS(){
 		fclose($file_handle);
 		echo "\n";
 	}
+}
+
+function tvdbToken(){
+	$headers = array(
+		"Accept" => "application/json", 
+		"Content-Type" => "application/json"
+	);
+	$json = array(
+		"apikey" => "FBE7B62621F4CAD7",
+         "userkey" => "328BB46EB1E9A0F5",
+         "username" => "causefx"
+	);
+	$api = curl_post("https://api.thetvdb.com/login", $json, $headers);
+    return json_decode($api['content'], true)['token'];
+}
+
+function tvdbGet($id){
+	$headers = array(
+		"Accept" => "application/json", 
+		"Authorization" => "Bearer ".tvdbToken()
+	);
+
+	$series = curl_get("https://api.thetvdb.com/series/$id", $headers);
+	$poster = curl_get("https://api.thetvdb.com/series/$id/images/query?keyType=poster", $headers);
+	$backdrop = curl_get("https://api.thetvdb.com/series/$id/images/query?keyType=fanart", $headers);
+	$api['series'] = json_decode($series, true)['data'];
+	$api['poster'] = json_decode($poster, true)['data'];
+	$api['backdrop'] = json_decode($backdrop, true)['data'];
+
+	return $api;
+}
+
+function orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){
+	return '
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <!--[if gte mso 9]><xml>
+<o:OfficeDocumentSettings>
+<o:AllowPNG/>
+<o:PixelsPerInch>96</o:PixelsPerInch>
+</o:OfficeDocumentSettings>
+</xml><![endif]-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width">
+    <!--[if !mso]><!-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<![endif]-->
+    <title></title>
+    <!--[if !mso]><!-- -->
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+    <!--<![endif]-->
+    <style type="text/css" id="media-query">
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        table,
+        tr,
+        td {
+            vertical-align: top;
+            border-collapse: collapse;
+        }
+        .ie-browser table,
+        .mso-container table {
+            table-layout: fixed;
+        }
+        * {
+            line-height: inherit;
+        }
+        a[x-apple-data-detectors=true] {
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+        [owa] .img-container div,
+        [owa] .img-container button {
+            display: block !important;
+        }
+        [owa] .fullwidth button {
+            width: 100% !important;
+        }
+        [owa] .block-grid .col {
+            display: table-cell;
+            float: none !important;
+            vertical-align: top;
+        }
+        .ie-browser .num12,
+        .ie-browser .block-grid,
+        [owa] .num12,
+        [owa] .block-grid {
+            width: 615px !important;
+        }
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+        .ie-browser .mixed-two-up .num4,
+        [owa] .mixed-two-up .num4 {
+            width: 204px !important;
+        }
+        .ie-browser .mixed-two-up .num8,
+        [owa] .mixed-two-up .num8 {
+            width: 408px !important;
+        }
+        .ie-browser .block-grid.two-up .col,
+        [owa] .block-grid.two-up .col {
+            width: 307px !important;
+        }
+        .ie-browser .block-grid.three-up .col,
+        [owa] .block-grid.three-up .col {
+            width: 205px !important;
+        }
+        .ie-browser .block-grid.four-up .col,
+        [owa] .block-grid.four-up .col {
+            width: 153px !important;
+        }
+        .ie-browser .block-grid.five-up .col,
+        [owa] .block-grid.five-up .col {
+            width: 123px !important;
+        }
+        .ie-browser .block-grid.six-up .col,
+        [owa] .block-grid.six-up .col {
+            width: 102px !important;
+        }
+        .ie-browser .block-grid.seven-up .col,
+        [owa] .block-grid.seven-up .col {
+            width: 87px !important;
+        }
+        .ie-browser .block-grid.eight-up .col,
+        [owa] .block-grid.eight-up .col {
+            width: 76px !important;
+        }
+        .ie-browser .block-grid.nine-up .col,
+        [owa] .block-grid.nine-up .col {
+            width: 68px !important;
+        }
+        .ie-browser .block-grid.ten-up .col,
+        [owa] .block-grid.ten-up .col {
+            width: 61px !important;
+        }
+        .ie-browser .block-grid.eleven-up .col,
+        [owa] .block-grid.eleven-up .col {
+            width: 55px !important;
+        }
+        .ie-browser .block-grid.twelve-up .col,
+        [owa] .block-grid.twelve-up .col {
+            width: 51px !important;
+        }
+        @media only screen and (min-width: 635px) {
+            .block-grid {
+                width: 615px !important;
+            }
+            .block-grid .col {
+                display: table-cell;
+                Float: none !important;
+                vertical-align: top;
+            }
+            .block-grid .col.num12 {
+                width: 615px !important;
+            }
+            .block-grid.mixed-two-up .col.num4 {
+                width: 204px !important;
+            }
+            .block-grid.mixed-two-up .col.num8 {
+                width: 408px !important;
+            }
+            .block-grid.two-up .col {
+                width: 307px !important;
+            }
+            .block-grid.three-up .col {
+                width: 205px !important;
+            }
+            .block-grid.four-up .col {
+                width: 153px !important;
+            }
+            .block-grid.five-up .col {
+                width: 123px !important;
+            }
+            .block-grid.six-up .col {
+                width: 102px !important;
+            }
+            .block-grid.seven-up .col {
+                width: 87px !important;
+            }
+            .block-grid.eight-up .col {
+                width: 76px !important;
+            }
+            .block-grid.nine-up .col {
+                width: 68px !important;
+            }
+            .block-grid.ten-up .col {
+                width: 61px !important;
+            }
+            .block-grid.eleven-up .col {
+                width: 55px !important;
+            }
+            .block-grid.twelve-up .col {
+                width: 51px !important;
+            }
+        }
+        @media (max-width: 635px) {
+            .block-grid,
+            .col {
+                min-width: 320px !important;
+                max-width: 100% !important;
+            }
+            .block-grid {
+                width: calc(100% - 40px) !important;
+            }
+            .col {
+                width: 100% !important;
+            }
+            .col>div {
+                margin: 0 auto;
+            }
+            img.fullwidth {
+                max-width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body class="clean-body" style="margin: 0;padding: 0;-webkit-text-size-adjust: 100%;background-color: #FFFFFF">
+    <!--[if IE]><div class="ie-browser"><![endif]-->
+    <!--[if mso]><div class="mso-container"><![endif]-->
+    <div class="nl-container" style="min-width: 320px;Margin: 0 auto;background-color: #FFFFFF">
+        <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="background-color: #FFFFFF;"><![endif]-->
+        <div style="background-color:#333333;">
+            <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+                class="block-grid ">
+                <div style="border-collapse: collapse;display: table;width: 100%;">
+                    <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#333333;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+                    <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:0px; padding-bottom:0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+                    <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+                        <div style="background-color: transparent; width: 100% !important;">
+                            <!--[if (!mso)&(!IE)]><!-->
+                            <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:0px; padding-bottom:0px; padding-right: 0px; padding-left: 0px;">
+                                <!--<![endif]-->
+                                <div align="left" class="img-container left fullwidth" style="padding-right: 30px;	padding-left: 30px;">
+                                    <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 30px; padding-left: 30px;" align="left"><![endif]-->
+                                    <img class="left fullwidth" align="left" border="0" src="https://sonflix.com/images/organizr-logo-h.png" alt="Image" title="Image"
+                                        style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: 0;height: auto;float: none;width: 100%;max-width: 555px"
+                                        width="555">
+                                    <!--[if mso]></td></tr></table><![endif]-->
+                                </div>
+                                <!--[if (!mso)&(!IE)]><!-->
+                            </div>
+                            <!--<![endif]-->
+                        </div>
+                    </div>
+                    <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+                </div>
+            </div>
+        </div>
+        <div style="background-color:#333333;">
+            <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+                class="block-grid ">
+                <div style="border-collapse: collapse;display: table;width: 100%;">
+                    <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#333333;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+                    <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:0px; padding-bottom:0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+                    <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+                        <div style="background-color: transparent; width: 100% !important;">
+                            <!--[if (!mso)&(!IE)]><!-->
+                            <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:0px; padding-bottom:0px; padding-right: 0px; padding-left: 0px;">
+                                <!--<![endif]-->
+                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;"><![endif]-->
+                                <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#FFFFFF; padding-right: 0px; padding-left: 0px; padding-top: 0px; padding-bottom: 0px;">
+                                    <div style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                                        <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center"><span style="font-size: 16px; line-height: 19px;"><strong><span style="line-height: 19px; font-size: 16px;">'.$header.'</span></strong>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <!--[if mso]></td></tr></table><![endif]-->
+                                <!--[if (!mso)&(!IE)]><!-->
+                            </div>
+                            <!--<![endif]-->
+                        </div>
+                    </div>
+                    <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+                </div>
+            </div>
+        </div>
+        <div style="background-color:#393939;">
+            <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+                class="block-grid ">
+                <div style="border-collapse: collapse;display: table;width: 100%;">
+                    <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#393939;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+                    <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+                    <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+                        <div style="background-color: transparent; width: 100% !important;">
+                            <!--[if (!mso)&(!IE)]><!-->
+                            <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 0px; padding-left: 0px;">
+                                <!--<![endif]-->
+                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 30px; padding-left: 30px; padding-top: 0px; padding-bottom: 0px;"><![endif]-->
+                                <div style="font-family:\'Ubuntu\', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#FFFFFF; padding-right: 30px; padding-left: 30px; padding-top: 0px; padding-bottom: 0px;">
+                                    <div style="font-family:Ubuntu, Tahoma, Verdana, Segoe, sans-serif;font-size:12px;line-height:14px;color:#FFFFFF;text-align:left;">
+                                        <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center"><span style="font-size: 16px; line-height: 19px;"><strong>'.$title.'</strong></span></p>
+                                    </div>
+                                </div>
+                                <!--[if mso]></td></tr></table><![endif]-->
+                                <div style="padding-right: 5px; padding-left: 5px; padding-top: 5px; padding-bottom: 5px;">
+                                    <!--[if (mso)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 5px;padding-left: 5px; padding-top: 5px; padding-bottom: 5px;"><table width="55%" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+                                    <div align="center">
+                                        <div style="border-top: 2px solid #66D9EF; width:55%; line-height:2px; height:2px; font-size:2px;">&#160;</div>
+                                    </div>
+                                    <!--[if (mso)]></td></tr></table></td></tr></table><![endif]-->
+                                </div>
+                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 30px; padding-left: 30px; padding-top: 15px; padding-bottom: 10px;"><![endif]-->
+                                <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#FFFFFF; padding-right: 30px; padding-left: 30px; padding-top: 15px; padding-bottom: 10px;">
+                                    <div style="font-family:\'Lato\',Tahoma,Verdana,Segoe,sans-serif;font-size:12px;line-height:14px;color:#FFFFFF;text-align:left;">
+                                        <p style="margin: 0;font-size: 12px;line-height: 14px"><span style="font-size: 28px; line-height: 33px;">Hey '.$user.',</span></p>
+                                    </div>
+                                </div>
+                                <!--[if mso]></td></tr></table><![endif]-->
+                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 15px; padding-left: 30px; padding-top: 10px; padding-bottom: 25px;"><![endif]-->
+                                <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:180%;color:#FFFFFF; padding-right: 15px; padding-left: 30px; padding-top: 10px; padding-bottom: 25px;">
+                                    <div style="font-size:12px;line-height:22px;font-family:\'Lato\',Tahoma,Verdana,Segoe,sans-serif;color:#FFFFFF;text-align:left;">
+                                        <p style="margin: 0;font-size: 14px;line-height: 25px"><span style="font-size: 18px; line-height: 32px;"><em><span style="line-height: 32px; font-size: 18px;">'.$mainMessage.'</span></em>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <!--[if mso]></td></tr></table><![endif]-->
+                                <div align="center" class="button-container center" style="padding-right: 30px; padding-left: 30px; padding-top:15px; padding-bottom:15px;">
+                                    <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"><tr><td style="padding-right: 30px; padding-left: 30px; padding-top:15px; padding-bottom:15px;" align="center"><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://sonflix.com" style="height:48px; v-text-anchor:middle; width:194px;" arcsize="53%" strokecolor="" fillcolor="#66D9EF"><w:anchorlock/><center style="color:#000; font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif; font-size:18px;"><![endif]-->
+                                    <a href="'.$buttonURL.'" target="_blank" style="display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #000; background-color: #66D9EF; border-radius: 25px; -webkit-border-radius: 25px; -moz-border-radius: 25px; max-width: 180px; width: 114px; width: auto; border-top: 3px solid transparent; border-right: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 3px solid transparent; padding-top: 5px; padding-right: 30px; padding-bottom: 5px; padding-left: 30px; font-family: \'Lato\', Tahoma, Verdana, Segoe, sans-serif;mso-border-alt: none">
+<span style="font-size:12px;line-height:21px;"><span style="font-size: 18px; line-height: 32px;" data-mce-style="font-size: 18px; line-height: 44px;">'.$button.'</span></span></a>
+                                    <!--[if mso]></center></v:roundrect></td></tr></table><![endif]-->
+                                </div>
+                                <!--[if mso]></center></v:roundrect></td></tr></table><![endif]-->
+                            </div>
+                            <!--[if (!mso)&(!IE)]><!-->
+                        </div>
+                        <!--<![endif]-->
+                    </div>
+                </div>
+                <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+            </div>
+        </div>
+    </div>
+    <div style="background-color:#ffffff;">
+        <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+            class="block-grid ">
+            <div style="border-collapse: collapse;display: table;width: 100%;">
+                <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#ffffff;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+                <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:30px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+                <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+                    <div style="background-color: transparent; width: 100% !important;">
+                        <!--[if (!mso)&(!IE)]><!-->
+                        <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:30px; padding-right: 0px; padding-left: 0px;">
+                            <!--<![endif]-->
+                            <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 10px;"><![endif]-->
+                            <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#555555; padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 10px;">
+                                <div style="font-size:12px;line-height:14px;color:#555555;font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                                    <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: center"><strong><span style="font-size: 26px; line-height: 31px;">'.$subTitle.'<br></span></strong></p>
+                                </div>
+                            </div>
+                            <!--[if mso]></td></tr></table><![endif]-->
+                            <div style="padding-right: 20px; padding-left: 20px; padding-top: 15px; padding-bottom: 20px;">
+                                <!--[if (mso)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 20px;padding-left: 20px; padding-top: 15px; padding-bottom: 20px;"><table width="40%" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+                                <div align="center">
+                                    <div style="border-top: 3px solid #66D9EF; width:40%; line-height:3px; height:3px; font-size:3px;">&#160;</div>
+                                </div>
+                                <!--[if (mso)]></td></tr></table></td></tr></table><![endif]-->
+                            </div>
+                            <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 0px;"><![endif]-->
+                            <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:180%;color:#7E7D7D; padding-right: 10px; padding-left: 10px; padding-top: 0px; padding-bottom: 0px;">
+                                <div style="font-size:12px;line-height:22px;color:#7E7D7D;font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                                    <p style="margin: 0;font-size: 14px;line-height: 25px;text-align: center"><em><span style="font-size: 18px; line-height: 32px;">'.$subMessage.'</span></em></p>
+                                </div>
+                            </div>
+                            <!--[if mso]></td></tr></table><![endif]-->
+                            <!--[if (!mso)&(!IE)]><!-->
+                        </div>
+                        <!--<![endif]-->
+                    </div>
+                </div>
+                <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+            </div>
+        </div>
+    </div>
+    <div style="background-color:#333333;">
+        <div style="Margin: 0 auto;min-width: 320px;max-width: 615px;width: 615px;width: calc(30500% - 193060px);overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+            class="block-grid ">
+            <div style="border-collapse: collapse;display: table;width: 100%;">
+                <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#333333;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 615px;"><tr class="layout-full-width" style="background-color:transparent;"><![endif]-->
+                <!--[if (mso)|(IE)]><td align="center" width="615" style=" width:615px; padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
+                <div class="col num12" style="min-width: 320px;max-width: 615px;width: 615px;width: calc(29500% - 180810px);background-color: transparent;">
+                    <div style="background-color: transparent; width: 100% !important;">
+                        <!--[if (!mso)&(!IE)]><!-->
+                        <div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 0px; padding-left: 0px;">
+                            <!--<![endif]-->
+                            <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;"><![endif]-->
+                            <div style="font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;line-height:120%;color:#959595; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
+                                <div style="font-size:12px;line-height:14px;color:#959595;font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                                    <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: center">This&#160;email was sent by <a style="color:#AD80FD;text-decoration: underline;" title="Organizr"
+                                            href="https://github.com/causefx/Organizr" target="_blank" rel="noopener noreferrer">Organizr</a><strong><br></strong></p>
+                                </div>
+                            </div>
+                            <!--[if mso]></td></tr></table><![endif]-->
+                            <!--[if (!mso)&(!IE)]><!-->
+                        </div>
+                        <!--<![endif]-->
+                    </div>
+                </div>
+                <!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]-->
+            </div>
+        </div>
+    </div>
+    <!--[if (mso)|(IE)]></td></tr></table><![endif]-->
+    </div>
+    <!--[if (mso)|(IE)]></div><![endif]-->
+</body>
+</html>
+	';
 }
 
 // Always run this

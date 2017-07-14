@@ -68,7 +68,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         <script src="bower_components/slick/slick.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
-	       <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
+	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
 		
 		<!--Other-->
 		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
@@ -78,6 +78,9 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
         <![endif]-->
         <style>
+            .fc-day-grid-event{
+                cursor: pointer;
+            }
             .recentItems {
                 padding-top: 10px;
                 margin: 5px 0;
@@ -492,6 +495,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         });
 		$('#clearSearch').click(function(e){
             $('#searchInput').val("");
+            $('#resultshere').html("");
             $('#searchInput').focus();
             e.preventDefault();
         });
@@ -521,6 +525,14 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
 		
         $( document ).ready(function() {
             $('#plexSearchForm').on('submit', function () {
+                var refreshBox = $(this).closest('div.content-box');
+                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
+                setTimeout(function(){
+                    var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                    deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+                        refreshPreloader.remove();
+                    });
+                },1000);
                 ajax_request('POST', 'search-plex', {
                     searchtitle: $('#plexSearchForm [name=search-title]').val(),
                 }).done(function(data){ $('#resultshere').html(data);});
@@ -791,17 +803,112 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
             $('#imagetype_selector').on('change',function(){
                 $('#calendar').fullCalendar('rerenderEvents');
             })
-            var $divs = $("div.row");
-
-            $('#numBnt').on('click', function () {
-                var numericallyOrderedDivs = $divs.sort(function (a, b) {
-                    return $(a).find("sort").text() > $(b).find("sort").text();
-                });
-                $("#content").html(numericallyOrderedDivs);
+                        $('td[class*=fc-event-container]').on('click tap', function(){
+                console.log("hmmm");
             });
         </script>
         <?php } ?>
+        <script>
+            function convertTime(a){
+                var hours = Math.trunc(a/60);
+                var minutes = a % 60;
+                return hours+"h "+minutes+"m";
+            }
+            function convertArray(a, type){
+                var result = "";
+                var count = 1;
+                var color = "";
+                $.each( a, function( key, value ) {
+                    if (count == 1){ color = "gray"; }else{ color = "gray"; }
+                    if(type == "MOVIE"){
+                        result += '<span class="label label-'+color+'">'+value['name']+'</span>&nbsp;';
+                    }else if(type == "TV"){
+                        result += '<span class="label label-'+color+'">'+value+'</span>&nbsp;';
+                    }
+                    count++;
+                });
+                return result;
+            }
+            function whatIsIt(a){
+                var what = Object.prototype.toString;
+                if(what.call(a) == "[object Array]"){
+                    return a[0].fileName;
+                }else if(what.call(a) == "[object Object]"){
+                    return a.fileName;
+                }
+            }
+            $(document).on('click', "a[class*=ID-]", function(){
+                var check = $(this).attr("class");
+                var ID = check.split("--")[1];
+                if (~check.indexOf("tvID")){
+                    var type = "TV";
+                    ajax_request('POST', 'tvdb-get', {
+                        id: ID,
+                    }).done(function(data){ 
+                        $('#calendarTitle').text(data.series.seriesName);
+                        $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+data.series.siteRating+'</span>&nbsp');
+                        $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(data.series.runtime)+'</span>&nbsp;');
+                        $('#calendarSummary').text(data.series.overview);
+                        $('#calendarTagline').text("");
+                        $('#calendarGenres').html(convertArray(data.series.genre, "TV"));
+                        $('#calendarLang').html("");
+                        $('#calendarPoster').attr("src","ajax.php?a=show-image&image=http://thetvdb.com/banners/"+whatIsIt(data.poster));
+                        $('#calendarMain').attr("style","background-size: 1000px 563px; background-image: url(ajax.php?a=show-image&image=http://thetvdb.com/banners/"+whatIsIt(data.backdrop)+");background-position: center;-webkit-filter: brightness(50%) contrast(100%);filter: brightness(50%) contrast(100%);top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                        $('#calendarExtra').modal('show');
+                        });
+                }else if (~check.indexOf("movieID")){
+                    var type = "MOVIE";
+                    $.ajax({
+                        type: 'GET',
+                        url: 'https://api.themoviedb.org/3/movie/'+ID+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1',
+                        cache: true,
+                        async: true,
+                        complete: function(xhr, status) {
+                            var result = $.parseJSON(xhr.responseText);
+                            if (xhr.statusText === "OK") {
+                                $('#calendarTitle').text(result.title);
+                                $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
+                                $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(result.runtime)+'</span>&nbsp;');
+                                $('#calendarSummary').text(result.overview);
+                                $('#calendarTagline').text(result.tagline);
+                                $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
+                                $('#calendarLang').html(convertArray(result.spoken_languages, "MOVIE"));
+                                $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
+                                $('#calendarMain').attr("style","background-image: url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");background-position: center;-webkit-filter: brightness(50%) contrast(100%);filter: brightness(50%) contrast(100%);top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                                $('#calendarExtra').modal('show');
+                            }
+                        }
+                    });
+                }
+            });
+        </script>
+        <div id="calendarExtra" class="modal fade in" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg gray-bg" role="document">
+                <div class="modal-content">
+                    <div class="modal-content" id="calendarMain"></div>
+                   <div style="position: inherit; padding: 15px">
+                        <span id="calendarRuntime" class="pull-left"></span>
+                        <span id="calendarRating" class="pull-left"></span>
+                        <span id="calendarGenres" class="pull-right"></span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-4 col-sm-5">
+                                <img style="border-radius: 10px;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" id="calendarPoster" src="" height="300px;">
+                            </div>
+                            <div class="col-lg-8 col-sm-7">
+                                <h2 id="calendarTitle" class="modal-title text-center">Modal title</h2>
+                                <h6 id="calendarTagline" class="modal-title text-center"><em>Modal title</em></h6>
+                                <p id="calendarSummary">Modal Summary</p>
+                            </div>
+                        </div>
+                    </div>
+                   <div style="position: inherit; padding: 10px 15px 30px 15px; margin-top: -20px;">
+                        <span id="calendarLang" class="pull-right"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </body>
-
 </html>
