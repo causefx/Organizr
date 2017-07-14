@@ -829,6 +829,17 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                 });
                 return result;
             }
+            function convertTrailer(a){
+                var result = "";
+                var count = 1;
+                $.each( a.results, function( key, value ) {
+                    if (count == 1){
+                        result += '<span id="openTrailer" style="cursor:pointer" data-key="'+value['key']+'" data-name="'+value['name']+'" data-site="'+value['site']+'" class="label label-danger">YouTube Trailer</span>&nbsp;';
+                    }
+                    count++;
+                });
+                return result;
+            }
             function whatIsIt(a){
                 var what = Object.prototype.toString;
                 if(what.call(a) == "[object Array]"){
@@ -845,6 +856,11 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                     return a;
                 }
             }
+            $(document).on('click', "#openTrailer", function(){
+                var key = $(this).attr("data-key");
+                $('#iFrameYT').html('<iframe id="calendarYoutube" class="embed-responsive-item" src="https://www.youtube.com/embed/'+key+'" allowfullscreen=""></iframe>');
+                $('#calendarVideo').modal('show');
+            });
             $(document).on('click', "a[class*=ID-]", function(){
                 $('#calendarExtra').modal('show');
                 var refreshBox = $('#calendarMainID');
@@ -865,7 +881,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                         if( data.trakt ) {                        
                             $.ajax({
                                 type: 'GET',
-                                url: 'https://api.themoviedb.org/3/tv/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1',
+                                url: 'https://api.themoviedb.org/3/tv/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos',
                                 cache: true,
                                 async: true,
                                 complete: function(xhr, status) {
@@ -877,6 +893,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                                         $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(whatWasIt(result.episode_run_time))+'</span>&nbsp;');
                                         $('#calendarSummary').text(result.overview);
                                         $('#calendarTagline').text("");
+                                        $('#calendarTrailer').html(convertTrailer(result.videos));
                                         $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
                                         $('#calendarLang').html(convertArray(result.languages, "TV"));
                                         $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
@@ -891,6 +908,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                             $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(data.series.runtime)+'</span>&nbsp;');
                             $('#calendarSummary').text(data.series.overview);
                             $('#calendarTagline').text("");
+                            $('#calendarTrailer').html("");
                             $('#calendarGenres').html(convertArray(data.series.genre, "TV"));
                             $('#calendarLang').html("");
                             $('#calendarPoster').attr("src","https://thetvdb.com/banners/_cache/"+whatIsIt(data.poster));
@@ -902,17 +920,19 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                     var type = "MOVIE";
                     $.ajax({
                         type: 'GET',
-                        url: 'https://api.themoviedb.org/3/movie/'+ID+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1',
+                        url: 'https://api.themoviedb.org/3/movie/'+ID+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos',
                         cache: true,
                         async: true,
                         complete: function(xhr, status) {
                             var result = $.parseJSON(xhr.responseText);
+                            console.log(result);
                             if (xhr.statusText === "OK") {
                                 $('#calendarTitle').text(result.title);
                                 $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
                                 $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(result.runtime)+'</span>&nbsp;');
                                 $('#calendarSummary').text(result.overview);
                                 $('#calendarTagline').text(result.tagline);
+                                $('#calendarTrailer').html(convertTrailer(result.videos));
                                 $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
                                 $('#calendarLang').html(convertArray(result.spoken_languages, "MOVIE"));
                                 $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
@@ -946,7 +966,18 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                         </div>
                     </div>
                    <div style="position: inherit; padding: 10px 15px 30px 15px; margin-top: -20px;">
+                        <span id="calendarTrailer" class="pull-right"></span>
                         <span id="calendarLang" class="pull-right"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="calendarVideo" class="modal fade in palette-Grey-900 bg" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg gray-bg" role="document">
+                <div id="calendarMainVideo" class="modal-content gray-bg">
+                    <div class="">
+                        <!-- 16:9 aspect ratio -->
+                        <div id="iFrameYT" class="embed-responsive embed-responsive-16by9 gray-bg"></div>
                     </div>
                 </div>
             </div>
