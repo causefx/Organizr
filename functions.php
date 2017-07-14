@@ -2734,7 +2734,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
     
@@ -2751,7 +2751,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
     
@@ -2768,7 +2768,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
     
@@ -2785,7 +2785,7 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
 
@@ -2806,7 +2806,7 @@ function getSickrageCalendarHistory($array){
             $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['date'];
             $downloaded = "green-bg";
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
 
@@ -2836,7 +2836,7 @@ function getSonarrCalendar($array){
         $downloaded = $child['hasFile'];
         if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "light-blue-bg"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
         
-        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded\", imagetype: \"tv\", url: \"https://thetvdb.com/?tab=series&id=$episodeID\" }, \n";
+        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
         
     }
 
@@ -2876,7 +2876,7 @@ function getRadarrCalendar($array){
             
             }
                         
-            $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded\", imagetype: \"film\", url: \"https://www.themoviedb.org/movie/$movieID\" }, \n";
+            $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded movieID--$movieID\", imagetype: \"film\" }, \n";
         }
         
     }
@@ -3557,6 +3557,36 @@ function customCSS(){
 		fclose($file_handle);
 		echo "\n";
 	}
+}
+
+function tvdbToken(){
+	$headers = array(
+		"Accept" => "application/json", 
+		"Content-Type" => "application/json"
+	);
+	$json = array(
+		"apikey" => "FBE7B62621F4CAD7",
+         "userkey" => "328BB46EB1E9A0F5",
+         "username" => "causefx"
+	);
+	$api = curl_post("https://api.thetvdb.com/login", $json, $headers);
+    return json_decode($api['content'], true)['token'];
+}
+
+function tvdbGet($id){
+	$headers = array(
+		"Accept" => "application/json", 
+		"Authorization" => "Bearer ".tvdbToken()
+	);
+
+	$series = curl_get("https://api.thetvdb.com/series/$id", $headers);
+	$poster = curl_get("https://api.thetvdb.com/series/$id/images/query?keyType=poster", $headers);
+	$backdrop = curl_get("https://api.thetvdb.com/series/$id/images/query?keyType=fanart", $headers);
+	$api['series'] = json_decode($series, true)['data'];
+	$api['poster'] = json_decode($poster, true)['data'];
+	$api['backdrop'] = json_decode($backdrop, true)['data'];
+
+	return $api;
 }
 
 function orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){

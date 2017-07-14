@@ -67,6 +67,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				echo nzbgetConnect($_GET['list'] ? $_GET['list'] : die('Error!'));
 				die();
 				break;
+			case 'show-image':
+				qualifyUser(NZBGETHOMEAUTH, true);
+				header('Content-type: image/jpeg');
+				echo file_get_contents($_GET['image']);
+				die();
+				break;
 			default:
 				sendNotification(false, 'Unsupported Action!');
 		}
@@ -74,7 +80,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
 	case 'POST':
         // Check if the user is an admin and is allowed to commit values
         switch ($action) {
-            case 'search-plex':
+            case 'tvdb-get':
+			 	$response = tvdbGet($_POST['id']);
+			 	break;
+			case 'search-plex':
 			 	$response = searchPlex($_POST['searchtitle']);
 			 	break;
 			case 'validate-invite':
