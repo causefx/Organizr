@@ -3598,6 +3598,7 @@ function tvdbGet($id){
 }
 
 function orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){
+	$path = getServerPath();
 	return '
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -3809,7 +3810,7 @@ function orgEmail($header = "Message From Admin", $title = "Important Message", 
                                 <!--<![endif]-->
                                 <div align="left" class="img-container left fullwidth" style="padding-right: 30px;	padding-left: 30px;">
                                     <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 30px; padding-left: 30px;" align="left"><![endif]-->
-                                    <img class="left fullwidth" align="left" border="0" src="https://sonflix.com/images/organizr-logo-h.png" alt="Image" title="Image"
+                                    <img class="left fullwidth" align="left" border="0" src="'.$path.'images/organizr-logo-h.png" alt="Image" title="Image"
                                         style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: 0;height: auto;float: none;width: 100%;max-width: 555px"
                                         width="555">
                                     <!--[if mso]></td></tr></table><![endif]-->
@@ -3894,7 +3895,7 @@ function orgEmail($header = "Message From Admin", $title = "Important Message", 
                                 </div>
                                 <!--[if mso]></td></tr></table><![endif]-->
                                 <div align="center" class="button-container center" style="padding-right: 30px; padding-left: 30px; padding-top:15px; padding-bottom:15px;">
-                                    <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"><tr><td style="padding-right: 30px; padding-left: 30px; padding-top:15px; padding-bottom:15px;" align="center"><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://sonflix.com" style="height:48px; v-text-anchor:middle; width:194px;" arcsize="53%" strokecolor="" fillcolor="#66D9EF"><w:anchorlock/><center style="color:#000; font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif; font-size:18px;"><![endif]-->
+                                    <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"><tr><td style="padding-right: 30px; padding-left: 30px; padding-top:15px; padding-bottom:15px;" align="center"><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="'.$path.'" style="height:48px; v-text-anchor:middle; width:194px;" arcsize="53%" strokecolor="" fillcolor="#66D9EF"><w:anchorlock/><center style="color:#000; font-family:\'Lato\', Tahoma, Verdana, Segoe, sans-serif; font-size:18px;"><![endif]-->
                                     <a href="'.$buttonURL.'" target="_blank" style="display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #000; background-color: #66D9EF; border-radius: 25px; -webkit-border-radius: 25px; -moz-border-radius: 25px; max-width: 180px; width: 114px; width: auto; border-top: 3px solid transparent; border-right: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 3px solid transparent; padding-top: 5px; padding-right: 30px; padding-bottom: 5px; padding-left: 30px; font-family: \'Lato\', Tahoma, Verdana, Segoe, sans-serif;mso-border-alt: none">
 <span style="font-size:12px;line-height:21px;"><span style="font-size: 18px; line-height: 32px;" data-mce-style="font-size: 18px; line-height: 44px;">'.$button.'</span></span></a>
                                     <!--[if mso]></center></v:roundrect></td></tr></table><![endif]-->
