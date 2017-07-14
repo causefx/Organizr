@@ -478,6 +478,18 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                             <span class="label indigo-bg well-sm">Unreleased</span>
                             <span class="label light-blue-bg well-sm">Premier</span>
                         </div>
+                        <!--
+                        <div class="pull-right">
+                            <div class="btn-group" role="group">
+                            <button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">View All<span class="caret"></span></button>
+                            <ul style="right:0; left: auto" class="dropdown-menu">
+                                <li><a class="" href="javascript:void(0)">Movies</a></li>
+                                <li><a class="" href="javascript:void(0)">TV Shows</a></li>
+                                <li><a class="" href="javascript:void(0)">Music</a></li>
+                            </ul>
+                            </div>
+                        </div>-->
+
                     </div>
                 </div>
                 <div id="calendarRow" class="row">
@@ -803,9 +815,6 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
             $('#imagetype_selector').on('change',function(){
                 $('#calendar').fullCalendar('rerenderEvents');
             })
-                        $('td[class*=fc-event-container]').on('click tap', function(){
-                console.log("hmmm");
-            });
         </script>
         <?php } ?>
         <script>
@@ -834,7 +843,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                 var count = 1;
                 $.each( a.results, function( key, value ) {
                     if (count == 1){
-                        result += '<span id="openTrailer" style="cursor:pointer" data-key="'+value['key']+'" data-name="'+value['name']+'" data-site="'+value['site']+'" class="label label-danger">YouTube Trailer</span>&nbsp;';
+                        result += '<span id="openTrailer" style="cursor:pointer;width: 200px;display: block;" data-key="'+value['key']+'" data-name="'+value['name']+'" data-site="'+value['site']+'" class="label label-danger">Watch Trailer</span>&nbsp;';
                     }
                     count++;
                 });
@@ -966,7 +975,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                         </div>
                     </div>
                    <div style="position: inherit; padding: 10px 15px 30px 15px; margin-top: -20px;">
-                        <span id="calendarTrailer" class="pull-right"></span>
+                        <span id="calendarTrailer" class="pull-left"></span>
                         <span id="calendarLang" class="pull-right"></span>
                     </div>
                 </div>
