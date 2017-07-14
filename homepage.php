@@ -837,7 +837,24 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                     return a.fileName;
                 }
             }
+            function whatWasIt(a){
+                var what = Object.prototype.toString;
+                if(what.call(a) == "[object Array]"){
+                    return a[0];
+                }else if(what.call(a) == "[object Object]"){
+                    return a;
+                }
+            }
             $(document).on('click', "a[class*=ID-]", function(){
+                $('#calendarExtra').modal('show');
+                var refreshBox = $('#calendarMainID');
+                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
+                setTimeout(function(){
+                    var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                    deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+                        refreshPreloader.remove();
+                    });
+                },200);
                 var check = $(this).attr("class");
                 var ID = check.split("--")[1];
                 if (~check.indexOf("tvID")){
@@ -845,17 +862,42 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                     ajax_request('POST', 'tvdb-get', {
                         id: ID,
                     }).done(function(data){ 
-                        $('#calendarTitle').text(data.series.seriesName);
-                        $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+data.series.siteRating+'</span>&nbsp');
-                        $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(data.series.runtime)+'</span>&nbsp;');
-                        $('#calendarSummary').text(data.series.overview);
-                        $('#calendarTagline').text("");
-                        $('#calendarGenres').html(convertArray(data.series.genre, "TV"));
-                        $('#calendarLang').html("");
-                        $('#calendarPoster').attr("src","ajax.php?a=show-image&image=http://thetvdb.com/banners/"+whatIsIt(data.poster));
-                        $('#calendarMain').attr("style","background-size: 1000px 563px; background-image: url(ajax.php?a=show-image&image=http://thetvdb.com/banners/"+whatIsIt(data.backdrop)+");background-position: center;-webkit-filter: brightness(50%) contrast(100%);filter: brightness(50%) contrast(100%);top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
-                        $('#calendarExtra').modal('show');
-                        });
+                        if( data.trakt ) {                        
+                            $.ajax({
+                                type: 'GET',
+                                url: 'https://api.themoviedb.org/3/tv/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1',
+                                cache: true,
+                                async: true,
+                                complete: function(xhr, status) {
+                                    var result = $.parseJSON(xhr.responseText);
+                                    if (xhr.statusText === "OK") {
+                                        console.log(result);
+                                        $('#calendarTitle').text(result.name);
+                                        $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
+                                        $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(whatWasIt(result.episode_run_time))+'</span>&nbsp;');
+                                        $('#calendarSummary').text(result.overview);
+                                        $('#calendarTagline').text("");
+                                        $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
+                                        $('#calendarLang').html(convertArray(result.languages, "TV"));
+                                        $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
+                                        $('#calendarMain').attr("style","background-image: url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");background-position: center;-webkit-filter: brightness(50%) contrast(100%);filter: brightness(50%) contrast(100%);top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                                        $('#calendarExtra').modal('show');
+                                    }
+                                }
+                            });
+                        }else{
+                           $('#calendarTitle').text(data.series.seriesName);
+                            $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+data.series.siteRating+'</span>&nbsp');
+                            $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(data.series.runtime)+'</span>&nbsp;');
+                            $('#calendarSummary').text(data.series.overview);
+                            $('#calendarTagline').text("");
+                            $('#calendarGenres').html(convertArray(data.series.genre, "TV"));
+                            $('#calendarLang').html("");
+                            $('#calendarPoster').attr("src","https://thetvdb.com/banners/_cache/"+whatIsIt(data.poster));
+                            $('#calendarMain').attr("style","background-size: 1000px 563px; background-image: url(ajax.php?a=show-image&image=http://thetvdb.com/banners/"+whatIsIt(data.backdrop)+");background-position: center;-webkit-filter: brightness(50%) contrast(100%);filter: brightness(50%) contrast(100%);top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                            $('#calendarExtra').modal('show');
+                        }
+                    });
                 }else if (~check.indexOf("movieID")){
                     var type = "MOVIE";
                     $.ajax({
@@ -884,9 +926,9 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
         </script>
         <div id="calendarExtra" class="modal fade in" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg gray-bg" role="document">
-                <div class="modal-content">
+                <div id="calendarMainID" class="modal-content">
                     <div class="modal-content" id="calendarMain"></div>
-                   <div style="position: inherit; padding: 15px">
+                    <div style="position: inherit; padding: 15px">
                         <span id="calendarRuntime" class="pull-left"></span>
                         <span id="calendarRating" class="pull-left"></span>
                         <span id="calendarGenres" class="pull-right"></span>

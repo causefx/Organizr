@@ -8,6 +8,8 @@
 // Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
+	echo "<center><img height='200px' src='images/confused.png'></center>";
+	echo "<center>Look's like somethigng happened, here are the errors and perhaps how to fix them:</center>";
 	echo '<pre style="white-space: pre-line; background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
 	if ($die) { http_response_code(503); die(); }
 }
@@ -1465,7 +1467,7 @@ function getError($os, $error){
 		),
 		'curl' => array(
 			'win' => '<b>cURL</b> not enabled, uncomment ;extension=php_curl.dll in the file php.ini | '.$ext,
-			'nix' => '<b>cURL</b> not enabled, PHP7 -> sudo apt-get install php-7.0 | PHP5 -> run sudo apt-get install php5-curl',
+			'nix' => '<b>cURL</b> not enabled, PHP7 -> sudo apt-get install php-curl | PHP5 -> run sudo apt-get install php5.6-curl',
 		),
 		'zip' => array(
 			'win' => '<b>PHP Zip</b> not enabled, uncomment ;extension=php_zip.dll in the file php.ini, if that doesn\'t work remove that line',
@@ -3576,16 +3578,22 @@ function tvdbToken(){
 function tvdbGet($id){
 	$headers = array(
 		"Accept" => "application/json", 
-		"Authorization" => "Bearer ".tvdbToken()
+		"Authorization" => "Bearer ".tvdbToken(),
+		"trakt-api-key" => "4502cfdf8f7282fe454878ff8583f5636392cdc5fcac30d0cc4565f7173bf443",
+		"trakt-api-version" => "2"
 	);
 
-	$series = curl_get("https://api.thetvdb.com/series/$id", $headers);
-	$poster = curl_get("https://api.thetvdb.com/series/$id/images/query?keyType=poster", $headers);
-	$backdrop = curl_get("https://api.thetvdb.com/series/$id/images/query?keyType=fanart", $headers);
-	$api['series'] = json_decode($series, true)['data'];
-	$api['poster'] = json_decode($poster, true)['data'];
-	$api['backdrop'] = json_decode($backdrop, true)['data'];
-
+	$trakt = curl_get("https://api.trakt.tv/search/tvdb/$id?type=show", $headers);
+	@$api['trakt'] = json_decode($trakt, true)[0]['show']['ids'];
+	
+	if(empty($api['trakt'])){
+		$series = curl_get("https://api.thetvdb.com/series/$id", $headers);
+		$poster = curl_get("https://api.thetvdb.com/series/$id/images/query?keyType=poster", $headers);
+		$backdrop = curl_get("https://api.thetvdb.com/series/$id/images/query?keyType=fanart", $headers);
+		$api['series'] = json_decode($series, true)['data'];
+		$api['poster'] = json_decode($poster, true)['data'];
+		$api['backdrop'] = json_decode($backdrop, true)['data'];
+	}
 	return $api;
 }
 
