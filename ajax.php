@@ -109,7 +109,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                         sendResult(frameTest($_POST['checkurl']), "flask", $_POST['checkurl'], "IFRAME_CAN_BE_FRAMED", "IFRAME_CANNOT_BE_FRAMED");
                         break;
                     case 'upload-images':
-                        uploadFiles('images/', array('jpg', 'png', 'svg', 'jpeg', 'bmp'));
+                        uploadFiles('images/', array('jpg', 'png', 'svg', 'jpeg', 'bmp', 'gif'));
                         sendNotification(true);
                         break;
                     case 'remove-images':

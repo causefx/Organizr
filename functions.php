@@ -733,7 +733,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $state = (($item->Player['state'] == "paused") ? "pause" : "play");
                 $topTitle = '<h5 class="text-center zero-m elip">'.$title.' - '.$item['title'].'</h5>';
                 $bottomTitle = '<small class="zero-m">S'.$item['parentIndex'].' · E'.$item['index'].'</small>';
-                if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
+                if($showNames == "true"){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
             }
             break;
         case 'clip':
@@ -842,7 +842,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
             }
 		}
 	
-		if (substr_count(PLEXURL, ':') == 2) {
+		if (substr_count(PLEXURL, '.') != 2) {
 			$address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
 		}else{
 			$address = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
@@ -945,7 +945,7 @@ function getPlexStreams($size, $showNames, $role){
 				$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames, $role);
 			}
 
-			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX'), $size, 'streams-plex', $items, "
+			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX')." <code>".count($items)." Streams</code>", $size, 'streams-plex', $items, "
 				setInterval(function() {
 					$('<div></div>').load('ajax.php?a=plex-streams',function() {
 						var element = $(this).find('[id]');
@@ -1481,13 +1481,15 @@ function getError($os, $error){
 // Check if all software dependancies are met
 function dependCheck() {
 	$output = array();
-	if (!extension_loaded('pdo_sqlite')) { $output[] = getError(getOS(),'pdo_sqlite'); }
-	if (!extension_loaded('curl')) { $output[] = getError(getOS(),'curl'); }
-	if (!extension_loaded('zip')) { $output[] = getError(getOS(),'zip'); }
+	$i = 1;
+	if (!extension_loaded('pdo_sqlite')) { $output["Step $i"] = getError(getOS(),'pdo_sqlite'); $i++; }
+	if (!extension_loaded('curl')) { $output["Step $i"] = getError(getOS(),'curl'); $i++; }
+	if (!extension_loaded('zip')) { $output["Step $i"] = getError(getOS(),'zip'); $i++; }
 	//if (!extension_loaded('sqlite3')) { $output[] = getError(getOS(),'sqlite3'); }
 	
 	if ($output) {
-		$output[] = "<b>Please visit here to also check status of necessary components after you fix them: <a href='check.php'>check.php<a/></b>";
+		$output["Step $i"] = "<b>Restart PHP and/or Webserver to apply changes</b>"; $i++; 
+		$output["Step $i"] = "<b>Please visit here to also check status of necessary components after you fix them: <a href='check.php'>check.php<a/></b>"; $i++; 
 		debug_out($output,1);
 	}
 	return true;
@@ -2207,11 +2209,6 @@ function sendNotification($success, $message = false, $send = true) {
 
 // Load colours from the database
 function loadAppearance() {
-	if (!isset($GLOBALS['file_db'])) {
-		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
-		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	}
-	
 	// Defaults
 	$defaults = array(
 		'title' => 'Organizr',
@@ -2228,19 +2225,25 @@ function loadAppearance() {
 		'loading' => '#66D9EF',
 		'hovertext' => '#000000',
 	);
-	
-	// Database Lookup
-	$options = $GLOBALS['file_db']->query('SELECT * FROM options');
-	
-	// Replace defaults with filled options
-	foreach($options as $row) {
-		foreach($defaults as $key => $value) {
-			if (isset($row[$key]) && $row[$key]) {
-				$defaults[$key] = $row[$key];
+
+	if (DATABASE_LOCATION) {
+		if (!isset($GLOBALS['file_db'])) {
+			$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+			$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			// Database Lookup
+			$options = $GLOBALS['file_db']->query('SELECT * FROM options');
+			// Replace defaults with filled options
+			foreach($options as $row) {
+				foreach($defaults as $key => $value) {
+					if (isset($row[$key]) && $row[$key]) {
+						$defaults[$key] = $row[$key];
+					}
+				}
 			}
 		}
-	}
 	
+	}
+
 	// Return the Results
 	return $defaults;
 }
@@ -3219,7 +3222,7 @@ function searchPlex($query){
     		}
     		if(!$results['image']){ $image_url = "images/no-search.png"; $key = "no-search"; }
 			
-			if (substr_count(PLEXURL, ':') == 2) {
+			if (substr_count(PLEXURL, '.') != 2) {
 				$link = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
 			}else{
 				$link = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
