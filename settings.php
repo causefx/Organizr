@@ -733,7 +733,7 @@ echo buildSettings(
 					),
 					array(
 						'type' => 'text',
-						'placeholder' => "plex",
+						'placeholder' => "Name of Plex Tab i.e. Plex",
 						'labelTranslate' => 'PLEX_TAB_NAME',
 						'name' => 'plexTabName',
 						'value' => PLEXTABNAME,

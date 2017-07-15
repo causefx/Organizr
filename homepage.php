@@ -819,9 +819,13 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
         <?php } ?>
         <script>
             function convertTime(a){
-                var hours = Math.trunc(a/60);
-                var minutes = a % 60;
-                return hours+"h "+minutes+"m";
+                if(a){
+                    var hours = Math.trunc(a/60);
+                    var minutes = a % 60;
+                    return hours+"h "+minutes+"m";
+                }else{
+                    return "N/A";
+                }
             }
             function convertArray(a, type){
                 var result = "";
@@ -843,9 +847,22 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                 var count = 1;
                 $.each( a.results, function( key, value ) {
                     if (count == 1){
-                        result += '<span id="openTrailer" style="cursor:pointer;width: 200px;display: block;" data-key="'+value['key']+'" data-name="'+value['name']+'" data-site="'+value['site']+'" class="label label-danger">Watch Trailer</span>&nbsp;';
+                        result += '<span id="openTrailer" style="cursor:pointer;width: 100%;display: block;" data-key="'+value['key']+'" data-name="'+value['name']+'" data-site="'+value['site']+'" class="label label-danger"><i class="fa fa-youtube-play" aria-hidden="true"></i> &nbsp;Watch Trailer</span>&nbsp;';
                     }
                     count++;
+                });
+                return result;
+            }
+            function convertCast(a){
+                var result = "";
+                var count = 1;
+                $.each( a.cast, function( key, value ) {
+                    if( value['profile_path'] ){
+                        if (count <= 6){
+                            result += '<div class="col-lg-2 col-xs-2"><div class="zero-m"><img style="border-radius:10%;margin-left: auto;margin-right: auto;display: block;" height="50px" src="https://image.tmdb.org/t/p/w150'+value['profile_path']+'" alt="profile"><h5 class="text-center"><strong>'+value['name']+'</strong></h5><h6 class="text-center">'+value['character']+'</h6></div></div>';
+                            count++;
+                        }
+                    }
                 });
                 return result;
             }
@@ -890,7 +907,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                         if( data.trakt ) {                        
                             $.ajax({
                                 type: 'GET',
-                                url: 'https://api.themoviedb.org/3/tv/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos',
+                                url: 'https://api.themoviedb.org/3/tv/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits',
                                 cache: true,
                                 async: true,
                                 complete: function(xhr, status) {
@@ -903,6 +920,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                                         $('#calendarSummary').text(result.overview);
                                         $('#calendarTagline').text("");
                                         $('#calendarTrailer').html(convertTrailer(result.videos));
+                                        $('#calendarCast').html(convertCast(result.credits));
                                         $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
                                         $('#calendarLang').html(convertArray(result.languages, "TV"));
                                         $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
@@ -918,6 +936,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                             $('#calendarSummary').text(data.series.overview);
                             $('#calendarTagline').text("");
                             $('#calendarTrailer').html("");
+                            $('#calendarCast').html("");
                             $('#calendarGenres').html(convertArray(data.series.genre, "TV"));
                             $('#calendarLang').html("");
                             $('#calendarPoster').attr("src","https://thetvdb.com/banners/_cache/"+whatIsIt(data.poster));
@@ -929,12 +948,13 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                     var type = "MOVIE";
                     $.ajax({
                         type: 'GET',
-                        url: 'https://api.themoviedb.org/3/movie/'+ID+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos',
+                        url: 'https://api.themoviedb.org/3/movie/'+ID+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits',
                         cache: true,
                         async: true,
                         complete: function(xhr, status) {
                             var result = $.parseJSON(xhr.responseText);
                             console.log(result);
+                            console.log(convertCast(result.credits));
                             if (xhr.statusText === "OK") {
                                 $('#calendarTitle').text(result.title);
                                 $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
@@ -942,6 +962,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                                 $('#calendarSummary').text(result.overview);
                                 $('#calendarTagline').text(result.tagline);
                                 $('#calendarTrailer').html(convertTrailer(result.videos));
+                                $('#calendarCast').html(convertCast(result.credits));
                                 $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
                                 $('#calendarLang').html(convertArray(result.spoken_languages, "MOVIE"));
                                 $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
@@ -964,19 +985,24 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-lg-4 col-sm-5">
-                                <img style="border-radius: 10px;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" id="calendarPoster" src="" height="300px;">
+                            <div class="col-lg-2 col-xs-4">
+                                <img style="width:100%;border-radius: 10px;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" id="calendarPoster" src="">
                             </div>
-                            <div class="col-lg-8 col-sm-7">
+                            <div class="col-lg-10 col-sm-8">
                                 <h2 id="calendarTitle" class="modal-title text-center">Modal title</h2>
                                 <h6 id="calendarTagline" class="modal-title text-center"><em>Modal title</em></h6>
                                 <p id="calendarSummary">Modal Summary</p>
+                                <div class="" id="calendarCast">Modal Summary</div>
                             </div>
                         </div>
                     </div>
-                   <div style="position: inherit; padding: 10px 15px 30px 15px; margin-top: -20px;">
-                        <span id="calendarTrailer" class="pull-left"></span>
-                        <span id="calendarLang" class="pull-right"></span>
+                   <div style="position: inherit; padding: 15px 0px 30px 0px; margin-top: -20px;">
+                        <div class="col-lg-2 col-xs-4">
+                            <span id="calendarTrailer" class="pull-left" style="width:100%"></span>
+                        </div> 
+                        <div class="col-lg-10 col-sm-8">   
+                            <span id="calendarLang" class="pull-right"></span>
+                        </div>                        
                     </div>
                 </div>
             </div>
