@@ -2995,6 +2995,7 @@ function getPlatform($platform){
         "Emby Classic" => "emby.png",
         "Safari" => "safari.png",
         "Android" => "android.png",
+        "AndroidTv" => "android.png",
         "Chromecast" => "chromecast.png",
         "Dashboard" => "emby.png",
         "Dlna" => "dlna.png",

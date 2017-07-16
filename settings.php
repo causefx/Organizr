@@ -55,7 +55,7 @@ if(SLIMBAR == "true") {
 
         <title>Settings</title>
 
-        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
         <link rel="stylesheet" href="bower_components/metisMenu/dist/metisMenu.min.css">
@@ -652,6 +652,11 @@ $userTypes = array(
 	'None' => 'false',
 	'User' => 'user|admin',
 	'Admin' => 'admin',
+);
+$branchTypes = array(
+	'Master' => 'master',
+	'Develop' => 'develop',
+	'Pre-Develop' => 'cero-dev',
 );
 
 // Build Homepage Settings
@@ -1337,12 +1342,13 @@ echo buildSettings(
 						'value' => IPINFOTOKEN,
 					),
 					array(
-						'type' => 'text',
+						'type' => 'select',
 						'labelTranslate' => 'GIT_BRANCH',
 						'placeholder' => 'Default: \'master\' - Development: \'develop\' OR \'cero-dev\'',
 						'id' => 'git_branch_id',
 						'name' => 'git_branch',
 						'value' => GIT_BRANCH,
+                        'options' => $branchTypes,
 					),
 					array(
 						array(
