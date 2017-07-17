@@ -2231,18 +2231,17 @@ function loadAppearance() {
 		if (!isset($GLOBALS['file_db'])) {
 			$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
 			$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			// Database Lookup
-			$options = $GLOBALS['file_db']->query('SELECT * FROM options');
-			// Replace defaults with filled options
-			foreach($options as $row) {
-				foreach($defaults as $key => $value) {
-					if (isset($row[$key]) && $row[$key]) {
-						$defaults[$key] = $row[$key];
-					}
+		}
+		// Database Lookup
+		$options = $GLOBALS['file_db']->query('SELECT * FROM options');
+		// Replace defaults with filled options
+		foreach($options as $row) {
+			foreach($defaults as $key => $value) {
+				if (isset($row[$key]) && $row[$key]) {
+					$defaults[$key] = $row[$key];
 				}
 			}
 		}
-	
 	}
 
 	// Return the Results

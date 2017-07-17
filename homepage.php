@@ -19,7 +19,7 @@ qualifyUser(HOMEPAGEAUTHNEEDED, true);
 
 // Load Colours/Appearance
 foreach(loadAppearance() as $key => $value) {
-	$$key = $value;
+	${$key} = $value;
 }
 
 $startDate = date('Y-m-d',strtotime("-".CALENDARSTARTDAY." days"));
