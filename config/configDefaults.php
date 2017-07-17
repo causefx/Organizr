@@ -13,6 +13,7 @@ return array(
 	"plexHomeAuth" => false,
 	"plexSearch" => false,
 	"plexRecentItems" => "20",
+	"plexPlaylists" => "false",
 	"plexTabName" => "",
 	"embyURL" => "",
 	"embyToken" => "",

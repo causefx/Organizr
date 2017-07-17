@@ -146,7 +146,7 @@ if(SLIMBAR == "true") {
 				});
 				$element.appendTo('#submitTabs ul');
 				$element.find('.icp-auto-pend').iconpicker({placement: 'left', hideOnSelect: false, collision: true}).hide();
-    $('.tab-box').scrollTop($('.tab-box')[0].scrollHeight);
+                $('.tab-box').scrollTop($('.tab-box')[0].scrollHeight);
 			}
 			function submitTabs(form) {
 				var formData = {};
@@ -768,6 +768,12 @@ echo buildSettings(
 							'name' => 'plexRecentMusic',
 							'value' => PLEXRECENTMUSIC,
 						),
+                        array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'PLAYLISTS',
+							'name' => 'plexPlaylists',
+							'value' => PLEXPLAYLISTS,
+						),
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'PLAYING_NOW',
@@ -1360,6 +1366,7 @@ echo buildSettings(
 						array(
 							'type' => 'button',
 							'id' => 'gitForceInstall',
+                            'style' => (extension_loaded("ZIP")) ? "" : "display : none",
 							'labelTranslate' => 'GIT_FORCE',
 							'icon' => 'gear',
 							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { performUpdate(); ajax_request(\'POST\', \'forceBranchInstall\'); } }',
