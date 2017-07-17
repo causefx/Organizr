@@ -2014,7 +2014,7 @@ function timezoneOptions() {
 // Build Database
 function createSQLiteDB($path = false) {
 	if ($path === false) {
-		if (defined('DATABASE_LOCATION')) {
+		if (DATABASE_LOCATION){
 			$path = DATABASE_LOCATION;
 		} else {
 			debug_out('No Path Specified!');

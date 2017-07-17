@@ -16,6 +16,10 @@
 	
     // Lazyload settings
 	$databaseConfig = configLazy('config/config.php');
+
+	if (!DATABASE_LOCATION){
+		die(header("Refresh:0"));
+	}
     
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 
     $notifyExplode = explode("-", NOTIFYEFFECT);
