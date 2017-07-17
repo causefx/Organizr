@@ -70,6 +70,10 @@ if(!file_exists('config/config.php')) {
 
 if (file_exists('config/config.php')) {
 
+    if (!DATABASE_LOCATION){
+		die(header("Refresh:0"));
+	}
+
     $configReady = "Yes";
 
     require_once("user.php");
