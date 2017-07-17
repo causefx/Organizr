@@ -55,7 +55,7 @@ if(SLIMBAR == "true") {
 
         <title>Settings</title>
 
-        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
         <link rel="stylesheet" href="bower_components/metisMenu/dist/metisMenu.min.css">
@@ -146,7 +146,7 @@ if(SLIMBAR == "true") {
 				});
 				$element.appendTo('#submitTabs ul');
 				$element.find('.icp-auto-pend').iconpicker({placement: 'left', hideOnSelect: false, collision: true}).hide();
-    $('.tab-box').scrollTop($('.tab-box')[0].scrollHeight);
+                $('.tab-box').scrollTop($('.tab-box')[0].scrollHeight);
 			}
 			function submitTabs(form) {
 				var formData = {};
@@ -653,6 +653,11 @@ $userTypes = array(
 	'User' => 'user|admin',
 	'Admin' => 'admin',
 );
+$branchTypes = array(
+	'Master' => 'master',
+	'Develop' => 'develop',
+	'Pre-Develop' => 'cero-dev',
+);
 
 // Build Homepage Settings
 echo buildSettings(
@@ -762,6 +767,12 @@ echo buildSettings(
 							'labelTranslate' => 'RECENT_MUSIC',
 							'name' => 'plexRecentMusic',
 							'value' => PLEXRECENTMUSIC,
+						),
+                        array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'PLAYLISTS',
+							'name' => 'plexPlaylists',
+							'value' => PLEXPLAYLISTS,
 						),
 						array(
 							'type' => 'checkbox',
@@ -1337,12 +1348,13 @@ echo buildSettings(
 						'value' => IPINFOTOKEN,
 					),
 					array(
-						'type' => 'text',
+						'type' => 'select',
 						'labelTranslate' => 'GIT_BRANCH',
 						'placeholder' => 'Default: \'master\' - Development: \'develop\' OR \'cero-dev\'',
 						'id' => 'git_branch_id',
 						'name' => 'git_branch',
 						'value' => GIT_BRANCH,
+                        'options' => $branchTypes,
 					),
 					array(
 						array(
@@ -1354,6 +1366,7 @@ echo buildSettings(
 						array(
 							'type' => 'button',
 							'id' => 'gitForceInstall',
+                            'style' => (extension_loaded("ZIP")) ? "" : "display : none",
 							'labelTranslate' => 'GIT_FORCE',
 							'icon' => 'gear',
 							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { performUpdate(); ajax_request(\'POST\', \'forceBranchInstall\'); } }',

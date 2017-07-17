@@ -642,7 +642,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 		$itemDetails['Overview'] = '';
 	}
     
-if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key.'.jpg'; }
+	if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key.'.jpg'; }
     if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
         $image_url = 'ajax.php?a=emby-image&type='.$imageType.'&img='.$imageId.'&height='.$height.'&width='.$width.'&key='.$key.'';        
     }
@@ -657,12 +657,12 @@ if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key
     if(isset($useImage)){ $image_url = $useImage; }
 	
 	// Assemble Item And Cache Into Array     
-if($nowPlaying){
-    //prettyPrint($itemDetails);
-    return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$URL.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+	if($nowPlaying){
+    	//prettyPrint($itemDetails);
+    	return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$URL.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
- return '<div class="item-'.$itemDetails['Type'].'"><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
-}
+		 return '<div class="item-'.$itemDetails['Type'].'"><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+	}
 }
 
 // Format item from Plex for Carousel
@@ -881,9 +881,10 @@ function outputRecentAdded($header, $items, $script = false, $array) {
     $hideMenu .= '</ul></div></div>';
     // If None Populate Empty Item
     if (!count($items)) {
-        return '<div id=recentMedia><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
+        return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
     }else{
-        return '<div id=recentMedia><h5 style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination">'.$hideMenu.'</div><br/><div class="recentItems">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+		$className = str_replace(' ', '', $header);
+        return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><div class="recentItems" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
     
 }
@@ -2230,18 +2231,17 @@ function loadAppearance() {
 		if (!isset($GLOBALS['file_db'])) {
 			$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
 			$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			// Database Lookup
-			$options = $GLOBALS['file_db']->query('SELECT * FROM options');
-			// Replace defaults with filled options
-			foreach($options as $row) {
-				foreach($defaults as $key => $value) {
-					if (isset($row[$key]) && $row[$key]) {
-						$defaults[$key] = $row[$key];
-					}
+		}
+		// Database Lookup
+		$options = $GLOBALS['file_db']->query('SELECT * FROM options');
+		// Replace defaults with filled options
+		foreach($options as $row) {
+			foreach($defaults as $key => $value) {
+				if (isset($row[$key]) && $row[$key]) {
+					$defaults[$key] = $row[$key];
 				}
 			}
 		}
-	
 	}
 
 	// Return the Results
@@ -2995,6 +2995,7 @@ function getPlatform($platform){
         "Emby Classic" => "emby.png",
         "Safari" => "safari.png",
         "Android" => "android.png",
+        "AndroidTv" => "android.png",
         "Chromecast" => "chromecast.png",
         "Dashboard" => "emby.png",
         "Dlna" => "dlna.png",
@@ -3598,6 +3599,46 @@ function tvdbGet($id){
 		$api['backdrop'] = json_decode($backdrop, true)['data'];
 	}
 	return $api;
+}
+
+function getPlexPlaylists(){
+    $address = qualifyURL(PLEXURL);
+    
+	// Perform API requests
+    $api = @curl_get($address."/playlists?X-Plex-Token=".PLEXTOKEN);
+    $api = simplexml_load_string($api);
+	if (is_array($api) || is_object($api)){
+		if (!$api->head->title){
+			$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
+			if (!$getServer) { return 'Could not load!'; }
+			// Identify the local machine
+			$gotServer = $getServer['machineIdentifier'];
+			$output = "";
+			foreach($api AS $child) {
+				$items = "";
+				if($child['playlistType'] == "video"){
+					$api = @curl_get($address.$child['key']."?X-Plex-Token=".PLEXTOKEN);
+					$api = simplexml_load_string($api);
+					if (is_array($api) || is_object($api)){
+						if (!$api->head->title){
+							foreach($api->Video AS $child){
+								$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, false, false,false);
+							}
+							if (count($items)) {
+								$className = str_replace(' ', '', $api['title']);
+								$output .= '<div id="playlist-'.$className.'" class="content-box box-shadow big-box"><h5 style="margin-bottom: -20px" class="text-center">'.$api['title'].'</h5><div class="recentHeader inbox-pagination '.$className.'"></div><br/><div class="recentItems" data-name="'.$className.'">'.implode('',$items).'</div></div>';
+							}							
+						}
+					}
+				}
+			}
+			return $output;
+		}else{
+			writeLog("error", "PLEX PLAYLIST ERROR: could not connect - check token - if HTTPS, is cert valid");
+		}
+	}else{
+		writeLog("error", "PLEX PLAYLIST ERROR: could not connect - check URL - if HTTPS, is cert valid");
+	}
 }
 
 function orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){

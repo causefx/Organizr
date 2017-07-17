@@ -19,7 +19,7 @@ qualifyUser(HOMEPAGEAUTHNEEDED, true);
 
 // Load Colours/Appearance
 foreach(loadAppearance() as $key => $value) {
-	$$key = $value;
+	${$key} = $value;
 }
 
 $startDate = date('Y-m-d',strtotime("-".CALENDARSTARTDAY." days"));
@@ -444,7 +444,17 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                     ?>
                     </div>
                 </div>
-				<?php } ?>
+                <div id="plexPlaylists" class="row">
+                    <div class="col-lg-12">
+                    <?php
+                    if(PLEXPLAYLISTS == "true"){  
+                        echo getPlexPlaylists($plexArray);
+                    } 
+                    ?>
+                    </div>
+                </div>
+                <?php } ?>
+    
 				<?php if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) { ?>
                 <div id="embyRowNowPlaying" class="row">
                     <?php if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(12, EMBYSHOWNAMES, $USER->role); } ?>
@@ -564,91 +574,96 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 var id = $(this).attr("link");
                 $("div[np^='"+id+"']").toggle();
             });
-     
-            $('.recentItems').slick({
-              
-                slidesToShow: 13,
-                slidesToScroll: 13,
-                infinite: true,
-                lazyLoad: 'ondemand',
-                prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
-                nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
-                appendArrows: '.recentHeader',
-                responsive: [
-                {
-                  breakpoint: 1750,
-                  settings: {
-                    slidesToShow: 12,
-                    slidesToScroll: 12,
-                  }
-                },
-                {
-                  breakpoint: 1600,
-                  settings: {
-                    slidesToShow: 11,
-                    slidesToScroll: 11,
-                  }
-                },
-                {
-                  breakpoint: 1450,
-                  settings: {
-                    slidesToShow: 10,
-                    slidesToScroll: 10,
-                  }
-                },
-                {
-                  breakpoint: 1300,
-                  settings: {
-                    slidesToShow: 9,
-                    slidesToScroll: 9,
-                  }
-                },
-                {
-                  breakpoint: 1150,
-                  settings: {
-                    slidesToShow: 8,
-                    slidesToScroll: 8,
-                  }
-                },
-                {
-                  breakpoint: 1000,
-                  settings: {
-                    slidesToShow: 7,
-                    slidesToScroll: 7,
-                  }
-                },
-                {
-                  breakpoint: 850,
-                  settings: {
-                    slidesToShow: 6,
-                    slidesToScroll: 6,
-                  }
-                },
-                {
-                  breakpoint: 700,
-                  settings: {
-                    slidesToShow: 5,
-                    slidesToScroll: 5,
-                  }
-                },
-                {
-                  breakpoint: 675,
-                  settings: {
-                    slidesToShow: 4,
-                    slidesToScroll: 4
-                  }
-                },
-                {
-                  breakpoint: 480,
-                  settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3
-                  }
-                }
-                // You can unslick at a given breakpoint now by adding:
-                // settings: "unslick"
-                // instead of a settings object
-              ]
+
+            $('.recentItems').each(function() {
+                var name = $(this).attr("data-name");
+                console.log(name);
+                $(this).slick({
+                
+                    slidesToShow: 13,
+                    slidesToScroll: 13,
+                    infinite: true,
+                    lazyLoad: 'ondemand',
+                    prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
+                    nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
+                    appendArrows: $('.'+name),
+                    arrows: true,
+                    responsive: [
+                    {
+                    breakpoint: 1750,
+                    settings: {
+                        slidesToShow: 12,
+                        slidesToScroll: 12,
+                    }
+                    },
+                    {
+                    breakpoint: 1600,
+                    settings: {
+                        slidesToShow: 11,
+                        slidesToScroll: 11,
+                    }
+                    },
+                    {
+                    breakpoint: 1450,
+                    settings: {
+                        slidesToShow: 10,
+                        slidesToScroll: 10,
+                    }
+                    },
+                    {
+                    breakpoint: 1300,
+                    settings: {
+                        slidesToShow: 9,
+                        slidesToScroll: 9,
+                    }
+                    },
+                    {
+                    breakpoint: 1150,
+                    settings: {
+                        slidesToShow: 8,
+                        slidesToScroll: 8,
+                    }
+                    },
+                    {
+                    breakpoint: 1000,
+                    settings: {
+                        slidesToShow: 7,
+                        slidesToScroll: 7,
+                    }
+                    },
+                    {
+                    breakpoint: 850,
+                    settings: {
+                        slidesToShow: 6,
+                        slidesToScroll: 6,
+                    }
+                    },
+                    {
+                    breakpoint: 700,
+                    settings: {
+                        slidesToShow: 5,
+                        slidesToScroll: 5,
+                    }
+                    },
+                    {
+                    breakpoint: 675,
+                    settings: {
+                        slidesToShow: 4,
+                        slidesToScroll: 4
+                    }
+                    },
+                    {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 3,
+                        slidesToScroll: 3
+                    }
+                    }
+                    // You can unslick at a given breakpoint now by adding:
+                    // settings: "unslick"
+                    // instead of a settings object
+                ]
+                });
             });
             
             var movieFiltered = false;
