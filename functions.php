@@ -2014,7 +2014,7 @@ function timezoneOptions() {
 // Build Database
 function createSQLiteDB($path = false) {
 	if ($path === false) {
-		if (defined('DATABASE_LOCATION')) {
+		if (DATABASE_LOCATION){
 			$path = DATABASE_LOCATION;
 		} else {
 			debug_out('No Path Specified!');
@@ -2099,10 +2099,10 @@ function createSQLiteDB($path = false) {
 // Upgrade Database
 function updateSQLiteDB($db_path = false, $oldVerNum = false) {
 	if (!$db_path) {
-		if (DATABASE_LOCATION){
-			$path = DATABASE_LOCATION;
+		if (defined('DATABASE_LOCATION')) {
+			$db_path = DATABASE_LOCATION;
 		} else {
-			debug_out('No Path Specified!');
+			debug_out('No Path Specified',1);
 		}
 	}
 	if (!isset($GLOBALS['file_db'])) {
