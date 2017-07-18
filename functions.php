@@ -855,7 +855,11 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
     if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
         $image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'';        
     }
-    if(!$thumb){ $image_url = "images/no-np.png"; $key = "no-np"; }
+    if($nowPlaying){
+        if(!$thumb){ $image_url = "images/no-np.png"; $key = "no-np"; }
+    }else{
+        if(!$thumb){ $image_url = "images/no-list.png"; $key = "no-list"; }
+    }
 	if(isset($useImage)){ $image_url = $useImage; }
 	$openTab = (PLEXTABNAME) ? "true" : "false";
     // Assemble Item And Cache Into Array 
@@ -868,15 +872,15 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
 
 //Recent Added
 function outputRecentAdded($header, $items, $script = false, $array) {
-    $hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu">';
+    $hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu filter-recent-event">';
     if($array["movie"] == "true"){
-        $hideMenu .= '<li><a class="js-filter-movie" href="javascript:void(0)">Hide Movies</a></li>';
+        $hideMenu .= '<li data-filter="item-movie" data-filter-on="false"><a class="js-filter-movie" href="javascript:void(0)">Movies</a></li>';
     }
     if($array["season"] == "true"){
-        $hideMenu .= '<li><a class="js-filter-season" href="javascript:void(0)">Hide Show</a></li>';
+        $hideMenu .= '<li data-filter="item-season" data-filter-on="false"><a class="js-filter-season" href="javascript:void(0)">Shows</a></li>';
     }
     if($array["album"] == "true"){
-        $hideMenu .= '<li><a class="js-filter-album" href="javascript:void(0)">Hide Music</a></li>';
+        $hideMenu .= '<li data-filter="item-album" data-filter-on="false"><a class="js-filter-album" href="javascript:void(0)">Music</a></li>';
     }
     $hideMenu .= '</ul></div></div>';
     // If None Populate Empty Item
@@ -946,7 +950,7 @@ function getPlexStreams($size, $showNames, $role){
 				$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames, $role);
 			}
 
-			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX')." <code>".count($items)." Streams</code>", $size, 'streams-plex', $items, "
+			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX')." ( ".count($items)." Streams )", $size, 'streams-plex', $items, "
 				setInterval(function() {
 					$('<div></div>').load('ajax.php?a=plex-streams',function() {
 						var element = $(this).find('[id]');
@@ -2690,7 +2694,7 @@ function getServerPath() {
         $protocol = "http://"; 
     }
 	$domain = '';
-    if (isset($_SERVER['SERVER_NAME']) && $_SERVER['SERVER_NAME'] != "_"){
+    if (isset($_SERVER['SERVER_NAME']) && strpos($_SERVER['SERVER_NAME'], '.') !== false){
         $domain = $_SERVER['SERVER_NAME'];
 	}elseif(isset($_SERVER['HTTP_HOST'])){
 		if (strpos($_SERVER['HTTP_HOST'], ':') !== false) {
@@ -3647,7 +3651,7 @@ function getPlexPlaylists(){
 			$output = "";
 			foreach($api AS $child) {
 				$items = "";
-				if($child['playlistType'] == "video"){
+				if ($child['playlistType'] == "video" && strpos(strtolower($child['title']) , 'private') === false){
 					$api = @curl_get($address.$child['key']."?X-Plex-Token=".PLEXTOKEN);
 					$api = simplexml_load_string($api);
 					if (is_array($api) || is_object($api)){
