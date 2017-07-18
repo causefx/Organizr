@@ -2984,7 +2984,7 @@ function getPlatform($platform){
         "Dlna" => "dlna.png",
         "Windows Phone" => "wp.png",
         "Windows RT" => "win8.png",
-        "Kodi" => "koid.png",
+        "Kodi" => "kodi.png",
     );
     if (array_key_exists($platform, $allPlatforms)) {
         return $allPlatforms[$platform];
