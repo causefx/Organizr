@@ -105,7 +105,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
             default: // Stuff that you need admin for
                 qualifyUser('admin', true);
                 switch ($action) {
-                    case 'check-url':
+                    case 'test-email':
+                        sendResult(sendTestEmail($_POST['emailto'], $_POST['emailsenderemail'], $_POST['emailhost'], $_POST['emailauth'], $_POST['emailusername'], $_POST['emailpassword'], $_POST['emailtype'], $_POST['emailport'], $_POST['emailsendername']), "flask", "E-Mail TEST", "SUCCESS", "ERROR");
+                        break;
+					case 'check-url':
                         sendResult(frameTest($_POST['checkurl']), "flask", $_POST['checkurl'], "IFRAME_CAN_BE_FRAMED", "IFRAME_CANNOT_BE_FRAMED");
                         break;
                     case 'upload-images':

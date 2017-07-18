@@ -1435,6 +1435,12 @@ echo buildSettings(
 						),
 					),
 					array(
+                        array(
+							'type' => 'button',
+							'labelTranslate' => 'TEST_EMAIL',
+							'id' => 'testEmail',
+							'icon' => 'flask',
+						),
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'SMTP_HOST_AUTH',
@@ -2757,6 +2763,38 @@ echo buildSettings(
             });
         </script>
         <script>
+            //TestEmail
+            function isUpperCase(str) {
+                return str === str.toUpperCase();
+            }
+            $('#smtpHostAuth_id').change(function() {
+                if($('#smtpHostAuth_id').attr("data-value") == "true"){
+                    $('#smtpHostAuth_id').attr("data-value", "false");
+                }else{
+                    $('#smtpHostAuth_id').attr("data-value", "true");
+                }
+            });
+            $('#testEmail').on('click', function () {
+                var password = '';
+                if(isUpperCase($('#smtpHostPassword_id').val())){
+                    password = '<?php echo SMTPHOSTPASSWORD; ?>';
+                }else{
+                    password = $('#smtpHostPassword_id').val();
+                }
+                console.log("starting");
+                ajax_request('POST', 'test-email', {
+                    emailto: '<?php echo $USER->email;?>',
+                    emailhost: $('#smtpHost_id').val(),
+                    emailport: $('#smtpHostPort_id').val(),
+                    emailusername: $('#smtpHostUsername_id').val(),
+                    emailpassword: password,
+                    emailsendername: $('#smtpHostSenderName_id').val(),
+                    emailsenderemail: $('#smtpHostSenderEmail_id').val(),
+                    emailtype: $('#smtpHostType_id').val(),
+                    emailauth: $('#smtpHostAuth_id').attr("data-value"),
+                });
+                console.log("ajax done");
+            });
             //Custom Themes            
             function changeColor(elementName, elementColor) {
                 var definedElement = document.getElementById(elementName);
@@ -3056,6 +3094,7 @@ echo buildSettings(
                     checkurl: $('#urlTestForm [name=url-test]').val(),
                 });
             });
+
             //Hide Icon box on load
             $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
             //Set Some Scrollbars

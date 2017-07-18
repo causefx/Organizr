@@ -3004,7 +3004,7 @@ function getPlatform($platform){
         "Dlna" => "dlna.png",
         "Windows Phone" => "wp.png",
         "Windows RT" => "win8.png",
-        "Kodi" => "koid.png",
+        "Kodi" => "kodi.png",
     );
     if (array_key_exists($platform, $allPlatforms)) {
         return $allPlatforms[$platform];
@@ -3323,6 +3323,34 @@ function sendEmail($email, $username = "Organizr User", $subject, $body, $cc = n
 
 }
 
+//EMAIL SHIT
+function sendTestEmail($to, $from, $host, $auth, $username, $password, $type, $port, $sendername){
+
+	$mail = new PHPMailer;
+	$mail->isSMTP();
+	$mail->Host = $host;
+	$mail->SMTPAuth = $auth;
+	$mail->Username = $username;
+	$mail->Password = $password;
+	$mail->SMTPSecure = $type;
+	$mail->Port = $port;
+	$mail->setFrom($from, $sendername);
+	$mail->addReplyTo($from, $sendername);
+	$mail->isHTML(true);
+	$mail->addAddress($to, "Organizr Admin");
+	$mail->Subject = "Organizr Test E-Mail";
+	$mail->Body    = "This was just a test!";
+	//$mail->send();
+	if(!$mail->send()) {
+		writeLog("error", "mail failed to send");
+		return false;
+	} else {
+		writeLog("success", "mail has been sent");
+		return true;
+	}
+
+}
+
 function libraryList(){
     $address = qualifyURL(PLEXURL);
 	$headers = array(
@@ -3628,7 +3656,7 @@ function getPlexPlaylists(){
 								$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, false, false,false);
 							}
 							if (count($items)) {
-								$className = str_replace(' ', '', $api['title']);
+								$className = preg_replace("/(\W)+/", "", $api['title']);
 								$output .= '<div id="playlist-'.$className.'" class="content-box box-shadow big-box"><h5 style="margin-bottom: -20px" class="text-center">'.$api['title'].'</h5><div class="recentHeader inbox-pagination '.$className.'"></div><br/><div class="recentItems" data-name="'.$className.'">'.implode('',$items).'</div></div>';
 							}							
 						}
