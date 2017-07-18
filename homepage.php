@@ -665,7 +665,57 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 ]
                 });
             });
+
             
+            // each filter we click on
+            $(".filter-recent-event > li").on("click", function() {
+                
+            // toggle the filter on/off
+            $(this).data( "filter-on" , !$(this).data("filter-on") );
+            
+            // set all the filter strings to empty
+            var filtersOn = "";
+            var filtersOff = "";
+            var allFilters = "";
+            
+            // loop through each filter
+            $(".filter-recent-event > li").each(function() {
+                
+                // set a variable to hold the value of the filter class
+                // and also if the filter is on/off
+                var filter = $(this).data("filter");
+                var isOn = $(this).data("filter-on");
+
+                // add the filter to the filtersOn / filtersOff collection
+                if( isOn ) {
+                    filtersOn += "." + filter + ", ";
+                } else {
+                    filtersOff += "." + filter + ", ";
+                }
+
+            });
+            
+            // remove the last ", " from each filter collection.
+            filtersOn = filtersOn.replace(/, $/, "");
+            filtersOff = filtersOff.replace(/, $/, "");
+            
+            // remove all filters if none are on.
+            if( filtersOn === "" ) {
+                filtersOn = "*";
+                filtersOff = "";
+            }
+            
+            // combine the filters together ( on + off )
+            allFilters = filtersOn + ":not(" + filtersOff + ")";
+            console.log( allFilters );
+            
+            // now filter the slides.
+            $('.recentItems ')
+                .slick('slickUnfilter')
+                .slick('slickFilter' , allFilters );
+
+            });
+            /*
             var movieFiltered = false;
             var seasonFiltered = false;
             var albumFiltered = false;
@@ -704,7 +754,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 $(this).text('Hide Music');
                 albumFiltered = false;
               }
-            });
+            });*/
             
             /*$('.w-refresh').click(function(e){
                 var moreInfo = $(this).closest('div.overlay').addClass("show");
