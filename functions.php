@@ -709,7 +709,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
             $image = 'slick-image-tall';
             $style = '';
             if(!$nowPlaying){ 
-                $thumb = $item['parentThumb'];
+                $thumb = ($item['parentThumb'] ? $item['parentThumb'] : $item['grandparentThumb']);
                 $key = $item['ratingKey'] . "-list";
             }else { 
                 $height = 281;

@@ -658,6 +658,16 @@ $branchTypes = array(
 	'Develop' => 'develop',
 	'Pre-Develop' => 'cero-dev',
 );
+$refreshSeconds = array(
+	'1 sec' => '1000',
+	'5 secs' => '5000',
+	'10 secs' => '10000',
+	'15 secs' => '15000',
+	'30 secs' => '30000',
+	'60 secs' => '60000',
+	'90 secs' => '90000',
+	'120 secs' => '120000',
+);
 
 // Build Homepage Settings
 echo buildSettings(
@@ -1010,6 +1020,20 @@ echo buildSettings(
 						'name' => 'sabnzbdKey',
 						'value' => SABNZBDKEY,
 					),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'DOWNLOAD_REFRESH',
+						'name' => 'downloadRefresh',
+						'value' => DOWNLOADREFRESH,
+						'options' => $refreshSeconds,
+					),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'HISTORY_REFRESH',
+						'name' => 'historyRefresh',
+						'value' => HISTORYREFRESH,
+						'options' => $refreshSeconds,
+					),
 				),
 			),
 			array(
@@ -1044,6 +1068,20 @@ echo buildSettings(
 						'labelTranslate' => 'PASSWORD',
 						'name' => 'nzbgetPassword',
 						'value' => (empty(NZBGETPASSWORD)?'':randString(20)),
+					),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'DOWNLOAD_REFRESH',
+						'name' => 'downloadRefresh',
+						'value' => DOWNLOADREFRESH,
+						'options' => $refreshSeconds,
+					),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'HISTORY_REFRESH',
+						'name' => 'historyRefresh',
+						'value' => HISTORYREFRESH,
+						'options' => $refreshSeconds,
 					),
 				),
 			),
@@ -1283,7 +1321,7 @@ echo buildSettings(
 						'type' => 'text',
 						'placeholder' => randString(32),
 						'labelTranslate' => 'EMBY_TOKEN',
-						'name' => 'plexToken',
+						'name' => 'embyToken',
 						'class' => 'be-auth be-auth-emby_all be-auth-emby_connect',
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
