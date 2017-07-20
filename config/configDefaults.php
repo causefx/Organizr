@@ -87,4 +87,6 @@ return array(
 	"homepageNoticeAuth" => "false",
 	"homepageNoticeLayout" => "elegant",
 	"ipInfoToken" => "ddd0c072ad5021",
+	"historyRefresh" => "120000",
+	"downloadRefresh" => "30000",
 );
