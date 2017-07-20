@@ -88,10 +88,7 @@ $(document).ready(function(){
 			beforeSend: function(){},
 			success: function(data, itemEl, listEl, boxEl, newInputEl, inputEl, id){
 				var parent = itemEl.find(".jFiler-jProgressBar").parent(),
-					new_file_name = JSON.parse(data),
 					filerKit = inputEl.prop("jFiler");
-
-        		filerKit.files_list[id].name = new_file_name;
 
 				itemEl.find(".jFiler-jProgressBar").fadeOut("slow", function(){
 					$("<div class=\"jFiler-item-others text-success\"><i class=\"fa fa-check\"></i> Success</div>").hide().appendTo(parent).fadeIn("slow");

@@ -781,8 +781,8 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
             // check if browser support HTML5 local storage
 			
             <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>
-            var queueRefresh = 30000;
-            var historyRefresh = 120000; // This really doesn't need to happen that often
+            var queueRefresh = <?php echo DOWNLOADREFRESH; ?>;
+            var historyRefresh = <?php echo HISTORYREFRESH; ?>; // This really doesn't need to happen that often
 
             var queueLoad = function() {
             <?php if(SABNZBDURL != "") { echo '$("tbody.dl-queue.sabnzbd").load("ajax.php?a=sabnzbd-update&list=queue");'; } ?>
