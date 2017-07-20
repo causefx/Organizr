@@ -3346,10 +3346,10 @@ function sendTestEmail($to, $from, $host, $auth, $username, $password, $type, $p
 	$mail->Body    = "This was just a test!";
 	//$mail->send();
 	if(!$mail->send()) {
-		writeLog("error", "mail failed to send");
+		writeLog("error", "EMAIL TEST: mail failed to send - Error:".$mail->ErrorInfo);
 		return false;
 	} else {
-		writeLog("success", "mail has been sent");
+		writeLog("success", "EMAIL TEST: mail has been sent successfully");
 		return true;
 	}
 
