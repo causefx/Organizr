@@ -89,4 +89,5 @@ return array(
 	"ipInfoToken" => "ddd0c072ad5021",
 	"historyRefresh" => "120000",
 	"downloadRefresh" => "30000",
+	"organizrAPI" => "",
 );
