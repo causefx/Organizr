@@ -2905,7 +2905,7 @@ function getHeadphonesCalendar($url, $key, $list){
     $gotCalendar = "";
 	if (is_array($api) || is_object($api)){
 		foreach($api AS $child) {
-			if($child['Status'] == "Wanted"){
+			if($child['Status'] == "Wanted" && $list == "getWanted"){
 				$i++;
 				$albumName = addslashes($child['AlbumTitle']);
 				$albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
@@ -2920,6 +2920,18 @@ function getHeadphonesCalendar($url, $key, $list){
 				if($albumStatus == "Wanted" && $notReleased == "true"){ $albumStatusColor = "indigo-bg"; }elseif($albumStatus == "Downloaded"){ $albumStatusColor = "green-bg"; }else{ $albumStatusColor = "red-bg"; }
 
 				$gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
+			}
+			if($child['Status'] == "Processed" && $list == "getHistory"){
+				$i++;
+				$albumName = addslashes($child['Title']);
+				$albumDate = $child['DateAdded'];
+				$albumID = $child['AlbumID'];
+				$albumDate = strtotime($albumDate);
+				$albumDate = date("Y-m-d", $albumDate);
+				$albumStatusColor = "green-bg";
+				if (new DateTime() < new DateTime($albumDate)) {  $notReleased = "true"; }else{ $notReleased = "false"; }
+
+				$gotCalendar .= "{ title: \"$albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
 			}
 		}
     	if ($i != 0){ return $gotCalendar; }

@@ -961,7 +961,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                     deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
                         refreshPreloader.remove();
                     });
-                },200);
+                },300);
                 var check = $(this).attr("class");
                 var ID = check.split("--")[1];
                 if (~check.indexOf("tvID")){
