@@ -1264,11 +1264,11 @@ echo buildSettings(
 						'labelTranslate' => 'AUTHTYPE',
 						'name' => 'authType',
 						'value' => AUTHTYPE,
-						'onchange' => 'if (this.value == \'internal\') { $(\'.be-auth, #authBackend_id, #authBackendCreate_id\').parent().hide(); } else { $(\'#authBackend_id, #authBackendCreate_id\').trigger(\'change\').parent().show(); }',
+						'onchange' => 'if (this.value == \'internal\') { $(\'.be-auth, #authBackend_id, #authBackendCreate_id\').parent().hide(); } else { $(\'#authBackend_id, #authBackendCreate_id\').trigger(\'change\').parent().show(); }if (this.value == \'external\') { alert(\'ATTENTION! Before using this option, Make sure that the ADMIN account that you setup matches at least one username on your external backend.  Otherwide you will lose Admin functionality.  If something messes up, edit config/config.php and change authType to either internal or both.\') } ',
 						'options' => array(
 							'Organizr' => 'internal',
-							'Organizr & Backend' => 'both',
-							// 'Backend' => 'external',
+							(AUTHBACKEND) ? 'Organizr & '.ucwords(AUTHBACKEND) : 'Organizr & Backend' => 'both',
+                            (AUTHBACKEND) ? ucwords(AUTHBACKEND)." Only" : "Backend Only" => 'external',
 						),
 					),
 					array(
@@ -1340,6 +1340,19 @@ echo buildSettings(
 						'class' => 'be-auth be-auth-plex',
 						'value' => (empty(PLEXPASSWORD)?'':randString(20)),
 					),
+                    array(
+						'type' => 'text',
+						'labelTranslate' => 'ORGANIZR_API_KEY',
+						'name' => 'organizrAPI',
+						'value' => ORGANIZRAPI,
+					),
+                    array(
+                        'type' => 'button',
+                        'id' => 'generateAPI',
+                        'labelTranslate' => 'GENERATE_API_KEY',
+                        'icon' => 'key',
+                        'onclick' => 'var code = generateCode(); $(\'#organizrAPI_id\').val(code); $(\'#organizrAPI_id\').attr(\'data-changed\', \'true\');',
+                    ),
 				),
 			),
 			array(
@@ -2268,7 +2281,7 @@ echo buildSettings(
 
                                         <div id="loginStats">
 
-                                            <div class="content-box ultra-widget">
+                                            <div class="ultra-widget">
 
                                                 <div class="w-progress">
 
@@ -2517,6 +2530,16 @@ echo buildSettings(
                     $('#plexError').text("Enter Username and Password");
                 }
             });
+            //Generate API
+            function generateCode() {
+                var code = "";
+                var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+                for (var i = 0; i < 20; i++)
+                    code += possible.charAt(Math.floor(Math.random() * possible.length));
+
+                return code;
+            }
 			function performUpdate(){
 				$('#updateStatus').show();
 				setTimeout(function(){
@@ -3190,7 +3213,7 @@ echo buildSettings(
             //Enable Tooltips
             $('[data-toggle="tooltip"]').tooltip(); 
             //AJAX call to github to get version info	
-			<?php if (GIT_CHECK) { echo 'checkGithub()'; } ?>
+			<?php if (GIT_CHECK == "true") { echo 'checkGithub()'; } ?>
 
             //Edit Info tab with Github info
             <?php if(file_exists(FAIL_LOG)) : ?>
