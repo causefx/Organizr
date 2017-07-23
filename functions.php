@@ -2,14 +2,14 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.402');
+ define('INSTALLEDVERSION', '1.42');
 // ===================================
 
 // Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
 	echo "<center><img height='200px' src='images/confused.png'></center>";
-	echo "<center>Look's like somethigng happened, here are the errors and perhaps how to fix them:</center>";
+	echo "<center>Look's like something happened, here are the errors and perhaps how to fix them:</center>";
 	echo '<pre style="white-space: pre-line; background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
 	if ($die) { http_response_code(503); die(); }
 }
@@ -2905,7 +2905,7 @@ function getHeadphonesCalendar($url, $key, $list){
     $gotCalendar = "";
 	if (is_array($api) || is_object($api)){
 		foreach($api AS $child) {
-			if($child['Status'] == "Wanted"){
+			if($child['Status'] == "Wanted" && $list == "getWanted"){
 				$i++;
 				$albumName = addslashes($child['AlbumTitle']);
 				$albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
@@ -2920,6 +2920,18 @@ function getHeadphonesCalendar($url, $key, $list){
 				if($albumStatus == "Wanted" && $notReleased == "true"){ $albumStatusColor = "indigo-bg"; }elseif($albumStatus == "Downloaded"){ $albumStatusColor = "green-bg"; }else{ $albumStatusColor = "red-bg"; }
 
 				$gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
+			}
+			if($child['Status'] == "Processed" && $list == "getHistory"){
+				$i++;
+				$albumName = addslashes($child['Title']);
+				$albumDate = $child['DateAdded'];
+				$albumID = $child['AlbumID'];
+				$albumDate = strtotime($albumDate);
+				$albumDate = date("Y-m-d", $albumDate);
+				$albumStatusColor = "green-bg";
+				if (new DateTime() < new DateTime($albumDate)) {  $notReleased = "true"; }else{ $notReleased = "false"; }
+
+				$gotCalendar .= "{ title: \"$albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
 			}
 		}
     	if ($i != 0){ return $gotCalendar; }

@@ -1,6 +1,9 @@
 <?php
-
-require_once("user.php");
+if (file_exists('config/config.php')) {
+    require_once("user.php");
+    $db = DATABASE_LOCATION.'users.db';
+    $folder = USER_HOME;
+}
 
 function check($extension) {
     
@@ -116,9 +119,6 @@ function getFilePermission($file) {
     endif;
 }
 
-$db = DATABASE_LOCATION.'users.db';
-$folder = USER_HOME;
-
 ?>
 
 <!DOCTYPE html>
@@ -164,10 +164,11 @@ $folder = USER_HOME;
                 check("PDO");
                 check("SQLITE3");
                 check("Zip");
+                check("cURL");
                 check("openssl");
                 check("session");
                 check("simplexml");
-                checkFunction("MAIL");
+                //checkFunction("MAIL");
                 checkFunction("fopen");
 
                 @getFilePermission($db);
