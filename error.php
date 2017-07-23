@@ -20,19 +20,12 @@ $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
 
-// Load User List
-$gotUsers = $file_db->query('SELECT * FROM users');
-
-// Load Colours/Appearance
 foreach(loadAppearance() as $key => $value) {
 	$$key = $value;
 }
 
-
 $requested = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-
 $status = (isset($_GET['error'])?$_GET['error']:404);
-
 $codes = array(  
        400 => array('Bad Request', 'The server cannot or will not process the request due to an apparent client error.', 'sowwy'),
        401 => array('Unauthorized', 'You do not have access to this page.', 'sowwy'),

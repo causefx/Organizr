@@ -67,6 +67,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				echo nzbgetConnect($_GET['list'] ? $_GET['list'] : die('Error!'));
 				die();
 				break;
+			case 'show-image':
+				qualifyUser(NZBGETHOMEAUTH, true);
+				header('Content-type: image/jpeg');
+				echo file_get_contents($_GET['image']);
+				die();
+				break;
 			default:
 				sendNotification(false, 'Unsupported Action!');
 		}
@@ -74,7 +80,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
 	case 'POST':
         // Check if the user is an admin and is allowed to commit values
         switch ($action) {
-            case 'search-plex':
+            case 'tvdb-get':
+			 	$response = tvdbGet($_POST['id']);
+			 	break;
+			case 'search-plex':
 			 	$response = searchPlex($_POST['searchtitle']);
 			 	break;
 			case 'validate-invite':
@@ -96,11 +105,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
             default: // Stuff that you need admin for
                 qualifyUser('admin', true);
                 switch ($action) {
-                    case 'check-url':
+                    case 'test-email':
+                        sendResult(sendTestEmail($_POST['emailto'], $_POST['emailsenderemail'], $_POST['emailhost'], $_POST['emailauth'], $_POST['emailusername'], $_POST['emailpassword'], $_POST['emailtype'], $_POST['emailport'], $_POST['emailsendername']), "flask", "E-Mail TEST", "SUCCESS", "ERROR");
+                        break;
+					case 'check-url':
                         sendResult(frameTest($_POST['checkurl']), "flask", $_POST['checkurl'], "IFRAME_CAN_BE_FRAMED", "IFRAME_CANNOT_BE_FRAMED");
                         break;
                     case 'upload-images':
-                        uploadFiles('images/', array('jpg', 'png', 'svg', 'jpeg', 'bmp'));
+                        uploadFiles('images/', array('jpg', 'png', 'svg', 'jpeg', 'bmp', 'gif'));
                         sendNotification(true);
                         break;
                     case 'remove-images':

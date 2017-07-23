@@ -8,6 +8,11 @@ upgradeCheck();
 // Lazyload settings
 $databaseConfig = configLazy('config/config.php');
 
+// Load Colours/Appearance
+foreach(loadAppearance() as $key => $value) {
+	$$key = $value;
+}
+
 //Set some variables
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
@@ -19,7 +24,7 @@ $hasOptions = "No";
 $settingsicon = "No";
 $settingsActive = "";
 $action = "";
-$title = "Organizr";
+/*$title = "Organizr";
 $topbar = "#333333"; 
 $topbartext = "#66D9EF";
 $bottombar = "#333333";
@@ -31,7 +36,7 @@ $activetabtext = "#FFFFFF";
 $inactiveicon = "#66D9EF";
 $inactivetext = "#66D9EF";
 $loading = "#66D9EF";
-$hovertext = "#000000";
+$hovertext = "#000000";*/
 $loadingIcon = "images/organizr-load-w-thick.gif";
 $baseURL = "";
 
@@ -64,6 +69,10 @@ if(!file_exists('config/config.php')) {
 }
 
 if (file_exists('config/config.php')) {
+
+    if (!DATABASE_LOCATION){
+		die(header("Refresh:0"));
+	}
 
     $configReady = "Yes";
 
@@ -143,7 +152,7 @@ if (file_exists('config/config.php')) {
 
     endif;
 
-    if($hasOptions == "Yes") :
+    /*if($hasOptions == "Yes") :
 
         $resulto = $file_db->query('SELECT * FROM options');
 
@@ -165,7 +174,7 @@ if (file_exists('config/config.php')) {
 
         endforeach;
 
-    endif;
+    endif;*/
 
     $userpic = md5( strtolower( trim( $USER->email ) ) );
     if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
@@ -286,12 +295,12 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
         }.bottom-bnts {
 
-            background-color: <?=$bottombar;?> !important;
+            background: <?=$bottombar;?> !important;
 
         }.gn-menu-main {
 
 
-            background-color: <?=$topbar;?>;
+            background: <?=$topbar;?>;
 
         }.gn-menu-main ul.gn-menu {
 
@@ -364,7 +373,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             background-size: 0 2px,100% 1px;
             background-repeat: no-repeat;
             background-position: center bottom,center calc(100% - 1px);
-            background-color: transparent;
+            background: transparent;
             box-shadow: none;
 
         }.gn-menu li.active i.fa {
@@ -393,7 +402,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
         }div#preloader {
 
-            background-color: <?=$loading;?>;
+            background: <?=$loading;?>;
 
         }.iframe {
 
@@ -1037,7 +1046,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             </div>
         </div>
         <?php endif; endif;?>
-		<?php if ($inviteCode){ ?>
+		<?php if(isset($_GET['inviteCode'])){ ?>
 		<div id="inviteSet" class="login-modal modal fade">
 			<div style="background:<?=$sidebar;?>;" class="table-wrapper">
 				<div class="table-row">
@@ -1215,7 +1224,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             User.processRegistration();
         });
         $("#editInfo").click(function(){
-
             $( "div[id^='editInfoDiv']" ).toggle();
             $( "div[id^='buttonsDiv']" ).toggle();
         });
@@ -1276,11 +1284,10 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             	cta(e1, e2, {relativeToWindow: true}, function () {
                 $('.login-modal').modal("show");
             });
-
             e.preventDefault();
         });
 		//InviteCode
-		<?php if($inviteCode){ ?>
+		<?php if(isset($_GET['inviteCode'])){ ?>
 		$('#inviteSet').modal("show");	
 		<?php } ?>
 
@@ -1403,6 +1410,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             $("li[class^='tab-item active']").first().find("img").addClass("TabOpened");
             if (defaultTab){
                 defaultTab = defaultTab.substr(0, defaultTab.length-1);
+                console.log(defaultTab);
             }else{
                 defaultTabNone = $("li[class^='tab-item']").attr("id");
                 if (defaultTabNone){
@@ -1413,8 +1421,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             }
 
             if (defaultTab){
-
-                $("#content").html('<div class="iframe active" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
+                defaultTabName = $("li[class^='tab-item active']").attr("name");
+                $("#content").html('<div class="iframe active" data-content-name="'+defaultTabName+'" data-content-url="'+defaultTab+'"><iframe scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
                 document.getElementById('main-wrapper').focus();
             }
             if (defaultTab == null){
@@ -1605,7 +1613,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
                     $("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
-                    $( '<div class="iframe active" data-content-name="'+thisname+'" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
+                    $( '<div class="iframe active" data-content-name="'+thisname+'" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#content" );
                     document.title = thistitle;
                    // window.location.href = '#' + thisname;
 
@@ -1660,7 +1668,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
                     $("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
 
-                    $( '<div class="iframe active" data-content-name="'+thisname+'" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
+                    $( '<div class="iframe active" data-content-name="'+thisname+'" data-content-url="'+thisid+'"><iframe scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+thisid+'"></iframe></div>' ).appendTo( "#contentRight" );
                     document.title = thistitle;
                     window.location.href = '#' + thisname;
 

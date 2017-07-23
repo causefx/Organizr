@@ -1,6 +1,9 @@
 <?php
-
-require_once("user.php");
+if (file_exists('config/config.php')) {
+    require_once("user.php");
+    $db = DATABASE_LOCATION.'users.db';
+    $folder = USER_HOME;
+}
 
 function check($extension) {
     
@@ -25,7 +28,7 @@ function check($extension) {
         
         if($extension == "PDO_SQLITE") :
             
-            echo '<br/> If you are on Windows, please uncomment this line in php.ini: ;extension=php_pdo_sqlite.dll';
+            echo '<br/> If you are on Windows, please uncomment this line in php.ini: ;extension=php_pdo_sqlite.dll<br/>If you are on Ununtu, please install php5.3-sqlite or php7-sqlite depending on your version of PHP, then restart PHP service';
         
         endif;
     
@@ -116,9 +119,6 @@ function getFilePermission($file) {
     endif;
 }
 
-$db = DATABASE_LOCATION.'users.db';
-$folder = USER_HOME;
-
 ?>
 
 <!DOCTYPE html>
@@ -164,10 +164,11 @@ $folder = USER_HOME;
                 check("PDO");
                 check("SQLITE3");
                 check("Zip");
+                check("cURL");
                 check("openssl");
                 check("session");
                 check("simplexml");
-                checkFunction("MAIL");
+                //checkFunction("MAIL");
                 checkFunction("fopen");
 
                 @getFilePermission($db);

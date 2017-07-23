@@ -55,7 +55,7 @@ if(SLIMBAR == "true") {
 
         <title>Settings</title>
 
-        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
         <link rel="stylesheet" href="bower_components/metisMenu/dist/metisMenu.min.css">
@@ -146,7 +146,7 @@ if(SLIMBAR == "true") {
 				});
 				$element.appendTo('#submitTabs ul');
 				$element.find('.icp-auto-pend').iconpicker({placement: 'left', hideOnSelect: false, collision: true}).hide();
-    $('.tab-box').scrollTop($('.tab-box')[0].scrollHeight);
+                $('.tab-box').scrollTop($('.tab-box')[0].scrollHeight);
 			}
 			function submitTabs(form) {
 				var formData = {};
@@ -358,7 +358,7 @@ if(SLIMBAR == "true") {
                                     <li><a id="open-logs" box="logs-box"><i class="fa fa-file-text-o blue pull-right"></i>View Logs</a></li>
                                     <li><a id="open-homepage" box="homepage-box"><i class=" fa fa-home yellow pull-right"></i>Edit Homepage</a></li>
                                     <li><a id="open-advanced" box="advanced-box"><i class=" fa fa-cog light-blue pull-right"></i>Advanced</a></li>
-                                    <li><a id="open-invites" box="invites-box"><i class=" fa fa-user-plus gray pull-right"></i>Plex Invites</a></li>
+                                    <?php if(!empty(PLEXURL)){?><li><a id="open-invites" box="invites-box"><i class=" fa fa-user-plus gray pull-right"></i>Plex Invites</a></li><?php }?>
                                     <li><a id="open-info" box="info-box"><i class=" fa fa-info-circle orange pull-right"></i>About</a></li>
                                     <li><a id="open-donate" box="donate-box"><i class=" fa fa-money red pull-right"></i>Donate</a></li>
                                 </ul>
@@ -653,6 +653,21 @@ $userTypes = array(
 	'User' => 'user|admin',
 	'Admin' => 'admin',
 );
+$branchTypes = array(
+	'Master' => 'master',
+	'Develop' => 'develop',
+	'Pre-Develop' => 'cero-dev',
+);
+$refreshSeconds = array(
+	'1 sec' => '1000',
+	'5 secs' => '5000',
+	'10 secs' => '10000',
+	'15 secs' => '15000',
+	'30 secs' => '30000',
+	'60 secs' => '60000',
+	'90 secs' => '90000',
+	'120 secs' => '120000',
+);
 
 // Build Homepage Settings
 echo buildSettings(
@@ -719,6 +734,10 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{20}',
 						'value' => PLEXTOKEN,
 					),
+                    array(
+						'type' => 'custom',
+						'html' => '<button id="openPlexModal" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float"> <span class="btn-label"><i class="fa fa-ticket"></i></span>'.translate("GET_PLEX_TOKEN").'</button>',
+					),
      				array(
 						'type' => 'text',
 						'placeholder' => "",
@@ -729,14 +748,10 @@ echo buildSettings(
 					),
 					array(
 						'type' => 'text',
-						'placeholder' => "plex",
+						'placeholder' => "Name of Plex Tab i.e. Plex",
 						'labelTranslate' => 'PLEX_TAB_NAME',
 						'name' => 'plexTabName',
 						'value' => PLEXTABNAME,
-					),
-					array(
-						'type' => 'custom',
-						'html' => '<a href="https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token">Plex Token Wiki Article</a>',
 					),
 					array(
       					array(
@@ -762,6 +777,12 @@ echo buildSettings(
 							'labelTranslate' => 'RECENT_MUSIC',
 							'name' => 'plexRecentMusic',
 							'value' => PLEXRECENTMUSIC,
+						),
+                        array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'PLAYLISTS',
+							'name' => 'plexPlaylists',
+							'value' => PLEXPLAYLISTS,
 						),
 						array(
 							'type' => 'checkbox',
@@ -999,6 +1020,20 @@ echo buildSettings(
 						'name' => 'sabnzbdKey',
 						'value' => SABNZBDKEY,
 					),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'DOWNLOAD_REFRESH',
+						'name' => 'downloadRefresh',
+						'value' => DOWNLOADREFRESH,
+						'options' => $refreshSeconds,
+					),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'HISTORY_REFRESH',
+						'name' => 'historyRefresh',
+						'value' => HISTORYREFRESH,
+						'options' => $refreshSeconds,
+					),
 				),
 			),
 			array(
@@ -1033,6 +1068,20 @@ echo buildSettings(
 						'labelTranslate' => 'PASSWORD',
 						'name' => 'nzbgetPassword',
 						'value' => (empty(NZBGETPASSWORD)?'':randString(20)),
+					),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'DOWNLOAD_REFRESH',
+						'name' => 'downloadRefresh',
+						'value' => DOWNLOADREFRESH,
+						'options' => $refreshSeconds,
+					),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'HISTORY_REFRESH',
+						'name' => 'historyRefresh',
+						'value' => HISTORYREFRESH,
+						'options' => $refreshSeconds,
 					),
 				),
 			),
@@ -1215,11 +1264,11 @@ echo buildSettings(
 						'labelTranslate' => 'AUTHTYPE',
 						'name' => 'authType',
 						'value' => AUTHTYPE,
-						'onchange' => 'if (this.value == \'internal\') { $(\'.be-auth, #authBackend_id, #authBackendCreate_id\').parent().hide(); } else { $(\'#authBackend_id, #authBackendCreate_id\').trigger(\'change\').parent().show(); }',
+						'onchange' => 'if (this.value == \'internal\') { $(\'.be-auth, #authBackend_id, #authBackendCreate_id\').parent().hide(); } else { $(\'#authBackend_id, #authBackendCreate_id\').trigger(\'change\').parent().show(); }if (this.value == \'external\') { alert(\'ATTENTION! Before using this option, Make sure that the ADMIN account that you setup matches at least one username on your external backend.  Otherwide you will lose Admin functionality.  If something messes up, edit config/config.php and change authType to either internal or both.\') } ',
 						'options' => array(
 							'Organizr' => 'internal',
-							'Organizr & Backend' => 'both',
-							// 'Backend' => 'external',
+							(AUTHBACKEND) ? 'Organizr & '.ucwords(AUTHBACKEND) : 'Organizr & Backend' => 'both',
+                            (AUTHBACKEND) ? ucwords(AUTHBACKEND)." Only" : "Backend Only" => 'external',
 						),
 					),
 					array(
@@ -1272,7 +1321,7 @@ echo buildSettings(
 						'type' => 'text',
 						'placeholder' => randString(32),
 						'labelTranslate' => 'EMBY_TOKEN',
-						'name' => 'plexToken',
+						'name' => 'embyToken',
 						'class' => 'be-auth be-auth-emby_all be-auth-emby_connect',
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
@@ -1291,6 +1340,19 @@ echo buildSettings(
 						'class' => 'be-auth be-auth-plex',
 						'value' => (empty(PLEXPASSWORD)?'':randString(20)),
 					),
+                    array(
+						'type' => 'text',
+						'labelTranslate' => 'ORGANIZR_API_KEY',
+						'name' => 'organizrAPI',
+						'value' => ORGANIZRAPI,
+					),
+                    array(
+                        'type' => 'button',
+                        'id' => 'generateAPI',
+                        'labelTranslate' => 'GENERATE_API_KEY',
+                        'icon' => 'key',
+                        'onclick' => 'var code = generateCode(); $(\'#organizrAPI_id\').val(code); $(\'#organizrAPI_id\').attr(\'data-changed\', \'true\');',
+                    ),
 				),
 			),
 			array(
@@ -1330,13 +1392,20 @@ echo buildSettings(
 						'name' => 'cookiePassword',
 						'value' => (empty(COOKIEPASSWORD)?'':randString(20)),
 					),
-					array(
+                    array(
 						'type' => 'text',
+						'labelTranslate' => 'IPINFO_TOKEN',
+						'name' => 'ipInfoToken',
+						'value' => IPINFOTOKEN,
+					),
+					array(
+						'type' => 'select',
 						'labelTranslate' => 'GIT_BRANCH',
 						'placeholder' => 'Default: \'master\' - Development: \'develop\' OR \'cero-dev\'',
 						'id' => 'git_branch_id',
 						'name' => 'git_branch',
 						'value' => GIT_BRANCH,
+                        'options' => $branchTypes,
 					),
 					array(
 						array(
@@ -1348,6 +1417,7 @@ echo buildSettings(
 						array(
 							'type' => 'button',
 							'id' => 'gitForceInstall',
+                            'style' => (extension_loaded("ZIP")) ? "" : "display : none",
 							'labelTranslate' => 'GIT_FORCE',
 							'icon' => 'gear',
 							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { performUpdate(); ajax_request(\'POST\', \'forceBranchInstall\'); } }',
@@ -1416,6 +1486,12 @@ echo buildSettings(
 						),
 					),
 					array(
+                        array(
+							'type' => 'button',
+							'labelTranslate' => 'TEST_EMAIL',
+							'id' => 'testEmail',
+							'icon' => 'flask',
+						),
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'SMTP_HOST_AUTH',
@@ -2133,7 +2209,7 @@ echo buildSettings(
 
 																<td><?=$dateInviteUsed;?></td>
 																<td><?=$usedBy;?></td>
-																<td><?=$ipUsed;?></td>
+																<td style="cursor: pointer" class="ipInfo"><?=$ipUsed;?></td>
 
 																<td><span style="font-size: 100%;" class="label label-<?=$validColor;?>"><?=$row['valid'];?></span></td>
 
@@ -2205,7 +2281,7 @@ echo buildSettings(
 
                                         <div id="loginStats">
 
-                                            <div class="content-box ultra-widget">
+                                            <div class="ultra-widget">
 
                                                 <div class="w-progress">
 
@@ -2293,7 +2369,7 @@ echo buildSettings(
 
                                                     <td><?=$val["username"];?></td>
 
-                                                    <td><?=$val["ip"];?></td>
+                                                    <td style="cursor: pointer" class="ipInfo"><?=$val["ip"];?></td>
 
                                                     <td><span class="label label-<?php getColor($val["auth_type"]);?>"><?=$val["auth_type"];?></span></td>
 
@@ -2329,6 +2405,51 @@ echo buildSettings(
                 </div>
             </div>
             <!--End Content-->
+            <!-- Modal for IP -->
+            <div id="ipModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="ipIp">Modal title</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h3>Hostname: <small id="ipHostname"></small></h3>
+                            <h3>Location: <small id="ipLocation"></small></h3>
+                            <h3>Org: <small id="ipOrg"></small></h3>
+                            <h3>City: <small id="ipCity"></small></h3>
+                            <h3>Region: <small id="ipRegion"></small></h3>
+                            <h3>Country: <small id="ipCountry"></small></h3>
+                            <h3>Phone: <small id="ipPhone"></small></h3>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END IP Modal -->
+             <!-- Modal for Plex Token -->
+            <div id="plexModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title"><?php echo translate("GET_PLEX_TOKEN"); ?></h4>
+                        </div>
+                        <div class="modal-body">
+                            <div style="display:none" id="plexError" class=""></div>
+                            <input class="form-control material" placeholder="<?php echo translate("USERNAME"); ?>" type="text" name="plex_username" id="plex_username" value="<?php echo PLEXUSERNAME;?>">
+                            <input class="form-control material" placeholder="<?php echo translate("PASSWORD"); ?>" type="password" name="plex_password" id="plex_password" value="<?php echo PLEXPASSWORD;?>">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves" data-dismiss="modal"><?php echo translate("CLOSE"); ?></button>
+                            <button id="getPlexToken" type="button" class="btn btn-success waves waves-effect waves-float"><?php echo translate("GET_PLEX_TOKEN"); ?></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END IP Modal -->
 
         </div>
 		 <?php if(isset($_POST['op'])) : ?>
@@ -2346,6 +2467,79 @@ echo buildSettings(
         <?php endif; ?>
 
 		<script>
+            //IP INFO
+            $(".ipInfo").click(function(){
+                $.getJSON("https://ipinfo.io/"+$(this).text()+"/?token=<?php echo IPINFOTOKEN;?>", function (response) {
+                    $('#ipModal').modal('show');
+                    $('#ipIp').text("IP Info for: "+response.ip);
+                    $('#ipHostname').text(response.hostname);
+                    $('#ipLocation').text(response.loc);
+                    $('#ipOrg').text(response.org);
+                    $('#ipCity').text(response.city);
+                    $('#ipRegion').text(response.region);
+                    $('#ipCountry').text(response.country);
+                    $('#ipPhone').text(response.phone);
+                    console.log(response);
+                });
+            });
+            // Plex.tv auth token fetch
+            $("#openPlexModal").click(function() {
+                $('#plexModal').modal('show');
+            });
+            $("#getPlexToken").click(function() {
+                $('#plexError').show();
+                $('#plexError').addClass("well well-sm yellow-bg");
+                $('#plexError').text("Grabbing Token");
+                var plex_username = $("#plex_username").val().trim();
+                var plex_password = $("#plex_password").val().trim();
+                if ((plex_password !== '') && (plex_password !== '')) {
+                    $.ajax({
+                        type: 'POST',
+                        headers: {
+                            'X-Plex-Product':'Organizr',
+                            'X-Plex-Version':'1.0',
+                            'X-Plex-Client-Identifier':'01010101-10101010'
+                        },
+                        url: 'https://plex.tv/users/sign_in.json',
+                        data: {
+                            'user[login]': plex_username,
+                            'user[password]': plex_password,
+                            force: true
+                        },
+                        cache: false,
+                        async: true,
+                        complete: function(xhr, status) {
+                            var result = $.parseJSON(xhr.responseText);
+                            if (xhr.status === 201) {
+                                $('#plexError').removeClass();
+                                $('#plexError').addClass("well well-sm green-bg");
+                                $('#plexError').show();
+                                $('#plexError').text(xhr.statusText);
+                                $("#plexToken_id").val(result.user.authToken);
+                                $("#plexToken_id").attr('data-changed', 'true');
+                                $('#plexModal').modal('hide');
+                            } else {
+                                $('#plexError').removeClass();
+                                $('#plexError').addClass("well well-sm red-bg");
+                                $('#plexError').show();
+                                $('#plexError').text(xhr.statusText);
+                            }
+                        }
+                    });
+                } else {
+                    $('#plexError').text("Enter Username and Password");
+                }
+            });
+            //Generate API
+            function generateCode() {
+                var code = "";
+                var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+                for (var i = 0; i < 20; i++)
+                    code += possible.charAt(Math.floor(Math.random() * possible.length));
+
+                return code;
+            }
 			function performUpdate(){
 				$('#updateStatus').show();
 				setTimeout(function(){
@@ -2630,6 +2824,38 @@ echo buildSettings(
             });
         </script>
         <script>
+            //TestEmail
+            function isUpperCase(str) {
+                return str === str.toUpperCase();
+            }
+            $('#smtpHostAuth_id').change(function() {
+                if($('#smtpHostAuth_id').attr("data-value") == "true"){
+                    $('#smtpHostAuth_id').attr("data-value", "false");
+                }else{
+                    $('#smtpHostAuth_id').attr("data-value", "true");
+                }
+            });
+            $('#testEmail').on('click', function () {
+                var password = '';
+                if(isUpperCase($('#smtpHostPassword_id').val())){
+                    password = '<?php echo SMTPHOSTPASSWORD; ?>';
+                }else{
+                    password = $('#smtpHostPassword_id').val();
+                }
+                console.log("starting");
+                ajax_request('POST', 'test-email', {
+                    emailto: '<?php echo $USER->email;?>',
+                    emailhost: $('#smtpHost_id').val(),
+                    emailport: $('#smtpHostPort_id').val(),
+                    emailusername: $('#smtpHostUsername_id').val(),
+                    emailpassword: password,
+                    emailsendername: $('#smtpHostSenderName_id').val(),
+                    emailsenderemail: $('#smtpHostSenderEmail_id').val(),
+                    emailtype: $('#smtpHostType_id').val(),
+                    emailauth: $('#smtpHostAuth_id').attr("data-value"),
+                });
+                console.log("ajax done");
+            });
             //Custom Themes            
             function changeColor(elementName, elementColor) {
                 var definedElement = document.getElementById(elementName);
@@ -2929,6 +3155,7 @@ echo buildSettings(
                     checkurl: $('#urlTestForm [name=url-test]').val(),
                 });
             });
+
             //Hide Icon box on load
             $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
             //Set Some Scrollbars
@@ -2985,8 +3212,8 @@ echo buildSettings(
             $("a[id^='ToolTables_datatable_0'] span").html('<?php echo $language->translate("PRINT");?>')
             //Enable Tooltips
             $('[data-toggle="tooltip"]').tooltip(); 
-        	   //AJAX call to github to get version info	
-			         <?php if (GIT_CHECK) { echo 'checkGithub()'; } ?>
+            //AJAX call to github to get version info	
+			<?php if (GIT_CHECK == "true") { echo 'checkGithub()'; } ?>
 
             //Edit Info tab with Github info
             <?php if(file_exists(FAIL_LOG)) : ?>

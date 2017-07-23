@@ -17,63 +17,10 @@ $USER = new User("registration_callback");
 // Check if connection to homepage is allowed
 qualifyUser(HOMEPAGEAUTHNEEDED, true);
 
-$dbfile = DATABASE_LOCATION.'users.db';
-
-$file_db = new PDO("sqlite:" . $dbfile);
-$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-$dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
-
-$hasOptions = "No";
-
-foreach($dbOptions as $row) :
-
-    if (in_array("options", $row)) :
-        $hasOptions = "Yes";
-    endif;
-
-endforeach;
-
-if($hasOptions == "No") :
-
-    $title = "Organizr";
-    $topbar = "#333333"; 
-    $topbartext = "#66D9EF";
-    $bottombar = "#333333";
-    $sidebar = "#393939";
-    $hoverbg = "#AD80FD";
-    $activetabBG = "#F92671";
-    $activetabicon = "#FFFFFF";
-    $activetabtext = "#FFFFFF";
-    $inactiveicon = "#66D9EF";
-    $inactivetext = "#66D9EF";
-    $loading = "#66D9EF";
-    $hovertext = "#000000";
-
-endif;
-
-if($hasOptions == "Yes") :
-
-    $resulto = $file_db->query('SELECT * FROM options'); 
-    foreach($resulto as $row) : 
-
-        $title = isset($row['title']) ? $row['title'] : "Organizr";
-        $topbartext = isset($row['topbartext']) ? $row['topbartext'] : "#66D9EF";
-        $topbar = isset($row['topbar']) ? $row['topbar'] : "#333333";
-        $bottombar = isset($row['bottombar']) ? $row['bottombar'] : "#333333";
-        $sidebar = isset($row['sidebar']) ? $row['sidebar'] : "#393939";
-        $hoverbg = isset($row['hoverbg']) ? $row['hoverbg'] : "#AD80FD";
-        $activetabBG = isset($row['activetabBG']) ? $row['activetabBG'] : "#F92671";
-        $activetabicon = isset($row['activetabicon']) ? $row['activetabicon'] : "#FFFFFF";
-        $activetabtext = isset($row['activetabtext']) ? $row['activetabtext'] : "#FFFFFF";
-        $inactiveicon = isset($row['inactiveicon']) ? $row['inactiveicon'] : "#66D9EF";
-        $inactivetext = isset($row['inactivetext']) ? $row['inactivetext'] : "#66D9EF";
-        $loading = isset($row['loading']) ? $row['loading'] : "#66D9EF";
-        $hovertext = isset($row['hovertext']) ? $row['hovertext'] : "#000000";
-
-    endforeach;
-
-endif;
+// Load Colours/Appearance
+foreach(loadAppearance() as $key => $value) {
+	${$key} = $value;
+}
 
 $startDate = date('Y-m-d',strtotime("-".CALENDARSTARTDAY." days"));
 $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days")); 
@@ -121,7 +68,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         <script src="bower_components/slick/slick.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
-	       <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
+	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
 		
 		<!--Other-->
 		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
@@ -131,6 +78,9 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
         <![endif]-->
         <style>
+            .fc-day-grid-event{
+                cursor: pointer;
+            }
             .recentItems {
                 padding-top: 10px;
                 margin: 5px 0;
@@ -494,7 +444,17 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                     ?>
                     </div>
                 </div>
-				<?php } ?>
+                <div id="plexPlaylists" class="row">
+                    <div class="col-lg-12">
+                    <?php
+                    if(PLEXPLAYLISTS == "true"){  
+                        echo getPlexPlaylists($plexArray);
+                    } 
+                    ?>
+                    </div>
+                </div>
+                <?php } ?>
+    
 				<?php if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) { ?>
                 <div id="embyRowNowPlaying" class="row">
                     <?php if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(12, EMBYSHOWNAMES, $USER->role); } ?>
@@ -528,6 +488,18 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                             <span class="label indigo-bg well-sm">Unreleased</span>
                             <span class="label light-blue-bg well-sm">Premier</span>
                         </div>
+                        <!--
+                        <div class="pull-right">
+                            <div class="btn-group" role="group">
+                            <button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">View All<span class="caret"></span></button>
+                            <ul style="right:0; left: auto" class="dropdown-menu">
+                                <li><a class="" href="javascript:void(0)">Movies</a></li>
+                                <li><a class="" href="javascript:void(0)">TV Shows</a></li>
+                                <li><a class="" href="javascript:void(0)">Music</a></li>
+                            </ul>
+                            </div>
+                        </div>-->
+
                     </div>
                 </div>
                 <div id="calendarRow" class="row">
@@ -545,6 +517,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         });
 		$('#clearSearch').click(function(e){
             $('#searchInput').val("");
+            $('#resultshere').html("");
             $('#searchInput').focus();
             e.preventDefault();
         });
@@ -574,6 +547,14 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
 		
         $( document ).ready(function() {
             $('#plexSearchForm').on('submit', function () {
+                var refreshBox = $(this).closest('div.content-box');
+                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
+                setTimeout(function(){
+                    var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                    deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+                        refreshPreloader.remove();
+                    });
+                },1000);
                 ajax_request('POST', 'search-plex', {
                     searchtitle: $('#plexSearchForm [name=search-title]').val(),
                 }).done(function(data){ $('#resultshere').html(data);});
@@ -593,93 +574,148 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 var id = $(this).attr("link");
                 $("div[np^='"+id+"']").toggle();
             });
-     
-            $('.recentItems').slick({
-              
-                slidesToShow: 13,
-                slidesToScroll: 13,
-                infinite: true,
-                lazyLoad: 'ondemand',
-                prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
-                nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
-                appendArrows: '.recentHeader',
-                responsive: [
-                {
-                  breakpoint: 1750,
-                  settings: {
-                    slidesToShow: 12,
-                    slidesToScroll: 12,
-                  }
-                },
-                {
-                  breakpoint: 1600,
-                  settings: {
-                    slidesToShow: 11,
-                    slidesToScroll: 11,
-                  }
-                },
-                {
-                  breakpoint: 1450,
-                  settings: {
-                    slidesToShow: 10,
-                    slidesToScroll: 10,
-                  }
-                },
-                {
-                  breakpoint: 1300,
-                  settings: {
-                    slidesToShow: 9,
-                    slidesToScroll: 9,
-                  }
-                },
-                {
-                  breakpoint: 1150,
-                  settings: {
-                    slidesToShow: 8,
-                    slidesToScroll: 8,
-                  }
-                },
-                {
-                  breakpoint: 1000,
-                  settings: {
-                    slidesToShow: 7,
-                    slidesToScroll: 7,
-                  }
-                },
-                {
-                  breakpoint: 850,
-                  settings: {
-                    slidesToShow: 6,
-                    slidesToScroll: 6,
-                  }
-                },
-                {
-                  breakpoint: 700,
-                  settings: {
-                    slidesToShow: 5,
-                    slidesToScroll: 5,
-                  }
-                },
-                {
-                  breakpoint: 675,
-                  settings: {
-                    slidesToShow: 4,
-                    slidesToScroll: 4
-                  }
-                },
-                {
-                  breakpoint: 480,
-                  settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3
-                  }
+
+            $('.recentItems').each(function() {
+                var name = $(this).attr("data-name");
+                console.log(name);
+                $(this).slick({
+                
+                    slidesToShow: 13,
+                    slidesToScroll: 13,
+                    infinite: true,
+                    lazyLoad: 'ondemand',
+                    prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
+                    nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
+                    appendArrows: $('.'+name),
+                    arrows: true,
+                    responsive: [
+                    {
+                    breakpoint: 1750,
+                    settings: {
+                        slidesToShow: 12,
+                        slidesToScroll: 12,
+                    }
+                    },
+                    {
+                    breakpoint: 1600,
+                    settings: {
+                        slidesToShow: 11,
+                        slidesToScroll: 11,
+                    }
+                    },
+                    {
+                    breakpoint: 1450,
+                    settings: {
+                        slidesToShow: 10,
+                        slidesToScroll: 10,
+                    }
+                    },
+                    {
+                    breakpoint: 1300,
+                    settings: {
+                        slidesToShow: 9,
+                        slidesToScroll: 9,
+                    }
+                    },
+                    {
+                    breakpoint: 1150,
+                    settings: {
+                        slidesToShow: 8,
+                        slidesToScroll: 8,
+                    }
+                    },
+                    {
+                    breakpoint: 1000,
+                    settings: {
+                        slidesToShow: 7,
+                        slidesToScroll: 7,
+                    }
+                    },
+                    {
+                    breakpoint: 850,
+                    settings: {
+                        slidesToShow: 6,
+                        slidesToScroll: 6,
+                    }
+                    },
+                    {
+                    breakpoint: 700,
+                    settings: {
+                        slidesToShow: 5,
+                        slidesToScroll: 5,
+                    }
+                    },
+                    {
+                    breakpoint: 675,
+                    settings: {
+                        slidesToShow: 4,
+                        slidesToScroll: 4
+                    }
+                    },
+                    {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 3,
+                        slidesToScroll: 3
+                    }
+                    }
+                    // You can unslick at a given breakpoint now by adding:
+                    // settings: "unslick"
+                    // instead of a settings object
+                ]
+                });
+            });
+
+            
+            // each filter we click on
+            $(".filter-recent-event > li").on("click", function() {
+                
+            // toggle the filter on/off
+            $(this).data( "filter-on" , !$(this).data("filter-on") );
+            
+            // set all the filter strings to empty
+            var filtersOn = "";
+            var filtersOff = "";
+            var allFilters = "";
+            
+            // loop through each filter
+            $(".filter-recent-event > li").each(function() {
+                
+                // set a variable to hold the value of the filter class
+                // and also if the filter is on/off
+                var filter = $(this).data("filter");
+                var isOn = $(this).data("filter-on");
+
+                // add the filter to the filtersOn / filtersOff collection
+                if( isOn ) {
+                    filtersOn += "." + filter + ", ";
+                } else {
+                    filtersOff += "." + filter + ", ";
                 }
-                // You can unslick at a given breakpoint now by adding:
-                // settings: "unslick"
-                // instead of a settings object
-              ]
+
             });
             
+            // remove the last ", " from each filter collection.
+            filtersOn = filtersOn.replace(/, $/, "");
+            filtersOff = filtersOff.replace(/, $/, "");
+            
+            // remove all filters if none are on.
+            if( filtersOn === "" ) {
+                filtersOn = "*";
+                filtersOff = "";
+            }
+            
+            // combine the filters together ( on + off )
+            allFilters = filtersOn + ":not(" + filtersOff + ")";
+            console.log( allFilters );
+            
+            // now filter the slides.
+            $('.recentItems ')
+                .slick('slickUnfilter')
+                .slick('slickFilter' , allFilters );
+
+            });
+            /*
             var movieFiltered = false;
             var seasonFiltered = false;
             var albumFiltered = false;
@@ -718,7 +754,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 $(this).text('Hide Music');
                 albumFiltered = false;
               }
-            });
+            });*/
             
             /*$('.w-refresh').click(function(e){
                 var moreInfo = $(this).closest('div.overlay').addClass("show");
@@ -745,8 +781,8 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
             // check if browser support HTML5 local storage
 			
             <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>
-            var queueRefresh = 30000;
-            var historyRefresh = 120000; // This really doesn't need to happen that often
+            var queueRefresh = <?php echo DOWNLOADREFRESH; ?>;
+            var historyRefresh = <?php echo HISTORYREFRESH; ?>; // This really doesn't need to happen that often
 
             var queueLoad = function() {
             <?php if(SABNZBDURL != "") { echo '$("tbody.dl-queue.sabnzbd").load("ajax.php?a=sabnzbd-update&list=queue");'; } ?>
@@ -800,10 +836,37 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                         today: { buttonText: '<?php echo $language->translate("TODAY");?>' },
                     },
                     events: [
-<?php if (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)){ echo getSickrageCalendarWanted($sickrage->future()); echo getSickrageCalendarHistory($sickrage->history("100","downloaded")); } ?>
-<?php if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){ echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); } ?>
-<?php if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){ echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); } ?>                 
-<?php if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){ echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); } ?>                                
+<?php 
+if (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)){
+	try { 
+		echo getSickrageCalendarWanted($sickrage->future());
+	} catch (Exception $e) { 
+		writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
+	} try { 
+		echo getSickrageCalendarHistory($sickrage->history("100","downloaded"));
+	} catch (Exception $e) { 
+		writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
+	}
+}
+if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){
+	try {
+		echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); 
+	} catch (Exception $e) { 
+		writeLog("error", "SONARR ERROR: ".strip($e->getMessage())); 
+	}
+}
+if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){ 
+	try { 
+		echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); 
+	} catch (Exception $e) { 
+		writeLog("error", "RADARR ERROR: ".strip($e->getMessage())); 
+	}
+}
+if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
+	echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); 
+	echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); 
+
+}?>                                
                     ],
                     eventRender: function eventRender( event, element, view ) {
                         return ['all', event.imagetype].indexOf($('#imagetype_selector').val()) >= 0
@@ -817,17 +880,208 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
             $('#imagetype_selector').on('change',function(){
                 $('#calendar').fullCalendar('rerenderEvents');
             })
-            var $divs = $("div.row");
-
-            $('#numBnt').on('click', function () {
-                var numericallyOrderedDivs = $divs.sort(function (a, b) {
-                    return $(a).find("sort").text() > $(b).find("sort").text();
-                });
-                $("#content").html(numericallyOrderedDivs);
-            });
         </script>
         <?php } ?>
+        <script>
+            function convertTime(a){
+                if(a){
+                    var hours = Math.trunc(a/60);
+                    var minutes = a % 60;
+                    return hours+"h "+minutes+"m";
+                }else{
+                    return "N/A";
+                }
+            }
+            function convertArray(a, type){
+                var result = "";
+                var count = 1;
+                var color = "";
+                $.each( a, function( key, value ) {
+                    if (count == 1){ color = "gray"; }else{ color = "gray"; }
+                    if(type == "MOVIE"){
+                        result += '<span class="label label-'+color+'">'+value['name']+'</span>&nbsp;';
+                    }else if(type == "TV"){
+                        result += '<span class="label label-'+color+'">'+value+'</span>&nbsp;';
+                    }
+                    count++;
+                });
+                return result;
+            }
+            function convertTrailer(a){
+                var result = "";
+                var count = 1;
+                $.each( a.results, function( key, value ) {
+                    if (count == 1){
+                        result += '<span id="openTrailer" style="cursor:pointer;width: 100%;display: block;" data-key="'+value['key']+'" data-name="'+value['name']+'" data-site="'+value['site']+'" class="label label-danger"><i class="fa fa-youtube-play" aria-hidden="true"></i> &nbsp;Watch Trailer</span>&nbsp;';
+                    }
+                    count++;
+                });
+                return result;
+            }
+            function convertCast(a){
+                var result = "";
+                var count = 1;
+                $.each( a.cast, function( key, value ) {
+                    if( value['profile_path'] ){
+                        if (count <= 6){
+                            result += '<div class="col-lg-2 col-xs-2"><div class="zero-m"><img style="border-radius:10%;margin-left: auto;margin-right: auto;display: block;" height="50px" src="https://image.tmdb.org/t/p/w150'+value['profile_path']+'" alt="profile"><h5 class="text-center"><strong>'+value['name']+'</strong></h5><h6 class="text-center">'+value['character']+'</h6></div></div>';
+                            count++;
+                        }
+                    }
+                });
+                return result;
+            }
+            function whatIsIt(a){
+                var what = Object.prototype.toString;
+                if(what.call(a) == "[object Array]"){
+                    return a[0].fileName;
+                }else if(what.call(a) == "[object Object]"){
+                    return a.fileName;
+                }
+            }
+            function whatWasIt(a){
+                var what = Object.prototype.toString;
+                if(what.call(a) == "[object Array]"){
+                    return a[0];
+                }else if(what.call(a) == "[object Object]"){
+                    return a;
+                }
+            }
+            $(document).on('click', "#openTrailer", function(){
+                var key = $(this).attr("data-key");
+                $('#iFrameYT').html('<iframe id="calendarYoutube" class="embed-responsive-item" src="https://www.youtube.com/embed/'+key+'" allowfullscreen=""></iframe>');
+                $('#calendarVideo').modal('show');
+            });
+            $(document).on('click', "a[class*=ID-]", function(){
+                $('#calendarExtra').modal('show');
+                var refreshBox = $('#calendarMainID');
+                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
+                setTimeout(function(){
+                    var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                    deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+                        refreshPreloader.remove();
+                    });
+                },300);
+                var check = $(this).attr("class");
+                var ID = check.split("--")[1];
+                if (~check.indexOf("tvID")){
+                    var type = "TV";
+                    ajax_request('POST', 'tvdb-get', {
+                        id: ID,
+                    }).done(function(data){ 
+                        if( data.trakt ) {                        
+                            $.ajax({
+                                type: 'GET',
+                                url: 'https://api.themoviedb.org/3/tv/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits',
+                                cache: true,
+                                async: true,
+                                complete: function(xhr, status) {
+                                    var result = $.parseJSON(xhr.responseText);
+                                    if (xhr.statusText === "OK") {
+                                        console.log(result);
+                                        $('#calendarTitle').text(result.name);
+                                        $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
+                                        $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(whatWasIt(result.episode_run_time))+'</span>&nbsp;');
+                                        $('#calendarSummary').text(result.overview);
+                                        $('#calendarTagline').text("");
+                                        $('#calendarTrailer').html(convertTrailer(result.videos));
+                                        $('#calendarCast').html(convertCast(result.credits));
+                                        $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
+                                        $('#calendarLang').html(convertArray(result.languages, "TV"));
+                                        $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
+                                        $('#calendarMain').attr("style","background-image: url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");background-position: center;-webkit-filter: brightness(50%) contrast(100%);filter: brightness(50%) contrast(100%);top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                                        $('#calendarExtra').modal('show');
+                                    }
+                                }
+                            });
+                        }else{
+                           $('#calendarTitle').text(data.series.seriesName);
+                            $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+data.series.siteRating+'</span>&nbsp');
+                            $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(data.series.runtime)+'</span>&nbsp;');
+                            $('#calendarSummary').text(data.series.overview);
+                            $('#calendarTagline').text("");
+                            $('#calendarTrailer').html("");
+                            $('#calendarCast').html("");
+                            $('#calendarGenres').html(convertArray(data.series.genre, "TV"));
+                            $('#calendarLang').html("");
+                            $('#calendarPoster').attr("src","https://thetvdb.com/banners/_cache/"+whatIsIt(data.poster));
+                            $('#calendarMain').attr("style","background-size: 1000px 563px; background-image: url(ajax.php?a=show-image&image=http://thetvdb.com/banners/"+whatIsIt(data.backdrop)+");background-position: center;-webkit-filter: brightness(50%) contrast(100%);filter: brightness(50%) contrast(100%);top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                            $('#calendarExtra').modal('show');
+                        }
+                    });
+                }else if (~check.indexOf("movieID")){
+                    var type = "MOVIE";
+                    $.ajax({
+                        type: 'GET',
+                        url: 'https://api.themoviedb.org/3/movie/'+ID+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits',
+                        cache: true,
+                        async: true,
+                        complete: function(xhr, status) {
+                            var result = $.parseJSON(xhr.responseText);
+                            console.log(result);
+                            console.log(convertCast(result.credits));
+                            if (xhr.statusText === "OK") {
+                                $('#calendarTitle').text(result.title);
+                                $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
+                                $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(result.runtime)+'</span>&nbsp;');
+                                $('#calendarSummary').text(result.overview);
+                                $('#calendarTagline').text(result.tagline);
+                                $('#calendarTrailer').html(convertTrailer(result.videos));
+                                $('#calendarCast').html(convertCast(result.credits));
+                                $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
+                                $('#calendarLang').html(convertArray(result.spoken_languages, "MOVIE"));
+                                $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
+                                $('#calendarMain').attr("style","background-image: url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");background-position: center;-webkit-filter: brightness(50%) contrast(100%);filter: brightness(50%) contrast(100%);top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                                $('#calendarExtra').modal('show');
+                            }
+                        }
+                    });
+                }
+            });
+        </script>
+        <div id="calendarExtra" class="modal fade in" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg gray-bg" role="document">
+                <div id="calendarMainID" class="modal-content">
+                    <div class="modal-content" id="calendarMain"></div>
+                    <div style="position: inherit; padding: 15px">
+                        <span id="calendarRuntime" class="pull-left"></span>
+                        <span id="calendarRating" class="pull-left"></span>
+                        <span id="calendarGenres" class="pull-right"></span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-2 col-xs-4">
+                                <img style="width:100%;border-radius: 10px;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" id="calendarPoster" src="">
+                            </div>
+                            <div class="col-lg-10 col-sm-8">
+                                <h2 id="calendarTitle" class="modal-title text-center">Modal title</h2>
+                                <h6 id="calendarTagline" class="modal-title text-center"><em>Modal title</em></h6>
+                                <p id="calendarSummary">Modal Summary</p>
+                                <div class="" id="calendarCast">Modal Summary</div>
+                            </div>
+                        </div>
+                    </div>
+                   <div style="position: inherit; padding: 15px 0px 30px 0px; margin-top: -20px;">
+                        <div class="col-lg-2 col-xs-4">
+                            <span id="calendarTrailer" class="pull-left" style="width:100%"></span>
+                        </div> 
+                        <div class="col-lg-10 col-sm-8">   
+                            <span id="calendarLang" class="pull-right"></span>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="calendarVideo" class="modal fade in palette-Grey-900 bg" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg gray-bg" role="document">
+                <div id="calendarMainVideo" class="modal-content gray-bg">
+                    <div class="">
+                        <!-- 16:9 aspect ratio -->
+                        <div id="iFrameYT" class="embed-responsive embed-responsive-16by9 gray-bg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </body>
-
 </html>

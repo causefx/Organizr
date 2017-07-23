@@ -13,6 +13,7 @@ return array(
 	"plexHomeAuth" => false,
 	"plexSearch" => false,
 	"plexRecentItems" => "20",
+	"plexPlaylists" => "false",
 	"plexTabName" => "",
 	"embyURL" => "",
 	"embyToken" => "",
@@ -85,4 +86,8 @@ return array(
 	"homepageNoticeType" => "success",
 	"homepageNoticeAuth" => "false",
 	"homepageNoticeLayout" => "elegant",
+	"ipInfoToken" => "ddd0c072ad5021",
+	"historyRefresh" => "120000",
+	"downloadRefresh" => "30000",
+	"organizrAPI" => "",
 );
