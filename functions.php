@@ -9,7 +9,7 @@
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
 	echo "<center><img height='200px' src='images/confused.png'></center>";
-	echo "<center>Look's like somethigng happened, here are the errors and perhaps how to fix them:</center>";
+	echo "<center>Look's like something happened, here are the errors and perhaps how to fix them:</center>";
 	echo '<pre style="white-space: pre-line; background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line']."\n\n".print_r($variable, true).'</pre>';
 	if ($die) { http_response_code(503); die(); }
 }
