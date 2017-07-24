@@ -1546,6 +1546,12 @@ echo buildSettings(
 						),
 					),
 					array(
+                        array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'ENABLE_SPLASH_SCREEN',
+							'name' => 'splash',
+							'value' => SPLASH,
+						),
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'ENABLE_LOADING_SCREEN',
