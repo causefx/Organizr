@@ -90,4 +90,5 @@ return array(
 	"historyRefresh" => "120000",
 	"downloadRefresh" => "30000",
 	"organizrAPI" => "",
+	"splash" => "false",
 );
