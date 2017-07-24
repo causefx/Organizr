@@ -1160,8 +1160,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
                     <div class="col-lg-12">
                         <div class="row">                      
                             <?php if($tabSetup == "No") : $tabCount = 1; foreach($splash as $row) : ?>
-                            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
-                                <li style="list-style-type: none; cursor: pointer;" window="<?=$row['window'];?>" class="splash-item content-box small-box ultra-widget gray-bg" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
+                            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2" id="splash-<?php echo strtolower($row['name']);?>">
+                                <li style="list-style-type: none; cursor: pointer;" window="<?=$row['window'];?>" class="splash-item content-box small-box ultra-widget gray-bg" name="<?php echo strtolower($row['name']);?>">
                                     <div class="w-content">
                                         <div class="w-icon">
                                             <center>
