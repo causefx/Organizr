@@ -2925,7 +2925,7 @@ function getHeadphonesCalendar($url, $key, $list){
 				$i++;
 				$find = array('_','[', ']', '\n');
 				$replace = array(' ','(', ')', ' ');
-				$albumName = addslashes(str_replace($find,$replace,$child['Title']));
+				$albumName = addslashes(str_replace($find,$replace,$child['FolderName']));
 				//$albumName = addslashes($child['Title']);
 				$albumDate = $child['DateAdded'];
 				$albumID = $child['AlbumID'];
