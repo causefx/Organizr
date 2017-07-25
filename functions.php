@@ -2923,7 +2923,10 @@ function getHeadphonesCalendar($url, $key, $list){
 			}
 			if($child['Status'] == "Processed" && $list == "getHistory"){
 				$i++;
-				$albumName = addslashes($child['Title']);
+				$find = array('_','[', ']');
+				$replace = array(' ','(', ')');
+				$albumName = addslashes(str_replace($find,$replace,$child['Title']));
+				//$albumName = addslashes($child['Title']);
 				$albumDate = $child['DateAdded'];
 				$albumID = $child['AlbumID'];
 				$albumDate = strtotime($albumDate);
