@@ -686,7 +686,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $thumb = $item['art'];
                 $key = $item['ratingKey'] . "-np";
                 $elapsed = $item['viewOffset'];
-                $duration = $item['duration'];
+                $duration = ($item['duration']) ? $item['duration'] : $item->Media['duration'];
                 $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
@@ -717,7 +717,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $thumb = $item['art'];
                 $key = $item['ratingKey'] . "-np";
                 $elapsed = $item['viewOffset'];
-                $duration = $item['duration'];
+                $duration = ($item['duration']) ? $item['duration'] : $item->Media['duration'];
                 $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
@@ -753,7 +753,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
 				$useImage = (isset($item['live']) ? "images/livetv.png" : null);
 				$extraInfo = isset($item['extraType']) ? "Trailer" : (isset($item['live']) ? "Live TV" : ":)");
                 $elapsed = $item['viewOffset'];
-                $duration = $item['duration'];
+                $duration = ($item['duration']) ? $item['duration'] : $item->Media['duration'];
                 $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
@@ -789,7 +789,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $thumb = $item['art'];
                 $key = $item['ratingKey'] . "-np";
                 $elapsed = $item['viewOffset'];
-                $duration = $item['duration'];
+                $duration = ($item['duration']) ? $item['duration'] : $item->Media['duration'];
                 $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
@@ -822,7 +822,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 $thumb = $item['art'];
                 $key = $item['ratingKey'] . "-np";
                 $elapsed = $item['viewOffset'];
-                $duration = $item['duration'];
+                $duration = ($item['duration']) ? $item['duration'] : $item->Media['duration'];
                 $watched = (!empty($elapsed) ? floor(($elapsed / $duration) * 100) : 0);
                 $transcoded = floor($item->TranscodeSession['progress']- $watched);
                 $stream = $item->Media->Part->Stream['decision'];
@@ -2909,7 +2909,7 @@ function getHeadphonesCalendar($url, $key, $list){
 				$i++;
 				$albumName = addslashes($child['AlbumTitle']);
 				$albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
-				$albumDate = $child['ReleaseDate'];
+				$albumDate = (strlen($child['ReleaseDate']) > 4) ? $child['ReleaseDate'] : $child['ReleaseDate']."-01-01";
 				$albumID = $child['AlbumID'];
 				$albumDate = strtotime($albumDate);
 				$albumDate = date("Y-m-d", $albumDate);
@@ -2923,7 +2923,10 @@ function getHeadphonesCalendar($url, $key, $list){
 			}
 			if($child['Status'] == "Processed" && $list == "getHistory"){
 				$i++;
-				$albumName = addslashes($child['Title']);
+				$find = array('_','[', ']', '\n');
+				$replace = array(' ','(', ')', ' ');
+				$albumName = addslashes(str_replace($find,$replace,$child['FolderName']));
+				//$albumName = addslashes($child['Title']);
 				$albumDate = $child['DateAdded'];
 				$albumID = $child['AlbumID'];
 				$albumDate = strtotime($albumDate);

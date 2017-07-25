@@ -128,6 +128,7 @@ if (file_exists('config/config.php')) {
         if($USER->authenticated && $USER->role == "admin") :
 
             $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
+            $splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
             $getsettings = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
 
             foreach($getsettings as $row) :
@@ -143,10 +144,12 @@ if (file_exists('config/config.php')) {
         elseif($USER->authenticated && $USER->role == "user") :
 
             $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true" ORDER BY `order` asc');
+            $splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true" ORDER BY `order` asc');
 
         else :
 
             $result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true" ORDER BY `order` asc');
+            $splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true" ORDER BY `order` asc');
 
         endif;
 
@@ -285,6 +288,23 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         <![endif]-->
     </head>
     <style>
+        .splash-item {
+            max-width: 100%;
+
+            -moz-transition: all 0.3s;
+            -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+            opacity: .8 !important;
+        }
+        .splash-item:hover {
+            -moz-transform: scale(1.1);
+            -webkit-transform: scale(1.1);
+            transform: scale(1.1);
+            z-index: 10000000;
+            border-radius: 10px;
+            opacity: 1 !important;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
         .TabOpened {
             -webkit-filter: drop-shadow(0px 0px 5px <?=$topbartext;?>);
             filter: drop-shadow(0px 0px 5px <?=$topbartext;?>);
@@ -1127,7 +1147,62 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				</div>
 			</div>
 		</div>
-		<?php } ?>
+        <?php } ?>
+        <?php if (file_exists('config/config.php') && $configReady = "Yes" && $tabSetup == "No" && SPLASH == "true") {?>
+        <div id="splashScreen" class="splash-modal modal fade">
+			<div style="background:<?=$sidebar;?>;" class="table-wrapper big-box">
+				
+                <button style="color:<?=$topbartext;?>;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <br/><br/>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="row">                      
+                            <?php if($tabSetup == "No") : $tabCount = 1; foreach($splash as $row) : ?>
+                            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2" id="splash-<?php echo strtolower($row['name']);?>">
+                                <li style="list-style-type: none; cursor: pointer;" window="<?=$row['window'];?>" class="splash-item content-box small-box ultra-widget gray-bg" name="<?php echo strtolower($row['name']);?>">
+                                    <div class="w-content">
+                                        <div class="w-icon">
+                                            <center>
+                                                <?php if($row['iconurl']) : ?>
+                                                    <i style="">
+                                                        <img src="<?=$row['iconurl'];?>" style="height: 100px; margin-top: -10px;" class="">
+                                                    </i>
+                                                <?php else : ?>
+                                                    <i style="padding-bottom: 8px" class="fa <?=$row['icon'];?> fa-sm"></i>
+                                                <?php endif; ?>
+                                            </center>
+                                        </div>
+                                        <div class="text-center"><span class="text-uppercase w-name elip"><?=$row['name'];?></span></div>
+                                    </div>
+                                </li>
+                            </div>
+                            <?php $tabCount++; endforeach; endif;?>  
+                        </div>
+                        <?php if( $USER->authenticated && $USER->role == "admin" ){ ?>
+                        <div class="row">                      
+                            <div class="col-lg-12">
+                                <li style="list-style-type: none; cursor: pointer;" class="splash-item content-box small-box ultra-widget gray-bg" data-title="" name="settings">
+                                    <div class="w-content">
+                                        <div class="w-icon">
+                                            <center>
+                                                <i style="">
+                                                    <img src="images/settings.png" style="height: 100px; margin-top: -10px;" class="">
+                                                </i>
+                                            </center>
+                                        </div>
+                                        <div class="text-center"><span class="text-uppercase w-name elip">Settings</span></div>
+                                    </div>
+                                </li>
+                            </div>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </div>
+			</div>
+        </div>
+        <?php } ?>
 
         <!--Scripts-->
         <script src="<?=$baseURL;?>bower_components/jquery/dist/jquery.min.js"></script>
@@ -1159,7 +1234,9 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
 
         <script>
-
+        <?php if (file_exists('config/config.php') && $configReady = "Yes" && $tabSetup == "No" && SPLASH == "true") {?>    
+        $('.splash-modal').modal("show");
+        <?php } ?>
         var fixed = document.getElementById('gn-scroller');
         fixed.addEventListener('touchmove', function(e) {
 
@@ -1573,6 +1650,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         });
         $(window).resize(function(){
             setHeight();
+
+        });
+
+        $("li[class^='splash-item']").on('click vclick', function(){
+            var thisname = $(this).attr("name");
+            var splashTab = $("#tabList li[name^='" + thisname + "']");
+            splashTab.trigger("click");
+            $('.splash-modal').modal("hide");
 
         });
             
