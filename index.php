@@ -1229,7 +1229,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         <script src="<?=$baseURL;?>js/notifications/notificationFx.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
         <!--Custom Scripts-->
-        <script src="<?=$baseURL;?>js/common.js"></script>
+        <script src="<?=$baseURL;?>js/common.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <script src="<?=$baseURL;?>js/mousetrap.min.js"></script>
         <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
 

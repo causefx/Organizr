@@ -137,7 +137,8 @@ $(function () {
         var fixNav = localStorage.getItem("fixNav");
         
         if(  fixNav === null ) {
-            localStorage.setItem("fixNav",'on');
+            //localStorage.setItem("fixNav",'on');
+            $('.fix-nav').trigger("click");
         }
 
         if (fixNav == 'on') {
