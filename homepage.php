@@ -989,7 +989,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                                         $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
                                         $('#calendarLang').html(convertArray(result.languages, "TV"));
                                         $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
-                                        $('#calendarMain').attr("style","background-image: url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");background-position: center;-webkit-filter: brightness(50%) contrast(100%);filter: brightness(50%) contrast(100%);top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                                        $('#calendarMain').attr("style","background-size: cover; background: linear-gradient(rgba(25,27,29,.75),rgba(25,27,29,.75)),url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
                                         $('#calendarExtra').modal('show');
                                     }
                                 }
@@ -1005,7 +1005,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                             $('#calendarGenres').html(convertArray(data.series.genre, "TV"));
                             $('#calendarLang').html("");
                             $('#calendarPoster').attr("src","https://thetvdb.com/banners/_cache/"+whatIsIt(data.poster));
-                            $('#calendarMain').attr("style","background-size: 1000px 563px; background-image: url(ajax.php?a=show-image&image=http://thetvdb.com/banners/"+whatIsIt(data.backdrop)+");background-position: center;-webkit-filter: brightness(50%) contrast(100%);filter: brightness(50%) contrast(100%);top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                            $('#calendarMain').attr("style","background-size: cover; background: linear-gradient(rgba(25,27,29,.75),rgba(25,27,29,.75)),url(ajax.php?a=show-image&image=http://thetvdb.com/banners/"+whatIsIt(data.backdrop)+");top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
                             $('#calendarExtra').modal('show');
                         }
                     });
@@ -1031,7 +1031,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                                 $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
                                 $('#calendarLang').html(convertArray(result.spoken_languages, "MOVIE"));
                                 $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
-                                $('#calendarMain').attr("style","background-image: url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");background-position: center;-webkit-filter: brightness(50%) contrast(100%);filter: brightness(50%) contrast(100%);top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                                $('#calendarMain').attr("style","background-size: cover; background: linear-gradient(rgba(25,27,29,.75),rgba(25,27,29,.75)),url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
                                 $('#calendarExtra').modal('show');
                             }
                         }
@@ -1050,10 +1050,10 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-lg-2 col-xs-4">
+                            <div class="col-sm-4">
                                 <img style="width:100%;border-radius: 10px;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" id="calendarPoster" src="">
                             </div>
-                            <div class="col-lg-10 col-sm-8">
+                            <div class="col-sm-8">
                                 <h2 id="calendarTitle" class="modal-title text-center">Modal title</h2>
                                 <h6 id="calendarTagline" class="modal-title text-center"><em>Modal title</em></h6>
                                 <p id="calendarSummary">Modal Summary</p>
@@ -1062,10 +1062,10 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                         </div>
                     </div>
                    <div style="position: inherit; padding: 15px 0px 30px 0px; margin-top: -20px;">
-                        <div class="col-lg-2 col-xs-4">
+                        <div class="col-sm-4">
                             <span id="calendarTrailer" class="pull-left" style="width:100%"></span>
                         </div> 
-                        <div class="col-lg-10 col-sm-8">   
+                        <div class="col-sm-8">   
                             <span id="calendarLang" class="pull-right"></span>
                         </div>                        
                     </div>
