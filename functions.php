@@ -2906,7 +2906,7 @@ function getHeadphonesCalendar($url, $key, $list){
     $gotCalendar = "";
 	if (is_array($api) || is_object($api)){
 		foreach($api AS $child) {
-			if($child['Status'] == "Wanted" && $list == "getWanted"){
+			if($child['Status'] == "Wanted" && $list == "getWanted" && $child['AlbumTitle']){
 				$i++;
 				$albumName = addslashes($child['AlbumTitle']);
 				$albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
@@ -2927,7 +2927,6 @@ function getHeadphonesCalendar($url, $key, $list){
 				$find = array('_','[', ']', '\n');
 				$replace = array(' ','(', ')', ' ');
 				$albumName = addslashes(str_replace($find,$replace,$child['FolderName']));
-				//$albumName = addslashes($child['Title']);
 				$albumDate = $child['DateAdded'];
 				$albumID = $child['AlbumID'];
 				$albumDate = strtotime($albumDate);

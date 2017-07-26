@@ -739,8 +739,6 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 mousescrollstep: 60
             });
 
-            // check if browser support HTML5 local storage
-			
             <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>
             var queueRefresh = <?php echo DOWNLOADREFRESH; ?>;
             var historyRefresh = <?php echo HISTORYREFRESH; ?>; // This really doesn't need to happen that often
@@ -840,7 +838,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
 
                     editable: false,
                     droppable: false,
-					               timeFormat: '<?php echo CALTIMEFORMAT; ?>',
+					timeFormat: '<?php echo CALTIMEFORMAT; ?>',
                 });
             });
             $('#imagetype_selector').on('change',function(){
