@@ -666,9 +666,10 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 }
 
 // Format item from Plex for Carousel
-function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames = false, $role = false) {
+function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames = false, $role = false, $playlist = false) {
     // Static Height
-    $height = 444;    
+    $height = 444;  
+	$playlist = ($playlist) ? " playlist-$playlist" : "";  
 
     switch ($item['type']) {
     	case 'season':
@@ -866,7 +867,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
     if($nowPlaying){
         return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a class="openTab" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img style="width: 500px; display:inherit;" src="'.$image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
-        return '<div class="item-'.$item['type'].'"><a class="openTab" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+        return '<div class="item-'.$item['type'].$playlist.'"><a class="openTab" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
     }
 }
 
@@ -888,7 +889,7 @@ function outputRecentAdded($header, $items, $script = false, $array) {
         return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
     }else{
 		$className = str_replace(' ', '', $header);
-        return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><div class="recentItems" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+        return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-recent" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
     
 }
@@ -2905,7 +2906,7 @@ function getHeadphonesCalendar($url, $key, $list){
     $gotCalendar = "";
 	if (is_array($api) || is_object($api)){
 		foreach($api AS $child) {
-			if($child['Status'] == "Wanted" && $list == "getWanted"){
+			if($child['Status'] == "Wanted" && $list == "getWanted" && $child['AlbumTitle']){
 				$i++;
 				$albumName = addslashes($child['AlbumTitle']);
 				$albumArtist = htmlentities($child['ArtistName'], ENT_QUOTES);
@@ -2926,7 +2927,6 @@ function getHeadphonesCalendar($url, $key, $list){
 				$find = array('_','[', ']', '\n');
 				$replace = array(' ','(', ')', ' ');
 				$albumName = addslashes(str_replace($find,$replace,$child['FolderName']));
-				//$albumName = addslashes($child['Title']);
 				$albumDate = $child['DateAdded'];
 				$albumID = $child['AlbumID'];
 				$albumDate = strtotime($albumDate);
@@ -3664,6 +3664,7 @@ function getPlexPlaylists(){
 			// Identify the local machine
 			$gotServer = $getServer['machineIdentifier'];
 			$output = "";
+			$hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" id="playlist-Name" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Choose A Playlist<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu filter-recent-playlist">';
 			foreach($api AS $child) {
 				$items = "";
 				if ($child['playlistType'] == "video" && strpos(strtolower($child['title']) , 'private') === false){
@@ -3671,18 +3672,20 @@ function getPlexPlaylists(){
 					$api = simplexml_load_string($api);
 					if (is_array($api) || is_object($api)){
 						if (!$api->head->title){
+							$className = preg_replace("/(\W)+/", "", $api['title']);
+							$hideMenu .= '<li data-filter="playlist-'.$className.'" data-name="'.$api['title'].'"><a class="js-filter-'.$className.'" href="javascript:void(0)">'.$api['title'].'</a></li>';
 							foreach($api->Video AS $child){
-								$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, false, false,false);
+								$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, false, false,false,$className);
 							}
 							if (count($items)) {
-								$className = preg_replace("/(\W)+/", "", $api['title']);
-								$output .= '<div id="playlist-'.$className.'" class="content-box box-shadow big-box"><h5 style="margin-bottom: -20px" class="text-center">'.$api['title'].'</h5><div class="recentHeader inbox-pagination '.$className.'"></div><br/><div class="recentItems" data-name="'.$className.'">'.implode('',$items).'</div></div>';
+								$output .= ''.implode('',$items).'';
 							}							
 						}
 					}
 				}
 			}
-			return $output;
+			$hideMenu .= '</ul></div></div>';
+			return '<div id="playlist-all" class="content-box box-shadow big-box"><h5 id="playlist-title" style="margin-bottom: -20px" class="text-center">All Playlists</h5><div class="recentHeader inbox-pagination all">'.$hideMenu.'</div><br/><br/><div class="recentItems-playlists" data-name="all">'.$output.'</div></div>';
 		}else{
 			writeLog("error", "PLEX PLAYLIST ERROR: could not connect - check token - if HTTPS, is cert valid");
 		}

@@ -544,7 +544,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         function localStorageSupport() {
             return (('localStorage' in window) && window['localStorage'] !== null)
         }
-		
+
         $( document ).ready(function() {
             $('#plexSearchForm').on('submit', function () {
                 var refreshBox = $(this).closest('div.content-box');
@@ -575,7 +575,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 $("div[np^='"+id+"']").toggle();
             });
 
-            $('.recentItems').each(function() {
+            $('div[class*=recentItems-]').each(function() {
                 var name = $(this).attr("data-name");
                 console.log(name);
                 $(this).slick({
@@ -665,103 +665,68 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 ]
                 });
             });
-
-            
+            //RECENT ITEMS
             // each filter we click on
             $(".filter-recent-event > li").on("click", function() {
+                    
+                // toggle the filter on/off
+                $(this).data( "filter-on" , !$(this).data("filter-on") );
                 
-            // toggle the filter on/off
-            $(this).data( "filter-on" , !$(this).data("filter-on") );
-            
-            // set all the filter strings to empty
-            var filtersOn = "";
-            var filtersOff = "";
-            var allFilters = "";
-            
-            // loop through each filter
-            $(".filter-recent-event > li").each(function() {
+                // set all the filter strings to empty
+                var filtersOn = "";
+                var filtersOff = "";
+                var allFilters = "";
                 
-                // set a variable to hold the value of the filter class
-                // and also if the filter is on/off
-                var filter = $(this).data("filter");
-                var isOn = $(this).data("filter-on");
+                // loop through each filter
+                $(".filter-recent-event > li").each(function() {
+                    
+                    // set a variable to hold the value of the filter class
+                    // and also if the filter is on/off
+                    var filter = $(this).data("filter");
+                    var isOn = $(this).data("filter-on");
 
-                // add the filter to the filtersOn / filtersOff collection
-                if( isOn ) {
-                    filtersOn += "." + filter + ", ";
-                } else {
-                    filtersOff += "." + filter + ", ";
+                    // add the filter to the filtersOn / filtersOff collection
+                    if( isOn ) {
+                        filtersOn += "." + filter + ", ";
+                    } else {
+                        filtersOff += "." + filter + ", ";
+                    }
+
+                });
+                
+                // remove the last ", " from each filter collection.
+                filtersOn = filtersOn.replace(/, $/, "");
+                filtersOff = filtersOff.replace(/, $/, "");
+                
+                // remove all filters if none are on.
+                if( filtersOn === "" ) {
+                    filtersOn = "*";
+                    filtersOff = "";
                 }
+                
+                // combine the filters together ( on + off )
+                allFilters = filtersOn + ":not(" + filtersOff + ")";
+                console.log( allFilters );
+                
+                // now filter the slides.
+                $('.recentItems-recent')
+                    .slick('slickUnfilter')
+                    .slick('slickFilter' , allFilters );
 
             });
-            
-            // remove the last ", " from each filter collection.
-            filtersOn = filtersOn.replace(/, $/, "");
-            filtersOff = filtersOff.replace(/, $/, "");
-            
-            // remove all filters if none are on.
-            if( filtersOn === "" ) {
-                filtersOn = "*";
-                filtersOff = "";
-            }
-            
-            // combine the filters together ( on + off )
-            allFilters = filtersOn + ":not(" + filtersOff + ")";
-            console.log( allFilters );
-            
-            // now filter the slides.
-            $('.recentItems ')
-                .slick('slickUnfilter')
-                .slick('slickFilter' , allFilters );
+            //PLAYLIST SHIT
+             // each filter we click on
+            $(".filter-recent-playlist > li").on("click", function() {
+                var name = $(this).attr('data-name');
+                var filter = $(this).attr('data-filter');
+                $('#playlist-title').text(name);
+                
+                // now filter the slides.
+                $('.recentItems-playlists')
+                    .slick('slickUnfilter')
+                    .slick('slickFilter' , '.'+filter );
 
             });
-            /*
-            var movieFiltered = false;
-            var seasonFiltered = false;
-            var albumFiltered = false;
-
-            $('.js-filter-movie').on('click', function(){
-              if (movieFiltered === false) {
-                $('.recentItems').slick('slickFilter','.item-season, .item-album, .item-Series, .item-Episode, .item-MusicAlbum');
-                $(this).text('Show Movies');
-                movieFiltered = true;
-              } else {
-                $('.recentItems').slick('slickUnfilter');
-                $(this).text('Hide Movies');
-                movieFiltered = false;
-              }
-            });
-            
-            $('.js-filter-season').on('click', function(){
-              if (seasonFiltered === false) {
-                $('.recentItems').slick('slickFilter','.item-movie, .item-album, .item-Movie, .item-MusicAlbum');
-                $(this).text('Show TV');
-                seasonFiltered = true;
-              } else {
-                $('.recentItems').slick('slickUnfilter');
-                $(this).text('Hide TV');
-                seasonFiltered = false;
-              }
-            });
-            
-            $('.js-filter-album').on('click', function(){
-              if (albumFiltered === false) {
-                $('.recentItems').slick('slickFilter','.item-season, .item-movie, .item-Series, .item-Episode, .item-Movie');
-                $(this).text('Show Music');
-                albumFiltered = true;
-              } else {
-                $('.recentItems').slick('slickUnfilter');
-                $(this).text('Hide Music');
-                albumFiltered = false;
-              }
-            });*/
-            
-            /*$('.w-refresh').click(function(e){
-                var moreInfo = $(this).closest('div.overlay').addClass("show");
-                console.log(moreInfo);
-                moreInfo.show();
-                e.preventDefault();
-            });*/
 
             $("body").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0},
@@ -773,13 +738,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 scrollspeed: 30,
                 mousescrollstep: 60
             });
-            /*$(".carousel-caption").niceScroll({
-                railpadding: {top:0,right:0,left:0,bottom:0},
-                scrollspeed: 30,
-                mousescrollstep: 60
-            });*/
-            // check if browser support HTML5 local storage
-			
+
             <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>
             var queueRefresh = <?php echo DOWNLOADREFRESH; ?>;
             var historyRefresh = <?php echo HISTORYREFRESH; ?>; // This really doesn't need to happen that often
@@ -796,7 +755,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
 
             // Initial Loads
             queueLoad();
-			         historyLoad();
+			historyLoad();
 
             // Interval Loads
             var queueInterval = setInterval(queueLoad, queueRefresh);
@@ -809,6 +768,11 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
             });
             <?php } ?>
         });
+
+        $( window ).on( "load", function() {
+            $( "ul.filter-recent-playlist > li:first" ).trigger("click");
+        });
+
         </script>
         <?php if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH))) { ?>
         <script>
@@ -874,7 +838,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
 
                     editable: false,
                     droppable: false,
-					               timeFormat: '<?php echo CALTIMEFORMAT; ?>',
+					timeFormat: '<?php echo CALTIMEFORMAT; ?>',
                 });
             });
             $('#imagetype_selector').on('change',function(){
