@@ -688,8 +688,27 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                     // add the filter to the filtersOn / filtersOff collection
                     if( isOn ) {
                         filtersOn += "." + filter + ", ";
+                        var title=$(this).attr('data-filter').split('-')[1];
+                        if(title == "movie"){
+                            var titleOriginal = "Movies";
+                        }else if(title == "season"){
+                            var titleOriginal = "Shows";
+                        }else if(title == "album"){
+                            var titleOriginal = "Music";
+                        }
+                        
+                        $('.js-filter-'+title).text(titleOriginal+' Active');
                     } else {
                         filtersOff += "." + filter + ", ";
+                        var title=$(this).attr('data-filter').split('-')[1];
+                        if(title == "movie"){
+                            var titleOriginal = "Movies";
+                        }else if(title == "season"){
+                            var titleOriginal = "Shows";
+                        }else if(title == "album"){
+                            var titleOriginal = "Music";
+                        }
+                        $('.js-filter-'+title).text(titleOriginal);
                     }
 
                 });

@@ -40,9 +40,9 @@ $codes = array(
        999 => array('Not Logged In', 'You need to be logged in to access this page.', 'confused'),
 );
 
-$errorTitle = $codes[$status][0];
-$message = $codes[$status][1];
-$errorImage = $codes[$status][2];
+$errorTitle = ($codes[$status][0]) ? $codes[$status][0] : "Error";
+$message = ($codes[$status][1]) ? $codes[$status][1] : "An Error Occured";
+$errorImage = ($codes[$status][2]) ? $codes[$status][2] : "confused";
 
 ?>
 
