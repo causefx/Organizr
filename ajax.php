@@ -27,6 +27,10 @@ $response = array();
 switch ($_SERVER['REQUEST_METHOD']) {
 	case 'GET':
 		switch ($action) {
+			case 'show-file':
+				showFile();
+				die();
+				break;
 			case 'emby-image':
 				qualifyUser(EMBYHOMEAUTH, true);
 				getEmbyImage();
@@ -130,11 +134,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
                             } else {
                                 unlink('custom.css');
                             }
-                            $response['parent']['reload'] = true;
+                            $response['show_apply'] = true;
                         }
                         unset($_POST['customCSS']);
                         // Custom CSS Special Case END
-                        $response['notify'] = sendNotification(updateDBOptions($_POST),false,false);
+						if (!empty($_POST)) {
+                        	$response['notify'] = sendNotification(updateDBOptions($_POST),false,false);
+						}
                         break;
                     case 'deleteDB':
                         deleteDatabase();

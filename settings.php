@@ -81,7 +81,7 @@ if(SLIMBAR == "true") {
         <link rel="stylesheet" href="css/settings.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/summernote/dist/summernote.css">
         <link href="css/jquery.filer.css" rel="stylesheet">
-	       <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
+	    <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
 
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
