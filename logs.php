@@ -1,4 +1,7 @@
 <?php
+// Some PHP config stuff
+ini_set("display_errors", 1);
+ini_set("error_reporting", E_ALL | E_STRICT);
 // Include functions if not already included
 require_once('functions.php');
 
@@ -10,15 +13,8 @@ $databaseConfig = configLazy('config/config.php');
 
 // Load USER
 require_once("user.php");
+qualifyUser("admin", true);
 $USER = new User("registration_callback");
-
-// Create Database Connection
-$file_db = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
-$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-// Some PHP config stuff
-ini_set("display_errors", 1);
-ini_set("error_reporting", E_ALL | E_STRICT);
 
 // Load Colours/Appearance
 foreach(loadAppearance() as $key => $value) {
