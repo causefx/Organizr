@@ -27,6 +27,11 @@ $response = array();
 switch ($_SERVER['REQUEST_METHOD']) {
 	case 'GET':
 		switch ($action) {
+			case 'get-calendar':
+				echo json_encode(getCalendar(),JSON_UNESCAPED_SLASHES);
+				//prettyPrint(getcalendar());
+				die();
+				break;
 			case 'show-file':
 				showFile();
 				die();

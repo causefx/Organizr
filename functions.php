@@ -4,6 +4,8 @@
 // Define Version
  define('INSTALLEDVERSION', '1.42');
 // ===================================
+use Kryptonit3\Sonarr\Sonarr;
+use Kryptonit3\SickRage\SickRage;
 
 // Debugging output functions
 function debug_out($variable, $die = false) {
@@ -2731,7 +2733,8 @@ function get_browser_name() {
 function getSickrageCalendarWanted($array){
     
     $array = json_decode($array, true);
-    $gotCalendar = "";
+    //$gotCalendar = "";
+    $gotCalendar = array();
     $i = 0;
 
     foreach($array['data']['missed'] AS $child) {
@@ -2747,7 +2750,14 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
+            //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
+			array_push($gotCalendar, array(
+				"id" => "Sick-Miss-".$i,
+				"title" => $seriesName, 
+				"start" => $episodeAirDate, 
+				"className" => $downloaded." tvID--".$episodeID, 
+				"imagetype" => "tv",
+			));
         
     }
     
@@ -2764,8 +2774,14 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
-        
+            //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
+			array_push($gotCalendar, array(
+				"id" => "Sick-Today-".$i,
+				"title" => $seriesName, 
+				"start" => $episodeAirDate, 
+				"className" => $downloaded." tvID--".$episodeID, 
+				"imagetype" => "tv",
+			));
     }
     
     foreach($array['data']['soon'] AS $child) {
@@ -2781,8 +2797,14 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
-        
+            //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
+			array_push($gotCalendar, array(
+				"id" => "Sick-Soon-".$i,
+				"title" => $seriesName, 
+				"start" => $episodeAirDate, 
+				"className" => $downloaded." tvID--".$episodeID, 
+				"imagetype" => "tv",
+			));
     }
     
     foreach($array['data']['later'] AS $child) {
@@ -2798,7 +2820,14 @@ function getSickrageCalendarWanted($array){
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
             if($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
+            //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
+			array_push($gotCalendar, array(
+				"id" => "Sick-Later-".$i,
+				"title" => $seriesName, 
+				"start" => $episodeAirDate, 
+				"className" => $downloaded." tvID--".$episodeID, 
+				"imagetype" => "tv",
+			));
         
     }
 
@@ -2809,7 +2838,8 @@ function getSickrageCalendarWanted($array){
 function getSickrageCalendarHistory($array){
     
     $array = json_decode($array, true);
-    $gotCalendar = "";
+    //$gotCalendar = "";
+    $gotCalendar = array();
     $i = 0;
 
     foreach($array['data'] AS $child) {
@@ -2819,7 +2849,14 @@ function getSickrageCalendarHistory($array){
             $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['date'];
             $downloaded = "green-bg";
-            $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
+            //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
+			array_push($gotCalendar, array(
+				"id" => "Sick-History-".$i,
+				"title" => $seriesName, 
+				"start" => $episodeAirDate, 
+				"className" => $downloaded." tvID--".$episodeID, 
+				"imagetype" => "tv",
+			));
         
     }
 
@@ -2830,7 +2867,8 @@ function getSickrageCalendarHistory($array){
 function getSonarrCalendar($array){
     
     $array = json_decode($array, true);
-    $gotCalendar = "";
+    //$gotCalendar = "";
+    $gotCalendar = array();
     $i = 0;
     foreach($array AS $child) {
 
@@ -2849,8 +2887,15 @@ function getSonarrCalendar($array){
         $downloaded = $child['hasFile'];
         if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "light-blue-bg"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
         
-        $gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
-        
+        //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
+		array_push($gotCalendar, array(
+			"id" => "Sonarr-".$i,
+			"title" => $seriesName, 
+			"start" => $episodeAirDate, 
+			"className" => $downloaded." tvID--".$episodeID, 
+			"imagetype" => "tv",
+		));
+
     }
 
     if ($i != 0){ return $gotCalendar; }
@@ -2860,7 +2905,8 @@ function getSonarrCalendar($array){
 function getRadarrCalendar($array){
     
     $array = json_decode($array, true);
-    $gotCalendar = "";
+    //$gotCalendar = "";
+    $gotCalendar = array();
     $i = 0;
     foreach($array AS $child) {
         
@@ -2889,7 +2935,14 @@ function getRadarrCalendar($array){
             
             }
                         
-            $gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded movieID--$movieID\", imagetype: \"film\" }, \n";
+            //$gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded movieID--$movieID\", imagetype: \"film\" }, \n";
+			array_push($gotCalendar, array(
+				"id" => "Radarr-".$i,
+				"title" => $movieName, 
+				"start" => $physicalRelease, 
+				"className" => $downloaded." movieID--".$movieID, 
+				"imagetype" => "film",
+			));
         }
         
     }
@@ -2903,7 +2956,8 @@ function getHeadphonesCalendar($url, $key, $list){
     $api = curl_get($url."/api?apikey=".$key."&cmd=$list");
     $api = json_decode($api, true);
     $i = 0;
-    $gotCalendar = "";
+    //$gotCalendar = "";
+    $gotCalendar = array();;
 	if (is_array($api) || is_object($api)){
 		foreach($api AS $child) {
 			if($child['Status'] == "Wanted" && $list == "getWanted" && $child['ReleaseDate']){
@@ -2920,7 +2974,15 @@ function getHeadphonesCalendar($url, $key, $list){
 
 				if($albumStatus == "Wanted" && $notReleased == "true"){ $albumStatusColor = "indigo-bg"; }elseif($albumStatus == "Downloaded"){ $albumStatusColor = "green-bg"; }else{ $albumStatusColor = "red-bg"; }
 
-				$gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
+				//$gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
+				array_push($gotCalendar, array(
+					"id" => "Headphones-".$i,
+					"title" => $albumArtist.' - '.$albumName, 
+					"start" => $albumDate, 
+					"className" => $albumStatusColor,
+					"imagetype" => "music",
+					'url' => "https://musicbrainz.org/release-group/".$albumID,
+				));
 			}
 			if($child['Status'] == "Processed" && $list == "getHistory"){
 				$i++;
@@ -2934,7 +2996,15 @@ function getHeadphonesCalendar($url, $key, $list){
 				$albumStatusColor = "green-bg";
 				if (new DateTime() < new DateTime($albumDate)) {  $notReleased = "true"; }else{ $notReleased = "false"; }
 
-				$gotCalendar .= "{ title: \"$albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
+				//$gotCalendar .= "{ title: \"$albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
+				array_push($gotCalendar, array(
+					"id" => "Headphones-".$i,
+					"title" => $albumName, 
+					"start" => $albumDate, 
+					"className" => $albumStatusColor,
+					"imagetype" => "music",
+					'url' => "https://musicbrainz.org/release-group/".$albumID,
+				));
 			}
 		}
     	if ($i != 0){ return $gotCalendar; }
@@ -3737,12 +3807,62 @@ function getExtension($string) {
 }
 
 function showFile(){
+	$auth = strpos($_SERVER['HTTP_REFERER'], ".php");
+	if ($auth === false) { die("WTF? Bro!  This is an internal function only"); }
 	$file = $_GET['file'];
 	$fileType = getExtension($file);
-	if($fileType != 'php' && strpos( strtolower($file), "http" ) !== false ){
+	if($fileType != 'php'){
 		header("Content-type: ".mimeTypes()[$fileType]);
 		@readfile($file);
 	}
+}
+
+function getCalendar(){
+	$sonarr = new Sonarr(SONARRURL, SONARRKEY);
+	$radarr = new Sonarr(RADARRURL, RADARRKEY);
+	$sickrage = new SickRage(SICKRAGEURL, SICKRAGEKEY);
+	$startDate = date('Y-m-d',strtotime("-".CALENDARSTARTDAY." days"));
+	$endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days")); 
+	//$calendarItems = '';
+	$calendarItems = array();
+	if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){
+		try {
+			//$calendarItems .= getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); 
+			$calendarItems = array_merge($calendarItems, getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)));  
+		} catch (Exception $e) { 
+			writeLog("error", "SONARR ERROR: ".strip($e->getMessage())); 
+		}
+	}
+	if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){ 
+		try { 
+			//$calendarItems .= getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); 
+			$calendarItems = array_merge($calendarItems, getRadarrCalendar($radarr->getCalendar($startDate, $endDate))); 
+		} catch (Exception $e) { 
+			writeLog("error", "RADARR ERROR: ".strip($e->getMessage())); 
+		}
+	}
+	if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
+		//$calendarItems .= getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); 
+		//$calendarItems .= getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); 
+		$calendarItems = array_merge($calendarItems, getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory")); 
+		$calendarItems = array_merge($calendarItems, getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted")); 
+
+	}
+	if (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)){
+		try { 
+			//$calendarItems .= getSickrageCalendarWanted($sickrage->future());
+			$calendarItems = array_merge($calendarItems, getSickrageCalendarWanted($sickrage->future()));
+		} catch (Exception $e) { 
+			writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
+		} try { 
+			//$calendarItems .= getSickrageCalendarHistory($sickrage->history("100","downloaded"));
+			$calendarItems = array_merge($calendarItems, getSickrageCalendarHistory($sickrage->history("100","downloaded")));
+		} catch (Exception $e) { 
+			writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
+		}
+	}
+	
+	return $calendarItems;
 }
 
 function orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){

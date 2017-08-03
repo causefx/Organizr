@@ -7,11 +7,7 @@ ini_set("error_reporting", E_ALL | E_STRICT);
 
 require_once("user.php");
 require_once("functions.php");
-use Kryptonit3\Sonarr\Sonarr;
-use Kryptonit3\SickRage\SickRage;
-$sonarr = new Sonarr(SONARRURL, SONARRKEY);
-$radarr = new Sonarr(RADARRURL, RADARRKEY);
-$sickrage = new SickRage(SICKRAGEURL, SICKRAGEKEY);
+
 $USER = new User("registration_callback");
 
 // Check if connection to homepage is allowed
@@ -21,9 +17,6 @@ qualifyUser(HOMEPAGEAUTHNEEDED, true);
 foreach(loadAppearance() as $key => $value) {
 	${$key} = $value;
 }
-
-$startDate = date('Y-m-d',strtotime("-".CALENDARSTARTDAY." days"));
-$endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days")); 
 
 ?>
 
@@ -818,39 +811,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                         month: { buttonText: '<?php echo $language->translate("MONTH");?>', eventLimit: false },
                         today: { buttonText: '<?php echo $language->translate("TODAY");?>' },
                     },
-                    events: [
-<?php 
-if (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)){
-	try { 
-		echo getSickrageCalendarWanted($sickrage->future());
-	} catch (Exception $e) { 
-		writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
-	} try { 
-		echo getSickrageCalendarHistory($sickrage->history("100","downloaded"));
-	} catch (Exception $e) { 
-		writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
-	}
-}
-if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){
-	try {
-		echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); 
-	} catch (Exception $e) { 
-		writeLog("error", "SONARR ERROR: ".strip($e->getMessage())); 
-	}
-}
-if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){ 
-	try { 
-		echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); 
-	} catch (Exception $e) { 
-		writeLog("error", "RADARR ERROR: ".strip($e->getMessage())); 
-	}
-}
-if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
-	echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); 
-	echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); 
-
-}?>                                
-                    ],
+                    //events: [ <?php //echo getCalendar(); ?> ],
                     eventRender: function eventRender( event, element, view ) {
                         return ['all', event.imagetype].indexOf($('#imagetype_selector').val()) >= 0
                     },
@@ -863,6 +824,31 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
             $('#imagetype_selector').on('change',function(){
                 $('#calendar').fullCalendar('rerenderEvents');
             })
+            $.ajax({
+                type: 'GET',
+                url: 'ajax.php?a=get-calendar',
+                success: function(data)
+                {
+                    newData =  $.parseJSON(data);
+                    console.log(newData);
+                    $('#calendar').fullCalendar('removeEvents');
+                    $('#calendar').fullCalendar('addEventSource', newData);         
+                }
+            });
+            setInterval(function() {
+                $.ajax({
+                    type: 'GET',
+                    url: 'ajax.php?a=get-calendar',
+                    success: function(data)
+                    {
+                        newData =  $.parseJSON(data);
+                        console.log(newData);
+                        $('#calendar').fullCalendar('removeEvents');
+                        $('#calendar').fullCalendar('addEventSource', newData);         
+                    }
+                });
+                console.log('Calendar updated');
+            }, 60000);
         </script>
         <?php } ?>
         <script>
