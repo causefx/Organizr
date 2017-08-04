@@ -3766,7 +3766,7 @@ function getPlexPlaylists(){
 }
 
 function readExternalLog($type,$filename,$name = null){
-    $log = file($filename);
+    $log = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     $log = array_reverse($log);
     foreach($log as $line){
 		if(!empty($line) && $line[0] != " "){
@@ -3807,8 +3807,6 @@ function getExtension($string) {
 }
 
 function showFile(){
-	$auth = strpos($_SERVER['HTTP_REFERER'], ".php");
-	if ($auth === false) { die("WTF? Bro!  This is an internal function only"); }
 	$file = $_GET['file'];
 	$fileType = getExtension($file);
 	if($fileType != 'php'){

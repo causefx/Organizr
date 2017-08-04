@@ -16,7 +16,6 @@ if (isset($_POST['action'])) { $action = $_POST['action']; }
 if (isset($_GET['action'])) { $action = $_GET['action']; }
 if (isset($_GET['a'])) { $action = $_GET['a']; }
 unset($_POST['action']);
-
 // No Action
 if (!isset($action)) {
 	sendNotification(false, 'No Action Specified!');
@@ -28,11 +27,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
 	case 'GET':
 		switch ($action) {
 			case 'get-calendar':
-				echo json_encode(getCalendar(),JSON_UNESCAPED_SLASHES);
-				//prettyPrint(getcalendar());
+				echo json_encode(getCalendar());
 				die();
 				break;
 			case 'show-file':
+				$auth = ($_SERVER['HTTP_REFERER'] ? true : false);
+				if ($auth === false) { die("WTF? Bro!  This is an internal function only"); }
 				showFile();
 				die();
 				break;
