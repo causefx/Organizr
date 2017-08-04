@@ -363,17 +363,6 @@ foreach(loadAppearance() as $key => $value) {
                                         <a id="getDownloader" class="repeat-btn">
                                             <i class="fa fa-repeat"></i>
                                         </a>
-                                        <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                            <i class="fa fa-chevron-down"></i>
-                                        </a>
-										<!-- Lets Move This To Homepage Settings
-                                        <ul id="downloaderSeconds" class="dropdown-menu" style="top: 32px !important">
-                                            <li data-value="5000"><a>Refresh every 5 seconds</a></li>
-                                            <li data-value="10000"><a>Refresh every 10 seconds</a></li>
-                                            <li data-value="30000"><a>Refresh every 30 seconds</a></li>
-                                            <li data-value="60000"><a>Refresh every 60 seconds</a></li>
-                                        </ul>
-										-->
                                     </div>
                                     <h3 class="pull-left"><?php if(NZBGETURL != ""){ echo "NZBGet "; } if(SABNZBDURL != ""){ echo "SABnzbd "; } ?></h3>
                                     <ul class="nav nav-tabs pull-right">
@@ -528,7 +517,8 @@ foreach(loadAppearance() as $key => $value) {
 				}
 				e.preventDefault();
 			}else{
-				console.log("nope");
+                var source = $(this).attr("href");
+				window.open(source, '_blank');
 			}
 
         });
@@ -830,9 +820,9 @@ foreach(loadAppearance() as $key => $value) {
                 success: function(data)
                 {
                     newData =  $.parseJSON(data);
-                    console.log(newData);
                     $('#calendar').fullCalendar('removeEvents');
-                    $('#calendar').fullCalendar('addEventSource', newData);         
+                    $('#calendar').fullCalendar('addEventSource', newData);   
+                    console.log('Calendar Entries Added');      
                 }
             });
             setInterval(function() {
@@ -842,12 +832,11 @@ foreach(loadAppearance() as $key => $value) {
                     success: function(data)
                     {
                         newData =  $.parseJSON(data);
-                        console.log(newData);
                         $('#calendar').fullCalendar('removeEvents');
-                        $('#calendar').fullCalendar('addEventSource', newData);         
+                        $('#calendar').fullCalendar('addEventSource', newData);  
+                        console.log('Calendar refreshed');       
                     }
                 });
-                console.log('Calendar updated');
             }, 60000);
         </script>
         <?php } ?>
