@@ -424,6 +424,16 @@ foreach(loadAppearance() as $key => $value) {
                         echo getPlexRecent($plexArray);
                     } 
                     ?>
+                    <!--<script>
+                        setInterval(function() {
+                            $('<div></div>').load('ajax.php?a=plex-recent',function() {
+                                var element = $(this).find('[id]');
+                                var loadedID = 	element.attr('id');
+                                $('#'+loadedID).replaceWith(element);
+                                console.log('Recent updated: '+loadedID);
+                            });
+                        }, 15000);
+                    </script>-->
                     </div>
                 </div>
                 <div id="plexPlaylists" class="row">
@@ -505,7 +515,96 @@ foreach(loadAppearance() as $key => $value) {
         });
         
 		$(document).on("click", ".openTab", function(e) {
-			if($(this).attr("openTab") === "true") {
+            var Title = $(this).attr("extraTitle");
+            var Type = $(this).attr("extraType");
+            var openTab = $(this).attr("openTab");
+            var location = $(this).attr("href");
+            if( Type === 'season' || Type === 'episode'){
+                Type = "tv";
+                SearchType = "show";
+            }else if( Type === 'movie'){
+                Type = "movie";
+                SearchType = "movie";            
+            }
+            if( Type === 'tv' || Type === 'movie' ){
+                $('#calendarExtra').modal('show');
+                var refreshBox = $('#calendarMainID');
+                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
+                setTimeout(function(){
+                    var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                    deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+                        refreshPreloader.remove();
+                    });
+                },600);
+                ajax_request('POST', 'tvdb-search', {
+                    name: Title,
+                    type: SearchType,
+                }).done(function(data){ 
+                    if( data.trakt ) {               
+                        $.ajax({
+                            type: 'GET',
+                            url: 'https://api.themoviedb.org/3/'+Type+'/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits',
+                            cache: true,
+                            async: true,
+                            complete: function(xhr, status) {
+                                var result = $.parseJSON(xhr.responseText);
+                                if (xhr.statusText === "OK") {
+                                    if( Type === "movie"){ 
+                                        $('#calendarTitle').html(result.title);
+                                        $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
+                                        $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(result.runtime)+'</span>&nbsp;');
+                                        $('#calendarSummary').text(result.overview);
+                                        $('#calendarTagline').text(result.tagline);
+                                        $('#calendarTrailer').html(convertTrailer(result.videos)+'&nbsp;<span class="label openPlex palette-Amber-600 bg" openTab="'+openTab+'" location="'+location+'" style="width:100%;display:block;cursor:pointer;"><i style="vertical-align:sub;" class="fa fa-play white"></i><text style="vertical-align:sub;"> Watch Now on PLEX</text></span>');
+                                        $('#calendarCast').html(convertCast(result.credits));
+                                        $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
+                                        $('#calendarLang').html(convertArray(result.spoken_languages, "MOVIE"));
+                                        $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
+                                        $('#calendarMain').attr("style","background-size: cover; background: linear-gradient(rgba(25,27,29,.75),rgba(25,27,29,.75)),url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                                        $('#calendarExtra').modal('show');
+                                    }else if (Type === "tv"){
+                                        $('#calendarTitle').html(result.name);
+                                        $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
+                                        $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(whatWasIt(result.episode_run_time))+'</span>&nbsp;');
+                                        $('#calendarSummary').text(result.overview);
+                                        $('#calendarTagline').text("");
+                                        $('#calendarTrailer').html(convertTrailer(result.videos)+'&nbsp;<span class="label openPlex palette-Amber-600 bg" openTab="'+openTab+'" location="'+location+'" style="width:100%;display:block;cursor:pointer;"><i style="vertical-align:sub;" class="fa fa-play white"></i><text style="vertical-align:sub;"> Watch Now on PLEX</text></span>');
+                                        $('#calendarCast').html(convertCast(result.credits));
+                                        $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
+                                        $('#calendarLang').html(convertArray(result.languages, "TV"));
+                                        $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
+                                        $('#calendarMain').attr("style","background-size: cover; background: linear-gradient(rgba(25,27,29,.75),rgba(25,27,29,.75)),url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                                        $('#calendarExtra').modal('show');
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+                e.preventDefault();
+            }else{
+
+                if($(this).attr("openTab") === "true") {
+                    var isActive = parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']");
+                    var activeFrame = isActive.children('iframe');
+                    if(isActive.length === 1){
+                        activeFrame.attr("src", $(this).attr("href"));
+                        parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
+                    }else{
+                        parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
+                        parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']").children('iframe').attr("src", $(this).attr("href"));
+                    }
+                    e.preventDefault();
+                }else{
+                    var source = $(this).attr("href");
+                    window.open(source, '_blank');
+                }
+            }
+
+        });
+
+        $(document).on("click", ".openPlex", function(e) {
+            if($(this).attr("openTab") === "true") {
 				var isActive = parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']");
 				var activeFrame = isActive.children('iframe');
 				if(isActive.length === 1){
@@ -513,14 +612,12 @@ foreach(loadAppearance() as $key => $value) {
 					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
 				}else{
 					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
-					parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']").children('iframe').attr("src", $(this).attr("href"));
+					parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']").children('iframe').attr("src", $(this).attr("location"));
 				}
-				e.preventDefault();
 			}else{
-                var source = $(this).attr("href");
+                var source = $(this).attr("location");
 				window.open(source, '_blank');
 			}
-
         });
         
             
@@ -870,7 +967,7 @@ foreach(loadAppearance() as $key => $value) {
                 var count = 1;
                 $.each( a.results, function( key, value ) {
                     if (count == 1){
-                        result += '<span id="openTrailer" style="cursor:pointer;width: 100%;display: block;" data-key="'+value['key']+'" data-name="'+value['name']+'" data-site="'+value['site']+'" class="label label-danger"><i class="fa fa-youtube-play" aria-hidden="true"></i> &nbsp;Watch Trailer</span>&nbsp;';
+                        result += '<span id="openTrailer" style="cursor:pointer;width: 100%;display: block;" data-key="'+value['key']+'" data-name="'+value['name']+'" data-site="'+value['site']+'" class="label label-danger"><i style="vertical-align:sub;" class="fa fa-youtube-play" aria-hidden="true"></i><text style="vertical-align:sub;"> Watch Trailer</text></span>&nbsp;';
                     }
                     count++;
                 });
@@ -882,7 +979,7 @@ foreach(loadAppearance() as $key => $value) {
                 $.each( a.cast, function( key, value ) {
                     if( value['profile_path'] ){
                         if (count <= 6){
-                            result += '<div class="col-lg-2 col-xs-2"><div class="zero-m"><img style="border-radius:10%;margin-left: auto;margin-right: auto;display: block;" height="50px" src="https://image.tmdb.org/t/p/w150'+value['profile_path']+'" alt="profile"><h5 class="text-center"><strong>'+value['name']+'</strong></h5><h6 class="text-center">'+value['character']+'</h6></div></div>';
+                            result += '<div class="col-lg-4 col-xs-4"><div class="zero-m"><img class="pull-left" style="border-radius:10%;margin-left: auto;margin-right: auto;display: block;" height="100px" src="https://image.tmdb.org/t/p/w150'+value['profile_path']+'" alt="profile"><h5 class="text-center"><strong>'+value['name']+'</strong></h5><h6 class="text-center">'+value['character']+'</h6></div></div>';
                             count++;
                         }
                     }
@@ -919,7 +1016,7 @@ foreach(loadAppearance() as $key => $value) {
                     deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
                         refreshPreloader.remove();
                     });
-                },300);
+                },600);
                 var check = $(this).attr("class");
                 var ID = check.split("--")[1];
                 if (~check.indexOf("tvID")){
@@ -1021,7 +1118,7 @@ foreach(loadAppearance() as $key => $value) {
                     </div>
                    <div style="position: inherit; padding: 15px 0px 30px 0px; margin-top: -20px;">
                         <div class="col-sm-4">
-                            <span id="calendarTrailer" class="pull-left" style="width:100%"></span>
+                            <span id="calendarTrailer" class="pull-left" style="width:100%;display: flex;"></span>
                         </div> 
                         <div class="col-sm-8">   
                             <span id="calendarLang" class="pull-right"></span>

@@ -867,9 +867,9 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
 	$openTab = (PLEXTABNAME) ? "true" : "false";
     // Assemble Item And Cache Into Array 
     if($nowPlaying){
-        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a class="openTab" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img style="width: 100%; display:inherit;" src="'.$image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img style="width: 100%; display:inherit;" src="'.$image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
-        return '<div class="item-'.$item['type'].$playlist.'"><a class="openTab" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+        return '<div class="item-'.$item['type'].$playlist.'"><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
     }
 }
 
@@ -1598,11 +1598,11 @@ function qualifyUser($type, $errOnFail = false) {
 	
 	if (!$authorized && $errOnFail) {
 		if ($GLOBALS['USER']->authenticated) {
-			header('Location: error.php?error=401');
-			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=401\'</script>';
+			header('Location: '.dirname($_SERVER['SCRIPT_NAME']).'error.php?error=401');
+			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'error.php?error=401\'</script>';
 		} else {
-			header('Location: error.php?error=999');
-			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=999\'</script>';
+			header('Location: '.dirname($_SERVER['SCRIPT_NAME']).'error.php?error=999');
+			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'error.php?error=999\'</script>';
 		}
 
 		debug_out('Not Authorized' ,1);
@@ -3719,6 +3719,21 @@ function tvdbGet($id){
 		$api['poster'] = json_decode($poster, true)['data'];
 		$api['backdrop'] = json_decode($backdrop, true)['data'];
 	}
+	return $api;
+}
+
+function tvdbSearch($name, $type){
+	$name = rawurlencode($name);
+	$headers = array(
+		"Accept" => "application/json", 
+		"Authorization" => "Bearer ".tvdbToken(),
+		"trakt-api-key" => "4502cfdf8f7282fe454878ff8583f5636392cdc5fcac30d0cc4565f7173bf443",
+		"trakt-api-version" => "2"
+	);
+
+	$trakt = curl_get("https://api.trakt.tv/search/$type?query=$name", $headers);
+	@$api['trakt'] = json_decode($trakt, true)[0][$type]['ids'];
+
 	return $api;
 }
 

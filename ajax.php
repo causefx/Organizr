@@ -92,6 +92,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
             case 'tvdb-get':
 			 	$response = tvdbGet($_POST['id']);
 			 	break;
+			case 'tvdb-search':
+			 	$response = tvdbSearch($_POST['name'], $_POST['type']);
+			 	break;
 			case 'search-plex':
 			 	$response = searchPlex($_POST['searchtitle']);
 			 	break;
