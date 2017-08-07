@@ -748,7 +748,7 @@ foreach(loadAppearance() as $key => $value) {
             //RECENT ITEMS
             // each filter we click on
             $(".filter-recent-event > li").on("click", function() {
-                    
+                 /*   
                 // toggle the filter on/off
                 $(this).data( "filter-on" , !$(this).data("filter-on") );
                 
@@ -805,12 +805,19 @@ foreach(loadAppearance() as $key => $value) {
                 
                 // combine the filters together ( on + off )
                 allFilters = filtersOn + ":not(" + filtersOff + ")";
-                console.log( allFilters );
-                
+                console.log( allFilters );*/
+                var name = $(this).attr('data-name');
+                var filter = $(this).attr('data-filter');
+                $('#recentContent-title').text('Recently Added '+name);
                 // now filter the slides.
-                $('.recentItems-recent')
-                    .slick('slickUnfilter')
-                    .slick('slickFilter' , allFilters );
+                if(filter !== 'item-all'){
+                    $('.recentItems-recent')
+                        .slick('slickUnfilter')
+                        .slick('slickFilter' , '.'+filter );
+                }else{
+                    $('.recentItems-recent')
+                        .slick('slickUnfilter')
+                }
 
             });
             //PLAYLIST SHIT

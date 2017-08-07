@@ -872,26 +872,27 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
         return '<div class="item-'.$item['type'].$playlist.'"><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
     }
 }
-
+//$hideMenu .= '<li data-filter="playlist-'.$className.'" data-name="'.$api['title'].'"><a class="js-filter-'.$className.'" href="javascript:void(0)">'.$api['title'].'</a></li>';
 //Recent Added
 function outputRecentAdded($header, $items, $script = false, $array) {
     $hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter &nbsp;<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu filter-recent-event">';
-    if($array["movie"] == "true"){
-        $hideMenu .= '<li data-filter="item-movie" data-filter-on="false"><a class="js-filter-movie" href="javascript:void(0)">Movies</a></li>';
+    if(preg_grep("/item-movie/", $items)){
+        $hideMenu .= '<li data-filter="item-movie" data-name="Movies" data-filter-on="false"><a class="js-filter-movie" href="javascript:void(0)">Movies</a></li>';
     }
-    if($array["season"] == "true"){
-        $hideMenu .= '<li data-filter="item-season" data-filter-on="false"><a class="js-filter-season" href="javascript:void(0)">Shows</a></li>';
+	if(preg_grep("/item-season/", $items)){
+        $hideMenu .= '<li data-filter="item-season" data-name="TV Shows" data-filter-on="false"><a class="js-filter-season" href="javascript:void(0)">Shows</a></li>';
     }
-    if($array["album"] == "true"){
-        $hideMenu .= '<li data-filter="item-album" data-filter-on="false"><a class="js-filter-album" href="javascript:void(0)">Music</a></li>';
+    if(preg_grep("/item-album/", $items)){
+        $hideMenu .= '<li data-filter="item-album" data-name="Music Albums" data-filter-on="false"><a class="js-filter-album" href="javascript:void(0)">Music</a></li>';
     }
+	$hideMenu .= '<li data-filter="item-all" data-name="Content" data-filter-on="false"><a class="js-filter-all" href="javascript:void(0)">All</a></li>';
     $hideMenu .= '</ul></div></div>';
     // If None Populate Empty Item
     if (!count($items)) {
         return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
     }else{
 		$className = str_replace(' ', '', $header);
-        return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-recent" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+        return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 id="recentContent-title" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-recent" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
     
 }
@@ -3723,7 +3724,7 @@ function tvdbGet($id){
 }
 
 function tvdbSearch($name, $type){
-	$name = rawurlencode($name);
+	$name = rawurlencode(preg_replace("/\(([^()]*+|(?R))*\)/","", $name));
 	$headers = array(
 		"Accept" => "application/json", 
 		"Authorization" => "Bearer ".tvdbToken(),
@@ -3752,7 +3753,7 @@ function getPlexPlaylists(){
 			$output = "";
 			$hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" id="playlist-Name" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Choose A Playlist &nbsp;<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu filter-recent-playlist">';
 			foreach($api AS $child) {
-				$items = "";
+				$items = array();
 				if ($child['playlistType'] == "video" && strpos(strtolower($child['title']) , 'private') === false){
 					$api = @curl_get($address.$child['key']."?X-Plex-Token=".PLEXTOKEN);
 					$api = simplexml_load_string($api);
