@@ -3671,6 +3671,7 @@ function getCert(){
     	file_put_contents( $file, fopen($url, 'r'));
 		writeLog("success", "CERT PEM: pem file created");
 	}elseif (file_exists($file) && time() - 2592000 > filemtime($file)) {
+		file_put_contents( $file, fopen($url, 'r'));
 		writeLog("success", "CERT PEM: downloaded new pem file");
 	}
 	return $file;
