@@ -748,64 +748,6 @@ foreach(loadAppearance() as $key => $value) {
             //RECENT ITEMS
             // each filter we click on
             $(".filter-recent-event > li").on("click", function() {
-                 /*   
-                // toggle the filter on/off
-                $(this).data( "filter-on" , !$(this).data("filter-on") );
-                
-                // set all the filter strings to empty
-                var filtersOn = "";
-                var filtersOff = "";
-                var allFilters = "";
-                
-                // loop through each filter
-                $(".filter-recent-event > li").each(function() {
-                    
-                    // set a variable to hold the value of the filter class
-                    // and also if the filter is on/off
-                    var filter = $(this).data("filter");
-                    var isOn = $(this).data("filter-on");
-
-                    // add the filter to the filtersOn / filtersOff collection
-                    if( isOn ) {
-                        filtersOn += "." + filter + ", ";
-                        var title=$(this).attr('data-filter').split('-')[1];
-                        if(title == "movie"){
-                            var titleOriginal = "Movies";
-                        }else if(title == "season"){
-                            var titleOriginal = "Shows";
-                        }else if(title == "album"){
-                            var titleOriginal = "Music";
-                        }
-                        
-                        $('.js-filter-'+title).text(titleOriginal+' Active');
-                    } else {
-                        filtersOff += "." + filter + ", ";
-                        var title=$(this).attr('data-filter').split('-')[1];
-                        if(title == "movie"){
-                            var titleOriginal = "Movies";
-                        }else if(title == "season"){
-                            var titleOriginal = "Shows";
-                        }else if(title == "album"){
-                            var titleOriginal = "Music";
-                        }
-                        $('.js-filter-'+title).text(titleOriginal);
-                    }
-
-                });
-                
-                // remove the last ", " from each filter collection.
-                filtersOn = filtersOn.replace(/, $/, "");
-                filtersOff = filtersOff.replace(/, $/, "");
-                
-                // remove all filters if none are on.
-                if( filtersOn === "" ) {
-                    filtersOn = "*";
-                    filtersOff = "";
-                }
-                
-                // combine the filters together ( on + off )
-                allFilters = filtersOn + ":not(" + filtersOff + ")";
-                console.log( allFilters );*/
                 var name = $(this).attr('data-name');
                 var filter = $(this).attr('data-filter');
                 $('#recentContent-title').text('Recently Added '+name);
@@ -818,7 +760,6 @@ foreach(loadAppearance() as $key => $value) {
                     $('.recentItems-recent')
                         .slick('slickUnfilter')
                 }
-
             });
             //PLAYLIST SHIT
              // each filter we click on
@@ -831,7 +772,6 @@ foreach(loadAppearance() as $key => $value) {
                 $('.recentItems-playlists')
                     .slick('slickUnfilter')
                     .slick('slickFilter' , '.'+filter );
-
             });
 
             $("body").niceScroll({
