@@ -323,6 +323,10 @@ if (function_exists('curl_version')) :
 		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
+		if(localURL($url)){
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYPEER, 0);
+		}
 		// Format Data
 		switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
 			case 'application/json': 
@@ -361,6 +365,10 @@ if (function_exists('curl_version')) :
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
   		curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
+		if(localURL($url)){
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYPEER, 0);
+		}
 		// Format Headers
 		$cHeaders = array();
 		foreach ($headers as $k => $v) {
@@ -386,6 +394,10 @@ if (function_exists('curl_version')) :
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
   		curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
 		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
+		if(localURL($url)){
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYPEER, 0);
+		}
 		// Format Headers
 		$cHeaders = array();
 		foreach ($headers as $k => $v) {
@@ -1506,6 +1518,39 @@ function dependCheck() {
 
 // Process file uploads
 function uploadFiles($path, $ext_mask = null) {
+	if (isset($_FILES) && count($_FILES)) {
+		require_once('class.uploader.php');
+
+		$uploader = new Uploader();
+		$data = $uploader->upload($_FILES['files'], array(
+			'limit' => 10,
+			'maxSize' => 10,
+			'extensions' => $ext_mask,
+			'required' => false,
+			'uploadDir' => str_replace('//','/',$path.'/'),
+			'title' => array('name'),
+			'removeFiles' => true,
+			'replace' => true,
+		));
+
+		if($data['isComplete']){
+			$files = $data['data'];
+   			writeLog("success", $files['metas'][0]['name']." was uploaded");
+			echo json_encode($files['metas'][0]['name']);
+		}
+
+		if($data['hasErrors']){
+			$errors = $data['errors'];
+   			writeLog("error", $files['metas'][0]['name']." was not able to upload");
+			echo json_encode($errors);
+		}
+	} else { 
+  		writeLog("error", "image was not uploaded");
+		echo json_encode('No files submitted!');
+	}
+}
+// Process file uploads
+function uploadAvatar($path, $ext_mask = null) {
 	if (isset($_FILES) && count($_FILES)) {
 		require_once('class.uploader.php');
 
@@ -3878,6 +3923,12 @@ function getCalendar(){
 	}
 	
 	return $calendarItems;
+}
+
+function localURL($url){
+	preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $url, $result);
+	$result = (!empty($result) ? true : false);
+	return $result;
 }
 
 function orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){

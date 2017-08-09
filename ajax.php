@@ -127,6 +127,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
                         uploadFiles('images/', array('jpg', 'png', 'svg', 'jpeg', 'bmp', 'gif'));
                         sendNotification(true);
                         break;
+					case 'upload-avatar':
+                        uploadAvatar(USER_HOME.$GLOBALS['USER']->username.'/', array('jpg', 'png', 'svg', 'jpeg', 'bmp', 'gif'));
+                        sendNotification(true);
+                        break;
                     case 'remove-images':
                         removeFiles('images/'.(isset($_POST['file'])?$_POST['file']:''));
                         sendNotification(true);
