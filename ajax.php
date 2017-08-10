@@ -26,6 +26,10 @@ $response = array();
 switch ($_SERVER['REQUEST_METHOD']) {
 	case 'GET':
 		switch ($action) {
+			case 'get-backups':
+				qualifyUser("admin", true);
+				$response = implode("\n",getBackups());
+				break;
 			case 'get-calendar':
 				echo json_encode(getCalendar());
 				die();
