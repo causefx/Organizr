@@ -519,7 +519,7 @@ foreach(loadAppearance() as $key => $value) {
             var Type = $(this).attr("extraType");
             var openTab = $(this).attr("openTab");
             var location = $(this).attr("href");
-            if( Type === 'season' || Type === 'episode'){
+            if( Type === 'season' || Type === 'episode' || Type === 'show'){
                 Type = "tv";
                 SearchType = "show";
             }else if( Type === 'movie'){

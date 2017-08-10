@@ -123,6 +123,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
 					case 'check-url':
                         sendResult(frameTest($_POST['checkurl']), "flask", $_POST['checkurl'], "IFRAME_CAN_BE_FRAMED", "IFRAME_CANNOT_BE_FRAMED");
                         break;
+					case 'backup-now':
+                        sendResult(backupDB(), "database", "Backup", "BACKUP_CREATED", "BACKUP_ERROR");
+                        break;
                     case 'upload-images':
                         uploadFiles('images/', array('jpg', 'png', 'svg', 'jpeg', 'bmp', 'gif'));
                         sendNotification(true);

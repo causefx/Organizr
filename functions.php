@@ -3368,7 +3368,7 @@ function searchPlex($query){
 				$link = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
 			}
 			
-            $items .= '<tr style="cursor: pointer;" class="openTab" openTab="'.$openTab.'" href="'.$link.'">
+            $items .= '<tr style="cursor: pointer;" class="openTab" extraTitle="'.$results['title'].'" extraType="'.$child['type'].'" openTab="'.$openTab.'" href="'.$link.'">
             <th scope="row"><img src="'.$image_url.'"></th>
             <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
             <td class="col-xs-3 nzbtable nzbtable-row"'.$style.'>'.$results['genre'].'</td>
@@ -3864,6 +3864,14 @@ function getLogs(){
     return $logs;
 }
 
+function getBackups(){
+    $path = __DIR__ ."/backups/";
+	@mkdir($path, 0770, true);
+    $backups = array();
+    $files = array_diff(scandir($path), array('.', '..'));
+    return array_reverse($files);
+}
+
 function getExtension($string) {
     return preg_replace("#(.+)?\.(\w+)(\?.+)?#", "$2", $string);
 }
@@ -3929,6 +3937,48 @@ function localURL($url){
 	preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $url, $result);
 	$result = (!empty($result) ? true : false);
 	return $result;
+}
+
+function fileArray($files){
+	foreach($files as $file){
+		if(file_exists($file)){
+			$list[] = $file;
+		}
+	}
+	if(!empty($list)){ return $list; } 
+}
+
+function backupDB(){
+	if (extension_loaded('ZIP')) {
+		$directory = getcwd()."/backups/";
+		@mkdir($directory, 0770, true);
+		$orgFiles = array(
+			'css' => 'custom.css', 
+			'temp' => 'cus.sd', 
+			'orgLog' => 'org.log', 
+			'loginLog' => 'loginLog.json', 
+			'chatDB' => 'chatpack.db', 
+			'config' => 'config/config.php', 
+			'database' => DATABASE_LOCATION.'users.db'
+		);
+		$files = fileArray($orgFiles);
+		if(!empty($files)){
+			writeLog("success", "BACKUP: backup process started");
+			$zipname = $directory.'backup['.date('Y-m-d_H-i').']['.INSTALLEDVERSION.'].zip';
+			$zip = new ZipArchive;
+			$zip->open($zipname, ZipArchive::CREATE);
+			foreach ($files as $file) {
+				$zip->addFile($file);
+			}
+			$zip->close();
+			writeLog("success", "BACKUP: backup process finished");
+			return true;
+		}else{
+			return false;
+		}
+	}else{
+		return false;
+	}
 }
 
 function orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){

@@ -1573,6 +1573,30 @@ echo buildSettings(
 					),
 				),
 			),
+            array(
+				'title' => 'Backup Settings',
+				'id' => 'backup_settings',
+				'image' => 'images/backup.png',
+				'fields' => array(
+					array(
+                        array(
+							'type' => 'button',
+							'labelTranslate' => 'BACKUP_NOW',
+							'id' => 'backupNow',
+							'icon' => 'database',
+                            'style' =>  (extension_loaded("ZIP")) ? "" : "display : none",
+						),
+					),
+                    array(
+						'type' => 'textarea',
+						'labelTranslate' => 'BACKUP_LIST',
+						'name' => 'backupList',
+						'value' => (extension_loaded("ZIP")) ? implode("\n",getBackups()) : "PLEASE ENABLE PHP ZIP",
+						'rows' => 15,
+						'style' => 'background: #000; color: #FFF;pointer-events: none',
+					),
+				),
+			),
 		),
 	)
 );
@@ -2830,6 +2854,12 @@ echo buildSettings(
             });
         </script>
         <script>
+            //Backup
+            $('#backupNow').on('click', function () {
+                console.log("starting backup now");
+                ajax_request('POST', 'backup-now');
+                console.log("ajax backup done");
+            });
             //TestEmail
             function isUpperCase(str) {
                 return str === str.toUpperCase();
