@@ -1584,7 +1584,7 @@ echo buildSettings(
 							'labelTranslate' => 'BACKUP_NOW',
 							'id' => 'backupNow',
 							'icon' => 'database',
-                            'style' =>  (extension_loaded("ZIP")) ? "" : "display : none",
+                            'style' =>  (extension_loaded("ZIP")) ? "margin-bottom: 5px;" : "display : none",
 						),
 					),
                     array(
@@ -2858,7 +2858,14 @@ echo buildSettings(
             $('#backupNow').on('click', function () {
                 console.log("starting backup now");
                 ajax_request('POST', 'backup-now');
-                console.log("ajax backup done");
+                setTimeout(function(){
+                    ajax_request('GET', 'get-backups').done(function(data){
+                        $('#backupList_id').html(data);
+                        $('#backupList_id').addClass('animated pulse');
+                    });
+                    console.log("ajax backup done")
+                }, 500);
+                ;
             });
             //TestEmail
             function isUpperCase(str) {
