@@ -2948,40 +2948,22 @@ function getSonarrCalendar($array){
 
 }
 
-function getRadarrCalendar($array){
-    
+function getRadarrCalendar($array){  
     $array = json_decode($array, true);
-    //$gotCalendar = "";
     $gotCalendar = array();
     $i = 0;
     foreach($array AS $child) {
-        
-        if(isset($child['inCinemas'])){
-            
+        if(isset($child['physicalRelease'])){
             $i++;
             $movieName = $child['title'];
             $movieID = $child['tmdbId'];
             if(!isset($movieID)){ $movieID = ""; }
-            
-            if(isset($child['inCinemas']) && isset($child['physicalRelease'])){ 
-                
-                $physicalRelease = $child['physicalRelease']; 
-                $physicalRelease = strtotime($physicalRelease);
-                $physicalRelease = date("Y-m-d", $physicalRelease);
-
-                if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
-
-                $downloaded = $child['hasFile'];
-                if($downloaded == "0" && $notReleased == "true"){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
-            
-            }else{ 
-                
-                $physicalRelease = $child['inCinemas']; 
-                $downloaded = "light-blue-bg";
-            
-            }
-                        
-            //$gotCalendar .= "{ title: \"$movieName\", start: \"$physicalRelease\", className: \"$downloaded movieID--$movieID\", imagetype: \"film\" }, \n";
+			$physicalRelease = $child['physicalRelease']; 
+			$physicalRelease = strtotime($physicalRelease);
+			$physicalRelease = date("Y-m-d", $physicalRelease);
+			if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
+			$downloaded = $child['hasFile'];
+			if($downloaded == "0" && $notReleased == "true"){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
 			array_push($gotCalendar, array(
 				"id" => "Radarr-".$i,
 				"title" => $movieName, 
@@ -2990,11 +2972,8 @@ function getRadarrCalendar($array){
 				"imagetype" => "film",
 			));
         }
-        
     }
-
     if ($i != 0){ return $gotCalendar; }
-
 }
 
 function getHeadphonesCalendar($url, $key, $list){
@@ -3865,7 +3844,7 @@ function getLogs(){
 }
 
 function getBackups(){
-    $path = __DIR__ ."/backups/";
+    $path = DATABASE_LOCATION ."backups/";
 	@mkdir($path, 0770, true);
     $backups = array();
     $files = array_diff(scandir($path), array('.', '..'));
@@ -3950,7 +3929,7 @@ function fileArray($files){
 
 function backupDB(){
 	if (extension_loaded('ZIP')) {
-		$directory = getcwd()."/backups/";
+		$directory = DATABASE_LOCATION."backups/";
 		@mkdir($directory, 0770, true);
 		$orgFiles = array(
 			'css' => 'custom.css', 
