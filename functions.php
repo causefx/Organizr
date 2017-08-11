@@ -3870,52 +3870,52 @@ function getCalendar(){
 	$sickrage = new SickRage(SICKRAGEURL, SICKRAGEKEY);
 	$startDate = date('Y-m-d',strtotime("-".CALENDARSTARTDAY." days"));
 	$endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days")); 
-	//$calendarItems = '';
 	$calendarItems = array();
 	if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){
 		try {
-			//$calendarItems .= getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); 
-			$calendarItems = array_merge($calendarItems, getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)));  
+			$sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate));
+			if(!empty($sonarrCalendar)) { $calendarItems = array_merge($calendarItems, $sonarrCalendar); }
 		} catch (Exception $e) { 
 			writeLog("error", "SONARR ERROR: ".strip($e->getMessage())); 
 		}
 	}
 	if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){ 
 		try { 
-			//$calendarItems .= getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); 
-			$calendarItems = array_merge($calendarItems, getRadarrCalendar($radarr->getCalendar($startDate, $endDate))); 
+			$radarrCalendar = getRadarrCalendar($radarr->getCalendar($startDate, $endDate));
+			if(!empty($radarrCalendar)) { $calendarItems = array_merge($calendarItems, $radarrCalendar); } 
 		} catch (Exception $e) { 
 			writeLog("error", "RADARR ERROR: ".strip($e->getMessage())); 
 		}
 	}
 	if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
-		//$calendarItems .= getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); 
-		//$calendarItems .= getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); 
-		$calendarItems = array_merge($calendarItems, getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory")); 
-		$calendarItems = array_merge($calendarItems, getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted")); 
+		$headphonesHistory = getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); 
+		$headphonesWanted = getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); 
+		if(!empty($headphonesHistory)) { $calendarItems = array_merge($calendarItems, $headphonesHistory); }
+		if(!empty($headphonesWanted)) { $calendarItems = array_merge($calendarItems, $headphonesWanted); }
 
 	}
 	if (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)){
 		try { 
-			//$calendarItems .= getSickrageCalendarWanted($sickrage->future());
-			$calendarItems = array_merge($calendarItems, getSickrageCalendarWanted($sickrage->future()));
+			$sickrageFuture = getSickrageCalendarWanted($sickrage->future());
+			if(!empty($sickrageFuture)) { $calendarItems = array_merge($calendarItems, $sickrageFuture); }
 		} catch (Exception $e) { 
 			writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
 		} try { 
-			//$calendarItems .= getSickrageCalendarHistory($sickrage->history("100","downloaded"));
-			$calendarItems = array_merge($calendarItems, getSickrageCalendarHistory($sickrage->history("100","downloaded")));
+			$sickrageHistory = getSickrageCalendarHistory($sickrage->history("100","downloaded"));
+			if(!empty($sickrageHistory)) { $calendarItems = array_merge($calendarItems, $sickrageHistory); }
 		} catch (Exception $e) { 
 			writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
 		}
 	}
-	
 	return $calendarItems;
 }
 
 function localURL($url){
-	preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $url, $result);
-	$result = (!empty($result) ? true : false);
-	return $result;
+	if (strpos($url, 'https') !== false) {
+		preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $url, $result);
+		$result = (!empty($result) ? true : false);
+		return $result;
+	}
 }
 
 function fileArray($files){
