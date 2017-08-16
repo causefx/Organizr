@@ -3783,7 +3783,7 @@ function getPlexPlaylists(){
 			// Identify the local machine
 			$gotServer = $getServer['machineIdentifier'];
 			$output = "";
-			$hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" id="playlist-Name" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Choose A Playlist &nbsp;<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu filter-recent-playlist">';
+			$hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" id="playlist-Name" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Choose A Playlist &nbsp;<span class="caret"></span></button><ul style="right:0; left: auto; height: 200px;" class="dropdown-menu filter-recent-playlist playlist-listing">';
 			foreach($api AS $child) {
 				$items = array();
 				if ($child['playlistType'] == "video" && strpos(strtolower($child['title']) , 'private') === false){

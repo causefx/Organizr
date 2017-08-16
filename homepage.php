@@ -769,6 +769,11 @@ foreach(loadAppearance() as $key => $value) {
                 scrollspeed: 30,
                 mousescrollstep: 60
             });
+            $(".playlist-listing").niceScroll({
+                railpadding: {top:0,right:0,left:0,bottom:0},
+                scrollspeed: 30,
+                mousescrollstep: 60
+            });
 
             <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>
             var queueRefresh = <?php echo DOWNLOADREFRESH; ?>;
