@@ -7,11 +7,7 @@ ini_set("error_reporting", E_ALL | E_STRICT);
 
 require_once("user.php");
 require_once("functions.php");
-use Kryptonit3\Sonarr\Sonarr;
-use Kryptonit3\SickRage\SickRage;
-$sonarr = new Sonarr(SONARRURL, SONARRKEY);
-$radarr = new Sonarr(RADARRURL, RADARRKEY);
-$sickrage = new SickRage(SICKRAGEURL, SICKRAGEKEY);
+
 $USER = new User("registration_callback");
 
 // Check if connection to homepage is allowed
@@ -21,9 +17,6 @@ qualifyUser(HOMEPAGEAUTHNEEDED, true);
 foreach(loadAppearance() as $key => $value) {
 	${$key} = $value;
 }
-
-$startDate = date('Y-m-d',strtotime("-".CALENDARSTARTDAY." days"));
-$endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days")); 
 
 ?>
 
@@ -370,17 +363,6 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                                         <a id="getDownloader" class="repeat-btn">
                                             <i class="fa fa-repeat"></i>
                                         </a>
-                                        <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                            <i class="fa fa-chevron-down"></i>
-                                        </a>
-										<!-- Lets Move This To Homepage Settings
-                                        <ul id="downloaderSeconds" class="dropdown-menu" style="top: 32px !important">
-                                            <li data-value="5000"><a>Refresh every 5 seconds</a></li>
-                                            <li data-value="10000"><a>Refresh every 10 seconds</a></li>
-                                            <li data-value="30000"><a>Refresh every 30 seconds</a></li>
-                                            <li data-value="60000"><a>Refresh every 60 seconds</a></li>
-                                        </ul>
-										-->
                                     </div>
                                     <h3 class="pull-left"><?php if(NZBGETURL != ""){ echo "NZBGet "; } if(SABNZBDURL != ""){ echo "SABnzbd "; } ?></h3>
                                     <ul class="nav nav-tabs pull-right">
@@ -446,11 +428,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 </div>
                 <div id="plexPlaylists" class="row">
                     <div class="col-lg-12">
-                    <?php
-                    if(PLEXPLAYLISTS == "true"){  
-                        echo getPlexPlaylists($plexArray);
-                    } 
-                    ?>
+                    <?php if(PLEXPLAYLISTS == "true"){ echo getPlexPlaylists($plexArray); } ?>
                     </div>
                 </div>
                 <?php } ?>
@@ -465,8 +443,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                     if(EMBYRECENTMOVIE == "true" || EMBYRECENTTV == "true" || EMBYRECENTMUSIC == "true"){  
                         $embyArray = array("Movie" => EMBYRECENTMOVIE, "Episode" => EMBYRECENTTV, "MusicAlbum" => EMBYRECENTMUSIC, "Series" => EMBYRECENTTV);
                         echo getEmbyRecent($embyArray);
-                    } 
-    
+                    }
                     ?>
                     </div>
 
@@ -523,7 +500,96 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
         });
         
 		$(document).on("click", ".openTab", function(e) {
-			if($(this).attr("openTab") === "true") {
+            var Title = $(this).attr("extraTitle");
+            var Type = $(this).attr("extraType");
+            var openTab = $(this).attr("openTab");
+            var location = $(this).attr("href");
+            if( Type === 'season' || Type === 'episode' || Type === 'show'){
+                Type = "tv";
+                SearchType = "show";
+            }else if( Type === 'movie'){
+                Type = "movie";
+                SearchType = "movie";            
+            }
+            if( Type === 'tv' || Type === 'movie' ){
+                $('#calendarExtra').modal('show');
+                var refreshBox = $('#calendarMainID');
+                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
+                setTimeout(function(){
+                    var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                    deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+                        refreshPreloader.remove();
+                    });
+                },600);
+                ajax_request('POST', 'tvdb-search', {
+                    name: Title,
+                    type: SearchType,
+                }).done(function(data){ 
+                    if( data.trakt ) {               
+                        $.ajax({
+                            type: 'GET',
+                            url: 'https://api.themoviedb.org/3/'+Type+'/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits',
+                            cache: true,
+                            async: true,
+                            complete: function(xhr, status) {
+                                var result = $.parseJSON(xhr.responseText);
+                                if (xhr.statusText === "OK") {
+                                    if( Type === "movie"){ 
+                                        $('#calendarTitle').html(result.title);
+                                        $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
+                                        $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(result.runtime)+'</span>&nbsp;');
+                                        $('#calendarSummary').text(result.overview);
+                                        $('#calendarTagline').text(result.tagline);
+                                        $('#calendarTrailer').html(convertTrailer(result.videos)+'&nbsp;<span class="label openPlex palette-Amber-600 bg" openTab="'+openTab+'" location="'+location+'" style="width:100%;display:block;cursor:pointer;"><i style="vertical-align:sub;" class="fa fa-play white"></i><text style="vertical-align:sub;"> Watch Now on PLEX</text></span>');
+                                        $('#calendarCast').html(convertCast(result.credits));
+                                        $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
+                                        $('#calendarLang').html(convertArray(result.spoken_languages, "MOVIE"));
+                                        $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
+                                        $('#calendarMain').attr("style","background-size: cover; background: linear-gradient(rgba(25,27,29,.75),rgba(25,27,29,.75)),url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                                        $('#calendarExtra').modal('show');
+                                    }else if (Type === "tv"){
+                                        $('#calendarTitle').html(result.name);
+                                        $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
+                                        $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(whatWasIt(result.episode_run_time))+'</span>&nbsp;');
+                                        $('#calendarSummary').text(result.overview);
+                                        $('#calendarTagline').text("");
+                                        $('#calendarTrailer').html(convertTrailer(result.videos)+'&nbsp;<span class="label openPlex palette-Amber-600 bg" openTab="'+openTab+'" location="'+location+'" style="width:100%;display:block;cursor:pointer;"><i style="vertical-align:sub;" class="fa fa-play white"></i><text style="vertical-align:sub;"> Watch Now on PLEX</text></span>');
+                                        $('#calendarCast').html(convertCast(result.credits));
+                                        $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
+                                        $('#calendarLang').html(convertArray(result.languages, "TV"));
+                                        $('#calendarPoster').attr("src","https://image.tmdb.org/t/p/w300"+result.poster_path);
+                                        $('#calendarMain').attr("style","background-size: cover; background: linear-gradient(rgba(25,27,29,.75),rgba(25,27,29,.75)),url(https://image.tmdb.org/t/p/w1000"+result.backdrop_path+");top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
+                                        $('#calendarExtra').modal('show');
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+                e.preventDefault();
+            }else{
+
+                if($(this).attr("openTab") === "true") {
+                    var isActive = parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']");
+                    var activeFrame = isActive.children('iframe');
+                    if(isActive.length === 1){
+                        activeFrame.attr("src", $(this).attr("href"));
+                        parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
+                    }else{
+                        parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
+                        parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']").children('iframe').attr("src", $(this).attr("href"));
+                    }
+                    e.preventDefault();
+                }else{
+                    var source = $(this).attr("href");
+                    window.open(source, '_blank');
+                }
+            }
+
+        });
+
+        $(document).on("click", ".openPlex", function(e) {
+            if($(this).attr("openTab") === "true") {
 				var isActive = parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']");
 				var activeFrame = isActive.children('iframe');
 				if(isActive.length === 1){
@@ -531,13 +597,12 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
 					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
 				}else{
 					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
-					parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']").children('iframe').attr("src", $(this).attr("href"));
+					parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']").children('iframe').attr("src", $(this).attr("location"));
 				}
-				e.preventDefault();
 			}else{
-				console.log("nope");
+                var source = $(this).attr("location");
+				window.open(source, '_blank');
 			}
-
         });
         
             
@@ -668,51 +733,18 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
             //RECENT ITEMS
             // each filter we click on
             $(".filter-recent-event > li").on("click", function() {
-                    
-                // toggle the filter on/off
-                $(this).data( "filter-on" , !$(this).data("filter-on") );
-                
-                // set all the filter strings to empty
-                var filtersOn = "";
-                var filtersOff = "";
-                var allFilters = "";
-                
-                // loop through each filter
-                $(".filter-recent-event > li").each(function() {
-                    
-                    // set a variable to hold the value of the filter class
-                    // and also if the filter is on/off
-                    var filter = $(this).data("filter");
-                    var isOn = $(this).data("filter-on");
-
-                    // add the filter to the filtersOn / filtersOff collection
-                    if( isOn ) {
-                        filtersOn += "." + filter + ", ";
-                    } else {
-                        filtersOff += "." + filter + ", ";
-                    }
-
-                });
-                
-                // remove the last ", " from each filter collection.
-                filtersOn = filtersOn.replace(/, $/, "");
-                filtersOff = filtersOff.replace(/, $/, "");
-                
-                // remove all filters if none are on.
-                if( filtersOn === "" ) {
-                    filtersOn = "*";
-                    filtersOff = "";
-                }
-                
-                // combine the filters together ( on + off )
-                allFilters = filtersOn + ":not(" + filtersOff + ")";
-                console.log( allFilters );
-                
+                var name = $(this).attr('data-name');
+                var filter = $(this).attr('data-filter');
+                $('#recentContent-title').text('Recently Added '+name);
                 // now filter the slides.
-                $('.recentItems-recent')
-                    .slick('slickUnfilter')
-                    .slick('slickFilter' , allFilters );
-
+                if(filter !== 'item-all'){
+                    $('.recentItems-recent')
+                        .slick('slickUnfilter')
+                        .slick('slickFilter' , '.'+filter );
+                }else{
+                    $('.recentItems-recent')
+                        .slick('slickUnfilter')
+                }
             });
             //PLAYLIST SHIT
              // each filter we click on
@@ -725,7 +757,6 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 $('.recentItems-playlists')
                     .slick('slickUnfilter')
                     .slick('slickFilter' , '.'+filter );
-
             });
 
             $("body").niceScroll({
@@ -734,6 +765,11 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                 mousescrollstep: 60
             });
             $(".table-responsive").niceScroll({
+                railpadding: {top:0,right:0,left:0,bottom:0},
+                scrollspeed: 30,
+                mousescrollstep: 60
+            });
+            $(".playlist-listing").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0},
                 scrollspeed: 30,
                 mousescrollstep: 60
@@ -799,39 +835,7 @@ $endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
                         month: { buttonText: '<?php echo $language->translate("MONTH");?>', eventLimit: false },
                         today: { buttonText: '<?php echo $language->translate("TODAY");?>' },
                     },
-                    events: [
-<?php 
-if (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)){
-	try { 
-		echo getSickrageCalendarWanted($sickrage->future());
-	} catch (Exception $e) { 
-		writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
-	} try { 
-		echo getSickrageCalendarHistory($sickrage->history("100","downloaded"));
-	} catch (Exception $e) { 
-		writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
-	}
-}
-if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){
-	try {
-		echo getSonarrCalendar($sonarr->getCalendar($startDate, $endDate)); 
-	} catch (Exception $e) { 
-		writeLog("error", "SONARR ERROR: ".strip($e->getMessage())); 
-	}
-}
-if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){ 
-	try { 
-		echo getRadarrCalendar($radarr->getCalendar($startDate, $endDate)); 
-	} catch (Exception $e) { 
-		writeLog("error", "RADARR ERROR: ".strip($e->getMessage())); 
-	}
-}
-if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
-	echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); 
-	echo getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); 
-
-}?>                                
-                    ],
+                    //events: [ <?php //echo getCalendar(); ?> ],
                     eventRender: function eventRender( event, element, view ) {
                         return ['all', event.imagetype].indexOf($('#imagetype_selector').val()) >= 0
                     },
@@ -844,6 +848,30 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
             $('#imagetype_selector').on('change',function(){
                 $('#calendar').fullCalendar('rerenderEvents');
             })
+            $.ajax({
+                type: 'GET',
+                url: 'ajax.php?a=get-calendar',
+                success: function(data)
+                {
+                    newData =  $.parseJSON(data);
+                    $('#calendar').fullCalendar('removeEvents');
+                    $('#calendar').fullCalendar('addEventSource', newData);   
+                    console.log('Calendar Entries Added');      
+                }
+            });
+            setInterval(function() {
+                $.ajax({
+                    type: 'GET',
+                    url: 'ajax.php?a=get-calendar',
+                    success: function(data)
+                    {
+                        newData =  $.parseJSON(data);
+                        $('#calendar').fullCalendar('removeEvents');
+                        $('#calendar').fullCalendar('addEventSource', newData);  
+                        console.log('Calendar refreshed');       
+                    }
+                });
+            }, 60000);
         </script>
         <?php } ?>
         <script>
@@ -876,7 +904,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                 var count = 1;
                 $.each( a.results, function( key, value ) {
                     if (count == 1){
-                        result += '<span id="openTrailer" style="cursor:pointer;width: 100%;display: block;" data-key="'+value['key']+'" data-name="'+value['name']+'" data-site="'+value['site']+'" class="label label-danger"><i class="fa fa-youtube-play" aria-hidden="true"></i> &nbsp;Watch Trailer</span>&nbsp;';
+                        result += '<span id="openTrailer" style="cursor:pointer;width: 100%;display: block;" data-key="'+value['key']+'" data-name="'+value['name']+'" data-site="'+value['site']+'" class="label label-danger"><i style="vertical-align:sub;" class="fa fa-youtube-play" aria-hidden="true"></i><text style="vertical-align:sub;"> Watch Trailer</text></span>&nbsp;';
                     }
                     count++;
                 });
@@ -888,7 +916,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                 $.each( a.cast, function( key, value ) {
                     if( value['profile_path'] ){
                         if (count <= 6){
-                            result += '<div class="col-lg-2 col-xs-2"><div class="zero-m"><img style="border-radius:10%;margin-left: auto;margin-right: auto;display: block;" height="50px" src="https://image.tmdb.org/t/p/w150'+value['profile_path']+'" alt="profile"><h5 class="text-center"><strong>'+value['name']+'</strong></h5><h6 class="text-center">'+value['character']+'</h6></div></div>';
+                            result += '<div class="col-lg-4 col-xs-4"><div class="zero-m"><img class="pull-left" style="border-radius:10%;margin-left: auto;margin-right: auto;display: block;" height="100px" src="https://image.tmdb.org/t/p/w150'+value['profile_path']+'" alt="profile"><h5 class="text-center"><strong>'+value['name']+'</strong></h5><h6 class="text-center">'+value['character']+'</h6></div></div>';
                             count++;
                         }
                     }
@@ -925,7 +953,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                     deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
                         refreshPreloader.remove();
                     });
-                },300);
+                },600);
                 var check = $(this).attr("class");
                 var ID = check.split("--")[1];
                 if (~check.indexOf("tvID")){
@@ -1027,7 +1055,7 @@ if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
                     </div>
                    <div style="position: inherit; padding: 15px 0px 30px 0px; margin-top: -20px;">
                         <div class="col-sm-4">
-                            <span id="calendarTrailer" class="pull-left" style="width:100%"></span>
+                            <span id="calendarTrailer" class="pull-left" style="width:100%;display: flex;"></span>
                         </div> 
                         <div class="col-sm-8">   
                             <span id="calendarLang" class="pull-right"></span>

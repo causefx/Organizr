@@ -81,7 +81,7 @@ if(SLIMBAR == "true") {
         <link rel="stylesheet" href="css/settings.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/summernote/dist/summernote.css">
         <link href="css/jquery.filer.css" rel="stylesheet">
-	       <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
+	    <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
 
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
@@ -1573,6 +1573,30 @@ echo buildSettings(
 					),
 				),
 			),
+            array(
+				'title' => 'Backup Settings',
+				'id' => 'backup_settings',
+				'image' => 'images/backup.png',
+				'fields' => array(
+					array(
+                        array(
+							'type' => 'button',
+							'labelTranslate' => 'BACKUP_NOW',
+							'id' => 'backupNow',
+							'icon' => 'database',
+                            'style' =>  (extension_loaded("ZIP")) ? "margin-bottom: 5px;" : "display : none",
+						),
+					),
+                    array(
+						'type' => 'textarea',
+						'labelTranslate' => 'BACKUP_LIST',
+						'name' => 'backupList',
+						'value' => (extension_loaded("ZIP")) ? implode("\n",getBackups()) : "PLEASE ENABLE PHP ZIP",
+						'rows' => 15,
+						'style' => 'background: #000; color: #FFF;pointer-events: none',
+					),
+				),
+			),
 		),
 	)
 );
@@ -2830,6 +2854,19 @@ echo buildSettings(
             });
         </script>
         <script>
+            //Backup
+            $('#backupNow').on('click', function () {
+                console.log("starting backup now");
+                ajax_request('POST', 'backup-now');
+                setTimeout(function(){
+                    ajax_request('GET', 'get-backups').done(function(data){
+                        $('#backupList_id').html(data);
+                        $('#backupList_id').addClass('animated pulse');
+                    });
+                    console.log("ajax backup done")
+                }, 500);
+                ;
+            });
             //TestEmail
             function isUpperCase(str) {
                 return str === str.toUpperCase();

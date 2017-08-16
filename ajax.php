@@ -16,7 +16,6 @@ if (isset($_POST['action'])) { $action = $_POST['action']; }
 if (isset($_GET['action'])) { $action = $_GET['action']; }
 if (isset($_GET['a'])) { $action = $_GET['a']; }
 unset($_POST['action']);
-
 // No Action
 if (!isset($action)) {
 	sendNotification(false, 'No Action Specified!');
@@ -27,6 +26,20 @@ $response = array();
 switch ($_SERVER['REQUEST_METHOD']) {
 	case 'GET':
 		switch ($action) {
+			case 'get-backups':
+				qualifyUser("admin", true);
+				$response = implode("\n",getBackups());
+				break;
+			case 'get-calendar':
+				echo json_encode(getCalendar());
+				die();
+				break;
+			case 'show-file':
+				$auth = ($_SERVER['HTTP_REFERER'] ? true : false);
+				if ($auth === false) { die("WTF? Bro!  This is an internal function only"); }
+				showFile();
+				die();
+				break;
 			case 'emby-image':
 				qualifyUser(EMBYHOMEAUTH, true);
 				getEmbyImage();
@@ -83,6 +96,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
             case 'tvdb-get':
 			 	$response = tvdbGet($_POST['id']);
 			 	break;
+			case 'tvdb-search':
+			 	$response = tvdbSearch($_POST['name'], $_POST['type']);
+			 	break;
 			case 'search-plex':
 			 	$response = searchPlex($_POST['searchtitle']);
 			 	break;
@@ -111,8 +127,15 @@ switch ($_SERVER['REQUEST_METHOD']) {
 					case 'check-url':
                         sendResult(frameTest($_POST['checkurl']), "flask", $_POST['checkurl'], "IFRAME_CAN_BE_FRAMED", "IFRAME_CANNOT_BE_FRAMED");
                         break;
+					case 'backup-now':
+                        sendResult(backupDB(), "database", "Backup", "BACKUP_CREATED", "BACKUP_ERROR");
+                        break;
                     case 'upload-images':
                         uploadFiles('images/', array('jpg', 'png', 'svg', 'jpeg', 'bmp', 'gif'));
+                        sendNotification(true);
+                        break;
+					case 'upload-avatar':
+                        uploadAvatar(USER_HOME.$GLOBALS['USER']->username.'/', array('jpg', 'png', 'svg', 'jpeg', 'bmp', 'gif'));
                         sendNotification(true);
                         break;
                     case 'remove-images':
@@ -130,11 +153,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
                             } else {
                                 unlink('custom.css');
                             }
-                            $response['parent']['reload'] = true;
+                            $response['show_apply'] = true;
                         }
                         unset($_POST['customCSS']);
                         // Custom CSS Special Case END
-                        $response['notify'] = sendNotification(updateDBOptions($_POST),false,false);
+						if (!empty($_POST)) {
+                        	$response['notify'] = sendNotification(updateDBOptions($_POST),false,false);
+						}
                         break;
                     case 'deleteDB':
                         deleteDatabase();
