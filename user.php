@@ -118,6 +118,7 @@
 		var $userdir = false;
 		// the user's email address, if logged in.
 		var $email = "";
+		var $adminEmail = "";
 		// the user's role in the system
 		var $role = "";
 		var $group = "";
@@ -212,6 +213,7 @@
 			$this->username = $_SESSION["username"];
 			$this->userdir = ($this->username !=User::GUEST_USER? USER_HOME . $this->username : false);
 			$this->email = $this->get_user_email($this->username);
+			$this->adminEmail = $this->get_admin_email();
 			$this->role = $this->get_user_role($this->username);
 			//$this->group = $this->get_user_group($this->username);
 			// clear database
@@ -823,6 +825,12 @@
 			if($username && $username !="" && $username !=User::GUEST_USER) {
 				$query = "SELECT email FROM users WHERE username = '$username' COLLATE NOCASE";
 				foreach($this->database->query($query) as $data) { return $data["email"]; }}
+			return "";
+		}
+		function get_admin_email()
+		{
+			$query = "SELECT email FROM users WHERE role = 'admin' COLLATE NOCASE LIMIT 1";
+			foreach($this->database->query($query) as $data) { return $data["email"]; }
 			return "";
 		}
 		/**
