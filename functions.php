@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.42');
+ define('INSTALLEDVERSION', '1.44');
 // ===================================
 use Kryptonit3\Sonarr\Sonarr;
 use Kryptonit3\SickRage\SickRage;
