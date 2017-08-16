@@ -424,25 +424,11 @@ foreach(loadAppearance() as $key => $value) {
                         echo getPlexRecent($plexArray);
                     } 
                     ?>
-                    <!--<script>
-                        setInterval(function() {
-                            $('<div></div>').load('ajax.php?a=plex-recent',function() {
-                                var element = $(this).find('[id]');
-                                var loadedID = 	element.attr('id');
-                                $('#'+loadedID).replaceWith(element);
-                                console.log('Recent updated: '+loadedID);
-                            });
-                        }, 15000);
-                    </script>-->
                     </div>
                 </div>
                 <div id="plexPlaylists" class="row">
                     <div class="col-lg-12">
-                    <?php
-                    if(PLEXPLAYLISTS == "true"){  
-                        echo getPlexPlaylists($plexArray);
-                    } 
-                    ?>
+                    <?php if(PLEXPLAYLISTS == "true"){ echo getPlexPlaylists($plexArray); } ?>
                     </div>
                 </div>
                 <?php } ?>
@@ -457,8 +443,7 @@ foreach(loadAppearance() as $key => $value) {
                     if(EMBYRECENTMOVIE == "true" || EMBYRECENTTV == "true" || EMBYRECENTMUSIC == "true"){  
                         $embyArray = array("Movie" => EMBYRECENTMOVIE, "Episode" => EMBYRECENTTV, "MusicAlbum" => EMBYRECENTMUSIC, "Series" => EMBYRECENTTV);
                         echo getEmbyRecent($embyArray);
-                    } 
-    
+                    }
                     ?>
                     </div>
 

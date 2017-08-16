@@ -1488,7 +1488,7 @@ function getError($os, $error){
 		),
 		'curl' => array(
 			'win' => '<b>cURL</b> not enabled, uncomment ;extension=php_curl.dll in the file php.ini | '.$ext,
-			'nix' => '<b>cURL</b> not enabled, PHP7 -> sudo apt-get install php-curl | PHP5 -> run sudo apt-get install php5.6-curl',
+			'nix' => '<b>cURL</b> not enabled, PHP7 -> sudo apt-get install php-curl or sudo apt-get install php7.0-curl | PHP5 -> run sudo apt-get install php5.6-curl',
 		),
 		'zip' => array(
 			'win' => '<b>PHP Zip</b> not enabled, uncomment ;extension=php_zip.dll in the file php.ini, if that doesn\'t work remove that line',
@@ -3630,6 +3630,13 @@ function inviteCodes($action, $code = null, $usedBy = null) {
 		case "use":
 			$currentIP = get_client_ip();
 			$invites = $GLOBALS['file_db']->query('UPDATE invites SET valid = "No", usedby = "'.$usedBy.'", dateused = "'.$now.'", ip = "'.$currentIP.'" WHERE code = "'.$code.'"');
+			if(ENABLEMAIL){
+				if (!isset($GLOBALS['USER'])) {
+					require_once("user.php");
+					$GLOBALS['USER'] = new User('registration_callback');
+				}
+				sendEmail($GLOBALS['USER']->adminEmail, "Admin", "Plex Invite Used", orgEmail("PLEX Invite Used", "Look who joined the cool club", "Admin", "Hey, The User: $usedBy has redeemd their invite code: [$code], their IP Address was: $currentIP", null, null, "What Next?", "Well, That is up to you.  You can go check on them if you like."));
+			}
 			return (!empty($invites) ? true : false );
 			break;
 	}

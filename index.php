@@ -24,19 +24,6 @@ $hasOptions = "No";
 $settingsicon = "No";
 $settingsActive = "";
 $action = "";
-/*$title = "Organizr";
-$topbar = "#333333"; 
-$topbartext = "#66D9EF";
-$bottombar = "#333333";
-$sidebar = "#393939";
-$hoverbg = "#AD80FD";
-$activetabBG = "#F92671";
-$activetabicon = "#FFFFFF";
-$activetabtext = "#FFFFFF";
-$inactiveicon = "#66D9EF";
-$inactivetext = "#66D9EF";
-$loading = "#66D9EF";
-$hovertext = "#000000";*/
 $loadingIcon = "images/organizr-load-w-thick.gif";
 $baseURL = "";
 
@@ -154,30 +141,6 @@ if (file_exists('config/config.php')) {
 		endif;
 
 	endif;
-
-	/*if($hasOptions == "Yes") :
-
-		$resulto = $file_db->query('SELECT * FROM options');
-
-		foreach($resulto as $row) : 
-
-			$title = isset($row['title']) ? $row['title'] : "Organizr";
-			$topbartext = isset($row['topbartext']) ? $row['topbartext'] : "#66D9EF";
-			$topbar = isset($row['topbar']) ? $row['topbar'] : "#333333";
-			$bottombar = isset($row['bottombar']) ? $row['bottombar'] : "#333333";
-			$sidebar = isset($row['sidebar']) ? $row['sidebar'] : "#393939";
-			$hoverbg = isset($row['hoverbg']) ? $row['hoverbg'] : "#AD80FD";
-			$activetabBG = isset($row['activetabBG']) ? $row['activetabBG'] : "#F92671";
-			$activetabicon = isset($row['activetabicon']) ? $row['activetabicon'] : "#FFFFFF";
-			$activetabtext = isset($row['activetabtext']) ? $row['activetabtext'] : "#FFFFFF";
-			$inactiveicon = isset($row['inactiveicon']) ? $row['inactiveicon'] : "#66D9EF";
-			$inactivetext = isset($row['inactivetext']) ? $row['inactivetext'] : "#66D9EF";
-			$loading = isset($row['loading']) ? $row['loading'] : "#66D9EF";
-			$hovertext = isset($row['hovertext']) ? $row['hovertext'] : "#000000";
-
-		endforeach;
-
-	endif;*/
 
 	$userpic = md5( strtolower( trim( $USER->email ) ) );
 	if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
@@ -864,7 +827,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		</div>
 		<?php if($configReady == "Yes") : if(!$USER->authenticated && $configReady == "Yes") : ?>
-		<div class="login-modal modal fade">
+		<div id="loginModal" class="login-modal modal fade">
 			<div style="background:<?=$sidebar;?>;" class="table-wrapper">
 				<div class="table-row">
 					<div class="table-cell text-center">
@@ -1230,17 +1193,10 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			}, 500);
 
 		}
-		$('#loginSubmit').click(function() {
-			/*if ($('#login').smkValidate()) {
-				console.log("validated");
-			}
-			console.log("didnt validate");*/
-		});
 		$('#registerSubmit').click(function() {
 			if ($('#registration').smkValidate()) {
 				console.log("validated");
 			}
-			console.log("didnt validate");
 			User.processRegistration();
 		});
 		$("#editInfo").click(function(){
@@ -1282,7 +1238,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			$("#switchCreateUser").toggle();
 		});
 		$("#switchForgot").click(function(){
-
 			$( "form[id^='login']" ).toggle();
 			$( "form[id^='forgotPassword']" ).toggle();
 			$("#switchForgot").toggle();
@@ -1290,7 +1245,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			$("#welcomeGoBack").toggle();
 		});
 		$("#switchCreateUser").click(function(){
-
 			$( "form[id^='login']" ).toggle();
 			$("#userPassForm").toggle();
 			$("#switchForgot").toggle();
@@ -1313,29 +1267,26 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		//Logout
 		$(".logout").click(function(e){
-		var el1 = document.querySelector(".logout"),
-		el2 = document.querySelector(".logout-modal");
-		cta(el1, el2, {relativeToWindow: true}, function () {
-		$('.logout-modal').modal("show");
-		});
-
-		e.preventDefault();
+			var el1 = document.querySelector(".logout"),
+			el2 = document.querySelector(".logout-modal");
+			cta(el1, el2, {relativeToWindow: true}, function () {
+				$('.logout-modal').modal("show");
+			});
+			e.preventDefault();
 		});
 
 		//Members Sidebar
 		$(".show-members").click(function(e){
-		var e_s1 = document.querySelector(".show-members"),
-		e_s2 = document.querySelector("#members-sidebar");
-
-		cta(e_s1, e_s2, {relativeToWindow: true}, function () {
-		$('#members-sidebar').addClass('members-sidebar-open');
-		});
-
-		e.preventDefault();
+			var e_s1 = document.querySelector(".show-members"),
+			e_s2 = document.querySelector("#members-sidebar");
+			cta(e_s1, e_s2, {relativeToWindow: true}, function () {
+		$		('#members-sidebar').addClass('members-sidebar-open');
+			});
+			e.preventDefault();
 		});
 
 		$('.close-members-sidebar').click(function(){
-		$('#members-sidebar').removeClass('members-sidebar-open');
+			$('#members-sidebar').removeClass('members-sidebar-open');
 		});
 
 		$(document).ready(function(){
@@ -1448,7 +1399,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			if (defaultTab == null){
 				$("div[id^='tabEmpty']").show();
 				<?php if($needSetup == "No" && $configReady == "Yes") : if(!$USER->authenticated) : ?>
-				$('.login-modal').modal("show");
+				$('#loginModal').modal("show");
 				<?php endif; endif; ?>
 			}
 			if ($(location).attr('hash')){
