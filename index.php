@@ -1054,7 +1054,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			</div>
 		</div>
 		<?php } ?>
-		<?php if (file_exists('config/config.php') && $configReady = "Yes" && $tabSetup == "No" && SPLASH == "true") {?>
+		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true") {?>
 		<div id="splashScreen" class="splash-modal modal fade">
 			<div style="background:<?=$sidebar;?>;" class="table-wrapper big-box">
 				
@@ -1140,7 +1140,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
 
 		<script>
-		<?php if (file_exists('config/config.php') && $configReady = "Yes" && $tabSetup == "No" && SPLASH == "true") {?>    
+		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true") {?>    
 		$('.splash-modal').modal("show");
 		<?php } ?>
 		var fixed = document.getElementById('gn-scroller');
@@ -1398,9 +1398,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			}
 			if (defaultTab == null){
 				$("div[id^='tabEmpty']").show();
-				<?php if($needSetup == "No" && $configReady == "Yes") : if(!$USER->authenticated) : ?>
-				$('#loginModal').modal("show");
-				<?php endif; endif; ?>
+				<?php 
+				echo "console.log('Need Setup = $needSetup | Config Ready = $configReady');";
+				if($needSetup == "No" && $configReady == "Yes"){
+					if(!$USER->authenticated){
+						echo "$('#loginModal').modal('show');";
+					}
+				}
+				?>
 			}
 			if ($(location).attr('hash')){
 				var getHash = $(location).attr('hash').substr(1).replace("%20", " ").replace("_", " ");
