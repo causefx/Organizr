@@ -4410,6 +4410,21 @@ function ping($pings, $type = "string") {
 	return $results;
 }
 
+function getPing($url, $style, $refresh = null){
+	if(ping($url) !== 0){ 
+		$class = 'success'; 
+		if(!$refresh){
+			$class .= " animated slideInLeft";
+		}
+	}else{ 
+		$class = "warning";
+		if(!$refresh){
+			$class .= " animated flash loop-animation-timeout";
+		} 
+	}
+	echo '<span class="badge ping-'.$class.'" style="position: absolute;z-index: 100;right: 5px; padding: 0px 0px;'.$style.';font-size: 10px;">&nbsp;</span>';
+}
+
 function orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){
 	$path = getServerPath();
 	return '

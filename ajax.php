@@ -34,6 +34,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				echo json_encode(getCalendar());
 				die();
 				break;
+			case 'get-ping':
+				echo getPing($_GET['url'], $_GET['style'], true);
+				die();
+				break;
 			case 'show-file':
 				$auth = ($_SERVER['HTTP_REFERER'] ? true : false);
 				if ($auth === false) { die("WTF? Bro!  This is an internal function only"); }

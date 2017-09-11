@@ -115,7 +115,7 @@ if (file_exists('config/config.php')) {
 		if($USER->authenticated && $USER->role == "admin") :
 
 			$result = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
-			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
+			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" ORDER BY `order` asc');
 			$getsettings = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
 
 			foreach($getsettings as $row) :
@@ -252,10 +252,24 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<![endif]-->
 	</head>
 	<style>
+		.loop-animation {
+			animation-iteration-count: infinite;
+			-webkit-animation-iteration-count: infinite;
+			-moz-animation-iteration-count: infinite;
+			-o-animation-iteration-count: infinite;
+		}
+		.loop-animation-timeout {
+			animation-iteration-count: 5;
+			-webkit-animation-iteration-count: 5;
+			-moz-animation-iteration-count: 5;
+			-o-animation-iteration-count: 5;
+		}
 		.ping-success {
-			background: green !important;
+			background: #46bc99 !important;
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 		}.ping-warning {
-			background: red !important;
+			background: #ff3333 !important;
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 		}
 		.TabOpened {
 			-webkit-filter: drop-shadow(0px 0px 5px <?=$topbartext;?>);
@@ -448,7 +462,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 							<ul id="tabList" class="gn-menu metismenu">
 
 								<!--Start Tab List-->
-								<?php if($tabSetup == "No") : $tabCount = 1; foreach($result as $row) : 
+								<?php if($tabSetup == "No") : $tabCount = 1; $allPings = array(); foreach($result as $row) : 
+								$name = str_replace(array(':', '\\', '/', '*'), 'x', $row['ping_url']);
 								if($row['defaultz'] == "true") : $defaultz = "active"; else : $defaultz = ""; endif; ?>
 								<li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
 									<a class="tab-link">
@@ -456,14 +471,16 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 											<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
 												<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 												<img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
-												<?php if($row['ping'] == "true" && $row['ping_url']){
-													if(ping($row['ping_url']) !== 0){ $class = 'success'; }else{ $class = "warning"; }
-													echo '<span id="ping-'.$row['url'].'" class="badge ping-'.$class.' '.ping($row['ping_url']).'" style="position: absolute;z-index: 100;right: 0px; padding: 0px 0px;margin-top: 30px;font-size: 10px;">&nbsp;</span>';
-												}?>
+												<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
+													<ping id="ping-<?=$name;?>"></ping>
+												<?php }?>
 											</i>
 										<?php else : ?>
 											<i class="fa <?=$row['icon'];?> fa-lg">
 												<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
+												<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
+													<ping id="ping-<?=$name;?>"></ping>
+												<?php }?>
 											</i>
 										<?php endif; ?>
 										<?=$row['name'];?>
@@ -1266,6 +1283,25 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		});
 
 		$(document).ready(function(){
+			
+			<?php $pingCount = 1; 
+			foreach($allPings as $type => $ping){
+				$name = str_replace(array(':', '\\', '/', '*'), 'x', $ping);
+				if(strpos($type, 'image') !== false){ $style = "margin-top:28px"; }else{ $style = ""; }?>
+				var  pingTab<?php echo $pingCount;?> = function() {
+					$("ping[id^='ping-<?php echo $name;?>']").load("ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>");
+				};
+				// Initial Loads
+				pingTab<?php echo $pingCount;?>();
+
+				// Interval Loads
+				setInterval(function() {
+					pingTab<?php echo $pingCount;?>();
+					console.log("ping check for tab[<?php echo $pingCount;?>] complete");
+				}, 10000);
+
+			<?php $pingCount++; }?>
+
 			//PLEX INVITE SHIT
 			$('#checkInviteForm').on('submit', function () {
 				ajax_request('POST', 'validate-invite', {
