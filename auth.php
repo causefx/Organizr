@@ -1,5 +1,5 @@
 <?php
-$debug = false;
+$debug = false; //CAREFUL WHEN SETTING TO TRUE AS THIS OPENS AUTH UP
 require_once("user.php");
 $USER = new User("registration_callback");
 $ban = isset($_GET['ban']) ? strtoupper($_GET['ban']) : "";

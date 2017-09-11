@@ -45,6 +45,7 @@ foreach(loadAppearance() as $key => $value) {
         <link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/google-material-color/dist/palette.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" type="text/css" href="bower_components/slick/slick.css?v=<?php echo INSTALLEDVERSION; ?>">
+        <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css"
         <!-- Add the slick-theme.css if you want default styling -->
        
 
@@ -65,6 +66,7 @@ foreach(loadAppearance() as $key => $value) {
 		
 		<!--Other-->
 		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
+        <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
 		
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
@@ -192,9 +194,27 @@ foreach(loadAppearance() as $key => $value) {
         <div class="main-wrapper" style="position: initial;">
             <div id="content" class="container-fluid">
                 <br/>
- 
-                <?php if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) { echo buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE); } ?>
                 
+                <?php if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) { echo buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE); } ?>
+                <?php if((PLEXSEARCH == "true" && qualifyUser(PLEXHOMEAUTH))) { ?>
+                <div id="searchPlexRow" class="row">
+                    <div class="col-lg-12">
+                        <div class="content-box box-shadow big-box todo-list">                        
+                            <form id="plexSearchForm" onsubmit="return false;" autocomplete="off">
+                                <div class="">
+                                    <div class="input-group">
+                                        <div style="border-radius: 25px 0 0 25px; border:0" class="input-group-addon gray-bg"><i class="fa fa-search white"></i></div>
+                                        <input id="searchInput" type="text" style="border-radius: 0;" autocomplete="off" name="search-title" class="form-control input-group-addon gray-bg" placeholder="Media Search">
+										<div id="clearSearch" style="border-radius: 0 25px 25px 0;border:0; cursor: pointer;" class="input-group-addon gray-bg"><i class="fa fa-close white"></i></div>
+                                        <button style="display:none" id="plexSearchForm_submit" class="btn btn-primary waves"></button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div id="resultshere" class="table-responsive"></div>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
                 <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { echo "<div>" . HOMEPAGECUSTOMHTML1 . "</div>"; } ?>
 
                 <?php if(SPEEDTEST == "true"){ ?>
@@ -333,26 +353,7 @@ foreach(loadAppearance() as $key => $value) {
                     </div>
                 </div>
                 <?php } ?>
-                <?php if((PLEXSEARCH == "true" && qualifyUser(PLEXHOMEAUTH))) { ?>
-                <div id="searchPlexRow" class="row">
-                    <div class="col-lg-12">
-                        <div class="content-box box-shadow big-box todo-list">                        
-                            <form id="plexSearchForm" onsubmit="return false;" autocomplete="off">
-                                <div class="">
-                                    <div class="input-group">
-                                        <div style="border-radius: 25px 0 0 25px; border:0" class="input-group-addon gray-bg"><i class="fa fa-search white"></i></div>
-                                        <input id="searchInput" type="text" style="border-radius: 0;" autocomplete="off" name="search-title" class="form-control input-group-addon gray-bg" placeholder="Media Search">
-										<div id="clearSearch" style="border-radius: 0 25px 25px 0;border:0; cursor: pointer;" class="input-group-addon gray-bg"><i class="fa fa-close white"></i></div>
-                                        <button style="display:none" id="plexSearchForm_submit" class="btn btn-primary waves"></button>
-                                    </div>
-                                </div>
-                            </form>
-                            <div id="resultshere" class="table-responsive"></div>
-                        </div>
-                    </div>
-                </div>
-                <?php } ?>
-                
+                                
                 <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
                 <div id="downloadClientRow" class="row">
                     <div class="col-xs-12 col-md-12">
@@ -458,12 +459,8 @@ foreach(loadAppearance() as $key => $value) {
                                 <?php if(RADARRURL != ""){ echo '<option value="film">Movies</option>'; }?>
                                 <?php if(SONARRURL != "" || SICKRAGEURL != ""){ echo '<option value="tv">TV Shows</option>'; }?>
                                 <?php if(HEADPHONESURL != ""){ echo '<option value="music">Music</option>'; }?>
-                            </select>
-
-                            <span class="label label-primary well-sm">Available</span>
-                            <span class="label label-danger well-sm">Unavailable</span>
-                            <span class="label indigo-bg well-sm">Unreleased</span>
-                            <span class="label light-blue-bg well-sm">Premier</span>
+                            </select>&nbsp;
+                            <span class="swal-legend label label-primary well-sm">Legend</span>
                         </div>
                         <!--
                         <div class="pull-right">
@@ -488,6 +485,14 @@ foreach(loadAppearance() as $key => $value) {
             </div>    
         </div>
         <script>
+        $(".swal-legend").click(function () {
+            swal({
+                title: "Calendar Legend",
+                text: '<span class="label label-primary well-sm">Available</span>&nbsp;<span class="label label-danger well-sm">Unavailable</span>&nbsp;<span class="label indigo-bg well-sm">Unreleased</span>&nbsp;<span class="label light-blue-bg well-sm">Premier</span>',
+                html: true,
+                confirmButtonColor: "#63A8EB"
+            });
+        });
         $('.close-btn').click(function(e){
             var closedBox = $(this).closest('div.content-box').remove();
             e.preventDefault();
@@ -593,7 +598,7 @@ foreach(loadAppearance() as $key => $value) {
 				var isActive = parent.$("div[data-content-name^='<?php echo strtolower(PLEXTABNAME);?>']");
 				var activeFrame = isActive.children('iframe');
 				if(isActive.length === 1){
-					activeFrame.attr("src", $(this).attr("href"));
+					activeFrame.attr("src", $(this).attr("location"));
 					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
 				}else{
 					parent.$("li[name='<?php echo strtolower(PLEXTABNAME);?>']").trigger("click");
@@ -759,8 +764,13 @@ foreach(loadAppearance() as $key => $value) {
                     .slick('slickFilter' , '.'+filter );
             });
 
-            $("body").niceScroll({
+            /*$("body").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0},
+                scrollspeed: 30,
+                mousescrollstep: 60
+            });*/
+            $("body").niceScroll({
+                //cursorwidth: "12px"
                 scrollspeed: 30,
                 mousescrollstep: 60
             });

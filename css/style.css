@@ -6,10 +6,50 @@
  *
 */
 /*@import url(https://fonts.googleapis.com/css?family=Roboto:100,400,500,300,700);*/
+.splash-item {
+	max-width: 100%;
+	-moz-transition: all 0.3s;
+	-webkit-transition: all 0.3s;
+	transition: all 0.3s;
+	opacity: .8 !important;
+}
+.splash-item:hover {
+	-moz-transform: scale(1.1);
+	-webkit-transform: scale(1.1);
+	transform: scale(1.1);
+	z-index: 10000000;
+	border-radius: 10px;
+	opacity: 1 !important;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.gn-menu i {
+	height: 18px;
+	width: 52px;
+}
+.active {
+	display: block;
+}
+.hidden {
+	display: none;
+}
+.errorz {
+	background-image: linear-gradient(red, red), linear-gradient(#d2d2d2, #d2d2d2);
+	outline: none;
+	animation: input-highlight .5s forwards;
+	box-shadow: none;
+	padding-left: 0;
+	border: 0;
+	border-radius: 0;
+	background-size: 0 2px,100% 1px;
+	background-repeat: no-repeat;
+	background-position: center bottom,center calc(100% - 1px);
+	background: transparent;
+	box-shadow: none;
+}
 .loop-animation {
-    animation-iteration-count: infinite;
-    -webkit-animation-iteration-count: infinite;
-    -moz-animation-iteration-count: infinite;
+	animation-iteration-count: infinite;
+	-webkit-animation-iteration-count: infinite;
+	-moz-animation-iteration-count: infinite;
     -o-animation-iteration-count: infinite;
 }
 .elip{
