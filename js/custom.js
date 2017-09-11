@@ -81,7 +81,7 @@ $(document).ready(function(){
 		},
 		uploadFile: {
 			url: "./ajax.php?a=upload-images",
-			data: null,
+			data: {},
 			type: 'POST',
 			enctype: 'multipart/form-data',
 			synchron: true,

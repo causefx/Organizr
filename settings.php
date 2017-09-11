@@ -114,6 +114,7 @@ if(SLIMBAR == "true") {
 		
         <!--Other-->
         <script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
+        <!--<script src="js/piwik.js?v=<?php echo INSTALLEDVERSION; ?>"></script>-->
 
         <!--Notification-->
         <script src="js/notifications/notificationFx.js"></script>
@@ -470,6 +471,21 @@ echo buildSettings(
 			<li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
 			<li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
 			<li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
+		</ul>
+							',
+                        ),
+                        array(
+							'type' => 'button',
+							'labelTranslate' => 'LAYER#CAKE',
+							'icon' => 'birthday-cake',
+							'id' => 'layerCake',
+							'buttonType' => 'dark',
+							'buttonDrop' => '
+        <ul class="dropdown-menu gray-bg">
+        <p class="text-center">Powered by Leram</p>
+			<li id="layerCakeDefault" data-toggle="tooltip" data-placement="top" title="" data-original-title="listen to the story im about to tell you it stated liek this"  style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" onclick="layerCake(\'Default\',\'Live\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">Default</a></li>
+			<li id="layerCakeCustom" data-toggle="tooltip" data-placement="top" title="" data-original-title="listen to the story im about to tell you it stated liek this" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" onclick="layerCake(\'Custom\',\'Live\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">Custom</a></li>
+			<li id="layerCakeStatic" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" onclick="layerCake(\'Static\',\'CSS\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">Static</a></li>
 		</ul>
 							',
 						),
@@ -1482,7 +1498,8 @@ echo buildSettings(
 						'value' => SMTPHOSTTYPE,
 						'options' => array(
 							'ssl' => 'ssl',
-							'tls' => 'tls',
+                            'tls' => 'tls',
+                            'off' => 'false',
 						),
 					),
 					array(
@@ -2497,6 +2514,8 @@ echo buildSettings(
         <?php endif; ?>
 
 		<script>
+            //Tooltips
+            $('[data-toggle="tooltip"]').tooltip();
             //IP INFO
             $(".ipInfo").click(function(){
                 $.getJSON("https://ipinfo.io/"+$(this).text()+"/?token=<?php echo IPINFOTOKEN;?>", function (response) {
@@ -3117,8 +3136,6 @@ echo buildSettings(
                 }
             });
 
-        
-     
             $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites ").on("click",function (e) {
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
@@ -3143,8 +3160,6 @@ echo buildSettings(
                 e.preventDefault();
             });
           
-         
-			
             function checkGithub() {
                 $.ajax({
                     type: "GET",
@@ -3186,6 +3201,25 @@ echo buildSettings(
                             console.log("something went wrong");
                         }
                         $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?>");
+                    }
+                });
+            }
+
+            function layerCake(type, path) {
+                $.ajax({
+                    type: "GET",
+                    url: "ajax.php?a=show-file&file=https://raw.githubusercontent.com/leram84/layer.Cake/master/"+path+"/"+type+".css",
+                    dataType: "text",
+                    success: function(github) {
+                        cssTab = $("a[href^='#tab-theme_css']");
+                        cssTab.trigger("click");
+                        $('#customCSS_id').text(github);
+                        swal({
+                            title: "Loaded Layer#Cake "+type,
+                            text: '<h2>Awesome Sauce!</h2><p>Now that you have enabled Layer#Cake, edit the colors here and then hit Save at the top right.<blockquote class="blockquote-reverse"><p>Layer#Cake is powered and brought to you by:</p><footer>Hackerman - <cite title="Source Title">Leram</cite></footer></blockquote>',
+                            html: true,
+                            confirmButtonColor: "#63A8EB"
+                        });
                     }
                 });
             }

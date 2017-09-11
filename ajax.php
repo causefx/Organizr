@@ -34,6 +34,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				echo json_encode(getCalendar());
 				die();
 				break;
+			case 'get-ping':
+				echo getPing($_GET['url'], $_GET['style'], true);
+				die();
+				break;
 			case 'show-file':
 				$auth = ($_SERVER['HTTP_REFERER'] ? true : false);
 				if ($auth === false) { die("WTF? Bro!  This is an internal function only"); }
@@ -107,8 +111,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				$response['notify'] = sendResult($response, "check", $_POST['checkurl'], "CODE_SUCCESS", "CODE_ERROR");
 				break;
 			case 'use-invite':
-				//$response = inviteCodes("check", $_POST['invitecode']);
-				//$response = inviteCodes("use", $_POST['invitecode']);
 				if(inviteCodes("check", $_POST['invitecode'])){
 					$response = inviteCodes("use", $_POST['invitecode'], $_POST['inviteuser']);
 					$response['notify'] = sendResult(plexUserShare($_POST['inviteuser']), "check", $_POST['checkurl'], "INVITE_SUCCESS", "INVITE_ERROR");

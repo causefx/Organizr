@@ -115,7 +115,7 @@ if (file_exists('config/config.php')) {
 		if($USER->authenticated && $USER->role == "admin") :
 
 			$result = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
-			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
+			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" ORDER BY `order` asc');
 			$getsettings = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
 
 			foreach($getsettings as $row) :
@@ -245,26 +245,30 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<script src="js/push.js"></script>
 		<!--Other-->
 		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
+		<!--<script src="js/piwik.js?v=<?php echo INSTALLEDVERSION; ?>"></script>-->
 		<!--[if lt IE 9]>
 		<script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
 		<script src="bower_components/respondJs/dest/respond.min.js"></script>
 		<![endif]-->
 	</head>
 	<style>
-		.splash-item {
-			max-width: 100%;
-			-moz-transition: all 0.3s;
-			-webkit-transition: all 0.3s;
-			transition: all 0.3s;
-			opacity: .8 !important;
+		.loop-animation {
+			animation-iteration-count: infinite;
+			-webkit-animation-iteration-count: infinite;
+			-moz-animation-iteration-count: infinite;
+			-o-animation-iteration-count: infinite;
 		}
-		.splash-item:hover {
-			-moz-transform: scale(1.1);
-			-webkit-transform: scale(1.1);
-			transform: scale(1.1);
-			z-index: 10000000;
-			border-radius: 10px;
-			opacity: 1 !important;
+		.loop-animation-timeout {
+			animation-iteration-count: 5;
+			-webkit-animation-iteration-count: 5;
+			-moz-animation-iteration-count: 5;
+			-o-animation-iteration-count: 5;
+		}
+		.ping-success {
+			background: #46bc99 !important;
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+		}.ping-warning {
+			background: #ff3333 !important;
 			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 		}
 		.TabOpened {
@@ -281,9 +285,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			background: <?=$sidebar;?>;
 		}.gn-menu-wrapper {
 			background: <?=$sidebar;?>;
-		}.gn-menu i {
-			height: 18px;
-			width: 52px;
 		}.la-timer.la-dark {
 			color: <?=$topbartext;?>
 		}.refresh-preloader {
@@ -308,23 +309,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		}.gn-menu li.rightActive > a {
 			background: <?=$hoverbg;?>;
 			border-radius: 100px 0 0 100px;
-		}.active {
-			display: block;
-		}.hidden {
-			display: none;
-		}.errorz {
-			background-image: linear-gradient(red, red), linear-gradient(#d2d2d2, #d2d2d2);
-			outline: none;
-			animation: input-highlight .5s forwards;
-			box-shadow: none;
-			padding-left: 0;
-			border: 0;
-			border-radius: 0;
-			background-size: 0 2px,100% 1px;
-			background-repeat: no-repeat;
-			background-position: center bottom,center calc(100% - 1px);
-			background: transparent;
-			box-shadow: none;
 		}.gn-menu li.active i.fa {
 			color: <?=$activetabicon;?>;
 		}.gn-menu li i.fa {
@@ -478,7 +462,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 							<ul id="tabList" class="gn-menu metismenu">
 
 								<!--Start Tab List-->
-								<?php if($tabSetup == "No") : $tabCount = 1; foreach($result as $row) : 
+								<?php if($tabSetup == "No") : $tabCount = 1; $allPings = array(); foreach($result as $row) : 
+								$name = str_replace(array(':', '\\', '/', '*'), 'x', $row['ping_url']);
 								if($row['defaultz'] == "true") : $defaultz = "active"; else : $defaultz = ""; endif; ?>
 								<li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
 									<a class="tab-link">
@@ -486,9 +471,17 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 											<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
 												<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 												<img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
+												<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
+													<ping id="ping-<?=$name;?>"></ping>
+												<?php }?>
 											</i>
 										<?php else : ?>
-											<i class="fa <?=$row['icon'];?> fa-lg"><span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span></i>
+											<i class="fa <?=$row['icon'];?> fa-lg">
+												<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
+												<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
+													<ping id="ping-<?=$name;?>"></ping>
+												<?php }?>
+											</i>
 										<?php endif; ?>
 										<?=$row['name'];?>
 									</a>
@@ -1290,6 +1283,25 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		});
 
 		$(document).ready(function(){
+			
+			<?php $pingCount = 1; 
+			foreach($allPings as $type => $ping){
+				$name = str_replace(array(':', '\\', '/', '*'), 'x', $ping);
+				if(strpos($type, 'image') !== false){ $style = "margin-top:28px"; }else{ $style = ""; }?>
+				var  pingTab<?php echo $pingCount;?> = function() {
+					$("ping[id^='ping-<?php echo $name;?>']").load("ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>");
+				};
+				// Initial Loads
+				pingTab<?php echo $pingCount;?>();
+
+				// Interval Loads
+				setInterval(function() {
+					pingTab<?php echo $pingCount;?>();
+					console.log("ping check for tab[<?php echo $pingCount;?>] complete");
+				}, 10000);
+
+			<?php $pingCount++; }?>
+
 			//PLEX INVITE SHIT
 			$('#checkInviteForm').on('submit', function () {
 				ajax_request('POST', 'validate-invite', {

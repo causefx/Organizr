@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.44');
+ define('INSTALLEDVERSION', '1.50');
 // ===================================
 use Kryptonit3\Sonarr\Sonarr;
 use Kryptonit3\SickRage\SickRage;
@@ -1460,6 +1460,19 @@ function upgradeCheck() {
 		$createConfigSuccess = createConfig($config);
 		unset($config);
 	}
+
+	// Upgrade to 1.50
+	$config = loadConfig();
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.50')) {
+		// Upgrade database to latest version
+		updateSQLiteDB($config['database_Location'],'1.40');
+		
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.50';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.40].bak.php');
+		$createConfigSuccess = createConfig($config);
+		unset($config);
+	}
 	
 	return true;
 }
@@ -1934,6 +1947,9 @@ function printTabRow($data) {
 			'user' => 'true',
 			'guest' => 'true',
 			'window' => 'false',
+			'splash' => 'true',
+			'ping' => 'false',
+			'ping_url' => '',
 			'defaultz' => '',
 		);
 	}
@@ -1987,6 +2003,35 @@ function printTabRow($data) {
 						'value' => $data['icon'],
 					),12,1,1).'
 					'.buildField(array(
+						'type' => 'text',
+						'id' => 'tab-'.$data['id'].'-ping_url',
+						'name' => 'ping_url['.$data['id'].']',
+						'placeholder' => 'host:port',
+						'labelTranslate' => 'PING_URL',
+						'value' => $data['ping_url'],
+					),12,2,1).'
+					'.buildField(array(
+						'type' => 'radio',
+						'labelTranslate' => 'DEFAULT',
+						'name' => 'defaultz['.$data['id'].']',
+						'value' => $data['defaultz'],
+						'onclick' => "$('[type=radio][id!=\''+this.id+'\']').each(function() { this.checked=false; });",
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'button',
+						'icon' => 'caret-square-o-down',
+                        'buttonType' => 'success',
+						'labelTranslate' => 'MORE',
+						'onclick' => "$('#tab-".$data['id']."-row').toggle();$(this).html($(this).html() == '<span class=\'btn-label\'><i class=\'fa fa-caret-square-o-down\'></i></span>More' ? '<span class=\'btn-label\'><i class=\'fa fa-caret-square-o-up\'></i></span>Less' : '<span class=\'btn-label\'><i class=\'fa fa-caret-square-o-down\'></i></span>More');",
+					),12,1,1).'
+					'.buildField(array(
+						'type' => 'button',
+						'icon' => 'trash',
+                        'buttonType' => 'danger',
+						'labelTranslate' => 'REMOVE',
+						'onclick' => "$(this).parents('li').remove();",
+					),12,1,1).'</div><div id = "tab-'.$data['id'].'-row" class = "row animated slideInUp" style = "display:none;" ><div></div>
+					'.buildField(array(
 						'type' => 'checkbox',
 						'labelTranslate' => 'ACTIVE',
 						'name' => 'active['.$data['id'].']',
@@ -2014,18 +2059,18 @@ function printTabRow($data) {
 						'value' => $data['window'],
 					),12,1,1).'
 					'.buildField(array(
-						'type' => 'radio',
-						'labelTranslate' => 'DEFAULT',
-						'name' => 'defaultz['.$data['id'].']',
-						'value' => $data['defaultz'],
-						'onclick' => "$('[type=radio][id!=\''+this.id+'\']').each(function() { this.checked=false; });",
+						'type' => 'checkbox',
+						'labelTranslate' => 'SPLASH',
+						'colour' => 'success',
+						'name' => 'splash['.$data['id'].']',
+						'value' => $data['splash'],
 					),12,1,1).'
 					'.buildField(array(
-						'type' => 'button',
-						'icon' => 'trash',
-                        'buttonType' => 'danger',
-						'labelTranslate' => 'REMOVE',
-						'onclick' => "$(this).parents('li').remove();",
+						'type' => 'checkbox',
+						'labelTranslate' => 'PING',
+						'colour' => 'success',
+						'name' => 'ping['.$data['id'].']',
+						'value' => $data['ping'],
 					),12,1,1).'
 				</div>
 			</tab>
@@ -2106,7 +2151,10 @@ function createSQLiteDB($path = false) {
 			`guest`	TEXT,
 			`icon`	TEXT,
 			`iconurl`	TEXT,
-			`window`	TEXT
+			`window`	TEXT,
+			`splash`	TEXT,
+			`ping`		TEXT,
+			`ping_url`	TEXT
 		);');
 		
 		// Create Options
@@ -2479,18 +2527,18 @@ function sabnzbdConnect($list = 'queue') {
         $downloadStatus = $child['status'];
         
         $gotNZB[] = '<tr>
-                        <td>'.$downloadName.'</td>
-                        <td>'.$downloadStatus.'</td>
-                        <td>'.$downloadCategory.'</td>
-                        <td>
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
-                                    <p class="text-center">'.round($downloadPercent).'%</p>
-                                    <span class="sr-only">'.$downloadPercent.'% Complete</span>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>';
+						<td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
+						<td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
+						<td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
+						<td class="col-xs-2 nzbtable nzbtable-row">
+							<div class="progress">
+								<div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+									<p class="text-center">'.round($downloadPercent).'%</p>
+									<span class="sr-only">'.$downloadPercent.'% Complete</span>
+								</div>
+							</div>
+						</td>
+					</tr>';
     }
     
 	if ($gotNZB) {
@@ -2518,10 +2566,10 @@ function updateTabs($tabs) {
 			if (!$value || !isset($tabs['url']) || !$tabs['url'][$key]) { continue; }
 			$totalValid++;
 			$fields = array();
-			foreach(array('id','name','url','icon','iconurl','order') as $v) {
+			foreach(array('id','name','url','icon','iconurl','order','ping_url') as $v) {
 				if (isset($tabs[$v]) && isset($tabs[$v][$key])) { $fields[$v] = $tabs[$v][$key]; }
 			}
-			foreach(array('active','user','guest','defaultz','window') as $v) {
+			foreach(array('active','user','guest','defaultz','window','splash','ping') as $v) {
 				if (isset($tabs[$v]) && isset($tabs[$v][$key])) { $fields[$v] = ($tabs[$v][$key]!=='false'?'true':'false'); }
 			}
 			$GLOBALS['file_db']->query('INSERT INTO tabs (`'.implode('`,`',array_keys($fields)).'`) VALUES (\''.implode("','",$fields).'\');');
@@ -3052,17 +3100,25 @@ function strip($string){
 }
 
 function writeLog($type, $message){
+	if(filesize("org.log") > 500000){
+		rename('org.log','org['.date('Y-m-d').'].log');
+		$message2 = date("Y-m-d H:i:s")."|".$type."|".strip("ORG LOG: Creating backup of org.log to org[".date('Y-m-d')."].log ")."\n";
+		file_put_contents("org.log", $message2, FILE_APPEND | LOCK_EX);
+
+	}
     $message = date("Y-m-d H:i:s")."|".$type."|".strip($message)."\n";
     file_put_contents("org.log", $message, FILE_APPEND | LOCK_EX);
 }
 
 function readLog(){
-    $log = file("org.log");
+    $log = file("org.log",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     $log = array_reverse($log);
     foreach($log as $line){
-        $line = explode("|", strip($line));
-        $line[1] = ($line[1] == "error") ? '<span class="label label-danger">Error</span>' : '<span class="label label-primary">Success</span>';
-        echo "<tr><td>".$line[0]."</td><td>".$line[2]."</td><td>".$line[1]."</td></tr>";
+		if(substr_count($line, '|') == 2){
+			$line = explode("|", strip($line));
+			$line[1] = ($line[1] == "error") ? '<span class="label label-danger">Error</span>' : '<span class="label label-primary">Success</span>';
+			echo "<tr><td>".$line[0]."</td><td>".$line[2]."</td><td>".$line[1]."</td></tr>";
+		}
     }
 }
 
@@ -3666,26 +3722,32 @@ function plexJoin($username, $email, $password){
 	$usernameError = (!empty($json['errors']['username']) ? $json['errors']['username'][0] : false);
 	$emailError = (!empty($json['errors']['email']) ? $json['errors']['email'][0] : false);
 	$passwordError = (!empty($json['errors']['password']) ? $json['errors']['password'][0] : false);
+	$errorMessage = "";
+	if($errors){
+		if($usernameError){ $errorMessage .= "[Username Error: ". $usernameError ."]"; }
+		if($emailError){ $errorMessage .= "[Email Error: ". $emailError ."]"; }
+		if($passwordError){ $errorMessage .= "[Password Error: ". $passwordError ."]"; }
+	}
 	
 	switch ($api['http_code']['http_code']){
 		case 400:
-			writeLog("error", "PLEX JOIN: $username already has access to the shared libraries");
+			writeLog("error", "PLEX JOIN: Error: ".$api['http_code']['http_code']." $username already has access to the shared libraries $errorMessage");
 			break;
 		case 401:
-			writeLog("error", "PLEX JOIN: invalid Plex Token");
+			writeLog("error", "PLEX JOIN: Error: ".$api['http_code']['http_code']." invalid Plex Token $errorMessage");
 			break;
 		case 422:
-			writeLog("error", "PLEX JOIN: user info error");
+			writeLog("error", "PLEX JOIN: Error: ".$api['http_code']['http_code']." user info error $errorMessage");
 			break;
 		case 429:
-			writeLog("error", "PLEX JOIN: too many requests to plex.tv please try later");
+			writeLog("error", "PLEX JOIN: Error: ".$api['http_code']['http_code']." too many requests to plex.tv please try later $errorMessage");
 			break;
 		case 200:
 		case 201:
 			writeLog("success", "PLEX JOIN: $username now has access to your Plex Library");
 			break;
 		default:
-			writeLog("error", "PLEX JOIN: unknown error, Error: ".$api['http_code']['http_code']);
+			writeLog("error", "PLEX JOIN: unknown error, $errorMessage Error: ".$api['http_code']['http_code']);
 	}
 	//prettyPrint($api);
 	//prettyPrint(json_decode($api['content'], true));
@@ -3965,6 +4027,402 @@ function backupDB(){
 	}else{
 		return false;
 	}
+}
+
+class Ping {
+
+	private $host;
+	private $ttl;
+	private $timeout;
+	private $port = 80;
+	private $data = 'Ping';
+	private $commandOutput;
+
+	/**
+	* Called when the Ping object is created.
+	*
+	* @param string $host
+	*   The host to be pinged.
+	* @param int $ttl
+	*   Time-to-live (TTL) (You may get a 'Time to live exceeded' error if this
+	*   value is set too low. The TTL value indicates the scope or range in which
+	*   a packet may be forwarded. By convention:
+	*     - 0 = same host
+	*     - 1 = same subnet
+	*     - 32 = same site
+	*     - 64 = same region
+	*     - 128 = same continent
+	*     - 255 = unrestricted
+	* @param int $timeout
+	*   Timeout (in seconds) used for ping and fsockopen().
+	* @throws \Exception if the host is not set.
+	*/
+	public function __construct($host, $ttl = 255, $timeout = 10) {
+	if (!isset($host)) {
+		throw new \Exception("Error: Host name not supplied.");
+	}
+
+	$this->host = $host;
+	$this->ttl = $ttl;
+	$this->timeout = $timeout;
+	}
+
+	/**
+	* Set the ttl (in hops).
+	*
+	* @param int $ttl
+	*   TTL in hops.
+	*/
+	public function setTtl($ttl) {
+	$this->ttl = $ttl;
+	}
+
+	/**
+	* Get the ttl.
+	*
+	* @return int
+	*   The current ttl for Ping.
+	*/
+	public function getTtl() {
+	return $this->ttl;
+	}
+
+	/**
+	* Set the timeout.
+	*
+	* @param int $timeout
+	*   Time to wait in seconds.
+	*/
+	public function setTimeout($timeout) {
+	$this->timeout = $timeout;
+	}
+
+	/**
+	* Get the timeout.
+	*
+	* @return int
+	*   Current timeout for Ping.
+	*/
+	public function getTimeout() {
+	return $this->timeout;
+	}
+
+	/**
+	* Set the host.
+	*
+	* @param string $host
+	*   Host name or IP address.
+	*/
+	public function setHost($host) {
+	$this->host = $host;
+	}
+
+	/**
+	* Get the host.
+	*
+	* @return string
+	*   The current hostname for Ping.
+	*/
+	public function getHost() {
+	return $this->host;
+	}
+
+	/**
+	* Set the port (only used for fsockopen method).
+	*
+	* Since regular pings use ICMP and don't need to worry about the concept of
+	* 'ports', this is only used for the fsockopen method, which pings servers by
+	* checking port 80 (by default).
+	*
+	* @param int $port
+	*   Port to use for fsockopen ping (defaults to 80 if not set).
+	*/
+	public function setPort($port) {
+	$this->port = $port;
+	}
+
+	/**
+	* Get the port (only used for fsockopen method).
+	*
+	* @return int
+	*   The port used by fsockopen pings.
+	*/
+	public function getPort() {
+	return $this->port;
+	}
+
+	/**
+	* Return the command output when method=exec.
+	* @return string
+	*/
+	public function getCommandOutput(){
+	return $this->commandOutput;
+	}
+
+	/**
+	* Matches an IP on command output and returns.
+	* @return string
+	*/
+	public function getIpAddress() {
+	$out = array();
+	if (preg_match('/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', $this->commandOutput, $out)){
+		return $out[0];
+	}
+	return null;
+	}
+
+	/**
+	* Ping a host.
+	*
+	* @param string $method
+	*   Method to use when pinging:
+	*     - exec (default): Pings through the system ping command. Fast and
+	*       robust, but a security risk if you pass through user-submitted data.
+	*     - fsockopen: Pings a server on port 80.
+	*     - socket: Creates a RAW network socket. Only usable in some
+	*       environments, as creating a SOCK_RAW socket requires root privileges.
+	*
+	* @throws InvalidArgumentException if $method is not supported.
+	*
+	* @return mixed
+	*   Latency as integer, in ms, if host is reachable or FALSE if host is down.
+	*/
+	public function ping($method = 'exec') {
+	$latency = false;
+
+	switch ($method) {
+		case 'exec':
+		$latency = $this->pingExec();
+		break;
+
+		case 'fsockopen':
+		$latency = $this->pingFsockopen();
+		break;
+
+		case 'socket':
+		$latency = $this->pingSocket();
+		break;
+
+		default:
+		throw new \InvalidArgumentException('Unsupported ping method.');
+	}
+
+	// Return the latency.
+	return $latency;
+	}
+
+	/**
+	* The exec method uses the possibly insecure exec() function, which passes
+	* the input to the system. This is potentially VERY dangerous if you pass in
+	* any user-submitted data. Be SURE you sanitize your inputs!
+	*
+	* @return int
+	*   Latency, in ms.
+	*/
+	private function pingExec() {
+	$latency = false;
+
+	$ttl = escapeshellcmd($this->ttl);
+	$timeout = escapeshellcmd($this->timeout);
+	$host = escapeshellcmd($this->host);
+
+	// Exec string for Windows-based systems.
+	if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+		// -n = number of pings; -i = ttl; -w = timeout (in milliseconds).
+		$exec_string = 'ping -n 1 -i ' . $ttl . ' -w ' . ($timeout * 1000) . ' ' . $host;
+	}
+	// Exec string for Darwin based systems (OS X).
+	else if(strtoupper(PHP_OS) === 'DARWIN') {
+		// -n = numeric output; -c = number of pings; -m = ttl; -t = timeout.
+		$exec_string = 'ping -n -c 1 -m ' . $ttl . ' -t ' . $timeout . ' ' . $host;
+	}
+	// Exec string for other UNIX-based systems (Linux).
+	else {
+		// -n = numeric output; -c = number of pings; -t = ttl; -W = timeout
+		$exec_string = 'ping -n -c 1 -t ' . $ttl . ' -W ' . $timeout . ' ' . $host . ' 2>&1';
+	}
+
+	exec($exec_string, $output, $return);
+
+	// Strip empty lines and reorder the indexes from 0 (to make results more
+	// uniform across OS versions).
+	$this->commandOutput = implode($output, '');
+	$output = array_values(array_filter($output));
+
+	// If the result line in the output is not empty, parse it.
+	if (!empty($output[1])) {
+		// Search for a 'time' value in the result line.
+		$response = preg_match("/time(?:=|<)(?<time>[\.0-9]+)(?:|\s)ms/", $output[1], $matches);
+
+		// If there's a result and it's greater than 0, return the latency.
+		if ($response > 0 && isset($matches['time'])) {
+		$latency = round($matches['time'], 2);
+		}
+	}
+
+	return $latency;
+	}
+
+	/**
+	* The fsockopen method simply tries to reach the host on a port. This method
+	* is often the fastest, but not necessarily the most reliable. Even if a host
+	* doesn't respond, fsockopen may still make a connection.
+	*
+	* @return int
+	*   Latency, in ms.
+	*/
+	private function pingFsockopen() {
+	$start = microtime(true);
+	// fsockopen prints a bunch of errors if a host is unreachable. Hide those
+	// irrelevant errors and deal with the results instead.
+	$fp = @fsockopen($this->host, $this->port, $errno, $errstr, $this->timeout);
+	if (!$fp) {
+		$latency = false;
+	}
+	else {
+		$latency = microtime(true) - $start;
+		$latency = round($latency * 1000, 2);
+	}
+	return $latency;
+	}
+
+	/**
+	* The socket method uses raw network packet data to try sending an ICMP ping
+	* packet to a server, then measures the response time. Using this method
+	* requires the script to be run with root privileges, though, so this method
+	* only works reliably on Windows systems and on Linux servers where the
+	* script is not being run as a web user.
+	*
+	* @return int
+	*   Latency, in ms.
+	*/
+	private function pingSocket() {
+	// Create a package.
+	$type = "\x08";
+	$code = "\x00";
+	$checksum = "\x00\x00";
+	$identifier = "\x00\x00";
+	$seq_number = "\x00\x00";
+	$package = $type . $code . $checksum . $identifier . $seq_number . $this->data;
+
+	// Calculate the checksum.
+	$checksum = $this->calculateChecksum($package);
+
+	// Finalize the package.
+	$package = $type . $code . $checksum . $identifier . $seq_number . $this->data;
+
+	// Create a socket, connect to server, then read socket and calculate.
+	if ($socket = socket_create(AF_INET, SOCK_RAW, 1)) {
+		socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array(
+		'sec' => 10,
+		'usec' => 0,
+		));
+		// Prevent errors from being printed when host is unreachable.
+		@socket_connect($socket, $this->host, null);
+		$start = microtime(true);
+		// Send the package.
+		@socket_send($socket, $package, strlen($package), 0);
+		if (socket_read($socket, 255) !== false) {
+		$latency = microtime(true) - $start;
+		$latency = round($latency * 1000, 2);
+		}
+		else {
+		$latency = false;
+		}
+	}
+	else {
+		$latency = false;
+	}
+	// Close the socket.
+	socket_close($socket);
+	return $latency;
+	}
+
+	/**
+	* Calculate a checksum.
+	*
+	* @param string $data
+	*   Data for which checksum will be calculated.
+	*
+	* @return string
+	*   Binary string checksum of $data.
+	*/
+	private function calculateChecksum($data) {
+	if (strlen($data) % 2) {
+		$data .= "\x00";
+	}
+
+	$bit = unpack('n*', $data);
+	$sum = array_sum($bit);
+
+	while ($sum >> 16) {
+		$sum = ($sum >> 16) + ($sum & 0xffff);
+	}
+
+	return pack('n*', ~$sum);
+	}
+}
+
+function ping($pings, $type = "string") {
+	$ping = new Ping("");
+	$ping->setTtl(128);
+	$ping->setTimeout(2);
+	switch ($type){
+		case "array":
+			$results = [];
+			foreach ($pings as $k => $v) {
+				if(strpos($v, ':') !== false){
+					$domain = explode(':', $v)[0];
+					$port = explode(':', $v)[1];
+					$ping->setHost($domain);
+					$ping->setPort($port);
+					$latency = $ping->ping('fsockopen');
+				}else{
+					$ping->setHost($v);
+					$latency = $ping->ping();
+				}
+				if ($latency || $latency === 0) {
+					$results[$k] = $latency;
+				} else {
+					$results[$k] = 0;
+				}
+			}
+			break;
+		case "string":
+			if(strpos($pings, ':') !== false){
+				$domain = explode(':', $pings)[0];
+				$port = explode(':', $pings)[1];
+				$ping->setHost($domain);
+				$ping->setPort($port);
+				$latency = $ping->ping('fsockopen');
+			}else{
+				$ping->setHost($pings);
+				$latency = $ping->ping();
+			}
+			if ($latency || $latency === 0) {
+				$results = $latency;
+			} else {
+				$results = 0;
+			}
+			break;
+	}
+
+	return $results;
+}
+
+function getPing($url, $style, $refresh = null){
+	if(ping($url) !== 0){ 
+		$class = 'success'; 
+		if(!$refresh){
+			$class .= " animated slideInLeft";
+		}
+	}else{ 
+		$class = "warning";
+		if(!$refresh){
+			$class .= " animated flash loop-animation-timeout";
+		} 
+	}
+	echo '<span class="badge ping-'.$class.'" style="position: absolute;z-index: 100;right: 5px; padding: 0px 0px;'.$style.';font-size: 10px;">&nbsp;</span>';
 }
 
 function orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){
