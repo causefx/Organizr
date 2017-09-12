@@ -453,27 +453,18 @@ foreach(loadAppearance() as $key => $value) {
                 <?php if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH))) { ?>
                 <div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
                     <div class="col-lg-12 content-form form-inline">
-                        <div class="form-group">
-                            <select class="form-control" id="imagetype_selector" style="width: auto !important; display: inline-block">
-                                <option value="all">View All</option>
-                                <?php if(RADARRURL != ""){ echo '<option value="film">Movies</option>'; }?>
-                                <?php if(SONARRURL != "" || SICKRAGEURL != ""){ echo '<option value="tv">TV Shows</option>'; }?>
-                                <?php if(HEADPHONESURL != ""){ echo '<option value="music">Music</option>'; }?>
-                            </select>&nbsp;
-                            <span class="swal-legend label label-primary well-sm">Legend</span>
-                        </div>
-                        <!--
-                        <div class="pull-right">
+                        <div class="form-group pull-right">
+                            <span class="swal-legend label label-primary well-sm">Legend</span>&nbsp;
                             <div class="btn-group" role="group">
-                            <button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">View All<span class="caret"></span></button>
-                            <ul style="right:0; left: auto" class="dropdown-menu">
-                                <li><a class="" href="javascript:void(0)">Movies</a></li>
-                                <li><a class="" href="javascript:void(0)">TV Shows</a></li>
-                                <li><a class="" href="javascript:void(0)">Music</a></li>
-                            </ul>
+                                <button id="calendarSelected" style="margin-right: 0px;" type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">View All&nbsp;<span class="caret"></span></button>
+                                <ul style="right:0; left: auto" class="dropdown-menu">
+                                    <li><a class="calendarOption" calendarOption="all" href="javascript:void(0)">View All</a></li>
+                                    <?php if(RADARRURL != ""){ echo '<li><a class="calendarOption" calendarOption="film" href="javascript:void(0)">Movies</a></li>'; }?>
+                                    <?php if(SONARRURL != ""){ echo '<li><a class="calendarOption" calendarOption="tv" href="javascript:void(0)">TV Shows</a></li>'; }?>
+                                    <?php if(HEADPHONESURL != ""){ echo '<li><a class="calendarOption" calendarOption="music" href="javascript:void(0)">Music</a></li>'; }?>
+                                </ul>
                             </div>
-                        </div>-->
-
+                        </div>
                     </div>
                 </div>
                 <div id="calendarRow" class="row">
@@ -847,7 +838,19 @@ foreach(loadAppearance() as $key => $value) {
                     },
                     //events: [ <?php //echo getCalendar(); ?> ],
                     eventRender: function eventRender( event, element, view ) {
-                        return ['all', event.imagetype].indexOf($('#imagetype_selector').val()) >= 0
+                        //return ['all', event.imagetype].indexOf($('#imagetype_selector').val()) >= 0
+                        if (typeof filter !== 'undefined') {
+                            if(filter === "all"){
+                                return event.imagetype === event.imagetype;
+                            }else if(filter !== "all"){
+                                return filter === event.imagetype;
+                            }
+                            if(filter === null){
+                                return event.imagetype === event.imagetype;
+                            }
+                        }else {
+                            return event.imagetype === event.imagetype;
+                        }
                     },
 
                     editable: false,
@@ -855,9 +858,22 @@ foreach(loadAppearance() as $key => $value) {
 					timeFormat: '<?php echo CALTIMEFORMAT; ?>',
                 });
             });
-            $('#imagetype_selector').on('change',function(){
+
+            $(document).on('click', ".calendarOption", function(){
+                window.filter = $(this).attr("calendarOption");
+                if(filter ==="all"){
+                    title = "View All";
+                }else if(filter ==="tv"){
+                    title = "TV Shows";
+                }else if(filter ==="film"){
+                    title = "Movies";
+                }else if(filter ==="music"){
+                    title = "Music";
+                }
+                console.log("Calendar Filter: "+title);
                 $('#calendar').fullCalendar('rerenderEvents');
-            })
+                $('#calendarSelected').html(title+"&nbsp;<span class=\"caret\"></span>");
+            });
             $.ajax({
                 type: 'GET',
                 url: 'ajax.php?a=get-calendar',
