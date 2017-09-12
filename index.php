@@ -131,12 +131,12 @@ if (file_exists('config/config.php')) {
 		elseif($USER->authenticated && $USER->role == "user") :
 
 			$result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true" ORDER BY `order` asc');
-			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true" ORDER BY `order` asc');
+			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" AND user = "true" ORDER BY `order` asc');
 
 		else :
 
 			$result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true" ORDER BY `order` asc');
-			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true" ORDER BY `order` asc');
+			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" AND guest = "true" ORDER BY `order` asc');
 
 		endif;
 
