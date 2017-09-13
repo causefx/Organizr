@@ -114,7 +114,6 @@ if(SLIMBAR == "true") {
 		
         <!--Other-->
         <script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
-        <!--<script src="js/piwik.js?v=<?php echo INSTALLEDVERSION; ?>"></script>-->
 
         <!--Notification-->
         <script src="js/notifications/notificationFx.js"></script>
@@ -353,6 +352,12 @@ if(SLIMBAR == "true") {
                             <img src="images/organizr-logo-h-d.png" width="100%" style="margin-top: -10px;">
                             <div class="profile-usermenu">
                                 <ul class="nav" id="settings-list">
+                                <!--
+                                <span class="fa-stack fa-lg pull-right" style="margin-top: -8px;margin-right: -15px;">
+                                    <i class="fa fa-square-o fa-stack-2x" style="font-size:null;"></i>
+                                    <i class="fa fa-twitter fa-stack-1x" style="font-size:null;"></i>
+                                </span>
+                                    -->
                                     <li><a id="open-tabs" box="tab-box"><i class="fa fa-list red-orange pull-right"></i>Edit Tabs</a></li>
                                     <li><a id="open-colors" box="color-box"><i class="fa fa-paint-brush green pull-right"></i>Edit Colors</a></li>
                                     <li><a id="open-users" box="users-box"><i class="fa fa-user red pull-right"></i>Manage Users</a></li>
@@ -483,9 +488,9 @@ echo buildSettings(
 							'buttonDrop' => '
         <ul class="dropdown-menu gray-bg">
         <p class="text-center">Powered by Leram</p>
-			<li id="layerCakeDefault" data-toggle="tooltip" data-placement="top" title="" data-original-title="listen to the story im about to tell you it stated liek this"  style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" onclick="layerCake(\'Default\',\'Live\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">Default</a></li>
-			<li id="layerCakeCustom" data-toggle="tooltip" data-placement="top" title="" data-original-title="listen to the story im about to tell you it stated liek this" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" onclick="layerCake(\'Custom\',\'Live\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">Custom</a></li>
-			<li id="layerCakeStatic" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" onclick="layerCake(\'Static\',\'CSS\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">Static</a></li>
+			<li id="layerCakeDefault" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 7 color theme based on Organizr" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" onclick="layerCake(\'Basic\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">Basic</a></li>
+			<li id="layerCakeCustom" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 32 color theme based on Organizr" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" onclick="layerCake(\'Advanced\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">Advanced</a></li>
+			<li id="open-themes" box="themes-box" onclick"" data-toggle="tooltip" data-placement="top" title="" data-original-title="Custom Themes Created by The Community" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" onclick="" href="#">Themes</a></li>
 		</ul>
 							',
 						),
@@ -1695,6 +1700,45 @@ echo buildSettings(
                                                     </span>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="email-content themes-box white-bg">
+                    <div class="email-body">
+                        <div class="email-header gray-bg">
+                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+                            <h1>layer.Cake Themes</h1>
+                        </div>
+                        <div class="email-inner small-box">
+                            <div class="email-inner-section">
+                                <div class="small-box fade in" id="layerCakeOrg">
+                                    <div class="row">
+                                        <div class="col-lg-2">
+                                            <div class="content-box profile-sidebar box-shadow">
+                                                <img src="images/organizr-logo-h-d.png" width="100%" style="margin-top: -10px;">
+                                                <div class="profile-usermenu">
+                                                    <ul class="nav" id="theme-list">
+                                                        
+
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-10">
+                                            <h1 id="chooseLayer">Choose A Theme To Preview</h1>
+                                            <div class="row">
+                                                <div id="layerCakePreview" class="col-lg-10">
+                                                    
+                                                        
+
+                                                </div>
+                                                <div id="layerCakeInfo" class="col-lg-2">
+
+                                                </div>
                                         </div>
                                     </div>
                                 </div>
@@ -3136,15 +3180,22 @@ echo buildSettings(
                 }
             });
 
-            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites ").on("click",function (e) {
+            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites , #open-themes").on("click",function (e) {
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
                 if($(window).width() < 768){
                     $('html').addClass("overhid");
                 }
-
-                var settingsBox = $('.'+$(this).attr("box"));
-                console.log($(this).attr("box"))
+                //Theme box
+                if($(this).attr("box") == "themes-box"){
+                    getLayerCakeThemes();
+                }
+                if (typeof $(this).attr("box") !== 'undefined') {
+                    var settingsBox = $('.'+$(this).attr("box"));
+                }else{
+                    var settingsBox = $('.themes-box');
+                }
+                //console.log(settingsBox);
                 settingsBox.addClass("email-active");
                 $("#settings-list").find("li").removeClass("active");
                 $(this).parent().addClass("active");
@@ -3223,6 +3274,68 @@ echo buildSettings(
                     }
                 });
             }
+
+            function getLayerCakeThemes() {
+                $.ajax({
+                    type: "GET",
+                    url: "https://api.github.com/repos/leram84/layer.Cake/contents/Themes",
+                    dataType: "json",
+                    success: function(github) {
+                        themeList = $('#theme-list');
+                        themeList.html("");
+                        var countThemes = 0;
+                        $.each(github, function(i,v) {
+                            if(v.type === "file"){
+                                i++;
+                                countThemes = i;
+                                file = v.name.split("-");
+                                preview = v.name.split(".");
+                                author = file[2].split(".");
+                                fileName = file[1];
+                                fileOrder = file[0];
+                                fileAuthor = author[0];
+                                $(themeList).append('<li><a preview="'+preview[0]+'.png" name="'+fileName+'" file="'+v.name+'" path="'+v.path+'" order="'+fileOrder+'" author="'+fileAuthor+'" id="LC-'+fileName+'">'+fileName+'</a></li>');
+                            }
+                        });
+                        console.log(countThemes);
+
+                    }
+                });
+            }
+
+            function layerCakeTheme(path, name, author) {
+                var settingsBox = $('.themes-box');
+                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(settingsBox).show();
+                $.ajax({
+                    type: "GET",
+                    url: "ajax.php?a=show-file&file=https://raw.githubusercontent.com/leram84/layer.Cake/master/Themes/"+path,
+                    dataType: "text",
+                    success: function(github) {
+                        $("#open-colors").trigger("click");
+                        $("a[href^='#tab-theme_css']").trigger("click");
+                        $('#customCSS_id').text(github);
+                        $("#customCSS_id").attr('data-changed', 'true');
+                        swal({
+                            title: "Loaded Theme: "+name,
+                            text: '<h2>Awesome Sauce!</h2><p>Theme has been imported. <p><strong style="color: red;">Please click Save at the top right.</strong></p><blockquote class="blockquote-reverse"><p>Layer#Cake Theme by:</p><footer><cite title="Source Title">'+author+'</cite></footer></blockquote>',
+                            html: true,
+                            confirmButtonColor: "#63A8EB"
+                        });
+                    }
+                });
+            }
+
+            //layerCake Themes
+            $(document).on('click', "a[id*=LC-]", function(){
+                file = $(this).attr("file");
+                name = $(this).attr("name");
+                author = $(this).attr("author");
+                button = '<div class="thumbnail"><div class="caption"><p class="pull-left">'+name+' by: '+author+'</p><p class="pull-right"><button type="button" onclick="layerCakeTheme(\''+file+'\',\''+name+'\',\''+author+'\')" class="btn btn-success waves waves-effect waves-float">Install</button></p></div><img src="https://raw.githubusercontent.com/leram84/layer.Cake/master/Themes/Preview/'+$(this).attr("preview")+'" alt="thumbnail"></div>';
+                console.log(button);
+                $('#chooseLayer').hide();
+                themeInfo = $('#layerCakeInfo');
+                $('#layerCakePreview').html( ''+button+'' );
+            });
         </script>
         <script>
         $( document ).ready(function() {
