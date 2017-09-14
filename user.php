@@ -9,13 +9,13 @@
 	 */
 	
 	// Include functions if not already included
-	require_once('functions.php');
+	require_once(__DIR__ . '/functions.php');
 	 
     // Autoload frameworks
 	require_once(__DIR__ . '/vendor/autoload.php');
 	
     // Lazyload settings
-	$databaseConfig = configLazy('config/config.php');
+	$databaseConfig = configLazy(__DIR__ . '/config/config.php');
 
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 
     $notifyExplode = explode("-", NOTIFYEFFECT);

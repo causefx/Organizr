@@ -82,6 +82,7 @@ if(SLIMBAR == "true") {
         <link rel="stylesheet" href="bower_components/summernote/dist/summernote.css">
         <link href="css/jquery.filer.css" rel="stylesheet">
 	    <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
+        <link rel="stylesheet" href="bower_components/morris.js/morris.css">
 
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
@@ -114,6 +115,9 @@ if(SLIMBAR == "true") {
 		
         <!--Other-->
         <script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
+        <script src="bower_components/raphael/raphael-min.js"></script>
+        <script src="bower_components/morris.js/morris.min.js"></script>
+        
 
         <!--Notification-->
         <script src="js/notifications/notificationFx.js"></script>
@@ -714,6 +718,12 @@ echo buildSettings(
 						'labelTranslate' => 'SPEED_TEST',
 						'name' => 'speedTest',
 						'value' => SPEEDTEST,
+					),
+					array(
+						'type' => 'custom',
+						'html' => '<button id="open-speedtest" box="speed-box" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-star"></i></span> History</button>',
+						'name' => 'speed_test_history',
+						'value' => '',
 					),
 					/*
 					array(
@@ -1746,6 +1756,54 @@ echo buildSettings(
                         </div>
                     </div>
                 </div>
+                <div class="email-content speed-box white-bg">
+                    <div class="email-body">
+                        <div class="email-header gray-bg">
+                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+                            <h1>SpeedTest History</h1>
+                        </div>
+                        <div class="email-inner small-box">
+                            <div class="email-inner-section">
+                                <div class="small-box fade in" id="speedOrg">
+           
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="content-box">
+                                                <div class="content-title big-box i-block">
+                                                </div>
+                                                <div class="clearfix"></div>
+                                                <div class="big-box">
+                                                    <div id="morris-line" class="morris-container"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+									</div>
+
+									<?php if(file_exists(DATABASE_LOCATION."speedtest.db")){ ?>
+                                    <div id="speedTestTable" class="table-responsive">
+                                        <table id="speedLogs" class="datatable display">
+                                            <thead>
+                                                <tr>
+                                                    <th><?php echo $language->translate("DATE");?></th>
+                                                    <th><?php echo $language->translate("IP");?></th>
+                                                    <th><?php echo $language->translate("DOWNLOAD");?></th>
+                                                    <th><?php echo $language->translate("UPLOAD");?></th>
+                                                    <th><?php echo $language->translate("PING");?></th>
+                                                    <th><?php echo $language->translate("JITTER");?></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+											<?php echo speedTestDisplay(speedTestData(),"table");?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <?php } ?>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="email-content info-box white-bg">
                     <div class="email-body">
                         <div class="email-header gray-bg">
@@ -2351,7 +2409,7 @@ echo buildSettings(
                                     
                                     <?php if(file_exists("org.log")){ ?>
                                     <div id="orgLogTable" class="table-responsive" style="display: none">
-                                        <table id="orgLogs" class="display">
+                                        <table id="orgLogs" class="datatable display">
                                             <thead>
                                                 <tr>
                                                     <th><?php echo $language->translate("DATE");?></th>
@@ -2406,7 +2464,7 @@ echo buildSettings(
 
                                         </div>
 
-                                        <table id="datatable" class="display">
+                                        <table id="datatable" class="datatable display">
 
                                             <thead>
 
@@ -2558,6 +2616,7 @@ echo buildSettings(
         <?php endif; ?>
 
 		<script>
+        	<?php echo speedTestDisplay(speedTestData(),"graph");?>
             //Tooltips
             $('[data-toggle="tooltip"]').tooltip();
             //IP INFO
@@ -2660,53 +2719,31 @@ echo buildSettings(
 					}, 1000);
 				}, 100);
 			}
-            $(function () {
-                //Data Tables
-                $('#datatable').DataTable({
-                    displayLength: 10,
-                    dom: 'T<"clear">lfrtip',
-                    responsive: true,
-                    "order": [[ 0, 'desc' ]],
-                    "language": {
-                        "info": "<?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 0);?> _START_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 1);?> _END_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 2);?> _TOTAL_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 3);?>",
-                        "infoEmpty": "<?php echo $language->translate('NO_ENTRIES');?>",
-                        "infoFiltered": "<?php echo explosion($language->translate('FILTERED'), 0);?> _MAX_ <?php echo explosion($language->translate('FILTERED'), 1);?>",
-                        "lengthMenu": "<?php echo $language->translate('SHOW');?> _MENU_ <?php echo $language->translate('ENTRIES');?>",
-                        "search": "",
-                        "searchPlaceholder": "<?php echo $language->translate('SEARCH');?>",
-                        "searchClass": "<?php echo $language->translate('SEARCH');?>",
-                        "zeroRecords": "<?php echo $language->translate('NO_MATCHING');?>",
-                        "paginate": {
-				            "next": "<?php echo $language->translate('NEXT');?>",
-                            "previous": "<?php echo $language->translate('PREVIOUS');?>",
-				           }
-			         }
-                });
-            });
+
               
-          $(function () {
-            //Data Tables
-            $('#orgLogs').DataTable({
-                displayLength: 10,
-                dom: 'T<"clear">lfrtip',
-                responsive: true,
-                "order": [[ 0, 'desc' ]],
-                "language": {
-                    "info": "<?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 0);?> _START_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 1);?> _END_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 2);?> _TOTAL_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 3);?>",
-                    "infoEmpty": "<?php echo $language->translate('NO_ENTRIES');?>",
-                    "infoFiltered": "<?php echo explosion($language->translate('FILTERED'), 0);?> _MAX_ <?php echo explosion($language->translate('FILTERED'), 1);?>",
-                    "lengthMenu": "<?php echo $language->translate('SHOW');?> _MENU_ <?php echo $language->translate('ENTRIES');?>",
-                    "search": "",
-                    "searchPlaceholder": "<?php echo $language->translate('SEARCH');?>",
-                    "searchClass": "<?php echo $language->translate('SEARCH');?>",
-                    "zeroRecords": "<?php echo $language->translate('NO_MATCHING');?>",
-                    "paginate": {
-            "next": "<?php echo $language->translate('NEXT');?>",
-                        "previous": "<?php echo $language->translate('PREVIOUS');?>",
-           }
-        }
-            });
-        });
+          	$(function () {
+				//Data Tables
+				$('.datatable').DataTable({
+					displayLength: 10,
+					dom: 'T<"clear">lfrtip',
+					responsive: true,
+					"order": [[ 0, 'desc' ]],
+					"language": {
+						"info": "<?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 0);?> _START_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 1);?> _END_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 2);?> _TOTAL_ <?php echo explosion($language->translate('SHOW_ENTRY_CURRENT'), 3);?>",
+						"infoEmpty": "<?php echo $language->translate('NO_ENTRIES');?>",
+						"infoFiltered": "<?php echo explosion($language->translate('FILTERED'), 0);?> _MAX_ <?php echo explosion($language->translate('FILTERED'), 1);?>",
+						"lengthMenu": "<?php echo $language->translate('SHOW');?> _MENU_ <?php echo $language->translate('ENTRIES');?>",
+						"search": "",
+						"searchPlaceholder": "<?php echo $language->translate('SEARCH');?>",
+						"searchClass": "<?php echo $language->translate('SEARCH');?>",
+						"zeroRecords": "<?php echo $language->translate('NO_MATCHING');?>",
+						"paginate": {
+							"next": "<?php echo $language->translate('NEXT');?>",
+							"previous": "<?php echo $language->translate('PREVIOUS');?>",
+						}
+					}
+				});
+        	});
         </script>
         <script>
             (function($) {
@@ -3180,7 +3217,7 @@ echo buildSettings(
                 }
             });
 
-            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites , #open-themes").on("click",function (e) {
+            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites , #open-themes, #open-speedtest").on("click",function (e) {
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
                 if($(window).width() < 768){
@@ -3362,7 +3399,9 @@ echo buildSettings(
                 railpadding: {top:0,right:0,left:0,bottom:0}
             });
 			 $(".iconpicker-items").niceScroll({
-                railpadding: {top:0,right:0,left:0,bottom:0}
+				railpadding: {top:0,right:0,left:0,bottom:0},
+				scrollspeed: 30,
+                mousescrollstep: 60
             });
             //Stop Div behind From Scrolling
             $( '.email-content' ).on( 'mousewheel', function ( e ) {
