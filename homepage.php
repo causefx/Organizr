@@ -236,7 +236,7 @@ foreach(loadAppearance() as $key => $value) {
                         document.getElementById('startBtn').style.display = 'none'
                         document.getElementById('testArea').style.display = ''
                         document.getElementById('abortBtn').style.display = ''
-                        w = new Worker('bower_components/speed/speedtest_worker.min.js')
+                        w = new Worker('bower_components/speed/speedtest_worker.js')
                         var interval = setInterval(function () { w.postMessage('status') }, 100)
                         w.onmessage = function (event) {
                             var data = event.data.split(';')
@@ -266,7 +266,8 @@ foreach(loadAppearance() as $key => $value) {
                             ping.textContent = data[3] + " ms";
                             jitter.textContent = data[5] + " ms";
                         }
-                        w.postMessage('start')
+                        w.postMessage('start {"telemetry_level":"basic"}')
+                        //w.postMessage('start')
                     }
                     function abortTest() {
                         if (w) w.postMessage('abort')

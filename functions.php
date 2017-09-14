@@ -4425,6 +4425,39 @@ function getPing($url, $style, $refresh = null){
 	echo '<span class="badge ping-'.$class.'" style="position: absolute;z-index: 100;right: 5px; padding: 0px 0px;'.$style.';font-size: 10px;">&nbsp;</span>';
 }
 
+function speedTestData(){
+	$file_db = DATABASE_LOCATION."speedtest.db";
+		if(file_exists($file_db)){
+		$conn = new PDO("sqlite:$file_db") or die("1");
+		$result = $conn->query('SELECT * FROM speedtest_users');
+		$conn = null;
+		if (is_array($result) || is_object($result)){
+			foreach($result as $k => $v){
+				$return[$k] = $v;
+			}
+			return $return;
+		}
+	}
+}
+
+function speedTestDisplay($array, $output){
+	if (is_array($array) || is_object($array)){
+		if($output == "graph"){
+			$result = "Morris.Line({element: 'morris-line',data: [";
+			foreach($array as $k => $v){
+				$result .= "{ y: '".substr($v['timestamp'],0,16)."', a: ".$v['ul'].", b: ".$v['dl'].", c: ".$v['ping']." },";
+			}
+			$result .= "],xkey: 'y',ykeys: ['a', 'b', 'c'],labels: ['Upload', 'Download', 'Ping'],hideHover: 'auto',resize: true,lineColors: ['#63A8EB','#ccc','#000'] });";
+		}elseif($output == "table"){
+			$result = "";
+			foreach($array as $k => $v){
+				$result .= "<tr><td>".$v['timestamp']."</td><td>".$v['ip']."</td><td>".$v['dl']."</td><td>".$v['ul']."</td><td>".$v['ping']."</td><td>".$v['jitter']."</td></tr>";
+			}
+		}
+		return $result;
+	}
+}
+
 function orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){
 	$path = getServerPath();
 	return '

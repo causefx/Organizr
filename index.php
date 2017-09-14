@@ -245,7 +245,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<script src="js/push.js"></script>
 		<!--Other-->
 		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
-		<!--<script src="js/piwik.js?v=<?php echo INSTALLEDVERSION; ?>"></script>-->
 		<!--[if lt IE 9]>
 		<script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
 		<script src="bower_components/respondJs/dest/respond.min.js"></script>
@@ -1284,23 +1283,26 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		$(document).ready(function(){
 			
-			<?php $pingCount = 1; 
-			foreach($allPings as $type => $ping){
-				$name = str_replace(array(':', '\\', '/', '*'), 'x', $ping);
-				if(strpos($type, 'image') !== false){ $style = "margin-top:28px"; }else{ $style = ""; }?>
-				var  pingTab<?php echo $pingCount;?> = function() {
-					$("ping[id^='ping-<?php echo $name;?>']").load("ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>");
-				};
-				// Initial Loads
-				pingTab<?php echo $pingCount;?>();
-
-				// Interval Loads
-				setInterval(function() {
+			<?php 
+			if($configReady == "Yes"){
+				$pingCount = 1; if($USER->authenticated && $USER->role == "admin"){ $pingTimer = "60000"; }else{ $pingTimer = "600000"; }
+				foreach($allPings as $type => $ping){
+					$name = str_replace(array(':', '\\', '/', '*'), 'x', $ping);
+					if(strpos($type, 'image') !== false){ $style = "margin-top:28px"; }else{ $style = ""; }?>
+					var  pingTab<?php echo $pingCount;?> = function() {
+						$("ping[id^='ping-<?php echo $name;?>']").load("ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>");
+					};
+					// Initial Loads
 					pingTab<?php echo $pingCount;?>();
-					console.log("ping check for tab[<?php echo $pingCount;?>] complete");
-				}, 10000);
 
-			<?php $pingCount++; }?>
+					// Interval Loads
+					setInterval(function() {
+						pingTab<?php echo $pingCount;?>();
+						console.log("ping check for tab[<?php echo $pingCount;?>] complete");
+					}, <?php echo $pingTimer; ?>);
+
+				<?php $pingCount++; }
+			}?>
 
 			//PLEX INVITE SHIT
 			$('#checkInviteForm').on('submit', function () {
