@@ -9,7 +9,7 @@
 	 */
 	
 	// Include functions if not already included
-	require_once(__DIR__ . '/functions.php');
+	require_once('functions.php');
 	 
     // Autoload frameworks
 	require_once(__DIR__ . '/vendor/autoload.php');

@@ -19,8 +19,8 @@ function twarn(s){log+=Date.now()+' WARN: '+s+'\n'; console.warn(s)}
 
 // test settings. can be overridden by sending specific values with the start command
 var settings = {
-  time_ul: 15, // duration of upload test in seconds
-  time_dl: 15, // duration of download test in seconds
+  time_ul: 10, // duration of upload test in seconds
+  time_dl: 10, // duration of download test in seconds
   time_ulGraceTime: 3, //time to wait in seconds before actually measuring ul speed (wait for buffers to fill)
   time_dlGraceTime: 1.5, //time to wait in seconds before actually measuring dl speed (wait for TCP window to increase)
   count_ping: 35, // number of pings to perform in ping test
@@ -28,8 +28,8 @@ var settings = {
   url_ul: 'empty.php', // path to an empty file, used for upload test. must be relative to this js file
   url_ping: 'empty.php', // path to an empty file, used for ping test. must be relative to this js file
   url_getIp: 'getIP.php', // path to getIP.php relative to this js file, or a similar thing that outputs the client's ip
-  xhr_dlMultistream: 20, // number of download streams to use (can be different if enable_quirks is active)
-  xhr_ulMultistream: 6, // number of upload streams to use (can be different if enable_quirks is active)
+  xhr_dlMultistream: 10, // number of download streams to use (can be different if enable_quirks is active)
+  xhr_ulMultistream: 3, // number of upload streams to use (can be different if enable_quirks is active)
   xhr_ignoreErrors: 1, // 0=fail on errors, 1=attempt to restart a stream if it fails, 2=ignore all errors
   xhr_dlUseBlob: false, // if set to true, it reduces ram usage but uses the hard drive (useful with large garbagePhp_chunkSize and/or high xhr_dlMultistream)
   garbagePhp_chunkSize: 20, // size of chunks sent by garbage.php (can be different if enable_quirks is active)
