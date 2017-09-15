@@ -178,6 +178,28 @@ if(SLIMBAR == "true") {
 		</script>
 		
         <style>
+			@-webkit-keyframes fadeIn {
+				from { opacity: 0; }
+				to { opacity: 1; }
+			}  
+			@keyframes fadeIn {
+				from { opacity: 0; }
+				to { opacity: 1; }
+			}
+			button.settingsMenu:hover {
+				width: 250px !important;
+				z-index: 10000;
+				color: black !important;
+			}
+			button.settingsMenu:hover p{
+				display: block !important;
+				-webkit-animation: fadeIn 1s;
+				animation: fadeIn 1s;
+			}
+			button.settingsMenuActive {
+				margin-left: 0px !important;
+				color: black !important;
+			}
             .loop-animation {
                 animation-iteration-count: infinite;
                 -webkit-animation-iteration-count: infinite;
@@ -213,12 +235,12 @@ if(SLIMBAR == "true") {
                     height: 100%;
                     position: fixed;
                     max-width: 100%;
-                    width: 84%;
-                    right: -84%;
+                    width: calc(100% - 50px) !important;
+                    right: calc(-100% - 50px);
                 }.email-content .email-header, .email-new .email-header{
                     position: fixed;
                     padding: 10px 30px;
-                    width: 84%;
+                    width: calc(100% - 50px) !important;
                     z-index: 1000;
                 }
             }ul.inbox-nav.nav {
@@ -334,7 +356,7 @@ if(SLIMBAR == "true") {
                             </div>
                             <form id="urlTestForm" onsubmit="return false;">
                                 <div class="modal-body">
-                                    Let's Check this URL
+									<?php echo translate("TEST_URL"); ?>
                                     <input type="text" class="form-control material" name="url-test" placeholder="<?php echo translate("URL"); ?>" autocorrect="off" autocapitalize="off" value="">
                                 </div>
                                 <div class="modal-footer">
@@ -348,35 +370,119 @@ if(SLIMBAR == "true") {
                 <br/>
                 <div id="versionCheck"></div>
                 <div class="row">
-                    <div class="col-lg-2">
-						<button id="apply" style="width: 100%; display: none;" class="btn waves btn-success btn-sm text-uppercase waves-effect waves-float animated tada" type="submit">
-							<?php echo $language->translate("APPLY_CHANGES");?>
-						</button>
-                        <div class="content-box profile-sidebar box-shadow">
-                            <img src="images/organizr-logo-h-d.png" width="100%" style="margin-top: -10px;">
-                            <div class="profile-usermenu">
-                                <ul class="nav" id="settings-list">
-                                <!--
-                                <span class="fa-stack fa-lg pull-right" style="margin-top: -8px;margin-right: -15px;">
-                                    <i class="fa fa-square-o fa-stack-2x" style="font-size:null;"></i>
-                                    <i class="fa fa-twitter fa-stack-1x" style="font-size:null;"></i>
-                                </span>
-                                    -->
-                                    <li><a id="open-tabs" box="tab-box"><i class="fa fa-list red-orange pull-right"></i>Edit Tabs</a></li>
-                                    <li><a id="open-colors" box="color-box"><i class="fa fa-paint-brush green pull-right"></i>Edit Colors</a></li>
-                                    <li><a id="open-users" box="users-box"><i class="fa fa-user red pull-right"></i>Manage Users</a></li>
-                                    <li><a id="open-logs" box="logs-box"><i class="fa fa-file-text-o blue pull-right"></i>View Logs</a></li>
-                                    <li><a id="open-homepage" box="homepage-box"><i class=" fa fa-home yellow pull-right"></i>Edit Homepage</a></li>
-                                    <li><a id="open-advanced" box="advanced-box"><i class=" fa fa-cog light-blue pull-right"></i>Advanced</a></li>
-                                    <?php if(!empty(PLEXURL)){?><li><a id="open-invites" box="invites-box"><i class=" fa fa-user-plus gray pull-right"></i>Plex Invites</a></li><?php }?>
-                                    <li><a id="open-info" box="info-box"><i class=" fa fa-info-circle orange pull-right"></i>About</a></li>
-                                    <li><a id="open-donate" box="donate-box"><i class=" fa fa-money red pull-right"></i>Donate</a></li>
-                                </ul>
-                            </div>
-                        </div>
+					<?php 
+					if($userDevice !== "phone"){
+						echo '<div class="col-xs-1" style="width: 60px">';
+						echo '
+						<button id="apply" type="submit" style="display:none;border-radius: 20px !important; -webkit-border-radius: 20px !important;margin-bottom: -20px;z-index:10000;" class="btn btn-success btn-icon waves waves-circle waves-effect waves-float settingsMenu animated tada">
+						<i class="fa fa-retweet fa-fw pull-left" style="padding-left: 12px;"></i>
+						<p class="" style="text-align: center;direction: rtl;display:none;"><strong>'.$language->translate("APPLY_CHANGES").'</strong></p>
+					</button>
+						';
+					}else{
+						echo '<div class="col-sm-2">'; 
+						echo '<button id="apply" style="width: 100%; display: none;" class="btn waves btn-success btn-sm text-uppercase waves-effect waves-float animated tada" type="submit">'.$language->translate("APPLY_CHANGES").'</button>';
+					}?>
+						
+
+<?php 
+$buildMenu = array(
+	array(
+		'id' => 'open-tabs',
+		'box' => 'tab-box',
+		'name' => 'Edit Tabs',
+		'icon_1' => 'circle',
+		'icon_2' => 'th-list',
+		'color' => 'red-orange',
+		'color2' => 'palette-Red-A700 bg',
+		'padding' => '8',
+	),
+	array(
+		'id' => 'open-colors',
+		'box' => 'color-box',
+		'name' => 'Edit Colors',
+		'icon_1' => 'circle',
+		'icon_2' => 'paint-brush',
+		'color' => 'red',
+		'color2' => 'palette-Indigo-A700 bg',
+		'padding' => '8',
+	),
+	array(
+		'id' => 'open-users',
+		'box' => 'users-box',
+		'name' => 'Manage Users',
+		'icon_1' => 'circle',
+		'icon_2' => 'user',
+		'color' => 'green',
+		'color2' => 'palette-Blue-Grey-700 bg',
+		'padding' => '9',
+	),
+	array(
+		'id' => 'open-logs',
+		'box' => 'logs-box',
+		'name' => 'View Logs',
+		'icon_1' => 'circle',
+		'icon_2' => 'list-alt',
+		'color' => 'blue',
+		'color2' => 'palette-Light-Blue-A700 bg',
+		'padding' => '8',
+	),
+	array(
+		'id' => 'open-homepage',
+		'box' => 'homepage-box',
+		'name' => 'Edit Homepage',
+		'icon_1' => 'circle',
+		'icon_2' => 'home',
+		'color' => 'yellow',
+		'color2' => 'palette-Yellow-A700 bg',
+		'padding' => '9',
+	),
+	array(
+		'id' => 'open-invites',
+		'box' => 'invites-box',
+		'name' => 'Plex Invites',
+		'icon_1' => 'circle',
+		'icon_2' => 'user-plus',
+		'color' => 'light-blue',
+		'color2' => 'palette-Amber-A700 bg',
+		'padding' => '7',
+	),
+	array(
+		'id' => 'open-advanced',
+		'box' => 'advanced-box',
+		'name' => 'Advanced',
+		'icon_1' => 'circle',
+		'icon_2' => 'cog',
+		'color' => 'gray',
+		'color2' => 'light-blue-bg',
+		'padding' => '8',
+	),array(
+		'id' => 'open-info',
+		'box' => 'info-box',
+		'name' => 'About',
+		'icon_1' => 'circle',
+		'icon_2' => 'info-circle',
+		'color' => 'orange',
+		'color2' => 'palette-Blue-A700 bg',
+		'padding' => '8',
+	),array(
+		'id' => 'open-donate',
+		'box' => 'donate-box',
+		'name' => 'Donate',
+		'icon_1' => 'square',
+		'icon_2' => 'money',
+		'color' => 'red',
+		'color2' => 'palette-Green-A700 bg',
+		'padding' => '7',
+	),
+);
+if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ echo buildMenuPhone($buildMenu); }
+?>								
+
+
                     </div>
                     <div class="col-lg-10">
-                        
+						<h1 class="text-center">ORGANIZR <3 YOU</h1>
                     </div>
                 </div>
                 <div class="email-content tab-box white-bg">
@@ -485,7 +591,7 @@ echo buildSettings(
                         ),
                         array(
 							'type' => 'button',
-							'labelTranslate' => 'LAYER#CAKE',
+							'label' => 'LAYER#CAKE',
 							'icon' => 'birthday-cake',
 							'id' => 'layerCake',
 							'buttonType' => 'dark',
@@ -1731,31 +1837,23 @@ echo buildSettings(
                                             <div class="content-box profile-sidebar box-shadow">
                                                 <img src="images/organizr-logo-h-d.png" width="100%" style="margin-top: -10px;">
                                                 <div class="profile-usermenu">
-                                                    <ul class="nav" id="theme-list">
-                                                        
-
-                                                    </ul>
+                                                    <ul class="nav" id="theme-list"></ul>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-lg-10">
                                             <h1 id="chooseLayer">Choose A Theme To Preview</h1>
                                             <div class="row">
-                                                <div id="layerCakePreview" class="col-lg-10">
-                                                    
-                                                        
-
-                                                </div>
-                                                <div id="layerCakeInfo" class="col-lg-2">
-
-                                                </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                                <div id="layerCakePreview" class="col-lg-10"></div>
+                                                <div id="layerCakeInfo" class="col-lg-2"></div>
+                                        	</div>
+                                    	</div>
+                                	</div>
+                            	</div>
+                        	</div>
+                    	</div>
+                	</div>
+				</div>
                 <div class="email-content speed-box white-bg">
                     <div class="email-body">
                         <div class="email-header gray-bg">
@@ -1765,12 +1863,10 @@ echo buildSettings(
                         <div class="email-inner small-box">
                             <div class="email-inner-section">
                                 <div class="small-box fade in" id="speedOrg">
-           
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="content-box">
-                                                <div class="content-title big-box i-block">
-                                                </div>
+                                                <div class="content-title big-box i-block"></div>
                                                 <div class="clearfix"></div>
                                                 <div class="big-box">
                                                     <div id="morris-line" class="morris-container"></div>
@@ -1778,7 +1874,6 @@ echo buildSettings(
                                             </div>
                                         </div>
 									</div>
-
 									<?php if(file_exists(DATABASE_LOCATION."speedtest.db")){ ?>
                                     <div id="speedTestTable" class="table-responsive">
                                         <table id="speedLogs" class="datatable display">
@@ -1792,13 +1887,10 @@ echo buildSettings(
                                                     <th><?php echo $language->translate("JITTER");?></th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
-											<?php echo speedTestDisplay(speedTestData(),"table");?>
-                                            </tbody>
+                                            <tbody><?php echo speedTestDisplay(speedTestData(),"table");?></tbody>
                                         </table>
                                     </div>
                                     <?php } ?>
-
                                 </div>
                             </div>
                         </div>
@@ -2616,7 +2708,11 @@ echo buildSettings(
         <?php endif; ?>
 
 		<script>
-        	<?php echo speedTestDisplay(speedTestData(),"graph");?>
+			<?php echo speedTestDisplay(speedTestData(),"graph");?>
+			$(".settingsMenu").click(function() {
+                $(".settingsMenu").removeClass("settingsMenuActive");
+                $(this).addClass("settingsMenuActive");
+            })
             //Tooltips
             $('[data-toggle="tooltip"]').tooltip();
             //IP INFO
@@ -3191,7 +3287,8 @@ echo buildSettings(
 
             });
             $(".email-header .close-button").click(function () {
-                $(".email-content").removeClass("email-active");
+				$(".email-content").removeClass("email-active");
+				$(".settingsMenu").removeClass("settingsMenuActive");
                 $('html').removeClass("overhid");
                 $("#settings-list").find("li").removeClass("active");
             });
