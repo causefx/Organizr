@@ -18,14 +18,14 @@ if (isset($_GET['admin'])) {
     if($USER->authenticated && $USER->role == "admin" && !in_array(strtoupper($USER->username), getBannedUsers($ban))) {
         !$debug ? exit(http_response_code(200)) : die("$USER->username on $currentIP Authorized At Admin Level");
 	} else {
-        !$debug ? writeLog("error", "Denied Access to $USER->username on $currentIP") : die("$USER->username on $currentIP Not Authorized At Admin Level");
+        !$debug ? exit(http_response_code(401)) : die("$USER->username on $currentIP Not Authorized At Admin Level");
     }
 }
 if (isset($_GET['user'])) {
     if($USER->authenticated && !in_array(strtoupper($USER->username), getBannedUsers($ban))) {
         !$debug ? exit(http_response_code(200)) : die("$USER->username on $currentIP Authorized At User Level");
 	} else {
-        !$debug ? writeLog("error", "Denied Access to $USER->username on $currentIP") : die("$USER->username on $currentIP Not Authorized At User Level");
+        !$debug ? exit(http_response_code(401)) : die("$USER->username on $currentIP Not Authorized At User Level");
 	}
 }
 if (!isset($_GET['user']) && !isset($_GET['admin']) && !isset($_GET['whitelist'])) {
