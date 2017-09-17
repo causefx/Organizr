@@ -91,4 +91,5 @@ return array(
 	"downloadRefresh" => "30000",
 	"organizrAPI" => "",
 	"splash" => "false",
+	"chat" => "false",
 );

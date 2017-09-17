@@ -26,6 +26,7 @@ $settingsActive = "";
 $action = "";
 $loadingIcon = "images/organizr-load-w-thick.gif";
 $baseURL = "";
+$dbcreated = false;
 
 // Get Action
 if(isset($_POST['action'])) {
@@ -163,6 +164,51 @@ if (file_exists('config/config.php')) {
 
 	endif;
 
+	//NEW CHAT
+	if(CHAT == "true"){
+		if( $db = new SQLite3("chatpack.db") ){
+			if( $db->busyTimeout(5000) ){
+				if( $db->exec("PRAGMA journal_mode = wal;") ) {
+					$logtable = "CREATE TABLE IF NOT EXISTS chatpack_log
+									(id INTEGER PRIMARY KEY,
+									timestamp INTEGER NOT NULL,
+									user TEXT NOT NULL,
+									avatar TEXT NOT NULL,
+									message TEXT NOT NULL,
+									liked INTEGER DEFAULT 0)";
+					if( $db->exec($logtable) ){
+						$usertable = "CREATE TABLE IF NOT EXISTS chatpack_typing
+										(id INTEGER PRIMARY KEY,
+										timestamp INTEGER NOT NULL,
+										user TEXT NOT NULL)";
+						
+						$onlinetable = "CREATE TABLE IF NOT EXISTS chatpack_last_message
+										(
+										user TEXT PRIMARY KEY NOT NULL,
+										timestamp INTEGER NOT NULL,
+										avatar TEXT NOT NULL)";
+
+						if( $db->exec($usertable) && $db->exec($onlinetable) ){
+							$dbcreated = true;
+						}else{
+							errormessage("creating database table for typing");
+						}
+					}else{
+						errormessage("creating database table for messages");
+					}
+					if( !$db->close() ){
+						errormessage("closing database connection");
+					}
+				}else{
+					errormessage("setting journal mode");
+				}
+			}else{
+				errormessage("setting busy timeout");
+			}
+		}else{
+			errormessage("using SQLite");
+		}
+	}
 }
 
 if(!defined('SLIMBAR')) : define('SLIMBAR', 'true'); endif;
@@ -251,6 +297,46 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<![endif]-->
 	</head>
 	<style>
+		.new-message{
+			color: #46bc99 !important;
+		}
+		@media screen and (max-width:737px){
+			.email-body{width: 100%; overflow: auto;height: 100%;}
+			.email-content, .email-new {
+				-webkit-overflow-scrolling: touch;
+				-webkit-transform: translateZ(0);
+				overflow: scroll;
+				position: fixed;
+				height:100% !important;
+				margin-top:<?=$slimBar;?>px;
+			}.email-content .email-header, .email-new .email-header{
+				padding: 10px 30px;
+				z-index: 1000;
+			}
+		}@media screen and (min-width:737px){
+			.email-body{width: 100%}
+			.email-content .close-button, .email-content .email-actions, .email-new .close-button, .email-new .email-actions {
+				position: relative;
+				top: 15px;
+				right: 0px;
+				float: right;
+			}.email-inner-section {
+				margin-top: 30px;
+			}.email-content, .email-new {
+				overflow: auto;
+				margin: <?=$slimBar;?>px 0 0 0 !important;
+				height: 100%;
+				position: fixed;
+				max-width: 100%;
+				width: calc(30%) !important;
+				right: calc(-30%);
+			}.email-content .email-header, .email-new .email-header{
+				position: fixed;
+				padding: 0px 30px;
+				width: calc(30%) !important;
+				z-index: 1000;
+			}
+		}
 		.loop-animation {
 			animation-iteration-count: infinite;
 			-webkit-animation-iteration-count: infinite;
@@ -563,6 +649,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 								<i class="mdi mdi-window-restore"></i>
 							</a>
 						</li>
+						<?php if(CHAT == "true"){?>
+						<li class="dropdown some-btn">
+							<a id="chat-open" class="chat-open">
+								<i class="mdi mdi-forum animated"></i>
+								<span class="label label-new-message"></span>
+							</a>
+						</li>
+						<?php } ?>
 						<li style="display: block" id="splitView" class="dropdown some-btn">
 							<a class="spltView">
 								<i class="mdi mdi-window-close"></i>
@@ -1101,6 +1195,62 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			</div>
 		</div>
 		<?php } ?>
+		<!-- CHAT BOX -->
+		<?php if(CHAT == "true"){?>
+		<div class="email-content chat-box white-bg">
+			<div class="email-body">
+				<div class="email-inner small-box" style="padding: 0">
+
+				
+					<div class="email-inner-section" style="margin-top: 0;">
+						<div class="small-box fade in" style="padding: 0">
+						
+								
+								<?php if( $dbcreated ){ ?>
+									<div class="main-wrapper" style="position: initial; left:0;">
+										<div id="content">
+												<div id="chat-div" class="">
+													<div class="content-box big-box chat gray-bg">
+													<?php if($userDevice !== "phone"){ ?>
+														<div class="box" style="overflow: hidden; width: auto; height: calc(100vh - 112px) !important;">
+													<?php }else{ ?>
+														<div class="box" style="overflow: hidden; width: auto; height: 85vh !important;">
+													<?php }?>
+															<div id="intro">
+																<center><img class="logo" alt="logo" src="images/organizr-logo-h.png" style="width: 100%;">
+																<br><br>start chatting...</center>
+															</div>
+															<ul id="messages" class="chat-double chat-container"></ul>
+															<ul class="chat-double chat-container" style="padding: 0px;"><li id="istyping"></li></ul>
+														</div>
+														<br/>
+														<input id="message" autofocus type="text" class="form-control gray-bg" placeholder="Enter your text" autocomplete="off"/>
+														<audio id="tabalert" preload="auto">
+															<source src="chat/audio/newmessage.mp3" type="audio/mpeg">
+														</audio>
+
+													</div>
+												</div>
+												<div id="chat-users-div" class="col-lg-12" style="display: none">
+													<div class="content-box">
+														<div class="content-title big-box i-block gray-bg">
+															<h4 class="zero-m">Online</h4>
+														</div>
+														<div class="clearfix"></div>
+														<div id="onlineusers" class="big-box"></div>
+													</div>
+												</div>
+											
+							
+        						<?php } ?>
+								
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php } ?>
 
 		<!--Scripts-->
 		<script src="<?=$baseURL;?>bower_components/jquery/dist/jquery.min.js"></script>
@@ -1130,8 +1280,21 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<script src="<?=$baseURL;?>js/common.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 		<script src="<?=$baseURL;?>js/mousetrap.min.js"></script>
 		<script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
+		<?php if(CHAT == "true"){?><script src="chatjs.php" defer="true"></script><?php }?>
 
 		<script>
+		//Tooltips
+		$('[data-toggle="tooltip"]').tooltip();
+		$(".box").niceScroll({
+            railpadding: {top:0,right:0,left:0,bottom:0},
+            scrollspeed: 30,
+            mousescrollstep: 60
+        });
+        $("#onlineusers").niceScroll({
+            railpadding: {top:0,right:0,left:0,bottom:0},
+            scrollspeed: 30,
+            mousescrollstep: 60
+        });
 		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true") {?>    
 		$('.splash-modal').modal("show");
 		<?php } ?>
@@ -1497,7 +1660,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			var activeFrame = $('#content').find('.active').children('iframe');
 			console.log(activeFrame.attr('src'));
 			window.open(activeFrame.attr('src'), '_blank');
-		});    
+		});  
+		$('#chat-open').on('click tap', function(){
+			$('.chat-box').toggleClass('email-active');
+			$(".mdi-forum").removeClass("tada loop-animation new-message");//SET MESSAGE TO ZERO
+			$("#message").focus();
+
+		});
+
 		$('#reload').on('contextmenu', function(e){
 
 			$("i[class^='mdi mdi-refresh']").attr("class", "mdi mdi-refresh fa-spin");

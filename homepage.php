@@ -477,6 +477,8 @@ foreach(loadAppearance() as $key => $value) {
             </div>    
         </div>
         <script>
+        //Tooltips
+        $('[data-toggle="tooltip"]').tooltip();
         $(".swal-legend").click(function () {
             swal({
                 title: "Calendar Legend",
