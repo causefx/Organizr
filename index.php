@@ -328,12 +328,12 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				height: 100%;
 				position: fixed;
 				max-width: 100%;
-				width: calc(30%) !important;
-				right: calc(-30%);
+				width: calc(35%) !important;
+				right: calc(-35%);
 			}.email-content .email-header, .email-new .email-header{
 				position: fixed;
 				padding: 0px 30px;
-				width: calc(30%) !important;
+				width: calc(35%) !important;
 				z-index: 1000;
 			}
 		}
@@ -871,7 +871,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 							<input type="hidden" name="op" value="update"/>
 							<input type="hidden" name="sha1" value=""/>
-				<input type="hidden" name="password" value="">
+							<input type="hidden" name="password" value="">
 							<input type="hidden" name="username" value="<?php echo $USER->username; ?>"/>
 							<input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
 
@@ -1210,7 +1210,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 									<div class="main-wrapper" style="position: initial; left:0;">
 										<div id="content">
 												<div id="chat-div" class="">
-													<div class="content-box big-box chat gray-bg">
+													<div class="big-box chat gray-bg">
 													<?php if($userDevice !== "phone"){ ?>
 														<div class="box" style="overflow: hidden; width: auto; height: calc(100vh - 112px) !important;">
 													<?php }else{ ?>
@@ -1251,6 +1251,11 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			</div>
 		</div>
 		<?php } ?>
+		<script>
+			var d = new Date();
+			var timezone = d.getTimezoneOffset();
+			console.log(timezone)
+		</script>
 
 		<!--Scripts-->
 		<script src="<?=$baseURL;?>bower_components/jquery/dist/jquery.min.js"></script>
