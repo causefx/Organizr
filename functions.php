@@ -4506,6 +4506,13 @@ function buildMenu($array){
 	}
 }
 
+function errormessage($msg) {
+	echo "<div style=\"margin-top: 50px;\">";
+	echo "<span style=\"color:#d89334;\">error </span>";
+	echo $msg;
+	echo "</div>";
+}
+
 class Mobile_Detect
 {
     /**

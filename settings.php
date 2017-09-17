@@ -481,9 +481,11 @@ if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ e
 
 
                     </div>
-                    <div class="col-lg-10">
-						<h1 class="text-center">ORGANIZR <3 YOU</h1>
+					<?php if($userDevice !== "phone"){?>
+                    <div class="col-lg-10" style="position: absolute;top: 50%;left: 10%;width: 80%;">
+						<h1 style="font-size: 50px" class="text-center">ORGANIZR <i class="fa fa-heart fa-1x red loop-animation animated pulse" aria-hidden="true"></i> YOU</h1>
                     </div>
+					<?php } ?>
                 </div>
                 <div class="email-content tab-box white-bg">
                     <div class="email-body">
@@ -1684,7 +1686,13 @@ echo buildSettings(
 						),
 					),
 					array(
-                        array(
+						array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'ENABLE_CHAT',
+							'name' => 'chat',
+							'value' => CHAT,
+						),
+						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'ENABLE_SPLASH_SCREEN',
 							'name' => 'splash',
@@ -2713,8 +2721,6 @@ echo buildSettings(
                 $(".settingsMenu").removeClass("settingsMenuActive");
                 $(this).addClass("settingsMenuActive");
             })
-            //Tooltips
-            $('[data-toggle="tooltip"]').tooltip();
             //IP INFO
             $(".ipInfo").click(function(){
                 $.getJSON("https://ipinfo.io/"+$(this).text()+"/?token=<?php echo IPINFOTOKEN;?>", function (response) {

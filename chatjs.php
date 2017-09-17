@@ -297,8 +297,7 @@ $(document).ready(function()
     $(window).focus();
     var tabinfocus = true;
     $("#chat").hide();
-    $("#username").val("");
-    $("#username").focus();
+
     
     // allowed characters in username
     
@@ -344,8 +343,6 @@ $(document).ready(function()
         //$(userfavicon).appendTo("head");
         
         // start chat
-        
-        $("#createuser").hide();
         $("#chat").show();
         $("#message").focus();
         
@@ -572,6 +569,7 @@ $(document).ready(function()
 
                     for( var i=0; i<newmessages.length; i++ )
                     {
+                        
                         var message = newmessages[i];
                         
                         if( message != "" )
@@ -603,7 +601,11 @@ $(document).ready(function()
 
                                     if( message.lastIndexOf(userwriting) == -1 )
                                     {
-                                        newmessagealert(message);
+                                        if ($('.chat-box').hasClass('email-active')){
+                                            console.log("supress message");
+                                        }else{
+                                            newmessagealert(message);
+                                        }
                                     }
                                     
                                     // refresh eventlisteners of messages to set likes
@@ -677,26 +679,46 @@ $(document).ready(function()
     }
     
     // tab focus
-    
+    window.onload = function()
+    {
+        if ($('.chat-box').hasClass('email-active')){
+            tabinfocus = true;
+            $(".mdi-forum").removeClass("tada loop-animation new-message");//SET MESSAGE TO ZERO
+            console.log("in focus");
+        }else{
+            tabinfocus = false;
+            console.log("not in focus");
+        }
+ 
+    };
+
     window.onfocus = function()
     {
-        tabinfocus = true;
-        parent.document.title = "Chat";
-        window.parent.$("span[id^='chat.phps']").html("");
+        if ($('.chat-box').hasClass('email-active')){
+            tabinfocus = true;
+            $(".mdi-forum").removeClass("tada loop-animation new-message");//SET MESSAGE TO ZERO
+            console.log("in focus");
+        }else{
+            tabinfocus = false;
+            console.log("not in focus");
+        }
+ 
     };
     
     window.onblur = function()
     {
         tabinfocus = false;
+        console.log("not in focus");
     };
     
     // new message tab alert
     
     function newmessagealert(message)
     {   
+
+
         if( !tabinfocus )
         {
-            // title marker
             i = parseInt(parent.document.title);
             if(isNaN(i)){
                 i = 1;
@@ -704,9 +726,8 @@ $(document).ready(function()
                 i++
              }
 
-            parent.document.title = i + " Chat";
-            //window.parent.$("#chat.phpx").addClass("gottem");
-            window.parent.$("span[id^='chat.phps']").html(i);
+            console.log("new message");
+            $(".mdi-forum").addClass("tada loop-animation new-message");
             var $jQueryObject = $($.parseHTML(message));
             var alertMessage = $jQueryObject.find(".chat-body").html();
             var alertUsername = $jQueryObject.find("h4[class^='pull-left zero-m']").html();
