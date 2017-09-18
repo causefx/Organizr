@@ -154,13 +154,15 @@ switch ($_SERVER['REQUEST_METHOD']) {
                                 write_ini_file($_POST['customCSS'], 'custom.css');
                             } else {
                                 unlink('custom.css');
-                            }
-                            $response['show_apply'] = true;
+							}
+							$response['notify'] = sendNotification(true,false,false);
+							$response['show_apply'] = true;
                         }
                         unset($_POST['customCSS']);
                         // Custom CSS Special Case END
 						if (!empty($_POST)) {
-                        	$response['notify'] = sendNotification(updateDBOptions($_POST),false,false);
+							$response['notify'] = sendNotification(updateDBOptions($_POST),false,false);
+							$response['show_apply'] = true;
 						}
                         break;
                     case 'deleteDB':

@@ -9,7 +9,8 @@ require_once("user.php");
 require_once("functions.php");
 
 $USER = new User("registration_callback");
-
+qualifyUser(HOMEPAGEAUTHNEEDED, true);
+if(CHAT !== "true"){ die("chat not enabled");}
 $dbfile = DATABASE_LOCATION.'users.db';
 
 $file_db = new PDO("sqlite:" . $dbfile);
@@ -67,6 +68,8 @@ if($hasOptions == "Yes") :
     endforeach;
 
 endif;
+
+
 ?>
 
 <!DOCTYPE html>

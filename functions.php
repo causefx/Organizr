@@ -4506,6 +4506,13 @@ function buildMenu($array){
 	}
 }
 
+function requestInvite($email, $username){
+	//sendEmail($email, $username = "Organizr User", $subject, $body, $cc = null){
+	//orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){
+	sendEmail($GLOBALS['USER']->adminEmail, "Admin", "Plex Invite Request", orgEmail("PLEX Invite Request", "Look who wants to join the cool club", "Admin", "Hey, The User: $user has requested access to your Plex Library.", "Generate Invite", null, "What Next?", "Well, That is up to you.  You can go check on them if you like."));
+
+}
+
 function errormessage($msg) {
 	echo "<div style=\"margin-top: 50px;\">";
 	echo "<span style=\"color:#d89334;\">error </span>";

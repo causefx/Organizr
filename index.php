@@ -165,7 +165,7 @@ if (file_exists('config/config.php')) {
 	endif;
 
 	//NEW CHAT
-	if(CHAT == "true"){
+	if(CHAT == "true" && qualifyUser(CHATAUTH)){
 		if( $db = new SQLite3("chatpack.db") ){
 			if( $db->busyTimeout(5000) ){
 				if( $db->exec("PRAGMA journal_mode = wal;") ) {
@@ -222,7 +222,7 @@ if(!isset($notifyExplode)) :
 
 endif;
 
-if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
+if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; $chatSize = "114px"; else : $slimBar = "56"; $userSize = "40"; $chatSize = "140px";endif;
 
 if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon = "settings2.png"; else: $iconRotate = "true"; $settingsIcon = "settings.png"; endif;
 
@@ -649,7 +649,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 								<i class="mdi mdi-window-restore"></i>
 							</a>
 						</li>
-						<?php if(CHAT == "true"){?>
+						<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
 						<li class="dropdown some-btn">
 							<a id="chat-open" class="chat-open">
 								<i class="mdi mdi-forum animated"></i>
@@ -1196,7 +1196,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		</div>
 		<?php } ?>
 		<!-- CHAT BOX -->
-		<?php if(CHAT == "true"){?>
+		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
 		<div class="email-content chat-box white-bg">
 			<div class="email-body">
 				<div class="email-inner small-box" style="padding: 0">
@@ -1211,11 +1211,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 										<div id="content">
 												<div id="chat-div" class="">
 													<div class="big-box chat gray-bg">
-													<?php if($userDevice !== "phone"){ ?>
-														<div class="box" style="overflow: hidden; width: auto; height: calc(100vh - 112px) !important;">
-													<?php }else{ ?>
-														<div class="box" style="overflow: hidden; width: auto; height: 85vh !important;">
-													<?php }?>
+														<div class="box" style="overflow: hidden; width: auto; height: calc(100vh - <?php echo $chatSize; ?>) !important;">
 															<div id="intro">
 																<center><img class="logo" alt="logo" src="images/organizr-logo-h.png" style="width: 100%;">
 																<br><br>start chatting...</center>
@@ -1285,7 +1281,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<script src="<?=$baseURL;?>js/common.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 		<script src="<?=$baseURL;?>js/mousetrap.min.js"></script>
 		<script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
-		<?php if(CHAT == "true"){?><script src="chatjs.php" defer="true"></script><?php }?>
+		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?><script src="chatjs.php" defer="true"></script><?php }?>
 
 		<script>
 		//Tooltips

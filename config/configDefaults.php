@@ -92,4 +92,5 @@ return array(
 	"organizrAPI" => "",
 	"splash" => "false",
 	"chat" => "false",
+	"chatAuth" => "false",
 );
