@@ -522,7 +522,7 @@ if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ e
 <?php
 $dirname = "images/";
 $images = scandir($dirname);
-$ignore = Array(".", "..", "favicon", "cache", "platforms", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "no-np.png", "no-list.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
+$ignore = Array(".", "..", "favicon", "settings", "cache", "platforms", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "no-np.png", "no-list.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
 foreach($images as $curimg){
 	if(!in_array($curimg, $ignore)) { ?>
 												<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
@@ -1688,12 +1688,6 @@ echo buildSettings(
 					array(
 						array(
 							'type' => 'checkbox',
-							'labelTranslate' => 'ENABLE_CHAT',
-							'name' => 'chat',
-							'value' => CHAT,
-						),
-						array(
-							'type' => 'checkbox',
 							'labelTranslate' => 'ENABLE_SPLASH_SCREEN',
 							'name' => 'splash',
 							'value' => SPLASH,
@@ -1715,6 +1709,28 @@ echo buildSettings(
 							'labelTranslate' => 'GRAVATAR',
 							'name' => 'gravatar',
 							'value' => GRAVATAR,
+						),
+					),
+				),
+			),
+			array(
+				'title' => 'Chat Settings',
+				'id' => 'chat_settings',
+				'image' => 'images/settings/full-color/png/64px/chat.png',
+				'fields' => array(
+					array(
+						array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'CHAT_AUTH',
+							'name' => 'chatAuth',
+							'value' => CHATAUTH,
+							'options' => $userTypes,
+						),
+                        array(
+							'type' => 'checkbox',
+							'labelTranslate' => 'ENABLE_CHAT',
+							'name' => 'chat',
+							'value' => CHAT,
 						),
 					),
 				),
