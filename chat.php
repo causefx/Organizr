@@ -9,7 +9,7 @@ require_once("user.php");
 require_once("functions.php");
 
 $USER = new User("registration_callback");
-qualifyUser(HOMEPAGEAUTHNEEDED, true);
+qualifyUser(CHATAUTH, true);
 if(CHAT !== "true"){ die("chat not enabled");}
 $dbfile = DATABASE_LOCATION.'users.db';
 
