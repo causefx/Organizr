@@ -561,7 +561,7 @@ $(document).ready(function()
                             }
                         }
                         if(onlinecount > 9 ){ onlinecount = "9-plus"; }
-                        if(newonlineusers === ''){ newonlineusers = "No Users Online";}
+                        if(newonlineusers === ''){ newonlineusers = "No Users Online"; onlinecount = 0;}
                         if( newonlineusers != oldonlineusers )
                         {
                             $("#onlineusers").html(newonlineusers);
