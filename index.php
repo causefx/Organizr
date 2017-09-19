@@ -222,7 +222,7 @@ if(!isset($notifyExplode)) :
 
 endif;
 
-if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; $chatSize = "114px"; else : $slimBar = "56"; $userSize = "40"; $chatSize = "140px";endif;
+if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; $chatSize = "142px"; else : $slimBar = "56"; $userSize = "40"; $chatSize = "171px";endif;
 
 if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon = "settings2.png"; else: $iconRotate = "true"; $settingsIcon = "settings.png"; endif;
 
@@ -1197,7 +1197,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<?php } ?>
 		<!-- CHAT BOX -->
 		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
-		<div class="email-content chat-box white-bg">
+		<div id="main-chat" class="email-content chat-box white-bg" style="z-index:1000000">
 			<div class="email-body">
 				<div class="email-inner small-box" style="padding: 0">
 
@@ -1209,33 +1209,46 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 								<?php if( $dbcreated ){ ?>
 									<div class="main-wrapper" style="position: initial; left:0;">
 										<div id="content">
-												<div id="chat-div" class="">
-													<div class="big-box chat gray-bg">
-														<div class="box" style="overflow: hidden; width: auto; height: calc(100vh - <?php echo $chatSize; ?>) !important;">
-															<div id="intro">
-																<center><img class="logo" alt="logo" src="images/organizr-logo-h.png" style="width: 100%;">
-																<br><br>start chatting...</center>
-															</div>
-															<ul id="messages" class="chat-double chat-container"></ul>
-															<ul class="chat-double chat-container" style="padding: 0px;"><li id="istyping"></li></ul>
-														</div>
-														<br/>
-														<input id="message" autofocus type="text" class="form-control gray-bg" placeholder="Enter your text" autocomplete="off"/>
-														<audio id="tabalert" preload="auto">
-															<source src="chat/audio/newmessage.mp3" type="audio/mpeg">
-														</audio>
 
-													</div>
+											<div class="btn-group btn-group-justified grayish-blue-bg">
+												<div class="btn-group" role="group">
+													<button id="chat-switch-chat" type="button" class="btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-comments-o"></i> Chat</button>
 												</div>
-												<div id="chat-users-div" class="col-lg-12" style="display: none">
+												<div class="btn-group" role="group">
+													<button id="chat-switch-online" type="button" class="btn waves  waves-effect waves-float grayish-blue-bg"><i id="online-count" class="fa fa-users"></i> Online Users</button>
+												</div>
+											</div>
+
+											<div id="chat-chat-div" class="">
+												<div class="big-box chat gray-bg">
+													<div class="box" style="overflow: hidden; width: auto; height: calc(100vh - <?php echo $chatSize; ?>) !important;">
+														<div id="intro">
+															<center><img class="logo" alt="logo" src="images/organizr-logo-h.png" style="width: 100%;">
+															<br><br>start chatting...</center>
+														</div>
+														<ul id="messages" class="chat-double chat-container"></ul>
+														<ul class="chat-double chat-container" style="padding: 0px;"><li id="istyping"></li></ul>
+													</div>
+													<br/>
+													<input id="message" autofocus onfocus="ensureVisible(this)" type="text" class="form-control gray-bg" placeholder="Enter your text" autocomplete="off"/>
+													<audio id="tabalert" preload="auto">
+														<source src="chat/audio/newmessage.mp3" type="audio/mpeg">
+													</audio>
+
+												</div>
+											</div>
+											<div id="chat-users-div" class="col-lg-12 gray-bg" style="display: none;">
+												<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px) !important;">
+													<br>
 													<div class="content-box">
 														<div class="content-title big-box i-block gray-bg">
 															<h4 class="zero-m">Online</h4>
 														</div>
 														<div class="clearfix"></div>
-														<div id="onlineusers" class="big-box"></div>
+														<div id="onlineusers" class="big-box" style="color:black;"></div>
 													</div>
 												</div>
+											</div>
 											
 							
         						<?php } ?>
@@ -1281,8 +1294,24 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<script src="<?=$baseURL;?>js/common.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 		<script src="<?=$baseURL;?>js/mousetrap.min.js"></script>
 		<script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
-		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?><script src="chatjs.php" defer="true"></script><?php }?>
+		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
+		<script src="chatjs.php" defer="true"></script>
+		<script type="text/javascript">
+		var scrolling = function(e, c) {
+			e.scrollIntoView();
+			if (c < 5) setTimeout(scrolling, 300, e, c + 1);
+		};
+		var ensureVisible = function(e) {
+			setTimeout(scrolling, 300, e, 0);
+		};
+		var mainchatdiv = document.getElementById('main-chat');
+		mainchatdiv.addEventListener('touchmove', function(e) {
 
+			e.preventDefault();
+
+		}, false);  
+   		</script>
+		<?php }?>
 		<script>
 		//Tooltips
 		$('[data-toggle="tooltip"]').tooltip();
@@ -1304,7 +1333,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 			e.preventDefault();
 
-		}, false);    
+		}, false);  
+
 		function setHeight() {
 			windowHeight = $(window).innerHeight();
 			$("div").find(".iframe").css('height', windowHeight - <?=$slimBar;?> + "px");
@@ -1667,6 +1697,16 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			$(".mdi-forum").removeClass("tada loop-animation new-message");//SET MESSAGE TO ZERO
 			$("#message").focus();
 
+		});
+
+		$('#chat-switch-chat').on('click tap', function(){
+			$('#chat-chat-div').show();
+			$('#chat-users-div').hide();
+			$("#message").focus();
+		});
+		$('#chat-switch-online').on('click tap', function(){
+			$('#chat-users-div').show();
+			$('#chat-chat-div').hide();
 		});
 
 		$('#reload').on('contextmenu', function(e){

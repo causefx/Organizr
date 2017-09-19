@@ -503,32 +503,36 @@ $(document).ready(function()
                         var onlineusers = JSON.parse(result);
                         var oldonlineusers = $("#onlineusers").html();
                         var newonlineusers = '';
+                        var onlinecount = 0;
                         
                         if( onlineusers.length <= 0 )  // no user typing
                         {
                             newonlineusers += "No Users Online";
+                            onlinecount = 0;
+
                         }
                         else
                         {   
                             if( onlineusers.length >= 1 )  // one user typing
                             {
                                 jQuery.each( onlineusers, function( i, val ) {
+                                    onlinecount++;
                                     var timecheck = val[1];
                                     var status = "";
                                     var color = "";
                                     if( timecheck < timenow - 1800 )
                                     {
-                                        status = '<span style="min-height: 14px;margin-top: 10px;" class="pull-right badge badge-danger animated pulse"> </span>';
+                                        status = '<span style="min-height: 14px;margin-top: 10px;" class="pull-right badge badge-danger"> </span>';
                                         color = "red";
                                     }else{
-                                        status = '<span style="min-height: 14px;margin-top: 10px;" class="pull-right badge badge-success animated flash"> </span>';                       
+                                        status = '<span style="min-height: 14px;margin-top: 10px;" class="pull-right badge badge-success"> </span>';                       
                                         color = "blue";                       
                                     }
                                     if( timecheck < timenow - 3600 )
                                     {
                                         newonlineusers += '';      
                                     }else{
-                                        newonlineusers += '<div class="member-info"><img style="height:40px" src="'+val[2]+'" alt="admin" class="img-circle"><span class="member-name">'+val[0]+'</span>'+status+'</div>'; 
+                                        newonlineusers += '<div class="member-info"><img style="height:40px" src="'+val[2]+'" alt="admin" class="img-circle"><span class="member-name" style="position: absolute;margin-top: 10px;">'+val[0]+'</span>'+status+'</div>'; 
                                         i++;
                                     }
                                     
@@ -556,10 +560,12 @@ $(document).ready(function()
                                 });
                             }
                         }
+                        if(onlinecount > 9 ){ onlinecount = "9-plus"; }
                         if(newonlineusers === ''){ newonlineusers = "No Users Online";}
                         if( newonlineusers != oldonlineusers )
                         {
                             $("#onlineusers").html(newonlineusers);
+                            $("#online-count").attr("class", "mdi mdi-numeric-"+onlinecount+"-box");
                         }
                     }
                 });

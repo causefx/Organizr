@@ -1716,9 +1716,8 @@ echo buildSettings(
 			array(
 				'title' => 'Chat Settings',
 				'id' => 'chat_settings',
-				'image' => 'images/settings/full-color/png/64px/chat.png',
+				'image' => 'images/settings/full-color/png/64px/chat.png',//onsubmit="ajax_request(\'POST\', \'deleteLog\'); return false;"
 				'fields' => array(
-					array(
 						array(
 							'type' => $userSelectType,
 							'labelTranslate' => 'CHAT_AUTH',
@@ -1726,13 +1725,20 @@ echo buildSettings(
 							'value' => CHATAUTH,
 							'options' => $userTypes,
 						),
-                        array(
+						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'ENABLE_CHAT',
 							'name' => 'chat',
 							'value' => CHAT,
 						),
-					),
+						array(
+							'type' => 'button',
+							'id' => 'deleteChat',
+							'labelTranslate' => 'DELETE_CHAT_DATABASE',
+							'icon' => 'trash',
+							'onclick' => 'ajax_request(\'POST\', \'deleteChat\');',
+							'class' => 'btn-warning',
+						),
 				),
 			),
             array(
@@ -2171,7 +2177,8 @@ echo buildSettings(
                                                 </div>
 
                                                 <div class="modal-footer">
-
+													
+													<button type="button" class="btn special" style="background: transparent !important;color: transparent !important;">Special</button>
                                                     <button type="button" class="btn btn-default waves" data-dismiss="modal"><?php echo $language->translate("CLOSE");?></button>
 
                                                 </div>
@@ -2736,6 +2743,15 @@ echo buildSettings(
 			$(".settingsMenu").click(function() {
                 $(".settingsMenu").removeClass("settingsMenuActive");
                 $(this).addClass("settingsMenuActive");
+			})
+			$(".special").click(function() {
+                swal({
+					title: "Hmmm What is This?",
+					text: '<p><img src="images/settings/not-so-hidden.gif"></p>',
+					html: true,
+					confirmButtonColor: "#63A8EB"
+				});
+                console.log('hmmmmm, what the hell is this section?');
             })
             //IP INFO
             $(".ipInfo").click(function(){
