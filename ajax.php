@@ -180,10 +180,17 @@ switch ($_SERVER['REQUEST_METHOD']) {
                         $response['tab']['goto'] = 'updatedb.php';
                         break;
                     case 'deleteLog':
-                        sendNotification(unlink(FAIL_LOG));
+						$response['notify'] = sendNotification(unlink(FAIL_LOG));
+						$response['show_apply'] = true;
+						break;
+					case 'deleteChat':
+						$response['notify'] = sendNotification(unlink("chatpack.db"));
+						$response['show_apply'] = true;
+						$response['reload'] = true;
                         break;
                     case 'deleteOrgLog':
-                        sendNotification(unlink("org.log"));
+						$response['notify'] = sendNotification(unlink("org.log"));
+						$response['show_apply'] = true;
                         break;
                     case 'submit-tabs':
                         $response['notify'] = sendNotification(updateTabs($_POST) , false, false);
