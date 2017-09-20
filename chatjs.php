@@ -516,7 +516,6 @@ $(document).ready(function()
                             if( onlineusers.length >= 1 )  // one user typing
                             {
                                 jQuery.each( onlineusers, function( i, val ) {
-                                    onlinecount++;
                                     var timecheck = val[1];
                                     var status = "";
                                     var color = "";
@@ -534,6 +533,7 @@ $(document).ready(function()
                                     }else{
                                         newonlineusers += '<div class="member-info"><img style="height:40px" src="'+val[2]+'" alt="admin" class="img-circle"><span class="member-name" style="position: absolute;margin-top: 10px;">'+val[0]+'</span>'+status+'</div>'; 
                                         i++;
+                                        onlinecount++;
                                     }
                                     
                                     $("img[alt^='"+val[0]+"']").each(function()
