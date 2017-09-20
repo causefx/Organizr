@@ -145,7 +145,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
                         sendNotification(true);
                         break;
                     case 'update-config':
-                        sendNotification(updateConfig($_POST));
+						$response['notify'] = sendNotification(updateConfig($_POST));
+						$response['show_apply'] = true;
                         break;
                     case 'update-appearance':
                         // Custom CSS Special Case START

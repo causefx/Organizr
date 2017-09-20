@@ -1,4 +1,4 @@
-<?php 
+<?php
 // Include functions if not already included
 require_once('functions.php');
 
@@ -144,19 +144,9 @@ if (file_exists('config/config.php')) {
 	endif;
 
 	$userpic = md5( strtolower( trim( $USER->email ) ) );
+	$showPic = "<i class=\"mdi mdi-account-circle\"></i>";
 	if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
-
 	if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
-
-	if(GRAVATAR == "true") :
-
-		$showPic = "<img src='https://www.gravatar.com/avatar/$userpic?s=$userSize' class='img-circle'>";
-
-	else: 
-		$showPic = "<i class=\"mdi mdi-account-box-outline\"></i>";
-
-	endif;
-
 
 	//NEW CHAT
 	if(CHAT == "true" && qualifyUser(CHATAUTH)){
