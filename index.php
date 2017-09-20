@@ -147,22 +147,16 @@ if (file_exists('config/config.php')) {
 	if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
 
 	if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
-	if($USER->authenticated) : 
 
-		if(GRAVATAR == "true") :
+	if(GRAVATAR == "true") :
 
-			$showPic = "<img src='https://www.gravatar.com/avatar/$userpic?s=$userSize' class='img-circle'>";
+		$showPic = "<img src='https://www.gravatar.com/avatar/$userpic?s=$userSize' class='img-circle'>";
 
-		else: 
-			$showPic = "<i class=\"mdi mdi-account-box-outline\"></i>";
-
-		endif;
-
-	else : 
-
-		$showPic = "<login class='login-btn text-uppercase'>" . $language->translate("LOGIN") . "</login>"; 
+	else: 
+		$showPic = "<i class=\"mdi mdi-account-box-outline\"></i>";
 
 	endif;
+
 
 	//NEW CHAT
 	if(CHAT == "true" && qualifyUser(CHATAUTH)){
@@ -624,31 +618,20 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 				<li class="pull-right">
 					<ul class="nav navbar-right right-menu">
-						<li class="dropdown some-btn">
-							<?php if($configReady == "Yes") : if(!$USER->authenticated) : ?>
-							<a class="log-in">
-							<?php endif; endif;?>
-							<?php if($configReady == "Yes") : if($USER->authenticated) : ?>
+						<?php if($configReady == "Yes"){?>
+						<li class="dropdown some-btn">	
 							<a class="show-members">
-							<?php endif; endif;?>
 								<i class="userpic"><?=$showPic;?></i> 
 							</a>
 						</li>
+						<?php if(!$USER->authenticated){?>
 						<li class="dropdown some-btn">
-							<a class="fullscreen">
-								<i class="mdi mdi-fullscreen"></i>
+							<a class="log-in">
+								<login class='login-btn text-uppercase'><?php echo $language->translate("LOGIN"); ?></login>
 							</a>
 						</li>
-						<li class="dropdown some-btn">
-							<a id="reload" class="refresh">
-								<i class="mdi mdi-refresh"></i>
-							</a>
-						</li>
-						<li class="dropdown some-btn">
-							<a id="popout" class="popout">
-								<i class="mdi mdi-window-restore"></i>
-							</a>
-						</li>
+						<?php } }?>								
+
 						<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
 						<li class="dropdown some-btn">
 							<a id="chat-open" class="chat-open">
@@ -657,11 +640,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 							</a>
 						</li>
 						<?php } ?>
-						<li style="display: block" id="splitView" class="dropdown some-btn">
-							<a class="spltView">
-								<i class="mdi mdi-window-close"></i>
-							</a>
-						</li>
 					</ul>
 				</li>
 			</ul>
@@ -844,6 +822,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 			<!--Welcome notification-->
 			<div id="welcome"></div>
+			<!-- OLD USER INFO 
 			<div id="members-sidebar" style="background: <?=$sidebar;?>;" class="members-sidebar fade in">
 				<h4 class="pull-left zero-m"><?php echo $language->translate("OPTIONS");?></h4>
 				<span class="close-members-sidebar"><i class="fa fa-remove fa-lg pull-right"></i></span>
@@ -910,6 +889,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				<?php endif; endif;?>
 
 			</div>
+			END OLD USER INFO --> 
 
 		</div>
 		<?php if($configReady == "Yes") : if(!$USER->authenticated && $configReady == "Yes") : ?>
@@ -1200,60 +1180,203 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<div id="main-chat" class="email-content chat-box white-bg" style="z-index:1000000">
 			<div class="email-body">
 				<div class="email-inner small-box" style="padding: 0">
-
-				
 					<div class="email-inner-section" style="margin-top: 0;">
-						<div class="small-box fade in" style="padding: 0">
-						
-								
-								<?php if( $dbcreated ){ ?>
-									<div class="main-wrapper" style="position: initial; left:0;">
-										<div id="content">
+						<div class="small-box fade in" style="padding: 0">											
+							<?php if( $dbcreated ){ ?>
+							<div class="main-wrapper" style="position: initial; left:0;">
+								<div id="content">
+									<div class="btn-group btn-group-justified grayish-blue-bg">
+										<div class="btn-group" role="group">
+											<button id="chat-switch-chat" type="button" class="btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-comments-o"></i> Chat</button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="chat-switch-online" type="button" class="btn waves  waves-effect waves-float grayish-blue-bg"><i id="online-count" class="fa fa-users"></i> Online Users</button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="chat-switch-close" type="button" class="btn waves  waves-effect waves-float grayish-blue-bg"><i class="fa fa-close"></i> Close</button>
+										</div>
+									</div>
 
-											<div class="btn-group btn-group-justified grayish-blue-bg">
-												<div class="btn-group" role="group">
-													<button id="chat-switch-chat" type="button" class="btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-comments-o"></i> Chat</button>
+									<div id="chat-chat-div" class="">
+										<div class="big-box chat gray-bg">
+											<div class="box" style="overflow: hidden; width: auto; height: calc(100vh - <?php echo $chatSize; ?>) !important;">
+												<div id="intro">
+													<center><img class="logo" alt="logo" src="images/organizr-logo-h.png" style="width: 100%;">
+													<br><br>start chatting...</center>
 												</div>
-												<div class="btn-group" role="group">
-													<button id="chat-switch-online" type="button" class="btn waves  waves-effect waves-float grayish-blue-bg"><i id="online-count" class="fa fa-users"></i> Online Users</button>
-												</div>
+												<ul id="messages" class="chat-double chat-container"></ul>
+												<ul class="chat-double chat-container" style="padding: 0px;"><li id="istyping"></li></ul>
 											</div>
+											<br/>
+											<input id="message" autofocus onfocus="ensureVisible(this)" type="text" class="form-control gray-bg" placeholder="Enter your text" autocomplete="off"/>
+											<audio id="tabalert" preload="auto">
+												<source src="chat/audio/newmessage.mp3" type="audio/mpeg">
+											</audio>
+										</div>
+									</div>
 
-											<div id="chat-chat-div" class="">
-												<div class="big-box chat gray-bg">
-													<div class="box" style="overflow: hidden; width: auto; height: calc(100vh - <?php echo $chatSize; ?>) !important;">
-														<div id="intro">
-															<center><img class="logo" alt="logo" src="images/organizr-logo-h.png" style="width: 100%;">
-															<br><br>start chatting...</center>
-														</div>
-														<ul id="messages" class="chat-double chat-container"></ul>
-														<ul class="chat-double chat-container" style="padding: 0px;"><li id="istyping"></li></ul>
+									<div id="chat-users-div" class="col-lg-12 gray-bg" style="display: none;">
+										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px) !important;">
+											<br>
+											<div class="content-box">
+												<div class="content-title big-box i-block gray-bg">
+													<h4 class="zero-m">Online</h4>
+												</div>
+												<div class="clearfix"></div>
+												<div id="onlineusers" class="big-box" style="color:black;"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>		
+							<?php } ?>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php } ?>
+		<?php if($configReady == "Yes"){ ?>
+		<!-- New User Menu BOX -->
+		<div id="main-user" class="email-content user-box white-bg" style="z-index:1000000">
+			<div class="email-body">
+				<div class="email-inner small-box" style="padding: 0">
+					<div class="email-inner-section" style="margin-top: 0;">
+						<div class="small-box fade in" style="padding: 0">											
+							<div class="main-wrapper" style="position: initial; left:0;">
+								<div id="content">
+									<div class="btn-group btn-group-justified grayish-blue-bg">
+										<div class="btn-group" role="group">
+											<button id="reload" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Refresh Tab" class="user-switch btn waves waves-effect waves-float grayish-blue-bg" style="border-radius:0"><i class="fa fa-refresh"></i></button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="splitView" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Close Tab" class="user-switch btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-window-close"></i></button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="popout" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Open Tab In New Window" class="user-switch btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-external-link"></i></button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="fullscreen" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Fullscreen" class="fullscreen user-switch btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-arrows-alt"></i></button>
+										</div>
+										<?php if($USER->authenticated){?>
+										<div class="btn-group" role="group">
+											<button id="editInfo" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="User Information" class="user-switch btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-user-circle"></i></button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="logout" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Signout" class="logout user-switch btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-sign-out"></i></button>
+										</div>
+										<?php } ?>
+										<div class="btn-group" role="group">
+											<button id="user-switch-close" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Close" class="user-switch btn waves waves-effect waves-float grayish-blue-bg" style="border-radius:0"><i class="fa fa-close"></i></button>
+										</div>
+									</div>
+									<!--EDIT USER -->
+									<div id="user-menu-div" class="col-lg-12 gray-bg" style="display: block;">
+										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px) !important;">
+											<br>
+											<div class="content-box">
+
+												<div class="profile-usertitle">
+													<?php if(GRAVATAR == "true") : ?>
+													<img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=100&d=mm" class="img-responsive img-circle center-block" alt="user">
+													<?php endif; ?>
+													<div class="profile-usertitle-name">
+														<?php echo strtoupper($USER->username); ?>
 													</div>
-													<br/>
-													<input id="message" autofocus onfocus="ensureVisible(this)" type="text" class="form-control gray-bg" placeholder="Enter your text" autocomplete="off"/>
-													<audio id="tabalert" preload="auto">
-														<source src="chat/audio/newmessage.mp3" type="audio/mpeg">
-													</audio>
+													<div class="profile-usertitle-job">
+														<?php echo strtoupper($USER->role); ?>
+													</div>
+												</div>
+												<div class="clearfix"></div>
+											</div>
+											<?php if($USER->authenticated){?>
+											<div id="editInfoDiv" class="content-box" style="display: none">
+
+												<div class="profile-usertitle">
+													<form class="content-form form-horizontal small-box" name="update" id="update" action="" method="POST">
+
+														<input type="hidden" name="op" value="update"/>
+														<input type="hidden" name="sha1" value=""/>
+														<input type="hidden" name="password" value="">
+														<input type="hidden" name="username" value="<?php echo $USER->username; ?>"/>
+														<input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
+
+														<div class="form-group">
+															<label for="user-email" class="col-sm-4 control-label gray"><?php echo $language->translate("EMAIL_ADDRESS");?></label>
+															<div class="col-sm-8">
+																<input type="email" autocomplete="off" value="<?php echo $USER->email; ?>" class="form-control material gray" name="email" id="user-email" placeholder="<?php echo $language->translate("EMAIL_ADDRESS");?>">
+															</div>
+														</div>
+
+														<div class="form-group">
+															<label for="password1" class="col-sm-4 control-label gray"><?php echo $language->translate("PASSWORD");?></label>
+															<div class="col-sm-8">
+																<input type="password" autocomplete="off" class="form-control material gray" name="password1" id="user-email" placeholder="<?php echo $language->translate("PASSWORD");?>">
+															</div>
+														</div>
+
+														<div class="form-group">
+															<label for="password2" class="col-sm-4 control-label gray"><?php echo $language->translate("PASSWORD_AGAIN");?></label>
+															<div class="col-sm-8">
+																<input type="password" autocomplete="off" class="form-control material gray" name="password2" id="user-email" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
+															</div>
+														</div>
+
+														<br><br>
+
+														<div class="form-group">
+
+															<input type="button" class="btn btn-success text-uppercase waves-effect waves-float" value="<?php echo $language->translate("UPDATE");?>" onclick="User.processUpdate()"/>
+															<button id="goBackButtons" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("GO_BACK");?></button>
+
+														</div>
+
+													</form>
 
 												</div>
 											</div>
-											<div id="chat-users-div" class="col-lg-12 gray-bg" style="display: none;">
-												<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px) !important;">
-													<br>
-													<div class="content-box">
-														<div class="content-title big-box i-block gray-bg">
-															<h4 class="zero-m">Online</h4>
-														</div>
-														<div class="clearfix"></div>
-														<div id="onlineusers" class="big-box" style="color:black;"></div>
-													</div>
-												</div>
-											</div>
+											<?php } ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+												
 											
-							
-        						<?php } ?>
-								
-							
+										</div>
+									</div>
+									<!-- END EDIT USER -->
+									<!--EDIT USER -->
+									<div id="user-users-div" class="col-lg-12 gray-bg" style="display: none;">
+										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px) !important;">
+											<br>
+											<div class="content-box">
+												<div class="content-title big-box i-block gray-bg">
+													<h4 class="zero-m">Online</h4>
+												</div>
+												<div class="clearfix"></div>
+											</div>
+										</div>
+									</div>
+									<!-- END EDIT USER -->
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -1453,6 +1576,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		//Logout
 		$(".logout").click(function(e){
+			$('#main-user').removeClass('email-active');
 			var el1 = document.querySelector(".logout"),
 			el2 = document.querySelector(".logout-modal");
 			cta(el1, el2, {relativeToWindow: true}, function () {
@@ -1463,11 +1587,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		//Members Sidebar
 		$(".show-members").click(function(e){
-			var e_s1 = document.querySelector(".show-members"),
-			e_s2 = document.querySelector("#members-sidebar");
-			cta(e_s1, e_s2, {relativeToWindow: true}, function () {
-		$		('#members-sidebar').addClass('members-sidebar-open');
-			});
+			$('#main-user').toggleClass('email-active');
 			e.preventDefault();
 		});
 
@@ -1666,6 +1786,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		$('#reload').on('click tap', function(){
 
 			$("i[class^='mdi mdi-refresh']").attr("class", "mdi mdi-refresh fa-spin");
+			$("#main-user").removeClass("email-active");
 
 			var activeFrame = $('#content').find('.active').children('iframe');
 
@@ -1688,15 +1809,17 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			},500);
 		});
 		$('#popout').on('click tap', function(){
+			$("#main-user").removeClass("email-active");
 			var activeFrame = $('#content').find('.active').children('iframe');
 			console.log(activeFrame.attr('src'));
-			window.open(activeFrame.attr('src'), '_blank');
+			window.open(activeFrame.attr('src'), '_blank');"reload"
 		});  
 		$('#chat-open').on('click tap', function(){
 			$('.chat-box').toggleClass('email-active');
 			$(".mdi-forum").removeClass("tada loop-animation new-message");//SET MESSAGE TO ZERO
-			$("#message").focus();
-
+			if($('.chat-box').hasClass('email-active')){
+				$("#message").focus();
+			}
 		});
 
 		$('#chat-switch-chat').on('click tap', function(){
@@ -1708,10 +1831,17 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			$('#chat-users-div').show();
 			$('#chat-chat-div').hide();
 		});
+		$('#chat-switch-close').on('click tap', function(){
+			$('.chat-box').toggleClass('email-active');
+		});
+		$('#user-switch-close').on('click tap', function(){
+			$('#main-user').toggleClass('email-active');
+		});
 
 		$('#reload').on('contextmenu', function(e){
 
 			$("i[class^='mdi mdi-refresh']").attr("class", "mdi mdi-refresh fa-spin");
+			$('#main-user').removeClass('email-active');
 
 			var activeFrame = $('#contentRight').find('.active').children('iframe');
 
@@ -1736,6 +1866,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		});
 		$('#splitView').on('contextmenu', function(e){
+			$('#main-user').removeClass('email-active');
 			e.stopPropagation();
 			//$('#splitView').hide();
 			$("#content").attr("class", "content");
@@ -1744,6 +1875,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			return false;
 		});
 		$('#splitView').on('click tap', function(){
+			$('#main-user').removeClass('email-active');
 			var activeFrame = $('#content').find('.active');
 			var getCurrentTab = $("li[class^='tab-item active']");
 			getCurrentTab.removeClass('active');
@@ -1909,7 +2041,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		Mousetrap.bind('p p', function() { $("a[class^='fix-nav']").trigger("click");  });
 		Mousetrap.bind('m m', function() { $("div[class^='hamburger']").trigger("click");  });
 		Mousetrap.bind('r r', function() { $("a[id^='reload']").trigger("click");  });
-		Mousetrap.bind('f f', function() { $("a[class^='fullscreen']").trigger("click");  });
+		Mousetrap.bind('f f', function() { $("button[class^='fullscreen']").trigger("click");  });
 		<?php if($tabSetup == "No") : foreach(range(1,$tabCount) as $index) : if ($index == 10) : break; endif;?>
 		Mousetrap.bind('ctrl+shift+<?php echo $index; ?>', function() { $("ul[id^='tabList'] li:nth-child(<?php echo $index; ?>)").trigger("click"); });    
 		<?php endforeach; endif; ?>

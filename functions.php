@@ -190,6 +190,7 @@ if (function_exists('curl_version')) :
 		$userHeaders = array(
 			'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD), 
 		);
+		libxml_use_internal_errors(true);
 		$userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
 		
 		if (is_array($userXML) || is_object($userXML)) {
@@ -952,7 +953,8 @@ function getPlexStreams($size, $showNames, $role){
     $address = qualifyURL(PLEXURL);
     
 	// Perform API requests
-    $api = @curl_get($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
+	$api = @curl_get($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
+	libxml_use_internal_errors(true);
     $api = simplexml_load_string($api);
 	if (is_array($api) || is_object($api)){
 		if (!$api->head->title){
@@ -1040,7 +1042,8 @@ function getPlexRecent($array){
 	$header = translate('RECENT_CONTENT');
 	
 	// Perform Requests
-    $api = @curl_get($address."/library/recentlyAdded?limit=".PLEXRECENTITEMS."&X-Plex-Token=".PLEXTOKEN);
+	$api = @curl_get($address."/library/recentlyAdded?limit=".PLEXRECENTITEMS."&X-Plex-Token=".PLEXTOKEN);
+	libxml_use_internal_errors(true);
     $api = simplexml_load_string($api);
 	if (is_array($api) || is_object($api)){
 		if (!$api->head->title){
@@ -3342,7 +3345,8 @@ function searchPlex($query){
 	$openTab = (PLEXTABNAME) ? "true" : "false";
 
     // Perform API requests
-    $api = @curl_get($address."/search?query=".rawurlencode($query)."&X-Plex-Token=".PLEXTOKEN);
+	$api = @curl_get($address."/search?query=".rawurlencode($query)."&X-Plex-Token=".PLEXTOKEN);
+	libxml_use_internal_errors(true);
     $api = simplexml_load_string($api);
 	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
     if (!$getServer) { return 'Could not load!'; }
@@ -3529,6 +3533,7 @@ function libraryList(){
 		"Accept" => "application/json", 
 		"X-Plex-Token" => PLEXTOKEN
 	);
+	libxml_use_internal_errors(true);
 	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
     if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
 	
@@ -3555,6 +3560,7 @@ function plexUserShare($username){
 		"Content-Type" => "application/json", 
 		"X-Plex-Token" => PLEXTOKEN
 	);
+	libxml_use_internal_errors(true);
 	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
     if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
 	
@@ -3595,6 +3601,7 @@ function plexUserDelete($username){
 		"Content-Type" => "application/json", 
 		"X-Plex-Token" => PLEXTOKEN
 	);
+	libxml_use_internal_errors(true);
 	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
     if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
 	$id = (is_numeric($username) ? $id : convertPlexName($username, "id"));
@@ -3837,7 +3844,8 @@ function getPlexPlaylists(){
     $address = qualifyURL(PLEXURL);
     
 	// Perform API requests
-    $api = @curl_get($address."/playlists?X-Plex-Token=".PLEXTOKEN);
+	$api = @curl_get($address."/playlists?X-Plex-Token=".PLEXTOKEN);
+	libxml_use_internal_errors(true);
     $api = simplexml_load_string($api);
 	if (is_array($api) || is_object($api)){
 		if (!$api->head->title){
