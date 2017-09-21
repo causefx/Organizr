@@ -810,77 +810,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			</div>
 			<!--End Content-->
 
-			<!--Welcome notification-->
-			<div id="welcome"></div>
-			<!-- OLD USER INFO 
-			<div id="members-sidebar" style="background: <?=$sidebar;?>;" class="members-sidebar fade in">
-				<h4 class="pull-left zero-m"><?php echo $language->translate("OPTIONS");?></h4>
-				<span class="close-members-sidebar"><i class="fa fa-remove fa-lg pull-right"></i></span>
-				<div class="clearfix"><br/></div>
-				<?php if($configReady == "Yes") : if($USER->authenticated) : ?>
-				<br>
-				<div class="content-box profile-sidebar box-shadow">
-					<?php if(GRAVATAR == "true") : ?>
-					<img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=100&d=mm" class="img-responsive img-circle center-block" alt="user">
-					<?php endif; ?>
-					<div class="profile-usertitle">
-						<div class="profile-usertitle-name">
-							<?php echo strtoupper($USER->username); ?>
-						</div>
-						<div class="profile-usertitle-job">
-							<?php echo strtoupper($USER->role); ?>
-						</div>
-					</div>
-					<div id="buttonsDiv" class="profile-userbuttons">
-						<button id="editInfo" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("EDIT_INFO");?></button>
-						<button type="button" class="logout btn btn-warning waves waves-effect waves-float"><?php echo $language->translate("LOGOUT");?></button>
-					</div>
-					<div id="editInfoDiv" style="display: none" class="profile-usertitle">
-						<form class="content-form form-inline" name="update" id="update" action="" method="POST">
-
-							<input type="hidden" name="op" value="update"/>
-							<input type="hidden" name="sha1" value=""/>
-							<input type="hidden" name="password" value="">
-							<input type="hidden" name="username" value="<?php echo $USER->username; ?>"/>
-							<input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
-
-							<div class="form-group">
-
-								<input autocomplete="off" type="text" value="<?php echo $USER->email; ?>" class="form-control" name="email" placeholder="<?php echo $language->translate("EMAIL_ADDRESS");?>">
-
-							</div>
-
-							<div class="form-group">
-
-								<input autocomplete="off" type="password" class="form-control" name="password1" placeholder="<?php echo $language->translate("PASSWORD");?>">
-
-							</div>
-
-							<div class="form-group">
-
-								<input autocomplete="off" type="password" class="form-control" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
-
-							</div>
-
-							<br>
-
-							<div class="form-group">
-
-								<input type="button" class="btn btn-success text-uppercase waves-effect waves-float" value="<?php echo $language->translate("UPDATE");?>" onclick="User.processUpdate()"/>
-								<button id="goBackButtons" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("GO_BACK");?></button>
-
-							</div>
-
-						</form>
-
-					</div>
-				</div>
-
-				<?php endif; endif;?>
-
-			</div>
-			END OLD USER INFO --> 
-
 		</div>
 		<?php if($configReady == "Yes") : if(!$USER->authenticated && $configReady == "Yes") : ?>
 		<div id="loginModal" class="login-modal modal fade">
@@ -1166,13 +1095,12 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		</div>
 		<?php } ?>
 		<!-- CHAT BOX -->
-		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
+		<?php if(CHAT == "true" && qualifyUser(CHATAUTH) && $dbcreated){?>
 		<div id="main-chat" class="email-content chat-box white-bg" style="z-index:1000000">
 			<div class="email-body">
 				<div class="email-inner small-box" style="padding: 0">
 					<div class="email-inner-section" style="margin-top: 0;">
 						<div class="small-box fade in" style="padding: 0">											
-							<?php if( $dbcreated ){ ?>
 							<div class="main-wrapper" style="position: initial; left:0;">
 								<div id="content">
 									<div class="btn-group btn-group-justified grayish-blue-bg">
@@ -1189,7 +1117,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 									<div id="chat-chat-div" class="">
 										<div class="big-box chat gray-bg">
-											<div class="box" style="overflow: hidden; width: auto; height: calc(100vh - <?php echo $chatSize; ?>) !important;">
+											<div class="box" style="overflow: hidden; width: auto; height: calc(100vh - <?php echo $chatSize; ?>)">
 												<div id="intro">
 													<center><img class="logo" alt="logo" src="images/organizr-logo-h.png" style="width: 100%;">
 													<br><br>start chatting...</center>
@@ -1219,7 +1147,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 									</div>
 								</div>
 							</div>		
-							<?php } ?>
 						</div>
 					</div>
 				</div>
@@ -1262,7 +1189,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 									</div>
 									<!--EDIT USER -->
 									<div id="user-menu-div" class="col-lg-12 gray-bg" style="display: block;">
-										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px) !important;">
+										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px)">
 											<br>
 											<div class="content-box">
 
@@ -1326,29 +1253,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 												</div>
 											</div>
 											<?php } ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-												
-											
 										</div>
 									</div>
 									<!-- END EDIT USER -->
@@ -1373,11 +1277,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			</div>
 		</div>
 		<?php } ?>
-		<script>
-			var d = new Date();
-			var timezone = d.getTimezoneOffset();
-			console.log(timezone)
-		</script>
 
 		<!--Scripts-->
 		<script src="<?=$baseURL;?>bower_components/jquery/dist/jquery.min.js"></script>
@@ -1578,6 +1477,9 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		//Members Sidebar
 		$(".show-members").click(function(e){
 			$('#main-user').toggleClass('email-active');
+			if($('#main-chat').hasClass('email-active')){
+				$('#main-chat').toggleClass('email-active');
+			}
 			e.preventDefault();
 		});
 
@@ -1809,6 +1711,9 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			$(".mdi-forum").removeClass("tada loop-animation new-message");//SET MESSAGE TO ZERO
 			if($('.chat-box').hasClass('email-active')){
 				$("#message").focus();
+			}
+			if($('#main-user').hasClass('email-active')){
+				$('#main-user').toggleClass('email-active');
 			}
 		});
 

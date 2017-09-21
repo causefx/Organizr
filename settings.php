@@ -189,16 +189,21 @@ if(SLIMBAR == "true") {
 			button.settingsMenu:hover {
 				width: 250px !important;
 				z-index: 10000;
-				color: black !important;
+				opacity: 1 !important;
 			}
 			button.settingsMenu:hover p{
 				display: block !important;
 				-webkit-animation: fadeIn 1s;
 				animation: fadeIn 1s;
+				opacity: 1 !important;
 			}
 			button.settingsMenuActive {
 				margin-left: 0px !important;
 				color: black !important;
+				opacity: 1 !important;
+			}
+			button.settingsMenuInactive {
+				opacity: .5;
 			}
             .loop-animation {
                 animation-iteration-count: infinite;
@@ -391,89 +396,89 @@ $buildMenu = array(
 		'id' => 'open-tabs',
 		'box' => 'tab-box',
 		'name' => 'Edit Tabs',
-		'icon_1' => 'circle',
+		'icon_1' => 'view-list',
 		'icon_2' => 'th-list',
 		'color' => 'red-orange',
 		'color2' => 'palette-Red-A700 bg',
-		'padding' => '8',
+		'padding' => '2',
 	),
 	array(
 		'id' => 'open-colors',
 		'box' => 'color-box',
 		'name' => 'Edit Colors',
-		'icon_1' => 'circle',
+		'icon_1' => 'format-paint',
 		'icon_2' => 'paint-brush',
 		'color' => 'red',
 		'color2' => 'palette-Indigo-A700 bg',
-		'padding' => '8',
+		'padding' => '2',
 	),
 	array(
 		'id' => 'open-users',
 		'box' => 'users-box',
 		'name' => 'Manage Users',
-		'icon_1' => 'circle',
+		'icon_1' => 'account-multiple',
 		'icon_2' => 'user',
 		'color' => 'green',
 		'color2' => 'palette-Blue-Grey-700 bg',
-		'padding' => '9',
+		'padding' => '2',
 	),
 	array(
 		'id' => 'open-logs',
 		'box' => 'logs-box',
 		'name' => 'View Logs',
-		'icon_1' => 'circle',
+		'icon_1' => 'file-document-box',
 		'icon_2' => 'list-alt',
 		'color' => 'blue',
-		'color2' => 'palette-Light-Blue-A700 bg',
-		'padding' => '8',
+		'color2' => 'palette-Teal-A700 bg',
+		'padding' => '2',
 	),
 	array(
 		'id' => 'open-homepage',
 		'box' => 'homepage-box',
 		'name' => 'Edit Homepage',
-		'icon_1' => 'circle',
+		'icon_1' => 'television-guide',
 		'icon_2' => 'home',
 		'color' => 'yellow',
-		'color2' => 'palette-Yellow-A700 bg',
-		'padding' => '9',
+		'color2' => 'palette-Deep-Orange-A400 bg',
+		'padding' => '2',
 	),
 	array(
 		'id' => 'open-invites',
 		'box' => 'invites-box',
 		'name' => 'Plex Invites',
-		'icon_1' => 'circle',
+		'icon_1' => 'account-multiple-plus',
 		'icon_2' => 'user-plus',
 		'color' => 'light-blue',
 		'color2' => 'palette-Amber-A700 bg',
-		'padding' => '7',
+		'padding' => '2',
 	),
 	array(
 		'id' => 'open-advanced',
 		'box' => 'advanced-box',
 		'name' => 'Advanced',
-		'icon_1' => 'circle',
+		'icon_1' => 'settings',
 		'icon_2' => 'cog',
 		'color' => 'gray',
-		'color2' => 'light-blue-bg',
-		'padding' => '8',
+		'color2' => 'palette-Grey-600 bg',
+		'padding' => '2',
 	),array(
 		'id' => 'open-info',
 		'box' => 'info-box',
 		'name' => 'About',
-		'icon_1' => 'circle',
+		'icon_1' => 'information',
 		'icon_2' => 'info-circle',
 		'color' => 'orange',
-		'color2' => 'palette-Blue-A700 bg',
-		'padding' => '8',
+		'color2' => 'palette-Light-Blue-A700 bg',
+		'padding' => '2',
 	),array(
 		'id' => 'open-donate',
 		'box' => 'donate-box',
 		'name' => 'Donate',
-		'icon_1' => 'square',
+		'icon_1' => 'cash-usd',
 		'icon_2' => 'money',
 		'color' => 'red',
 		'color2' => 'palette-Green-A700 bg',
-		'padding' => '7',
+		'padding' => '2',
 	),
 );
 if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ echo buildMenuPhone($buildMenu); }
@@ -2741,8 +2746,10 @@ echo buildSettings(
 		<script>
 			<?php echo speedTestDisplay(speedTestData(),"graph");?>
 			$(".settingsMenu").click(function() {
-                $(".settingsMenu").removeClass("settingsMenuActive");
-                $(this).addClass("settingsMenuActive");
+				$(".settingsMenu").removeClass("settingsMenuActive");
+				$(this).addClass("settingsMenuActive");
+				$(".settingsMenu").addClass("settingsMenuInactive");
+				$(this).removeClass("settingsMenuInactive");
 			})
 			$(".special").click(function() {
                 swal({
@@ -3327,8 +3334,9 @@ echo buildSettings(
             $(".email-header .close-button").click(function () {
 				$(".email-content").removeClass("email-active");
 				$(".settingsMenu").removeClass("settingsMenuActive");
+				$(".settingsMenu").removeClass("settingsMenuInactive");
                 $('html').removeClass("overhid");
-                $("#settings-list").find("li").removeClass("active");
+				$("#settings-list").find("li").removeClass("active");
             });
              $(document).mouseup(function (e)
 {
@@ -3345,9 +3353,11 @@ echo buildSettings(
                     var container = $(".email-content");
 
                     if (!container.is(e.target) && container.has(e.target).length === 0) {
-                        $(".email-content").removeClass("email-active");
-                        $('html').removeClass("overhid");
-                        $("#settings-list").find("li").removeClass("active");
+						$(".email-content").removeClass("email-active");
+						$(".settingsMenu").removeClass("settingsMenuActive");
+						$(".settingsMenu").removeClass("settingsMenuInactive");
+						$('html').removeClass("overhid");
+						$("#settings-list").find("li").removeClass("active");
                     }
                 }
             });
