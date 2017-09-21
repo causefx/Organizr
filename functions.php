@@ -4504,7 +4504,7 @@ function buildMenu($array){
 			}
 			$result .= '
 			<button id="'.$v['id'].'" box="'.$v['box'].'" type="button" style="border-radius: 0px !important; -webkit-border-radius: 0px !important;margin-bottom: 3px;margin-left:5px;color:white;" class="btn '.$v['color2'].' btn-icon waves waves-circle waves-effect waves-float settingsMenu">
-				<i class="fa fa-'.$v['icon_2'].' fa-fw pull-left" style="padding-left: '.$v['padding'].'px;font-size: 25px"></i>
+				<i class="mdi mdi-'.$v['icon_1'].' fa-fw pull-left" style="padding-left: '.$v['padding'].'px;font-size: 30px"></i>
 				<p class="" style="text-align: center;direction: rtl;display:none;margin: 2px;"><strong>'.$v['name'].'</strong></p>
 			</button>
 			';
