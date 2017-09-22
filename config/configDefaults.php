@@ -93,4 +93,5 @@ return array(
 	"splash" => "false",
 	"chat" => "false",
 	"chatAuth" => "false",
+	"installedTheme" => "",
 );

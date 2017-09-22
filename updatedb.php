@@ -1,9 +1,5 @@
 <?php 
-
-date_default_timezone_set('America/Los_Angeles');
-
 $data = false;
-
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
 
@@ -67,7 +63,7 @@ function checkDatabase($type, $table, $check) {
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="msapplication-tap-highlight" content="no" />
 
-        <title>Database Upgrade</title>
+        <title>Organizr Upgrade</title>
 
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
@@ -97,10 +93,10 @@ function checkDatabase($type, $table, $check) {
                 
                 <?php
                 
-                checkDatabase('SELECT', 'options', 'options');
-                checkDatabase('SELECT', 'tabs', 'tabs');
-                checkDatabase('PRAGMA', 'options', 'loading');
-                checkDatabase('PRAGMA', 'options', 'hovertext');
+                //checkDatabase('SELECT', 'options', 'options');
+                //checkDatabase('SELECT', 'tabs', 'tabs');
+                //checkDatabase('PRAGMA', 'options', 'loading');
+                //checkDatabase('PRAGMA', 'options', 'hovertext');
 
                 ?>
 

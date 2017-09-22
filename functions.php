@@ -1724,6 +1724,7 @@ function buildSettings($array) {
 	}
 	
 	$pageID = (isset($array['id'])?$array['id']:str_replace(array(' ','"',"'"),array('_'),strtolower($array['id'])));
+	$extraClick = ($pageID == 'appearance_settings' ? "$('#advanced_settings_form_submit').click();console.log('add theme settings');" : "");
 	
 	return '
 	<div class="email-body">
@@ -1794,6 +1795,7 @@ function buildSettings($array) {
 					ajax_request(\'POST\', \''.(isset($array['submitAction'])?$array['submitAction']:'update-config').'\', newVals, function(data, code) {
 						$(\'#'.$pageID.'_form\').find(\'[data-changed=true][name]\').removeAttr(\'data-changed\');
 					});
+					'.$extraClick.'
 				} else {
 					parent.notify(\'Nothing to update!\', \'bullhorn\', \'error\', 5000, \''.$notifyExplode[0].'\', \''.$notifyExplode[1].'\');
 				}

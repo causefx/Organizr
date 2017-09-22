@@ -1659,6 +1659,17 @@ echo buildSettings(
 				'fields' => array(
 					array(
 						'type' => 'text',
+						'format' => 'text',
+						'labelTranslate' => 'INSTALLED_THEME',
+						'name' => 'installedTheme',
+						'id' => 'installedTheme',
+						'class' => 'text-center',
+						'placeholder' => (empty(INSTALLEDTHEME)?'No Theme Installed':INSTALLEDTHEME),
+						'value' => INSTALLEDTHEME,
+						'disabled' => true,
+					),
+					array(
+						'type' => 'text',
 						'placeholder' => 'images/organizr.png',
 						'labelTranslate' => 'LOADING_ICON_URL',
 						'name' => 'loadingIcon',
@@ -3447,6 +3458,7 @@ echo buildSettings(
                         cssTab = $("a[href^='#tab-theme_css']");
                         cssTab.trigger("click");
                         $('#customCSS_id').text(github);
+                        $('#installedTheme').val(type);
                         swal({
                             title: "Loaded Layer#Cake "+type,
                             text: '<h2>Awesome Sauce!</h2><p>Now that you have enabled Layer#Cake, edit the colors here and then hit Save at the top right.<blockquote class="blockquote-reverse"><p>Layer#Cake is powered and brought to you by:</p><footer>Hackerman - <cite title="Source Title">Leram</cite></footer></blockquote>',
@@ -3471,21 +3483,22 @@ echo buildSettings(
                                 i++;
                                 countThemes = i;
                                 file = v.name.split("-");
-                                preview = v.name.split(".");
-                                author = file[2].split(".");
-                                fileName = file[1];
+								preview = v.name.split(".");
+								preview = preview[0].substring(0, preview[0].length -2);
+								version = file[3].split(".");
+								version = version[0]+'.'+version[1];
+								fileName = file[1];
                                 fileOrder = file[0];
-                                fileAuthor = author[0];
-                                $(themeList).append('<li><a preview="'+preview[0]+'.png" name="'+fileName+'" file="'+v.name+'" path="'+v.path+'" order="'+fileOrder+'" author="'+fileAuthor+'" id="LC-'+fileName+'">'+fileName+'</a></li>');
+                                fileAuthor = file[2];
+                                $(themeList).append('<li><a preview="'+preview+'.png" name="'+fileName+'" version="'+version+'" file="'+v.name+'" path="'+v.path+'" order="'+fileOrder+'" author="'+fileAuthor+'" id="LC-'+fileName+'">'+fileName+' v'+version+'</a></li>');
                             }
                         });
                         console.log(countThemes);
-
                     }
                 });
             }
 
-            function layerCakeTheme(path, name, author) {
+            function layerCakeTheme(path, name, author, theme) {
                 var settingsBox = $('.themes-box');
                 $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(settingsBox).show();
                 $.ajax({
@@ -3496,7 +3509,9 @@ echo buildSettings(
                         $("#open-colors").trigger("click");
                         $("a[href^='#tab-theme_css']").trigger("click");
                         $('#customCSS_id').text(github);
-                        $("#customCSS_id").attr('data-changed', 'true');
+						$("#customCSS_id").attr('data-changed', 'true');
+						$('#installedTheme').val(theme);
+						$("#installedTheme").attr('data-changed', 'true');
                         swal({
                             title: "Loaded Theme: "+name,
                             text: '<h2>Awesome Sauce!</h2><p>Theme has been imported. <p><strong style="color: red;">Please click Save at the top right.</strong></p><blockquote class="blockquote-reverse"><p>Layer#Cake Theme by:</p><footer><cite title="Source Title">'+author+'</cite></footer></blockquote>',
@@ -3512,7 +3527,8 @@ echo buildSettings(
                 file = $(this).attr("file");
                 name = $(this).attr("name");
                 author = $(this).attr("author");
-                button = '<div class="thumbnail"><div class="caption"><p class="pull-left">'+name+' by: '+author+'</p><p class="pull-right"><button type="button" onclick="layerCakeTheme(\''+file+'\',\''+name+'\',\''+author+'\')" class="btn btn-success waves waves-effect waves-float">Install</button></p></div><img src="https://raw.githubusercontent.com/leram84/layer.Cake/master/Themes/Preview/'+$(this).attr("preview")+'" alt="thumbnail"></div>';
+                theme = $(this).attr("name")+'-'+$(this).attr("version");
+                button = '<div class="thumbnail"><div class="caption"><p class="pull-left">'+name+' by: '+author+'</p><p class="pull-right"><button type="button" onclick="layerCakeTheme(\''+file+'\',\''+name+'\',\''+author+'\',\''+theme+'\')" class="btn btn-success waves waves-effect waves-float">Install</button></p></div><img src="https://raw.githubusercontent.com/leram84/layer.Cake/master/Themes/Preview/'+$(this).attr("preview")+'" alt="thumbnail"></div>';
                 console.log(button);
                 $('#chooseLayer').hide();
                 themeInfo = $('#layerCakeInfo');
