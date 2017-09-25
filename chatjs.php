@@ -4,6 +4,23 @@ $USER = new User("registration_callback");
 $userpic = md5( strtolower( trim( $USER->email ) ) );
 header("Content-type: application/javascript");
 ?>
+function dblDigit(d) {
+    if (d < 10) { d = "0" + d;}
+    return d;
+}
+function formatAMPM(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var month = dblDigit(date.getMonth() + 1);
+  var day = dblDigit(date.getDate());
+  var ampm = hours >= 12 ? 'P' : 'A';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  hours = dblDigit(hours);
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = month + '-' + day + ' ' + hours + ':' + minutes + '' + ampm;
+  return strTime;
+}
 var isMobile = false; //initiate as false
 var d = new Date();
 var timezone = d.getTimezoneOffset();
@@ -602,6 +619,15 @@ $(document).ready(function()
                                         toscroll.scrollTop = toscroll.scrollHeight;
                                         $(".box").animate({ scrollTop: $('.box').prop("scrollHeight")}, 0);
                                         newcontent = content.html();
+                                        $(function(){
+                                            $('.chat-timestamp').each(function(){
+                                                var $this = $(this).attr('time');
+                                                var dateVal = new Date($this+' UTC');
+                                                var dateString = dateVal.toLocaleString();
+                                                $(this).text(formatAMPM(dateVal)); 
+                                                //console.log(formatAMPM(dateVal));
+                                            });
+                                        });
                                     }
                                     
                                     // new message tab alert

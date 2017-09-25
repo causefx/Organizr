@@ -7,7 +7,6 @@ ini_set("error_reporting", E_ALL | E_STRICT);
 
 require_once("user.php");
 require_once("functions.php");
-
 $USER = new User("registration_callback");
 
 // Check if connection to homepage is allowed
@@ -527,7 +526,7 @@ foreach(loadAppearance() as $key => $value) {
                     if( data.trakt ) {               
                         $.ajax({
                             type: 'GET',
-                            url: 'https://api.themoviedb.org/3/'+Type+'/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits',
+                            url: 'https://api.themoviedb.org/3/'+Type+'/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits&language=<?php echo $userLanguage; ?>',
                             cache: true,
                             async: true,
                             complete: function(xhr, status) {
@@ -993,7 +992,7 @@ foreach(loadAppearance() as $key => $value) {
                         if( data.trakt ) {                        
                             $.ajax({
                                 type: 'GET',
-                                url: 'https://api.themoviedb.org/3/tv/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits',
+                                url: 'https://api.themoviedb.org/3/tv/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits&language=<?php echo $userLanguage; ?>',
                                 cache: true,
                                 async: true,
                                 complete: function(xhr, status) {
@@ -1034,7 +1033,7 @@ foreach(loadAppearance() as $key => $value) {
                     var type = "MOVIE";
                     $.ajax({
                         type: 'GET',
-                        url: 'https://api.themoviedb.org/3/movie/'+ID+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits',
+                        url: 'https://api.themoviedb.org/3/movie/'+ID+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits&language=<?php echo $userLanguage; ?>',
                         cache: true,
                         async: true,
                         complete: function(xhr, status) {

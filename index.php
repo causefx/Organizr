@@ -1134,7 +1134,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 									</div>
 
 									<div id="chat-users-div" class="col-lg-12 gray-bg" style="display: none;">
-										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px) !important;">
+										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px);">
 											<br>
 											<div class="content-box">
 												<div class="content-title big-box i-block gray-bg">
@@ -1258,7 +1258,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 									<!-- END EDIT USER -->
 									<!--EDIT USER -->
 									<div id="user-users-div" class="col-lg-12 gray-bg" style="display: none;">
-										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px) !important;">
+										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px);">
 											<br>
 											<div class="content-box">
 												<div class="content-title big-box i-block gray-bg">
@@ -1504,7 +1504,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 					// Interval Loads
 					setInterval(function() {
 						pingTab<?php echo $pingCount;?>();
-						console.log("ping check for tab[<?php echo $pingCount;?>] complete");
+						//console.log("ping check for tab[<?php echo $pingCount;?>] complete");
 					}, <?php echo $pingTimer; ?>);
 
 				<?php $pingCount++; }
