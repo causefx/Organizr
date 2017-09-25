@@ -42,6 +42,10 @@ if(SLIMBAR == "true") {
 	$slimBar = "56"; 
 	$userSize = "40"; 
 }
+//Theme Info
+$themeName = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[0] : null);
+$themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null);
+
 ?>
 
 <!DOCTYPE html>
@@ -764,6 +768,11 @@ echo buildSettings(
 					array(
 						'type' => 'header',
 						'label' => 'Custom CSS',
+                    ),
+                    array(
+                        'type' => 'header',
+                        'class' => 'themeHeader',
+						'label' => (empty(INSTALLEDTHEME)?'Installed Theme: No Theme Installed':'Installed Theme: '.INSTALLEDTHEME),
 					),
 					array(
 						'type' => 'textarea',
@@ -3458,7 +3467,8 @@ echo buildSettings(
                         cssTab = $("a[href^='#tab-theme_css']");
                         cssTab.trigger("click");
                         $('#customCSS_id').text(github);
-                        $('#installedTheme').val(type);
+                        $('#installedTheme').val('');
+                        $("#installedTheme").attr('data-changed', 'true');
                         swal({
                             title: "Loaded Layer#Cake "+type,
                             text: '<h2>Awesome Sauce!</h2><p>Now that you have enabled Layer#Cake, edit the colors here and then hit Save at the top right.<blockquote class="blockquote-reverse"><p>Layer#Cake is powered and brought to you by:</p><footer>Hackerman - <cite title="Source Title">Leram</cite></footer></blockquote>',
@@ -3484,13 +3494,25 @@ echo buildSettings(
                                 countThemes = i;
                                 file = v.name.split("-");
 								preview = v.name.split(".");
-								preview = preview[0].substring(0, preview[0].length -2);
+								preview = preview[0].substring(4, preview[0].length -2).split("-");
 								version = file[3].split(".");
 								version = version[0]+'.'+version[1];
 								fileName = file[1];
                                 fileOrder = file[0];
                                 fileAuthor = file[2];
-                                $(themeList).append('<li><a preview="'+preview+'.png" name="'+fileName+'" version="'+version+'" file="'+v.name+'" path="'+v.path+'" order="'+fileOrder+'" author="'+fileAuthor+'" id="LC-'+fileName+'">'+fileName+' v'+version+'</a></li>');
+                                if(fileName == '<?php echo $themeName; ?>'){
+                                    if(version !== '<?php echo $themeVersion; ?>'){
+                                        //update available
+                                        info = '<p class="pull-right"><span class="label label-primary">Update Available</span></p>';
+
+                                    }else{
+                                        //no update available
+                                        info = '<p class="pull-right"><span class="label label-success">Installed</span></p>';
+                                    }
+                                }else{
+                                    info = '';
+                                }
+                                $(themeList).append('<li><a preview="'+preview[0]+'.png" name="'+fileName+'" check="'+fileName+'-'+version+'" version="'+version+'" file="'+v.name+'" path="'+v.path+'" order="'+fileOrder+'" author="'+fileAuthor+'" id="LC-'+fileName+'">'+fileName+' v'+version+' '+info+'</a></li>');
                             }
                         });
                         console.log(countThemes);
@@ -3511,6 +3533,7 @@ echo buildSettings(
                         $('#customCSS_id').text(github);
 						$("#customCSS_id").attr('data-changed', 'true');
 						$('#installedTheme').val(theme);
+						$('.themeHeader').text('Installed Theme: '+theme);
 						$("#installedTheme").attr('data-changed', 'true');
                         swal({
                             title: "Loaded Theme: "+name,
