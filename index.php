@@ -1935,7 +1935,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		Mousetrap.bind('s s', function() { $("li[id^='settings.phpx']").trigger("click");  });
 		Mousetrap.bind('p p', function() { $("a[class^='fix-nav']").trigger("click");  });
 		Mousetrap.bind('m m', function() { $("div[class^='hamburger']").trigger("click");  });
-		Mousetrap.bind('r r', function() { $("a[id^='reload']").trigger("click");  });
+		Mousetrap.bind('r r', function() { $("button[id^='reload']").trigger("click");  });
 		Mousetrap.bind('f f', function() { $("button[class^='fullscreen']").trigger("click");  });
 		<?php if($tabSetup == "No") : foreach(range(1,$tabCount) as $index) : if ($index == 10) : break; endif;?>
 		Mousetrap.bind('ctrl+shift+<?php echo $index; ?>', function() { $("ul[id^='tabList'] li:nth-child(<?php echo $index; ?>)").trigger("click"); });    

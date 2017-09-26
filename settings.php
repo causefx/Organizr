@@ -771,8 +771,8 @@ echo buildSettings(
                     ),
                     array(
                         'type' => 'header',
-                        'class' => 'themeHeader',
-						'label' => (empty(INSTALLEDTHEME)?'Installed Theme: No Theme Installed':'Installed Theme: '.INSTALLEDTHEME),
+                        'class' => '',
+						'label' => (empty(INSTALLEDTHEME)?'<span class="themeHeader">Installed Theme: No Theme Installed</span>':'<span class="themeHeader">Installed Theme: '.INSTALLEDTHEME.'</span><button id="clearTheme" type="button" class="btn waves pull-right btn-labeled btn-sm btn-danger text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-trash"></i></span> Clear Theme</button>'),
 					),
 					array(
 						'type' => 'textarea',
@@ -3556,6 +3556,38 @@ echo buildSettings(
                 $('#chooseLayer').hide();
                 themeInfo = $('#layerCakeInfo');
                 $('#layerCakePreview').html( ''+button+'' );
+            });
+
+            $("#clearTheme").click(function () {
+                swal({
+                    title: "Please Choose",
+                    text: "You can clear just the theme name saved or clear theme nsame and CSS",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Clear Everything!",
+                    cancelButtonText: "Clear Name Only!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false,
+                    confirmButtonColor: "#63A8EB"
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        swal("Cleared!", "All Theme settings have been cleared", "success");
+                        $('#customCSS_id').text("");
+						$("#customCSS_id").attr('data-changed', 'true');
+						$('#installedTheme').val("");
+						$('.themeHeader').text('Installed Theme: No Theme Installed!');
+						$("#installedTheme").attr('data-changed', 'true');
+                        $('#appearance_settings_form_submit').addClass("animated tada");
+                    } else {
+                        swal("Cleared", "Cleared the Theme name saved, CSS still remains", "success");
+						$('#installedTheme').val("");
+						$('.themeHeader').text('Installed Theme: No Theme Installed!');
+						$("#installedTheme").attr('data-changed', 'true');
+                        $('#appearance_settings_form_submit').addClass("animated tada");
+                    }
+                });
             });
         </script>
         <script>
