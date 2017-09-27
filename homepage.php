@@ -55,7 +55,6 @@ foreach(loadAppearance() as $key => $value) {
         <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
         <script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
         <script src="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
-        <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
         <script src="bower_components/cta/dist/cta.min.js"></script>
         <script src="bower_components/fullcalendar/dist/fullcalendar.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <script src="bower_components/slick/slick.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
@@ -189,7 +188,7 @@ foreach(loadAppearance() as $key => $value) {
         </style>
     </head>
 
-    <body class="scroller-body" style="padding: 0px;">
+    <body id="body-homepage" class="scroller-body" style="padding: 0px;">
         <div class="main-wrapper" style="position: initial;">
             <div id="content" class="container-fluid">
                 <br/>
@@ -757,25 +756,23 @@ foreach(loadAppearance() as $key => $value) {
                     .slick('slickFilter' , '.'+filter );
             });
 
-            /*$("body").niceScroll({
-                railpadding: {top:0,right:0,left:0,bottom:0},
-                scrollspeed: 30,
-                mousescrollstep: 60
-            });*/
             $("body").niceScroll({
                 //cursorwidth: "12px"
                 scrollspeed: 30,
-                mousescrollstep: 60
+                mousescrollstep: 60,
+                grabcursorenabled: false
             });
             $(".table-responsive").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0},
                 scrollspeed: 30,
-                mousescrollstep: 60
+                mousescrollstep: 60,
+                grabcursorenabled: false
             });
             $(".playlist-listing").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0},
                 scrollspeed: 30,
-                mousescrollstep: 60
+                mousescrollstep: 60,
+                grabcursorenabled: false
             });
 
             <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>

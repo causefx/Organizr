@@ -62,7 +62,7 @@ $errorImage = ($codes[$status][2]) ? $codes[$status][2] : "confused";
         <link rel="stylesheet" href="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>css/style.css">
 		<style><?php customCSS(); ?></style>
     </head>
-    <body class="gray-bg" style="padding: 0;">
+    <body id="body-error" class="gray-bg" style="padding: 0;">
         <div class="main-wrapper" style="position: initial;">
             <div style="margin:0 20px; overflow:hidden">
                 <div class="table-wrapper" style="background:<?=$sidebar;?>;">

@@ -27,6 +27,7 @@ $action = "";
 $loadingIcon = "images/organizr-load-w-thick.gif";
 $baseURL = "";
 $dbcreated = false;
+$splash = false;
 
 // Get Action
 if(isset($_POST['action'])) {
@@ -83,8 +84,8 @@ if (file_exists('config/config.php')) {
 	$db = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
 	$file_db = new PDO("sqlite:" . $db);
 	$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	$dbTab = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"');
-	$dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
+	$dbTab = q2a($file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"'));
+	$dbOptions = q2a($file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"'));
 
 	foreach($dbTab as $row) :
 
@@ -111,13 +112,13 @@ if (file_exists('config/config.php')) {
 
 	endforeach;
 
-	if($tabSetup == "No") :
+	if($tabSetup == "No") :		
 
 		if($USER->authenticated && $USER->role == "admin") :
 
-			$result = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
-			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" ORDER BY `order` asc');
-			$getsettings = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
+			$result = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc'));
+			$splash = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" ORDER BY `order` asc'));
+			$getsettings = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc'));
 
 			foreach($getsettings as $row) :
 
@@ -131,13 +132,13 @@ if (file_exists('config/config.php')) {
 
 		elseif($USER->authenticated && $USER->role == "user") :
 
-			$result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true" ORDER BY `order` asc');
-			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" AND user = "true" ORDER BY `order` asc');
+			$result = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true" ORDER BY `order` asc'));
+			$splash = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" AND user = "true" ORDER BY `order` asc'));
 
 		else :
 
-			$result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true" ORDER BY `order` asc');
-			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" AND guest = "true" ORDER BY `order` asc');
+			$result = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true" ORDER BY `order` asc'));
+			$splash = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" AND guest = "true" ORDER BY `order` asc'));
 
 		endif;
 
@@ -493,7 +494,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<?php customCSS(); ?>
 	</style>
 
-	<body style="overflow: hidden">
+	<body id="body-index" style="overflow: hidden">
 
 		<?php if (LOADINGSCREEN == "true") : ?>
 		<!--Preloader-->
@@ -1039,7 +1040,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			</div>
 		</div>
 		<?php } ?>
-		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true") {?>
+		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true" && $splash) {?>
 		<div id="splashScreen" class="splash-modal modal fade">
 			<div style="background:<?=$sidebar;?>;" class="table-wrapper big-box">
 				
