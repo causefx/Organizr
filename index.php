@@ -86,63 +86,50 @@ if (file_exists('config/config.php')) {
 	$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	$dbTab = q2a($file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"'));
 	$dbOptions = q2a($file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"'));
+	if (is_array($dbTab)) {
+		foreach($dbTab as $row) {
+			if (in_array("tabs", $row)) {
+				$tabSetup = "No";
+			}
+		}
+	}
 
-	foreach($dbTab as $row) :
-
-		if (in_array("tabs", $row)) :
-
-			$tabSetup = "No";
-
-		endif;
-
-	endforeach;
-
-	if($tabSetup == "Yes") :
-
+	if($tabSetup == "Yes"){
 		$settingsActive = "active";
-	endif;
+	}
+	if (is_array($dbOptions)) {
+		foreach($dbOptions as $row) {
+			if (in_array("options", $row)) {
+				$hasOptions = "Yes";
+			}
+		}
+	}
 
-	foreach($dbOptions as $row) :
-
-		if (in_array("options", $row)) :
-
-			$hasOptions = "Yes";
-
-		endif;
-
-	endforeach;
-
-	if($tabSetup == "No") :		
-
-		if($USER->authenticated && $USER->role == "admin") :
-
+	if($tabSetup == "No") {	
+		if($USER->authenticated && $USER->role == "admin") {
 			$result = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc'));
 			$splash = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" ORDER BY `order` asc'));
-			$getsettings = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc'));
+			if (is_array($result)) {
+				foreach($result as $row) {
+					if(!empty($row['iconurl']) && $settingsicon == "No") {
+						$settingsicon = "Yes";
+					}
+				}
+			}
 
-			foreach($getsettings as $row) :
-
-				if(!empty($row['iconurl']) && $settingsicon == "No") :
-
-					$settingsicon = "Yes";
-
-				endif;
-
-			endforeach;
-
-		elseif($USER->authenticated && $USER->role == "user") :
+		}elseif($USER->authenticated && $USER->role == "user") {
 
 			$result = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true" ORDER BY `order` asc'));
 			$splash = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" AND user = "true" ORDER BY `order` asc'));
 
-		else :
+		}else {
 
 			$result = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true" ORDER BY `order` asc'));
 			$splash = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" AND guest = "true" ORDER BY `order` asc'));
 
-		endif;
+		}
 
-	endif;
+	}
 
 	$userpic = md5( strtolower( trim( $USER->email ) ) );
 	$showPic = "<i class=\"mdi mdi-account-circle\"></i>";
@@ -532,32 +519,45 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 							<ul id="tabList" class="gn-menu metismenu">
 
 								<!--Start Tab List-->
-								<?php if($tabSetup == "No") : $tabCount = 1; $allPings = array(); foreach($result as $row) : 
-								$name = str_replace(array(':', '\\', '/', '*'), 'x', $row['ping_url']);
-								if($row['defaultz'] == "true") : $defaultz = "active"; else : $defaultz = ""; endif; ?>
-								<li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
-									<a class="tab-link">
-										<?php if($row['iconurl']) : ?>
-											<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
-												<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
-												<img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
-												<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
-													<ping id="ping-<?=$name;?>"></ping>
-												<?php }?>
-											</i>
-										<?php else : ?>
-											<i class="fa <?=$row['icon'];?> fa-lg">
-												<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
-												<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
-													<ping id="ping-<?=$name;?>"></ping>
-												<?php }?>
-											</i>
-										<?php endif; ?>
-										<?=$row['name'];?>
-									</a>
+								<?php
+								if($tabSetup == "No") {
+									$tabCount = 1; 
+									$allPings = array(); 
+									if (is_array($result)) {
+										foreach($result as $row) {
+											$name = str_replace(array(':', '\\', '/', '*'), 'x', $row['ping_url']);
+											if($row['defaultz'] == "true") { 
+												$defaultz = "active"; 
+											}else { 
+												$defaultz = ""; 
+											} ?>
+									<li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
+										<a class="tab-link">
+											<?php if($row['iconurl']) { ?>
+												<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
+													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
+													<img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
+													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
+														<ping id="ping-<?=$name;?>"></ping>
+													<?php }?>
+												</i>
+											<?php }else { ?>
+												<i class="fa <?=$row['icon'];?> fa-lg">
+													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
+													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
+														<ping id="ping-<?=$name;?>"></ping>
+													<?php }?>
+												</i>
+											<?php } ?>
+											<?=$row['name'];?>
+										</a>
 
-								</li>
-								<?php $tabCount++; endforeach; endif;?>
+									</li>
+									<?php 
+										$tabCount++; 
+										}; 
+									}
+								}?>
 								<?php if($configReady == "Yes") : if($USER->authenticated && $USER->role == "admin") :?>
 								<li class="tab-item <?=$settingsActive;?>" id="settings.phpx" data-title="Settings" name="settings">
 									<a class="tab-link">
@@ -1192,8 +1192,10 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 									<div id="user-menu-div" class="col-lg-12 gray-bg" style="display: block;">
 										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px)">
 											<br>
+											<div class="content-box top-clock" style="left: 0;right: 0;">
+												<span style="display: block" class="current-time gray text-center"></span>
+											</div>
 											<div class="content-box">
-
 												<div class="profile-usertitle">
 													<?php if(GRAVATAR == "true") : ?>
 													<img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=100&d=mm" class="img-responsive img-circle center-block" alt="user">
@@ -1326,6 +1328,18 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
    		</script>
 		<?php }?>
 		<script>
+		var datetime = null,
+        date = null;
+
+		var update = function () {
+			date = moment(new Date())
+			datetime.html(date.format('h:mm A'));
+		};
+		 //Current Time
+		 datetime = $('.current-time')
+		update();
+		setInterval(update, 60000);
+		console.log(datetime);
 		//Tooltips
 		$('[data-toggle="tooltip"]').tooltip();
 		$(".box").niceScroll({
