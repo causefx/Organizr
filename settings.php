@@ -99,7 +99,7 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
         <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
         <script src="bower_components/Waves/dist/waves.min.js"></script>
         <script src="bower_components/moment/min/moment.min.js"></script>
-        <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
+        <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
         <script src="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
         <script src="bower_components/cta/dist/cta.min.js"></script>
@@ -203,7 +203,6 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 			}
 			button.settingsMenuActive {
 				margin-left: 0px !important;
-				color: black !important;
 				opacity: 1 !important;
 			}
 			button.settingsMenuInactive {
@@ -328,7 +327,7 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
         </style>
     </head>
 
-    <body class="scroller-body" style="padding: 0; background: #273238; overflow: hidden">
+    <body id="body-settings" class="scroller-body" style="padding: 0; background: #273238; overflow: hidden">
         <div id="main-wrapper" class="main-wrapper">
 
             <!--Content-->
@@ -433,7 +432,7 @@ $buildMenu = array(
 		'icon_1' => 'email',
 		'icon_2' => 'mail',
 		'color' => 'yellow',
-		'color2' => 'palette-Deep-Orange-A400 bg',
+		'color2' => 'palette-Pink-A700 bg',
 		'padding' => '2',
 	),
 	array(
@@ -1931,15 +1930,18 @@ echo buildSettings(
                                    
 
                                         <div class="mail-header">
-                                            <p><button class="btn btn-success waves generateEmails">Choose Users</button></p>
-                                            <div class="form-group" id="emailSelect">
-                                                
+                                            <p>
+                                                <button class="btn btn-success waves generateEmails">Choose Users</button>
+                                                <button id="selectAllEmail" style="display: none;" class="btn btn-success waves">Select All</button>
+                                            </p>
+                                            <div style="display: none;"class="form-group" id="emailSelect">
+                                            <select multiple="true" size="10" id="email-users" class="form-control"></select>
                                             </div>
                                             <div class="form-group">
-                                                <input type="text" class="form-control" id="mailTo" placeholder="To">
+                                                <input type="text" class="form-control material" id="mailTo" placeholder="To">
                                             </div>
                                             <div class="form-group">
-                                                <input type="text" class="form-control" id="subject" placeholder="Subject">
+                                                <input type="text" class="form-control material" id="subject" placeholder="Subject">
                                             </div>
                                         </div>
 
@@ -2827,17 +2829,34 @@ echo buildSettings(
                 $('.generateEmails').text("Loading...");
                 ajax_request('POST', 'get-emails', {type : 'plex'}).done(function(data){
                     console.log('start');
-                    $('#emailSelect').html(data);
-                    $("#email-users").niceScroll({
-                        railpadding: {top:0,right:0,left:0,bottom:0}
-                    });
-                    $('#email-users').change(function(e) {
-                        var selected = $(e.target).val();
-                        $('#mailTo').val(selected);
-                    }); 
+                    $('#email-users').html(data);
+                    $('#emailSelect').show();
                     $('.generateEmails').hide();
+                    $('#selectAllEmail').show();
                 });
-            })
+            });
+            $(function() {
+                /*$("#email-users").niceScroll({
+                    cursorwidth: "12px",
+                    railpadding: {top:0,right:0,left:0,bottom:0},
+                    scrollspeed: 30,
+                    mousescrollstep: 60,
+                    grabcursorenabled: false,
+                    autohidemode: false
+                });*/
+                $('#email-users').slimScroll({
+                    width: '100%',
+                    railVisible: true,
+                    alwaysVisible: true,
+                    allowPageScroll: true
+                });
+            });
+
+            $("#email-users").on('change click', function (e) {
+                var selected = $("#email-users").val();
+                $('#mailTo').val(selected);
+                console.log(selected);
+            });
             $("#sendEmail").click(function() {
                 var to = $('#mailTo').val();
                 var subject = $('#subject').val();
@@ -2852,6 +2871,12 @@ echo buildSettings(
                 });
 
             })
+            $('#selectAllEmail').click(function() {
+                $('#email-users option').prop('selected', true);
+                var selected = $("#email-users").val();
+                $('#mailTo').val(selected);
+                console.log(selected);
+            });
             //IP INFO
             $(".ipInfo").click(function(){
                 $.getJSON("https://ipinfo.io/"+$(this).text()+"/?token=<?php echo IPINFOTOKEN;?>", function (response) {
@@ -3688,21 +3713,26 @@ echo buildSettings(
             $( "div[class^='jFiler jFiler-theme-dragdropbox']" ).hide();
             //Set Some Scrollbars
 			$(".note-editable panel-body").niceScroll({
-                railpadding: {top:0,right:0,left:0,bottom:0}
+                railpadding: {top:0,right:0,left:0,bottom:0},
+                grabcursorenabled: false
             });
             $(".scroller-body").niceScroll({
-                railpadding: {top:0,right:0,left:0,bottom:0}
+                railpadding: {top:0,right:0,left:0,bottom:0},
+                grabcursorenabled: false
             });
             $(".email-content").niceScroll({
-                railpadding: {top:0,right:0,left:0,bottom:0}
+                railpadding: {top:0,right:0,left:0,bottom:0},
+                grabcursorenabled: false
             });
             $("textarea").niceScroll({
-                railpadding: {top:0,right:0,left:0,bottom:0}
+                railpadding: {top:0,right:0,left:0,bottom:0},
+                grabcursorenabled: false
             });
 			$(".iconpicker-items").niceScroll({
 				railpadding: {top:0,right:0,left:0,bottom:0},
 				scrollspeed: 30,
-                mousescrollstep: 60
+                mousescrollstep: 60,
+                grabcursorenabled: false
             });
             //Stop Div behind From Scrolling
             $( '.email-content' ).on( 'mousewheel', function ( e ) {

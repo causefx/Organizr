@@ -4580,11 +4580,10 @@ function getEmails($type = 'org'){
 }
 
 function printEmails($emails){
-	$result = '<select multiple="true" id="email-users" class="form-control">';
+	$result = '';
 	foreach($emails as $k => $v){
 		$result .= '<option value="'.$v.'">'.$k.'</option>';
 	}
-	$result .= '</select>';
 	return $result;
 }
 
@@ -4593,7 +4592,18 @@ function massEmail($to, $subject, $message){
 		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
 		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
-	sendEmail(null, null, $subject, orgEmail("Message From Admin", "Important Information", "There", $message, null, null, "Thank You!", "Thanks for taking the time to read this message from me."),null,$to);
+	sendEmail(null, null, $subject, orgEmail("Message From Admin", "Important Information", "There", $message, null, null, "Thank You!", "Thanks for taking the time to read this message from me."),$GLOBALS['USER']->adminEmail,$to);
+}
+
+function q2a($q){
+	if (is_array($q) || is_object($q)){
+		foreach ($q as $k => $v){
+			$a[$k] = $v;
+		}
+		if(!empty($a)){
+			return $a;
+		}
+	}
 }
 
 class Mobile_Detect

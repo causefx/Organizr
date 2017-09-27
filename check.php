@@ -149,7 +149,7 @@ function getFilePermission($file) {
         
     </head>
 
-    <body class="gray-bg" style="padding: 0;">
+    <body id="body-check" class="gray-bg" style="padding: 0;">
 
         <div id="main-wrapper" class="main-wrapper">
 
