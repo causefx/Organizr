@@ -425,6 +425,16 @@ $buildMenu = array(
 		'color' => 'green',
 		'color2' => 'palette-Blue-Grey-700 bg',
 		'padding' => '2',
+    ),
+    array(
+		'id' => 'open-email',
+		'box' => 'email-box',
+		'name' => 'Email Users',
+		'icon_1' => 'email',
+		'icon_2' => 'mail',
+		'color' => 'yellow',
+		'color2' => 'palette-Deep-Orange-A400 bg',
+		'padding' => '2',
 	),
 	array(
 		'id' => 'open-logs',
@@ -445,7 +455,7 @@ $buildMenu = array(
 		'color' => 'yellow',
 		'color2' => 'palette-Deep-Orange-A400 bg',
 		'padding' => '2',
-	),
+    ),
 	array(
 		'id' => 'open-invites',
 		'box' => 'invites-box',
@@ -1909,6 +1919,39 @@ echo buildSettings(
                     	</div>
                 	</div>
 				</div>
+                <div class="email-content email-box white-bg"><!-- $('.email-box').find('.panel-body').html(); -->
+                    <div class="email-body">
+                        <div class="email-header gray-bg">
+                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+                            <h1>E-Mail Users</h1>
+                        </div>
+                        <div class="email-inner small-box">
+                            <div class="email-inner-section">
+                                <div class="small-box fade in">
+                                   
+
+                                        <div class="mail-header">
+                                            <p><button class="btn btn-success waves generateEmails">Choose Users</button></p>
+                                            <div class="form-group" id="emailSelect">
+                                                
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="mailTo" placeholder="To">
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="subject" placeholder="Subject">
+                                            </div>
+                                        </div>
+
+                                        <div class="summernote"></div>
+                                        <button id="sendEmail" class="btn btn-success waves">Send</button>
+              
+                       
+                            	</div>
+                        	</div>
+                    	</div>
+                	</div>
+				</div>
                 <div class="email-content speed-box white-bg">
                     <div class="email-body">
                         <div class="email-header gray-bg">
@@ -2780,6 +2823,35 @@ echo buildSettings(
 				});
                 console.log('hmmmmm, what the hell is this section?');
             })
+            $(".generateEmails").click(function() {
+                $('.generateEmails').text("Loading...");
+                ajax_request('POST', 'get-emails', {type : 'plex'}).done(function(data){
+                    console.log('start');
+                    $('#emailSelect').html(data);
+                    $("#email-users").niceScroll({
+                        railpadding: {top:0,right:0,left:0,bottom:0}
+                    });
+                    $('#email-users').change(function(e) {
+                        var selected = $(e.target).val();
+                        $('#mailTo').val(selected);
+                    }); 
+                    $('.generateEmails').hide();
+                });
+            })
+            $("#sendEmail").click(function() {
+                var to = $('#mailTo').val();
+                var subject = $('#subject').val();
+                var message = $('.email-box').find('.panel-body').html();
+                console.log(to);
+                console.log(subject);
+                console.log(message);
+                ajax_request('POST', 'mass-email', {
+                    emailto: to,
+                    emailsubject: subject,
+                    emailmessage: message
+                });
+
+            })
             //IP INFO
             $(".ipInfo").click(function(){
                 $.getJSON("https://ipinfo.io/"+$(this).text()+"/?token=<?php echo IPINFOTOKEN;?>", function (response) {
@@ -3382,7 +3454,7 @@ echo buildSettings(
                 }
             });
 
-            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites , #open-themes, #open-speedtest").on("click",function (e) {
+            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites , #open-themes, #open-speedtest, #open-email").on("click",function (e) {
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
                 if($(window).width() < 768){
@@ -3551,8 +3623,21 @@ echo buildSettings(
                 name = $(this).attr("name");
                 author = $(this).attr("author");
                 theme = $(this).attr("name")+'-'+$(this).attr("version");
-                button = '<div class="thumbnail"><div class="caption"><p class="pull-left">'+name+' by: '+author+'</p><p class="pull-right"><button type="button" onclick="layerCakeTheme(\''+file+'\',\''+name+'\',\''+author+'\',\''+theme+'\')" class="btn btn-success waves waves-effect waves-float">Install</button></p></div><img src="https://raw.githubusercontent.com/leram84/layer.Cake/master/Themes/Preview/'+$(this).attr("preview")+'" alt="thumbnail"></div>';
-                console.log(button);
+                $.ajax({
+                    type: 'GET',
+                    url: 'https://raw.githubusercontent.com/leram84/layer.Cake/master/Themes/Information/'+name+'.txt',
+                    dataType: "html",
+                    async: false,
+                    success: function(msg){
+                        gotinformation = msg.replace(/\r\n|\r|\n/g,"<br/>");
+                        
+                    },
+                    error: function(msg){
+                        gotinformation = "There is no information for theme "+name;
+                    }
+                });
+                information = '<div class="caption"><h3>Theme Information</h3><p>'+gotinformation+'</p></div>';
+                button = '<div class="thumbnail"><div class="caption"><p class="pull-left">'+name+' by: '+author+'</p><p class="pull-right"><button type="button" onclick="layerCakeTheme(\''+file+'\',\''+name+'\',\''+author+'\',\''+theme+'\')" class="btn btn-success waves waves-effect waves-float">Install</button></p></div><img src="https://raw.githubusercontent.com/leram84/layer.Cake/master/Themes/Preview/'+$(this).attr("preview")+'" alt="thumbnail">'+information+'</div>';
                 $('#chooseLayer').hide();
                 themeInfo = $('#layerCakeInfo');
                 $('#layerCakePreview').html( ''+button+'' );
@@ -3614,7 +3699,7 @@ echo buildSettings(
             $("textarea").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0}
             });
-			 $(".iconpicker-items").niceScroll({
+			$(".iconpicker-items").niceScroll({
 				railpadding: {top:0,right:0,left:0,bottom:0},
 				scrollspeed: 30,
                 mousescrollstep: 60
