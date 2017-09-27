@@ -3477,7 +3477,7 @@ function get_client_ip() {
 }
 
 //EMAIL SHIT
-function sendEmail($email, $username = "Organizr User", $subject, $body, $cc = null){
+function sendEmail($email, $username = "Organizr User", $subject, $body, $cc = null, $bcc = null){
 
 	$mail = new PHPMailer;
 	$mail->isSMTP();
@@ -3490,7 +3490,22 @@ function sendEmail($email, $username = "Organizr User", $subject, $body, $cc = n
 	$mail->setFrom(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
 	$mail->addReplyTo(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
 	$mail->isHTML(true);
-	$mail->addAddress($email, $username);
+	if($email){
+		$mail->addAddress($email, $username);
+	}
+	if($cc){
+		$mail->addCC($cc);
+	}
+	if($bcc){
+		if(strpos($bcc , ',') === false){
+			$mail->addBCC($bcc);
+		}else{
+			$allEmails = explode(",",$bcc);
+			foreach($allEmails as $gotEmail){
+				$mail->addBCC($gotEmail);
+			}
+		}
+	}
 	$mail->Subject = $subject;
 	$mail->Body    = $body;
 	//$mail->send();
@@ -3551,6 +3566,7 @@ function libraryList(){
 			$email = (string)strtolower($child['email']);
 			$libraryList['users'][$username] = (string)$child['id'];
 			$libraryList['emails'][$email] = (string)$child['id'];
+			$libraryList['both'][$username] = $email;
 		}
     }
     return (!empty($libraryList) ? array_change_key_case($libraryList,CASE_LOWER) : null );
@@ -4439,7 +4455,7 @@ function getPing($url, $style, $refresh = null){
 
 function speedTestData(){
 	$file_db = DATABASE_LOCATION."speedtest.db";
-		if(file_exists($file_db)){
+	if(file_exists($file_db)){
 		$conn = new PDO("sqlite:$file_db") or die("1");
 		$result = $conn->query('SELECT * FROM speedtest_users');
 		$conn = null;
@@ -4482,6 +4498,9 @@ function buildMenuPhone($array){
 			if($v['id'] == 'open-invites' && empty(PLEXURL)){
 				continue;
 			}
+			if($v['id'] == 'open-email' && ENABLEMAIL !== "true"){
+				continue;
+			}
 			/*$result .= '
 			<li>
 				<a id="'.$v['id'].'" box="'.$v['box'].'">'.$v['name'].'
@@ -4503,6 +4522,9 @@ function buildMenu($array){
 		$result = '<div class="settingsList">';
 		foreach($array as $k => $v){
 			if($v['id'] == 'open-invites' && empty(PLEXURL)){
+				continue;
+			}
+			if($v['id'] == 'open-email' && ENABLEMAIL !== "true"){
 				continue;
 			}
 			$result .= '
@@ -4529,6 +4551,49 @@ function errormessage($msg) {
 	echo "<span style=\"color:#d89334;\">error </span>";
 	echo $msg;
 	echo "</div>";
+}
+
+function getOrgUsers(){
+	$file_db = DATABASE_LOCATION."users.db";
+	if(file_exists($file_db)){
+		$conn = new PDO("sqlite:$file_db") or die("1");
+		$result = $conn->query('SELECT * FROM users');
+		$conn = null;
+		if (is_array($result) || is_object($result)){
+			foreach($result as $k => $v){
+				$return[$v['username']] = $v['email'];
+			}
+			return $return;
+		}
+	}
+}
+
+function getEmails($type = 'org'){
+	if($type == 'plex'){
+		$emails = array_merge(libraryList()['both'],getOrgUsers());
+	}elseif($type == 'emby'){
+		$emails = getOrgUsers();
+	}else{
+		$emails = getOrgUsers();
+	}
+	return $emails;
+}
+
+function printEmails($emails){
+	$result = '<select multiple="true" id="email-users" class="form-control">';
+	foreach($emails as $k => $v){
+		$result .= '<option value="'.$v.'">'.$k.'</option>';
+	}
+	$result .= '</select>';
+	return $result;
+}
+
+function massEmail($to, $subject, $message){
+	if (!isset($GLOBALS['file_db'])) {
+		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
+		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	}
+	sendEmail(null, null, $subject, orgEmail("Message From Admin", "Important Information", "There", $message, null, null, "Thank You!", "Thanks for taking the time to read this message from me."),null,$to);
 }
 
 class Mobile_Detect

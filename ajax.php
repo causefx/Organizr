@@ -123,6 +123,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
             default: // Stuff that you need admin for
                 qualifyUser('admin', true);
                 switch ($action) {
+					case 'get-emails':
+						$response = printEmails(getEmails($_POST['type']));
+						break;
+					case 'mass-email':
+						massEmail($_POST['emailto'],$_POST['emailsubject'],$_POST['emailmessage']);
+						$response['notify'] = sendNotification(true, 'E-Mail Sent', false);
+						break;
                     case 'test-email':
                         sendResult(sendTestEmail($_POST['emailto'], $_POST['emailsenderemail'], $_POST['emailhost'], $_POST['emailauth'], $_POST['emailusername'], $_POST['emailpassword'], $_POST['emailtype'], $_POST['emailport'], $_POST['emailsendername']), "flask", "E-Mail TEST", "SUCCESS", "ERROR");
                         break;
