@@ -717,7 +717,8 @@ $(document).ready(function()
     window.onload = function()
     {
         tabinfocus = true;
-        console.log("chat started");
+        window.chatLoaded = false;
+        console.log("loading chat");
         setTimeout(function() {
             if ($('.chat-box').hasClass('email-active')){
                 tabinfocus = true;
@@ -727,27 +728,33 @@ $(document).ready(function()
                 tabinfocus = false;
                 console.log("not in focus");
             }
+            window.chatLoaded = true;
+            console.log("chat started");
         }, 5000);
 
     };
 
     window.onfocus = function()
     {
-        if ($('.chat-box').hasClass('email-active')){
-            tabinfocus = true;
-            $(".mdi-forum").removeClass("tada loop-animation new-message");//SET MESSAGE TO ZERO
-            console.log("in focus");
-        }else{
-            tabinfocus = false;
-            console.log("not in focus");
+        if(window.chatLoaded === true){
+            if ($('.chat-box').hasClass('email-active')){
+                tabinfocus = true;
+                $(".mdi-forum").removeClass("tada loop-animation new-message");//SET MESSAGE TO ZERO
+                console.log("in focus");
+            }else{
+                tabinfocus = false;
+                console.log("not in focus");
+            }
         }
  
     };
     
     window.onblur = function()
     {
-        tabinfocus = false;
-        console.log("not in focus");
+        if(window.chatLoaded === true){
+            tabinfocus = false;
+            console.log("not in focus");
+        }
     };
     
     // new message tab alert
