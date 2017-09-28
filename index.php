@@ -64,15 +64,11 @@ if (file_exists('config/config.php')) {
 	}
 
 	$configReady = "Yes";
-
 	require_once("user.php");
-
 	$USER = new User("registration_callback");
-
+	
 	$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
-
 	$database = new PDO("sqlite:" . $dbfile);
-
 	$query = "SELECT * FROM users";
 
 	foreach($database->query($query) as $data) {
@@ -1333,13 +1329,13 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		var update = function () {
 			date = moment(new Date())
-			datetime.html(date.format('h:mm A'));
+			datetime.html(date.format('ddd MMM DD YYYY h:mm A'));
 		};
 		 //Current Time
 		 datetime = $('.current-time')
 		update();
 		setInterval(update, 60000);
-		console.log(datetime);
+		console.log(date);
 		//Tooltips
 		$('[data-toggle="tooltip"]').tooltip();
 		$(".box").niceScroll({
