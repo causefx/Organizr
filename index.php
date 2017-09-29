@@ -28,6 +28,7 @@ $loadingIcon = "images/organizr-load-w-thick.gif";
 $baseURL = "";
 $dbcreated = false;
 $splash = false;
+$group = (isset($group) ? $group : "guest");
 
 // Get Action
 if(isset($_POST['action'])) {
@@ -477,7 +478,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<?php customCSS(); ?>
 	</style>
 
-	<body id="body-index" style="overflow: hidden">
+	<body id="body-index-<?php echo $group;?>" style="overflow: hidden">
 
 		<?php if (LOADINGSCREEN == "true") : ?>
 		<!--Preloader-->
