@@ -1731,6 +1731,9 @@ function buildSettings($array) {
 	<div class="email-body">
 		<div class="email-header gray-bg">
 			<button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+			<button id="'.$pageID.'_form_submit" class="btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float save-btn-form">
+			<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
+			</button>
 			<h1>'.$array['title'].'</h1>
 		</div>
 		<div class="email-inner small-box">
@@ -1739,9 +1742,6 @@ function buildSettings($array) {
 					<div class="col-lg-12">
 						'.(isset($array['customBeforeForm'])?$array['customBeforeForm']:'').'
 						<form class="content-form" name="'.$pageID.'" id="'.$pageID.'_form" onsubmit="return false;">
-							<button id="'.$pageID.'_form_submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
-							<span class="btn-label"><i class="fa fa-floppy-o"></i></span>Save
-							</button>
 							'.$fields.($tabContent?'
 							<div class="tabbable tabs-with-bg" id="'.$pageID.'_tabs">
 								<ul class="nav nav-tabs apps">
@@ -1889,7 +1889,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 			$icon = (isset($params['icon'])?$params['icon']:'flask');
 			$bType = (isset($params['buttonType'])?$params['buttonType']:'success');
 			$bDropdown = (isset($params['buttonDrop'])?$params['buttonDrop']:'');
-			$field = ($bDropdown?'<div class="btn-group">':'').'<button id="'.$id.'" type="button" class="btn waves btn-labeled btn-'.$bType.' btn-sm text-uppercase waves-effect waves-float'.$class.''.($bDropdown?' dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':'"').' '.implode(' ',$tags).'><span class="btn-label"><i class="fa fa-'.$icon.'"></i></span>'.$label.'</button>'.($bDropdown?$bDropdown.'</div>':'');
+			$field = ($bDropdown?'<div class="btn-group">':'').'<button id="'.$id.'" type="button" class="btn waves btn-labeled btn-'.$bType.' btn-sm text-uppercase waves-effect waves-float'.$class.''.($bDropdown?' dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':'"').' '.implode(' ',$tags).'><span class="btn-label"><i class="fa fa-'.$icon.'"></i></span><span class="btn-text">'.$label.'</span></button>'.($bDropdown?$bDropdown.'</div>':'');
 			break;
 		case 'textarea':
 			$rows = (isset($params['rows'])?$params['rows']:5);
@@ -1984,6 +1984,7 @@ function printTabRow($data) {
 						'placeholder' => 'Organizr Homepage',
 						'labelTranslate' => 'TAB_NAME',
 						'value' => $data['name'],
+						'class' => 'darkBold',
 					),12,2,1).'
 					'.buildField(array(
 						'type' => 'text',
@@ -1993,7 +1994,8 @@ function printTabRow($data) {
 						'placeholder' => 'homepage.php',
 						'labelTranslate' => 'TAB_URL',
 						'value' => $data['url'],
-					),12,2,1).'
+						'class' => 'darkBold',
+					),12,2,2).'
 					'.buildField(array(
 						'type' => 'text',
 						'id' => 'tab-'.$data['id'].'-iconurl',
@@ -2001,6 +2003,7 @@ function printTabRow($data) {
 						'placeholder' => 'images/organizr.png',
 						'labelTranslate' => 'ICON_URL',
 						'value' => $data['iconurl'],
+						'class' => 'darkBold',
 					),12,2,1).'
 					'.buildField(array(
 						'type' => 'custom',
@@ -2016,6 +2019,7 @@ function printTabRow($data) {
 						'placeholder' => 'host:port',
 						'labelTranslate' => 'PING_URL',
 						'value' => $data['ping_url'],
+						'class' => 'darkBold',
 					),12,2,1).'
 					'.buildField(array(
 						'type' => 'radio',
@@ -2026,10 +2030,11 @@ function printTabRow($data) {
 					),12,1,1).'
 					'.buildField(array(
 						'type' => 'button',
-						'icon' => 'caret-square-o-down',
+						'icon' => 'chevron-down',
                         'buttonType' => 'success',
 						'labelTranslate' => 'MORE',
 						'onclick' => "$('#tab-".$data['id']."-row').toggle();",
+						'class' => 'toggleTabExtra',
 					),12,1,1).'
 					'.buildField(array(
 						'type' => 'button',
@@ -4511,7 +4516,7 @@ function buildMenuPhone($array){
 				</a>
 			</li>
 			';*/
-			$result .= '<li><a id="'.$v['id'].'" box="'.$v['box'].'"><i class="fa fa-'.$v['icon_2'].' '.$v['color'].' pull-right"></i>'.$v['name'].'</a></li>';
+			$result .= '<li><a id="'.$v['id'].'" box="'.$v['box'].'"><i class="fa fa-'.$v['icon_2'].' '.$v['color'].' fa-fw pull-right"></i>'.$v['name'].'</a></li>';
 		}
 		$result .= '</ul></div></div>';
 		return $result;

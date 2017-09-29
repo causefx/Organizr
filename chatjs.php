@@ -710,7 +710,7 @@ $(document).ready(function()
                 istyping(user, 0);     
             }
             
-        }, 500);
+        }, 1250);
     }
     
     // tab focus
