@@ -95,4 +95,5 @@ return array(
 	"chatAuth" => "false",
 	"installedTheme" => "",
 	"calendarRefresh" => "60000",
+	"authBackendDomainFormat" => "",
 );
