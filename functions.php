@@ -34,14 +34,27 @@ if (function_exists('ldap_connect')) :
 		
 		// returns true or false
 		$ldap = ldap_connect(implode(' ',$ldapServers));
-		if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
-   			writeLog("success", "LDAP authentication success"); 
-			return true;
-		} else {
-   			writeLog("error", "LDPA could not authenticate"); 
-			return false;
+		if(empty(AUTHBACKENDDOMAINFORMAT)){
+			if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
+				writeLog("success", "LDAP authentication success"); 
+				return true;
+			} else {
+				writeLog("error", "LDAP could not authenticate"); 
+				return false;
+			}
+		}else{
+			ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
+			ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
+			$bind = ldap_bind($ldap, sprinf(AUTHBACKENDDOMAINFORMAT, $username), $password);
+			if ($bind) {
+				writeLog("success", "LDAP authentication success"); 
+				return true;
+			} else {
+				writeLog("error", "LDPA could not authenticate"); 
+				return false;
+			}			
 		}
-  		writeLog("error", "LDPA could not authenticate");      
+  		writeLog("error", "LDAP could not authenticate");      
 		return false;
 	}
 else :

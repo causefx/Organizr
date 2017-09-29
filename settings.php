@@ -549,7 +549,7 @@ if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ e
 												<span class="btn-label"><i class="fa fa-check"></i></span><?php echo $language->translate("CHECK_FRAME");?>
 											</button>
                                             <button id="toggleAllExtra" type="button" class="btn waves btn-labeled btn-info btn-sm text-uppercase waves-effect waves-float indigo-bg">
-												<span class="btn-label"><i class="fa fa-toggle-off"></i></span><span class="btn-text">Toggle All Tab Info</span>
+												<span class="btn-label"><i class="fa fa-toggle-off"></i></span><span class="btn-text"><?php echo $language->translate("TOGGLE_ALL");?></span>
 											</button>
 										</div>
 										<input type="file" name="files[]" id="uploadIcons" multiple="multiple">
@@ -1501,6 +1501,14 @@ echo buildSettings(
 						'name' => 'authBackendDomain',
 						'class' => 'be-auth be-auth-ldap',
 						'value' => AUTHBACKENDDOMAIN,
+                    ),
+                    array(
+						'type' => 'text',
+						'placeholder' => 'domain & format',
+						'labelTranslate' => 'AUTHBACKENDDOMAINFORMAT',
+						'name' => 'authBackendDomainFormat',
+						'class' => 'be-auth be-auth-ldap',
+						'value' => AUTHBACKENDDOMAINFORMAT,
 					),
 					array(
 						'type' => 'text',
@@ -3771,7 +3779,9 @@ echo buildSettings(
             });
             $(".email-content").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0},
-                grabcursorenabled: false
+                railoffset: {top:75,right:0,left:0,bottom:75},
+                grabcursorenabled: false,
+                zindex: 1101
             });
             $("textarea").niceScroll({
                 railpadding: {top:0,right:0,left:0,bottom:0},
