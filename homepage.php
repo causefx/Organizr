@@ -188,7 +188,7 @@ foreach(loadAppearance() as $key => $value) {
         </style>
     </head>
 
-    <body id="body-homepage" class="scroller-body" style="padding: 0px;">
+    <body id="body-homepage-<?php echo $group;?>" class="scroller-body" style="padding: 0px;">
         <div class="main-wrapper" style="position: initial;">
             <div id="content" class="container-fluid">
                 <br/>
