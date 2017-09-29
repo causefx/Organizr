@@ -53,7 +53,7 @@ foreach(loadAppearance() as $key => $value) {
         <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="bower_components/moment/min/moment.min.js"></script>
         <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
-        <script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
+        <script src="bower_components/slimScroll/jquery.slimscroll.min.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <script src="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
         <script src="bower_components/cta/dist/cta.min.js"></script>
         <script src="bower_components/fullcalendar/dist/fullcalendar.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
@@ -896,7 +896,7 @@ foreach(loadAppearance() as $key => $value) {
                         console.log('Calendar refreshed');       
                     }
                 });
-            }, 60000);
+            }, <?php echo CALENDARREFRESH; ?>);
         </script>
         <?php } ?>
         <script>

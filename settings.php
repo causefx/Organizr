@@ -182,6 +182,23 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 		</script>
 		
         <style>
+            .save-btn-form {
+                position: absolute;
+                top: 15px;
+                right: 60px;
+            }
+            @media screen and (min-width: 737px){
+                .save-btn-form {
+                    position: relative;
+                    top: 15px;
+                    right: 10px;
+                    float: right;
+                }
+            }
+            .darkBold {
+                color: black;
+                font-weight: 500;
+            }
 			@-webkit-keyframes fadeIn {
 				from { opacity: 0; }
 				to { opacity: 1; }
@@ -430,7 +447,7 @@ $buildMenu = array(
 		'box' => 'email-box',
 		'name' => 'Email Users',
 		'icon_1' => 'email',
-		'icon_2' => 'mail',
+		'icon_2' => 'envelope',
 		'color' => 'yellow',
 		'color2' => 'palette-Pink-A700 bg',
 		'padding' => '2',
@@ -509,6 +526,9 @@ if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ e
                     <div class="email-body">
                         <div class="email-header gray-bg">
                             <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+                            <button type="button" class="btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float save-btn-form submitTabBtn">
+												<span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo translate('SAVE_TABS'); ?>
+											</button>
                             <h1>Edit Tabs</h1>
                         </div>
                         <div class="email-inner small-box">
@@ -528,8 +548,8 @@ if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ e
            									<button id="checkFrame" data-toggle="modal" data-target=".checkFrame" type="button" class="btn waves btn-labeled btn-gray btn-sm text-uppercase waves-effect waves-float">
 												<span class="btn-label"><i class="fa fa-check"></i></span><?php echo $language->translate("CHECK_FRAME");?>
 											</button>
-											<button type="submit" class="btn waves btn-labeled btn-success btn btn-sm pull-right text-uppercase waves-effect waves-float">
-												<span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo translate('SAVE_TABS'); ?>
+                                            <button id="toggleAllExtra" type="button" class="btn waves btn-labeled btn-info btn-sm text-uppercase waves-effect waves-float indigo-bg">
+												<span class="btn-label"><i class="fa fa-toggle-off"></i></span><span class="btn-text">Toggle All Tab Info</span>
 											</button>
 										</div>
 										<input type="file" name="files[]" id="uploadIcons" multiple="multiple">
@@ -540,7 +560,7 @@ if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ e
 <?php
 $dirname = "images/";
 $images = scandir($dirname);
-$ignore = Array(".", "..", "favicon", "settings", "cache", "platforms", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "no-np.png", "no-list.png", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
+$ignore = Array(".", "..", "favicon", "settings", "cache", "platforms", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "no-np.png", "no-list.png", "no-np.psd", "no-list.psd", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
 foreach($images as $curimg){
 	if(!in_array($curimg, $ignore)) { ?>
 												<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">    
@@ -820,9 +840,15 @@ $refreshSeconds = array(
 	'10 secs' => '10000',
 	'15 secs' => '15000',
 	'30 secs' => '30000',
-	'60 secs' => '60000',
-	'90 secs' => '90000',
-	'120 secs' => '120000',
+	'1 min' => '60000',
+	'1.5 mins' => '90000',
+	'2 mins' => '120000',
+	'5 mins' => '300000',
+	'10 mins' => '600000',
+	'15 mins' => '900000',
+	'30 mins' => '1800000',
+	'45 mins' => '2700000',
+	'1 hour' => '3600000',
 );
 
 // Build Homepage Settings
@@ -1306,6 +1332,13 @@ echo buildSettings(
 						'name' => 'calendarEndDay',
 						'pattern' => '[1-9][0-9]+',
 						'value' => CALENDARENDDAY,
+                    ),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'CALENDAR_REFRESH',
+						'name' => 'calendarRefresh',
+						'value' => CALENDARREFRESH,
+						'options' => $refreshSeconds,
 					),
 				),
 			),
@@ -2013,7 +2046,7 @@ echo buildSettings(
                                         <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span><?php echo $language->translate("VIEW_ON_GITHUB");?></a>
                                         <a href='https://gitter.im/Organizrr/Lobby' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span><?php echo $language->translate("CHAT_WITH_US");?></a>
                                         <button type="button" class="class='btn waves btn-labeled btn-warning btn text-uppercase waves-effect waves-float" data-toggle="modal" data-target=".Help-Me-modal-lg"><span class='btn-label'><i class='fa fa-life-ring'></i></span><?php echo $language->translate("HELP");?></button>
-                                        <button id="deleteToggle" type="button" class="class='btn waves btn-labeled btn-danger btn text-uppercase waves-effect waves-float" ><span class='btn-label'><i class='fa fa-trash'></i></span><?php echo $language->translate("DELETE_DATABASE");?></button>
+                                        <!--<button id="deleteToggle" type="button" class="class='btn waves btn-labeled btn-danger btn text-uppercase waves-effect waves-float" ><span class='btn-label'><i class='fa fa-trash'></i></span><?php echo $language->translate("DELETE_DATABASE");?></button>-->
                                     </p>
 
                                     <div class="modal fade Help-Me-modal-lg" tabindex="-1" role="dialog">
@@ -2835,6 +2868,9 @@ echo buildSettings(
                     $('#selectAllEmail').show();
                 });
             });
+            $(".submitTabBtn").click(function() {
+                $("#submitTabs").submit();
+            });
             $(function() {
                 /*$("#email-users").niceScroll({
                     cursorwidth: "12px",
@@ -3448,6 +3484,19 @@ echo buildSettings(
               allowTabChar: true,       
 
             });
+            //more/less
+            $(".toggleTabExtra").click(function () {
+                $(this).find('.btn-text').text(function(i, text){
+                    return text === "More" ? "Less" : "More";
+                })
+                $(this).find('i').toggleClass('fa-chevron-down fa-chevron-up');
+             });
+             $("#toggleAllExtra").click(function () {
+                $( ".toggleTabExtra" ).each(function() {
+                    $(this).click();
+                });
+                $(this).find('i').toggleClass('fa-toggle-off fa-toggle-on');
+             });
             $(".email-header .close-button").click(function () {
 				$(".email-content").removeClass("email-active");
 				$(".settingsMenu").removeClass("settingsMenuActive");
@@ -3661,8 +3710,8 @@ echo buildSettings(
                         gotinformation = "There is no information for theme "+name;
                     }
                 });
-                information = '<div class="caption"><h3>Theme Information</h3><p>'+gotinformation+'</p></div>';
-                button = '<div class="thumbnail"><div class="caption"><p class="pull-left">'+name+' by: '+author+'</p><p class="pull-right"><button type="button" onclick="layerCakeTheme(\''+file+'\',\''+name+'\',\''+author+'\',\''+theme+'\')" class="btn btn-success waves waves-effect waves-float">Install</button></p></div><img src="https://raw.githubusercontent.com/leram84/layer.Cake/master/Themes/Preview/'+$(this).attr("preview")+'" alt="thumbnail">'+information+'</div>';
+                information = '<div class="caption gray-bg"><h3>Theme Information</h3><p>'+gotinformation+'</p></div>';
+                button = '<div class="thumbnail gray-bg"><div class="caption gray-bg"><p class="pull-left">'+name+' by: '+author+'</p><p class="pull-right"><button type="button" onclick="layerCakeTheme(\''+file+'\',\''+name+'\',\''+author+'\',\''+theme+'\')" class="btn btn-success waves waves-effect waves-float">Install</button></p></div><img src="https://raw.githubusercontent.com/leram84/layer.Cake/master/Themes/Preview/'+$(this).attr("preview")+'" alt="thumbnail">'+information+'</div>';
                 $('#chooseLayer').hide();
                 themeInfo = $('#layerCakeInfo');
                 $('#layerCakePreview').html( ''+button+'' );

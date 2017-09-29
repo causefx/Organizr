@@ -94,4 +94,5 @@ return array(
 	"chat" => "false",
 	"chatAuth" => "false",
 	"installedTheme" => "",
+	"calendarRefresh" => "60000",
 );

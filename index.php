@@ -1874,7 +1874,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				}
 
 			}
-
+			$('#main-user').removeClass('email-active');
+			$('.chat-box').removeClass('email-active');
 		});
 		$("li[class^='tab-item']").on('contextmenu', function(e){
 			e.stopPropagation();
@@ -1928,6 +1929,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				}
 
 			}
+			$('#main-user').removeClass('email-active');
+			$('.chat-box').removeClass('email-active');
 			return false;
 		});
 		Mousetrap.bind('ctrl+shift+up', function(e) {
