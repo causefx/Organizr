@@ -344,7 +344,7 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
         </style>
     </head>
 
-    <body id="body-settings-<?php echo $group;?>" class="scroller-body" style="padding: 0; background: #273238; overflow: hidden">
+    <body id="body-settings" class="scroller-body group-<?php echo $group;?>" style="padding: 0; background: #273238; overflow: hidden">
         <div id="main-wrapper" class="main-wrapper">
 
             <!--Content-->

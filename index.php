@@ -478,7 +478,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<?php customCSS(); ?>
 	</style>
 
-	<body id="body-index-<?php echo $group;?>" style="overflow: hidden">
+	<body id="body-index" class="group-<?php echo $group;?>" style="overflow: hidden">
 
 		<?php if (LOADINGSCREEN == "true") : ?>
 		<!--Preloader-->

@@ -44,8 +44,9 @@ foreach(loadAppearance() as $key => $value) {
         <link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/google-material-color/dist/palette.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" type="text/css" href="bower_components/slick/slick.css?v=<?php echo INSTALLEDVERSION; ?>">
-        <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css"
-        <!-- Add the slick-theme.css if you want default styling -->
+        <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
+        <link rel="stylesheet" href="<?=$baseURL;?>bower_components/smoke/dist/css/smoke.min.css?v=<?php echo INSTALLEDVERSION; ?>">
+        
        
 
         <!--Scripts-->
@@ -65,6 +66,7 @@ foreach(loadAppearance() as $key => $value) {
 		<!--Other-->
 		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+        <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
 		
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
@@ -188,7 +190,7 @@ foreach(loadAppearance() as $key => $value) {
         </style>
     </head>
 
-    <body id="body-homepage-<?php echo $group;?>" class="scroller-body" style="padding: 0px;">
+    <body id="body-homepage" class="scroller-body group-<?php echo $group;?>" style="padding: 0px;">
         <div class="main-wrapper" style="position: initial;">
             <div id="content" class="container-fluid">
                 <br/>
@@ -497,6 +499,11 @@ foreach(loadAppearance() as $key => $value) {
         });
         
 		$(document).on("click", ".openTab", function(e) {
+            parent.$.smkAlert({
+                text: 'Loading...',
+                type: 'info',
+                time: 1
+            });
             var Title = $(this).attr("extraTitle");
             var Type = $(this).attr("extraType");
             var openTab = $(this).attr("openTab");
@@ -509,20 +516,20 @@ foreach(loadAppearance() as $key => $value) {
                 SearchType = "movie";            
             }
             if( Type === 'tv' || Type === 'movie' ){
-                $('#calendarExtra').modal('show');
-                var refreshBox = $('#calendarMainID');
-                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
-                setTimeout(function(){
-                    var refreshPreloader = refreshBox.find('.refresh-preloader'),
-                    deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
-                        refreshPreloader.remove();
-                    });
-                },600);
                 ajax_request('POST', 'tvdb-search', {
                     name: Title,
                     type: SearchType,
                 }).done(function(data){ 
-                    if( data.trakt ) {               
+                    if( data.trakt && data.trakt.tmdb !== null) {
+                        $('#calendarExtra').modal('show');
+                        var refreshBox = $('#calendarMainID');
+                        $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
+                        setTimeout(function(){
+                            var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                            deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+                                refreshPreloader.remove();
+                            });
+                        },600);               
                         $.ajax({
                             type: 'GET',
                             url: 'https://api.themoviedb.org/3/'+Type+'/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits&language=<?php echo $userLanguage; ?>',
@@ -561,6 +568,8 @@ foreach(loadAppearance() as $key => $value) {
                                 }
                             }
                         });
+                    }else{
+                        swal("Sorry!", "No info was found for this item!", "error");
                     }
                 });
                 e.preventDefault();
@@ -970,15 +979,11 @@ foreach(loadAppearance() as $key => $value) {
                 $('#calendarVideo').modal('show');
             });
             $(document).on('click', "a[class*=ID-]", function(){
-                $('#calendarExtra').modal('show');
-                var refreshBox = $('#calendarMainID');
-                $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
-                setTimeout(function(){
-                    var refreshPreloader = refreshBox.find('.refresh-preloader'),
-                    deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
-                        refreshPreloader.remove();
-                    });
-                },600);
+                parent.$.smkAlert({
+                    text: 'Loading...',
+                    type: 'info',
+                    time: 1
+                });
                 var check = $(this).attr("class");
                 var ID = check.split("--")[1];
                 if (~check.indexOf("tvID")){
@@ -986,7 +991,16 @@ foreach(loadAppearance() as $key => $value) {
                     ajax_request('POST', 'tvdb-get', {
                         id: ID,
                     }).done(function(data){ 
-                        if( data.trakt ) {                        
+                        if( data.trakt && data.trakt.tmdb !== null) {    
+                            $('#calendarExtra').modal('show');
+                            var refreshBox = $('#calendarMainID');
+                            $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
+                            setTimeout(function(){
+                                var refreshPreloader = refreshBox.find('.refresh-preloader'),
+                                deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
+                                    refreshPreloader.remove();
+                                });
+                            },600);                    
                             $.ajax({
                                 type: 'GET',
                                 url: 'https://api.themoviedb.org/3/tv/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits&language=<?php echo $userLanguage; ?>',
@@ -995,7 +1009,6 @@ foreach(loadAppearance() as $key => $value) {
                                 complete: function(xhr, status) {
                                     var result = $.parseJSON(xhr.responseText);
                                     if (xhr.statusText === "OK") {
-                                        console.log(result);
                                         $('#calendarTitle').text(result.name);
                                         $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
                                         $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(whatWasIt(result.episode_run_time))+'</span>&nbsp;');
@@ -1012,18 +1025,7 @@ foreach(loadAppearance() as $key => $value) {
                                 }
                             });
                         }else{
-                           $('#calendarTitle').text(data.series.seriesName);
-                            $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+data.series.siteRating+'</span>&nbsp');
-                            $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(data.series.runtime)+'</span>&nbsp;');
-                            $('#calendarSummary').text(data.series.overview);
-                            $('#calendarTagline').text("");
-                            $('#calendarTrailer').html("");
-                            $('#calendarCast').html("");
-                            $('#calendarGenres').html(convertArray(data.series.genre, "TV"));
-                            $('#calendarLang').html("");
-                            $('#calendarPoster').attr("src","https://thetvdb.com/banners/_cache/"+whatIsIt(data.poster));
-                            $('#calendarMain').attr("style","background-size: cover; background: linear-gradient(rgba(25,27,29,.75),rgba(25,27,29,.75)),url(ajax.php?a=show-image&image=http://thetvdb.com/banners/"+whatIsIt(data.backdrop)+");top: 0;left: 0;width: 100%;height: 100%;position: fixed;");
-                            $('#calendarExtra').modal('show');
+                            swal("Sorry..", "No info was found for this item!", "error");
                         }
                     });
                 }else if (~check.indexOf("movieID")){
