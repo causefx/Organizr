@@ -451,7 +451,7 @@ foreach(loadAppearance() as $key => $value) {
 
                 </div>
 				<?php } ?>
-                <?php if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH))) { ?>
+                <?php if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)) || (COUCHURL != "" && qualifyUser(COUCHHOMEAUTH))) { ?>
                 <div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
                     <div class="col-lg-12 content-form form-inline">
                         <div class="form-group pull-right">
