@@ -486,7 +486,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			<div class="table-row">
 				<div class="table-cell">
 					<div class="la-ball-scale-multiple la-3x" style="color: <?=$topbar;?>">
-						<?php if (pathinfo($loadingIcon, PATHINFO_EXTENSION) !== "gif" ) : 
+						<?php if ($loadingIcon == "images/organizr-load-w-thick.gif") : 
 							echo "<div></div><div></div><div></div>";
 						endif; ?>
 						<logo class="logo"><img height="192px" src="<?=$loadingIcon;?>"></logo>
