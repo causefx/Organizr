@@ -2533,7 +2533,7 @@ function nzbgetConnect($list = 'listgroups') {
 			return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
 		}
 	}else{
-		writeLog("error", "NZBGET ERROR: could not connect - check URL and/or check token and/or Usernamd and Password - if HTTPS, is cert valid");
+		writeLog("error", "NZBGET ERROR: could not connect - check URL and/or check token and/or Username and Password - if HTTPS, is cert valid");
 	}
 }
 
@@ -3019,6 +3019,42 @@ function getSonarrCalendar($array){
 
     if ($i != 0){ return $gotCalendar; }
 
+}
+
+function getCouchCalendar(){
+	$url = qualifyURL(COUCHURL);    
+    $api = curl_get($url."/api/".COUCHAPI."/media.list");
+    $api = json_decode($api, true);
+    $i = 0;
+    $gotCalendar = array();
+	if (is_array($api) || is_object($api)){
+		foreach($api['movies'] AS $child) {
+			if($child['status'] == "active" || $child['status'] == "done" ){
+				$i++;
+				$movieName = $child['info']['original_title'];
+				$movieID = $child['info']['tmdb_id'];
+				if(!isset($movieID)){ $movieID = ""; }
+				$physicalRelease = (isset($child['info']['released']) ? $child['info']['released'] : null); 
+				$backupRelease = (isset($child['info']['release_date']['theater']) ? $child['info']['release_date']['theater'] : null); 
+				$physicalRelease = (isset($physicalRelease) ? $physicalRelease : $backupRelease);
+				$physicalRelease = strtotime($physicalRelease);
+				$physicalRelease = date("Y-m-d", $physicalRelease);
+				if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
+				$downloaded = ($child['status'] == "active") ? "0" : "1";
+				if($downloaded == "0" && $notReleased == "true"){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
+				array_push($gotCalendar, array(
+					"id" => "CouchPotato-".$i,
+					"title" => $movieName, 
+					"start" => $physicalRelease, 
+					"className" => $downloaded." movieID--".$movieID, 
+					"imagetype" => "film",
+				));
+			}
+		}
+    	if ($i != 0){ return $gotCalendar; }
+	}else{
+		writeLog("error", "CouchPotato ERROR: could not connect - check URL and/or check API key - if HTTPS, is cert valid");
+	}
 }
 
 function getRadarrCalendar($array){  
@@ -4001,6 +4037,11 @@ function getCalendar(){
 		} catch (Exception $e) { 
 			writeLog("error", "RADARR ERROR: ".strip($e->getMessage())); 
 		}
+	}
+	if (COUCHURL != "" && qualifyUser(COUCHHOMEAUTH)){
+		$couchCalendar = getCouchCalendar(); 
+		if(!empty($couchCalendar)) { $calendarItems = array_merge($calendarItems, $couchCalendar); }
+
 	}
 	if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
 		$headphonesHistory = getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); 

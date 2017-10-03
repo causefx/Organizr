@@ -96,4 +96,7 @@ return array(
 	"installedTheme" => "",
 	"calendarRefresh" => "60000",
 	"authBackendDomainFormat" => "",
+	"couchURL" => "",
+	"couchAPI" => "",
+	"couchHomeAuth" => false,
 );

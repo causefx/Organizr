@@ -182,6 +182,9 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 		</script>
 		
         <style>
+            body{
+                background: #273238;
+            }
             .save-btn-form {
                 position: absolute;
                 top: 15px;
@@ -344,7 +347,7 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
         </style>
     </head>
 
-    <body id="body-settings" class="scroller-body group-<?php echo $group;?>" style="padding: 0; background: #273238; overflow: hidden">
+    <body id="body-settings" class="scroller-body group-<?php echo $group;?>" style="padding: 0; overflow: hidden">
         <div id="main-wrapper" class="main-wrapper">
 
             <!--Content-->
@@ -1117,6 +1120,36 @@ echo buildSettings(
 						'name' => 'radarrKey',
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => RADARRKEY,
+					),
+				),
+            ),
+            array(
+				'title' => 'CouchPotato',
+				'id' => 'couchpotato',
+				'image' => 'images/couchpotato.png',
+				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'couchHomeAuth',
+						'value' => COUCHHOMEAUTH,
+						'options' => $userTypes,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:8181',
+						'labelTranslate' => 'COUCH_URL',
+						'assist' => 'http://hostname:8181',
+						'name' => 'couchURL',
+						'pattern' => $urlPattern,
+						'value' => COUCHURL,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => randString(32),
+						'labelTranslate' => 'COUCH_KEY',
+						'name' => 'couchAPI',
+						'value' => COUCHAPI,
 					),
 				),
 			),
