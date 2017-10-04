@@ -3180,8 +3180,8 @@ ul.inbox-pagination li {
 }
 
 .profile-usermenu ul li a i {
-  margin-right: 8px;
-  font-size: 14px;
+  /*margin-right: 8px;
+  font-size: 14px;*/
 }
 
 .profile-usermenu ul li.active {
@@ -5033,7 +5033,7 @@ body .slimScrollDiv {
   font-style: normal;
   font-weight: normal;
   speak: none;
-  display: inline-block;
+  display: inline;
   text-decoration: inherit;
   width: 1em;
   margin-right: .2em;
