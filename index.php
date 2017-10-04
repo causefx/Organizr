@@ -474,6 +474,9 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		}.ns-effect-exploader {
 			padding: 5px 22px;
 		}
+		[class^="icon-"]:before, [class*=" icon-"]:before {
+			display: inline !important;
+		}
 		<?php endif; ?>
 		<?php customCSS(); ?>
 	</style>
@@ -1192,6 +1195,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 											<div class="content-box top-clock" style="left: 0;right: 0;">
 												<span style="display: block" class="current-time gray text-center"></span>
 											</div>
+											<div id="weather" class="content-box ultra-widget yellow-bg"></div>
 											<div class="content-box">
 												<div class="profile-usertitle">
 													<?php if(GRAVATAR == "true") : ?>
@@ -1305,6 +1309,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<!--Custom Scripts-->
 		<script src="<?=$baseURL;?>js/common.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 		<script src="<?=$baseURL;?>js/mousetrap.min.js"></script>
+		<script src="<?=$baseURL;?>js/jquery.simpleWeather.js"></script>
 		<script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
 		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
 		<script src="chatjs.php" defer="true"></script>
@@ -1325,6 +1330,60 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
    		</script>
 		<?php }?>
 		<script>
+
+
+
+		
+/* Does your browser support geolocation? */
+if ("geolocation" in navigator) {
+  $('#weather').show(); 
+} else {
+  $('#weathern').hide();
+}
+
+$(document).ready(function() {
+	getWeather();
+	setInterval(getWeather, 600000);
+    
+});
+function getWeather(){
+	navigator.geolocation.getCurrentPosition(function(position) {
+    	loadWeather(position.coords.latitude+','+position.coords.longitude);
+  	});
+	  console.log('grabbing weather');
+}
+
+function loadWeather(location, woeid) {
+  $.simpleWeather({
+    location: location,
+    woeid: woeid,
+    unit: 'f',
+    success: function(weather) {
+      //html = '<h2><i class="icon-'+weather.code+'"></i> '+weather.temp+'&deg;'+weather.units.temp+'</h2>';
+      //html += '<ul><li>'+weather.city+', '+weather.region+'</li>';
+      //html += '<li class="currently">'+weather.currently+'</li>';
+      //html += '<li>'+weather.alt.temp+'&deg;C</li></ul>';  
+	  html = '<div class="w-content">';
+	  html += '<div class="w-icon right pull-right"><i class="icon-'+weather.code+'"></i></div>';
+	  html += '<div class="w-descr left pull-left text-center">';
+	  html += '<span class="text-uppercase w-name">'+weather.city+', '+weather.region+'</span><br><span class="w-name">'+weather.temp+'&deg;'+weather.units.temp+' / '+weather.alt.temp+'&deg;C</span><br><span class="w-name">'+weather.currently+'</span></div></div>';
+      
+      $("#weather").html(html);
+    },
+    error: function(error) {
+      $("#weather").html('<p>'+error+'</p>');
+    }
+  });
+}
+
+
+
+
+
+
+
+
+
 		var datetime = null,
         date = null;
 
