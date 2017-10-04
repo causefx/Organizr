@@ -523,12 +523,12 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 	
 	// Get Item Details
 	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&api_key='.$token),true)['Items'][0];
-	if (substr_count(EMBYURL, ':') == 2) {
+	/*if (substr_count(EMBYURL, ':') == 2) {
 		$URL = "http://app.emby.media/itemdetails.html?id=".$itemDetails['Id'];
 	}else{
 		$URL = EMBYURL."/web/itemdetails.html?id=".$itemDetails['Id'];
-	}
-	//$URL = "http://app.emby.media/itemdetails.html?id=".$itemDetails['Id'];
+	}*/
+	$URL = EMBYURL."/web/itemdetails.html?id=".$itemDetails['Id'];
 	switch ($itemDetails['Type']) {
 		case 'Episode':
 			$title = (isset($itemDetails['SeriesName'])?$itemDetails['SeriesName']:"");
