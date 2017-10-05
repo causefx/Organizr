@@ -244,6 +244,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<script type="text/javascript" src="<?=$baseURL;?>js/user.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
 		<link rel="stylesheet" href="<?=$baseURL;?>css/style.css?v=<?php echo INSTALLEDVERSION; ?>">
+		<link rel="stylesheet" href="<?=$baseURL;?>css/weather-icons.css?v=<?php echo INSTALLEDVERSION; ?>">
 		<link rel="stylesheet" href="bower_components/animate.css/animate.min.css?v=<?php echo INSTALLEDVERSION; ?>">
 
 		<link rel="icon" type="image/png" href="<?=$baseURL;?>images/favicon/android-chrome-192x192.png" sizes="192x192">
@@ -266,6 +267,9 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<![endif]-->
 	</head>
 	<style>
+		#weather .w-icon.right.pull-right {
+			font-size: 70px;
+		}
 		.new-message{
 			color: #46bc99 !important;
 		}
@@ -1214,7 +1218,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 												</div>
 												<div class="clearfix"></div>
 											</div>
-											<div id="weather" class="content-box ultra-widget yellow-bg"></div>
 											<?php if($USER->authenticated){?>
 											<div id="editInfoDiv" class="content-box" style="display: none">
 
@@ -1262,6 +1265,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 												</div>
 											</div>
 											<?php } ?>
+											<div id="weather" class="content-box ultra-widget yellow-bg"></div>
 										</div>
 									</div>
 									<!-- END EDIT USER -->
@@ -1341,7 +1345,113 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		} else {
 			$('#weathern').hide();
 		}
-
+		function setWeatherIcon(condid) {
+		var icon = '';
+			switch(condid) {
+				case '0': icon  = 'wi-tornado';
+				break;
+				case '1': icon = 'wi-storm-showers';
+				break;
+				case '2': icon = 'wi-tornado';
+				break;
+				case '3': icon = 'wi-thunderstorm';
+				break;
+				case '4': icon = 'wi-thunderstorm';
+				break;
+				case '5': icon = 'wi-snow';
+				break;
+				case '6': icon = 'wi-rain-mix';
+				break;
+				case '7': icon = 'wi-rain-mix';
+				break;
+				case '8': icon = 'wi-sprinkle';
+				break;
+				case '9': icon = 'wi-sprinkle';
+				break;
+				case '10': icon = 'wi-hail';
+				break;
+				case '11': icon = 'wi-showers';
+				break;
+				case '12': icon = 'wi-showers';
+				break;
+				case '13': icon = 'wi-snow';
+				break;
+				case '14': icon = 'wi-storm-showers';
+				break;
+				case '15': icon = 'wi-snow';
+				break;
+				case '16': icon = 'wi-snow';
+				break;
+				case '17': icon = 'wi-hail';
+				break;
+				case '18': icon = 'wi-hail';
+				break;
+				case '19': icon = 'wi-cloudy-gusts';
+				break;
+				case '20': icon = 'wi-fog';
+				break;
+				case '21': icon = 'wi-fog';
+				break;
+				case '22': icon = 'wi-fog';
+				break;
+				case '23': icon = 'wi-cloudy-gusts';
+				break;
+				case '24': icon = 'wi-cloudy-windy';
+				break;
+				case '25': icon = 'wi-thermometer';
+				break;
+				case '26': icon = 'wi-cloudy';
+				break;
+				case '27': icon = 'wi-night-cloudy';
+				break;
+				case '28': icon = 'wi-day-cloudy';
+				break;
+				case '29': icon = 'wi-night-cloudy';
+				break;
+				case '30': icon = 'wi-day-cloudy';
+				break;
+				case '31': icon = 'wi-night-clear';
+				break;
+				case '32': icon = 'wi-day-sunny';
+				break;
+				case '33': icon = 'wi-night-clear';
+				break;
+				case '34': icon = 'wi-day-sunny-overcast';
+				break;
+				case '35': icon = 'wi-hail';
+				break;
+				case '36': icon = 'wi-day-sunny';
+				break;
+				case '37': icon = 'wi-thunderstorm';
+				break;
+				case '38': icon = 'wi-thunderstorm';
+				break;
+				case '39': icon = 'wi-thunderstorm';
+				break;
+				case '40': icon = 'wi-storm-showers';
+				break;
+				case '41': icon = 'wi-snow';
+				break;
+				case '42': icon = 'wi-snow';
+				break;
+				case '43': icon = 'wi-snow';
+				break;
+				case '44': icon = 'wi-cloudy';
+				break;
+				case '45': icon = 'wi-lightning';
+				break;
+				case '46': icon = 'wi-snow';
+				break;
+				case '47': icon = 'wi-thunderstorm';
+				break;
+				case '3200': icon = 'wi-cloud';
+				break;
+				default: icon = 'wi-cloud';
+				break;
+			}
+		
+			return '<i class="wi '+icon+' wi-fw"></i>';
+		}
 		$(document).ready(function() {
 			getWeather();
 			setInterval(getWeather, 600000);
@@ -1358,11 +1468,32 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				woeid: woeid,
 				unit: 'f',
 				success: function(weather) {
-					html = '<div class="w-content">';
-					//html += '<div class="w-icon right pull-right"><i class="icon-'+weather.code+'"></i></div>';
-					html += '<div class="w-icon right pull-right"><img class="pull-right" style="width: 85%;margin-right: -50px;" src="'+weather.image+'"></div>';
+					//html = '<h5 class="text-uppercase text-center">Weather For '+weather.city+', '+weather.region+'</h5>';
+					html = '<h6 class="text-center">Current Weather</h6>';
+					html += '<div class="w-content content-box">';
+					html += '<div class="w-icon right pull-right">'+setWeatherIcon(weather.code)+'</div>';
 					html += '<div class="w-descr left pull-left text-center">';
-					html += '<span class="text-uppercase w-name">'+weather.city+', '+weather.region+'</span><br><span class="w-name">'+weather.temp+'&deg;'+weather.units.temp+' / '+weather.alt.temp+'&deg;C</span><br><span class="w-name">'+weather.currently+'</span></div></div>';
+					html += '<span class="w-name">'+weather.temp+'&deg;'+weather.units.temp+' / '+weather.alt.temp+'&deg;C</span><br>';
+					html += '<span class="w-name">'+weather.currently+'</span>';
+					html += '</div></div>';
+					//Forecast
+					html += '<div class="content-box big-box"><h4 class="">'+weather.city+', '+weather.region+' Forecast</h4><div class="table-responsive"><table class="table table-striped table-condensed">';
+					//html += '<caption>'+weather.city+', '+weather.region+'</caption>';
+					html += '<thead><tr><th>Day</th><th>High</th><th>Low</th><th>Weather</th><th>Visual</th></tr></thead><tbody>';
+					//Days
+					html += '<tr><th scope="row">'+weather.forecast[0].day+'</th><td>'+weather.forecast[0].high+'&deg;'+weather.units.temp+' / '+weather.forecast[0].alt.high+'&deg;C</td>';
+					html += '<td>'+weather.forecast[0].low+'&deg;'+weather.units.temp+' / '+weather.forecast[0].alt.low+'&deg;C</td><td>'+weather.forecast[0].text+'</td><td>'+setWeatherIcon(weather.forecast[0].code)+'</td></tr>';
+					html += '<tr><th scope="row">'+weather.forecast[1].day+'</th><td>'+weather.forecast[1].high+'&deg;'+weather.units.temp+' / '+weather.forecast[1].alt.high+'&deg;C</td>';
+					html += '<td>'+weather.forecast[1].low+'&deg;'+weather.units.temp+' / '+weather.forecast[1].alt.low+'&deg;C</td><td>'+weather.forecast[1].text+'</td><td>'+setWeatherIcon(weather.forecast[1].code)+'</td></tr>';
+					html += '<tr><th scope="row">'+weather.forecast[2].day+'</th><td>'+weather.forecast[2].high+'&deg;'+weather.units.temp+' / '+weather.forecast[2].alt.high+'&deg;C</td>';
+					html += '<td>'+weather.forecast[2].low+'&deg;'+weather.units.temp+' / '+weather.forecast[2].alt.low+'&deg;C</td><td>'+weather.forecast[2].text+'</td><td>'+setWeatherIcon(weather.forecast[2].code)+'</td></tr>';
+					html += '<tr><th scope="row">'+weather.forecast[3].day+'</th><td>'+weather.forecast[3].high+'&deg;'+weather.units.temp+' / '+weather.forecast[3].alt.high+'&deg;C</td>';
+					html += '<td>'+weather.forecast[3].low+'&deg;'+weather.units.temp+' / '+weather.forecast[3].alt.low+'&deg;C</td><td>'+weather.forecast[3].text+'</td><td>'+setWeatherIcon(weather.forecast[3].code)+'</td></tr>';
+					html += '<tr><th scope="row">'+weather.forecast[4].day+'</th><td>'+weather.forecast[4].high+'&deg;'+weather.units.temp+' / '+weather.forecast[4].alt.high+'&deg;C</td>';
+					html += '<td>'+weather.forecast[4].low+'&deg;'+weather.units.temp+' / '+weather.forecast[4].alt.low+'&deg;C</td><td>'+weather.forecast[4].text+'</td><td>'+setWeatherIcon(weather.forecast[4].code)+'</td></tr>';
+					//Days End
+					html += '</tbody></table></div></div>';
+
 					$("#weather").html(html);
 				},
 				error: function(error) {
@@ -1375,8 +1506,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
         date = null;
 
 		var update = function () {
-			date = moment(new Date())
-			datetime.html(date.format('ddd MMM DD YYYY h:mm A'));
+			date = moment(new Date()).format('llll');
+			datetime.html(date);
 		};
 		 //Current Time
 		 datetime = $('.current-time')
@@ -1562,7 +1693,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 					// Interval Loads
 					setInterval(function() {
 						pingTab<?php echo $pingCount;?>();
-						//console.log("ping check for tab[<?php echo $pingCount;?>] complete");
 					}, <?php echo $pingTimer; ?>);
 
 				<?php $pingCount++; }

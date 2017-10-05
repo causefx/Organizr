@@ -2900,8 +2900,13 @@ echo buildSettings(
                 console.log('hmmmmm, what the hell is this section?');
             })
             $(".generateEmails").click(function() {
+                <?php if(PLEXURL != ''){
+                    echo 'var backend = "plex";';
+                }elseif(EMBYURL != ''){
+                    echo 'var backend = "emby";';
+                } ?>
                 $('.generateEmails').text("Loading...");
-                ajax_request('POST', 'get-emails', {type : 'plex'}).done(function(data){
+                ajax_request('POST', 'get-emails', {type : backend}).done(function(data){
                     console.log('start');
                     $('#email-users').html(data);
                     $('#emailSelect').show();

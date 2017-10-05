@@ -622,10 +622,12 @@ $(document).ready(function()
                                         $(function(){
                                             $('.chat-timestamp').each(function(){
                                                 var $this = $(this).attr('time');
-                                                var dateVal = new Date($this+' UTC');
-                                                var dateString = dateVal.toLocaleString();
-                                                $(this).text(formatAMPM(dateVal)); 
-                                                //console.log(formatAMPM(dateVal));
+                                                if(isMobile === true){
+                                                    newdate = moment($this+'Z').format('lll');
+                                                }else {
+                                                    newdate = moment(new Date($this+'Z')).format('lll');
+                                                }
+                                                $(this).text(newdate); 
                                             });
                                         });
                                     }
