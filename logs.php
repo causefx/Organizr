@@ -17,8 +17,8 @@ qualifyUser("admin", true);
 $USER = new User("registration_callback");
 
 // Load Colours/Appearance
-foreach(loadAppearance() as $key => $value) {
-	$$key = $value;
+foreach (loadAppearance() as $key => $value) {
+    $$key = $value;
 }
 
 $logs = getLogs();
@@ -40,8 +40,8 @@ $logs = getLogs();
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
         <link rel="stylesheet" href="bower_components/metisMenu/dist/metisMenu.min.css">
-        <link rel="stylesheet" href="bower_components/Waves/dist/waves.min.css"> 
-        <link rel="stylesheet" href="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css"> 
+        <link rel="stylesheet" href="bower_components/Waves/dist/waves.min.css">
+        <link rel="stylesheet" href="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
 
         <link rel="stylesheet" href="js/selects/cs-select.css">
         <link rel="stylesheet" href="js/selects/cs-skin-elastic.css">
@@ -62,13 +62,13 @@ $logs = getLogs();
         <link rel="stylesheet" href="css/settings.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/summernote/dist/summernote.css">
         <link href="css/jquery.filer.css" rel="stylesheet">
-	    <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
+        <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
 
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
         <![endif]-->
-		
+
         <!--Scripts-->
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
         <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -92,7 +92,7 @@ $logs = getLogs();
 
         <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
         <script src="bower_components/numbered/jquery.numberedtextarea.js"></script>
-		
+
         <!--Other-->
         <script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
@@ -109,7 +109,7 @@ $logs = getLogs();
         <script src="bower_components/datatables-tabletools/js/dataTables.tableTools.js"></script>
          <!--Summernote-->
         <script src="bower_components/summernote/dist/summernote.min.js"></script>
-		<style><?php customCSS(); ?></style>
+        <style><?php customCSS(); ?></style>
     </head>
     <body class="scroller-body" style="padding: 0; overflow: hidden">
         <div id="main-wrapper" class="main-wrapper">
@@ -118,13 +118,16 @@ $logs = getLogs();
                 <div class="big-box">
                     <div class="row">
                         <div class="col-lg-12">
-                            <?php if( count($logs) < 5){?>
+                            <?php if (count($logs) < 5) {
+    ?>
                             <div class="btn-group btn-group-justified gray-bg">
-                                <?php foreach($logs as $k => $v){ ?>
+                                <?php foreach ($logs as $k => $v) {
+        ?>
                                 <div class="btn-group" role="group">
                                     <button type="button" data-name="<?php echo $k; ?>" class="btn waves btn-info waves-effect waves-float log-link gray-bg"><?php echo $k; ?></button>
                                 </div>
-                                <?php } ?>
+                                <?php
+    } ?>
                                 <div class="btn-group" role="group">
                                     <button type="button" data-name="All" class="btn waves btn-info waves-effect waves-float log-link gray-bg">Combined</button>
                                 </div>
@@ -132,50 +135,57 @@ $logs = getLogs();
                                     <button type="button" data-name="All" class="btn waves btn-info waves-effect waves-float all-link gray-bg">Show All Logs</button>
                                 </div>
                             </div>
-                            <?php } ?>
-                            <?php if( count($logs) >= 5){?>
+                            <?php
+} ?>
+                            <?php if (count($logs) >= 5) {
+        ?>
                             <div class="btn-group pull-right" role="group" aria-label="...">
                                 <div class="btn-group" role="group">
                                     <button type="button" class="btn waves btn-default dropdown-toggle waves-effect waves-float green-bg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Choose Log <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu pull-right" style="position: fixed;right: 20px;top: 50px;">
-                                        <?php foreach($logs as $k => $v){ ?>
+                                        <?php foreach ($logs as $k => $v) {
+            ?>
                                         <li data-name="<?php echo $k; ?>" class="log-link"><a href="#"><?php echo $k; ?></a></li>
-                                        <?php } ?>
+                                        <?php
+        } ?>
                                         <li class="divider"></li>
                                         <li data-name="All" class="log-link"><a href="#">Combined</a></li>
                                         <li data-name="All" class="all-link"><a href="#">Show All Logs</a></li>
                                     </ul>
                                 </div>
                             </div>
-                            <?php } ?>
+                            <?php
+    } ?>
                         </div>
                     </div>
                     <br/>
                     <div class="row">
                         <div class="col-lg-12">
 
-                            <?php foreach($logs as $k => $v){ ?>
-                            <div id="<?php echo $k;?>-table" class="table-responsive content-box" style="padding: 10px; display: none">
-                            <h2><?php echo $k;?></h2>
+                            <?php foreach ($logs as $k => $v) {
+        ?>
+                            <div id="<?php echo $k; ?>-table" class="table-responsive content-box" style="padding: 10px; display: none">
+                            <h2><?php echo $k; ?></h2>
                                 <table id="datatable" class="datatable display">
                                     <thead>
                                         <tr>
-                                            <th><?php echo $language->translate("LOG");?></th>
+                                            <th><?php echo $language->translate("LOG"); ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                            <?php readExternalLog('single',$v); ?>
+                                            <?php readExternalLog('single', $v); ?>
                                     </tbody>
                                 </table>
                             </div>
-                            <?php }?>
+                            <?php
+    }?>
 
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-12">                            
+                        <div class="col-lg-12">
                             <div id="All-table" class="table-responsive" style="padding: 10px; display: none">
                             <h2>All Logs</h2>
                                 <table id="datatable" class="datatable display">
@@ -186,9 +196,9 @@ $logs = getLogs();
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <?php foreach($logs as $k => $v){
-                                        readExternalLog('all',$v,$k);
-                                    }?>
+                                    <?php foreach ($logs as $k => $v) {
+        readExternalLog('all', $v, $k);
+    }?>
                                     </tbody>
                                 </table>
                             </div>
