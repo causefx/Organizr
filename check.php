@@ -8,17 +8,17 @@ if (file_exists('config/config.php')) {
 function check($extension) {
     
     if (extension_loaded($extension)) : 
-    
+        echo '<div class="col-lg-3">';
         echo '<div class="panel panel-success">';
         echo '<div class="panel-heading">';
         echo '<h3 class="panel-title">'. $extension . '</h3>';
         echo '</div>';
         echo '<div style="color: gray" class="panel-body">';
         echo $extension . ' is loaded and ready to rock-n-roll!  Good 2 Go!';
-        echo '</div></div>'; 
+        echo '</div></div></div>'; 
     
     else :
-    
+        echo '<div class="col-lg-3">';
         echo '<div class="panel panel-danger">';
         echo '<div class="panel-heading">';
         echo '<h3 class="panel-title">'. $extension . '</h3>';
@@ -32,7 +32,7 @@ function check($extension) {
         
         endif;
     
-        echo '</div></div>'; 
+        echo '</div></div></div>'; 
     
     endif;  
     
@@ -41,7 +41,7 @@ function check($extension) {
 function checkFunction($function) {
     
     if (function_exists($function)) : 
-    
+        echo '<div class="col-lg-3">';
         echo '<div class="panel panel-success">';
         echo '<div class="panel-heading">';
         echo '<h3 class="panel-title">'. $function . '</h3>';
@@ -55,10 +55,10 @@ function checkFunction($function) {
         
         endif;
     
-        echo '</div></div>'; 
+        echo '</div></div></div>'; 
     
     else :
-    
+        echo '<div class="col-lg-3">';
         echo '<div class="panel panel-danger">';
         echo '<div class="panel-heading">';
         echo '<h3 class="panel-title">'. $function . '</h3>';
@@ -72,7 +72,7 @@ function checkFunction($function) {
         
         endif;
     
-        echo '</div></div>'; 
+        echo '</div></div></div>'; 
     
     endif;  
     
@@ -95,24 +95,23 @@ function getFilePermission($file) {
         endif;
 
         if (is_writable($file)) :
-
+            echo '<div class="col-lg-6">';
             echo '<div class="panel panel-success">';
             echo '<div class="panel-heading">';
             echo '<h3 class="panel-title">'. $file . '<permissions style="float: right;">Permissions: ' . substr(decoct(fileperms($file)),$length) . '</permissions></h3>';
             echo '</div>';
             echo '<div style="color: gray" class="panel-body">';
             echo $file . ' is writable and ready to rock-n-roll!  Good 2 Go!';
-            echo '</div></div>'; 
-
+            echo '</div></div></div>'; 
         else :
-
+            echo '<div class="col-lg-6">';
             echo '<div class="panel panel-danger">';
             echo '<div class="panel-heading">';
             echo '<h3 class="panel-title">'. $file . '</h3>';
             echo '</div>';
             echo '<div style="color: gray" class="panel-body">';
             echo $file . ' is NOT writable!  Please change the permissions to make it writtable by the PHP User.';
-            echo '</div></div>'; 
+            echo '</div></div></div>'; 
 
         endif;
         
@@ -135,17 +134,10 @@ function getFilePermission($file) {
         <title>Requirement Checker</title>
 
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
-        <link rel="stylesheet" href="bower_components/metisMenu/dist/metisMenu.min.css">
-        <link rel="stylesheet" href="bower_components/Waves/dist/waves.min.css"> 
-        <link rel="stylesheet" href="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css"> 
-
-        <link rel="stylesheet" href="js/selects/cs-select.css">
-        <link rel="stylesheet" href="js/selects/cs-skin-elastic.css">
-
-
         <link rel="stylesheet" href="css/style.css">
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
+		<script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
         
     </head>
 
@@ -157,6 +149,8 @@ function getFilePermission($file) {
             <div id="content"  style="margin:0 20px; overflow:hidden">
                 
                 <h1><center>Check Requirements & Permissions</center></h1>
+
+                <div class="row">
                 
                 <?php
                 
@@ -168,21 +162,26 @@ function getFilePermission($file) {
                 check("openssl");
                 check("session");
                 check("simplexml");
-                //checkFunction("MAIL");
+                check("json");
+                checkFunction("hash");
                 checkFunction("fopen");
+                checkFunction("fsockopen");
+                ?>
+                </div>
+                <div class="row">
+                <?php
 
                 @getFilePermission($db);
                 @getFilePermission($folder);
                 getFilePermission((__DIR__));
                 getFilePermission(dirname(__DIR__));
-                
+                echo '</div>';
                 //PHPINFO
-                
                 echo '<div class="panel panel-success">';
                 echo '<div class="panel-heading">';
                 echo '<h3 class="panel-title">PHP Info</h3>';
                 echo '</div>';
-                echo '<div style="color: gray" class="panel-body">';
+                echo '<div style="color: black" class="panel-body">';
                 echo phpinfo();
                 echo '</div></div>';
 
@@ -191,6 +190,13 @@ function getFilePermission($file) {
             </div>
 
         </div>
+        <script>
+        $("body").niceScroll({
+            railpadding: {top:0,right:10,left:0,bottom:0},
+            scrollspeed: 30,
+            mousescrollstep: 60
+        });
+        </script>
 
     </body>
 

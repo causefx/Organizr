@@ -402,7 +402,7 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 					if($userDevice !== "phone"){
 						echo '<div class="col-xs-1" style="width: 60px">';
 						echo '
-						<button id="apply" type="submit" style="display:none;border-radius: 20px !important; -webkit-border-radius: 20px !important;margin-bottom: -20px;z-index:10000;" class="btn btn-success btn-icon waves waves-circle waves-effect waves-float settingsMenu animated tada">
+						<button id="apply" type="submit" style="display:none;border-radius: 0px !important; -webkit-border-radius: 20px !important;margin-bottom: -20px;margin-left: 5px;z-index:10000;" class="btn btn-success btn-icon waves waves-circle waves-effect waves-float settingsMenu animated tada">
 						<i class="fa fa-retweet fa-fw pull-left" style="padding-left: 12px;"></i>
 						<p class="" style="text-align: center;direction: rtl;display:none;"><strong>'.$language->translate("APPLY_CHANGES").'</strong></p>
 					</button>
@@ -2904,6 +2904,8 @@ echo buildSettings(
                     echo 'var backend = "plex";';
                 }elseif(EMBYURL != ''){
                     echo 'var backend = "emby";';
+                }else{
+                    echo 'var backend = "org";';
                 } ?>
                 $('.generateEmails').text("Loading...");
                 ajax_request('POST', 'get-emails', {type : backend}).done(function(data){
@@ -3766,7 +3768,7 @@ echo buildSettings(
             $("#clearTheme").click(function () {
                 swal({
                     title: "Please Choose",
-                    text: "You can clear just the theme name saved or clear theme nsame and CSS",
+                    text: "You can clear just the theme name saved or clear theme name and CSS",
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",
