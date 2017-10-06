@@ -1469,7 +1469,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				unit: 'f',
 				success: function(weather) {
 					//html = '<h5 class="text-uppercase text-center">Weather For '+weather.city+', '+weather.region+'</h5>';
-					html = '<h6 class="text-center yellow">Current Weather</h6>';
+					html = '<h5 class="text-center yellow">Current Weather</h5>';
 					html += '<div class="content-box ultra-widget yellow-bg">';
 					html += '<div class="w-icon right pull-right">'+setWeatherIcon(weather.code)+'</div>';
 					html += '<div class="w-descr left pull-left text-center">';
