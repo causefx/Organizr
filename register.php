@@ -4,24 +4,20 @@ require_once("user.php");
 $errors         = array();
 $data           = array();
 
-    if (empty($_POST['registerPasswordValue']))
-        $errors['registerPasswordValue'] = 'Password is required.';
-    
-    if ($_POST['registerPasswordValue'] != REGISTERPASSWORD)
-        $errors['registerPasswordValue'] = 'Password does not match.';
+if (empty($_POST['registerPasswordValue'])) {
+    $errors['registerPasswordValue'] = 'Password is required.';
+}
 
-    if ( ! empty($errors)) {
+if ($_POST['registerPasswordValue'] != REGISTERPASSWORD) {
+    $errors['registerPasswordValue'] = 'Password does not match.';
+}
 
-        $data['success'] = false;
-        $data['errors']  = $errors;
-        
-    } else {
+if (! empty($errors)) {
+    $data['success'] = false;
+    $data['errors']  = $errors;
+} else {
+    $data['success'] = true;
+    $data['message'] = 'Success!';
+}
 
-        $data['success'] = true;
-        $data['message'] = 'Success!';
-        
-    }
-
-    echo json_encode($data);
-
-?>
+echo json_encode($data);

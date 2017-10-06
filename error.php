@@ -20,13 +20,13 @@ $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 ini_set("display_errors", 1);
 ini_set("error_reporting", E_ALL | E_STRICT);
 
-foreach(loadAppearance() as $key => $value) {
-	$$key = $value;
+foreach (loadAppearance() as $key => $value) {
+    $$key = $value;
 }
 
 $requested = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 $status = (isset($_GET['error'])?$_GET['error']:404);
-$codes = array(  
+$codes = array(
        400 => array('Bad Request', 'The server cannot or will not process the request due to an apparent client error.', 'sowwy'),
        401 => array('Unauthorized', 'You do not have access to this page.', 'sowwy'),
        403 => array('Forbidden', 'The server has refused to fulfill your request.', 'sowwy'),
@@ -58,9 +58,9 @@ $errorImage = ($codes[$status][2]) ? $codes[$status][2] : "confused";
         <title><?=$errorTitle;?></title>
 
         <link rel="stylesheet" href="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>bower_components/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>bower_components/Waves/dist/waves.min.css"> 
+        <link rel="stylesheet" href="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>bower_components/Waves/dist/waves.min.css">
         <link rel="stylesheet" href="<?php echo checkRootPath(dirname($_SERVER['SCRIPT_NAME'])); ?>css/style.css">
-		<style><?php customCSS(); ?></style>
+        <style><?php customCSS(); ?></style>
     </head>
     <body id="body-error" class="gray-bg" style="padding: 0;">
         <div class="main-wrapper" style="position: initial;">
