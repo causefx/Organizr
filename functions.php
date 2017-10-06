@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 // ===================================
 // Define Version
@@ -1644,11 +1644,11 @@ function qualifyUser($type, $errOnFail = false) {
 	
 	if (!$authorized && $errOnFail) {
 		if ($GLOBALS['USER']->authenticated) {
-			header('Location: '.dirname($_SERVER['SCRIPT_NAME']).'error.php?error=401');
-			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'error.php?error=401\'</script>';
+			header('Location: '.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=401');
+			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=401\'</script>';
 		} else {
-			header('Location: '.dirname($_SERVER['SCRIPT_NAME']).'error.php?error=999');
-			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'error.php?error=999\'</script>';
+			header('Location: '.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=999');
+			echo '<script>window.location.href = \''.dirname($_SERVER['SCRIPT_NAME']).'/error.php?error=999\'</script>';
 		}
 
 		debug_out('Not Authorized' ,1);
