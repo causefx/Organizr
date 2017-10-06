@@ -54,8 +54,10 @@ homepageSettings.ini.php
 loginLog.json
 custom.css
 _config.yml
+org.log
 test.php
 users.db
+config/cacert.pem
 config/config.php
 config/config*.bak.php
 config/users/
