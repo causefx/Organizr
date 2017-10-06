@@ -1944,7 +1944,7 @@ echo buildSettings(
                                                 <div class="w-content big-box">
                                                     <div class="w-progress">
                                                         <span class="w-amount">BitCoin</span>
-                                                        <small class="text-uppercase">1NDy1Su6izmwkcFZaZuMWDYrFFUNv3FQCN</small>
+                                                        <small class="text-uppercase">1JLWKsSgDDKdnLjPWbnxfQmCxi8uUohzVv</small>
                                                     </div>
                                                     <span class="w-refresh w-p-icon">
                                                         <span class="fa-stack fa-lg">
