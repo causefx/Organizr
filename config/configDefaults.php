@@ -91,4 +91,12 @@ return array(
 	"downloadRefresh" => "30000",
 	"organizrAPI" => "",
 	"splash" => "false",
+	"chat" => "false",
+	"chatAuth" => "false",
+	"installedTheme" => "",
+	"calendarRefresh" => "60000",
+	"authBackendDomainFormat" => "",
+	"couchURL" => "",
+	"couchAPI" => "",
+	"couchHomeAuth" => false,
 );

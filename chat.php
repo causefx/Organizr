@@ -9,7 +9,8 @@ require_once("user.php");
 require_once("functions.php");
 
 $USER = new User("registration_callback");
-
+qualifyUser(CHATAUTH, true);
+if(CHAT !== "true"){ die("chat not enabled");}
 $dbfile = DATABASE_LOCATION.'users.db';
 
 $file_db = new PDO("sqlite:" . $dbfile);
@@ -67,6 +68,8 @@ if($hasOptions == "Yes") :
     endforeach;
 
 endif;
+
+
 ?>
 
 <!DOCTYPE html>
@@ -143,12 +146,9 @@ endif;
 
             }  
         
-            if( $db = new SQLite3("chatpack.db") )
-            {
-                if( $db->busyTimeout(5000) )
-                {
-                    if( $db->exec("PRAGMA journal_mode = wal;") )
-                    {
+            if( $db = new SQLite3("chatpack.db") ){
+                if( $db->busyTimeout(5000) ){
+                    if( $db->exec("PRAGMA journal_mode = wal;") ) {
                         $logtable = "CREATE TABLE IF NOT EXISTS chatpack_log
                                      (id INTEGER PRIMARY KEY,
                                      timestamp INTEGER NOT NULL,
@@ -156,9 +156,7 @@ endif;
                                      avatar TEXT NOT NULL,
                                      message TEXT NOT NULL,
                                      liked INTEGER DEFAULT 0)";
-
-                        if( $db->exec($logtable) )
-                        {
+                        if( $db->exec($logtable) ){
                             $usertable = "CREATE TABLE IF NOT EXISTS chatpack_typing
                                           (id INTEGER PRIMARY KEY,
                                           timestamp INTEGER NOT NULL,
@@ -170,44 +168,28 @@ endif;
                                           timestamp INTEGER NOT NULL,
                                           avatar TEXT NOT NULL)";
 
-                            if( $db->exec($usertable) && $db->exec($onlinetable) )
-                            {
+                            if( $db->exec($usertable) && $db->exec($onlinetable) ){
                                 $dbcreated = true;
-                            }
-                            else
-                            {
+                            }else{
                                 errormessage("creating database table for typing");
                             }
-                        }
-                        else
-                        {
+                        }else{
                             errormessage("creating database table for messages");
                         }
-
-                        if( !$db->close() )
-                        {
+                        if( !$db->close() ){
                             errormessage("closing database connection");
                         }
-                    }
-                    else
-                    {
+                    }else{
                         errormessage("setting journal mode");
                     }
-                }
-                else
-                {
+                }else{
                     errormessage("setting busy timeout");
                 }
-            }
-            else
-            {
+            }else{
                 errormessage("using SQLite");
             }
         
-            if( $dbcreated )
-            {
-
-        ?>
+            if( $dbcreated ){?>
         
         <div class="main-wrapper" style="position: initial;">
             <div id="content" class="container-fluid">
@@ -241,23 +223,10 @@ endif;
                         </div>
                     </div>
                 </div>
-
             </div>    
         </div>
         
-        <?php
-            
-            }
-        
-            function errormessage($msg)
-            {
-                echo "<div style=\"margin-top: 50px;\">";
-                echo "<span style=\"color:#d89334;\">error </span>";
-                echo $msg;
-                echo "</div>";
-            }
-                
-        ?>
+        <?php } ?>
     </body>
 
     <script>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 // Include functions if not already included
 require_once('functions.php');
 
@@ -26,6 +26,9 @@ $settingsActive = "";
 $action = "";
 $loadingIcon = "images/organizr-load-w-thick.gif";
 $baseURL = "";
+$dbcreated = false;
+$splash = false;
+$group = (isset($group) ? $group : "guest");
 
 // Get Action
 if(isset($_POST['action'])) {
@@ -62,15 +65,11 @@ if (file_exists('config/config.php')) {
 	}
 
 	$configReady = "Yes";
-
 	require_once("user.php");
-
 	$USER = new User("registration_callback");
-
+	
 	$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
-
 	$database = new PDO("sqlite:" . $dbfile);
-
 	$query = "SELECT * FROM users";
 
 	foreach($database->query($query) as $data) {
@@ -82,87 +81,103 @@ if (file_exists('config/config.php')) {
 	$db = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
 	$file_db = new PDO("sqlite:" . $db);
 	$file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	$dbTab = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"');
-	$dbOptions = $file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"');
+	$dbTab = q2a($file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="tabs"'));
+	$dbOptions = q2a($file_db->query('SELECT name FROM sqlite_master WHERE type="table" AND name="options"'));
+	if (is_array($dbTab)) {
+		foreach($dbTab as $row) {
+			if (in_array("tabs", $row)) {
+				$tabSetup = "No";
+			}
+		}
+	}
 
-	foreach($dbTab as $row) :
-
-		if (in_array("tabs", $row)) :
-
-			$tabSetup = "No";
-
-		endif;
-
-	endforeach;
-
-	if($tabSetup == "Yes") :
-
+	if($tabSetup == "Yes"){
 		$settingsActive = "active";
-	endif;
+	}
+	if (is_array($dbOptions)) {
+		foreach($dbOptions as $row) {
+			if (in_array("options", $row)) {
+				$hasOptions = "Yes";
+			}
+		}
+	}
 
-	foreach($dbOptions as $row) :
+	if($tabSetup == "No") {	
+		if($USER->authenticated && $USER->role == "admin") {
+			$result = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc'));
+			$splash = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" ORDER BY `order` asc'));
+			if (is_array($result)) {
+				foreach($result as $row) {
+					if(!empty($row['iconurl']) && $settingsicon == "No") {
+						$settingsicon = "Yes";
+					}
+				}
+			}
 
-		if (in_array("options", $row)) :
+		}elseif($USER->authenticated && $USER->role == "user") {
 
-			$hasOptions = "Yes";
+			$result = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true" ORDER BY `order` asc'));
+			$splash = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" AND user = "true" ORDER BY `order` asc'));
 
-		endif;
+		}else {
 
-	endforeach;
+			$result = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true" ORDER BY `order` asc'));
+			$splash = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" AND guest = "true" ORDER BY `order` asc'));
 
-	if($tabSetup == "No") :
+		}
 
-		if($USER->authenticated && $USER->role == "admin") :
-
-			$result = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
-			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
-			$getsettings = $file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc');
-
-			foreach($getsettings as $row) :
-
-				if(!empty($row['iconurl']) && $settingsicon == "No") :
-
-					$settingsicon = "Yes";
-
-				endif;
-
-			endforeach;
-
-		elseif($USER->authenticated && $USER->role == "user") :
-
-			$result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true" ORDER BY `order` asc');
-			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND user = "true" ORDER BY `order` asc');
-
-		else :
-
-			$result = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true" ORDER BY `order` asc');
-			$splash = $file_db->query('SELECT * FROM tabs WHERE active = "true" AND guest = "true" ORDER BY `order` asc');
-
-		endif;
-
-	endif;
+	}
 
 	$userpic = md5( strtolower( trim( $USER->email ) ) );
+	$showPic = "<i class=\"mdi mdi-account-circle\"></i>";
 	if(LOADINGICON !== "") : $loadingIcon = LOADINGICON; endif;
-
 	if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
-	if($USER->authenticated) : 
 
-		if(GRAVATAR == "true") :
+	//NEW CHAT
+	if(CHAT == "true" && qualifyUser(CHATAUTH)){
+		if( $db = new SQLite3("chatpack.db") ){
+			if( $db->busyTimeout(5000) ){
+				if( $db->exec("PRAGMA journal_mode = wal;") ) {
+					$logtable = "CREATE TABLE IF NOT EXISTS chatpack_log
+									(id INTEGER PRIMARY KEY,
+									timestamp INTEGER NOT NULL,
+									user TEXT NOT NULL,
+									avatar TEXT NOT NULL,
+									message TEXT NOT NULL,
+									liked INTEGER DEFAULT 0)";
+					if( $db->exec($logtable) ){
+						$usertable = "CREATE TABLE IF NOT EXISTS chatpack_typing
+										(id INTEGER PRIMARY KEY,
+										timestamp INTEGER NOT NULL,
+										user TEXT NOT NULL)";
+						
+						$onlinetable = "CREATE TABLE IF NOT EXISTS chatpack_last_message
+										(
+										user TEXT PRIMARY KEY NOT NULL,
+										timestamp INTEGER NOT NULL,
+										avatar TEXT NOT NULL)";
 
-			$showPic = "<img src='https://www.gravatar.com/avatar/$userpic?s=$userSize' class='img-circle'>";
-
-		else: 
-			$showPic = "<i class=\"mdi mdi-account-box-outline\"></i>";
-
-		endif;
-
-	else : 
-
-		$showPic = "<login class='login-btn text-uppercase'>" . $language->translate("LOGIN") . "</login>"; 
-
-	endif;
-
+						if( $db->exec($usertable) && $db->exec($onlinetable) ){
+							$dbcreated = true;
+						}else{
+							errormessage("creating database table for typing");
+						}
+					}else{
+						errormessage("creating database table for messages");
+					}
+					if( !$db->close() ){
+						errormessage("closing database connection");
+					}
+				}else{
+					errormessage("setting journal mode");
+				}
+			}else{
+				errormessage("setting busy timeout");
+			}
+		}else{
+			errormessage("using SQLite");
+		}
+	}
 }
 
 if(!defined('SLIMBAR')) : define('SLIMBAR', 'true'); endif;
@@ -176,7 +191,7 @@ if(!isset($notifyExplode)) :
 
 endif;
 
-if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; else : $slimBar = "56"; $userSize = "40"; endif;
+if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; $chatSize = "142px"; else : $slimBar = "56"; $userSize = "40"; $chatSize = "171px";endif;
 
 if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon = "settings2.png"; else: $iconRotate = "true"; $settingsIcon = "settings.png"; endif;
 
@@ -229,6 +244,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<script type="text/javascript" src="<?=$baseURL;?>js/user.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 
 		<link rel="stylesheet" href="<?=$baseURL;?>css/style.css?v=<?php echo INSTALLEDVERSION; ?>">
+		<link rel="stylesheet" href="<?=$baseURL;?>css/weather-icons.css?v=<?php echo INSTALLEDVERSION; ?>">
 		<link rel="stylesheet" href="bower_components/animate.css/animate.min.css?v=<?php echo INSTALLEDVERSION; ?>">
 
 		<link rel="icon" type="image/png" href="<?=$baseURL;?>images/favicon/android-chrome-192x192.png" sizes="192x192">
@@ -251,20 +267,66 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<![endif]-->
 	</head>
 	<style>
-		.splash-item {
-			max-width: 100%;
-			-moz-transition: all 0.3s;
-			-webkit-transition: all 0.3s;
-			transition: all 0.3s;
-			opacity: .8 !important;
+		#weather .w-icon.right.pull-right {
+			font-size: 70px;
 		}
-		.splash-item:hover {
-			-moz-transform: scale(1.1);
-			-webkit-transform: scale(1.1);
-			transform: scale(1.1);
-			z-index: 10000000;
-			border-radius: 10px;
-			opacity: 1 !important;
+		.new-message{
+			color: #46bc99 !important;
+		}
+		@media screen and (max-width:737px){
+			.email-body{width: 100%; overflow: auto;height: 100%;}
+			.email-content, .email-new {
+				-webkit-overflow-scrolling: touch;
+				-webkit-transform: translateZ(0);
+				overflow: scroll;
+				position: fixed;
+				height:100% !important;
+				margin-top:<?=$slimBar;?>px;
+			}.email-content .email-header, .email-new .email-header{
+				padding: 10px 30px;
+				z-index: 1000;
+			}
+		}@media screen and (min-width:737px){
+			.email-body{width: 100%}
+			.email-content .close-button, .email-content .email-actions, .email-new .close-button, .email-new .email-actions {
+				position: relative;
+				top: 15px;
+				right: 0px;
+				float: right;
+			}.email-inner-section {
+				margin-top: 30px;
+			}.email-content, .email-new {
+				overflow: auto;
+				margin: <?=$slimBar;?>px 0 0 0 !important;
+				height: 100%;
+				position: fixed;
+				max-width: 100%;
+				width: calc(35%) !important;
+				right: calc(-35%);
+			}.email-content .email-header, .email-new .email-header{
+				position: fixed;
+				padding: 0px 30px;
+				width: calc(35%) !important;
+				z-index: 1000;
+			}
+		}
+		.loop-animation {
+			animation-iteration-count: infinite;
+			-webkit-animation-iteration-count: infinite;
+			-moz-animation-iteration-count: infinite;
+			-o-animation-iteration-count: infinite;
+		}
+		.loop-animation-timeout {
+			animation-iteration-count: 5;
+			-webkit-animation-iteration-count: 5;
+			-moz-animation-iteration-count: 5;
+			-o-animation-iteration-count: 5;
+		}
+		.ping-success {
+			background: #46bc99 !important;
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+		}.ping-warning {
+			background: #ff3333 !important;
 			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 		}
 		.TabOpened {
@@ -281,9 +343,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			background: <?=$sidebar;?>;
 		}.gn-menu-wrapper {
 			background: <?=$sidebar;?>;
-		}.gn-menu i {
-			height: 18px;
-			width: 52px;
 		}.la-timer.la-dark {
 			color: <?=$topbartext;?>
 		}.refresh-preloader {
@@ -308,23 +367,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		}.gn-menu li.rightActive > a {
 			background: <?=$hoverbg;?>;
 			border-radius: 100px 0 0 100px;
-		}.active {
-			display: block;
-		}.hidden {
-			display: none;
-		}.errorz {
-			background-image: linear-gradient(red, red), linear-gradient(#d2d2d2, #d2d2d2);
-			outline: none;
-			animation: input-highlight .5s forwards;
-			box-shadow: none;
-			padding-left: 0;
-			border: 0;
-			border-radius: 0;
-			background-size: 0 2px,100% 1px;
-			background-repeat: no-repeat;
-			background-position: center bottom,center calc(100% - 1px);
-			background: transparent;
-			box-shadow: none;
 		}.gn-menu li.active i.fa {
 			color: <?=$activetabicon;?>;
 		}.gn-menu li i.fa {
@@ -436,11 +478,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		}.ns-effect-exploader {
 			padding: 5px 22px;
 		}
+		[class^="icon-"]:before, [class*=" icon-"]:before {
+			display: inline !important;
+		}
 		<?php endif; ?>
 		<?php customCSS(); ?>
 	</style>
 
-	<body style="overflow: hidden">
+	<body id="body-index" class="group-<?php echo $group;?>" style="overflow: hidden">
 
 		<?php if (LOADINGSCREEN == "true") : ?>
 		<!--Preloader-->
@@ -448,9 +493,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			<div class="table-row">
 				<div class="table-cell">
 					<div class="la-ball-scale-multiple la-3x" style="color: <?=$topbar;?>">
-						<?php if (pathinfo($loadingIcon, PATHINFO_EXTENSION) !== "gif" ) : 
-							echo "<div></div><div></div><div></div>";
-						endif; ?>
 						<logo class="logo"><img height="192px" src="<?=$loadingIcon;?>"></logo>
 					</div>
 				</div>
@@ -478,23 +520,45 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 							<ul id="tabList" class="gn-menu metismenu">
 
 								<!--Start Tab List-->
-								<?php if($tabSetup == "No") : $tabCount = 1; foreach($result as $row) : 
-								if($row['defaultz'] == "true") : $defaultz = "active"; else : $defaultz = ""; endif; ?>
-								<li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
-									<a class="tab-link">
-										<?php if($row['iconurl']) : ?>
-											<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
-												<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
-												<img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
-											</i>
-										<?php else : ?>
-											<i class="fa <?=$row['icon'];?> fa-lg"><span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span></i>
-										<?php endif; ?>
-										<?=$row['name'];?>
-									</a>
+								<?php
+								if($tabSetup == "No") {
+									$tabCount = 1; 
+									$allPings = array(); 
+									if (is_array($result)) {
+										foreach($result as $row) {
+											$name = str_replace(array(':', '\\', '/', '*'), 'x', $row['ping_url']);
+											if($row['defaultz'] == "true") { 
+												$defaultz = "active"; 
+											}else { 
+												$defaultz = ""; 
+											} ?>
+									<li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
+										<a class="tab-link">
+											<?php if($row['iconurl']) { ?>
+												<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
+													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
+													<img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
+													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
+														<ping id="ping-<?=$name;?>"></ping>
+													<?php }?>
+												</i>
+											<?php }else { ?>
+												<i class="fa <?=$row['icon'];?> fa-lg">
+													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
+													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
+														<ping id="ping-<?=$name;?>"></ping>
+													<?php }?>
+												</i>
+											<?php } ?>
+											<?=$row['name'];?>
+										</a>
 
-								</li>
-								<?php $tabCount++; endforeach; endif;?>
+									</li>
+									<?php 
+										$tabCount++; 
+										}; 
+									}
+								}?>
 								<?php if($configReady == "Yes") : if($USER->authenticated && $USER->role == "admin") :?>
 								<li class="tab-item <?=$settingsActive;?>" id="settings.phpx" data-title="Settings" name="settings">
 									<a class="tab-link">
@@ -546,36 +610,28 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 				<li class="pull-right">
 					<ul class="nav navbar-right right-menu">
-						<li class="dropdown some-btn">
-							<?php if($configReady == "Yes") : if(!$USER->authenticated) : ?>
-							<a class="log-in">
-							<?php endif; endif;?>
-							<?php if($configReady == "Yes") : if($USER->authenticated) : ?>
+						<?php if($configReady == "Yes"){?>
+						<li class="dropdown some-btn">	
 							<a class="show-members">
-							<?php endif; endif;?>
 								<i class="userpic"><?=$showPic;?></i> 
 							</a>
 						</li>
+						<?php if(!$USER->authenticated){?>
 						<li class="dropdown some-btn">
-							<a class="fullscreen">
-								<i class="mdi mdi-fullscreen"></i>
+							<a class="log-in">
+								<login class='login-btn text-uppercase'><?php echo $language->translate("LOGIN"); ?></login>
 							</a>
 						</li>
+						<?php } }?>								
+
+						<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
 						<li class="dropdown some-btn">
-							<a id="reload" class="refresh">
-								<i class="mdi mdi-refresh"></i>
+							<a id="chat-open" class="chat-open">
+								<i class="mdi mdi-forum animated"></i>
+								<span class="label label-new-message"></span>
 							</a>
 						</li>
-						<li class="dropdown some-btn">
-							<a id="popout" class="popout">
-								<i class="mdi mdi-window-restore"></i>
-							</a>
-						</li>
-						<li style="display: block" id="splitView" class="dropdown some-btn">
-							<a class="spltView">
-								<i class="mdi mdi-window-close"></i>
-							</a>
-						</li>
+						<?php } ?>
 					</ul>
 				</li>
 			</ul>
@@ -755,75 +811,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			<div id="contentRight" class="content splitRight" style="">
 			</div>
 			<!--End Content-->
-
-			<!--Welcome notification-->
-			<div id="welcome"></div>
-			<div id="members-sidebar" style="background: <?=$sidebar;?>;" class="members-sidebar fade in">
-				<h4 class="pull-left zero-m"><?php echo $language->translate("OPTIONS");?></h4>
-				<span class="close-members-sidebar"><i class="fa fa-remove fa-lg pull-right"></i></span>
-				<div class="clearfix"><br/></div>
-				<?php if($configReady == "Yes") : if($USER->authenticated) : ?>
-				<br>
-				<div class="content-box profile-sidebar box-shadow">
-					<?php if(GRAVATAR == "true") : ?>
-					<img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=100&d=mm" class="img-responsive img-circle center-block" alt="user">
-					<?php endif; ?>
-					<div class="profile-usertitle">
-						<div class="profile-usertitle-name">
-							<?php echo strtoupper($USER->username); ?>
-						</div>
-						<div class="profile-usertitle-job">
-							<?php echo strtoupper($USER->role); ?>
-						</div>
-					</div>
-					<div id="buttonsDiv" class="profile-userbuttons">
-						<button id="editInfo" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("EDIT_INFO");?></button>
-						<button type="button" class="logout btn btn-warning waves waves-effect waves-float"><?php echo $language->translate("LOGOUT");?></button>
-					</div>
-					<div id="editInfoDiv" style="display: none" class="profile-usertitle">
-						<form class="content-form form-inline" name="update" id="update" action="" method="POST">
-
-							<input type="hidden" name="op" value="update"/>
-							<input type="hidden" name="sha1" value=""/>
-				<input type="hidden" name="password" value="">
-							<input type="hidden" name="username" value="<?php echo $USER->username; ?>"/>
-							<input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
-
-							<div class="form-group">
-
-								<input autocomplete="off" type="text" value="<?php echo $USER->email; ?>" class="form-control" name="email" placeholder="<?php echo $language->translate("EMAIL_ADDRESS");?>">
-
-							</div>
-
-							<div class="form-group">
-
-								<input autocomplete="off" type="password" class="form-control" name="password1" placeholder="<?php echo $language->translate("PASSWORD");?>">
-
-							</div>
-
-							<div class="form-group">
-
-								<input autocomplete="off" type="password" class="form-control" name="password2" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
-
-							</div>
-
-							<br>
-
-							<div class="form-group">
-
-								<input type="button" class="btn btn-success text-uppercase waves-effect waves-float" value="<?php echo $language->translate("UPDATE");?>" onclick="User.processUpdate()"/>
-								<button id="goBackButtons" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("GO_BACK");?></button>
-
-							</div>
-
-						</form>
-
-					</div>
-				</div>
-
-				<?php endif; endif;?>
-
-			</div>
 
 		</div>
 		<?php if($configReady == "Yes") : if(!$USER->authenticated && $configReady == "Yes") : ?>
@@ -1054,7 +1041,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			</div>
 		</div>
 		<?php } ?>
-		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true") {?>
+		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true" && $splash) {?>
 		<div id="splashScreen" class="splash-modal modal fade">
 			<div style="background:<?=$sidebar;?>;" class="table-wrapper big-box">
 				
@@ -1109,6 +1096,200 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			</div>
 		</div>
 		<?php } ?>
+		<!-- CHAT BOX -->
+		<?php if(CHAT == "true" && qualifyUser(CHATAUTH) && $dbcreated){?>
+		<div id="main-chat" class="email-content chat-box white-bg" style="z-index:1000000">
+			<div class="email-body">
+				<div class="email-inner small-box" style="padding: 0">
+					<div class="email-inner-section" style="margin-top: 0;">
+						<div class="small-box fade in" style="padding: 0">											
+							<div class="main-wrapper" style="position: initial; left:0;">
+								<div id="content">
+									<div class="btn-group btn-group-justified grayish-blue-bg">
+										<div class="btn-group" role="group">
+											<button id="chat-switch-chat" type="button" class="btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-comments-o"></i> Chat</button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="chat-switch-online" type="button" class="btn waves  waves-effect waves-float grayish-blue-bg"><i id="online-count" class="fa fa-users"></i> Online Users</button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="chat-switch-close" type="button" class="btn waves  waves-effect waves-float grayish-blue-bg"><i class="fa fa-close"></i> Close</button>
+										</div>
+									</div>
+
+									<div id="chat-chat-div" class="">
+										<div class="big-box chat gray-bg">
+											<div class="box" style="overflow: hidden; width: auto; height: calc(100vh - <?php echo $chatSize; ?>)">
+												<div id="intro">
+													<center><img class="logo" alt="logo" src="images/organizr-logo-h.png" style="width: 100%;">
+													<br><br>start chatting...</center>
+												</div>
+												<ul id="messages" class="chat-double chat-container"></ul>
+												<ul class="chat-double chat-container" style="padding: 0px;"><li id="istyping"></li></ul>
+											</div>
+											<br/>
+											<input id="message" autofocus onfocus="ensureVisible(this)" type="text" class="form-control gray-bg" placeholder="Enter your text" autocomplete="off"/>
+											<audio id="tabalert" preload="auto">
+												<source src="chat/audio/newmessage.mp3" type="audio/mpeg">
+											</audio>
+										</div>
+									</div>
+
+									<div id="chat-users-div" class="col-lg-12 gray-bg" style="display: none;">
+										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px);">
+											<br>
+											<div class="content-box">
+												<div class="content-title big-box i-block gray-bg">
+													<h4 class="zero-m">Online</h4>
+												</div>
+												<div class="clearfix"></div>
+												<div id="onlineusers" class="big-box" style="color:black;"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>		
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php } ?>
+		<?php if($configReady == "Yes"){ ?>
+		<!-- New User Menu BOX -->
+		<div id="main-user" class="email-content user-box white-bg" style="z-index:1000000">
+			<div class="email-body">
+				<div class="email-inner small-box" style="padding: 0">
+					<div class="email-inner-section" style="margin-top: 0;">
+						<div class="small-box fade in" style="padding: 0">											
+							<div class="main-wrapper" style="position: initial; left:0;">
+								<div id="content">
+									<div class="btn-group btn-group-justified grayish-blue-bg">
+										<div class="btn-group" role="group">
+											<button id="reload" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Refresh Tab" class="user-switch btn waves waves-effect waves-float grayish-blue-bg" style="border-radius:0"><i class="fa fa-refresh"></i></button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="splitView" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Close Tab" class="user-switch btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-window-close"></i></button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="popout" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Open Tab In New Window" class="user-switch btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-external-link"></i></button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="fullscreen" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Fullscreen" class="fullscreen user-switch btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-arrows-alt"></i></button>
+										</div>
+										<?php if($USER->authenticated){?>
+										<div class="btn-group" role="group">
+											<button id="editInfo" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="User Information" class="user-switch btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-user-circle"></i></button>
+										</div>
+										<div class="btn-group" role="group">
+											<button id="logout" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Signout" class="logout user-switch btn waves waves-effect waves-float grayish-blue-bg"><i class="fa fa-sign-out"></i></button>
+										</div>
+										<?php } ?>
+										<div class="btn-group" role="group">
+											<button id="user-switch-close" type="button" data-toggle="tooltip" data-placement="bottom" data-original-title="Close" class="user-switch btn waves waves-effect waves-float grayish-blue-bg" style="border-radius:0"><i class="fa fa-close"></i></button>
+										</div>
+									</div>
+									<!--EDIT USER -->
+									<div id="user-menu-div" class="col-lg-12 gray-bg" style="display: block;">
+										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px)">
+											<br>
+											<div class="content-box" style="left: 0;right: 0;">
+												<span style="display: block" class="current-time gray text-center"></span>
+											</div>
+											<div class="content-box">
+											<!--
+											<div class="member-info zero-m">
+												<img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=50&d=mm" alt="user" class="img-circle pull-left">
+												<p><i class="fa fa-user green zero-m"></i><span class="member-name gray"><strong><?php echo strtoupper($USER->username); ?></strong></span></p>
+												<p><i class="fa fa-group green zero-m"></i><span class="member-name gray"><strong> <?php echo strtoupper($USER->role); ?></strong></span></p>
+
+											</div>
+											-->
+												<div class="profile-usertitle">
+													<?php if(GRAVATAR == "true") : ?>
+													<img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=100&d=mm" class="img-responsive img-circle center-block" alt="user">
+													<?php endif; ?>
+													<div class="profile-usertitle-name">
+														<?php echo strtoupper($USER->username); ?>
+													</div>
+													<div class="profile-usertitle-job">
+														<?php echo strtoupper($USER->role); ?>
+													</div>
+												</div>
+												<div class="clearfix"></div>
+											</div>
+											<?php if($USER->authenticated){?>
+											<div id="editInfoDiv" class="content-box" style="display: none">
+
+												<div class="profile-usertitle">
+													<form class="content-form form-horizontal small-box" name="update" id="update" action="" method="POST">
+
+														<input type="hidden" name="op" value="update"/>
+														<input type="hidden" name="sha1" value=""/>
+														<input type="hidden" name="password" value="">
+														<input type="hidden" name="username" value="<?php echo $USER->username; ?>"/>
+														<input type="hidden" name="role" value="<?php echo $USER->role; ?>"/>
+
+														<div class="form-group">
+															<label for="user-email" class="col-sm-4 control-label gray"><?php echo $language->translate("EMAIL_ADDRESS");?></label>
+															<div class="col-sm-8">
+																<input type="email" autocomplete="off" value="<?php echo $USER->email; ?>" class="form-control material gray" name="email" id="user-email" placeholder="<?php echo $language->translate("EMAIL_ADDRESS");?>">
+															</div>
+														</div>
+
+														<div class="form-group">
+															<label for="password1" class="col-sm-4 control-label gray"><?php echo $language->translate("PASSWORD");?></label>
+															<div class="col-sm-8">
+																<input type="password" autocomplete="off" class="form-control material gray" name="password1" id="user-email" placeholder="<?php echo $language->translate("PASSWORD");?>">
+															</div>
+														</div>
+
+														<div class="form-group">
+															<label for="password2" class="col-sm-4 control-label gray"><?php echo $language->translate("PASSWORD_AGAIN");?></label>
+															<div class="col-sm-8">
+																<input type="password" autocomplete="off" class="form-control material gray" name="password2" id="user-email" placeholder="<?php echo $language->translate("PASSWORD_AGAIN");?>">
+															</div>
+														</div>
+
+														<br><br>
+
+														<div class="form-group">
+
+															<input type="button" class="btn btn-success text-uppercase waves-effect waves-float" value="<?php echo $language->translate("UPDATE");?>" onclick="User.processUpdate()"/>
+															<button id="goBackButtons" type="button" class="btn btn-primary text-uppercase waves waves-effect waves-float"><?php echo $language->translate("GO_BACK");?></button>
+
+														</div>
+
+													</form>
+
+												</div>
+											</div>
+											<?php } ?>
+											<div id="weather" class="gray"></div>
+										</div>
+									</div>
+									<!-- END EDIT USER -->
+									<!--EDIT USER -->
+									<div id="user-users-div" class="col-lg-12 gray-bg" style="display: none;">
+										<div class="gray-bg"  style="overflow: hidden; width: auto; height: calc(100vh - 62px);">
+											<br>
+											<div class="content-box">
+												<div class="content-title big-box i-block gray-bg">
+													<h4 class="zero-m">Online</h4>
+												</div>
+												<div class="clearfix"></div>
+											</div>
+										</div>
+									</div>
+									<!-- END EDIT USER -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php } ?>
 
 		<!--Scripts-->
 		<script src="<?=$baseURL;?>bower_components/jquery/dist/jquery.min.js"></script>
@@ -1137,9 +1318,214 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<!--Custom Scripts-->
 		<script src="<?=$baseURL;?>js/common.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
 		<script src="<?=$baseURL;?>js/mousetrap.min.js"></script>
+		<script src="<?=$baseURL;?>js/jquery.simpleWeather.js"></script>
 		<script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
+		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
+		<script src="chatjs.php" defer="true"></script>
+		<script type="text/javascript">
+		var scrolling = function(e, c) {
+			e.scrollIntoView();
+			if (c < 5) setTimeout(scrolling, 300, e, c + 1);
+		};
+		var ensureVisible = function(e) {
+			setTimeout(scrolling, 300, e, 0);
+		};
+		var mainchatdiv = document.getElementById('main-chat');
+		mainchatdiv.addEventListener('touchmove', function(e) {
 
+			e.preventDefault();
+
+		}, false);  
+   		</script>
+		<?php }?>
 		<script>
+		/* Does your browser support geolocation? */
+		if ("geolocation" in navigator) {
+			$('#weather').show(); 
+		} else {
+			$('#weathern').hide();
+		}
+		function setWeatherIcon(condid) {
+		var icon = '';
+			switch(condid) {
+				case '0': icon  = 'wi-tornado';
+				break;
+				case '1': icon = 'wi-storm-showers';
+				break;
+				case '2': icon = 'wi-tornado';
+				break;
+				case '3': icon = 'wi-thunderstorm';
+				break;
+				case '4': icon = 'wi-thunderstorm';
+				break;
+				case '5': icon = 'wi-snow';
+				break;
+				case '6': icon = 'wi-rain-mix';
+				break;
+				case '7': icon = 'wi-rain-mix';
+				break;
+				case '8': icon = 'wi-sprinkle';
+				break;
+				case '9': icon = 'wi-sprinkle';
+				break;
+				case '10': icon = 'wi-hail';
+				break;
+				case '11': icon = 'wi-showers';
+				break;
+				case '12': icon = 'wi-showers';
+				break;
+				case '13': icon = 'wi-snow';
+				break;
+				case '14': icon = 'wi-storm-showers';
+				break;
+				case '15': icon = 'wi-snow';
+				break;
+				case '16': icon = 'wi-snow';
+				break;
+				case '17': icon = 'wi-hail';
+				break;
+				case '18': icon = 'wi-hail';
+				break;
+				case '19': icon = 'wi-cloudy-gusts';
+				break;
+				case '20': icon = 'wi-fog';
+				break;
+				case '21': icon = 'wi-fog';
+				break;
+				case '22': icon = 'wi-fog';
+				break;
+				case '23': icon = 'wi-cloudy-gusts';
+				break;
+				case '24': icon = 'wi-cloudy-windy';
+				break;
+				case '25': icon = 'wi-thermometer';
+				break;
+				case '26': icon = 'wi-cloudy';
+				break;
+				case '27': icon = 'wi-night-cloudy';
+				break;
+				case '28': icon = 'wi-day-cloudy';
+				break;
+				case '29': icon = 'wi-night-cloudy';
+				break;
+				case '30': icon = 'wi-day-cloudy';
+				break;
+				case '31': icon = 'wi-night-clear';
+				break;
+				case '32': icon = 'wi-day-sunny';
+				break;
+				case '33': icon = 'wi-night-clear';
+				break;
+				case '34': icon = 'wi-day-sunny-overcast';
+				break;
+				case '35': icon = 'wi-hail';
+				break;
+				case '36': icon = 'wi-day-sunny';
+				break;
+				case '37': icon = 'wi-thunderstorm';
+				break;
+				case '38': icon = 'wi-thunderstorm';
+				break;
+				case '39': icon = 'wi-thunderstorm';
+				break;
+				case '40': icon = 'wi-storm-showers';
+				break;
+				case '41': icon = 'wi-snow';
+				break;
+				case '42': icon = 'wi-snow';
+				break;
+				case '43': icon = 'wi-snow';
+				break;
+				case '44': icon = 'wi-cloudy';
+				break;
+				case '45': icon = 'wi-lightning';
+				break;
+				case '46': icon = 'wi-snow';
+				break;
+				case '47': icon = 'wi-thunderstorm';
+				break;
+				case '3200': icon = 'wi-cloud';
+				break;
+				default: icon = 'wi-cloud';
+				break;
+			}
+		
+			return '<i class="wi '+icon+' wi-fw"></i>';
+		}
+		$(document).ready(function() {
+			getWeather();
+			setInterval(getWeather, 600000);
+		});
+		function getWeather(){
+			navigator.geolocation.getCurrentPosition(function(position) {
+				loadWeather(position.coords.latitude+','+position.coords.longitude);
+			});
+			console.log('grabbing weather');
+		}
+		function loadWeather(location, woeid) {
+			$.simpleWeather({
+				location: location,
+				woeid: woeid,
+				unit: 'f',
+				success: function(weather) {
+					//html = '<h5 class="text-uppercase text-center">Weather For '+weather.city+', '+weather.region+'</h5>';
+					html = '<h5 class="text-center yellow">Current Weather</h5>';
+					html += '<div class="content-box ultra-widget yellow-bg">';
+					html += '<div class="w-icon right pull-right">'+setWeatherIcon(weather.code)+'</div>';
+					html += '<div class="w-descr left pull-left text-center">';
+					html += '<span class="w-name">'+weather.temp+'&deg;'+weather.units.temp+' / '+weather.alt.temp+'&deg;C</span><br>';
+					html += '<span class="w-name">'+weather.currently+'</span>';
+					html += '</div></div>';
+					//Forecast
+					html += '<div class="content-box big-box"><h4 class="">'+weather.city+', '+weather.region+' Forecast</h4><div class="table-responsive"><table class="table table-striped table-condensed">';
+					//html += '<caption>'+weather.city+', '+weather.region+'</caption>';
+					html += '<thead><tr><th>Day</th><th>High</th><th>Low</th><th>Weather</th><th>Visual</th></tr></thead><tbody>';
+					//Days
+					html += '<tr><th scope="row">'+weather.forecast[0].day+'</th><td>'+weather.forecast[0].high+'&deg;'+weather.units.temp+' / '+weather.forecast[0].alt.high+'&deg;C</td>';
+					html += '<td>'+weather.forecast[0].low+'&deg;'+weather.units.temp+' / '+weather.forecast[0].alt.low+'&deg;C</td><td>'+weather.forecast[0].text+'</td><td>'+setWeatherIcon(weather.forecast[0].code)+'</td></tr>';
+					html += '<tr><th scope="row">'+weather.forecast[1].day+'</th><td>'+weather.forecast[1].high+'&deg;'+weather.units.temp+' / '+weather.forecast[1].alt.high+'&deg;C</td>';
+					html += '<td>'+weather.forecast[1].low+'&deg;'+weather.units.temp+' / '+weather.forecast[1].alt.low+'&deg;C</td><td>'+weather.forecast[1].text+'</td><td>'+setWeatherIcon(weather.forecast[1].code)+'</td></tr>';
+					html += '<tr><th scope="row">'+weather.forecast[2].day+'</th><td>'+weather.forecast[2].high+'&deg;'+weather.units.temp+' / '+weather.forecast[2].alt.high+'&deg;C</td>';
+					html += '<td>'+weather.forecast[2].low+'&deg;'+weather.units.temp+' / '+weather.forecast[2].alt.low+'&deg;C</td><td>'+weather.forecast[2].text+'</td><td>'+setWeatherIcon(weather.forecast[2].code)+'</td></tr>';
+					html += '<tr><th scope="row">'+weather.forecast[3].day+'</th><td>'+weather.forecast[3].high+'&deg;'+weather.units.temp+' / '+weather.forecast[3].alt.high+'&deg;C</td>';
+					html += '<td>'+weather.forecast[3].low+'&deg;'+weather.units.temp+' / '+weather.forecast[3].alt.low+'&deg;C</td><td>'+weather.forecast[3].text+'</td><td>'+setWeatherIcon(weather.forecast[3].code)+'</td></tr>';
+					html += '<tr><th scope="row">'+weather.forecast[4].day+'</th><td>'+weather.forecast[4].high+'&deg;'+weather.units.temp+' / '+weather.forecast[4].alt.high+'&deg;C</td>';
+					html += '<td>'+weather.forecast[4].low+'&deg;'+weather.units.temp+' / '+weather.forecast[4].alt.low+'&deg;C</td><td>'+weather.forecast[4].text+'</td><td>'+setWeatherIcon(weather.forecast[4].code)+'</td></tr>';
+					//Days End
+					html += '</tbody></table></div></div>';
+
+					$("#weather").html(html);
+				},
+				error: function(error) {
+					$("#weather").html('<p>'+error+'</p>');
+				}
+			});
+		}
+
+		var datetime = null,
+        date = null;
+
+		var update = function () {
+			date = moment(new Date()).format('llll');
+			datetime.html(date);
+		};
+		 //Current Time
+		 datetime = $('.current-time')
+		update();
+		setInterval(update, 60000);
+		console.log(date);
+		//Tooltips
+		$('[data-toggle="tooltip"]').tooltip();
+		$(".box").niceScroll({
+            railpadding: {top:0,right:0,left:0,bottom:0},
+            scrollspeed: 30,
+            mousescrollstep: 60
+        });
+        $("#onlineusers").niceScroll({
+            railpadding: {top:0,right:0,left:0,bottom:0},
+            scrollspeed: 30,
+            mousescrollstep: 60
+        });
 		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true") {?>    
 		$('.splash-modal').modal("show");
 		<?php } ?>
@@ -1148,7 +1534,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 			e.preventDefault();
 
-		}, false);    
+		}, false);  
+
 		function setHeight() {
 			windowHeight = $(window).innerHeight();
 			$("div").find(".iframe").css('height', windowHeight - <?=$slimBar;?> + "px");
@@ -1267,6 +1654,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		//Logout
 		$(".logout").click(function(e){
+			$('#main-user').removeClass('email-active');
 			var el1 = document.querySelector(".logout"),
 			el2 = document.querySelector(".logout-modal");
 			cta(el1, el2, {relativeToWindow: true}, function () {
@@ -1277,11 +1665,10 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		//Members Sidebar
 		$(".show-members").click(function(e){
-			var e_s1 = document.querySelector(".show-members"),
-			e_s2 = document.querySelector("#members-sidebar");
-			cta(e_s1, e_s2, {relativeToWindow: true}, function () {
-		$		('#members-sidebar').addClass('members-sidebar-open');
-			});
+			$('#main-user').toggleClass('email-active');
+			if($('#main-chat').hasClass('email-active')){
+				$('#main-chat').toggleClass('email-active');
+			}
 			e.preventDefault();
 		});
 
@@ -1290,6 +1677,27 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		});
 
 		$(document).ready(function(){
+			
+			<?php 
+			if($configReady == "Yes"){
+				$pingCount = 1; if($USER->authenticated && $USER->role == "admin"){ $pingTimer = "60000"; }else{ $pingTimer = "600000"; }
+				foreach($allPings as $type => $ping){
+					$name = str_replace(array(':', '\\', '/', '*'), 'x', $ping);
+					if(strpos($type, 'image') !== false){ $style = "margin-top:28px"; }else{ $style = ""; }?>
+					var  pingTab<?php echo $pingCount;?> = function() {
+						$("ping[id^='ping-<?php echo $name;?>']").load("ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>");
+					};
+					// Initial Loads
+					pingTab<?php echo $pingCount;?>();
+
+					// Interval Loads
+					setInterval(function() {
+						pingTab<?php echo $pingCount;?>();
+					}, <?php echo $pingTimer; ?>);
+
+				<?php $pingCount++; }
+			}?>
+
 			//PLEX INVITE SHIT
 			$('#checkInviteForm').on('submit', function () {
 				ajax_request('POST', 'validate-invite', {
@@ -1458,6 +1866,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		$('#reload').on('click tap', function(){
 
 			$("i[class^='mdi mdi-refresh']").attr("class", "mdi mdi-refresh fa-spin");
+			$("#main-user").removeClass("email-active");
 
 			var activeFrame = $('#content').find('.active').children('iframe');
 
@@ -1480,13 +1889,42 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			},500);
 		});
 		$('#popout').on('click tap', function(){
+			$("#main-user").removeClass("email-active");
 			var activeFrame = $('#content').find('.active').children('iframe');
 			console.log(activeFrame.attr('src'));
-			window.open(activeFrame.attr('src'), '_blank');
-		});    
+			window.open(activeFrame.attr('src'), '_blank');"reload"
+		});  
+		$('#chat-open').on('click tap', function(){
+			$('.chat-box').toggleClass('email-active');
+			$(".mdi-forum").removeClass("tada loop-animation new-message");//SET MESSAGE TO ZERO
+			if($('.chat-box').hasClass('email-active')){
+				$("#message").focus();
+			}
+			if($('#main-user').hasClass('email-active')){
+				$('#main-user').toggleClass('email-active');
+			}
+		});
+
+		$('#chat-switch-chat').on('click tap', function(){
+			$('#chat-chat-div').show();
+			$('#chat-users-div').hide();
+			$("#message").focus();
+		});
+		$('#chat-switch-online').on('click tap', function(){
+			$('#chat-users-div').show();
+			$('#chat-chat-div').hide();
+		});
+		$('#chat-switch-close').on('click tap', function(){
+			$('.chat-box').toggleClass('email-active');
+		});
+		$('#user-switch-close').on('click tap', function(){
+			$('#main-user').toggleClass('email-active');
+		});
+
 		$('#reload').on('contextmenu', function(e){
 
 			$("i[class^='mdi mdi-refresh']").attr("class", "mdi mdi-refresh fa-spin");
+			$('#main-user').removeClass('email-active');
 
 			var activeFrame = $('#contentRight').find('.active').children('iframe');
 
@@ -1511,6 +1949,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		});
 		$('#splitView').on('contextmenu', function(e){
+			$('#main-user').removeClass('email-active');
 			e.stopPropagation();
 			//$('#splitView').hide();
 			$("#content").attr("class", "content");
@@ -1519,6 +1958,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			return false;
 		});
 		$('#splitView').on('click tap', function(){
+			$('#main-user').removeClass('email-active');
 			var activeFrame = $('#content').find('.active');
 			var getCurrentTab = $("li[class^='tab-item active']");
 			getCurrentTab.removeClass('active');
@@ -1611,7 +2051,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				}
 
 			}
-
+			$('#main-user').removeClass('email-active');
+			$('.chat-box').removeClass('email-active');
 		});
 		$("li[class^='tab-item']").on('contextmenu', function(e){
 			e.stopPropagation();
@@ -1665,6 +2106,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				}
 
 			}
+			$('#main-user').removeClass('email-active');
+			$('.chat-box').removeClass('email-active');
 			return false;
 		});
 		Mousetrap.bind('ctrl+shift+up', function(e) {
@@ -1683,8 +2126,8 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		Mousetrap.bind('s s', function() { $("li[id^='settings.phpx']").trigger("click");  });
 		Mousetrap.bind('p p', function() { $("a[class^='fix-nav']").trigger("click");  });
 		Mousetrap.bind('m m', function() { $("div[class^='hamburger']").trigger("click");  });
-		Mousetrap.bind('r r', function() { $("a[id^='reload']").trigger("click");  });
-		Mousetrap.bind('f f', function() { $("a[class^='fullscreen']").trigger("click");  });
+		Mousetrap.bind('r r', function() { $("button[id^='reload']").trigger("click");  });
+		Mousetrap.bind('f f', function() { $("button[class^='fullscreen']").trigger("click");  });
 		<?php if($tabSetup == "No") : foreach(range(1,$tabCount) as $index) : if ($index == 10) : break; endif;?>
 		Mousetrap.bind('ctrl+shift+<?php echo $index; ?>', function() { $("ul[id^='tabList'] li:nth-child(<?php echo $index; ?>)").trigger("click"); });    
 		<?php endforeach; endif; ?>

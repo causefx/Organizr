@@ -15,7 +15,7 @@
 	require_once(__DIR__ . '/vendor/autoload.php');
 	
     // Lazyload settings
-	$databaseConfig = configLazy('config/config.php');
+	$databaseConfig = configLazy(__DIR__ . '/config/config.php');
 
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 
     $notifyExplode = explode("-", NOTIFYEFFECT);
@@ -27,7 +27,9 @@
         return substr($ip, $start, $end);
     }
 
-    define('GUEST_HASH', "guest-".guestHash(0, 5));
+	define('GUEST_HASH', "guest-".guestHash(0, 5));
+	$group = new User();
+	$group = $group->role;
 
 	class User
 	{
@@ -841,7 +843,7 @@
 			if($username && $username !="" && $username !=User::GUEST_USER) {
 				$query = "SELECT role FROM users WHERE username = '$username' COLLATE NOCASE";
 				foreach($this->database->query($query) as $data) { return $data["role"]; }}
-			return User::GUEST_USER;
+			return "guest";
 		}
         
        /* function get_user_group($username)

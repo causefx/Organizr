@@ -81,7 +81,7 @@ $(function () {
 
   $('.fullscreen').click(function(e){
     toggleFullScreen();
-    $('.fullscreen i').toggleClass("mdi-fullscreen mdi-fullscreen-exit");
+    $('.fullscreen i').toggleClass("fa-arrows-alt fa-compress");
     e.preventDefault();
   });
 

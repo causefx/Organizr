@@ -34,6 +34,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				echo json_encode(getCalendar());
 				die();
 				break;
+			case 'get-ping':
+				echo getPing($_GET['url'], $_GET['style'], true);
+				die();
+				break;
 			case 'show-file':
 				$auth = ($_SERVER['HTTP_REFERER'] ? true : false);
 				if ($auth === false) { die("WTF? Bro!  This is an internal function only"); }
@@ -107,8 +111,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				$response['notify'] = sendResult($response, "check", $_POST['checkurl'], "CODE_SUCCESS", "CODE_ERROR");
 				break;
 			case 'use-invite':
-				//$response = inviteCodes("check", $_POST['invitecode']);
-				//$response = inviteCodes("use", $_POST['invitecode']);
 				if(inviteCodes("check", $_POST['invitecode'])){
 					$response = inviteCodes("use", $_POST['invitecode'], $_POST['inviteuser']);
 					$response['notify'] = sendResult(plexUserShare($_POST['inviteuser']), "check", $_POST['checkurl'], "INVITE_SUCCESS", "INVITE_ERROR");
@@ -121,6 +123,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
             default: // Stuff that you need admin for
                 qualifyUser('admin', true);
                 switch ($action) {
+					case 'get-emails':
+						$response = printEmails(getEmails($_POST['type']));
+						break;
+					case 'mass-email':
+						massEmail($_POST['emailto'],$_POST['emailsubject'],$_POST['emailmessage']);
+						$response['notify'] = sendNotification(true, 'E-Mail Sent', false);
+						break;
                     case 'test-email':
                         sendResult(sendTestEmail($_POST['emailto'], $_POST['emailsenderemail'], $_POST['emailhost'], $_POST['emailauth'], $_POST['emailusername'], $_POST['emailpassword'], $_POST['emailtype'], $_POST['emailport'], $_POST['emailsendername']), "flask", "E-Mail TEST", "SUCCESS", "ERROR");
                         break;
@@ -143,7 +152,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
                         sendNotification(true);
                         break;
                     case 'update-config':
-                        sendNotification(updateConfig($_POST));
+						$response['notify'] = sendNotification(updateConfig($_POST));
+						$response['show_apply'] = true;
                         break;
                     case 'update-appearance':
                         // Custom CSS Special Case START
@@ -152,13 +162,15 @@ switch ($_SERVER['REQUEST_METHOD']) {
                                 write_ini_file($_POST['customCSS'], 'custom.css');
                             } else {
                                 unlink('custom.css');
-                            }
-                            $response['show_apply'] = true;
+							}
+							$response['notify'] = sendNotification(true,false,false);
+							$response['show_apply'] = true;
                         }
                         unset($_POST['customCSS']);
                         // Custom CSS Special Case END
 						if (!empty($_POST)) {
-                        	$response['notify'] = sendNotification(updateDBOptions($_POST),false,false);
+							$response['notify'] = sendNotification(updateDBOptions($_POST),false,false);
+							$response['show_apply'] = true;
 						}
                         break;
                     case 'deleteDB':
@@ -176,10 +188,17 @@ switch ($_SERVER['REQUEST_METHOD']) {
                         $response['tab']['goto'] = 'updatedb.php';
                         break;
                     case 'deleteLog':
-                        sendNotification(unlink(FAIL_LOG));
+						$response['notify'] = sendNotification(unlink(FAIL_LOG));
+						$response['show_apply'] = true;
+						break;
+					case 'deleteChat':
+						$response['notify'] = sendNotification(unlink("chatpack.db"));
+						$response['show_apply'] = true;
+						$response['reload'] = true;
                         break;
                     case 'deleteOrgLog':
-                        sendNotification(unlink("org.log"));
+						$response['notify'] = sendNotification(unlink("org.log"));
+						$response['show_apply'] = true;
                         break;
                     case 'submit-tabs':
                         $response['notify'] = sendNotification(updateTabs($_POST) , false, false);
