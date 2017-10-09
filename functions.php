@@ -3161,11 +3161,13 @@ function strip($string){
 }
 
 function writeLog($type, $message){
-	if(filesize("org.log") > 500000){
-		rename('org.log','org['.date('Y-m-d').'].log');
-		$message2 = date("Y-m-d H:i:s")."|".$type."|".strip("ORG LOG: Creating backup of org.log to org[".date('Y-m-d')."].log ")."\n";
-		file_put_contents("org.log", $message2, FILE_APPEND | LOCK_EX);
+	if(file_exists("org.log")){
+		if(filesize("org.log") > 500000){
+			rename('org.log','org['.date('Y-m-d').'].log');
+			$message2 = date("Y-m-d H:i:s")."|".$type."|".strip("ORG LOG: Creating backup of org.log to org[".date('Y-m-d')."].log ")."\n";
+			file_put_contents("org.log", $message2, FILE_APPEND | LOCK_EX);
 
+		}
 	}
     $message = date("Y-m-d H:i:s")."|".$type."|".strip($message)."\n";
     file_put_contents("org.log", $message, FILE_APPEND | LOCK_EX);
