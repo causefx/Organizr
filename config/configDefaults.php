@@ -99,4 +99,6 @@ return array(
 	"couchURL" => "",
 	"couchAPI" => "",
 	"couchHomeAuth" => false,
+	"weather" => "false",
+	"weatherAuth" => "false",
 );
