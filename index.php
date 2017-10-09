@@ -267,6 +267,11 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<![endif]-->
 	</head>
 	<style>
+		#splashScreen ping span {
+		    margin-top: 0 !important;
+		    font-size: 10px;
+		    zoom: 2;
+		}
 		#weather .w-icon.right.pull-right {
 			font-size: 70px;
 		}
@@ -539,14 +544,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 													<img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
 													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
-														<ping id="ping-<?=$name;?>"></ping>
+														<ping class="ping-<?=$name;?>"></ping>
 													<?php }?>
 												</i>
 											<?php }else { ?>
 												<i class="fa <?=$row['icon'];?> fa-lg">
 													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
-														<ping id="ping-<?=$name;?>"></ping>
+														<ping class="ping-<?=$name;?>"></ping>
 													<?php }?>
 												</i>
 											<?php } ?>
@@ -1062,8 +1067,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 													<i style="">
 														<img src="<?=$row['iconurl'];?>" style="height: 100px; margin-top: -10px;" class="">
 													</i>
+													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
+														<ping style="display: block" class="ping-<?=$name;?>"></ping>
+													<?php }?>
 												<?php else : ?>
 													<i style="padding-bottom: 8px" class="fa <?=$row['icon'];?> fa-sm"></i>
+													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
+														<ping style="display: block" class="ping-<?=$name;?>"></ping>
+													<?php }?>
 												<?php endif; ?>
 											</center>
 										</div>
@@ -1688,7 +1699,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 					$name = str_replace(array(':', '\\', '/', '*'), 'x', $ping);
 					if(strpos($type, 'image') !== false){ $style = "margin-top:28px"; }else{ $style = ""; }?>
 					var  pingTab<?php echo $pingCount;?> = function() {
-						$("ping[id^='ping-<?php echo $name;?>']").load("ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>");
+						$("ping[class^='ping-<?php echo $name;?>']").load("ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>");
 					};
 					// Initial Loads
 					pingTab<?php echo $pingCount;?>();

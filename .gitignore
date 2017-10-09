@@ -67,3 +67,6 @@ config/users*.db
 config/users*.bak.db
 config/tmp/*
 images/cache/*
+backups/*
+backups/
+backups
