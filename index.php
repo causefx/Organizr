@@ -2009,7 +2009,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		$("li[class^='splash-item']").on('click vclick', function(){
 			var thisname = $(this).attr("name");
-			var splashTab = $("#tabList li[name^='" + thisname + "']");
+			var splashTab = $("#tabList li[name='" + thisname + "']");
 			splashTab.trigger("click");
 			$('.splash-modal').modal("hide");
 
