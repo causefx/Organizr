@@ -33,7 +33,7 @@ foreach(loadAppearance() as $key => $value) {
 
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css"> 
+        <link rel="stylesheet" href="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
         <script src="js/menu/modernizr.custom.js"></script>
 
         <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
@@ -46,8 +46,8 @@ foreach(loadAppearance() as $key => $value) {
         <link rel="stylesheet" type="text/css" href="bower_components/slick/slick.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
         <link rel="stylesheet" href="bower_components/smoke/dist/css/smoke.min.css?v=<?php echo INSTALLEDVERSION; ?>">
-        
-       
+
+
 
         <!--Scripts-->
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -62,12 +62,12 @@ foreach(loadAppearance() as $key => $value) {
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
 	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
-		
+
 		<!--Other-->
 		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
         <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
-		
+
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
@@ -130,11 +130,11 @@ foreach(loadAppearance() as $key => $value) {
             }.carousel-image{
                 width: 100px !important;
                 height: 150px !important;
-                border-radius: 3px 0 0 3px;  
+                border-radius: 3px 0 0 3px;
             }.carousel-image.album{
                 width: 150px !important;
                 height: 150px !important;
-                border-radius: 3px 0 0 3px;  
+                border-radius: 3px 0 0 3px;
             }.carousel-control.album {
                 top: 5px !important;
                 width: 4% !important;
@@ -186,7 +186,7 @@ foreach(loadAppearance() as $key => $value) {
 				white-space: normal !important;
 				width: 0% !important;
 				font-size: 12px; !important;
-			}<?php customCSS(); ?>       
+			}<?php customCSS(); ?>
         </style>
     </head>
 
@@ -194,12 +194,12 @@ foreach(loadAppearance() as $key => $value) {
         <div class="main-wrapper" style="position: initial;">
             <div id="content" class="container-fluid">
                 <br/>
-                
+
                 <?php if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) { echo buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE); } ?>
                 <?php if((PLEXSEARCH == "true" && qualifyUser(PLEXHOMEAUTH))) { ?>
                 <div id="searchPlexRow" class="row">
                     <div class="col-lg-12">
-                        <div class="content-box box-shadow big-box todo-list">                        
+                        <div class="content-box box-shadow big-box todo-list">
                             <form id="plexSearchForm" onsubmit="return false;" autocomplete="off">
                                 <div class="">
                                     <div class="input-group">
@@ -217,7 +217,7 @@ foreach(loadAppearance() as $key => $value) {
                 <?php } ?>
                 <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { echo "<div>" . HOMEPAGECUSTOMHTML1 . "</div>"; } ?>
 
-                <?php if(SPEEDTEST == "true"){ ?>
+                <?php if(SPEEDTEST == "true" && qualifyUser(SPEEDTESTAUTH)){ ?>
                 <style type="text/css">
 
                     .flash {
@@ -354,7 +354,7 @@ foreach(loadAppearance() as $key => $value) {
                     </div>
                 </div>
                 <?php } ?>
-                                
+
                 <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
                 <div id="downloadClientRow" class="row">
                     <div class="col-xs-12 col-md-12">
@@ -421,10 +421,10 @@ foreach(loadAppearance() as $key => $value) {
                 <div id="plexRow" class="row">
                     <div class="col-lg-12">
                     <?php
-                    if(PLEXRECENTMOVIE == "true" || PLEXRECENTTV == "true" || PLEXRECENTMUSIC == "true"){  
+                    if(PLEXRECENTMOVIE == "true" || PLEXRECENTTV == "true" || PLEXRECENTMUSIC == "true"){
                         $plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
                         echo getPlexRecent($plexArray);
-                    } 
+                    }
                     ?>
                     </div>
                 </div>
@@ -434,7 +434,7 @@ foreach(loadAppearance() as $key => $value) {
                     </div>
                 </div>
                 <?php } ?>
-    
+
 				<?php if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) { ?>
                 <div id="embyRowNowPlaying" class="row">
                     <?php if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(12, EMBYSHOWNAMES, $USER->role); } ?>
@@ -442,7 +442,7 @@ foreach(loadAppearance() as $key => $value) {
                 <div id="embyRow" class="row">
                     <div class="col-lg-12">
                     <?php
-                    if(EMBYRECENTMOVIE == "true" || EMBYRECENTTV == "true" || EMBYRECENTMUSIC == "true"){  
+                    if(EMBYRECENTMOVIE == "true" || EMBYRECENTTV == "true" || EMBYRECENTMUSIC == "true"){
                         $embyArray = array("Movie" => EMBYRECENTMOVIE, "Episode" => EMBYRECENTTV, "MusicAlbum" => EMBYRECENTMUSIC, "Series" => EMBYRECENTTV);
                         echo getEmbyRecent($embyArray);
                     }
@@ -474,7 +474,7 @@ foreach(loadAppearance() as $key => $value) {
                     </div>
                 </div>
                 <?php } ?>
-            </div>    
+            </div>
         </div>
         <script>
         //Tooltips
@@ -497,7 +497,7 @@ foreach(loadAppearance() as $key => $value) {
             $('#searchInput').focus();
             e.preventDefault();
         });
-        
+
 		$(document).on("click", ".openTab", function(e) {
             parent.$.smkAlert({
                 text: 'Loading...',
@@ -513,13 +513,13 @@ foreach(loadAppearance() as $key => $value) {
                 SearchType = "show";
             }else if( Type === 'movie'){
                 Type = "movie";
-                SearchType = "movie";            
+                SearchType = "movie";
             }
             if( Type === 'tv' || Type === 'movie' ){
                 ajax_request('POST', 'tvdb-search', {
                     name: Title,
                     type: SearchType,
-                }).done(function(data){ 
+                }).done(function(data){
                     if( data.trakt && data.trakt.tmdb !== null) {
                         $('#calendarExtra').modal('show');
                         var refreshBox = $('#calendarMainID');
@@ -529,7 +529,7 @@ foreach(loadAppearance() as $key => $value) {
                             deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
                                 refreshPreloader.remove();
                             });
-                        },600);               
+                        },600);
                         $.ajax({
                             type: 'GET',
                             url: 'https://api.themoviedb.org/3/'+Type+'/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits&language=<?php echo $userLanguage; ?>',
@@ -538,7 +538,7 @@ foreach(loadAppearance() as $key => $value) {
                             complete: function(xhr, status) {
                                 var result = $.parseJSON(xhr.responseText);
                                 if (xhr.statusText === "OK") {
-                                    if( Type === "movie"){ 
+                                    if( Type === "movie"){
                                         $('#calendarTitle').html(result.title);
                                         $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
                                         $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(result.runtime)+'</span>&nbsp;');
@@ -610,8 +610,8 @@ foreach(loadAppearance() as $key => $value) {
 				window.open(source, '_blank');
 			}
         });
-        
-            
+
+
         function localStorageSupport() {
             return (('localStorage' in window) && window['localStorage'] !== null)
         }
@@ -650,7 +650,7 @@ foreach(loadAppearance() as $key => $value) {
                 var name = $(this).attr("data-name");
                 console.log(name);
                 $(this).slick({
-                
+
                     slidesToShow: 13,
                     slidesToScroll: 13,
                     infinite: true,
@@ -758,7 +758,7 @@ foreach(loadAppearance() as $key => $value) {
                 var name = $(this).attr('data-name');
                 var filter = $(this).attr('data-filter');
                 $('#playlist-title').text(name);
-                
+
                 // now filter the slides.
                 $('.recentItems-playlists')
                     .slick('slickUnfilter')
@@ -829,7 +829,7 @@ foreach(loadAppearance() as $key => $value) {
                 var y = date.getFullYear();
 
                 $('#calendar').fullCalendar({
-                    eventLimit: false, 
+                    eventLimit: false,
                     firstDay: <?php echo CALENDARSTART;?>,
                     height: "auto",
                     defaultView: '<?php echo CALENDARVIEW;?>',
@@ -889,8 +889,8 @@ foreach(loadAppearance() as $key => $value) {
                 {
                     newData =  $.parseJSON(data);
                     $('#calendar').fullCalendar('removeEvents');
-                    $('#calendar').fullCalendar('addEventSource', newData);   
-                    console.log('Calendar Entries Added');      
+                    $('#calendar').fullCalendar('addEventSource', newData);
+                    console.log('Calendar Entries Added');
                 }
             });
             setInterval(function() {
@@ -901,8 +901,8 @@ foreach(loadAppearance() as $key => $value) {
                     {
                         newData =  $.parseJSON(data);
                         $('#calendar').fullCalendar('removeEvents');
-                        $('#calendar').fullCalendar('addEventSource', newData);  
-                        console.log('Calendar refreshed');       
+                        $('#calendar').fullCalendar('addEventSource', newData);
+                        console.log('Calendar refreshed');
                     }
                 });
             }, <?php echo CALENDARREFRESH; ?>);
@@ -990,8 +990,8 @@ foreach(loadAppearance() as $key => $value) {
                     var type = "TV";
                     ajax_request('POST', 'tvdb-get', {
                         id: ID,
-                    }).done(function(data){ 
-                        if( data.trakt && data.trakt.tmdb !== null) {    
+                    }).done(function(data){
+                        if( data.trakt && data.trakt.tmdb !== null) {
                             $('#calendarExtra').modal('show');
                             var refreshBox = $('#calendarMainID');
                             $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
@@ -1000,7 +1000,7 @@ foreach(loadAppearance() as $key => $value) {
                                 deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
                                     refreshPreloader.remove();
                                 });
-                            },600);                    
+                            },600);
                             $.ajax({
                                 type: 'GET',
                                 url: 'https://api.themoviedb.org/3/tv/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits&language=<?php echo $userLanguage; ?>',
@@ -1083,10 +1083,10 @@ foreach(loadAppearance() as $key => $value) {
                    <div style="position: inherit; padding: 15px 0px 30px 0px; margin-top: -20px;">
                         <div class="col-sm-4">
                             <span id="calendarTrailer" class="pull-left" style="width:100%;display: flex;"></span>
-                        </div> 
-                        <div class="col-sm-8">   
+                        </div>
+                        <div class="col-sm-8">
                             <span id="calendarLang" class="pull-right"></span>
-                        </div>                        
+                        </div>
                     </div>
                 </div>
             </div>

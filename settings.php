@@ -873,18 +873,6 @@ echo buildSettings(
 						'value' => HOMEPAGEAUTHNEEDED,
 						'options' => $userTypes,
 					),
-					array(
-						'type' => 'checkbox',
-						'labelTranslate' => 'SPEED_TEST',
-						'name' => 'speedTest',
-						'value' => SPEEDTEST,
-					),
-					array(
-						'type' => 'custom',
-						'html' => '<button id="open-speedtest" box="speed-box" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-star"></i></span> History</button>',
-						'name' => 'speed_test_history',
-						'value' => '',
-					),
 					/*
 					array(
 						'type' => 'custom',
@@ -1430,6 +1418,32 @@ echo buildSettings(
 						'type' => 'custom',
 		 				'labelTranslate' => 'NOTICE_MESSAGE',
 						'html' => '<div class="summernote" name="homepageNoticeMessage">'.HOMEPAGENOTICEMESSAGE.'</div>',
+					),
+				),
+			),
+			array(
+				'title' => 'Speed Test',
+				'id' => 'speedTestSettings',
+				'image' => 'images/settings/full-color/png/64px/speedometer.png',
+				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'speedtestAuth',
+						'value' => SPEEDTESTAUTH,
+						'options' => $userTypes,
+					),
+					array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'SPEED_TEST',
+						'name' => 'speedTest',
+						'value' => SPEEDTEST,
+					),
+					array(
+						'type' => 'custom',
+						'html' => '<button id="open-speedtest" box="speed-box" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float"><span class="btn-label"><i class="fa fa-star"></i></span> History</button>',
+						'name' => 'speed_test_history',
+						'value' => '',
 					),
 				),
 			),

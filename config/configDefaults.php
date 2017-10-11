@@ -101,4 +101,5 @@ return array(
 	"couchHomeAuth" => false,
 	"weather" => "false",
 	"weatherAuth" => "false",
+	"speedtestAuth" => "false",
 );
