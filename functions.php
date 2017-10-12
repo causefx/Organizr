@@ -2019,11 +2019,13 @@ function printTabRow($data) {
 						'class' => 'darkBold',
 					),12,2,1).'
 					'.buildField(array(
-						'type' => 'custom',
+						'type' => 'text',
 						'id' => 'tab-'.$data['id'].'-icon',
 						'name' => 'icon['.$data['id'].']',
-						'html' => '- '.translate('OR').' - <div class="input-group"><input data-placement="bottomRight" class="form-control material icp-auto'.($hidden?'-pend':'').'" id="$id" name="$name" value="$val" type="text" /><span class="input-group-addon"></span></div>',
+						'placeholder' => 'fa-icon',
+						'labelTranslate' => 'OR_ICON_NAME',
 						'value' => $data['icon'],
+						'class' => 'iconpickeradd darkBold',
 					),12,1,1).'
 					'.buildField(array(
 						'type' => 'text',

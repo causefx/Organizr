@@ -153,7 +153,13 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 					$(this).attr('for',$(this).attr('for').replace('new',idNumber));
 				});
 				$element.appendTo('#submitTabs ul');
-				$element.find('.icp-auto-pend').iconpicker({placement: 'left', hideOnSelect: false, collision: true}).hide();
+				$element.find('.iconpickeradd').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
+				$(".iconpicker-items").niceScroll({
+					railpadding: {top:0,right:0,left:0,bottom:0},
+					scrollspeed: 30,
+	                mousescrollstep: 60,
+	                grabcursorenabled: false
+	            });
                 $('.tab-box').scrollTop($('.tab-box')[0].scrollHeight);
 			}
 			function submitTabs(form) {
@@ -3251,7 +3257,6 @@ echo buildSettings(
                 $('#showLess').hide();
 
             });
-            $('.icp-auto').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
             $("li[class^='list-group-item']").bind('mouseheld', function(e) {
 
                 $(this).find("span[class^='fa fa-hand-paper-o']").attr("class", "fa fa-hand-grab-o");
@@ -3833,6 +3838,17 @@ echo buildSettings(
         </script>
         <script>
         $( document ).ready(function() {
+			$(".iconpickeradd").on("click", function() {
+                console.log('icon picker start add');
+                $(this).iconpicker({placement: 'left', hideOnSelect: false, collision: true});
+				$(".iconpicker-items").niceScroll({
+					railpadding: {top:0,right:0,left:0,bottom:0},
+					scrollspeed: 30,
+	                mousescrollstep: 60,
+	                grabcursorenabled: false
+	            });
+                $(this).focus();
+            });
             //AJAX Submit for URL Check
             $('#urlTestForm_submit').on('click', function () {
                 ajax_request('POST', 'check-url', {
@@ -3861,12 +3877,7 @@ echo buildSettings(
                 railpadding: {top:0,right:0,left:0,bottom:0},
                 grabcursorenabled: false
             });
-			$(".iconpicker-items").niceScroll({
-				railpadding: {top:0,right:0,left:0,bottom:0},
-				scrollspeed: 30,
-                mousescrollstep: 60,
-                grabcursorenabled: false
-            });
+
             //Stop Div behind From Scrolling
             $( '.email-content' ).on( 'mousewheel', function ( e ) {
                 e.preventDefault();
