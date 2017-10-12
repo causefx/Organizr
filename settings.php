@@ -11,6 +11,7 @@ $databaseConfig = configLazy('config/config.php');
 // Load USER
 require_once("user.php");
 $USER = new User("registration_callback");
+$group = $USER->role;
 
 // Create Database Connection
 $file_db = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
@@ -3686,7 +3687,7 @@ echo buildSettings(
                         }else{
                             console.log("something went wrong");
                         }
-                        $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?>");
+                        $(infoTabVersion).html("<strong><?php echo $language->translate("INSTALLED_VERSION");?>: </strong>" + currentVersion + " <strong><?php echo $language->translate("CURRENT_VERSION");?>: </strong>" + githubVersion + " <strong><?php echo $language->translate("DATABASE_PATH");?>:  </strong> <?php echo htmlentities(DATABASE_LOCATION);?> <strong><?php echo $language->translate("DOMAIN");?>:  </strong> <?php echo substr(getServerPath(), 0, -1);?>");
                     }
                 });
             }

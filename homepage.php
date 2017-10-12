@@ -8,6 +8,7 @@ ini_set("error_reporting", E_ALL | E_STRICT);
 require_once("user.php");
 require_once("functions.php");
 $USER = new User("registration_callback");
+$group = $USER->role;
 
 // Check if connection to homepage is allowed
 qualifyUser(HOMEPAGEAUTHNEEDED, true);

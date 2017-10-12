@@ -28,7 +28,6 @@ $loadingIcon = "images/organizr-load-w-thick.gif";
 $baseURL = "";
 $dbcreated = false;
 $splash = false;
-$group = (isset($group) ? $group : "guest");
 
 // Get Action
 if(isset($_POST['action'])) {
@@ -67,6 +66,7 @@ if (file_exists('config/config.php')) {
 	$configReady = "Yes";
 	require_once("user.php");
 	$USER = new User("registration_callback");
+	$group = $USER->role;
 
 	$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
 	$database = new PDO("sqlite:" . $dbfile);
@@ -185,15 +185,13 @@ if(!defined('AUTOHIDE')) : define('AUTOHIDE', 'false'); endif;
 if(!defined('ENABLEMAIL')) : define('ENABLEMAIL', 'false'); endif;
 if(!defined('CUSTOMCSS')) : define('CUSTOMCSS', 'false'); endif;
 if(!defined('LOADINGSCREEN')) : define('LOADINGSCREEN', 'true'); endif;
-if(!isset($notifyExplode)) :
-
-	$notifyExplode = array("bar","slidetop");
-
-endif;
+if(!isset($notifyExplode)) : $notifyExplode = array("bar","slidetop"); endif;
 
 if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; $chatSize = "142px"; else : $slimBar = "56"; $userSize = "40"; $chatSize = "171px";endif;
 
 if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon = "settings2.png"; else: $iconRotate = "true"; $settingsIcon = "settings.png"; endif;
+
+$group = (isset($group) ? $group : "guest");
 
 ?>
 <!--
