@@ -960,7 +960,7 @@ function getEmbyStreams($size, $showNames, $role) {
 				$('#'+loadedID).replaceWith(element);
 				console.log('Loaded updated: '+loadedID);
 			});
-		}, 15000);
+		}, 600000);
 	");
 }
 
@@ -993,7 +993,7 @@ function getPlexStreams($size, $showNames, $role){
 						$('#'+loadedID).replaceWith(element);
 						console.log('Loaded updated: '+loadedID);
 					});
-				}, 15000);
+				}, 600000);
 			");
 		}else{
 			writeLog("error", "PLEX STREAM ERROR: could not connect - check token - if HTTPS, is cert valid");
