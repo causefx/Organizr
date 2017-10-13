@@ -947,35 +947,84 @@ echo buildSettings(
 							'value' => PLEXSEARCH,
 						),
 						array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+							'name' => 'plexHomeAuth',
+							'value' => PLEXSEARCHAUTH,
+							'options' => $userTypes,
+						),
+					),
+					array(
+						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'RECENT_MOVIES',
 							'name' => 'plexRecentMovie',
 							'value' => PLEXRECENTMOVIE,
+						),array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+							'name' => 'plexRecentMovieAuth',
+							'value' => PLEXRECENTMOVIEAUTH,
+							'options' => $userTypes,
 						),
+					),
+					array(
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'RECENT_TV',
 							'name' => 'plexRecentTV',
 							'value' => PLEXRECENTTV,
+						),array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+							'name' => 'plexRecentTVAuth',
+							'value' => PLEXRECENTTVAUTH,
+							'options' => $userTypes,
 						),
+					),
+					array(
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'RECENT_MUSIC',
 							'name' => 'plexRecentMusic',
 							'value' => PLEXRECENTMUSIC,
+						),array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+							'name' => 'plexRecentMusicAuth',
+							'value' => PLEXRECENTMUSICAUTH,
+							'options' => $userTypes,
 						),
+					),
+					array(
                         array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'PLAYLISTS',
 							'name' => 'plexPlaylists',
 							'value' => PLEXPLAYLISTS,
+						),array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+							'name' => 'plexPlaylistsAuth',
+							'value' => PLEXPLAYLISTSAUTH,
+							'options' => $userTypes,
 						),
+					),
+					array(
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'PLAYING_NOW',
 							'name' => 'plexPlayingNow',
 							'value' => PLEXPLAYINGNOW,
+						),array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+							'name' => 'plexPlayingNowAuth',
+							'value' => PLEXPLAYINGNOWAUTH,
+							'options' => $userTypes,
 						),
+					),
+					array(
       					array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'SHOW_NAMES',

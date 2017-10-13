@@ -699,6 +699,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames = false, $role = false, $playlist = false) {
     // Static Height
     $height = 444;
+	$widthOverride = 100;
 	$playlist = ($playlist) ? " playlist-$playlist" : "";
 
     switch ($item['type']) {
@@ -817,7 +818,8 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
             }else {
                 $height = 281;
                 $width = 500;
-                $thumb = $item['art'];
+				$thumb = ($item['art']) ? $item['art'] :  $item['parentThumb'];
+				$widthOverride = ($item['art']) ? 100 :  56;
                 $key = $item['ratingKey'] . "-np";
                 $elapsed = $item['viewOffset'];
                 $duration = ($item['duration']) ? $item['duration'] : $item->Media['duration'];
@@ -895,7 +897,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
 	$openTab = (PLEXTABNAME) ? "true" : "false";
     // Assemble Item And Cache Into Array
     if($nowPlaying){
-        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img style="width: 100%; display:inherit;" src="'.$image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img style="width: '.$widthOverride.'%; display:block;" src="'.$image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
         return '<div class="item-'.$item['type'].$playlist.'"><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
     }

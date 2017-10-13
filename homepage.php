@@ -197,7 +197,7 @@ foreach(loadAppearance() as $key => $value) {
                 <br/>
 
                 <?php if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) { echo buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE); } ?>
-                <?php if((PLEXSEARCH == "true" && qualifyUser(PLEXHOMEAUTH))) { ?>
+                <?php if((qualifyUser(PLEXSEARCHAUTH) && PLEXSEARCH == "true" && qualifyUser(PLEXHOMEAUTH))) { ?>
                 <div id="searchPlexRow" class="row">
                     <div class="col-lg-12">
                         <div class="content-box box-shadow big-box todo-list">
@@ -417,12 +417,12 @@ foreach(loadAppearance() as $key => $value) {
                 <?php } ?>
 				<?php if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) { ?>
                 <div id="plexRowNowPlaying" class="row">
-                    <?php if(PLEXPLAYINGNOW == "true"){ echo getPlexStreams(12, PLEXSHOWNAMES, $USER->role); } ?>
+                    <?php if(qualifyUser(PLEXPLAYINGNOWAUTH) && PLEXPLAYINGNOW == "true"){ echo getPlexStreams(12, PLEXSHOWNAMES, $USER->role); } ?>
                 </div>
                 <div id="plexRow" class="row">
                     <div class="col-lg-12">
                     <?php
-                    if(PLEXRECENTMOVIE == "true" || PLEXRECENTTV == "true" || PLEXRECENTMUSIC == "true"){
+                    if(qualifyUser(PLEXRECENTMOVIEAUTH) && PLEXRECENTMOVIE == "true" || qualifyUser(PLEXRECENTTVAUTH) && PLEXRECENTTV == "true" || qualifyUser(PLEXRECENTMUSICAUTH) &&  PLEXRECENTMUSIC == "true"){
                         $plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
                         echo getPlexRecent($plexArray);
                     }
@@ -431,7 +431,7 @@ foreach(loadAppearance() as $key => $value) {
                 </div>
                 <div id="plexPlaylists" class="row">
                     <div class="col-lg-12">
-                    <?php if(PLEXPLAYLISTS == "true"){ echo getPlexPlaylists($plexArray); } ?>
+                    <?php if(qualifyUser(PLEXPLAYLISTSAUTH) && PLEXPLAYLISTS == "true"){ echo getPlexPlaylists($plexArray); } ?>
                     </div>
                 </div>
                 <?php } ?>
