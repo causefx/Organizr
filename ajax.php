@@ -66,7 +66,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				break;
 			case 'emby-recent':
 				qualifyUser(EMBYHOMEAUTH, true);
-				echo getEmbyRecent($_GET['type'], 12);
+				echo getEmbyRecent(array("Movie" => EMBYRECENTMOVIE, "Episode" => EMBYRECENTTV, "MusicAlbum" => EMBYRECENTMUSIC, "Series" => EMBYRECENTTV));
 				die();
 				break;
 			case 'plex-recent':
@@ -226,4 +226,3 @@ if ($response) {
 } else {
 	sendNotification(false, 'Error: No Output Specified!');
 }
-
