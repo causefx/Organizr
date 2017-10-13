@@ -420,14 +420,14 @@ foreach(loadAppearance() as $key => $value) {
                     <?php if(qualifyUser(PLEXPLAYINGNOWAUTH) && PLEXPLAYINGNOW == "true"){ echo getPlexStreams(12, PLEXSHOWNAMES, $USER->role); } ?>
                 </div>
                 <div id="plexRow" class="row">
-                    <div class="col-lg-12">
-                    <?php
-                    if(qualifyUser(PLEXRECENTMOVIEAUTH) && PLEXRECENTMOVIE == "true" || qualifyUser(PLEXRECENTTVAUTH) && PLEXRECENTTV == "true" || qualifyUser(PLEXRECENTMUSICAUTH) &&  PLEXRECENTMUSIC == "true"){
-                        $plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
-                        echo getPlexRecent($plexArray);
-                    }
-                    ?>
-                    </div>
+					<div class="col-lg-12">
+	                <?php
+	                if(qualifyUser(PLEXRECENTMOVIEAUTH) && PLEXRECENTMOVIE == "true" || qualifyUser(PLEXRECENTTVAUTH) && PLEXRECENTTV == "true" || qualifyUser(PLEXRECENTMUSICAUTH) &&  PLEXRECENTMUSIC == "true"){
+	                    $plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
+	                    echo getPlexRecent($plexArray);
+	                }
+	                ?>
+					</div>
                 </div>
                 <div id="plexPlaylists" class="row">
                     <div class="col-lg-12">
@@ -617,6 +617,100 @@ foreach(loadAppearance() as $key => $value) {
             return (('localStorage' in window) && window['localStorage'] !== null)
         }
 
+		function loadSlick(){
+			$('div[class*=recentItems-]').each(function() {
+				if($(this).hasClass('slick-initialized')){
+					console.log('skipping slick addon');
+					return false;
+				}
+                var name = $(this).attr("data-name");
+                console.log('creating slick for '+name);
+                $(this).slick({
+
+                    slidesToShow: 13,
+                    slidesToScroll: 13,
+                    infinite: true,
+                    lazyLoad: 'ondemand',
+                    prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
+                    nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
+                    appendArrows: $('.'+name),
+                    arrows: true,
+                    responsive: [
+						{
+		                    breakpoint: 1750,
+		                    settings: {
+		                        slidesToShow: 12,
+		                        slidesToScroll: 12,
+		                    }
+	                    },
+	                    {
+		                    breakpoint: 1600,
+		                    settings: {
+		                        slidesToShow: 11,
+		                        slidesToScroll: 11,
+		                    }
+	                    },
+	                    {
+		                    breakpoint: 1450,
+		                    settings: {
+		                        slidesToShow: 10,
+		                        slidesToScroll: 10,
+		                    }
+	                    },
+	                    {
+		                    breakpoint: 1300,
+		                    settings: {
+		                        slidesToShow: 9,
+		                        slidesToScroll: 9,
+		                    }
+	                    },
+	                    {
+		                    breakpoint: 1150,
+		                    settings: {
+		                        slidesToShow: 8,
+		                        slidesToScroll: 8,
+		                    }
+	                    },
+	                    {
+		                    breakpoint: 1000,
+		                    settings: {
+		                        slidesToShow: 7,
+		                        slidesToScroll: 7,
+		                    }
+	                    },
+	                    {
+		                    breakpoint: 850,
+		                    settings: {
+		                        slidesToShow: 6,
+		                        slidesToScroll: 6,
+		                    }
+	                    },
+	                    {
+		                    breakpoint: 700,
+		                    settings: {
+		                        slidesToShow: 5,
+		                        slidesToScroll: 5,
+		                    }
+	                    },
+	                    {
+		                    breakpoint: 675,
+		                    settings: {
+		                        slidesToShow: 4,
+		                        slidesToScroll: 4
+		                    }
+	                    },
+	                    {
+		                    breakpoint: 480,
+		                    settings: {
+		                        slidesToShow: 3,
+		                        slidesToScroll: 3
+		                    }
+	                    }
+	                ]
+                });
+            });
+		}
+
         $( document ).ready(function() {
             $('#plexSearchForm').on('submit', function () {
                 var refreshBox = $(this).closest('div.content-box');
@@ -646,97 +740,9 @@ foreach(loadAppearance() as $key => $value) {
                 var id = $(this).attr("link");
                 $("div[np^='"+id+"']").toggle();
             });
+			//load slick
+			loadSlick();
 
-            $('div[class*=recentItems-]').each(function() {
-                var name = $(this).attr("data-name");
-                console.log(name);
-                $(this).slick({
-
-                    slidesToShow: 13,
-                    slidesToScroll: 13,
-                    infinite: true,
-                    lazyLoad: 'ondemand',
-                    prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
-                    nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
-                    appendArrows: $('.'+name),
-                    arrows: true,
-                    responsive: [
-                    {
-                    breakpoint: 1750,
-                    settings: {
-                        slidesToShow: 12,
-                        slidesToScroll: 12,
-                    }
-                    },
-                    {
-                    breakpoint: 1600,
-                    settings: {
-                        slidesToShow: 11,
-                        slidesToScroll: 11,
-                    }
-                    },
-                    {
-                    breakpoint: 1450,
-                    settings: {
-                        slidesToShow: 10,
-                        slidesToScroll: 10,
-                    }
-                    },
-                    {
-                    breakpoint: 1300,
-                    settings: {
-                        slidesToShow: 9,
-                        slidesToScroll: 9,
-                    }
-                    },
-                    {
-                    breakpoint: 1150,
-                    settings: {
-                        slidesToShow: 8,
-                        slidesToScroll: 8,
-                    }
-                    },
-                    {
-                    breakpoint: 1000,
-                    settings: {
-                        slidesToShow: 7,
-                        slidesToScroll: 7,
-                    }
-                    },
-                    {
-                    breakpoint: 850,
-                    settings: {
-                        slidesToShow: 6,
-                        slidesToScroll: 6,
-                    }
-                    },
-                    {
-                    breakpoint: 700,
-                    settings: {
-                        slidesToShow: 5,
-                        slidesToScroll: 5,
-                    }
-                    },
-                    {
-                    breakpoint: 675,
-                    settings: {
-                        slidesToShow: 4,
-                        slidesToScroll: 4
-                    }
-                    },
-                    {
-                    breakpoint: 480,
-                    settings: {
-                        slidesToShow: 3,
-                        slidesToScroll: 3
-                    }
-                    }
-                    // You can unslick at a given breakpoint now by adding:
-                    // settings: "unslick"
-                    // instead of a settings object
-                ]
-                });
-            });
             //RECENT ITEMS
             // each filter we click on
             $(".filter-recent-event > li").on("click", function() {

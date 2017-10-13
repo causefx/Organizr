@@ -1049,7 +1049,18 @@ function getEmbyRecent($array) {
     unset($array["MusicAlbum"]);
     unset($array["Series"]);
 
-    return outputRecentAdded($header, $items, "", $array);
+    return outputRecentAdded($header, $items, "
+	setInterval(function() {
+		$('<div></div>').load('ajax.php?a=emby-recent',function() {
+			var element = $(this).find('#recentMedia');
+			var loadedID = 	element.attr('id');
+			$('#recentMedia').replaceWith(element);
+			console.log('Loaded recent: '+loadedID);
+			loadSlick();
+		});
+
+	}, 15000);
+	", $array);
 }
 
 // Get Recent Content From Plex
@@ -1077,7 +1088,18 @@ function getPlexRecent($array){
 				}
 			}
 
-			return outputRecentAdded($header, $items, "", $array);
+			return outputRecentAdded($header, $items, "
+			setInterval(function() {
+				$('<div></div>').load('ajax.php?a=plex-recent',function() {
+					var element = $(this).find('#recentMedia');
+					var loadedID = 	element.attr('id');
+					$('#recentMedia').replaceWith(element);
+					console.log('Loaded recent: '+loadedID);
+					loadSlick();
+				});
+
+			}, 15000);
+			", $array);
 		}else{
 			writeLog("error", "PLEX RECENT-ITEMS ERROR: could not connect - check token - if HTTPS, is cert valid");
 		}
