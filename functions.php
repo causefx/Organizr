@@ -960,7 +960,7 @@ function getEmbyStreams($size, $showNames, $role) {
 				$('#'+loadedID).replaceWith(element);
 				console.log('Loaded updated: '+loadedID);
 			});
-		}, 600000);
+		}, 15000);
 	");
 }
 
@@ -993,7 +993,7 @@ function getPlexStreams($size, $showNames, $role){
 						$('#'+loadedID).replaceWith(element);
 						console.log('Loaded updated: '+loadedID);
 					});
-				}, 600000);
+				}, 15000);
 			");
 		}else{
 			writeLog("error", "PLEX STREAM ERROR: could not connect - check token - if HTTPS, is cert valid");
@@ -1059,7 +1059,7 @@ function getEmbyRecent($array) {
 			loadSlick();
 		});
 
-	}, 15000);
+	}, 600000);
 	", $array);
 }
 
@@ -1098,7 +1098,7 @@ function getPlexRecent($array){
 					loadSlick();
 				});
 
-			}, 15000);
+			}, 600000);
 			", $array);
 		}else{
 			writeLog("error", "PLEX RECENT-ITEMS ERROR: could not connect - check token - if HTTPS, is cert valid");
