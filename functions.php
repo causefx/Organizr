@@ -2833,7 +2833,7 @@ function getServerPath() {
         	$domain = $_SERVER['HTTP_HOST'];
 		}
 	}
-    return $protocol . $domain . dirname($_SERVER['REQUEST_URI']);
+    return $protocol . $domain . str_replace("\\", "/", dirname($_SERVER['REQUEST_URI']));
 }
 
 function get_browser_name() {
