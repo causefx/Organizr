@@ -1478,6 +1478,37 @@ echo buildSettings(
 				),
 			),
 			array(
+				'title' => 'Ombi',
+				'id' => 'ombiSettings',
+				'image' => 'images/ombi.png',
+				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'ombiAuth',
+						'value' => OMBIAUTH,
+						'options' => $userTypes,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:5000',
+						'labelTranslate' => 'OMBI_URL',
+						'assist' => 'http://hostname:5000 | http://hostname/ombi | http://hostname:5000/ombi',
+						'name' => 'ombiURL',
+						'pattern' => $urlPattern,
+						'value' => OMBIURL,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => randString(32),
+						'labelTranslate' => 'OMBI_KEY',
+						'name' => 'ombiKey',
+						'value' => OMBIKEY,
+					),
+
+				),
+			),
+			array(
 				'title' => 'Speed Test',
 				'id' => 'speedTestSettings',
 				'image' => 'images/settings/full-color/png/64px/speedometer.png',

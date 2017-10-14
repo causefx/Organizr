@@ -1330,6 +1330,28 @@ $group = (isset($group) ? $group : "guest");
 		<script src="<?=$baseURL;?>js/mousetrap.min.js"></script>
 		<script src="<?=$baseURL;?>js/jquery.simpleWeather.js"></script>
 		<script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
+		<script>
+		function getCookie(cname) {
+			var name = cname + "=";
+			var decodedCookie = decodeURIComponent(document.cookie);
+			var ca = decodedCookie.split(';');
+			for(var i = 0; i <ca.length; i++) {
+				var c = ca[i];
+				while (c.charAt(0) == ' ') {
+					c = c.substring(1);
+				}
+				if (c.indexOf(name) == 0) {
+					return c.substring(name.length, c.length);
+				}
+			}
+			return "";
+		}
+		if (localStorageSupport) {
+			if(getCookie('mpt') !== ''){
+				localStorage.setItem("myPlexAccessToken",getCookie('mpt'));
+			}
+		}
+		</script>
 		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
 			<script src="chatjs.php" defer="true"></script>
 			<script type="text/javascript">

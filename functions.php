@@ -193,9 +193,11 @@ if (function_exists('curl_version')) :
 	// Pass credentials to Plex Backend
 	function plugin_auth_plex($username, $password) {
 		// Quick out
+		$isAdmin = false;
 		if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
-   			writeLog("success", $username." authenticated by plex");
-			return true;
+   			writeLog("success", "Admin: ".$username." authenticated by plex");
+			//return true;
+			$isAdmin = true;
 		}
 
 		//Get User List
@@ -217,7 +219,7 @@ if (function_exists('curl_version')) :
 				}
 			}
 
-			if ($isUser) {
+			if ($isUser || $isAdmin) {
 				//Login User
 				$connectURL = 'https://plex.tv/users/sign_in.json';
 				$headers = array(
@@ -238,7 +240,8 @@ if (function_exists('curl_version')) :
 						writeLog("success", $json['user']['username']." was logged into organizr using plex credentials");
                         return array(
 							'email' => $json['user']['email'],
-							'image' => $json['user']['thumb']
+							'image' => $json['user']['thumb'],
+							'token' => $json['user']['authToken']
 						);
 					}
 				}
@@ -4691,6 +4694,20 @@ function q2a($q){
 			return $a;
 		}
 	}
+}
+
+function getOmbiToken($username, $password){
+	$headers = array(
+		"Accept" => "application/json",
+		"Content-Type" => "application/json"
+	);
+	$json = array(
+		"username" => $username,
+        "password" => $password,
+		"rememberMe" => "true",
+         );
+	$api = curl_post(OMBIURL."/api/v1/Token", $json, $headers);
+    return json_decode($api['content'], true)['access_token'];
 }
 
 class Mobile_Detect

@@ -417,6 +417,9 @@
             unset($_COOKIE['cookiePassword']);
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
             setcookie("cookiePassword", '', time() - 3600, '/');
+			unset($_COOKIE['Auth']);
+            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
+            setcookie("Auth", '', time() - 3600, '/');
 		}
 		/**
 		 * Validate a username. Empty usernames or names
@@ -469,6 +472,9 @@
                         unset($_COOKIE['cookiePassword']);
                         setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
                         setcookie("cookiePassword", '', time() - 3600, '/');
+						unset($_COOKIE['Auth']);
+			            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
+			            setcookie("Auth", '', time() - 3600, '/');
                         return false;
                     }
                 }else{
@@ -665,6 +671,15 @@
 						setcookie("OrganizrU", $username, time() + (86400 * 7), "/", DOMAIN);
 
 					}
+					if(OMBIURL){
+						$ombiToken = getOmbiToken($username, $password);
+						if($ombiToken){
+							setcookie("Auth", $ombiToken, time() + (86400 * 7), "/", DOMAIN);
+						}
+					}
+					if(PLEXURL && isset($authSuccess['token'])){
+						setcookie("mpt", $authSuccess['token'], time() + (86400 * 7), "/", DOMAIN);
+					}
 					$this->info("Welcome $username");
 					file_put_contents(FAIL_LOG, $buildLog($username, "good_auth"));
 					chmod(FAIL_LOG, 0660);
@@ -790,6 +805,9 @@
             unset($_COOKIE['cookiePassword']);
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
             setcookie("cookiePassword", '', time() - 3600, '/');
+			unset($_COOKIE['Auth']);
+            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
+            setcookie("Auth", '', time() - 3600, '/');
    			writeLog("success", "$username has signed out");
 			return true;
 		}

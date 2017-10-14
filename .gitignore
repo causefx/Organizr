@@ -71,3 +71,4 @@ images/cache/*
 backups/*
 backups/
 backups
+test*.php
