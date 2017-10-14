@@ -58,6 +58,7 @@ org.log
 org*.log
 test.php
 users.db
+speedtest.db
 config/cacert.pem
 config/config.php
 config/config*.bak.php

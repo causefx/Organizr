@@ -45,7 +45,7 @@ if (function_exists('ldap_connect')) :
 		}else{
 			ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 			ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
-			$bind = ldap_bind($ldap, sprinf(AUTHBACKENDDOMAINFORMAT, $username), $password);
+			$bind = @ldap_bind($ldap, sprintf(AUTHBACKENDDOMAINFORMAT, $username), $password);
 			if ($bind) {
 				writeLog("success", "LDAP authentication success");
 				return true;
