@@ -151,6 +151,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
                         removeFiles('images/'.(isset($_POST['file'])?$_POST['file']:''));
                         sendNotification(true);
                         break;
+					case 'remove-file':
+                        removeFiles($_POST['file']);
+                        sendNotification(true);
+                        break;
                     case 'update-config':
 						$response['notify'] = sendNotification(updateConfig($_POST));
 						$response['show_apply'] = true;

@@ -74,6 +74,20 @@ foreach(loadAppearance() as $key => $value) {
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
         <![endif]-->
         <style>
+			<?php if($USER->role !== "admin"){ echo '.refreshImage { display: none; }';}?>
+			.refreshImage{
+				top: -15px;
+				opacity: .3;
+			}
+			.refreshImage:hover{
+				opacity: 1;
+			}
+			.refreshImage .w-refresh {
+			    font-size: 36px;
+			    opacity: 0.5;
+			    right: 0;
+			    left: 5px;
+			}
             .fc-day-grid-event{
                 cursor: pointer;
             }
@@ -480,6 +494,14 @@ foreach(loadAppearance() as $key => $value) {
         <script>
         //Tooltips
         $('[data-toggle="tooltip"]').tooltip();
+
+		$(document).on("click", ".refreshImage", function(e) {
+			e.preventDefault;
+			var orginalElement = $(this).parent().find('.refreshImageSource');
+			var original = orginalElement.attr('original-image');
+			orginalElement.attr('src', original);
+			console.log(original);
+		});
         $(".swal-legend").click(function () {
             swal({
                 title: "Calendar Legend",

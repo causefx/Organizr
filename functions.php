@@ -674,27 +674,27 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 	if (!isset($itemDetails['Overview'])) {
 		$itemDetails['Overview'] = '';
 	}
-
+	$original_image_url = 'ajax.php?a=emby-image&type='.$imageType.'&img='.$imageId.'&height='.$height.'&width='.$width.'&key='.$key.'$'.randString();
 	if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key.'.jpg'; }
     if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
         $image_url = 'ajax.php?a=emby-image&type='.$imageType.'&img='.$imageId.'&height='.$height.'&width='.$width.'&key='.$key.'';
     }
 
     if($nowPlaying){
-        if(!$imageType){ $image_url = "images/no-np.png"; $key = "no-np"; }
-        if(!$imageId){ $image_url = "images/no-np.png"; $key = "no-np"; }
+        if(!$imageType){ $original_image_url = $image_url = "images/no-np.png"; $key = "no-np"; }
+        if(!$imageId){ $original_image_url = $image_url = "images/no-np.png"; $key = "no-np"; }
     }else{
-        if(!$imageType){ $image_url = "images/no-list.png"; $key = "no-list"; }
-        if(!$imageId){ $image_url = "images/no-list.png"; $key = "no-list"; }
+        if(!$imageType){ $original_image_url = $image_url = "images/no-list.png"; $key = "no-list"; }
+        if(!$imageId){ $original_image_url = $image_url = "images/no-list.png"; $key = "no-list"; }
     }
     if(isset($useImage)){ $image_url = $useImage; }
 
 	// Assemble Item And Cache Into Array
 	if($nowPlaying){
     	//prettyPrint($itemDetails);
-    	return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$URL.'" target="_blank"><img style="width: 100%; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+    	return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$URL.'" target="_blank"><img style="width: 100%; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'" original-image="'.$original_image_url.'" class="refreshImageSource"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
-		 return '<div class="item-'.$itemDetails['Type'].'"><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+		 return '<div class="item-'.$itemDetails['Type'].'"><div class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
 	}
 }
 
@@ -886,23 +886,23 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
 
     // If No Overview
     if (!isset($itemDetails['Overview'])) { $itemDetails['Overview'] = ''; }
-
+	$original_image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'$'.randString();
     if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key.'.jpg'; }
     if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
         $image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'';
     }
     if($nowPlaying){
-        if(!$thumb){ $image_url = "images/no-np.png"; $key = "no-np"; }
+        if(!$thumb){ $original_image_url = $image_url = "images/no-np.png"; $key = "no-np"; }
     }else{
-        if(!$thumb){ $image_url = "images/no-list.png"; $key = "no-list"; }
+        if(!$thumb){ $original_image_url = $image_url = "images/no-list.png"; $key = "no-list"; }
     }
 	if(isset($useImage)){ $image_url = $useImage; }
 	$openTab = (PLEXTABNAME) ? "true" : "false";
     // Assemble Item And Cache Into Array
     if($nowPlaying){
-        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img style="width: '.$widthOverride.'%; display:block;" src="'.$image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img class="refreshImageSource" style="width: '.$widthOverride.'%; display:block;" src="'.$image_url.'" original-image="'.$original_image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
-        return '<div class="item-'.$item['type'].$playlist.'"><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+        return '<div class="item-'.$item['type'].$playlist.'"><div style="" class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
     }
 }
 //$hideMenu .= '<li data-filter="playlist-'.$className.'" data-name="'.$api['title'].'"><a class="js-filter-'.$className.'" href="javascript:void(0)">'.$api['title'].'</a></li>';
@@ -1113,6 +1113,7 @@ function getPlexRecent($array){
 
 // Get Image From Emby
 function getEmbyImage() {
+	$refresh = false;
 	$embyAddress = qualifyURL(EMBYURL);
     if (!file_exists('images/cache')) {
         mkdir('images/cache', 0777, true);
@@ -1120,21 +1121,25 @@ function getEmbyImage() {
 
 	$itemId = $_GET['img'];
  	$key = $_GET['key'];
+	if(strpos($key, '$') !== false){
+		$key = explode('$', $key)[0];
+		$refresh = true;
+	}
 	$itemType = $_GET['type'];
 	$imgParams = array();
 	if (isset($_GET['height'])) { $imgParams['height'] = 'maxHeight='.$_GET['height']; }
 	if (isset($_GET['width'])) { $imgParams['width'] = 'maxWidth='.$_GET['width']; }
 
 	if(isset($itemId)) {
-     $image_src = $embyAddress . '/Items/'.$itemId.'/Images/'.$itemType.'?'.implode('&', $imgParams);
-    $cachefile = 'images/cache/'.$key.'.jpg';
-    $cachetime = 604800;
-    // Serve from the cache if it is younger than $cachetime
-    if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
-        header("Content-type: image/jpeg");
-        @readfile($cachefile);
-        exit;
-    }
+	    $image_src = $embyAddress . '/Items/'.$itemId.'/Images/'.$itemType.'?'.implode('&', $imgParams);
+	    $cachefile = 'images/cache/'.$key.'.jpg';
+	    $cachetime = 604800;
+	    // Serve from the cache if it is younger than $cachetime
+	    if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh !== true) {
+	        header("Content-type: image/jpeg");
+	        @readfile($cachefile);
+	        exit;
+	    }
         ob_start(); // Start the output buffer
         header('Content-type: image/jpeg');
         @readfile($image_src);
@@ -1151,6 +1156,7 @@ function getEmbyImage() {
 
 // Get Image From Plex
 function getPlexImage() {
+	$refresh = false;
 	$plexAddress = qualifyURL(PLEXURL);
     if (!file_exists('images/cache')) {
         mkdir('images/cache', 0777, true);
@@ -1158,6 +1164,10 @@ function getPlexImage() {
 
 	$image_url = $_GET['img'];
 	$key = $_GET['key'];
+	if(strpos($key, '$') !== false){
+		$key = explode('$', $key)[0];
+		$refresh = true;
+	}
 	$image_height = $_GET['height'];
 	$image_width = $_GET['width'];
 
@@ -1166,7 +1176,7 @@ function getPlexImage() {
         $cachefile = 'images/cache/'.$key.'.jpg';
         $cachetime = 604800;
         // Serve from the cache if it is younger than $cachetime
-        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
+        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh !== true) {
             header("Content-type: image/jpeg");
             @readfile($cachefile);
             exit;
@@ -1644,10 +1654,10 @@ function uploadAvatar($path, $ext_mask = null) {
 // Remove file
 function removeFiles($path) {
     if(is_file($path)) {
-        writeLog("success", "image was removed");
+        writeLog("success", "file was removed");
         unlink($path);
     } else {
-  		writeLog("error", "image was not removed");
+  		writeLog("error", "file was not removed");
 		echo json_encode('No file specified for removal!');
 	}
 }
