@@ -4,6 +4,7 @@ return array(
 	"user_home" => false,
 	"timezone" => "",
 	"plexURL" => "",
+	"plexTabURL" => "",
 	"plexToken" => "",
 	"plexRecentMovie" => "false",
 	"plexRecentTV" => "false",

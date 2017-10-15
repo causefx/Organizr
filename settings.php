@@ -940,6 +940,13 @@ echo buildSettings(
 						'value' => PLEXTABNAME,
 					),
 					array(
+						'type' => 'text',
+						'placeholder' => "URL For Plex Links",
+						'labelTranslate' => 'PLEX_TAB_URL',
+						'name' => 'plexTabURL',
+						'value' => PLEXTABURL,
+					),
+					array(
       					array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'ALLOW_SEARCH',

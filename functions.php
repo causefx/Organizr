@@ -878,10 +878,10 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
             }
 		}
 
-		if (substr_count(PLEXURL, '.') != 2) {
-			$address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
+		if (PLEXTABURL) {
+			$address = PLEXTABURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
 		}else{
-			$address = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
+			$address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
 		}
 
     // If No Overview
