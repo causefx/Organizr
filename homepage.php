@@ -78,6 +78,7 @@ foreach(loadAppearance() as $key => $value) {
 			.refreshImage{
 				top: -10px;
 				opacity: 0;
+				z-index: 1000;
 			}
 			.ultra-widget.refreshImage .w-refresh.w-p-icon {
 			    opacity: 1;
