@@ -154,7 +154,7 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 					$(this).attr('for',$(this).attr('for').replace('new',idNumber));
 				});
 				$element.appendTo('#submitTabs ul');
-				$element.find('.iconpickeradd').iconpicker({placement: 'left', hideOnSelect: false, collision: true});
+				$element.find('.iconpickeradd').iconpicker({placement: 'right', hideOnSelect: false, collision: true});
 				$(".iconpicker-items").niceScroll({
 					railpadding: {top:0,right:0,left:0,bottom:0},
 					scrollspeed: 30,
@@ -3928,7 +3928,7 @@ echo buildSettings(
         $( document ).ready(function() {
 			$(".iconpickeradd").on("click", function() {
                 console.log('icon picker start add');
-                $(this).iconpicker({placement: 'left', hideOnSelect: false, collision: true});
+                $(this).iconpicker({placement: 'right', hideOnSelect: false, collision: true});
 				$(".iconpicker-items").niceScroll({
 					railpadding: {top:0,right:0,left:0,bottom:0},
 					scrollspeed: 30,

@@ -900,7 +900,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
 	$openTab = (PLEXTABNAME) ? "true" : "false";
     // Assemble Item And Cache Into Array
     if($nowPlaying){
-        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img class="refreshImageSource" style="width: '.$widthOverride.'%; display:block;" src="'.$image_url.'" original-image="'.$original_image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><div class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img class="refreshImageSource" style="width: '.$widthOverride.'%; display:block;" src="'.$image_url.'" original-image="'.$original_image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
         return '<div class="item-'.$item['type'].$playlist.'"><div style="" class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
     }
@@ -1176,7 +1176,7 @@ function getPlexImage() {
         $cachefile = 'images/cache/'.$key.'.jpg';
         $cachetime = 604800;
         // Serve from the cache if it is younger than $cachetime
-        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh !== true) {
+        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh == false) {
             header("Content-type: image/jpeg");
             @readfile($cachefile);
             exit;
@@ -4550,7 +4550,7 @@ function getPing($url, $style, $refresh = null){
 			$class .= " animated flash loop-animation-timeout";
 		}
 	}
-	echo '<span class="badge ping-'.$class.'" style="position: absolute;z-index: 100;right: 5px; padding: 0px 0px;'.$style.';font-size: 10px;">&nbsp;</span>';
+	echo '<span class="pingcheck badge ping-'.$class.'" style="position: absolute;z-index: 100;right: 5px; padding: 0px 0px;'.$style.';font-size: 10px;">&nbsp;</span>';
 }
 
 function speedTestData(){

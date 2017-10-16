@@ -542,14 +542,14 @@ $group = (isset($group) ? $group : "guest");
 													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 													<img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
 													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
-														<ping class="ping-<?=$name;?>"></ping>
+														<ping class="ping-<?=$name;?> startPingTimer"></ping>
 													<?php }?>
 												</i>
 											<?php }else { ?>
 												<i class="fa <?=$row['icon'];?> fa-lg">
 													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
-														<ping class="ping-<?=$name;?>"></ping>
+														<ping class="ping-<?=$name;?> startPingTimer"></ping>
 													<?php }?>
 												</i>
 											<?php } ?>
@@ -1824,7 +1824,6 @@ $group = (isset($group) ? $group : "guest");
 			$("li[class^='tab-item active']").first().find("img").addClass("TabOpened");
 			if (defaultTab){
 				defaultTab = defaultTab.substr(0, defaultTab.length-1);
-				console.log(defaultTab);
 			}else{
 				defaultTabNone = $("li[class^='tab-item']").attr("id");
 				if (defaultTabNone){
@@ -1836,8 +1835,28 @@ $group = (isset($group) ? $group : "guest");
 
 			if (defaultTab){
 				defaultTabName = $("li[class^='tab-item active']").attr("name");
-				$("#content").html('<div class="iframe active" data-content-name="'+defaultTabName+'" data-content-url="'+defaultTab+'"><iframe id="frame-'+defaultTabName+'" scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
-				document.getElementById('main-wrapper').focus();
+				startPingTimer = $("li[class^='tab-item active']").find('.startPingTimer');
+				console.log('loading default tab: '+defaultTabName);
+				if((startPingTimer).length){ //has ping attr
+					setTimeout(function(){ //allow it 1.25 secs to check
+						defaultPingID = $("li[class^='tab-item active']").find('.pingcheck'); //grab the DOM Element
+						if((defaultPingID).length){ //check if element is true
+							if(defaultPingID.hasClass('ping-success')){ //check if element has success status
+								console.log(defaultTabName+' has responded, proceeding with load');
+								$("#content").html('<div class="iframe active" data-content-name="'+defaultTabName+'" data-content-url="'+defaultTab+'"><iframe id="frame-'+defaultTabName+'" scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
+								document.getElementById('main-wrapper').focus();
+							}else{
+								console.log(defaultTabName+' did not respond, cancelling load');
+							}
+						}else{
+							console.log(defaultTabName+' did not have ping value');
+						}
+					}, 1250);
+				}else{
+					console.log(defaultTabName+' isn\'t setup with ping, cancelling check on load');
+					$("#content").html('<div class="iframe active" data-content-name="'+defaultTabName+'" data-content-url="'+defaultTab+'"><iframe id="frame-'+defaultTabName+'" scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
+					document.getElementById('main-wrapper').focus();
+				}
 			}
 			if (defaultTab == null){
 				$("div[id^='tabEmpty']").show();
@@ -2051,7 +2070,7 @@ $group = (isset($group) ? $group : "guest");
 
 			}else if (currentframe.attr("class") == "iframe hidden") {
 
-				console.log(thisid + " is active already but hidden");
+				console.log(thisid + " - reactivating iFrame");
 
 				$("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
@@ -2068,7 +2087,7 @@ $group = (isset($group) ? $group : "guest");
 				if ($(this).attr("window") == "true") {
 					window.open(thisid,'_blank');
 				}else {
-					console.log(thisid + " make new div");
+					console.log(thisid + " - loading new iFrame");
 
 					$("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
@@ -2107,7 +2126,7 @@ $group = (isset($group) ? $group : "guest");
 
 			}else if (currentframe.attr("class") == "iframe hidden") {
 
-				console.log(thisid + " is active already but hidden");
+				console.log(thisid + " - reactivating iFrame");
 
 				$("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
 
@@ -2124,7 +2143,7 @@ $group = (isset($group) ? $group : "guest");
 				if ($(this).attr("window") == "true") {
 					window.open(thisid,'_blank');
 				}else {
-					console.log(thisid + " make new div");
+					console.log(thisid + " - loading new iFrame");
 
 					$("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
 
