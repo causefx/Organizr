@@ -1790,7 +1790,7 @@ echo buildSettings(
 					),
 					array(
 						'type' => 'number',
-						'placeholder' => '465',
+						'placeholder' => 'port # i.e. 465',
 						'labelTranslate' => 'SMTP_HOST_PORT',
 						'name' => 'smtpHostPort',
 						'value' => SMTPHOSTPORT,

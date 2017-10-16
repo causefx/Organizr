@@ -80,11 +80,18 @@ foreach(loadAppearance() as $key => $value) {
 				opacity: 0;
 				z-index: 1000;
 			}
+
+			.refreshNP {
+				z-index: 1001;
+			}
+			.w-refresh {
+				opacity: 1;
+			}
 			.ultra-widget.refreshImage .w-refresh.w-p-icon {
 			    opacity: 1;
 			}
-			.refreshImage:hover{
-				opacity: 1;
+			.refreshImage:hover, .refreshNP:hover{
+				opacity: 1 !important;
 			}
 			.refreshImage .w-refresh {
 			    font-size: 36px;
