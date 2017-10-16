@@ -1940,12 +1940,14 @@ echo buildSettings(
 							'name' => 'chatAuth',
 							'value' => CHATAUTH,
 							'options' => $userTypes,
+							'disabled' => (!extension_loaded('sqlite3')) ? true : false,
 						),
 						array(
 							'type' => 'checkbox',
-							'labelTranslate' => 'ENABLE_CHAT',
+							'labelTranslate' => (!extension_loaded('sqlite3')) ? 'SQLITE_NOT_INSTALLED' : 'ENABLE_CHAT',
 							'name' => 'chat',
 							'value' => CHAT,
+							'disabled' => (!extension_loaded('sqlite3')) ? true : false,
 						),
 						array(
 							'type' => 'button',
@@ -1954,6 +1956,7 @@ echo buildSettings(
 							'icon' => 'trash',
 							'onclick' => 'ajax_request(\'POST\', \'deleteChat\');',
 							'class' => 'btn-warning',
+							'disabled' => (!extension_loaded('sqlite3')) ? true : false,
 						),
 				),
 			),

@@ -7537,4 +7537,6 @@ function mimeTypes(){
 }
 
 // Always run this
-dependCheck();
+if(strpos($_SERVER['SCRIPT_NAME'], 'check.php') == false){
+	dependCheck();
+}
