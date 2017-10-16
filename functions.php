@@ -2552,9 +2552,10 @@ function nzbgetConnect($list = 'listgroups') {
 			}
 
 			$gotNZB[] = '<tr>
-							<td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
+							<td class="col-xs-6 nzbtable-file-row">'.$downloadName.'</td>
 							<td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
 							<td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
+							<td class="col-xs-1 nzbtable nzbtable-row">'.realSize(($child['FileSizeMB']*1024)*1024).'</td>
 							<td class="col-xs-2 nzbtable nzbtable-row">
 								<div class="progress">
 									<div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
@@ -2591,9 +2592,10 @@ function sabnzbdConnect($list = 'queue') {
         $downloadStatus = $child['status'];
 
         $gotNZB[] = '<tr>
-						<td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
+						<td class="col-xs-6 nzbtable-file-row">'.$downloadName.'</td>
 						<td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
 						<td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
+						<td class="col-xs-1 nzbtable nzbtable-row">'.$child['size'].'</td>
 						<td class="col-xs-2 nzbtable nzbtable-row">
 							<div class="progress">
 								<div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
@@ -4718,6 +4720,12 @@ function getOmbiToken($username, $password){
          );
 	$api = curl_post(OMBIURL."/api/v1/Token", $json, $headers);
     return json_decode($api['content'], true)['access_token'];
+}
+
+function realSize($bytes, $decimals = 2) {
+    $size = array('B','kB','MB','GB','TB','PB','EB','ZB','YB');
+    $factor = floor((strlen($bytes) - 1) / 3);
+    return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . ' '.@$size[$factor];
 }
 
 class Mobile_Detect

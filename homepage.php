@@ -421,6 +421,7 @@ foreach(loadAppearance() as $key => $value) {
                                                             <th class="col-xs-7 nzbtable-file-row"><?php echo $language->translate("FILE");?></th>
                                                             <th class="col-xs-2 nzbtable"><?php echo $language->translate("STATUS");?></th>
                                                             <th class="col-xs-1 nzbtable"><?php echo $language->translate("CATEGORY");?></th>
+															<th class="col-xs-1 nzbtable"><?php echo $language->translate("SIZE");?></th>
                                                             <th class="col-xs-2 nzbtable"><?php echo $language->translate("PROGRESS");?></th>
                                                         </tr>
                                                     </thead>
@@ -437,6 +438,7 @@ foreach(loadAppearance() as $key => $value) {
                                                             <th class="col-xs-7 nzbtable-file-row"><?php echo $language->translate("FILE");?></th>
                                                             <th class="col-xs-2 nzbtable"><?php echo $language->translate("STATUS");?></th>
                                                             <th class="col-xs-1 nzbtable"><?php echo $language->translate("CATEGORY");?></th>
+															<th class="col-xs-1 nzbtable"><?php echo $language->translate("SIZE");?></th>
                                                             <th class="col-xs-2 nzbtable"><?php echo $language->translate("PROGRESS");?></th>
                                                         </tr>
                                                     </thead>
