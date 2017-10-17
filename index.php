@@ -1350,10 +1350,14 @@ $group = (isset($group) ? $group : "guest");
 					if(getCookie('mpt') !== ''){
 						localStorage.setItem("myPlexAccessToken",getCookie('mpt'));
 					}
+					if(getCookie('Auth') !== ''){
+						localStorage.setItem("id_token",getCookie('Auth'));
+					}
 				}
 		<?php }else{?>
 			if (localStorageSupport) {
 				localStorage.removeItem("myPlexAccessToken");
+				localStorage.removeItem("id_token");
 			}
 		<?php } } ?>
 
@@ -1767,6 +1771,9 @@ $group = (isset($group) ? $group : "guest");
 						//$('#checkInviteForm').hide();
 						//$('#chooseMethod').show();
 						$('#accountSubmitted').show();
+						$('#useInviteForm_submit').hide();
+						$('#plexYesGoBack').hide();
+						$('#useInviteForm [name=inviteUser]').hide();
 						console.log(result);
 					}
 				});
