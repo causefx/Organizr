@@ -2570,7 +2570,7 @@ function nzbgetConnect($list = 'listgroups') {
 		if ($gotNZB) {
 			return implode('',$gotNZB);
 		} else {
-			return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+			return '<tr><td colspan="5"><p class="text-center">No Results</p></td></tr>';
 		}
 	}else{
 		writeLog("error", "NZBGET ERROR: could not connect - check URL and/or check token and/or Username and Password - if HTTPS, is cert valid");
@@ -2610,7 +2610,7 @@ function sabnzbdConnect($list = 'queue') {
 	if ($gotNZB) {
 		return implode('',$gotNZB);
 	} else {
-		return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+		return '<tr><td colspan="5"><p class="text-center">No Results</p></td></tr>';
 	}
 }
 
