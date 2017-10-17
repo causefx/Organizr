@@ -420,6 +420,9 @@
 			unset($_COOKIE['Auth']);
             setcookie("Auth", '', time() - 3600, '/', DOMAIN);
             setcookie("Auth", '', time() - 3600, '/');
+			unset($_COOKIE['mpt']);
+            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
+            setcookie("mpt", '', time() - 3600, '/');
 		}
 		/**
 		 * Validate a username. Empty usernames or names
@@ -475,6 +478,9 @@
 						unset($_COOKIE['Auth']);
 			            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
 			            setcookie("Auth", '', time() - 3600, '/');
+						unset($_COOKIE['mpt']);
+			            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
+			            setcookie("mpt", '', time() - 3600, '/');
                         return false;
                     }
                 }else{
@@ -808,6 +814,9 @@
 			unset($_COOKIE['Auth']);
             setcookie("Auth", '', time() - 3600, '/', DOMAIN);
             setcookie("Auth", '', time() - 3600, '/');
+			unset($_COOKIE['mpt']);
+            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
+            setcookie("mpt", '', time() - 3600, '/');
    			writeLog("success", "$username has signed out");
 			return true;
 		}

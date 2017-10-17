@@ -1082,25 +1082,23 @@ $group = (isset($group) ? $group : "guest");
 								</li>
 							</div>
 							<?php $tabCount++; endforeach; endif;?>
-						</div>
-						<?php if( $USER->authenticated && $USER->role == "admin" ){ ?>
-						<div class="row">
-							<div class="col-lg-12">
-								<li style="list-style-type: none; cursor: pointer;" class="splash-item content-box small-box ultra-widget gray-bg" data-title="" name="settings">
-									<div class="w-content">
-										<div class="w-icon">
-											<center>
-												<i style="">
-													<img src="images/settings.png" style="height: 100px; margin-top: -10px;" class="">
-												</i>
-											</center>
+							<?php if( $USER->authenticated && $USER->role == "admin" ){ ?>
+								<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+									<li style="list-style-type: none; cursor: pointer;" class="splash-item content-box small-box ultra-widget gray-bg" data-title="" name="settings">
+										<div class="w-content">
+											<div class="w-icon">
+												<center>
+													<i style="">
+														<img src="images/settings.png" style="height: 100px; margin-top: -10px;" class="">
+													</i>
+												</center>
+											</div>
+											<div class="text-center"><span class="text-uppercase w-name elip">Settings</span></div>
 										</div>
-										<div class="text-center"><span class="text-uppercase w-name elip">Settings</span></div>
-									</div>
-								</li>
-							</div>
+									</li>
+								</div>
+							<?php } ?>
 						</div>
-						<?php } ?>
 					</div>
 				</div>
 			</div>
@@ -1346,11 +1344,19 @@ $group = (isset($group) ? $group : "guest");
 			}
 			return "";
 		}
-		if (localStorageSupport) {
-			if(getCookie('mpt') !== ''){
-				localStorage.setItem("myPlexAccessToken",getCookie('mpt'));
+		<?php if($configReady == "Yes") {
+			if($USER->authenticated){ ?>
+				if (localStorageSupport) {
+					if(getCookie('mpt') !== ''){
+						localStorage.setItem("myPlexAccessToken",getCookie('mpt'));
+					}
+				}
+		<?php }else{?>
+			if (localStorageSupport) {
+				localStorage.removeItem("myPlexAccessToken");
 			}
-		}
+		<?php } } ?>
+
 		</script>
 		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
 			<script src="chatjs.php" defer="true"></script>
@@ -1738,11 +1744,14 @@ $group = (isset($group) ? $group : "guest");
 				ajax_request('POST', 'validate-invite', {
 					invitecode: $('#checkInviteForm [name=inviteCode]').val(),
 				}).done(function(data){
+					var InviteCode = $('#checkInviteForm [name=inviteCode]').val();
 					var result = JSON.stringify(data).includes("success");
 					if(result === true){
 						$('#checkInviteForm').hide();
-						$('#chooseMethod').show();
+						$('#chooseMethod').show();//DZ60N2
+						$('#useInviteForm [name=inviteCode]').val(InviteCode);
 						console.log(result);
+						console.log(InviteCode);
 					}
 				});
 
