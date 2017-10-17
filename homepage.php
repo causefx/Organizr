@@ -393,67 +393,12 @@ foreach(loadAppearance() as $key => $value) {
                 </div>
                 <?php } ?>
 
-                <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
-                <div id="downloadClientRow" class="row">
-                    <div class="col-xs-12 col-md-12">
-                        <div class="content-box">
-                            <div class="tabbable panel with-nav-tabs panel-default">
-                                <div class="panel-heading">
-                                    <div class="content-tools i-block pull-right">
-                                        <a id="getDownloader" class="repeat-btn">
-                                            <i class="fa fa-repeat"></i>
-                                        </a>
-                                    </div>
-                                    <h3 class="pull-left"><?php if(NZBGETURL != ""){ echo "NZBGet "; } if(SABNZBDURL != ""){ echo "SABnzbd "; } ?></h3>
-                                    <ul class="nav nav-tabs pull-right">
-                                        <li class="active"><a href="#downloadQueue" data-toggle="tab" aria-expanded="true"><?php echo $language->translate("QUEUE");?></a></li>
-                                        <li class=""><a href="#downloadHistory" data-toggle="tab" aria-expanded="false"><?php echo $language->translate("HISTORY");?></a></li>
-                                    </ul>
-                                    <div class="clearfix"></div>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="tab-content">
-                                        <div class="tab-pane fade active in" id="downloadQueue">
-                                            <div class="table-responsive" style="max-height: 300px">
-                                                <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="col-xs-7 nzbtable-file-row"><?php echo $language->translate("FILE");?></th>
-                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("STATUS");?></th>
-                                                            <th class="col-xs-1 nzbtable"><?php echo $language->translate("CATEGORY");?></th>
-															<th class="col-xs-1 nzbtable"><?php echo $language->translate("SIZE");?></th>
-                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("PROGRESS");?></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="dl-queue sabnzbd"></tbody>
-                                                    <tbody class="dl-queue nzbget"></tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="downloadHistory">
-                                            <div class="table-responsive" style="max-height: 300px">
-                                                <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="col-xs-7 nzbtable-file-row"><?php echo $language->translate("FILE");?></th>
-                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("STATUS");?></th>
-                                                            <th class="col-xs-1 nzbtable"><?php echo $language->translate("CATEGORY");?></th>
-															<th class="col-xs-1 nzbtable"><?php echo $language->translate("SIZE");?></th>
-                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("PROGRESS");?></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="dl-history sabnzbd"></tbody>
-                                                    <tbody class="dl-history nzbget"></tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php } ?>
+                <?php if(NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)){
+					echo  buildDownloader('nzbget');
+				}
+				if(SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH)) {
+					echo  buildDownloader('sabnzbd');
+				} ?>
 				<?php if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) { ?>
                 <div id="plexRowNowPlaying" class="row">
                     <?php if(qualifyUser(PLEXPLAYINGNOWAUTH) && PLEXPLAYINGNOW == "true"){ echo getPlexStreams(12, PLEXSHOWNAMES, $USER->role); } ?>

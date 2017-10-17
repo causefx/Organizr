@@ -4728,6 +4728,66 @@ function realSize($bytes, $decimals = 2) {
     return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . ' '.@$size[$factor];
 }
 
+function buildDownloader($name){
+	return '
+<div id="downloadClientRow" class="row">
+	<div class="col-xs-12 col-md-12">
+		<div class="content-box">
+			<div class="tabbable panel with-nav-tabs panel-default">
+				<div class="panel-heading">
+					<div class="content-tools i-block pull-right">
+						<a id="getDownloader" class="repeat-btn">
+							<i class="fa fa-repeat"></i>
+						</a>
+					</div>
+					<h3 class="pull-left">'.strtoupper($name).'</h3>
+					<ul class="nav nav-tabs pull-right">
+						<li class="active"><a href="#downloadQueue-'.$name.'" data-toggle="tab" aria-expanded="true">'.translate("QUEUE").'</a></li>
+						<li class=""><a href="#downloadHistory-'.$name.'" data-toggle="tab" aria-expanded="false">'.translate("HISTORY").'</a></li>
+					</ul>
+					<div class="clearfix"></div>
+				</div>
+				<div class="panel-body">
+					<div class="tab-content">
+						<div class="tab-pane fade active in" id="downloadQueue-'.$name.'">
+							<div class="table-responsive" style="max-height: 300px">
+								<table class="table table-striped progress-widget zero-m" style="max-height: 300px">
+									<thead>
+										<tr>
+											<th class="col-xs-7 nzbtable-file-row">'.translate("FILE").'</th>
+											<th class="col-xs-2 nzbtable">'.translate("STATUS").'</th>
+											<th class="col-xs-1 nzbtable">'.translate("CATEGORY").'</th>
+											<th class="col-xs-1 nzbtable">'.translate("SIZE").'</th>
+											<th class="col-xs-2 nzbtable">'.translate("PROGRESS").'</th>
+										</tr>
+									</thead>
+									<tbody class="dl-queue '.$name.'"></tbody>
+								</table>
+							</div>
+						</div>
+						<div class="tab-pane fade" id="downloadHistory-'.$name.'">
+							<div class="table-responsive" style="max-height: 300px">
+								<table class="table table-striped progress-widget zero-m" style="max-height: 300px">
+									<thead>
+										<tr>
+											<th class="col-xs-7 nzbtable-file-row">'.translate("FILE").'</th>
+											<th class="col-xs-2 nzbtable">'.translate("STATUS").'</th>
+											<th class="col-xs-1 nzbtable">'.translate("CATEGORY").'</th>
+											<th class="col-xs-1 nzbtable">'.translate("SIZE").'</th>
+											<th class="col-xs-2 nzbtable">'.translate("PROGRESS").'</th>
+										</tr>
+									</thead>
+									<tbody class="dl-history '.$name.'"></tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>';
+}
 class Mobile_Detect
 {
     /**
