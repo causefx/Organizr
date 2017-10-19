@@ -351,7 +351,7 @@ if (function_exists('curl_version')) :
 			case 'application/json':
 				curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
 				break;
-			case 'application/x-www-form-urlencoded';
+			case 'application/x-www-form-urlencoded':
 				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
 				break;
 			default:
@@ -694,7 +694,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
     	//prettyPrint($itemDetails);
     	return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="refreshNP w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$URL.'" target="_blank"><img style="width: 100%; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'" original-image="'.$original_image_url.'" class="refreshImageSource"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
-		 return '<div class="item-'.$itemDetails['Type'].'"><div class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+		 return '<div class="item-'.$itemDetails['Type'].'"><div class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small class="elip slick-bottom-title">'.$title.'</small></div>';
 	}
 }
 
@@ -902,7 +902,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
     if($nowPlaying){
         return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="refreshNP w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><div class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img class="refreshImageSource" style="width: '.$widthOverride.'%; display:block;" src="'.$image_url.'" original-image="'.$original_image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
-        return '<div class="item-'.$item['type'].$playlist.'"><div style="" class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+        return '<div class="item-'.$item['type'].$playlist.'"><div style="" class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small class="elip slick-bottom-title">'.$title.'</small></div>';
     }
 }
 //$hideMenu .= '<li data-filter="playlist-'.$className.'" data-name="'.$api['title'].'"><a class="js-filter-'.$className.'" href="javascript:void(0)">'.$api['title'].'</a></li>';
@@ -963,7 +963,7 @@ function getEmbyStreams($size, $showNames, $role) {
 				$('#'+loadedID).replaceWith(element);
 				console.log('Loaded updated: '+loadedID);
 			});
-		}, 15000);
+		}, ".NOWPLAYINGREFRESH.");
 	");
 }
 
@@ -996,7 +996,7 @@ function getPlexStreams($size, $showNames, $role){
 						$('#'+loadedID).replaceWith(element);
 						console.log('Loaded updated: '+loadedID);
 					});
-				}, 15000);
+				}, ".NOWPLAYINGREFRESH.");
 			");
 		}else{
 			writeLog("error", "PLEX STREAM ERROR: could not connect - check token - if HTTPS, is cert valid");
@@ -1062,7 +1062,7 @@ function getEmbyRecent($array) {
 			loadSlick();
 		});
 
-	}, 600000);
+	}, ".RECENTREFRESH.");
 	", $array);
 }
 
@@ -1101,7 +1101,7 @@ function getPlexRecent($array){
 					loadSlick();
 				});
 
-			}, 600000);
+			}, ".RECENTREFRESH.");
 			", $array);
 		}else{
 			writeLog("error", "PLEX RECENT-ITEMS ERROR: could not connect - check token - if HTTPS, is cert valid");
@@ -4720,6 +4720,253 @@ function getOmbiToken($username, $password){
          );
 	$api = curl_post(OMBIURL."/api/v1/Token", $json, $headers);
     return json_decode($api['content'], true)['access_token'];
+}
+
+function ombiAction($id, $action, $type){
+	$headers = array(
+		"Accept" => "application/json",
+		"Content-Type" => "application/json",
+		"Apikey" => OMBIKEY
+	);
+	switch ($type) {
+		case 'season':
+		case 'tv':
+			$type = 'tv';
+			break;
+		default:
+			$type = 'movie';
+			break;
+	}
+	switch ($action) {
+		case 'approve':
+			# code...
+			break;
+		case 'deny':
+			# code...
+			break;
+		case 'delete':
+			$api = curl_delete(OMBIURL."/api/v1/Request/".$type."/".$id, $headers);
+			break;
+		default:
+			# code...
+			break;
+	}
+	switch ($api['http_code']['http_code']){
+		case 401:
+			writeLog("error", "OMBI: Invalid API KEY");
+			return false;
+			break;
+		case 200:
+			writeLog("success", "OMBI: action completed successfully");
+			return true;
+			break;
+		default:
+			writeLog("error", "OMBI: unknown error with request [type: $type | action: $action | id: $id]");
+			return false;
+	}
+    //return (!empty($result) ? $result : null );
+}
+
+function getOmbiRequests($type = "both"){
+	$headers = array(
+		"Accept" => "application/json",
+		"Apikey" => OMBIKEY,
+	);
+	$requests = array();
+	switch ($type) {
+		case 'movie':
+			$movie = json_decode(curl_get(OMBIURL."/api/v1/Request/movie", $headers), true);
+			break;
+		case 'tv':
+			$tv = json_decode(curl_get(OMBIURL."/api/v1/Request/tv", $headers), true);
+			break;
+
+		default:
+			$movie = json_decode(curl_get(OMBIURL."/api/v1/Request/movie", $headers), true);
+			$tv = json_decode(curl_get(OMBIURL."/api/v1/Request/tv", $headers), true);
+			break;
+	}
+	if(isset($movie)){
+		foreach ($movie as $key => $value) {
+			$requests['movie'][] = array(
+				'id' => $value['theMovieDbId'],
+				'title' => $value['title'],
+				'poster' => (strpos($value['posterPath'], "/") !== false) ? $value['posterPath'] : 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'],
+				'approved' => $value['approved'],
+				'available' => $value['available'],
+				'denied' => $value['denied'],
+				'deniedReason' => $value['deniedReason'],
+				'user' => $value['requestedUser']['userName'],
+				'request_id' => $value['id'],
+			);
+		}
+	}
+	if(isset($tv) && (is_array($tv) || is_object($tv))){
+		foreach ($tv as $key => $value) {
+			$requests['tv'][] = array(
+				'id' => $value['tvDbId'],
+				'title' => $value['title'],
+				'poster' => $value['posterPath'],
+				'approved' => $value['childRequests'][0]['approved'],
+				'available' => $key['childRequests'][0]['available'],
+				'denied' => $key['childRequests'][0]['denied'],
+				'deniedReason' => $key['childRequests'][0]['deniedReason'],
+				'user' => $value['childRequests'][0]['requestedUser']['userName'],
+				'request_id' => $value['id'],
+			);
+		}
+	}
+    return $requests;
+}
+
+function convertOmbiString($type, $value){
+	switch ($type) {
+		case 'approved':
+			$string['string'] = ($value) ? 'Approved' : 'Approval-Pending';
+			$string['icon'] = ($value) ? 'mdi mdi-check' : 'mdi mdi-clock';
+			$string['color'] = ($value) ? 'green-bg' : 'yellow-bg';
+			break;
+		case 'available':
+			$string['string'] = ($value) ? 'Available' : 'Not Downloaded';
+			$string['icon'] = ($value) ? 'mdi mdi-server' : 'mdi mdi-server-off';
+			$string['color'] = ($value) ? 'green-bg' : 'red-bg';
+			break;
+		case 'denied':
+			$string['string'] = ($value) ? 'Denied' : 'Approved';
+			$string['icon'] = ($value) ? 'mdi mdi-emoticon-sad' : 'mdi mdi-emoticon-happy';
+			$string['color'] = ($value) ? 'red-bg' : 'green-bg';
+			break;
+		case 'status':
+			switch ($value) {
+				case '1':
+					$string['string'] = 'Denied';
+					$string['icon'] = 'mdi mdi-window-close';
+					$string['color'] = 'red-bg';
+					break;
+				case '2':
+					$string['string'] = 'Approved';
+					$string['icon'] = 'mdi mdi-check';
+					$string['color'] = 'green-bg';
+					break;
+				case '3':
+					$string['string'] = 'Not Approved';
+					$string['icon'] = 'mdi mdi-clock';
+					$string['color'] = 'yellow-bg';
+					break;
+
+				default:
+					# code...
+					break;
+			}
+			break;
+		default:
+			$string['string'] = ($value) ? 'Approved' : 'Approval-Pending';
+			$string['color'] = ($value) ? 'green-bg' : 'red-bg';
+			break;
+	}
+	return $string;
+}
+function buildOmbiItem($type, $group, $user, $request){
+	if (is_array($request) || is_object($request)){
+		$actions = '';
+		if($request['denied']){
+			$status = 1;
+			$actions .= '<li request-type="'.$type.'" request-id="'.$request['id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve - Not Active</a></li>';
+		}else{
+			if($request['approved']){
+				$status = 2;
+			}else{
+				$status = 3;
+				$actions .= '<li request-type="'.$type.'" request-id="'.$request['id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve - Not Active</a></li>';
+				$actions .= '<li request-type="'.$type.'" request-id="'.$request['id'].'" request-name="deny"><a class="requestAction" href="javascript:void(0)">Deny - Not Active</a></li>';
+			}
+		}
+		$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="delete"><a class="requestAction" href="javascript:void(0)">Delete</a></li>';
+		if(isset($group) && $group == 'admin'){
+			return '
+			<div class="item-'.$type.'-'.convertOmbiString('approved', $request['approved'])['string'].'">
+				<div class="requestOptions">
+					<div class="btn-group transparent" role="group">
+						<button type="button" class="btn waves btn-success  btn-sm dropdown-toggle waves-effect waves-float transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-dots-vertical mdi-24px"></i></button>
+						<ul class="dropdown-menu"><h6 class="text-center">'.$request['user'].'</h6>'.$actions.'</ul>
+					</div>
+				</div>
+				<a class="openTab" extraTitle="'.$request['title'].'" extraType="'.$type.'" openTab="true"><img alt="" class="slick-image-tall" data-lazy="'.$request['poster'].'"></a>
+				<div class="requestBottom text-center">
+					<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('status', $status)['string'].'" class="zero-m requestGroup '.convertOmbiString('status', $status)['color'].'">
+						<i class="'.convertOmbiString('status', $status)['icon'].'"></i>
+					</div>
+					<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('available', $request['available'])['string'].'" class="zero-m requestGroup '.convertOmbiString('available', $request['available'])['color'].'">
+						<i class="'.convertOmbiString('available', $request['available'])['icon'].'"></i>
+					</div>
+				</div>
+				<small class="elip slick-bottom-title">'.$request['title'].'</small>
+			</div>';
+		}elseif(isset($group) && $group == 'user'){
+			if(strtolower($request['user']) == strtolower($user)){
+				return '
+				<div class="item-'.$type.'-'.convertOmbiString('approved', $request['approved'])['string'].'">
+					<a class="openTab" extraTitle="'.$request['title'].'" extraType="'.$type.'" openTab="true"><img alt="" class="slick-image-tall" data-lazy="'.$request['poster'].'"></a>
+					<div class="requestBottom text-center">
+						<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('status', $status)['string'].'" class="zero-m requestGroup '.convertOmbiString('status', $status)['color'].'">
+							<i class="'.convertOmbiString('status', $status)['icon'].'"></i>
+						</div>
+						<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('available', $request['available'])['string'].'" class="zero-m requestGroup '.convertOmbiString('available', $request['available'])['color'].'">
+							<i class="'.convertOmbiString('available', $request['available'])['icon'].'"></i>
+						</div>
+					</div>
+					<small class="elip slick-bottom-title">'.$request['title'].'</small>
+				</div>';
+			}
+		}
+	}
+}
+function buildOmbiList($group, $user){
+	$requests = array();
+	$openTab = 'true';
+	foreach (getOmbiRequests('movie')['movie'] as $request) {
+		$requests[] = buildOmbiItem('movie', $group, $user, $request);
+	}
+	foreach (getOmbiRequests('tv')['tv'] as $request) {
+		$requests[] = buildOmbiItem('season', $group, $user, $request);
+	}
+	return outputOmbiRequests("Requested Content", $requests, "
+	setInterval(function() {
+		$('<div></div>').load('ajax.php?a=ombi-requests',function() {
+			var element = $(this).find('[id]');
+			var loadedID = 	element.attr('id');
+			$('#'+loadedID).replaceWith(element);
+			console.log('Loaded updated: '+loadedID);
+			loadSlick();
+		});
+
+	}, ".RECENTREFRESH.");
+	", false);
+}
+
+function outputOmbiRequests($header = "Requested Content", $items, $script = false, $array) {
+    $hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter &nbsp;<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu filter-request-event">';
+	if(preg_grep("/item-movie-Approved/", $items)){
+        $hideMenu .= '<li data-filter="item-movie-Approved" data-name="Approved Movies" data-filter-on="false"><a class="js-filter-movie" href="javascript:void(0)">Approved Movies</a></li>';
+    }
+	if(preg_grep("/item-movie-Approval-Pending/", $items)){
+        $hideMenu .= '<li data-filter="item-movie-Approval-Pending" data-name="Approval Pending Movies" data-filter-on="false"><a class="js-filter-movie" href="javascript:void(0)">Approval Pending Movies</a></li>';
+    }
+	if(preg_grep("/item-season-Approved/", $items)){
+        $hideMenu .= '<li data-filter="item-season-Approved" data-name="Approved TV Shows" data-filter-on="false"><a class="js-filter-season" href="javascript:void(0)">Approved Shows</a></li>';
+    }
+	if(preg_grep("/item-season-Approval-Pending/", $items)){
+        $hideMenu .= '<li data-filter="item-season-Approval-Pending" data-name="Approval Pending TV Shows" data-filter-on="false"><a class="js-filter-season" href="javascript:void(0)">Approval Pending Shows</a></li>';
+    }
+	$hideMenu .= '<li data-filter="item-all" data-name="Content" data-filter-on="false"><a class="js-filter-all" href="javascript:void(0)">All</a></li>';
+    $hideMenu .= '</ul></div></div>';
+    // If None Populate Empty Item
+    if (!count($items)) {
+        return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Requests Found</p></div>';
+    }else{
+		$className = str_replace(' ', '', $header);
+        return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 id="requestContent-title" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-request" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+    }
 }
 
 function realSize($bytes, $decimals = 2) {

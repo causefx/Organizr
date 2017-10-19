@@ -75,6 +75,18 @@ foreach(loadAppearance() as $key => $value) {
         <![endif]-->
         <style>
 			<?php if($USER->role !== "admin"){ echo '.refreshImage { display: none; }';}?>
+			.requestOptions {
+				position: absolute;
+			    top: 5px;
+			    margin-left: 5px;
+				opacity: 1;
+			}
+			.slick-slide:focus {
+			    outline: transparent;
+			}
+			.requestOptions:hover {
+				opacity: 1;
+			}
 			.refreshImage{
 				top: -10px;
 				opacity: 0;
@@ -119,13 +131,55 @@ foreach(loadAppearance() as $key => $value) {
                 margin: 5px 0;
             }
             .slick-image-tall{
-                width: 125px;
-                height: 180px;
+                /*width: 125px;
+                height: 180px;*/
+				width: 100%;
+				height: 200px;
+				padding: 0 2px;
             }
+			.slick-bottom-title {
+				width: 100%;
+				padding: 0 2px;
+			}
+			.requestBottom {
+				width: 100%;
+				padding: 0 2px;
+			    display: inline-flex;
+
+			}
+			.requestLast {
+				border-radius: 0 0 5px 5px;
+			    border-top: 1px solid;
+			}
+			.transparent {
+				background: transparent !important;
+				-webkit-box-shadow: none;
+    			box-shadow: none;
+			}
+			.requestGroup {
+				width: 50%;
+				vertical-align: top !important;
+				margin: 0 0px !important;
+				display: inline-block;
+			}
+			i.mdi.mdi-dots-vertical.mdi-24px {
+			    -webkit-filter: drop-shadow(1px 2px 3px black);
+			    filter: drop-shadow(1px 2px 3px black);
+			}
+			.requestGroup:first-child {
+				border-radius: 0 0 0 5px;
+			}
+			.requestGroup:last-child {
+				border-radius: 0 0 5px 0;
+			}
             .slick-image-short{
-                width: 125px;
+                /*width: 125px;
                 height: 130px;
-                margin-top: 50px;
+                margin-top: 50px;*/
+				width: 100%;
+				height: 130px;
+				margin-top: 70px;
+				padding: 0 2px;
             }
             .overlay{
                 position: absolute;
@@ -436,6 +490,13 @@ foreach(loadAppearance() as $key => $value) {
 
                 </div>
 				<?php } ?>
+				<?php if (qualifyUser(OMBIAUTH) && OMBIURL) { ?>
+				<div id="ombiRequests" class="row">
+                    <div class="col-lg-12">
+						<?php echo buildOmbiList($USER->role, $USER->username); ?>
+					</div>
+				</div>
+				<?php } ?>
                 <?php if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)) || (COUCHURL != "" && qualifyUser(COUCHHOMEAUTH))) { ?>
                 <div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
                     <div class="col-lg-12 content-form form-inline">
@@ -543,13 +604,18 @@ foreach(loadAppearance() as $key => $value) {
                             complete: function(xhr, status) {
                                 var result = $.parseJSON(xhr.responseText);
                                 if (xhr.statusText === "OK") {
+									if(typeof location !== 'undefined'){
+										$('#calendarTrailer').html(convertTrailer(result.videos)+'&nbsp;<span class="label openPlex palette-Amber-600 bg" openTab="'+openTab+'" location="'+location+'" style="width:100%;display:block;cursor:pointer;"><i style="vertical-align:sub;" class="fa fa-play white"></i><text style="vertical-align:sub;"> Watch Now on PLEX</text></span>');
+									}else{
+										$('#calendarTrailer').html(convertTrailer(result.videos));
+									}
                                     if( Type === "movie"){
                                         $('#calendarTitle').html(result.title);
                                         $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
                                         $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(result.runtime)+'</span>&nbsp;');
                                         $('#calendarSummary').text(result.overview);
                                         $('#calendarTagline').text(result.tagline);
-                                        $('#calendarTrailer').html(convertTrailer(result.videos)+'&nbsp;<span class="label openPlex palette-Amber-600 bg" openTab="'+openTab+'" location="'+location+'" style="width:100%;display:block;cursor:pointer;"><i style="vertical-align:sub;" class="fa fa-play white"></i><text style="vertical-align:sub;"> Watch Now on PLEX</text></span>');
+
                                         $('#calendarCast').html(convertCast(result.credits));
                                         $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
                                         $('#calendarLang').html(convertArray(result.spoken_languages, "MOVIE"));
@@ -562,7 +628,7 @@ foreach(loadAppearance() as $key => $value) {
                                         $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(whatWasIt(result.episode_run_time))+'</span>&nbsp;');
                                         $('#calendarSummary').text(result.overview);
                                         $('#calendarTagline').text("");
-                                        $('#calendarTrailer').html(convertTrailer(result.videos)+'&nbsp;<span class="label openPlex palette-Amber-600 bg" openTab="'+openTab+'" location="'+location+'" style="width:100%;display:block;cursor:pointer;"><i style="vertical-align:sub;" class="fa fa-play white"></i><text style="vertical-align:sub;"> Watch Now on PLEX</text></span>');
+
                                         $('#calendarCast').html(convertCast(result.credits));
                                         $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
                                         $('#calendarLang').html(convertArray(result.languages, "TV"));
@@ -623,95 +689,98 @@ foreach(loadAppearance() as $key => $value) {
 
 		function loadSlick(){
 			$('div[class*=recentItems-]').each(function() {
+				var needsSlick = true;
+				var name = $(this).attr("data-name");
 				if($(this).hasClass('slick-initialized')){
-					console.log('skipping slick addon');
-					return false;
+					console.log('skipping slick addon for: '+name);
+					needsSlick = false;
 				}
-                var name = $(this).attr("data-name");
-                console.log('creating slick for '+name);
-                $(this).slick({
+				if(needsSlick === true){
+	                console.log('creating slick for '+name);
+	                $(this).slick({
 
-                    slidesToShow: 13,
-                    slidesToScroll: 13,
-                    infinite: true,
-                    lazyLoad: 'ondemand',
-                    prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
-                    nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
-                    appendArrows: $('.'+name),
-                    arrows: true,
-                    responsive: [
-						{
-		                    breakpoint: 1750,
-		                    settings: {
-		                        slidesToShow: 12,
-		                        slidesToScroll: 12,
+	                    slidesToShow: 13,
+	                    slidesToScroll: 13,
+	                    infinite: true,
+	                    lazyLoad: 'ondemand',
+	                    prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
+	                    nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
+	                    appendArrows: $('.'+name),
+	                    arrows: true,
+	                    responsive: [
+							{
+			                    breakpoint: 1750,
+			                    settings: {
+			                        slidesToShow: 12,
+			                        slidesToScroll: 12,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 1600,
+			                    settings: {
+			                        slidesToShow: 11,
+			                        slidesToScroll: 11,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 1450,
+			                    settings: {
+			                        slidesToShow: 10,
+			                        slidesToScroll: 10,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 1300,
+			                    settings: {
+			                        slidesToShow: 9,
+			                        slidesToScroll: 9,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 1150,
+			                    settings: {
+			                        slidesToShow: 8,
+			                        slidesToScroll: 8,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 1000,
+			                    settings: {
+			                        slidesToShow: 7,
+			                        slidesToScroll: 7,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 850,
+			                    settings: {
+			                        slidesToShow: 6,
+			                        slidesToScroll: 6,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 700,
+			                    settings: {
+			                        slidesToShow: 5,
+			                        slidesToScroll: 5,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 675,
+			                    settings: {
+			                        slidesToShow: 4,
+			                        slidesToScroll: 4
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 480,
+			                    settings: {
+			                        slidesToShow: 3,
+			                        slidesToScroll: 3
+			                    }
 		                    }
-	                    },
-	                    {
-		                    breakpoint: 1600,
-		                    settings: {
-		                        slidesToShow: 11,
-		                        slidesToScroll: 11,
-		                    }
-	                    },
-	                    {
-		                    breakpoint: 1450,
-		                    settings: {
-		                        slidesToShow: 10,
-		                        slidesToScroll: 10,
-		                    }
-	                    },
-	                    {
-		                    breakpoint: 1300,
-		                    settings: {
-		                        slidesToShow: 9,
-		                        slidesToScroll: 9,
-		                    }
-	                    },
-	                    {
-		                    breakpoint: 1150,
-		                    settings: {
-		                        slidesToShow: 8,
-		                        slidesToScroll: 8,
-		                    }
-	                    },
-	                    {
-		                    breakpoint: 1000,
-		                    settings: {
-		                        slidesToShow: 7,
-		                        slidesToScroll: 7,
-		                    }
-	                    },
-	                    {
-		                    breakpoint: 850,
-		                    settings: {
-		                        slidesToShow: 6,
-		                        slidesToScroll: 6,
-		                    }
-	                    },
-	                    {
-		                    breakpoint: 700,
-		                    settings: {
-		                        slidesToShow: 5,
-		                        slidesToScroll: 5,
-		                    }
-	                    },
-	                    {
-		                    breakpoint: 675,
-		                    settings: {
-		                        slidesToShow: 4,
-		                        slidesToScroll: 4
-		                    }
-	                    },
-	                    {
-		                    breakpoint: 480,
-		                    settings: {
-		                        slidesToShow: 3,
-		                        slidesToScroll: 3
-		                    }
-	                    }
-	                ]
-                });
+		                ]
+	                });
+				}
             });
 		}
 
@@ -730,6 +799,25 @@ foreach(loadAppearance() as $key => $value) {
                 }).done(function(data){ $('#resultshere').html(data);});
 
             });
+			$(document).on('click', '.requestAction', function(){
+				var type = $(this).parent().attr('request-type');
+				var action = $(this).parent().attr('request-name');
+				var id = $(this).parent().attr('request-id');
+				console.log('OMBI Action: [type: '+type+' | action: '+action+' | id: '+id+']');
+				ajax_request('POST', 'ombi-action', {
+                    id: id,
+					action_type: action,
+					type: type,
+                }).done(function(data){
+					$('<div></div>').load('ajax.php?a=ombi-requests',function() {
+						var element = $(this).find('[id]');
+						var loadedID = 	element.attr('id');
+						$('#'+loadedID).replaceWith(element);
+						console.log('OMBI ACTION Submited and reloaded: '+loadedID);
+						loadSlick();
+					});
+				});
+			});
             $('.repeat-btn').click(function(){
                 var refreshBox = $(this).closest('div.content-box');
                 $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
@@ -760,6 +848,22 @@ foreach(loadAppearance() as $key => $value) {
                         .slick('slickFilter' , '.'+filter );
                 }else{
                     $('.recentItems-recent')
+                        .slick('slickUnfilter')
+                }
+            });
+			//REQUEST ITEMS
+            // each filter we click on
+            $(".filter-request-event > li").on("click", function() {
+                var name = $(this).attr('data-name');
+                var filter = $(this).attr('data-filter');
+                $('#requestContent-title').text('Requested '+name);
+                // now filter the slides.
+                if(filter !== 'item-all'){
+                    $('.recentItems-request')
+                        .slick('slickUnfilter')
+                        .slick('slickFilter' , '.'+filter );
+                }else{
+                    $('.recentItems-request')
                         .slick('slickUnfilter')
                 }
             });

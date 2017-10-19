@@ -112,4 +112,11 @@ return array(
 	"weather" => "false",
 	"weatherAuth" => "false",
 	"speedtestAuth" => "false",
+	"recentRefresh" => "600000",
+	"requestRefresh" => "600000",
+	"nowPlayingRefresh" => "15000",
+	"embyRecentMovieAuth" => "false",
+	"embyRecentTVAuth" => "false",
+	"embyRecentMusicAuth" => "false",
+	"embyPlayingNowAuth" => "false",
 );

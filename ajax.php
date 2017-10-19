@@ -64,6 +64,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				echo getPlexStreams(12, PLEXSHOWNAMES, $GLOBALS['USER']->role);
 				die();
 				break;
+			case 'ombi-requests':
+				qualifyUser(PLEXHOMEAUTH, true);
+				echo buildOmbiList($GLOBALS['USER']->role, $GLOBALS['USER']->username);
+				die();
+				break;
 			case 'emby-recent':
 				qualifyUser(EMBYHOMEAUTH, true);
 				echo getEmbyRecent(array("Movie" => EMBYRECENTMOVIE, "Episode" => EMBYRECENTTV, "MusicAlbum" => EMBYRECENTMUSIC, "Series" => EMBYRECENTTV));
@@ -123,6 +128,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
             default: // Stuff that you need admin for
                 qualifyUser('admin', true);
                 switch ($action) {
+					case 'ombi-action':
+                        sendResult(ombiAction($_POST['id'], $_POST['action_type'], $_POST['type']), "search", "OMBI ", "action completed successfully", "an error occured");
+                        break;
 					case 'get-emails':
 						$response = printEmails(getEmails($_POST['type']));
 						break;

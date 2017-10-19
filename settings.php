@@ -913,24 +913,35 @@ echo buildSettings(
 						'value' => PLEXURL,
 					),
 					array(
+						array(
 						'type' => 'text',
 						'placeholder' => randString(20),
 						'labelTranslate' => 'PLEX_TOKEN',
 						'name' => 'plexToken',
 						'pattern' => '[a-zA-Z0-9]{20}',
 						'value' => PLEXTOKEN,
-					),
-                    array(
-						'type' => 'custom',
-						'html' => '<button id="openPlexModal" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float"> <span class="btn-label"><i class="fa fa-ticket"></i></span>'.translate("GET_PLEX_TOKEN").'</button>',
+						),
+						array(
+							'type' => 'custom',
+							'html' => '<button id="openPlexModal" type="button" class="btn waves btn-labeled btn-success btn-sm text-uppercase waves-effect waves-float"> <span class="btn-label"><i class="fa fa-ticket"></i></span>'.translate("GET_PLEX_TOKEN").'</button>',
+						),
 					),
      				array(
+						array(
 						'type' => 'text',
 						'placeholder' => "",
 						'labelTranslate' => 'RECENT_ITEMS_LIMIT',
 						'name' => 'plexRecentItems',
 						'pattern' => '[0-9]+',
 						'value' => PLEXRECENTITEMS,
+						),
+						array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'RECENT_REFRESH',
+							'name' => 'recentRefresh',
+							'value' => RECENTREFRESH,
+							'options' => $refreshSeconds,
+						),
 					),
 					array(
 						'type' => 'text',
@@ -967,7 +978,8 @@ echo buildSettings(
 							'labelTranslate' => 'RECENT_MOVIES',
 							'name' => 'plexRecentMovie',
 							'value' => PLEXRECENTMOVIE,
-						),array(
+						),
+						array(
 							'type' => $userSelectType,
 							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 							'name' => 'plexRecentMovieAuth',
@@ -981,7 +993,8 @@ echo buildSettings(
 							'labelTranslate' => 'RECENT_TV',
 							'name' => 'plexRecentTV',
 							'value' => PLEXRECENTTV,
-						),array(
+						),
+						array(
 							'type' => $userSelectType,
 							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 							'name' => 'plexRecentTVAuth',
@@ -995,7 +1008,8 @@ echo buildSettings(
 							'labelTranslate' => 'RECENT_MUSIC',
 							'name' => 'plexRecentMusic',
 							'value' => PLEXRECENTMUSIC,
-						),array(
+						),
+						array(
 							'type' => $userSelectType,
 							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 							'name' => 'plexRecentMusicAuth',
@@ -1009,7 +1023,8 @@ echo buildSettings(
 							'labelTranslate' => 'PLAYLISTS',
 							'name' => 'plexPlaylists',
 							'value' => PLEXPLAYLISTS,
-						),array(
+						),
+						array(
 							'type' => $userSelectType,
 							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 							'name' => 'plexPlaylistsAuth',
@@ -1023,7 +1038,8 @@ echo buildSettings(
 							'labelTranslate' => 'PLAYING_NOW',
 							'name' => 'plexPlayingNow',
 							'value' => PLEXPLAYINGNOW,
-						),array(
+						),
+						array(
 							'type' => $userSelectType,
 							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
 							'name' => 'plexPlayingNowAuth',
@@ -1070,13 +1086,22 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => EMBYTOKEN,
 					),
-     				array(
-						'type' => 'text',
-						'placeholder' => "",
-						'labelTranslate' => 'RECENT_ITEMS_LIMIT',
-						'name' => 'embyRecentItems',
-						'pattern' => '[0-9]+',
-						'value' => EMBYRECENTITEMS,
+					array(
+	     				array(
+							'type' => 'text',
+							'placeholder' => "",
+							'labelTranslate' => 'RECENT_ITEMS_LIMIT',
+							'name' => 'embyRecentItems',
+							'pattern' => '[0-9]+',
+							'value' => EMBYRECENTITEMS,
+						),
+						array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'RECENT_REFRESH',
+							'name' => 'recentRefresh',
+							'value' => RECENTREFRESH,
+							'options' => $refreshSeconds,
+						),
 					),
 					array(
 						array(
@@ -1086,11 +1111,29 @@ echo buildSettings(
 							'value' => EMBYRECENTMOVIE,
 						),
 						array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+							'name' => 'embyRecentMovieAuth',
+							'value' => EMBYRECENTMOVIEAUTH,
+							'options' => $userTypes,
+						),
+					),
+					array(
+						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'RECENT_TV',
 							'name' => 'embyRecentTV',
 							'value' => EMBYRECENTTV,
 						),
+						array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+							'name' => 'embyRecentTVAuth',
+							'value' => EMBYRECENTTVAUTH,
+							'options' => $userTypes,
+						),
+					),
+					array(
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'RECENT_MUSIC',
@@ -1098,11 +1141,29 @@ echo buildSettings(
 							'value' => EMBYRECENTMUSIC,
 						),
 						array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+							'name' => 'embyRecentMusicAuth',
+							'value' => EMBYRECENTMUSICAUTH,
+							'options' => $userTypes,
+						),
+					),
+					array(
+						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'PLAYING_NOW',
 							'name' => 'embyPlayingNow',
 							'value' => EMBYPLAYINGNOW,
 						),
+						array(
+							'type' => $userSelectType,
+							'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+							'name' => 'embyPlayingNowAuth',
+							'value' => EMBYPLAYINGNOWAUTH,
+							'options' => $userTypes,
+						),
+					),
+					array(
       					array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'SHOW_NAMES',
@@ -1512,7 +1573,13 @@ echo buildSettings(
 						'name' => 'ombiKey',
 						'value' => OMBIKEY,
 					),
-
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'REQUEST_REFRESH',
+						'name' => 'requestRefresh',
+						'value' => REQUESTREFRESH,
+						'options' => $refreshSeconds,
+					),
 				),
 			),
 			array(
