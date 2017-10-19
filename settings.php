@@ -1487,7 +1487,7 @@ echo buildSettings(
 					),
 				),
 			),
-   array(
+   			array(
 				'title' => 'Notice',
 				'id' => 'notice',
 				'image' => 'images/pin.png',
@@ -1627,6 +1627,17 @@ echo buildSettings(
 						'value' => HOMEPAGECUSTOMHTML1,
 						'rows' => 15,
 						'style' => 'background: #000; color: #FFF;',
+					),
+				),
+			),
+			array(
+				'title' => 'Homepage Arrangement',
+				'id' => 'homepageArrangement',
+				'image' => 'images/settings/full-color/png/64px/news.png',
+				'fields' => array(
+					array(
+						'type' => 'custom',
+						'html' => buildHomepageSettings(),
 					),
 				),
 			),
@@ -3996,6 +4007,40 @@ echo buildSettings(
         </script>
         <script>
         $( document ).ready(function() {
+
+			$("#homepage-items").sortable({
+				placeholder:    "sort-placeholder",
+				forcePlaceholderSize: true,
+				start: function( e, ui ){
+					ui.item.data( "start-pos", ui.item.index()+1 );
+				},
+				change: function( e, ui ){
+					var seq,
+					startPos = ui.item.data( "start-pos" ),
+					$index,
+					correction;
+					correction = startPos <= ui.placeholder.index() ? 0 : 1;
+					ui.item.parent().find( "div.fc-event").each( function( idx, el ){
+						var $this = $( el ),
+						$index = $this.index();
+						if ( ( $index+1 >= startPos && correction === 0) || ($index+1 <= startPos && correction === 1 ) ){
+							$index = $index + correction;
+							$this.find( ".ordinal-position").text( $index);
+							link = $this.find( ".ordinal-position" ).attr('data-link');
+							$('#homepage-values [name='+link+']').val($index);
+							$('#homepage-values [name='+link+']').attr('data-changed', 'true');
+							console.log(link+' - '+$index);
+						}
+					});
+					seq = ui.item.parent().find( "div.sort-placeholder").index() + correction;
+					ui.item.find( ".ordinal-position" ).text( seq );
+					newlink = ui.item.find( ".ordinal-position" ).attr('data-link');
+					$('#homepage-values [name='+newlink+']').val(seq);
+					$('#homepage-values [name='+newlink+']').attr('data-changed', 'true');
+					console.log(newlink+' - '+seq);
+				}
+			});
+
 			$(".iconpickeradd").on("click", function() {
                 console.log('icon picker start add');
                 $(this).iconpicker({placement: 'right', hideOnSelect: false, collision: true});

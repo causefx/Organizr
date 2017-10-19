@@ -6,7 +6,26 @@
 // ===================================
 use Kryptonit3\Sonarr\Sonarr;
 use Kryptonit3\SickRage\SickRage;
-
+//homepage order
+function homepageOrder(){
+	$homepageOrder = array(
+		"homepageOrdercustomhtml" => homepageOrdercustomhtml,
+		"homepageOrdernotice" => homepageOrdernotice,
+		"homepageOrderplexsearch" => homepageOrderplexsearch,
+		"homepageOrderspeedtest" => homepageOrderspeedtest,
+		"homepageOrdernzbget" => homepageOrdernzbget,
+		"homepageOrdersabnzbd" => homepageOrdersabnzbd,
+		"homepageOrderplexnowplaying" => homepageOrderplexnowplaying,
+		"homepageOrderplexrecent" => homepageOrderplexrecent,
+		"homepageOrderplexplaylist" => homepageOrderplexplaylist,
+		"homepageOrderembynowplaying" => homepageOrderembynowplaying,
+		"homepageOrderembyrecent" => homepageOrderembyrecent,
+		"homepageOrderombi" => homepageOrderombi,
+		"homepageOrdercalendar" => homepageOrdercalendar,
+	);
+	asort($homepageOrder);
+	return $homepageOrder;
+}
 // Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
@@ -4939,9 +4958,9 @@ function buildOmbiList($group, $user){
 	return outputOmbiRequests("Requested Content", $requests, "
 	setInterval(function() {
 		$('<div></div>').load('ajax.php?a=ombi-requests',function() {
-			var element = $(this).find('[id]');
+			var element = $(this).find('#recentRequests');
 			var loadedID = 	element.attr('id');
-			$('#'+loadedID).replaceWith(element);
+			$('#recentRequests').replaceWith(element);
 			console.log('Loaded updated: '+loadedID);
 			loadSlick();
 		});
@@ -4975,10 +4994,303 @@ function outputOmbiRequests($header = "Requested Content", $items, $script = fal
     }
 }
 
+function buildHomepageSettings(){
+	$homepageOrder = homepageOrder();
+	$homepageList = '<h4>Drag Homepage Items to Order Them</h4><div id="homepage-items" class="external-events">';
+	$inputList = '<div id="homepage-values">';
+	foreach ($homepageOrder as $key => $val) {
+		$homepageList .= '
+		<div class="fc-event blue-bg">
+			<span class="ordinal-position text-uppercase" data-link="'.$key.'" style="float:left">'.strtoupper($val).'</span>
+			&nbsp; '.substr($key, 13).'
+			<span class="fa fa-bars remove-event"></span>
+		</div>';
+		$inputList .= '<input type="hidden" name="'.$key.'">';
+	}
+	$homepageList .= '</div>';
+	$inputList .= '</div>';
+	return $homepageList.$inputList;
+}
+
+function buildHomepage($group, $user){
+	$homepageOrder = homepageOrder();
+	$homepageBuilt = '';
+	foreach ($homepageOrder as $key => $value) {
+		$homepageBuilt .= buildHomepageItem($key, $group, $user);
+	}
+	return $homepageBuilt;
+}
+
 function realSize($bytes, $decimals = 2) {
     $size = array('B','kB','MB','GB','TB','PB','EB','ZB','YB');
     $factor = floor((strlen($bytes) - 1) / 3);
     return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . ' '.@$size[$factor];
+}
+
+function buildHomepageItem($homepageItem, $group, $user){
+	$homepageItemBuilt = '';
+	switch ($homepageItem) {
+		case 'homepageOrderplexsearch':
+			if((qualifyUser(PLEXSEARCHAUTH) && PLEXSEARCH == "true" && qualifyUser(PLEXHOMEAUTH))) {
+				$homepageItemBuilt .= '
+				<div id="searchPlexRow" class="row">
+					<div class="col-lg-12">
+						<div class="content-box box-shadow big-box todo-list">
+							<form id="plexSearchForm" onsubmit="return false;" autocomplete="off">
+								<div class="">
+									<div class="input-group">
+										<div style="border-radius: 25px 0 0 25px; border:0" class="input-group-addon gray-bg"><i class="fa fa-search white"></i></div>
+										<input id="searchInput" type="text" style="border-radius: 0;" autocomplete="off" name="search-title" class="form-control input-group-addon gray-bg" placeholder="Media Search">
+										<div id="clearSearch" style="border-radius: 0 25px 25px 0;border:0; cursor: pointer;" class="input-group-addon gray-bg"><i class="fa fa-close white"></i></div>
+										<button style="display:none" id="plexSearchForm_submit" class="btn btn-primary waves"></button>
+									</div>
+								</div>
+							</form>
+							<div id="resultshere" class="table-responsive"></div>
+						</div>
+					</div>
+				</div>
+				';
+			}
+			break;
+		case 'homepageOrdercustomhtml':
+			if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) {
+				$homepageItemBuilt .= "<div>" . HOMEPAGECUSTOMHTML1 . "</div>";
+			}
+			break;
+		case 'homepageOrdernotice':
+			if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) {
+				$homepageItemBuilt .= buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE);
+			}
+			break;
+		case 'homepageOrderspeedtest':
+			if(SPEEDTEST == "true" && qualifyUser(SPEEDTESTAUTH)){
+				$homepageItemBuilt .= '
+				<style type="text/css">
+					.flash {
+						animation: flash 0.6s linear infinite;
+					}
+					@keyframes flash {
+						0% { opacity: 0.6; }
+						50% { opacity: 1; }
+					}
+				</style>
+				<script type="text/javascript">
+				var w = null
+					function runTest() {
+						document.getElementById("startBtn").style.display = "none"
+						document.getElementById("testArea").style.display = ""
+						document.getElementById("abortBtn").style.display = ""
+						w = new Worker("bower_components/speed/speedtest_worker.js")
+						var interval = setInterval(function () { w.postMessage("status") }, 100)
+						w.onmessage = function (event) {
+							var data = event.data.split(";")
+							var status = Number(data[0])
+							var dl = document.getElementById("download")
+							var ul = document.getElementById("upload")
+							var ping = document.getElementById("ping")
+							var jitter = document.getElementById("jitter")
+							dl.className = status === 1 ? "w-name flash" : "w-name"
+							ping.className = status === 2 ? "w-name flash" : "w-name"
+							jitter.className = ul.className = status === 3 ? "w-name flash" : "w-name"
+							if (status >= 4) {
+								clearInterval(interval)
+								document.getElementById("abortBtn").style.display = "none"
+								document.getElementById("startBtn").style.display = ""
+								w = null
+							}
+							if (status === 5) {
+								document.getElementById("testArea").style.display = "none"
+							}
+							dl.textContent = data[1] + " Mbit/s";
+							$("#downloadpercent").attr("style", "width: " + data[1] + "%;");
+							$("#uploadpercent").attr("style", "width: " + data[2] + "%;");
+							$("#pingpercent").attr("style", "width: " + data[3] + "%;");
+							$("#jitterpercent").attr("style", "width: " + data[5] + "%;");
+							ul.textContent = data[2] + " Mbit/s";
+							ping.textContent = data[3] + " ms";
+							jitter.textContent = data[5] + " ms";
+						}
+						w.postMessage(\'start {"telemetry_level":"basic"}\')
+						//w.postMessage("start")
+					}
+					function abortTest() {
+						if (w) w.postMessage("abort")
+					}
+				</script>
+				<div class="row" id="testArea" style="display:none">
+					<div class="test col-sm-3 col-lg-3">
+						<div class="content-box ultra-widget green-bg" data-counter="">
+							<div id="downloadpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+							<div class="w-content">
+								<div class="w-icon right pull-right"><i class="mdi mdi-cloud-download"></i></div>
+								<div class="w-descr left pull-left text-center">
+									<span class="testName text-uppercase w-name">Download</span>
+									<br>
+									<span class="w-name counter" id="download" ></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="test col-sm-3 col-lg-3">
+						<div class="content-box ultra-widget red-bg" data-counter="">
+							<div id="uploadpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+							<div class="w-content">
+								<div class="w-icon right pull-right"><i class="mdi mdi-cloud-upload"></i></div>
+								<div class="w-descr left pull-left text-center">
+									<span class="testName text-uppercase w-name">Upload</span>
+									<br>
+									<span class="w-name counter" id="upload" ></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="test col-sm-3 col-lg-3">
+						<div class="content-box ultra-widget yellow-bg" data-counter="">
+							<div id="pingpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+							<div class="w-content">
+								<div class="w-icon right pull-right"><i class="mdi mdi-timer"></i></div>
+								<div class="w-descr left pull-left text-center">
+									<span class="testName text-uppercase w-name">Latency</span>
+									<br>
+									<span class="w-name counter" id="ping" ></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="test col-sm-3 col-lg-3">
+						<div class="content-box ultra-widget blue-bg" data-counter="">
+							<div id="jitterpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+							<div class="w-content">
+								<div class="w-icon right pull-right"><i class="mdi mdi-pulse"></i></div>
+								<div class="w-descr left pull-left text-center">
+									<span class="testName text-uppercase w-name">Jitter</span>
+									<br>
+									<span class="w-name counter" id="jitter" ></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<br/>
+				</div>
+				<div id="abortBtn" class="row" style="display: none" onclick="javascript:abortTest()">
+					<div class="col-lg-12">
+						<div class="content-box red-bg" style="cursor: pointer;">
+							<h1 style="margin: 10px" class="text-uppercase text-center">Abort Speed Test</h1>
+							<div class="clearfix"></div>
+						</div>
+					</div>
+				</div>
+				<div id="startBtn" class="row" onclick="javascript:runTest()">
+					<div class="col-lg-12">
+						<div class="content-box green-bg" style="cursor: pointer;">
+							<h1 style="margin: 10px" class="text-uppercase text-center">Run Speed Test</h1>
+							<div class="clearfix"></div>
+						</div>
+					</div>
+				</div>
+				';
+			}
+			break;
+		case 'homepageOrdernzbget':
+			if(NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)){
+				$homepageItemBuilt .= buildDownloader('nzbget');
+			}
+			break;
+		case 'homepageOrdersabnzbd':
+			if(SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH)) {
+				$homepageItemBuilt .= buildDownloader('sabnzbd');
+			}
+			break;
+		case 'homepageOrderplexnowplaying':
+			if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) {
+				if(qualifyUser(PLEXPLAYINGNOWAUTH) && PLEXPLAYINGNOW == "true"){
+					$homepageItemBuilt .= '<div id="plexRowNowPlaying" class="row">';
+					$homepageItemBuilt .= getPlexStreams(12, PLEXSHOWNAMES, $group);
+					$homepageItemBuilt .= '</div>';
+				}
+			}
+			break;
+		case 'homepageOrderplexrecent':
+			if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) {
+				if(qualifyUser(PLEXRECENTMOVIEAUTH) && PLEXRECENTMOVIE == "true" || qualifyUser(PLEXRECENTTVAUTH) && PLEXRECENTTV == "true" || qualifyUser(PLEXRECENTMUSICAUTH) &&  PLEXRECENTMUSIC == "true"){
+					$plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
+					$homepageItemBuilt .= '<div id="plexRow" class="row"><div class="col-lg-12">';
+					$homepageItemBuilt .= getPlexRecent($plexArray);
+					$homepageItemBuilt .= '</div></div>';
+				}
+			}
+			break;
+		case 'homepageOrderplexplaylist':
+			if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) {
+				if(qualifyUser(PLEXPLAYLISTSAUTH) && PLEXPLAYLISTS == "true"){
+					$homepageItemBuilt .= '<div id="plexPlaylists" class="row"><div class="col-lg-12">';
+					$plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
+					$homepageItemBuilt .= getPlexPlaylists($plexArray);
+					$homepageItemBuilt .= '</div> </div>';
+				}
+			}
+			break;
+		case 'homepageOrderembynowplaying':
+			if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) {
+				if(qualifyUser(EMBYPLAYINGNOWAUTH) && EMBYPLAYINGNOW == "true"){
+					$homepageItemBuilt .= '<div id="embyRowNowPlaying" class="row">';
+					$homepageItemBuilt .= getEmbyStreams(12, EMBYSHOWNAMES, $USER->role);
+					$homepageItemBuilt .= '</div>';
+				}
+			}
+			break;
+		case 'homepageOrderembyrecent':
+			if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) {
+				if(qualifyUser(EMBYRECENTMOVIEAUTH) && EMBYRECENTMOVIE == "true" || qualifyUser(EMBYRECENTTVAUTH) && EMBYRECENTTV == "true" || qualifyUser(EMBYRECENTMUSICAUTH) && EMBYRECENTMUSIC == "true"){
+					$embyArray = array("Movie" => EMBYRECENTMOVIE, "Episode" => EMBYRECENTTV, "MusicAlbum" => EMBYRECENTMUSIC, "Series" => EMBYRECENTTV);
+					$homepageItemBuilt .= '<div id="embyRow" class="row"><div class="col-lg-12">';
+					$homepageItemBuilt .= getEmbyRecent($embyArray);
+					$homepageItemBuilt .= '</div></div>';
+				}
+			}
+			break;
+		case 'homepageOrderombi':
+			if (qualifyUser(OMBIAUTH) && OMBIURL) {
+				$homepageItemBuilt .= '<div id="ombiRequests" class="row"><div class="col-lg-12">';
+				$homepageItemBuilt .= buildOmbiList($group, $user);
+				$homepageItemBuilt .= '</div></div>';
+			}
+			break;
+		case 'homepageOrdercalendar':
+			if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)) || (COUCHURL != "" && qualifyUser(COUCHHOMEAUTH))) {
+				$calendarItems = '';
+				if(RADARRURL != ""){ $calendarItems .= '<li><a class="calendarOption" calendarOption="film" href="javascript:void(0)">Movies</a></li>'; }
+				if(SONARRURL != ""){ $calendarItems .= '<li><a class="calendarOption" calendarOption="tv" href="javascript:void(0)">TV Shows</a></li>'; }
+				if(HEADPHONESURL != ""){ $calendarItems .= '<li><a class="calendarOption" calendarOption="music" href="javascript:void(0)">Music</a></li>'; }
+				$homepageItemBuilt .= '
+				<div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
+					<div class="col-lg-12 content-form form-inline">
+						<div class="form-group pull-right">
+							<span class="swal-legend label label-primary well-sm">Legend</span>&nbsp;
+							<div class="btn-group" role="group">
+								<button id="calendarSelected" style="margin-right: 0px;" type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">View All&nbsp;<span class="caret"></span></button>
+								<ul style="right:0; left: auto" class="dropdown-menu">
+									<li><a class="calendarOption" calendarOption="all" href="javascript:void(0)">View All</a></li>
+									'.$calendarItems.'
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="calendarRow" class="row">
+					<div class="col-lg-12">
+						<div id="calendar" class="fc-calendar box-shadow fc fc-ltr fc-unthemed"></div>
+					</div>
+				</div>
+				';
+			}
+			break;
+		default:
+			# code...
+			break;
+	}
+	return $homepageItemBuilt;
 }
 
 function buildDownloader($name){
