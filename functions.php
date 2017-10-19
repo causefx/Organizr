@@ -4816,7 +4816,7 @@ function getOmbiRequests($type = "both"){
 			);
 		}
 	}
-    return $requests;
+    return (empty($requests)) ? '' : $requests;
 }
 
 function convertOmbiString($type, $value){
@@ -4924,11 +4924,17 @@ function buildOmbiItem($type, $group, $user, $request){
 function buildOmbiList($group, $user){
 	$requests = array();
 	$openTab = 'true';
-	foreach (getOmbiRequests('movie')['movie'] as $request) {
-		$requests[] = buildOmbiItem('movie', $group, $user, $request);
+	$movieList = getOmbiRequests('movie');
+	$tvList = getOmbiRequests('tv');
+	if (is_array($movieList) || is_object($movieList)){
+		foreach ($movieList['movie'] as $request) {
+			$requests[] = buildOmbiItem('movie', $group, $user, $request);
+		}
 	}
-	foreach (getOmbiRequests('tv')['tv'] as $request) {
-		$requests[] = buildOmbiItem('season', $group, $user, $request);
+	if (is_array($tvList) || is_object($tvList)){
+		foreach ($tvList['tv'] as $request) {
+			$requests[] = buildOmbiItem('season', $group, $user, $request);
+		}
 	}
 	return outputOmbiRequests("Requested Content", $requests, "
 	setInterval(function() {
