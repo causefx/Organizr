@@ -4791,7 +4791,7 @@ function getOmbiRequests($type = "both"){
 			$requests['movie'][] = array(
 				'id' => $value['theMovieDbId'],
 				'title' => $value['title'],
-				'poster' => (strpos($value['posterPath'], "/") !== false) ? $value['posterPath'] : 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'],
+				'poster' => (strpos($value['posterPath'], "http") !== false) ? $value['posterPath'] : 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'],
 				'approved' => $value['approved'],
 				'available' => $value['available'],
 				'denied' => $value['denied'],

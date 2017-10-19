@@ -80,6 +80,7 @@ foreach(loadAppearance() as $key => $value) {
 			    top: 5px;
 			    margin-left: 5px;
 				opacity: 1;
+				z-index: 1;
 			}
 			.slick-slide:focus {
 			    outline: transparent;
