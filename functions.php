@@ -4747,6 +4747,9 @@ function ombiAction($id, $action, $type){
 		"Content-Type" => "application/json",
 		"Apikey" => OMBIKEY
 	);
+	$body = array(
+		'id' => $id,
+	);
 	switch ($type) {
 		case 'season':
 		case 'tv':
@@ -4758,10 +4761,10 @@ function ombiAction($id, $action, $type){
 	}
 	switch ($action) {
 		case 'approve':
-			# code...
+			$api = curl_post(OMBIURL."/api/v1/Request/".$type."/approve", $body, $headers);
 			break;
 		case 'deny':
-			# code...
+			$api = curl_post(OMBIURL."/api/v1/Request/".$type."/deny", $body, $headers);
 			break;
 		case 'delete':
 			$api = curl_delete(OMBIURL."/api/v1/Request/".$type."/".$id, $headers);
@@ -4890,14 +4893,14 @@ function buildOmbiItem($type, $group, $user, $request){
 		$actions = '';
 		if($request['denied']){
 			$status = 1;
-			$actions .= '<li request-type="'.$type.'" request-id="'.$request['id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve - Not Active</a></li>';
+			//$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve</a></li>';
 		}else{
 			if($request['approved']){
 				$status = 2;
 			}else{
 				$status = 3;
-				$actions .= '<li request-type="'.$type.'" request-id="'.$request['id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve - Not Active</a></li>';
-				$actions .= '<li request-type="'.$type.'" request-id="'.$request['id'].'" request-name="deny"><a class="requestAction" href="javascript:void(0)">Deny - Not Active</a></li>';
+				$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve</a></li>';
+				$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="deny"><a class="requestAction" href="javascript:void(0)">Deny</a></li>';
 			}
 		}
 		$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="delete"><a class="requestAction" href="javascript:void(0)">Delete</a></li>';
@@ -5001,8 +5004,8 @@ function buildHomepageSettings(){
 	foreach ($homepageOrder as $key => $val) {
 		$homepageList .= '
 		<div class="fc-event blue-bg">
-			<span class="ordinal-position text-uppercase" data-link="'.$key.'" style="float:left">'.strtoupper($val).'</span>
-			&nbsp; '.substr($key, 13).'
+			<span class="ordinal-position text-uppercase" data-link="'.$key.'" style="float:left">'.$val.'</span>
+			&nbsp; '.strtoupper(substr($key, 13)).'
 			<span class="fa fa-bars remove-event"></span>
 		</div>';
 		$inputList .= '<input type="hidden" name="'.$key.'">';
@@ -5235,7 +5238,7 @@ function buildHomepageItem($homepageItem, $group, $user){
 			if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) {
 				if(qualifyUser(EMBYPLAYINGNOWAUTH) && EMBYPLAYINGNOW == "true"){
 					$homepageItemBuilt .= '<div id="embyRowNowPlaying" class="row">';
-					$homepageItemBuilt .= getEmbyStreams(12, EMBYSHOWNAMES, $USER->role);
+					$homepageItemBuilt .= getEmbyStreams(12, EMBYSHOWNAMES, $group);
 					$homepageItemBuilt .= '</div>';
 				}
 			}
