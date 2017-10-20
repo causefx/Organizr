@@ -605,23 +605,37 @@ foreach(loadAppearance() as $key => $value) {
 			loadSlick();
 
             //RECENT ITEMS
-            // each filter we click on
+            // each filter we click on for plex
             $(".filter-recent-event > li").on("click", function() {
                 var name = $(this).attr('data-name');
                 var filter = $(this).attr('data-filter');
-                $('#recentContent-title').text('Recently Added '+name);
+                $('#recentContent-title-Plex').text('Plex Recently Added '+name);
                 // now filter the slides.
                 if(filter !== 'item-all'){
-                    $('.recentItems-recent')
+                    $('.recentItems-recent-Plex')
                         .slick('slickUnfilter')
                         .slick('slickFilter' , '.'+filter );
                 }else{
-                    $('.recentItems-recent')
+                    $('.recentItems-recent-Plex')
+                        .slick('slickUnfilter')
+                }
+            });
+			$(".filter-recent-event > li").on("click", function() {
+                var name = $(this).attr('data-name');
+                var filter = $(this).attr('data-filter');
+                $('#recentContent-title-Emby').text('Emby Recently Added '+name);
+                // now filter the slides.
+                if(filter !== 'item-all'){
+                    $('.recentItems-recent-Emby')
+                        .slick('slickUnfilter')
+                        .slick('slickFilter' , '.'+filter );
+                }else{
+                    $('.recentItems-recent-Emby')
                         .slick('slickUnfilter')
                 }
             });
 			//REQUEST ITEMS
-            // each filter we click on
+            // each filter we click on for emby
             $(".filter-request-event > li").on("click", function() {
                 var name = $(this).attr('data-name');
                 var filter = $(this).attr('data-filter');

@@ -561,6 +561,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 			if(!$nowPlaying){
 				$imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
 				$key = $itemDetails['Id'] . "-list";
+				$itemType = 'season';
 			}else{
 				$height = 281;
 				$width = 500;
@@ -597,6 +598,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 			if(!$nowPlaying){
 				$imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
 				$key = $itemDetails['Id'] . "-list";
+				$itemType = 'album';
 			}else{
 				$height = 281;
 				$width = 500;
@@ -663,6 +665,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 			if(!$nowPlaying){
 				$imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
 				$key = $itemDetails['Id'] . "-list";
+				$itemType = 'movie';
 			}else{
 				$height = 281;
 				$width = 500;
@@ -713,7 +716,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
     	//prettyPrint($itemDetails);
     	return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="refreshNP w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$URL.'" target="_blank"><img style="width: 100%; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'" original-image="'.$original_image_url.'" class="refreshImageSource"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
-		 return '<div class="item-'.$itemDetails['Type'].'"><div class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small class="elip slick-bottom-title">'.$title.'</small></div>';
+		 return '<div class="item-'.$itemType.'"><div class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small class="elip slick-bottom-title">'.$title.'</small></div>';
 	}
 }
 
@@ -926,7 +929,7 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
 }
 //$hideMenu .= '<li data-filter="playlist-'.$className.'" data-name="'.$api['title'].'"><a class="js-filter-'.$className.'" href="javascript:void(0)">'.$api['title'].'</a></li>';
 //Recent Added
-function outputRecentAdded($header, $items, $script = false, $array) {
+function outputRecentAdded($header, $items, $script = false, $array, $type) {
     $hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter &nbsp;<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu filter-recent-event">';
     if(preg_grep("/item-movie/", $items)){
         $hideMenu .= '<li data-filter="item-movie" data-name="Movies" data-filter-on="false"><a class="js-filter-movie" href="javascript:void(0)">Movies</a></li>';
@@ -941,10 +944,10 @@ function outputRecentAdded($header, $items, $script = false, $array) {
     $hideMenu .= '</ul></div></div>';
     // If None Populate Empty Item
     if (!count($items)) {
-        return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
+        return '<div id="recentMedia'.$type.'" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
     }else{
-		$className = str_replace(' ', '', $header);
-        return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 id="recentContent-title" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-recent" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+		$className = str_replace(' ', '', $header.' on '.$type);
+        return '<div id="recentMedia'.$type.'" class="content-box box-shadow big-box"><h5 id="recentContent-title-'.$type.'" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-recent-'.$type.'" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
 
 }
@@ -953,9 +956,9 @@ function outputRecentAdded($header, $items, $script = false, $array) {
 function outputNowPlaying($header, $size, $type, $items, $script = false) {
 	// If None Populate Empty Item
 	if (!count($items)) {
-		return '<div id=streamz></div>'.($script?'<script>'.$script.'</script>':'');
+		return '<div id='.$type.'></div>'.($script?'<script>'.$script.'</script>':'');
 	}else{
-	   return '<div id=streamz><h5 class="zero-m big-box"><strong>'.$header.'</strong></h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
+	   return '<div id='.$type.'><h5 class="zero-m big-box"><strong>'.$header.'</strong></h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
  }
 
 }
@@ -974,7 +977,7 @@ function getEmbyStreams($size, $showNames, $role) {
 		}
 	}
 
-	return outputNowPlaying(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems, "
+	return outputNowPlaying(translate('PLAYING_NOW_ON_EMBY')." ( ".count($playingItems)." Streams )", $size, 'streams-emby', $playingItems, "
 		setInterval(function() {
 			$('<div></div>').load('ajax.php?a=emby-streams',function() {
 				var element = $(this).find('[id]');
@@ -1074,15 +1077,15 @@ function getEmbyRecent($array) {
     return outputRecentAdded($header, $items, "
 	setInterval(function() {
 		$('<div></div>').load('ajax.php?a=emby-recent',function() {
-			var element = $(this).find('#recentMedia');
+			var element = $(this).find('#recentMediaEmby');
 			var loadedID = 	element.attr('id');
-			$('#recentMedia').replaceWith(element);
+			$('#recentMediaEmby').replaceWith(element);
 			console.log('Loaded recent: '+loadedID);
 			loadSlick();
 		});
 
 	}, ".RECENTREFRESH.");
-	", $array);
+	", $array, 'Emby');
 }
 
 // Get Recent Content From Plex
@@ -1113,15 +1116,15 @@ function getPlexRecent($array){
 			return outputRecentAdded($header, $items, "
 			setInterval(function() {
 				$('<div></div>').load('ajax.php?a=plex-recent',function() {
-					var element = $(this).find('#recentMedia');
+					var element = $(this).find('#recentMediaPlex');
 					var loadedID = 	element.attr('id');
-					$('#recentMedia').replaceWith(element);
+					$('#recentMediaPlex').replaceWith(element);
 					console.log('Loaded recent: '+loadedID);
 					loadSlick();
 				});
 
 			}, ".RECENTREFRESH.");
-			", $array);
+			", $array, 'Plex');
 		}else{
 			writeLog("error", "PLEX RECENT-ITEMS ERROR: could not connect - check token - if HTTPS, is cert valid");
 		}
@@ -5076,11 +5079,11 @@ function buildHomepageSettings(){
 				break;
 		}
 		$homepageList .= '
-		<div class="fc-event '.$class.'">
+		<div class="col-md-3 sort-homepage"><div class="fc-event '.$class.'">
 			<span class="ordinal-position text-uppercase badge badge-gray" data-link="'.$key.'" style="float:left;width: 30px;">'.$val.'</span>
 			&nbsp; '.strtoupper(substr($key, 13)).'
 			<span class="remove-event"><img style="width: 22px;" src="'.$image.'"></span>
-		</div>';
+		</div></div>';
 		$inputList .= '<input type="hidden" name="'.$key.'">';
 	}
 	$homepageList .= '</div>';
