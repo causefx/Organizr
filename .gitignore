@@ -46,6 +46,9 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# Files from my local computer
+php_errors.log
+
 # =========================
 # Organizr files
 # =========================

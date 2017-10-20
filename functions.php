@@ -553,6 +553,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 	$URL = EMBYURL."/web/itemdetails.html?id=".$itemDetails['Id'];
 	switch ($itemDetails['Type']) {
 		case 'Episode':
+		case 'Series':
 			$title = (isset($itemDetails['SeriesName'])?$itemDetails['SeriesName']:"");
 			$imageId = (isset($itemDetails['SeriesId'])?$itemDetails['SeriesId']:$itemDetails['Id']);
 			$width = 300;
@@ -3524,10 +3525,10 @@ function searchPlex($query){
     		}
     		if(!$results['image']){ $image_url = "images/no-search.png"; $key = "no-search"; }
 
-			if (substr_count(PLEXURL, '.') != 2) {
-				$link = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
+			if (PLEXTABURL) {
+				$link = PLEXTABURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
 			}else{
-				$link = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
+				$link = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
 			}
 
             $items .= '<tr style="cursor: pointer;" class="openTab" extraTitle="'.$results['title'].'" extraType="'.$child['type'].'" openTab="'.$openTab.'" href="'.$link.'">
