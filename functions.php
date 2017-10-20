@@ -5000,13 +5000,86 @@ function outputOmbiRequests($header = "Requested Content", $items, $script = fal
 function buildHomepageSettings(){
 	$homepageOrder = homepageOrder();
 	$homepageList = '<h4>Drag Homepage Items to Order Them</h4><div id="homepage-items" class="external-events">';
-	$inputList = '<div id="homepage-values">';
+	$inputList = '<div id="homepage-values" class="row">';
 	foreach ($homepageOrder as $key => $val) {
+		switch ($key) {
+			case 'homepageOrdercustomhtml':
+				$class = 'palette-Deep-Purple-100 bg gray';
+				$image = 'images/html.png';
+				if(empty(HOMEPAGECUSTOMHTML1)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdernotice':
+				$class = 'palette-Cyan-A400 bg gray';
+				$image = 'images/pin.png';
+				if(empty(HOMEPAGENOTICETITLE) && empty(HOMEPAGENOTICEMESSAGE)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderspeedtest':
+				$class = 'red-bg';
+				$image = 'images/settings/full-color/png/64px/speedometer.png';
+				if(SPEEDTEST !== "true"){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdernzbget':
+				$class = 'green-bg';
+				$image = 'images/nzbget.png';
+				if(empty(NZBGETURL)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdersabnzbd':
+				$class = 'yellow-bg';
+				$image = 'images/sabnzbd.png';
+				if(empty(SABNZBDURL)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderplexsearch':
+			case 'homepageOrderplexnowplaying':
+			case 'homepageOrderplexrecent':
+			case 'homepageOrderplexplaylist':
+				$class = 'palette-Amber-A700 bg gray';
+				$image = 'images/plex.png';
+				if(empty(PLEXURL)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderembynowplaying':
+			case 'homepageOrderembyrecent':
+				$class = 'palette-Green-A700 bg gray';
+				$image = 'images/emby.png';
+				if(empty(EMBYURL)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderombi':
+				$class = 'orange-bg';
+				$image = 'images/ombi.png';
+				if(empty(OMBIURL)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdercalendar':
+				$class = 'palette-Blue-400 bg gray';
+				$image = 'images/calendar.png';
+				if(SONARRURL == "" && RADARRURL == "" && HEADPHONESURL == "" && SICKRAGEURL == "" && COUCHURL == "" ){
+					$class .= ' faded';
+				}
+				break;
+			default:
+				$class = 'blue-bg';
+				$image = '';
+				break;
+		}
 		$homepageList .= '
-		<div class="fc-event blue-bg">
-			<span class="ordinal-position text-uppercase" data-link="'.$key.'" style="float:left">'.$val.'</span>
+		<div class="fc-event '.$class.'">
+			<span class="ordinal-position text-uppercase badge badge-gray" data-link="'.$key.'" style="float:left;width: 30px;">'.$val.'</span>
 			&nbsp; '.strtoupper(substr($key, 13)).'
-			<span class="fa fa-bars remove-event"></span>
+			<span class="remove-event"><img style="width: 22px;" src="'.$image.'"></span>
 		</div>';
 		$inputList .= '<input type="hidden" name="'.$key.'">';
 	}

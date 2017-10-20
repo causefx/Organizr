@@ -192,6 +192,18 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
             body{
                 background: #273238;
             }
+			.sort-placeholder {
+			    width: 100%;
+				height: 100%;
+			    border: 1px dashed gray;
+			    background-color: #fff;
+			    margin: 8px 0;
+			    padding: 20px 0;
+				list-style: none;
+			}
+			.faded {
+				opacity: .5;
+			}
             .save-btn-form {
                 position: absolute;
                 top: 15px;
@@ -3346,6 +3358,8 @@ echo buildSettings(
                 //$(".todo ul").sortable();
                 $(".todo ul").sortable({
                     'opacity': 0.9,
+					'placeholder':    "sort-placeholder",
+					'forcePlaceholderSize': true,
                 });
 
                 $("#submitTabs").on('submit', function (e) {
