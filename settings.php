@@ -4017,8 +4017,8 @@ echo buildSettings(
         $( document ).ready(function() {
 
 			$("#homepage-items").sortable({
-				placeholder:    "sort-placeholder",
-				//forcePlaceholderSize: true,
+				placeholder:    "sort-placeholder col-md-3",
+				forcePlaceholderSize: true,
 				start: function( e, ui ){
 					ui.item.data( "start-pos", ui.item.index()+1 );
 				},
@@ -4040,7 +4040,7 @@ echo buildSettings(
 							console.log(link+' - '+$index);
 						}
 					});
-					seq = ui.item.parent().find( "div.sort-placeholder").index() + correction;
+					seq = ui.item.parent().find( "div.sort-placeholder.col-md-3").index() + correction;
 					ui.item.find( ".ordinal-position" ).text( seq );
 					newlink = ui.item.find( ".ordinal-position" ).attr('data-link');
 					$('#homepage-values [name='+newlink+']').val(seq);
