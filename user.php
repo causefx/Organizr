@@ -7,17 +7,17 @@
 	 *	entry is assigned a new random token,  which is used in
 	 * salting subsequent password checks.
 	 */
-	
+
 	// Include functions if not already included
 	require_once('functions.php');
-	 
+
     // Autoload frameworks
 	require_once(__DIR__ . '/vendor/autoload.php');
-	
+
     // Lazyload settings
 	$databaseConfig = configLazy(__DIR__ . '/config/config.php');
 
-    if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif; 
+    if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif;
     $notifyExplode = explode("-", NOTIFYEFFECT);
     define('FAIL_LOG', 'loginLog.json');
     @date_default_timezone_set(TIMEZONE);
@@ -28,8 +28,6 @@
     }
 
 	define('GUEST_HASH', "guest-".guestHash(0, 5));
-	$group = new User();
-	$group = $group->role;
 
 	class User
 	{
@@ -126,10 +124,10 @@
 		var $group = "";
 		// global database handle
 		var $database = false;
-        
+
         //EMAIL SHIT
         function startEmail($email, $username, $subject, $body){
-            
+
             $mail = new PHPMailer;
             $mail->isSMTP();
             $mail->Host = SMTPHOST;
@@ -151,9 +149,9 @@
             } else {
                 $this->info('E-Mail sent!');
             }
-            
+
         }
-       
+
 		// class object constructor
 		function __construct($registration_callback=false)
 		{
@@ -243,7 +241,7 @@
 				$this->info("<strong>log in error:</strong> password did not pass validation");
 				return false; }
 			// step 2: if validation passed, log the user in
-			return $this->login_user($username, $sha1, $rememberMe == "true", $password); 
+			return $this->login_user($username, $sha1, $rememberMe == "true", $password);
 		}
 		/**
 		 * Called when the requested POST operation is "logout"
@@ -303,12 +301,12 @@
 				$domain = getServerPath();
 				$body = orgEmail(
 					$header = $language->translate('EMAIL_NEWUSER_HEADER'),
-					$title = $language->translate('EMAIL_NEWUSER_TITLE'), 
-					$user = $username, 
+					$title = $language->translate('EMAIL_NEWUSER_TITLE'),
+					$user = $username,
 					$mainMessage =$language->translate('EMAIL_NEWUSER_MESSAGE'),
 					$button = $language->translate('EMAIL_NEWUSER_BUTTON'),
-					$buttonURL = $domain, 
-					$subTitle = $language->translate('EMAIL_NEWUSER_SUBTITLE'), 
+					$buttonURL = $domain,
+					$subTitle = $language->translate('EMAIL_NEWUSER_SUBTITLE'),
 					$subMessage = $language->translate('EMAIL_NEWUSER_SUBMESSAGE')
 					);
                 $this->startEmail($email, $username, $subject, $body);
@@ -348,7 +346,7 @@
 			if($email !="" && preg_match(User::emailregexp, $email)==0) {
 				$this->info("<strong>invite error:</strong> email address did not pass validation");
 				writeLog("error", "$email didn't pass validation");
-				return false; 
+				return false;
 			}
 			// step 2: if validation passed, send the user's information for invite
 			return $this->invite_user($username, $email, $server);
@@ -386,12 +384,12 @@
 			$domain = getServerPath();
 			$body = orgEmail(
 					$header = $language->translate('EMAIL_RESET_HEADER'),
-					$title = $language->translate('EMAIL_RESET_TITLE'), 
-					$user = $username, 
+					$title = $language->translate('EMAIL_RESET_TITLE'),
+					$user = $username,
 					$mainMessage =$language->translate('EMAIL_RESET_MESSAGE')."<br/>".$newpassword,
 					$button = $language->translate('EMAIL_RESET_BUTTON'),
-					$buttonURL = $domain, 
-					$subTitle = $language->translate('EMAIL_RESET_SUBTITLE'), 
+					$buttonURL = $domain,
+					$subTitle = $language->translate('EMAIL_RESET_SUBTITLE'),
 					$subMessage = $language->translate('EMAIL_RESET_SUBMESSAGE')
 					);
             $this->startEmail($email, $username, $subject, $body);
@@ -419,6 +417,12 @@
             unset($_COOKIE['cookiePassword']);
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
             setcookie("cookiePassword", '', time() - 3600, '/');
+			unset($_COOKIE['Auth']);
+            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
+            setcookie("Auth", '', time() - 3600, '/');
+			unset($_COOKIE['mpt']);
+            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
+            setcookie("mpt", '', time() - 3600, '/');
 		}
 		/**
 		 * Validate a username. Empty usernames or names
@@ -452,11 +456,11 @@
 		{
 			// actually logged in?
 			if($this->is_user_active($username)===false) { return false; }
-            
+
 			// logged in, but do the tokens match?
 			$token = $this->get_user_token($username);
             if(MULTIPLELOGIN == "false"){
-            
+
                 if(isset($_COOKIE["Organizr"])){
                     if($_COOKIE["Organizr"] == $token){
                         return true;
@@ -471,28 +475,34 @@
                         unset($_COOKIE['cookiePassword']);
                         setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
                         setcookie("cookiePassword", '', time() - 3600, '/');
+						unset($_COOKIE['Auth']);
+			            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
+			            setcookie("Auth", '', time() - 3600, '/');
+						unset($_COOKIE['mpt']);
+			            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
+			            setcookie("mpt", '', time() - 3600, '/');
                         return false;
                     }
                 }else{
                     if($token != $_SESSION["token"]) {
-                        
+
                         $this->error("token mismatch for $username");
-                        return false; 
-                    
+                        return false;
+
                     }
                     // active, using the correct token -> authenticated
                      setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
                      return true;
-                    
+
                 }
-                
+
             }else{
-                
+
                 setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
                 return true;
-                
-            }    
-            
+
+            }
+
 		}
 		/**
 		 * Unicode friendly(ish) version of strtolower
@@ -537,7 +547,7 @@
 			$username = strtolower($username);
 			$dbpassword = $this->token_hash_password($username, $sha1, "");
 			if($dbpassword==$sha1) die("password hashing is not implemented.");
-            $newRole = "admin"; 
+            $newRole = "admin";
             $queryAdmin = "SELECT username FROM users";
             foreach($this->database->query($queryAdmin) as $data) {
                 $newRole = "user";
@@ -550,7 +560,7 @@
 					$this->error = "this user name is already being used by someone else.";
                     $this->error("this user name is already being used by someone else.");
 					return false; }
-			} else {	
+			} else {
 				$query = "SELECT username FROM users";
 				$usernames = array();
 				foreach($this->database->query($query) as $data) { $usernames[] = $this->homogenise_username($data["username"]); }
@@ -567,7 +577,7 @@
 					$this->info("user account for $username not created.");
 					$this->error = "this email address is already in use by someone else.";
 					$this->error("this email address is already in use by someone else.");
-					return false; 
+					return false;
 				}
 			} else {
 				$email = $this->random_ascii_string(32).'@placeholder.eml';
@@ -599,16 +609,16 @@
 		 */
 		function login_user($username, $sha1, $remember, $password, $surface = true) {
 			$username = strtolower($username);
-			
+
             $buildLog = function($username, $authType) {
                 if(file_exists(FAIL_LOG)) {
                     $getFailLog = str_replace("\r\ndate", "date", file_get_contents(FAIL_LOG));
                     $gotFailLog = json_decode($getFailLog, true);
                 }
-                
+
                 $failLogEntryFirst = array('logType' => 'login_log', 'auth' => array(array('date' => date("Y-m-d H:i:s"), 'username' => $username, 'ip' => $_SERVER['REMOTE_ADDR'], 'auth_type' => $authType)));
                 $failLogEntry = array('date' => date("Y-m-d H:i:s"), 'username' => $username, 'ip' => $_SERVER['REMOTE_ADDR'], 'auth_type' => $authType);
-                if(isset($gotFailLog)) { 
+                if(isset($gotFailLog)) {
                     array_push($gotFailLog["auth"], $failLogEntry);
                     $writeFailLog = str_replace("date", "\r\ndate", json_encode($gotFailLog));
                 } else {
@@ -616,7 +626,7 @@
                 }
                 return $writeFailLog;
             };
-			
+
 			// External Authentication
 			$authSuccess = false;
 			$function = 'plugin_auth_'.AUTHBACKEND;
@@ -640,14 +650,14 @@
 							} else {
 								// Legacy - Less Secure
 								$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
-								if($dbpassword==$data["password"]) { 
+								if($dbpassword==$data["password"]) {
 									$authSuccess = true;
 								}
 							}
 						}
 					}
 			}
-			
+
 			if ($authSuccess) {
 				// Make sure user exists in database
 				$query = "SELECT username FROM users WHERE username = '".$username."' COLLATE NOCASE";
@@ -656,7 +666,7 @@
 					$userExists = true;
 					break;
 				}
-				
+
 				if ($userExists) {
 					// authentication passed - 1) mark active and update token
 					$this->mark_user_active($username);
@@ -665,14 +675,23 @@
 					if($remember == "true") {
 						setcookie("Organizr", $this->get_user_token($username), time() + (86400 * 7), "/", DOMAIN);
 						setcookie("OrganizrU", $username, time() + (86400 * 7), "/", DOMAIN);
-						
+
+					}
+					if(OMBIURL){
+						$ombiToken = getOmbiToken($username, $password);
+						if($ombiToken){
+							setcookie("Auth", $ombiToken, time() + (86400 * 7), "/", DOMAIN);
+						}
+					}
+					if(PLEXURL && isset($authSuccess['token'])){
+						setcookie("mpt", $authSuccess['token'], time() + (86400 * 7), "/", DOMAIN);
 					}
 					$this->info("Welcome $username");
 					file_put_contents(FAIL_LOG, $buildLog($username, "good_auth"));
 					chmod(FAIL_LOG, 0660);
 					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
      				writeLog("success", "$username has logged in");
-					return true; 
+					return true;
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
 					// Create User
 					$falseByRef = false;
@@ -684,7 +703,7 @@
 					chmod(FAIL_LOG, 0660);
 					if(User::unsafe_reporting) { $this->error = "Successful Backend Auth, $username not in DB, Create Set to False."; $this->error("Successful Backend Auth, $username not in DB, Create Set to False."); }
 					else { $this->error = "Not permitted to login as this user, please contact an administrator."; $this->error("Not permitted to login as this user, please contact an administrator"); }
-					return false; 
+					return false;
 				}
 			} else if (!$authSuccess) {
 				// authentication failed
@@ -694,7 +713,7 @@
 				chmod(FAIL_LOG, 0660);
 				if(User::unsafe_reporting) { $this->error = "incorrect password for $username."; $this->error("incorrect password for $username."); }
 				else { $this->error = "the specified username/password combination is incorrect."; $this->error("the specified username/password combination is incorrect."); }
-				return false; 
+				return false;
 			} else {
 				// authentication could not take place
 				//$this->info("there was no user $username in the database");
@@ -735,7 +754,7 @@
     		writeLog("success", "PLEX INVITE: $id has been deleted");
 			return true;
 		}
-		
+
 		/**
 		 * Invite using a user's information
 		 */
@@ -763,12 +782,12 @@
 				$subject = DOMAIN . " $uServer ".$language->translate('INVITE_CODE');
 				$body = orgEmail(
 					$header = explosion($language->translate('EMAIL_INVITE_HEADER'), 0)." ".$uServer." ".explosion($language->translate('EMAIL_INVITE_HEADER'), 1),
-					$title = $language->translate('EMAIL_INVITE_TITLE'), 
-					$user = $username, 
+					$title = $language->translate('EMAIL_INVITE_TITLE'),
+					$user = $username,
 					$mainMessage = explosion($language->translate('EMAIL_INVITE_MESSAGE'), 0)." ".$uServer." ".explosion($language->translate('EMAIL_INVITE_MESSAGE'), 1)." ".$inviteCode,
 					$button = explosion($language->translate('EMAIL_INVITE_BUTTON'), 0)." ".$uServer." ".explosion($language->translate('EMAIL_INVITE_BUTTON'), 1),
-					$buttonURL = $link, 
-					$subTitle = $language->translate('EMAIL_INVITE_SUBTITLE'), 
+					$buttonURL = $link,
+					$subTitle = $language->translate('EMAIL_INVITE_SUBTITLE'),
 					$subMessage = explosion($language->translate('EMAIL_INVITE_SUBMESSAGE'), 0)." <a href='".$domain."?inviteCode'>".$domain."</a> ".explosion($language->translate('EMAIL_INVITE_SUBMESSAGE'), 1)
 					);
                 $this->startEmail($email, $username, $subject, $body);
@@ -792,6 +811,12 @@
             unset($_COOKIE['cookiePassword']);
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
             setcookie("cookiePassword", '', time() - 3600, '/');
+			unset($_COOKIE['Auth']);
+            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
+            setcookie("Auth", '', time() - 3600, '/');
+			unset($_COOKIE['mpt']);
+            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
+            setcookie("mpt", '', time() - 3600, '/');
    			writeLog("success", "$username has signed out");
 			return true;
 		}
@@ -816,7 +841,7 @@
 		 */
 		function token_hash_password($username, $sha1, $token)
 		{
-			
+
 			return hash("sha256",($this->database->query('SELECT username FROM users WHERE username = \''.$username.'\' COLLATE NOCASE')->fetch()['username']).$sha1.$token);
 		}
 		/**
@@ -845,7 +870,7 @@
 				foreach($this->database->query($query) as $data) { return $data["role"]; }}
 			return "guest";
 		}
-        
+
        /* function get_user_group($username)
 		{
 			if($username && $username !="" && $username !=User::GUEST_USER) {
@@ -876,7 +901,7 @@
 			$update = "UPDATE users SET password = '$newpassword' WHERE username = '$username' COLLATE NOCASE";
 			$this->database->exec($update);
 			if($noMsg == "false"){
-                $this->info("token and password updated for <strong>$username</strong>");   
+                $this->info("token and password updated for <strong>$username</strong>");
             }
 			return $token;
 		}

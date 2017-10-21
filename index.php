@@ -19,7 +19,7 @@ ini_set("error_reporting", E_ALL | E_STRICT);
 $data = false;
 $databaseLocation = "databaseLocation.ini.php";
 $needSetup = "Yes";
-$tabSetup = "Yes";	
+$tabSetup = "Yes";
 $hasOptions = "No";
 $settingsicon = "No";
 $settingsActive = "";
@@ -28,7 +28,6 @@ $loadingIcon = "images/organizr-load-w-thick.gif";
 $baseURL = "";
 $dbcreated = false;
 $splash = false;
-$group = (isset($group) ? $group : "guest");
 
 // Get Action
 if(isset($_POST['action'])) {
@@ -67,7 +66,8 @@ if (file_exists('config/config.php')) {
 	$configReady = "Yes";
 	require_once("user.php");
 	$USER = new User("registration_callback");
-	
+	$group = $USER->role;
+
 	$dbfile = DATABASE_LOCATION  . constant('User::DATABASE_NAME') . ".db";
 	$database = new PDO("sqlite:" . $dbfile);
 	$query = "SELECT * FROM users";
@@ -102,7 +102,7 @@ if (file_exists('config/config.php')) {
 		}
 	}
 
-	if($tabSetup == "No") {	
+	if($tabSetup == "No") {
 		if($USER->authenticated && $USER->role == "admin") {
 			$result = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" ORDER BY `order` asc'));
 			$splash = q2a($file_db->query('SELECT * FROM tabs WHERE active = "true" AND splash = "true" ORDER BY `order` asc'));
@@ -150,7 +150,7 @@ if (file_exists('config/config.php')) {
 										(id INTEGER PRIMARY KEY,
 										timestamp INTEGER NOT NULL,
 										user TEXT NOT NULL)";
-						
+
 						$onlinetable = "CREATE TABLE IF NOT EXISTS chatpack_last_message
 										(
 										user TEXT PRIMARY KEY NOT NULL,
@@ -185,26 +185,24 @@ if(!defined('AUTOHIDE')) : define('AUTOHIDE', 'false'); endif;
 if(!defined('ENABLEMAIL')) : define('ENABLEMAIL', 'false'); endif;
 if(!defined('CUSTOMCSS')) : define('CUSTOMCSS', 'false'); endif;
 if(!defined('LOADINGSCREEN')) : define('LOADINGSCREEN', 'true'); endif;
-if(!isset($notifyExplode)) :
-
-	$notifyExplode = array("bar","slidetop");
-
-endif;
+if(!isset($notifyExplode)) : $notifyExplode = array("bar","slidetop"); endif;
 
 if(SLIMBAR == "true") : $slimBar = "30"; $userSize = "25"; $chatSize = "142px"; else : $slimBar = "56"; $userSize = "40"; $chatSize = "171px";endif;
 
 if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon = "settings2.png"; else: $iconRotate = "true"; $settingsIcon = "settings.png"; endif;
 
+$group = (isset($group) ? $group : "guest");
+
 ?>
 <!--
 
-	___       ___       ___       ___       ___       ___       ___       ___   
-   /\  \     /\  \     /\  \     /\  \     /\__\     /\  \     /\  \     /\  \  
-  /::\  \   /::\  \   /::\  \   /::\  \   /:| _|_   _\:\  \   _\:\  \   /::\  \ 
+	___       ___       ___       ___       ___       ___       ___       ___
+   /\  \     /\  \     /\  \     /\  \     /\__\     /\  \     /\  \     /\  \
+  /::\  \   /::\  \   /::\  \   /::\  \   /:| _|_   _\:\  \   _\:\  \   /::\  \
  /:/\:\__\ /::\:\__\ /:/\:\__\ /::\:\__\ /::|/\__\ /\/::\__\ /::::\__\ /::\:\__\
  \:\/:/  / \;:::/  / \:\:\/__/ \/\::/  / \/|::/  / \::/\/__/ \::;;/__/ \;:::/  /
-  \::/  /   |:\/__/   \::/  /    /:/  /    |:/  /   \:\__\    \:\__\    |:\/__/ 
-   \/__/     \|__|     \/__/     \/__/     \/__/     \/__/     \/__/     \|__|  
+  \::/  /   |:\/__/   \::/  /    /:/  /    |:/  /   \:\__\    \:\__\    |:\/__/
+   \/__/     \|__|     \/__/     \/__/     \/__/     \/__/     \/__/     \|__|
 
 					  [Organizr Version: <?php echo INSTALLEDVERSION; ?> - By: CauseFX]
 
@@ -216,7 +214,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-		<meta name="apple-mobile-web-app-capable" content="yes" />   
+		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="mobile-web-app-capable" content="yes" /
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="msapplication-tap-highlight" content="no" />
@@ -267,6 +265,11 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<![endif]-->
 	</head>
 	<style>
+		#splashScreen ping span {
+		    margin-top: 0 !important;
+		    font-size: 10px;
+		    zoom: 2;
+		}
 		#weather .w-icon.right.pull-right {
 			font-size: 70px;
 		}
@@ -408,11 +411,11 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			background-image: -webkit-linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), -webkit-linear-gradient(#d2d2d2, #d2d2d2);
 			background-image: linear-gradient(<?=$topbartext;?>, <?=$topbartext;?>), linear-gradient(#d2d2d2, #d2d2d2);
 		}img.titlelogoclass {
-			max-width: 250px; 
+			max-width: 250px;
 			max-height: <?=$slimBar;?>px;
 		}@media only screen and (max-width: 450px) {
 			img.titlelogoclass {
-				max-width: 150px; 
+				max-width: 150px;
 			}
 		}.login-btn {
 			-webkit-border-radius: 4;
@@ -522,15 +525,15 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 								<!--Start Tab List-->
 								<?php
 								if($tabSetup == "No") {
-									$tabCount = 1; 
-									$allPings = array(); 
+									$tabCount = 1;
+									$allPings = array();
 									if (is_array($result)) {
 										foreach($result as $row) {
 											$name = str_replace(array(':', '\\', '/', '*'), 'x', $row['ping_url']);
-											if($row['defaultz'] == "true") { 
-												$defaultz = "active"; 
-											}else { 
-												$defaultz = ""; 
+											if($row['defaultz'] == "true") {
+												$defaultz = "active";
+											}else {
+												$defaultz = "";
 											} ?>
 									<li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
 										<a class="tab-link">
@@ -539,14 +542,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 													<img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
 													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
-														<ping id="ping-<?=$name;?>"></ping>
+														<ping class="ping-<?=$name;?> startPingTimer"></ping>
 													<?php }?>
 												</i>
 											<?php }else { ?>
 												<i class="fa <?=$row['icon'];?> fa-lg">
 													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
-														<ping id="ping-<?=$name;?>"></ping>
+														<ping class="ping-<?=$name;?> startPingTimer"></ping>
 													<?php }?>
 												</i>
 											<?php } ?>
@@ -554,9 +557,9 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 										</a>
 
 									</li>
-									<?php 
-										$tabCount++; 
-										}; 
+									<?php
+										$tabCount++;
+										};
 									}
 								}?>
 								<?php if($configReady == "Yes") : if($USER->authenticated && $USER->role == "admin") :?>
@@ -595,15 +598,15 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				</li>
 
 				<li class="top-clock">
-					<?php 
-					if($configReady == "Yes") : 
-						if(TITLELOGO == "") : 
-							echo "<span><span style=\"color: $topbartext\"><b>$title</b></span></span>"; 
-						else : 
+					<?php
+					if($configReady == "Yes") :
+						if(TITLELOGO == "") :
+							echo "<span><span style=\"color: $topbartext\"><b>$title</b></span></span>";
+						else :
 							echo "<img class='titlelogoclass' src='" . TITLELOGO . "'>";
 						endif;
 					else :
-						echo "<span><span style=\"color: $topbartext\"><b>$title</b></span></span>"; 
+						echo "<span><span style=\"color: $topbartext\"><b>$title</b></span></span>";
 					endif;
 					?>
 				</li>
@@ -611,9 +614,9 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				<li class="pull-right">
 					<ul class="nav navbar-right right-menu">
 						<?php if($configReady == "Yes"){?>
-						<li class="dropdown some-btn">	
+						<li class="dropdown some-btn">
 							<a class="show-members">
-								<i class="userpic"><?=$showPic;?></i> 
+								<i class="userpic"><?=$showPic;?></i>
 							</a>
 						</li>
 						<?php if(!$USER->authenticated){?>
@@ -622,7 +625,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 								<login class='login-btn text-uppercase'><?php echo $language->translate("LOGIN"); ?></login>
 							</a>
 						</li>
-						<?php } }?>								
+						<?php } }?>
 
 						<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
 						<li class="dropdown some-btn">
@@ -639,7 +642,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			<!--Content-->
 			<div id="content" class="content" style="">
 				<script>addToHomescreen();</script>
-				
+
 				<!--Load Framed Content-->
 				<?php if($needSetup == "Yes" && $configReady == "Yes") : ?>
 				<div class="table-wrapper" style="background:<?=$sidebar;?>;">
@@ -708,7 +711,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 				</div>
 				<?php endif; ?>
-				
+
 				<?php if($needSetup == "Yes" && $configReady == "No") : ?>
 				<div class="table-wrapper" style="background:<?=$sidebar;?>;">
 
@@ -739,11 +742,11 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 												<h5><?php echo $language->translate("SET_DATABASE_LOCATION");?></h5>
 												<?php echo getTimezone();?>
 												<h5><?php echo $language->translate("SET_TIMEZONE");?></h5>
-												<?php 
-												if(file_exists(dirname(__DIR__) . '/users.db') || file_exists(__DIR__ . '/users.db') || file_exists(__DIR__ . '/config/users.db')) : 
+												<?php
+												if(file_exists(dirname(__DIR__) . '/users.db') || file_exists(__DIR__ . '/users.db') || file_exists(__DIR__ . '/config/users.db')) :
 												echo '<h5 class="text-center red">';
 												echo $language->translate("DONT_WORRY");
-												echo '</h5>'; 
+												echo '</h5>';
 												endif;?>
 
 											</div>
@@ -764,7 +767,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 				</div>
 				<?php endif; ?>
-				
+
 				<?php if($configReady == "Yes") : if(!$USER->authenticated && $tabSetup == "Yes" && $needSetup == "No") :?>
 				<div class="table-wrapper">
 					<div class="table-row">
@@ -784,7 +787,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 					</div>
 				</div>
 				<?php endif; endif; ?>
-				<?php if($tabSetup == "No" && $needSetup == "No") :?>        
+				<?php if($tabSetup == "No" && $needSetup == "No") :?>
 				<div id="tabEmpty" class="table-wrapper" style="display: none; background:<?=$sidebar;?>;">
 					<div class="table-row">
 						<div class="table-cell text-center">
@@ -846,7 +849,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 											<input type="password" class="form-control material" name="password1" value="" autocomplete="off" placeholder="<?php echo $language->translate("PASSWORD");?>" required>
 										</div>
 										<div class="form-group">
-											<div class="i-block"> <input id="rememberMe" name="rememberMe" class="switcher switcher-success switcher-medium pull-left" value="true" type="checkbox" checked=""> 
+											<div class="i-block"> <input id="rememberMe" name="rememberMe" class="switcher switcher-success switcher-medium pull-left" value="true" type="checkbox" checked="">
 												<label for="rememberMe" class="pull-left"></label>
 												<label class="pull-right"> &nbsp; <?php echo $language->translate("REMEMBER_ME");?></label>
 											</div>
@@ -855,7 +858,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 										<button id="loginSubmit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="log in" onclick="User.processLogin()"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("LOGIN");?></text></button>
 
-									</form> 
+									</form>
 									<?php if (ENABLEMAIL == "true") : ?>
 									<button id="switchForgot" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("FORGOT_PASSWORD");?></text></button>
 									<?php endif; ?>
@@ -871,7 +874,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 										<button style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="reset password"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("RESET_PASSWORD");?></text></button>
 
-									</form> 
+									</form>
 									<button id="welcomeGoBack" style="background:<?=$topbartext;?>; display: none" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
 									<?php if(REGISTERPASSWORD != "") : ?>
 									<div id="userPassForm" style="display: none;">
@@ -922,7 +925,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 										<button id="registerSubmit" type="submit" class="btn green-bg btn-block btn-warning text-uppercase waves waves-effect waves-float" value="Register"><?php echo $language->translate("REGISTER");?></button>
 										<button id="welcomeGoBack3" style="background:<?=$topbartext;?>; display: none" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
 
-									</form> 
+									</form>
 									<?php endif; ?>
 								</div>
 							</div>
@@ -987,14 +990,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 										<button id="checkInviteForm_submit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="checkInvite"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("SUBMIT_CODE");?></text></button>
 
-									</form> 
-									
+									</form>
+
 									<div style="display: none" id="chooseMethod">
 										<h4 class="text-center"><?php echo $language->translate("HAVE_ACCOUNT");?></h4>
 										<button id="yesPlexButton" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("YES");?></text></button>
 										<button id="noPlexButton" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("NO");?></text></button>
 									</div>
-									
+
 									<form style="display:none" name="useInviteForm" id="useInviteForm" onsubmit="return false;" data-smk-icon="glyphicon-remove-sign">
 										<h4 class="text-center"><?php echo $language->translate("ENTER_PLEX_NAME");?></h4>
 										<h4 id="accountMade" style="display: none" class="text-center">
@@ -1031,7 +1034,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 										<button id="joinPlexForm_submit" style="background:<?=$topbar;?>;" type="submit" class="btn btn-block btn-info text-uppercase waves" value="useInvite"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("SIGN_UP");?></text></button>
 										<button id="plexNoGoBack" style="background:<?=$topbartext;?>;" class="btn btn-block btn-info text-uppercase waves"><text style="color:<?=$topbar;?>;"><?php echo $language->translate("GO_BACK");?></text></button>
 
-									</form> 
+									</form>
 
 								</div>
 							</div>
@@ -1044,15 +1047,16 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true" && $splash) {?>
 		<div id="splashScreen" class="splash-modal modal fade">
 			<div style="background:<?=$sidebar;?>;" class="table-wrapper big-box">
-				
+
 				<button style="color:<?=$topbartext;?>;" type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 				<br/><br/>
 				<div class="row">
 					<div class="col-lg-12">
-						<div class="row">                      
-							<?php if($tabSetup == "No") : $tabCount = 1; foreach($splash as $row) : ?>
+						<div class="row">
+							<?php if($tabSetup == "No") : $tabCount = 1; foreach($splash as $row) :
+								$name = str_replace(array(':', '\\', '/', '*'), 'x', $row['ping_url']);?>
 							<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2" id="splash-<?php echo strtolower($row['name']);?>">
 								<li style="list-style-type: none; cursor: pointer;" window="<?=$row['window'];?>" class="splash-item content-box small-box ultra-widget gray-bg" name="<?php echo strtolower($row['name']);?>">
 									<div class="w-content">
@@ -1062,8 +1066,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 													<i style="">
 														<img src="<?=$row['iconurl'];?>" style="height: 100px; margin-top: -10px;" class="">
 													</i>
+													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
+														<ping style="display: block" class="ping-<?=$name;?>"></ping>
+													<?php }?>
 												<?php else : ?>
 													<i style="padding-bottom: 8px" class="fa <?=$row['icon'];?> fa-sm"></i>
+													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
+														<ping style="display: block" class="ping-<?=$name;?>"></ping>
+													<?php }?>
 												<?php endif; ?>
 											</center>
 										</div>
@@ -1071,26 +1081,24 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 									</div>
 								</li>
 							</div>
-							<?php $tabCount++; endforeach; endif;?>  
-						</div>
-						<?php if( $USER->authenticated && $USER->role == "admin" ){ ?>
-						<div class="row">                      
-							<div class="col-lg-12">
-								<li style="list-style-type: none; cursor: pointer;" class="splash-item content-box small-box ultra-widget gray-bg" data-title="" name="settings">
-									<div class="w-content">
-										<div class="w-icon">
-											<center>
-												<i style="">
-													<img src="images/settings.png" style="height: 100px; margin-top: -10px;" class="">
-												</i>
-											</center>
+							<?php $tabCount++; endforeach; endif;?>
+							<?php if( $USER->authenticated && $USER->role == "admin" ){ ?>
+								<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+									<li style="list-style-type: none; cursor: pointer;" class="splash-item content-box small-box ultra-widget gray-bg" data-title="" name="settings">
+										<div class="w-content">
+											<div class="w-icon">
+												<center>
+													<i style="">
+														<img src="images/settings.png" style="height: 100px; margin-top: -10px;" class="">
+													</i>
+												</center>
+											</div>
+											<div class="text-center"><span class="text-uppercase w-name elip">Settings</span></div>
 										</div>
-										<div class="text-center"><span class="text-uppercase w-name elip">Settings</span></div>
-									</div>
-								</li>
-							</div>
+									</li>
+								</div>
+							<?php } ?>
 						</div>
-						<?php } ?>
 					</div>
 				</div>
 			</div>
@@ -1102,7 +1110,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			<div class="email-body">
 				<div class="email-inner small-box" style="padding: 0">
 					<div class="email-inner-section" style="margin-top: 0;">
-						<div class="small-box fade in" style="padding: 0">											
+						<div class="small-box fade in" style="padding: 0">
 							<div class="main-wrapper" style="position: initial; left:0;">
 								<div id="content">
 									<div class="btn-group btn-group-justified grayish-blue-bg">
@@ -1148,7 +1156,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 										</div>
 									</div>
 								</div>
-							</div>		
+							</div>
 						</div>
 					</div>
 				</div>
@@ -1161,7 +1169,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			<div class="email-body">
 				<div class="email-inner small-box" style="padding: 0">
 					<div class="email-inner-section" style="margin-top: 0;">
-						<div class="small-box fade in" style="padding: 0">											
+						<div class="small-box fade in" style="padding: 0">
 							<div class="main-wrapper" style="position: initial; left:0;">
 								<div id="content">
 									<div class="btn-group btn-group-justified grayish-blue-bg">
@@ -1320,188 +1328,225 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		<script src="<?=$baseURL;?>js/mousetrap.min.js"></script>
 		<script src="<?=$baseURL;?>js/jquery.simpleWeather.js"></script>
 		<script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
-		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
-		<script src="chatjs.php" defer="true"></script>
-		<script type="text/javascript">
-		var scrolling = function(e, c) {
-			e.scrollIntoView();
-			if (c < 5) setTimeout(scrolling, 300, e, c + 1);
-		};
-		var ensureVisible = function(e) {
-			setTimeout(scrolling, 300, e, 0);
-		};
-		var mainchatdiv = document.getElementById('main-chat');
-		mainchatdiv.addEventListener('touchmove', function(e) {
-
-			e.preventDefault();
-
-		}, false);  
-   		</script>
-		<?php }?>
 		<script>
-		/* Does your browser support geolocation? */
-		if ("geolocation" in navigator) {
-			$('#weather').show(); 
-		} else {
-			$('#weathern').hide();
-		}
-		function setWeatherIcon(condid) {
-		var icon = '';
-			switch(condid) {
-				case '0': icon  = 'wi-tornado';
-				break;
-				case '1': icon = 'wi-storm-showers';
-				break;
-				case '2': icon = 'wi-tornado';
-				break;
-				case '3': icon = 'wi-thunderstorm';
-				break;
-				case '4': icon = 'wi-thunderstorm';
-				break;
-				case '5': icon = 'wi-snow';
-				break;
-				case '6': icon = 'wi-rain-mix';
-				break;
-				case '7': icon = 'wi-rain-mix';
-				break;
-				case '8': icon = 'wi-sprinkle';
-				break;
-				case '9': icon = 'wi-sprinkle';
-				break;
-				case '10': icon = 'wi-hail';
-				break;
-				case '11': icon = 'wi-showers';
-				break;
-				case '12': icon = 'wi-showers';
-				break;
-				case '13': icon = 'wi-snow';
-				break;
-				case '14': icon = 'wi-storm-showers';
-				break;
-				case '15': icon = 'wi-snow';
-				break;
-				case '16': icon = 'wi-snow';
-				break;
-				case '17': icon = 'wi-hail';
-				break;
-				case '18': icon = 'wi-hail';
-				break;
-				case '19': icon = 'wi-cloudy-gusts';
-				break;
-				case '20': icon = 'wi-fog';
-				break;
-				case '21': icon = 'wi-fog';
-				break;
-				case '22': icon = 'wi-fog';
-				break;
-				case '23': icon = 'wi-cloudy-gusts';
-				break;
-				case '24': icon = 'wi-cloudy-windy';
-				break;
-				case '25': icon = 'wi-thermometer';
-				break;
-				case '26': icon = 'wi-cloudy';
-				break;
-				case '27': icon = 'wi-night-cloudy';
-				break;
-				case '28': icon = 'wi-day-cloudy';
-				break;
-				case '29': icon = 'wi-night-cloudy';
-				break;
-				case '30': icon = 'wi-day-cloudy';
-				break;
-				case '31': icon = 'wi-night-clear';
-				break;
-				case '32': icon = 'wi-day-sunny';
-				break;
-				case '33': icon = 'wi-night-clear';
-				break;
-				case '34': icon = 'wi-day-sunny-overcast';
-				break;
-				case '35': icon = 'wi-hail';
-				break;
-				case '36': icon = 'wi-day-sunny';
-				break;
-				case '37': icon = 'wi-thunderstorm';
-				break;
-				case '38': icon = 'wi-thunderstorm';
-				break;
-				case '39': icon = 'wi-thunderstorm';
-				break;
-				case '40': icon = 'wi-storm-showers';
-				break;
-				case '41': icon = 'wi-snow';
-				break;
-				case '42': icon = 'wi-snow';
-				break;
-				case '43': icon = 'wi-snow';
-				break;
-				case '44': icon = 'wi-cloudy';
-				break;
-				case '45': icon = 'wi-lightning';
-				break;
-				case '46': icon = 'wi-snow';
-				break;
-				case '47': icon = 'wi-thunderstorm';
-				break;
-				case '3200': icon = 'wi-cloud';
-				break;
-				default: icon = 'wi-cloud';
-				break;
-			}
-		
-			return '<i class="wi '+icon+' wi-fw"></i>';
-		}
-		$(document).ready(function() {
-			getWeather();
-			setInterval(getWeather, 600000);
-		});
-		function getWeather(){
-			navigator.geolocation.getCurrentPosition(function(position) {
-				loadWeather(position.coords.latitude+','+position.coords.longitude);
-			});
-			console.log('grabbing weather');
-		}
-		function loadWeather(location, woeid) {
-			$.simpleWeather({
-				location: location,
-				woeid: woeid,
-				unit: 'f',
-				success: function(weather) {
-					//html = '<h5 class="text-uppercase text-center">Weather For '+weather.city+', '+weather.region+'</h5>';
-					html = '<h5 class="text-center yellow">Current Weather</h5>';
-					html += '<div class="content-box ultra-widget yellow-bg">';
-					html += '<div class="w-icon right pull-right">'+setWeatherIcon(weather.code)+'</div>';
-					html += '<div class="w-descr left pull-left text-center">';
-					html += '<span class="w-name">'+weather.temp+'&deg;'+weather.units.temp+' / '+weather.alt.temp+'&deg;C</span><br>';
-					html += '<span class="w-name">'+weather.currently+'</span>';
-					html += '</div></div>';
-					//Forecast
-					html += '<div class="content-box big-box"><h4 class="">'+weather.city+', '+weather.region+' Forecast</h4><div class="table-responsive"><table class="table table-striped table-condensed">';
-					//html += '<caption>'+weather.city+', '+weather.region+'</caption>';
-					html += '<thead><tr><th>Day</th><th>High</th><th>Low</th><th>Weather</th><th>Visual</th></tr></thead><tbody>';
-					//Days
-					html += '<tr><th scope="row">'+weather.forecast[0].day+'</th><td>'+weather.forecast[0].high+'&deg;'+weather.units.temp+' / '+weather.forecast[0].alt.high+'&deg;C</td>';
-					html += '<td>'+weather.forecast[0].low+'&deg;'+weather.units.temp+' / '+weather.forecast[0].alt.low+'&deg;C</td><td>'+weather.forecast[0].text+'</td><td>'+setWeatherIcon(weather.forecast[0].code)+'</td></tr>';
-					html += '<tr><th scope="row">'+weather.forecast[1].day+'</th><td>'+weather.forecast[1].high+'&deg;'+weather.units.temp+' / '+weather.forecast[1].alt.high+'&deg;C</td>';
-					html += '<td>'+weather.forecast[1].low+'&deg;'+weather.units.temp+' / '+weather.forecast[1].alt.low+'&deg;C</td><td>'+weather.forecast[1].text+'</td><td>'+setWeatherIcon(weather.forecast[1].code)+'</td></tr>';
-					html += '<tr><th scope="row">'+weather.forecast[2].day+'</th><td>'+weather.forecast[2].high+'&deg;'+weather.units.temp+' / '+weather.forecast[2].alt.high+'&deg;C</td>';
-					html += '<td>'+weather.forecast[2].low+'&deg;'+weather.units.temp+' / '+weather.forecast[2].alt.low+'&deg;C</td><td>'+weather.forecast[2].text+'</td><td>'+setWeatherIcon(weather.forecast[2].code)+'</td></tr>';
-					html += '<tr><th scope="row">'+weather.forecast[3].day+'</th><td>'+weather.forecast[3].high+'&deg;'+weather.units.temp+' / '+weather.forecast[3].alt.high+'&deg;C</td>';
-					html += '<td>'+weather.forecast[3].low+'&deg;'+weather.units.temp+' / '+weather.forecast[3].alt.low+'&deg;C</td><td>'+weather.forecast[3].text+'</td><td>'+setWeatherIcon(weather.forecast[3].code)+'</td></tr>';
-					html += '<tr><th scope="row">'+weather.forecast[4].day+'</th><td>'+weather.forecast[4].high+'&deg;'+weather.units.temp+' / '+weather.forecast[4].alt.high+'&deg;C</td>';
-					html += '<td>'+weather.forecast[4].low+'&deg;'+weather.units.temp+' / '+weather.forecast[4].alt.low+'&deg;C</td><td>'+weather.forecast[4].text+'</td><td>'+setWeatherIcon(weather.forecast[4].code)+'</td></tr>';
-					//Days End
-					html += '</tbody></table></div></div>';
-
-					$("#weather").html(html);
-				},
-				error: function(error) {
-					$("#weather").html('<p>'+error+'</p>');
+		function getCookie(cname) {
+			var name = cname + "=";
+			var decodedCookie = decodeURIComponent(document.cookie);
+			var ca = decodedCookie.split(';');
+			for(var i = 0; i <ca.length; i++) {
+				var c = ca[i];
+				while (c.charAt(0) == ' ') {
+					c = c.substring(1);
 				}
-			});
+				if (c.indexOf(name) == 0) {
+					return c.substring(name.length, c.length);
+				}
+			}
+			return "";
 		}
+		<?php if($configReady == "Yes") {
+			if($USER->authenticated){ ?>
+				if (localStorageSupport) {
+					if(getCookie('mpt') !== ''){
+						localStorage.setItem("myPlexAccessToken",getCookie('mpt'));
+					}
+					if(getCookie('Auth') !== ''){
+						localStorage.setItem("id_token",getCookie('Auth'));
+					}
+				}
+		<?php }else{?>
+			if (localStorageSupport) {
+				localStorage.removeItem("myPlexAccessToken");
+				localStorage.removeItem("id_token");
+			}
+		<?php } } ?>
 
+		</script>
+		<?php if(CHAT == "true" && qualifyUser(CHATAUTH)){?>
+			<script src="chatjs.php" defer="true"></script>
+			<script type="text/javascript">
+			var scrolling = function(e, c) {
+				e.scrollIntoView();
+				if (c < 5) setTimeout(scrolling, 300, e, c + 1);
+			};
+			var ensureVisible = function(e) {
+				setTimeout(scrolling, 300, e, 0);
+			};
+			var mainchatdiv = document.getElementById('main-chat');
+			mainchatdiv.addEventListener('touchmove', function(e) {
+
+				e.preventDefault();
+
+			}, false);
+	   	</script>
+		<?php }?>
+		<?php if(WEATHER == "true" && qualifyUser(WEATHERAUTH)){?>
+			<script>
+			/* Does your browser support geolocation? */
+			if ("geolocation" in navigator) {
+				$('#weather').show();
+			} else {
+				$('#weathern').hide();
+			}
+			function setWeatherIcon(condid) {
+			var icon = '';
+				switch(condid) {
+					case '0': icon  = 'wi-tornado';
+					break;
+					case '1': icon = 'wi-storm-showers';
+					break;
+					case '2': icon = 'wi-tornado';
+					break;
+					case '3': icon = 'wi-thunderstorm';
+					break;
+					case '4': icon = 'wi-thunderstorm';
+					break;
+					case '5': icon = 'wi-snow';
+					break;
+					case '6': icon = 'wi-rain-mix';
+					break;
+					case '7': icon = 'wi-rain-mix';
+					break;
+					case '8': icon = 'wi-sprinkle';
+					break;
+					case '9': icon = 'wi-sprinkle';
+					break;
+					case '10': icon = 'wi-hail';
+					break;
+					case '11': icon = 'wi-showers';
+					break;
+					case '12': icon = 'wi-showers';
+					break;
+					case '13': icon = 'wi-snow';
+					break;
+					case '14': icon = 'wi-storm-showers';
+					break;
+					case '15': icon = 'wi-snow';
+					break;
+					case '16': icon = 'wi-snow';
+					break;
+					case '17': icon = 'wi-hail';
+					break;
+					case '18': icon = 'wi-hail';
+					break;
+					case '19': icon = 'wi-cloudy-gusts';
+					break;
+					case '20': icon = 'wi-fog';
+					break;
+					case '21': icon = 'wi-fog';
+					break;
+					case '22': icon = 'wi-fog';
+					break;
+					case '23': icon = 'wi-cloudy-gusts';
+					break;
+					case '24': icon = 'wi-cloudy-windy';
+					break;
+					case '25': icon = 'wi-thermometer';
+					break;
+					case '26': icon = 'wi-cloudy';
+					break;
+					case '27': icon = 'wi-night-cloudy';
+					break;
+					case '28': icon = 'wi-day-cloudy';
+					break;
+					case '29': icon = 'wi-night-cloudy';
+					break;
+					case '30': icon = 'wi-day-cloudy';
+					break;
+					case '31': icon = 'wi-night-clear';
+					break;
+					case '32': icon = 'wi-day-sunny';
+					break;
+					case '33': icon = 'wi-night-clear';
+					break;
+					case '34': icon = 'wi-day-sunny-overcast';
+					break;
+					case '35': icon = 'wi-hail';
+					break;
+					case '36': icon = 'wi-day-sunny';
+					break;
+					case '37': icon = 'wi-thunderstorm';
+					break;
+					case '38': icon = 'wi-thunderstorm';
+					break;
+					case '39': icon = 'wi-thunderstorm';
+					break;
+					case '40': icon = 'wi-storm-showers';
+					break;
+					case '41': icon = 'wi-snow';
+					break;
+					case '42': icon = 'wi-snow';
+					break;
+					case '43': icon = 'wi-snow';
+					break;
+					case '44': icon = 'wi-cloudy';
+					break;
+					case '45': icon = 'wi-lightning';
+					break;
+					case '46': icon = 'wi-snow';
+					break;
+					case '47': icon = 'wi-thunderstorm';
+					break;
+					case '3200': icon = 'wi-cloud';
+					break;
+					default: icon = 'wi-cloud';
+					break;
+				}
+
+				return '<i class="wi '+icon+' wi-fw"></i>';
+			}
+			$(document).ready(function() {
+				getWeather();
+				setInterval(getWeather, 600000);
+			});
+			function getWeather(){
+				navigator.geolocation.getCurrentPosition(function(position) {
+					loadWeather(position.coords.latitude+','+position.coords.longitude);
+				});
+				console.log('grabbing weather');
+			}
+			function loadWeather(location, woeid) {
+				$.simpleWeather({
+					location: location,
+					woeid: woeid,
+					unit: 'f',
+					success: function(weather) {
+						//html = '<h5 class="text-uppercase text-center">Weather For '+weather.city+', '+weather.region+'</h5>';
+						html = '<h5 class="text-center yellow">Current Weather</h5>';
+						html += '<div class="content-box ultra-widget yellow-bg">';
+						html += '<div class="w-icon right pull-right">'+setWeatherIcon(weather.code)+'</div>';
+						html += '<div class="w-descr left pull-left text-center">';
+						html += '<span class="w-name">'+weather.temp+'&deg;'+weather.units.temp+' / '+weather.alt.temp+'&deg;C</span><br>';
+						html += '<span class="w-name">'+weather.currently+'</span>';
+						html += '</div></div>';
+						//Forecast
+						html += '<div class="content-box big-box"><h4 class="">'+weather.city+', '+weather.region+' Forecast</h4><div class="table-responsive"><table class="table table-striped table-condensed">';
+						//html += '<caption>'+weather.city+', '+weather.region+'</caption>';
+						html += '<thead><tr><th>Day</th><th>High</th><th>Low</th><th>Weather</th><th>Visual</th></tr></thead><tbody>';
+						//Days
+						html += '<tr><th scope="row">'+weather.forecast[0].day+'</th><td>'+weather.forecast[0].high+'&deg;'+weather.units.temp+' / '+weather.forecast[0].alt.high+'&deg;C</td>';
+						html += '<td>'+weather.forecast[0].low+'&deg;'+weather.units.temp+' / '+weather.forecast[0].alt.low+'&deg;C</td><td>'+weather.forecast[0].text+'</td><td>'+setWeatherIcon(weather.forecast[0].code)+'</td></tr>';
+						html += '<tr><th scope="row">'+weather.forecast[1].day+'</th><td>'+weather.forecast[1].high+'&deg;'+weather.units.temp+' / '+weather.forecast[1].alt.high+'&deg;C</td>';
+						html += '<td>'+weather.forecast[1].low+'&deg;'+weather.units.temp+' / '+weather.forecast[1].alt.low+'&deg;C</td><td>'+weather.forecast[1].text+'</td><td>'+setWeatherIcon(weather.forecast[1].code)+'</td></tr>';
+						html += '<tr><th scope="row">'+weather.forecast[2].day+'</th><td>'+weather.forecast[2].high+'&deg;'+weather.units.temp+' / '+weather.forecast[2].alt.high+'&deg;C</td>';
+						html += '<td>'+weather.forecast[2].low+'&deg;'+weather.units.temp+' / '+weather.forecast[2].alt.low+'&deg;C</td><td>'+weather.forecast[2].text+'</td><td>'+setWeatherIcon(weather.forecast[2].code)+'</td></tr>';
+						html += '<tr><th scope="row">'+weather.forecast[3].day+'</th><td>'+weather.forecast[3].high+'&deg;'+weather.units.temp+' / '+weather.forecast[3].alt.high+'&deg;C</td>';
+						html += '<td>'+weather.forecast[3].low+'&deg;'+weather.units.temp+' / '+weather.forecast[3].alt.low+'&deg;C</td><td>'+weather.forecast[3].text+'</td><td>'+setWeatherIcon(weather.forecast[3].code)+'</td></tr>';
+						html += '<tr><th scope="row">'+weather.forecast[4].day+'</th><td>'+weather.forecast[4].high+'&deg;'+weather.units.temp+' / '+weather.forecast[4].alt.high+'&deg;C</td>';
+						html += '<td>'+weather.forecast[4].low+'&deg;'+weather.units.temp+' / '+weather.forecast[4].alt.low+'&deg;C</td><td>'+weather.forecast[4].text+'</td><td>'+setWeatherIcon(weather.forecast[4].code)+'</td></tr>';
+						//Days End
+						html += '</tbody></table></div></div>';
+
+						$("#weather").html(html);
+					},
+					error: function(error) {
+						$("#weather").html('<p>'+error+'</p>');
+					}
+				});
+			}
+			</script>
+		<?php } ?>
+		<script>
 		var datetime = null,
         date = null;
 
@@ -1526,7 +1571,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
             scrollspeed: 30,
             mousescrollstep: 60
         });
-		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true") {?>    
+		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true") {?>
 		$('.splash-modal').modal("show");
 		<?php } ?>
 		var fixed = document.getElementById('gn-scroller');
@@ -1534,7 +1579,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 			e.preventDefault();
 
-		}, false);  
+		}, false);
 
 		function setHeight() {
 			windowHeight = $(window).innerHeight();
@@ -1546,14 +1591,14 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			var notifyIcon = notifyIcon;
 			var notifyType = notifyType;
 			var notifyLength = notifyLength;
-			var notifyLayout = notifyLayout; 
+			var notifyLayout = notifyLayout;
 			var notifyEffect = notifyEffect;
 			if (notifyEffect === "slidetop"){
 				var addMeesage = '<span class="fa fa-' + notifyIcon + ' fa-2x"></span>' + '<p>' + notifyString + '</p>';
 			}else if (notifyEffect === "exploader"){
 				var addMeesage = '<span class="fa fa-' + notifyIcon + ' fa-2x pull-left"></span>' + '<p>' + notifyString + '</p>';
 			}else if (notifyEffect === "thumbslider"){
-				var addMeesage = '<div class="ns-thumb"><img src="images/alert.png"/></div><div class="ns-content"><p>' + notifyString + '</p></div>';    
+				var addMeesage = '<div class="ns-thumb"><img src="images/alert.png"/></div><div class="ns-content"><p>' + notifyString + '</p></div>';
 			}else{
 				var addMeesage = '<p>' + notifyString + '</p>';
 			}
@@ -1609,7 +1654,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		$("#plexYesGoBack").click(function(){
 			$("#useInviteForm").toggle();
 			$("#chooseMethod").toggle();
-		});	
+		});
 		$("#welcomeGoBack2").click(function(){
 			$( "form[id^='login']" ).toggle();
 			$("#userPassForm").toggle();
@@ -1618,7 +1663,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			$("#welcomeGoBack2").toggle();
 		});
 		$("#welcomeGoBack3").click(function(){
-			$("#registration").toggle();  
+			$("#registration").toggle();
 			$("#welcomeGoBack3").toggle();
 			$( "form[id^='login']" ).toggle();
 			$("#switchForgot").toggle();
@@ -1637,7 +1682,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			$("#switchForgot").toggle();
 			$("#switchCreateUser").toggle();
 			$("#welcomeGoBack2").toggle();
-		});  
+		});
 		//Sign in
 		$(".log-in").click(function(e){
 			var e1 = document.querySelector(".log-in"),
@@ -1649,7 +1694,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		});
 		//InviteCode
 		<?php if(isset($_GET['inviteCode'])){ ?>
-		$('#inviteSet').modal("show");	
+		$('#inviteSet').modal("show");
 		<?php } ?>
 
 		//Logout
@@ -1677,15 +1722,15 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		});
 
 		$(document).ready(function(){
-			
-			<?php 
+
+			<?php
 			if($configReady == "Yes"){
 				$pingCount = 1; if($USER->authenticated && $USER->role == "admin"){ $pingTimer = "60000"; }else{ $pingTimer = "600000"; }
 				foreach($allPings as $type => $ping){
 					$name = str_replace(array(':', '\\', '/', '*'), 'x', $ping);
 					if(strpos($type, 'image') !== false){ $style = "margin-top:28px"; }else{ $style = ""; }?>
 					var  pingTab<?php echo $pingCount;?> = function() {
-						$("ping[id^='ping-<?php echo $name;?>']").load("ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>");
+						$("ping[class^='ping-<?php echo $name;?>']").load("ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>");
 					};
 					// Initial Loads
 					pingTab<?php echo $pingCount;?>();
@@ -1702,12 +1747,15 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			$('#checkInviteForm').on('submit', function () {
 				ajax_request('POST', 'validate-invite', {
 					invitecode: $('#checkInviteForm [name=inviteCode]').val(),
-				}).done(function(data){ 
+				}).done(function(data){
+					var InviteCode = $('#checkInviteForm [name=inviteCode]').val();
 					var result = JSON.stringify(data).includes("success");
 					if(result === true){
 						$('#checkInviteForm').hide();
-						$('#chooseMethod').show();
+						$('#chooseMethod').show();//DZ60N2
+						$('#useInviteForm [name=inviteCode]').val(InviteCode);
 						console.log(result);
+						console.log(InviteCode);
 					}
 				});
 
@@ -1716,13 +1764,16 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				ajax_request('POST', 'use-invite', {
 					invitecode: $('#useInviteForm [name=inviteCode]').val(),
 					inviteuser: $('#useInviteForm [name=inviteUser]').val(),
-				}).done(function(data){ 
+				}).done(function(data){
 					var result = JSON.stringify(data).includes("success");
 					console.log(result);
 					if(result === true){
 						//$('#checkInviteForm').hide();
 						//$('#chooseMethod').show();
 						$('#accountSubmitted').show();
+						$('#useInviteForm_submit').hide();
+						$('#plexYesGoBack').hide();
+						$('#useInviteForm [name=inviteUser]').hide();
 						console.log(result);
 					}
 				});
@@ -1733,7 +1784,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 					joinuser: $('#joinPlexForm [name=joinUser]').val(),
 					joinemail: $('#joinPlexForm [name=joinEmail]').val(),
 					joinpassword: $('#joinPlexForm [name=joinPassword]').val(),
-				}).done(function(data){ 
+				}).done(function(data){
 					var result = JSON.stringify(data).includes("success");
 					if(result === true){
 						$('#joinPlexForm').hide();
@@ -1760,15 +1811,15 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				};
 
 				$.ajax({
-					type        : 'POST', 
-					url         : 'register.php', 
+					type        : 'POST',
+					url         : 'register.php',
 					data        : formData,
 					dataType    : 'json',
 					encode      : true
 				})
 					.done(function(data) {
 
-						console.log(data); 
+						console.log(data);
 						if ( ! data.success) {
 
 							$('#userCreateErrors').html('Wrong Password!'); // add the actual error message under our input
@@ -1776,7 +1827,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 						} else {
 
 							$("#userPassForm").toggle();
-							$("#registration").toggle(); 
+							$("#registration").toggle();
 							$("#welcomeGoBack3").toggle();
 
 						}
@@ -1789,7 +1840,6 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			$("li[class^='tab-item active']").first().find("img").addClass("TabOpened");
 			if (defaultTab){
 				defaultTab = defaultTab.substr(0, defaultTab.length-1);
-				console.log(defaultTab);
 			}else{
 				defaultTabNone = $("li[class^='tab-item']").attr("id");
 				if (defaultTabNone){
@@ -1801,12 +1851,32 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 			if (defaultTab){
 				defaultTabName = $("li[class^='tab-item active']").attr("name");
-				$("#content").html('<div class="iframe active" data-content-name="'+defaultTabName+'" data-content-url="'+defaultTab+'"><iframe id="frame-'+defaultTabName+'" scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
-				document.getElementById('main-wrapper').focus();
+				startPingTimer = $("li[class^='tab-item active']").find('.startPingTimer');
+				console.log('loading default tab: '+defaultTabName);
+				if((startPingTimer).length){ //has ping attr
+					setTimeout(function(){ //allow it 1.25 secs to check
+						defaultPingID = $("li[class^='tab-item active']").find('.pingcheck'); //grab the DOM Element
+						if((defaultPingID).length){ //check if element is true
+							if(defaultPingID.hasClass('ping-success')){ //check if element has success status
+								console.log(defaultTabName+' has responded, proceeding with load');
+								$("#content").html('<div class="iframe active" data-content-name="'+defaultTabName+'" data-content-url="'+defaultTab+'"><iframe id="frame-'+defaultTabName+'" scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
+								document.getElementById('main-wrapper').focus();
+							}else{
+								console.log(defaultTabName+' did not respond, cancelling load');
+							}
+						}else{
+							console.log(defaultTabName+' did not have ping value');
+						}
+					}, 1250);
+				}else{
+					console.log(defaultTabName+' isn\'t setup with ping, cancelling check on load');
+					$("#content").html('<div class="iframe active" data-content-name="'+defaultTabName+'" data-content-url="'+defaultTab+'"><iframe id="frame-'+defaultTabName+'" scrolling="auto" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" frameborder="0" style="width:100%; height:100%; position: absolute;" src="'+defaultTab+'"></iframe></div>');
+					document.getElementById('main-wrapper').focus();
+				}
 			}
 			if (defaultTab == null){
 				$("div[id^='tabEmpty']").show();
-				<?php 
+				<?php
 				echo "console.log('Need Setup = $needSetup | Config Ready = $configReady');";
 				if($needSetup == "No" && $configReady == "Yes"){
 					if(!$USER->authenticated){
@@ -1823,13 +1893,13 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				var getLiTab = $("li[name^='" + gotHash + "']");
 				if(gotHash === "upgrade"){ getLiTab.toggle(); console.log("got it"); }
 				getLiTab.trigger("click");
-				
 
-			}   
+
+			}
 
 			setHeight();
 
-		}); 
+		});
 		<?php if(!empty($USER->info_log)) : ?>
 
 		notify("<?php echo printArray($USER->info_log); ?>","info-circle","notice","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
@@ -1893,7 +1963,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			var activeFrame = $('#content').find('.active').children('iframe');
 			console.log(activeFrame.attr('src'));
 			window.open(activeFrame.attr('src'), '_blank');"reload"
-		});  
+		});
 		$('#chat-open').on('click tap', function(){
 			$('.chat-box').toggleClass('email-active');
 			$(".mdi-forum").removeClass("tada loop-animation new-message");//SET MESSAGE TO ZERO
@@ -1966,7 +2036,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			$("img[class^='TabOpened']").parents("li").trigger("click");
 			activeFrame.remove();
 		});
-		<?php if($iconRotate == "true") : ?>   
+		<?php if($iconRotate == "true") : ?>
 		$("li[id^='settings.phpx']").on('click tap', function(){
 
 			$("img[id^='settings-icon']").addClass("fa-spin");
@@ -1994,12 +2064,12 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 		$("li[class^='splash-item']").on('click vclick', function(){
 			var thisname = $(this).attr("name");
-			var splashTab = $("#tabList li[name^='" + thisname + "']");
+			var splashTab = $("#tabList li[name='" + thisname + "']");
 			splashTab.trigger("click");
 			$('.splash-modal').modal("hide");
 
 		});
-			
+
 		$("li[class^='tab-item']").on('click vclick', function(){
 			var thisidfull = $(this).attr("id");
 			var thistitle = $(this).attr("data-title");
@@ -2016,7 +2086,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 			}else if (currentframe.attr("class") == "iframe hidden") {
 
-				console.log(thisid + " is active already but hidden");
+				console.log(thisid + " - reactivating iFrame");
 
 				$("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
@@ -2033,7 +2103,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				if ($(this).attr("window") == "true") {
 					window.open(thisid,'_blank');
 				}else {
-					console.log(thisid + " make new div");
+					console.log(thisid + " - loading new iFrame");
 
 					$("#content div[class^='iframe active']").attr("class", "iframe hidden");
 
@@ -2047,7 +2117,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 					$(this).attr("class", "tab-item active");
 					jQuery(this).find("img").addClass("TabOpened");
-					
+
 				}
 
 			}
@@ -2072,7 +2142,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 			}else if (currentframe.attr("class") == "iframe hidden") {
 
-				console.log(thisid + " is active already but hidden");
+				console.log(thisid + " - reactivating iFrame");
 
 				$("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
 
@@ -2089,7 +2159,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 				if ($(this).attr("window") == "true") {
 					window.open(thisid,'_blank');
 				}else {
-					console.log(thisid + " make new div");
+					console.log(thisid + " - loading new iFrame");
 
 					$("#contentRight div[class^='iframe active']").attr("class", "iframe hidden");
 
@@ -2115,13 +2185,13 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 			var previousTab = getCurrentTab.prev().attr( "class", "tab-item" );
 			previousTab.trigger("click");
 			return false;
-		}); 
+		});
 		Mousetrap.bind('ctrl+shift+down', function(e) {
 			var getCurrentTab = $("li[class^='tab-item active']");
 			var nextTab = getCurrentTab.next().attr( "class", "tab-item" );
 			nextTab.trigger("click");
 			return false;
-		});     
+		});
 
 		Mousetrap.bind('s s', function() { $("li[id^='settings.phpx']").trigger("click");  });
 		Mousetrap.bind('p p', function() { $("a[class^='fix-nav']").trigger("click");  });
@@ -2129,13 +2199,13 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 		Mousetrap.bind('r r', function() { $("button[id^='reload']").trigger("click");  });
 		Mousetrap.bind('f f', function() { $("button[class^='fullscreen']").trigger("click");  });
 		<?php if($tabSetup == "No") : foreach(range(1,$tabCount) as $index) : if ($index == 10) : break; endif;?>
-		Mousetrap.bind('ctrl+shift+<?php echo $index; ?>', function() { $("ul[id^='tabList'] li:nth-child(<?php echo $index; ?>)").trigger("click"); });    
+		Mousetrap.bind('ctrl+shift+<?php echo $index; ?>', function() { $("ul[id^='tabList'] li:nth-child(<?php echo $index; ?>)").trigger("click"); });
 		<?php endforeach; endif; ?>
 		Mousetrap.bind('esc esc', function() {
 			$("#content").attr("class", "content");
 			$("li[class^='tab-item rightActive']").attr("class", "tab-item");
 			$("#contentRight").html('');
-		});    
+		});
 		var ref = document.referrer;
 		if(ref.indexOf("updated")>=0){
 
@@ -2146,7 +2216,7 @@ if(file_exists("images/settings2.png")) : $iconRotate = "false"; $settingsIcon =
 
 			notify("<?php echo $language->translate('CUSTOM_COMPLETE');?>","exclamation-circle ","success","5000", "<?=$notifyExplode[0];?>", "<?=$notifyExplode[1];?>");
 
-		} 
+		}
 		</script>
 
 	</body>
