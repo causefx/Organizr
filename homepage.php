@@ -471,6 +471,7 @@ foreach(loadAppearance() as $key => $value) {
 	                    slidesToShow: 13,
 	                    slidesToScroll: 13,
 	                    infinite: true,
+						speed: 900,
 	                    lazyLoad: 'ondemand',
 	                    prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
 	                    nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
@@ -480,71 +481,71 @@ foreach(loadAppearance() as $key => $value) {
 							{
 			                    breakpoint: 1750,
 			                    settings: {
-			                        slidesToShow: 12,
-			                        slidesToScroll: 12,
-			                    }
-		                    },
-		                    {
-			                    breakpoint: 1600,
-			                    settings: {
 			                        slidesToShow: 11,
 			                        slidesToScroll: 11,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 1450,
+			                    breakpoint: 1600,
 			                    settings: {
 			                        slidesToShow: 10,
 			                        slidesToScroll: 10,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 1300,
+			                    breakpoint: 1450,
 			                    settings: {
 			                        slidesToShow: 9,
 			                        slidesToScroll: 9,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 1150,
+			                    breakpoint: 1300,
 			                    settings: {
 			                        slidesToShow: 8,
 			                        slidesToScroll: 8,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 1000,
+			                    breakpoint: 1150,
 			                    settings: {
 			                        slidesToShow: 7,
 			                        slidesToScroll: 7,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 850,
+			                    breakpoint: 1000,
 			                    settings: {
 			                        slidesToShow: 6,
 			                        slidesToScroll: 6,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 700,
+			                    breakpoint: 850,
 			                    settings: {
 			                        slidesToShow: 5,
 			                        slidesToScroll: 5,
 			                    }
 		                    },
 		                    {
+			                    breakpoint: 700,
+			                    settings: {
+			                        slidesToShow: 4,
+			                        slidesToScroll: 4,
+			                    }
+		                    },
+		                    {
 			                    breakpoint: 675,
 			                    settings: {
 			                        slidesToShow: 4,
-			                        slidesToScroll: 4
+			                        slidesToScroll: 4,
 			                    }
 		                    },
 		                    {
 			                    breakpoint: 480,
 			                    settings: {
 			                        slidesToShow: 3,
-			                        slidesToScroll: 3
+			                        slidesToScroll: 3,
 			                    }
 		                    }
 		                ]

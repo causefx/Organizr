@@ -1586,6 +1586,10 @@ echo buildSettings(
 						'value' => REQUESTREFRESH,
 						'options' => $refreshSeconds,
 					),
+					array(
+						'type' => 'custom',
+						'html' => '<h2>Requires Ombi V3.0.2151 & Above</h2>',
+					),
 				),
 			),
 			array(
