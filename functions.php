@@ -5044,6 +5044,25 @@ function outputOmbiRequests($header = "Requested Content", $items, $script = fal
     }
 }
 
+function loadIcons(){
+	$dirname = "images/";
+	$images = scandir($dirname);
+	$ignore = Array(".", "..", "favicon", "settings", "cache", "platforms", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "no-np.png", "no-list.png", "no-np.psd", "no-list.psd", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
+	$allIcons = '';
+	foreach($images as $curimg){
+		if(!in_array($curimg, $ignore)) {
+			$allIcons .= '
+			<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">
+				<a data-toggle="tooltip" data-placement="bottom" title="'.$dirname.$curimg.'" class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+					<img style="width: 50px; height: 50px;" data-src="'.$dirname.$curimg.'" alt="thumbnail" class="allIcons lazyload">
+				</a>
+			</div>
+			';
+		}
+	}
+	return $allIcons;
+}
+
 function buildHomepageSettings(){
 	$homepageOrder = homepageOrder();
 	$homepageList = '<h4>Drag Homepage Items to Order Them</h4><div id="homepage-items" class="external-events">';
