@@ -394,6 +394,47 @@ if (function_exists('curl_version')) :
 		return array('content'=>$result, 'http_code'=>$httpcode);
 	}
 
+	// Curl Put
+	function curl_put($url, $data, $headers = array(), $referer='') {
+		// Initiate cURL
+		$curlReq = curl_init($url);
+		// As post request
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "PUT");
+		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
+		if(localURL($url)){
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYPEER, 0);
+		}
+		// Format Data
+		switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
+			case 'application/json':
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
+				break;
+			case 'application/x-www-form-urlencoded':
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+				break;
+			default:
+				$headers['Content-Type'] = 'application/x-www-form-urlencoded';
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+		}
+		// Format Headers
+		$cHeaders = array();
+		foreach ($headers as $k => $v) {
+			$cHeaders[] = $k.': '.$v;
+		}
+		if (count($cHeaders)) {
+			curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+		}
+		// Execute
+		$result = curl_exec($curlReq);
+		$httpcode = curl_getinfo($curlReq);
+		// Close
+		curl_close($curlReq);
+		// Return
+		return array('content'=>$result, 'http_code'=>$httpcode);
+	}
+
 	//Curl Get Function
 	function curl_get($url, $headers = array()) {
 		// Initiate cURL
@@ -1165,7 +1206,8 @@ function getEmbyImage() {
 	    }
         ob_start(); // Start the output buffer
         header('Content-type: image/jpeg');
-        @readfile($image_src);
+        //@readfile($image_src);
+		echo @curl_get($image_src);
         // Cache the output to a file
         $fp = fopen($cachefile, 'wb');
         fwrite($fp, ob_get_contents());
@@ -1206,7 +1248,8 @@ function getPlexImage() {
         }
 		ob_start(); // Start the output buffer
         header('Content-type: image/jpeg');
-		@readfile($image_src);
+		//@readfile($image_src);
+		echo @curl_get($image_src);
         // Cache the output to a file
         $fp = fopen($cachefile, 'wb');
         fwrite($fp, ob_get_contents());
@@ -4768,7 +4811,7 @@ function ombiAction($id, $action, $type){
 			$api = curl_post(OMBIURL."/api/v1/Request/".$type."/approve", $body, $headers);
 			break;
 		case 'deny':
-			$api = curl_post(OMBIURL."/api/v1/Request/".$type."/deny", $body, $headers);
+			$api = curl_put(OMBIURL."/api/v1/Request/".$type."/deny", $body, $headers);
 			break;
 		case 'delete':
 			$api = curl_delete(OMBIURL."/api/v1/Request/".$type."/".$id, $headers);
@@ -4783,11 +4826,11 @@ function ombiAction($id, $action, $type){
 			return false;
 			break;
 		case 200:
-			writeLog("success", "OMBI: action completed successfully");
+			writeLog("success", "OMBI: action completed successfully for [type: $type - action: $action - id: $id]");
 			return true;
 			break;
 		default:
-			writeLog("error", "OMBI: unknown error with request [type: $type | action: $action | id: $id]");
+			writeLog("error", "OMBI: unknown error with request [type: $type - action: $action - id: $id]");
 			return false;
 	}
     //return (!empty($result) ? $result : null );
@@ -4834,9 +4877,9 @@ function getOmbiRequests($type = "both"){
 				'title' => $value['title'],
 				'poster' => $value['posterPath'],
 				'approved' => $value['childRequests'][0]['approved'],
-				'available' => $key['childRequests'][0]['available'],
-				'denied' => $key['childRequests'][0]['denied'],
-				'deniedReason' => $key['childRequests'][0]['deniedReason'],
+				'available' => $value['childRequests'][0]['available'],
+				'denied' => $value['childRequests'][0]['denied'],
+				'deniedReason' => $value['childRequests'][0]['deniedReason'],
 				'user' => $value['childRequests'][0]['requestedUser']['userName'],
 				'request_id' => $value['id'],
 			);

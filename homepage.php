@@ -468,10 +468,10 @@ foreach(loadAppearance() as $key => $value) {
 	                console.log('creating slick for '+name);
 	                $(this).slick({
 
-	                    slidesToShow: 13,
-	                    slidesToScroll: 13,
+	                    slidesToShow: 27,
+	                    slidesToScroll: 27,
 	                    infinite: true,
-						speed: 900,
+						//speed: 900,
 	                    lazyLoad: 'ondemand',
 	                    prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
 	                    nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
@@ -479,73 +479,178 @@ foreach(loadAppearance() as $key => $value) {
 	                    arrows: true,
 	                    responsive: [
 							{
-			                    breakpoint: 1750,
+								breakpoint: 3744,
+								settings: {
+									slidesToShow: 26,
+									slidesToScroll: 26,
+								}
+							},
+							{
+								breakpoint: 3600,
+								settings: {
+									slidesToShow: 25,
+									slidesToScroll: 25,
+								}
+							},
+							{
+								breakpoint: 3456,
+								settings: {
+									slidesToShow: 24,
+									slidesToScroll: 24,
+								}
+							},
+							{
+								breakpoint: 3312,
+								settings: {
+									slidesToShow: 23,
+									slidesToScroll: 23,
+								}
+							},
+							{
+								breakpoint: 3168,
+								settings: {
+									slidesToShow: 22,
+									slidesToScroll: 22,
+								}
+							},
+							{
+								breakpoint: 3024,
+								settings: {
+									slidesToShow: 21,
+									slidesToScroll: 21,
+								}
+							},
+							{
+								breakpoint: 2880,
+								settings: {
+									slidesToShow: 20,
+									slidesToScroll: 20,
+								}
+							},
+							{
+								breakpoint: 2736,
+								settings: {
+									slidesToShow: 19,
+									slidesToScroll: 19,
+								}
+							},
+							{
+								breakpoint: 2592,
+								settings: {
+									slidesToShow: 18,
+									slidesToScroll: 18,
+								}
+							},
+							{
+								breakpoint: 2448,
+								settings: {
+									slidesToShow: 17,
+									slidesToScroll: 17,
+								}
+							},
+							{
+			                    breakpoint: 2304,
+			                    settings: {
+			                        slidesToShow: 16,
+			                        slidesToScroll: 16,
+			                    }
+		                    },
+							{
+								breakpoint: 2160,
+								settings: {
+									slidesToShow: 15,
+									slidesToScroll: 15,
+								}
+							},
+							{
+			                    breakpoint: 2016,
+			                    settings: {
+			                        slidesToShow: 14,
+			                        slidesToScroll: 14,
+			                    }
+		                    },
+							{
+			                    breakpoint: 1872,
+			                    settings: {
+			                        slidesToShow: 13,
+			                        slidesToScroll: 13,
+			                    }
+		                    },
+							{
+			                    breakpoint: 1728,
+			                    settings: {
+			                        slidesToShow: 12,
+			                        slidesToScroll: 12,
+			                    }
+		                    },
+							{
+			                    breakpoint: 1584,
 			                    settings: {
 			                        slidesToShow: 11,
 			                        slidesToScroll: 11,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 1600,
+			                    breakpoint: 1440,
 			                    settings: {
 			                        slidesToShow: 10,
 			                        slidesToScroll: 10,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 1450,
+			                    breakpoint: 1296,
 			                    settings: {
 			                        slidesToShow: 9,
 			                        slidesToScroll: 9,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 1300,
+			                    breakpoint: 1152,
 			                    settings: {
 			                        slidesToShow: 8,
 			                        slidesToScroll: 8,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 1150,
+			                    breakpoint: 1008,
 			                    settings: {
 			                        slidesToShow: 7,
 			                        slidesToScroll: 7,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 1000,
+			                    breakpoint: 864,
 			                    settings: {
 			                        slidesToShow: 6,
 			                        slidesToScroll: 6,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 850,
+			                    breakpoint: 720,
 			                    settings: {
 			                        slidesToShow: 5,
 			                        slidesToScroll: 5,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 700,
+			                    breakpoint: 576,
 			                    settings: {
 			                        slidesToShow: 4,
 			                        slidesToScroll: 4,
 			                    }
 		                    },
 		                    {
-			                    breakpoint: 675,
-			                    settings: {
-			                        slidesToShow: 4,
-			                        slidesToScroll: 4,
-			                    }
-		                    },
-		                    {
-			                    breakpoint: 480,
+			                    breakpoint: 432,
 			                    settings: {
 			                        slidesToShow: 3,
 			                        slidesToScroll: 3,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 288,
+			                    settings: {
+			                        slidesToShow: 2,
+			                        slidesToScroll: 2,
 			                    }
 		                    }
 		                ]

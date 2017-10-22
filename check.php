@@ -168,6 +168,12 @@ function getFilePermission($file) {
                 checkFunction("hash");
                 checkFunction("fopen");
                 checkFunction("fsockopen");
+				checkFunction("ob_start");
+				checkFunction("ob_get_contents");
+				checkFunction("ob_end_flush");
+				checkFunction("fwrite");
+				checkFunction("fclose");
+				checkFunction("readfile");
                 ?>
                 </div>
                 <div class="row">

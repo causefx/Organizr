@@ -538,7 +538,7 @@ $group = (isset($group) ? $group : "guest");
 									<li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
 										<a class="tab-link">
 											<?php if($row['iconurl']) { ?>
-												<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
+												<i style="font-size: 19px; padding: 0 10px; font-size: 19px" data-toggle="tooltip" data-placement="bottom" data-original-title="<?=$row['name'];?>">
 													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 													<img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
 													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
@@ -546,7 +546,7 @@ $group = (isset($group) ? $group : "guest");
 													<?php }?>
 												</i>
 											<?php }else { ?>
-												<i class="fa <?=$row['icon'];?> fa-lg">
+												<i class="fa <?=$row['icon'];?> fa-lg" data-toggle="tooltip" data-placement="bottom" data-original-title="<?=$row['name'];?>">
 													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
 														<ping class="ping-<?=$name;?> startPingTimer"></ping>
@@ -1559,8 +1559,10 @@ $group = (isset($group) ? $group : "guest");
 		update();
 		setInterval(update, 60000);
 		console.log(date);
+		<?php if($userDevice !== "phone"){?>
 		//Tooltips
 		$('[data-toggle="tooltip"]').tooltip();
+		<?php } ?>
 		$(".box").niceScroll({
             railpadding: {top:0,right:0,left:0,bottom:0},
             scrollspeed: 30,
