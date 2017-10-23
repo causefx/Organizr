@@ -79,6 +79,7 @@ foreach(loadAppearance() as $key => $value) {
 				padding: 5px;
 				margin-top: -10px;
 				border-radius: 5px 5px 0 0;
+                margin-bottom: 0;
 			}
 			.requestOptions {
 				position: absolute;
