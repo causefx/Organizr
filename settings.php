@@ -124,7 +124,7 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
          <!--Summernote-->
         <script src="bower_components/summernote/dist/summernote.min.js"></script>
 		<!--Other-->
-		<script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-beta.2/lazyload.js"></script>
+		<script src="js/lazyload.min.js"></script>
 		<script>
 			function addTab() {
 				var idNumber = Math.round(Math.random() * 999999999) + 1000000000;
@@ -175,6 +175,10 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
             body{
                 background: #273238;
             }
+			.shadow {
+				-webkit-filter: drop-shadow(0px 0px 0px black);
+				filter: drop-shadow(0px 0px 0px black);
+			}
 			.faded {
 				opacity: .5;
 			}
@@ -609,7 +613,7 @@ echo buildSettings(
 							'id' => 'layerCake',
 							'buttonType' => 'dark',
 							'buttonDrop' => '
-							<ul class="dropdown-menu gray-bg">
+							<ul class="dropdown-menu">
 								<li id="open-themes" box="themes-box" onclick"" data-toggle="tooltip" data-placement="top" title="" data-original-title="Custom Themes Created by The Community"><a onclick="" href="#">Themes</a></li>
 								<li id="layerCakeDefault" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 7 color theme based on Organizr"><a onclick="layerCake(\'Basic\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">LAYER#CAKE Basic</a></li>
 								<li id="layerCakeCustom" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 32 color theme based on Organizr"><a onclick="layerCake(\'Advanced\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">LAYER#CAKE Advanced</a></li>

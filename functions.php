@@ -5054,7 +5054,7 @@ function loadIcons(){
 			$allIcons .= '
 			<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">
 				<a data-toggle="tooltip" data-placement="bottom" title="'.$dirname.$curimg.'" class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
-					<img style="width: 50px; height: 50px;" data-src="'.$dirname.$curimg.'" alt="thumbnail" class="allIcons lazyload">
+					<img style="width: 50px; height: 50px;" data-src="'.$dirname.$curimg.'" alt="thumbnail" class="allIcons lazyload shadow">
 				</a>
 			</div>
 			';
