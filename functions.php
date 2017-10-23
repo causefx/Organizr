@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.50');
+ define('INSTALLEDVERSION', '1.5001');
 // ===================================
 use Kryptonit3\Sonarr\Sonarr;
 use Kryptonit3\SickRage\SickRage;
@@ -4862,8 +4862,9 @@ function getOmbiRequests($type = "both"){
 			break;
 	}
 	if(isset($movie)){
+		//$movie = array_reverse($movie);
 		foreach ($movie as $key => $value) {
-			$requests['movie'][] = array(
+			$requests[] = array(
 				'id' => $value['theMovieDbId'],
 				'title' => $value['title'],
 				'poster' => (strpos($value['posterPath'], "http") !== false) ? $value['posterPath'] : 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'],
@@ -4873,13 +4874,18 @@ function getOmbiRequests($type = "both"){
 				'deniedReason' => $value['deniedReason'],
 				'user' => $value['requestedUser']['userName'],
 				'request_id' => $value['id'],
+				'request_date' => $value['requestedDate'],
+				'release_date' => $value['releaseDate'],
+				'type' => 'movie',
+				'icon' => 'mdi mdi-filmstrip',
+				'color' => 'palette-Purple-900 bg white',
 			);
 		}
 	}
 	if(isset($tv) && (is_array($tv) || is_object($tv))){
 		foreach ($tv as $key => $value) {
 			if(is_array($value['childRequests'][0])){
-				$requests['tv'][] = array(
+				$requests[] = array(
 					'id' => $value['tvDbId'],
 					'title' => $value['title'],
 					'poster' => $value['posterPath'],
@@ -4889,6 +4895,11 @@ function getOmbiRequests($type = "both"){
 					'deniedReason' => $value['childRequests'][0]['deniedReason'],
 					'user' => $value['childRequests'][0]['requestedUser']['userName'],
 					'request_id' => $value['id'],
+					'request_date' => $value['childRequests'][0]['requestedDate'],
+					'release_date' => $value['releaseDate'],
+					'type' => 'tv',
+					'icon' => 'mdi mdi-television',
+					'color' => 'grayish-blue-bg',
 				);
 			}
 		}
@@ -4975,6 +4986,9 @@ function buildOmbiItem($type, $group, $user, $request){
 				</div>
 				<a class="openTab" extraTitle="'.$request['title'].'" extraType="'.$type.'" openTab="true"><img alt="" class="slick-image-tall" data-lazy="'.$request['poster'].'"></a>
 				<div class="requestBottom text-center">
+					<div data-toggle="tooltip" data-placement="top" data-original-title="'.$request['type'].'" class="zero-m requestGroup '.$request['color'].'">
+						<i class="'.$request['icon'].'"></i>
+					</div>
 					<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('status', $status)['string'].'" class="zero-m requestGroup '.convertOmbiString('status', $status)['color'].'">
 						<i class="'.convertOmbiString('status', $status)['icon'].'"></i>
 					</div>
@@ -5005,17 +5019,30 @@ function buildOmbiItem($type, $group, $user, $request){
 }
 function buildOmbiList($group, $user){
 	$requests = array();
-	$openTab = 'true';
 	$movieList = getOmbiRequests('movie');
 	$tvList = getOmbiRequests('tv');
-	if (is_array($movieList) || is_object($movieList)){
-		foreach ($movieList['movie'] as $request) {
-			$requests[] = buildOmbiItem('movie', $group, $user, $request);
+	if(is_array($movieList) && is_array($tvList)){
+		$result = array_merge($movieList , $tvList );
+	}else{
+		if(is_array($movieList)){
+			$result = $movieList;
+		}elseif(is_array($movieList)){
+			$result = $tvList;
+		}else{
+			$result = false;
 		}
 	}
-	if (is_array($tvList) || is_object($tvList)){
-		foreach ($tvList['tv'] as $request) {
-			$requests[] = buildOmbiItem('season', $group, $user, $request);
+	if (is_array($result) || is_object($result)){
+		usort($result, function ($item1, $item2) {
+			if ($item1['request_date'] == $item2['request_date']) return 0;
+			return $item1['request_date'] > $item2['request_date'] ? -1 : 1;
+		});
+		foreach ($result as $request) {
+			if($request['type'] == 'movie'){
+		        $requests[] = buildOmbiItem('movie', $group, $user, $request);
+		    }elseif($request['type'] == 'tv'){
+		        $requests[] = buildOmbiItem('season', $group, $user, $request);
+		    }
 		}
 	}
 	return outputOmbiRequests("Requested Content", $requests, "

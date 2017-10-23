@@ -1019,6 +1019,10 @@ body {
   margin: 0 !important;
 }
 
+.zero-p {
+  padding: 0 !important;
+}
+
 .green {
   color: #42b382;
 }
@@ -1062,7 +1066,9 @@ body {
 .grayish-blue {
   color: #37474f;
 }
-
+.white {
+	color: #fff;
+}
 .white-bg {
   background: #fff !important;
 }
