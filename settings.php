@@ -1548,7 +1548,7 @@ echo buildSettings(
 					),
 					array(
 						'type' => 'custom',
-						'html' => '<h2>Requires Ombi V3.0.2151 & Above</h2>',
+						'html' => '<h2>Requires Ombi V3.0.2165 & Above</h2>',
 					),
 				),
 			),

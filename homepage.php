@@ -75,6 +75,11 @@ foreach(loadAppearance() as $key => $value) {
         <![endif]-->
         <style>
 			<?php if($USER->role !== "admin"){ echo '.refreshImage { display: none; }';}?>
+			.requestHeader {
+				padding: 5px;
+				margin-top: -10px;
+				border-radius: 5px 5px 0 0;
+			}
 			.requestOptions {
 				position: absolute;
 			    top: 5px;

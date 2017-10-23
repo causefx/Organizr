@@ -4810,6 +4810,12 @@ function ombiAction($id, $action, $type){
 		case 'approve':
 			$api = curl_post(OMBIURL."/api/v1/Request/".$type."/approve", $body, $headers);
 			break;
+		case 'available':
+				$api = curl_post(OMBIURL."/api/v1/Request/".$type."/available", $body, $headers);
+				break;
+		case 'unavailable':
+				$api = curl_post(OMBIURL."/api/v1/Request/".$type."/unavailable", $body, $headers);
+				break;
 		case 'deny':
 			$api = curl_put(OMBIURL."/api/v1/Request/".$type."/deny", $body, $headers);
 			break;
@@ -4872,17 +4878,19 @@ function getOmbiRequests($type = "both"){
 	}
 	if(isset($tv) && (is_array($tv) || is_object($tv))){
 		foreach ($tv as $key => $value) {
-			$requests['tv'][] = array(
-				'id' => $value['tvDbId'],
-				'title' => $value['title'],
-				'poster' => $value['posterPath'],
-				'approved' => $value['childRequests'][0]['approved'],
-				'available' => $value['childRequests'][0]['available'],
-				'denied' => $value['childRequests'][0]['denied'],
-				'deniedReason' => $value['childRequests'][0]['deniedReason'],
-				'user' => $value['childRequests'][0]['requestedUser']['userName'],
-				'request_id' => $value['id'],
-			);
+			if(is_array($value['childRequests'][0])){
+				$requests['tv'][] = array(
+					'id' => $value['tvDbId'],
+					'title' => $value['title'],
+					'poster' => $value['posterPath'],
+					'approved' => $value['childRequests'][0]['approved'],
+					'available' => $value['childRequests'][0]['available'],
+					'denied' => $value['childRequests'][0]['denied'],
+					'deniedReason' => $value['childRequests'][0]['deniedReason'],
+					'user' => $value['childRequests'][0]['requestedUser']['userName'],
+					'request_id' => $value['id'],
+				);
+			}
 		}
 	}
     return (empty($requests)) ? '' : $requests;
@@ -4940,7 +4948,7 @@ function buildOmbiItem($type, $group, $user, $request){
 		$actions = '';
 		if($request['denied']){
 			$status = 1;
-			//$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve</a></li>';
+			$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve</a></li>';
 		}else{
 			if($request['approved']){
 				$status = 2;
@@ -4950,6 +4958,11 @@ function buildOmbiItem($type, $group, $user, $request){
 				$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="deny"><a class="requestAction" href="javascript:void(0)">Deny</a></li>';
 			}
 		}
+		if($request['available']){
+			$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="unavailable"><a class="requestAction" href="javascript:void(0)">Mark as Unavailable</a></li>';
+		}else{
+			$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="available"><a class="requestAction" href="javascript:void(0)">Mark as Available</a></li>';
+		}
 		$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="delete"><a class="requestAction" href="javascript:void(0)">Delete</a></li>';
 		if(isset($group) && $group == 'admin'){
 			return '
@@ -4957,7 +4970,7 @@ function buildOmbiItem($type, $group, $user, $request){
 				<div class="requestOptions">
 					<div class="btn-group transparent" role="group">
 						<button type="button" class="btn waves btn-success  btn-sm dropdown-toggle waves-effect waves-float transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-dots-vertical mdi-24px"></i></button>
-						<ul class="dropdown-menu"><h6 class="text-center">'.$request['user'].'</h6>'.$actions.'</ul>
+						<ul class="dropdown-menu"><h6 class="text-center requestHeader gray-bg">'.$request['user'].'</h6>'.$actions.'</ul>
 					</div>
 				</div>
 				<a class="openTab" extraTitle="'.$request['title'].'" extraType="'.$type.'" openTab="true"><img alt="" class="slick-image-tall" data-lazy="'.$request['poster'].'"></a>
