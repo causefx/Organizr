@@ -1,10 +1,4 @@
 <?php
-
-if(isset($_GET['error'])){
-    $status = (isset($_GET['error'])?$_GET['error']:404);
-    http_response_code($status);
-}
-$status = http_response_code();
 // Include functions if not already included
 require_once('functions.php');
 // Upgrade environment
@@ -14,6 +8,17 @@ $databaseConfig = configLazy('config/config.php');
 // Load USER
 require_once("user.php");
 $USER = new User("registration_callback");
+if(isset($_GET['error'])){
+    $status = (isset($_GET['error'])?$_GET['error']:404);
+    setcookie('lec', $status, time() + (5), "/", DOMAIN);
+    http_response_code($status);
+    header('Location: '.$_SERVER['PHP_SELF']);
+}
+if(!isset($_COOKIE['lec'])) {
+    $status = '404';
+} else {
+    $status = $_COOKIE['lec'];
+}
 // Create Database Connection
 $file_db = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
 $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -76,7 +81,7 @@ $errorImage = ($codes[$status][2]) ? $codes[$status][2] : "confused";
                         			</div>
                         			<div class="big-box">
                         				<h4 style="color: <?=$topbar;?>;"><?=$errorTitle;?></h4>
-                        				<p style="color: <?=$topbar;?>;"><?php echo $message;?></p> <?php echo $status;?>
+                        				<p style="color: <?=$topbar;?>;"><?php echo $message;?></p>
                         			</div>
                         		</div>
                         	</div>
