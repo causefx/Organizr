@@ -4894,10 +4894,11 @@ function getOmbiRequests($type = "both"){
 	if(isset($movie)){
 		//$movie = array_reverse($movie);
 		foreach ($movie as $key => $value) {
+			$poster = explode('/',$value['posterPath']);
 			$requests[] = array(
 				'id' => $value['theMovieDbId'],
 				'title' => $value['title'],
-				'poster' => (strpos($value['posterPath'], "/") !== false) ? 'https://image.tmdb.org/t/p/w300/'.end(explode('/',$value['posterPath'])) : 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'],
+				'poster' => (strpos($value['posterPath'], "/") !== false) ? 'https://image.tmdb.org/t/p/w300/'.end($poster) : 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'],
 				'approved' => $value['approved'],
 				'available' => $value['available'],
 				'denied' => $value['denied'],
