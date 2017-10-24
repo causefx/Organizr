@@ -8,11 +8,12 @@ $databaseConfig = configLazy('config/config.php');
 // Load USER
 require_once("user.php");
 $USER = new User("registration_callback");
-if(isset($_GET['error'])){
+if(isset($_GET['error']) && $_GET['error'] !== '404'){
     $status = (isset($_GET['error'])?$_GET['error']:404);
     setcookie('lec', $status, time() + (5), "/", DOMAIN);
     http_response_code($status);
     header('Location: '.$_SERVER['PHP_SELF']);
+    exit();
 }
 if(!isset($_COOKIE['lec'])) {
     $status = '404';
