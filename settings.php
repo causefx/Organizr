@@ -1546,6 +1546,12 @@ echo buildSettings(
 						'value' => REQUESTREFRESH,
 						'options' => $refreshSeconds,
 					),
+                    array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'REQUESTED_ONLY',
+						'name' => 'requestedUserOnly',
+						'value' => REQUESTEDUSERONLY,
+					),
 					array(
 						'type' => 'custom',
 						'html' => '<h2>Requires Ombi V3.0.2165 & Above</h2>',

@@ -5007,14 +5007,21 @@ function buildOmbiItem($type, $group, $user, $request){
 		}
 		$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="delete"><a class="requestAction" href="javascript:void(0)">Delete</a></li>';
 		if(isset($group) && $group == 'admin'){
+			$actionMenu = '
+			<div class="requestOptions">
+				<div class="btn-group transparent" role="group">
+					<button type="button" class="btn waves btn-success  btn-sm dropdown-toggle waves-effect waves-float transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-dots-vertical mdi-24px"></i></button>
+					<ul class="dropdown-menu"><h6 class="text-center requestHeader gray-bg">'.$request['user'].'</h6>'.$actions.'</ul>
+				</div>
+			</div>
+			';
+		}else{
+			$actionMenu = '';
+		}
+		if((isset($group)) && $group == 'admin' || REQUESTEDUSERONLY == 'false'){
 			return '
 			<div class="item-'.$type.'-'.convertOmbiString('approved', $request['approved'])['string'].'">
-				<div class="requestOptions">
-					<div class="btn-group transparent" role="group">
-						<button type="button" class="btn waves btn-success  btn-sm dropdown-toggle waves-effect waves-float transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-dots-vertical mdi-24px"></i></button>
-						<ul class="dropdown-menu"><h6 class="text-center requestHeader gray-bg">'.$request['user'].'</h6>'.$actions.'</ul>
-					</div>
-				</div>
+				'.$actionMenu.'
 				<a class="openTab" extraTitle="'.$request['title'].'" extraType="'.$type.'" openTab="true"><img alt="" class="slick-image-tall" data-lazy="'.$request['poster'].'"></a>
 				<div class="requestBottom text-center">
 					<div data-toggle="tooltip" data-placement="top" data-original-title="'.$request['type'].'" class="zero-m requestGroup '.$request['color'].'">
@@ -5029,12 +5036,16 @@ function buildOmbiItem($type, $group, $user, $request){
 				</div>
 				<small class="elip slick-bottom-title">'.$request['title'].'</small>
 			</div>';
-		}elseif(isset($group) && $group == 'user'){
+		}else{
 			if(strtolower($request['user']) == strtolower($user)){
 				return '
 				<div class="item-'.$type.'-'.convertOmbiString('approved', $request['approved'])['string'].'">
+					'.$actionMenu.'
 					<a class="openTab" extraTitle="'.$request['title'].'" extraType="'.$type.'" openTab="true"><img alt="" class="slick-image-tall" data-lazy="'.$request['poster'].'"></a>
 					<div class="requestBottom text-center">
+						<div data-toggle="tooltip" data-placement="top" data-original-title="'.$request['type'].'" class="zero-m requestGroup '.$request['color'].'">
+							<i class="'.$request['icon'].'"></i>
+						</div>
 						<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('status', $status)['string'].'" class="zero-m requestGroup '.convertOmbiString('status', $status)['color'].'">
 							<i class="'.convertOmbiString('status', $status)['icon'].'"></i>
 						</div>
