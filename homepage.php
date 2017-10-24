@@ -75,7 +75,7 @@ foreach(loadAppearance() as $key => $value) {
         <![endif]-->
         <style>
 			<?php if($USER->role !== "admin"){ echo '.refreshImage { display: none; }';}?>
-            .dropdown-menu {
+            .requestOptions ul.dropdown-menu {
                 max-width: 160px;
             }
 			.requestHeader {
