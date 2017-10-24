@@ -75,6 +75,9 @@ foreach(loadAppearance() as $key => $value) {
         <![endif]-->
         <style>
 			<?php if($USER->role !== "admin"){ echo '.refreshImage { display: none; }';}?>
+            .dropdown-menu {
+                max-width: 160px;
+            }
 			.requestHeader {
 				padding: 5px;
 				margin-top: -10px;
@@ -690,13 +693,21 @@ foreach(loadAppearance() as $key => $value) {
 					action_type: action,
 					type: type,
                 }).done(function(data){
-					$('<div></div>').load('ajax.php?a=ombi-requests',function() {
-						var element = $(this).find('[id]');
-						var loadedID = 	element.attr('id');
-						$('#'+loadedID).replaceWith(element);
-						console.log('OMBI ACTION Submited and reloaded: '+loadedID);
-						loadSlick();
-					});
+                    $.ajax({
+        				url: 'ajax.php?a=ombi-requests',
+        				timeout: 10000,
+        				type: 'GET',
+        				success: function(response) {
+        					var getDiv = response;
+        					var loadedID = 	$(getDiv).attr('id');
+        					$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+        					console.log('OMBI ACTION Submited and reloaded: '+loadedID);
+                            loadSlick();
+        				},
+        				error: function(jqXHR, textStatus, errorThrown) {
+        					console.error(loadedID+' could not be updated');
+        				}
+        			});
 				});
 			});
             $('.repeat-btn').click(function(){

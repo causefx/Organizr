@@ -998,9 +998,9 @@ function outputRecentAdded($header, $items, $script = false, $array, $type) {
 function outputNowPlaying($header, $size, $type, $items, $script = false) {
 	// If None Populate Empty Item
 	if (!count($items)) {
-		return '<div id='.$type.'></div>'.($script?'<script>'.$script.'</script>':'');
+		return '<div id="'.$type.'"></div>'.($script?'<script>'.$script.'</script>':'');
 	}else{
-	   return '<div id='.$type.'><h5 class="zero-m big-box"><strong>'.$header.'</strong></h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
+	   return '<div id="'.$type.'"><h5 class="zero-m big-box"><strong>'.$header.'</strong></h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
  }
 
 }
@@ -1021,11 +1021,19 @@ function getEmbyStreams($size, $showNames, $role) {
 
 	return outputNowPlaying(translate('PLAYING_NOW_ON_EMBY')." ( ".count($playingItems)." Streams )", $size, 'streams-emby', $playingItems, "
 		setInterval(function() {
-			$('<div></div>').load('ajax.php?a=emby-streams',function() {
-				var element = $(this).find('[id]');
-				var loadedID = 	element.attr('id');
-				$('#'+loadedID).replaceWith(element);
-				console.log('Loaded updated: '+loadedID);
+			$.ajax({
+				url: 'ajax.php?a=emby-streams',
+				timeout: 10000,
+				type: 'GET',
+				success: function(response) {
+					var getDiv = response;
+					var loadedID = 	$(getDiv).attr('id');
+					$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+					console.log(loadedID+' has been updated');
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					console.error(loadedID+' could not be updated');
+				}
 			});
 		}, ".NOWPLAYINGREFRESH.");
 	");
@@ -1054,11 +1062,19 @@ function getPlexStreams($size, $showNames, $role){
 
 			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX')." ( ".count($items)." Streams )", $size, 'streams-plex', $items, "
 				setInterval(function() {
-					$('<div></div>').load('ajax.php?a=plex-streams',function() {
-						var element = $(this).find('[id]');
-						var loadedID = 	element.attr('id');
-						$('#'+loadedID).replaceWith(element);
-						console.log('Loaded updated: '+loadedID);
+					$.ajax({
+						url: 'ajax.php?a=plex-streams',
+						timeout: 10000,
+						type: 'GET',
+						success: function(response) {
+							var getDiv = response;
+							var loadedID = 	$(getDiv).attr('id');
+							$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+							console.log(loadedID+' has been updated');
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+							console.error(loadedID+' could not be updated');
+						}
 					});
 				}, ".NOWPLAYINGREFRESH.");
 			");
@@ -1118,14 +1134,21 @@ function getEmbyRecent($array) {
 
     return outputRecentAdded($header, $items, "
 	setInterval(function() {
-		$('<div></div>').load('ajax.php?a=emby-recent',function() {
-			var element = $(this).find('#recentMediaEmby');
-			var loadedID = 	element.attr('id');
-			$('#recentMediaEmby').replaceWith(element);
-			console.log('Loaded recent: '+loadedID);
-			loadSlick();
+		$.ajax({
+			url: 'ajax.php?a=emby-recent',
+			timeout: 10000,
+			type: 'GET',
+			success: function(response) {
+				var getDiv = response;
+				var loadedID = 	$(getDiv).attr('id');
+				$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+				loadSlick();
+				console.log(loadedID+' has been updated');
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				console.error(loadedID+' could not be updated');
+			}
 		});
-
 	}, ".RECENTREFRESH.");
 	", $array, 'Emby');
 }
@@ -1157,14 +1180,21 @@ function getPlexRecent($array){
 
 			return outputRecentAdded($header, $items, "
 			setInterval(function() {
-				$('<div></div>').load('ajax.php?a=plex-recent',function() {
-					var element = $(this).find('#recentMediaPlex');
-					var loadedID = 	element.attr('id');
-					$('#recentMediaPlex').replaceWith(element);
-					console.log('Loaded recent: '+loadedID);
-					loadSlick();
+				$.ajax({
+					url: 'ajax.php?a=plex-recent',
+					timeout: 10000,
+					type: 'GET',
+					success: function(response) {
+						var getDiv = response;
+						var loadedID = 	$(getDiv).attr('id');
+						$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+						loadSlick();
+						console.log(loadedID+' has been updated');
+					},
+					error: function(jqXHR, textStatus, errorThrown) {
+						console.error(loadedID+' could not be updated');
+					}
 				});
-
 			}, ".RECENTREFRESH.");
 			", $array, 'Plex');
 		}else{
@@ -4867,7 +4897,7 @@ function getOmbiRequests($type = "both"){
 			$requests[] = array(
 				'id' => $value['theMovieDbId'],
 				'title' => $value['title'],
-				'poster' => (strpos($value['posterPath'], "http") !== false) ? $value['posterPath'] : 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'],
+				'poster' => (strpos($value['posterPath'], "/") !== false) ? 'https://image.tmdb.org/t/p/w300/'.end(explode('/',$value['posterPath'])) : 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'],
 				'approved' => $value['approved'],
 				'available' => $value['available'],
 				'denied' => $value['denied'],
@@ -4878,7 +4908,7 @@ function getOmbiRequests($type = "both"){
 				'release_date' => $value['releaseDate'],
 				'type' => 'movie',
 				'icon' => 'mdi mdi-filmstrip',
-				'color' => 'palette-Purple-900 bg white',
+				'color' => 'palette-Deep-Purple-900 bg white',
 			);
 		}
 	}
@@ -5047,15 +5077,22 @@ function buildOmbiList($group, $user){
 	}
 	return outputOmbiRequests("Requested Content", $requests, "
 	setInterval(function() {
-		$('<div></div>').load('ajax.php?a=ombi-requests',function() {
-			var element = $(this).find('#recentRequests');
-			var loadedID = 	element.attr('id');
-			$('#recentRequests').replaceWith(element);
-			console.log('Loaded updated: '+loadedID);
-			loadSlick();
+		$.ajax({
+			url: 'ajax.php?a=ombi-requests',
+			timeout: 10000,
+			type: 'GET',
+			success: function(response) {
+				var getDiv = response;
+				var loadedID = 	$(getDiv).attr('id');
+				$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+				loadSlick();
+				console.log(loadedID+' has been updated');
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				console.error(loadedID+' could not be updated');
+			}
 		});
-
-	}, ".RECENTREFRESH.");
+	}, ".REQUESTREFRESH.");
 	", false);
 }
 
