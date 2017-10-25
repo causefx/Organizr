@@ -797,8 +797,8 @@ $group = (isset($group) ? $group : "guest");
 										<h1 class="zero-m text-uppercase" style="color:<?=$topbartext;?>;"><?php echo $language->translate("HOLD_UP");?></h1>
 									</div>
 									<div class="big-box text-left">
-										<center><img src="images/sowwy.png" style="height: 200px;"></center>
-										<h2 class="text-center"><?php echo $language->translate("LOOKS_LIKE_YOU_DONT_HAVE_ACCESS");?></h2>
+										<!--<center><img src="images/sowwy.png" style="height: 200px;"></center>
+										<h2 class="text-center"><?php echo $language->translate("LOOKS_LIKE_YOU_DONT_HAVE_ACCESS");?></h2>-->
 										<?php if(!$USER->authenticated) : ?>
 										<button style="background:<?=$topbar;?>;" type="submit" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("LOGIN");?></text></button>
 										<?php endif; ?>
@@ -949,7 +949,7 @@ $group = (isset($group) ? $group : "guest");
 									<form name="log out" id="logout" action="" method="POST">
 										<input type="hidden" name="op" value="logout">
 										<input type="hidden" name="username"value="<?php echo $_SESSION["username"]; ?>" >
-										<center><img src="images/sowwy.png" style="height: 200px;"></center>
+										<!--<center><img src="images/sowwy.png" style="height: 200px;"></center>-->
 										<h3 style="color:<?=$topbar;?>;" class="zero-m text-uppercase"><?php echo $language->translate("DO_YOU_WANT_TO_LOGOUT");?></h3>
 										<a style="color:<?=$topbar;?>;" id="logoutSubmit" class="i-block" data-dismiss="modal"><?php echo $language->translate("YES_WORD");?></a>
 										<a style="color:<?=$topbar;?>;" class="i-block" data-dismiss="modal"><?php echo $language->translate("NO_WORD");?></a>
