@@ -1083,7 +1083,7 @@ $group = (isset($group) ? $group : "guest");
 							</div>
 							<?php $tabCount++; endforeach; endif;?>
 							<?php if( $USER->authenticated && $USER->role == "admin" ){ ?>
-								<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+								<div class="col-xs-2">
 									<li style="list-style-type: none; cursor: pointer;" class="splash-item content-box small-box ultra-widget gray-bg" data-title="" name="settings">
 										<div class="w-content">
 											<div class="w-icon">
