@@ -12,7 +12,15 @@ if(isset($_GET['error']) && $_GET['error'] !== '404'){
     $status = (isset($_GET['error'])?$_GET['error']:404);
     setcookie('lec', $status, time() + (5), "/", DOMAIN);
     http_response_code($status);
-    header('Location: '.$_SERVER['PHP_SELF']);
+    //get file name
+    if(!empty($_SERVER['PHP_SELF'])){
+        $file = $_SERVER['PHP_SELF'];
+    }elseif(!empty($_SERVER['SCRIPT_NAME'])){
+        $file = $_SERVER['SCRIPT_NAME'];
+    }else{
+        $file = checkRootPath(dirname($_SERVER['SCRIPT_NAME'])).'error.php';
+    }
+    header('Location:'.$file);
     exit();
 }
 if(!isset($_COOKIE['lec'])) {
@@ -43,11 +51,12 @@ $codes = array(
        502 => array('Bad Gateway', 'The server received an invalid response from the upstream server while trying to fulfill the request.', 'confused'),
        503 => array('Service Unavailable', 'The server is currently unavailable (because it is overloaded or down for maintenance).', 'confused'),
        504 => array('Gateway Timeout', 'The upstream server failed to send a request in the time allowed by the server.', 'confused'),
-       999 => array('Not Logged In', 'You need to be logged in to access this page.', 'confused'),
+       999 => array('Not Logged In', 'You need to be logged in to access this page.', 'confused', '401'),
 );
 $errorTitle = ($codes[$status][0]) ? $codes[$status][0] : "Error";
 $message = ($codes[$status][1]) ? $codes[$status][1] : "An Error Occured";
 $errorImage = ($codes[$status][2]) ? $codes[$status][2] : "confused";
+$status = ($codes[$status][3]) ? $codes[$status][3] : $status;
 ?>
 
 <!DOCTYPE html>
