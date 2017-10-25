@@ -1089,7 +1089,7 @@ $group = (isset($group) ? $group : "guest");
 											<div class="w-icon">
 												<center>
 													<i style="">
-														<img src="<?=$settingsIcon;?>" style="height: 100px; margin-top: -10px;" class="">
+														<img src="images/<?=$settingsIcon;?>" style="height: 100px; margin-top: -10px;" class="">
 													</i>
 												</center>
 											</div>
