@@ -169,7 +169,7 @@ if (function_exists('curl_version')) :
 
 		// Get A User
 		$connectId = '';
-		$userIds = json_decode(file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
+		$userIds = json_decode(@file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
 		if (is_array($userIds)) {
 			foreach ($userIds as $key => $value) { // Scan for this user
 				if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
@@ -585,7 +585,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 	$height = 444;
 
 	// Get Item Details
-	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&api_key='.$token),true)['Items'][0];
+	$itemDetails = json_decode(@file_get_contents($address.'/Items?Ids='.$item['Id'].'&api_key='.$token),true)['Items'][0];
 	/*if (substr_count(EMBYURL, ':') == 2) {
 		$URL = "http://app.emby.media/itemdetails.html?id=".$itemDetails['Id'];
 	}else{
@@ -1079,7 +1079,7 @@ function getEmbyRecent($array) {
     }
 
     // Get the latest Items
-    $latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?EnableImages=false&Limit='.EMBYRECENTITEMS.'&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
+    $latest = json_decode(@file_get_contents($address.'/Users/'.$userId.'/Items/Latest?EnableImages=false&Limit='.EMBYRECENTITEMS.'&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
 
     // For Each Item In Category
     $items = array();
