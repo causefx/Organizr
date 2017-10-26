@@ -319,13 +319,13 @@ $(document).ready(function()
 
 
     // allowed characters in username
-
+	/*
     $("#username").keyup(function()
     {
         var text = $(this).val();
         $(this).val(text.replace(/[^a-zA-Z0-9 ]/g, ""));
     });
-
+	*/
     // enter username
 
     var user = "";
@@ -396,94 +396,6 @@ $(document).ready(function()
                 });
             }
         }
-    });
-
-    // log emoticon
-
-    $(".emoticonimg").click(function()
-    {
-        var emoticonselected = $(this);
-        emoticonselected.hide();
-        var emoticonid = $(this).attr("id");
-        var data = "messagedata=" + "specialchar" + emoticonid + "###" + user + "###" + avatar;
-
-        $.ajax
-        ({
-            type: "POST",
-            url: "chat/logmessage.php",
-            data: data,
-            cache: false,
-            success: function(result)
-            {
-                emoticonselected.show();
-            }
-        });
-    });
-
-    // show upload form
-
-    $("#showuploadform").click(function()
-    {
-        $("#showuploadform").hide();
-        $("#showemoticons").show();
-        $("#uploadform").show();
-        $("#emoticons").hide();
-        $("#loadingwrapper").hide();
-
-        var r = Math.floor((Math.random() * 14) + 1);
-        var randomemoticon = "chat/img/emoticon" + r + ".png";
-        $("#showemoticonsimg").attr("src", randomemoticon);
-
-        refresh();  // also use as manual content refresh
-    });
-
-    // upload image
-
-    $("#form").submit(function(event)
-    {
-        event.preventDefault();
-
-        $("#uploadform").hide();
-        $("#showemoticons").hide();
-        $("#loadingwrapper").show();
-
-        var filedata = $("#uploadimage").prop("files")[0];
-        var formdata = new FormData();
-        formdata.append("image", filedata);
-        var datavars = user + "###" + avatar;
-        formdata.append("datavars", datavars);
-
-        $.ajax
-        ({
-            type: "POST",
-            url: "chat/uploadimage.php",
-            cache: false,
-            contentType: false,
-            processData: false,
-            data: formdata,
-            success: function(result)
-            {
-                $("#uploadimage").val("");
-                $("#showuploadform").show();
-                $("#showemoticons").hide();
-                $("#uploadform").hide();
-                $("#loadingwrapper").hide();
-                $("#content").show();
-                $("#emoticons").show();
-            }
-        });
-    });
-
-    // show emoticons
-
-    $("#showemoticons").click(function()
-    {
-        $("#showuploadform").show();
-        $("#showemoticons").hide();
-        $("#uploadform").hide();
-        $("#loadingwrapper").hide();
-        $("#content").show();
-        $("#emoticons").show();
     });
 
     // refresh content
@@ -644,48 +556,12 @@ $(document).ready(function()
                                         }
                                     }
 
-                                    // refresh eventlisteners of messages to set likes
-
-                                    $(".messagelike").unbind().click(function()
-                                    {
-                                        if( this.innerHTML.indexOf("target=") == -1 &&
-                                            this.innerHTML.indexOf("_blank") == -1 )
-                                        {
-                                            likemessage(this.id);
-                                        }
-                                    });
                                 });
                             }
                         }
                     }
 
-                    // get and show likes
 
-                    $.ajax
-                    ({
-                        url: "chat/getlikes.php",
-                        cache: false,
-                        success: function(result)
-                        {
-                            var likesandunlikes = result.split("#");
-                            var likedmessages = likesandunlikes[0];
-                            var unlikedmessages = likesandunlikes[1];
-                            var likes = JSON.parse(likedmessages);
-                            var unlikes = JSON.parse(unlikedmessages);
-
-                            for( var i=0; i<likes.length; i++ )
-                            {
-                                var likeid = "#like" + likes[i];
-                                $(likeid).show();
-                            }
-
-                            for( var i=0; i<unlikes.length; i++ )
-                            {
-                                var unlikeid = "#like" + unlikes[i];
-                                $(unlikeid).hide();
-                            }
-                        }
-                    });
 
                     // hide intro
 
@@ -796,21 +672,6 @@ $(document).ready(function()
             var audio = $("#tabalert")[0];
             audio.play();
         }
-    }
-
-    // like message
-
-    function likemessage(messageid)
-    {
-        var data = "messageid=" + messageid;
-
-        $.ajax
-        ({
-            type: "POST",
-            url: "chat/setlike.php",
-            data: data,
-            cache: false
-        });
     }
 
     // update which users are typing
