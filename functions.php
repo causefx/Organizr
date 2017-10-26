@@ -1019,24 +1019,7 @@ function getEmbyStreams($size, $showNames, $role) {
 		}
 	}
 
-	return outputNowPlaying(translate('PLAYING_NOW_ON_EMBY')." ( ".count($playingItems)." Streams )", $size, 'streams-emby', $playingItems, "
-		setInterval(function() {
-			$.ajax({
-				url: 'ajax.php?a=emby-streams',
-				timeout: 10000,
-				type: 'GET',
-				success: function(response) {
-					var getDiv = response;
-					var loadedID = 	$(getDiv).attr('id');
-					$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
-					console.log(loadedID+' has been updated');
-				},
-				error: function(jqXHR, textStatus, errorThrown) {
-					console.error(loadedID+' could not be updated');
-				}
-			});
-		}, ".NOWPLAYINGREFRESH.");
-	");
+	return outputNowPlaying(translate('PLAYING_NOW_ON_EMBY')." ( ".count($playingItems)." Streams )", $size, 'streams-emby', $playingItems, ajaxLoop('emby-streams',NOWPLAYINGREFRESH));
 }
 
 // Get Now Playing Streams From Plex
@@ -1060,24 +1043,7 @@ function getPlexStreams($size, $showNames, $role){
 				$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames, $role);
 			}
 
-			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX')." ( ".count($items)." Streams )", $size, 'streams-plex', $items, "
-				setInterval(function() {
-					$.ajax({
-						url: 'ajax.php?a=plex-streams',
-						timeout: 10000,
-						type: 'GET',
-						success: function(response) {
-							var getDiv = response;
-							var loadedID = 	$(getDiv).attr('id');
-							$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
-							console.log(loadedID+' has been updated');
-						},
-						error: function(jqXHR, textStatus, errorThrown) {
-							console.error(loadedID+' could not be updated');
-						}
-					});
-				}, ".NOWPLAYINGREFRESH.");
-			");
+			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX')." ( ".count($items)." Streams )", $size, 'streams-plex', $items, ajaxLoop('plex-streams',NOWPLAYINGREFRESH));
 		}else{
 			writeLog("error", "PLEX STREAM ERROR: could not connect - check token - if HTTPS, is cert valid");
 		}
@@ -1132,25 +1098,7 @@ function getEmbyRecent($array) {
     unset($array["MusicAlbum"]);
     unset($array["Series"]);
 
-    return outputRecentAdded($header, $items, "
-	setInterval(function() {
-		$.ajax({
-			url: 'ajax.php?a=emby-recent',
-			timeout: 10000,
-			type: 'GET',
-			success: function(response) {
-				var getDiv = response;
-				var loadedID = 	$(getDiv).attr('id');
-				$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
-				loadSlick();
-				console.log(loadedID+' has been updated');
-			},
-			error: function(jqXHR, textStatus, errorThrown) {
-				console.error(loadedID+' could not be updated');
-			}
-		});
-	}, ".RECENTREFRESH.");
-	", $array, 'Emby');
+    return outputRecentAdded($header, $items, ajaxLoop('emby-recent',RECENTREFRESH,'loadSlick();'), $array, 'Emby');
 }
 
 // Get Recent Content From Plex
@@ -1178,25 +1126,7 @@ function getPlexRecent($array){
 				}
 			}
 
-			return outputRecentAdded($header, $items, "
-			setInterval(function() {
-				$.ajax({
-					url: 'ajax.php?a=plex-recent',
-					timeout: 10000,
-					type: 'GET',
-					success: function(response) {
-						var getDiv = response;
-						var loadedID = 	$(getDiv).attr('id');
-						$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
-						loadSlick();
-						console.log(loadedID+' has been updated');
-					},
-					error: function(jqXHR, textStatus, errorThrown) {
-						console.error(loadedID+' could not be updated');
-					}
-				});
-			}, ".RECENTREFRESH.");
-			", $array, 'Plex');
+			return outputRecentAdded($header, $items, ajaxLoop('plex-recent',RECENTREFRESH,'loadSlick();'), $array, 'Plex');
 		}else{
 			writeLog("error", "PLEX RECENT-ITEMS ERROR: could not connect - check token - if HTTPS, is cert valid");
 		}
@@ -4750,7 +4680,31 @@ function errormessage($msg) {
 	echo $msg;
 	echo "</div>";
 }
-
+function ajaxLoop($ajaxFunction, $refresh, $extraFunction = ''){
+	return "
+	setInterval(function() {
+		$.ajax({
+			url: 'ajax.php?a=".$ajaxFunction."',
+			timeout: 10000,
+			type: 'GET',
+			success: function(response) {
+				var getDiv = response;
+				var loadedID = 	$(getDiv).attr('id');
+				if (typeof loadedID !== 'undefined') {
+					$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+					".$extraFunction."
+					console.log('".$ajaxFunction." has been updated');
+				}else{
+					console.log('".$ajaxFunction." data was not sufficent or is offline');
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				console.error('".$ajaxFunction." could not be updated');
+			}
+		});
+	}, ".$refresh.");
+	";
+}
 function getOrgUsers(){
 	$file_db = DATABASE_LOCATION."users.db";
 	if(file_exists($file_db)){
@@ -5087,25 +5041,7 @@ function buildOmbiList($group, $user){
 		    }
 		}
 	}
-	return outputOmbiRequests("Requested Content", $requests, "
-	setInterval(function() {
-		$.ajax({
-			url: 'ajax.php?a=ombi-requests',
-			timeout: 10000,
-			type: 'GET',
-			success: function(response) {
-				var getDiv = response;
-				var loadedID = 	$(getDiv).attr('id');
-				$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
-				loadSlick();
-				console.log(loadedID+' has been updated');
-			},
-			error: function(jqXHR, textStatus, errorThrown) {
-				console.error(loadedID+' could not be updated');
-			}
-		});
-	}, ".REQUESTREFRESH.");
-	", false);
+	return outputOmbiRequests("Requested Content", $requests, ajaxLoop('ombi-requests',REQUESTREFRESH,'loadSlick();'), false);
 }
 
 function outputOmbiRequests($header = "Requested Content", $items, $script = false, $array) {
