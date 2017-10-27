@@ -897,6 +897,7 @@ $group = (isset($group) ? $group : "guest");
 										<input type="hidden" name="op" value="register"/>
 										<input type="hidden" name="sha1" value=""/>
 										<input type="hidden" name="settings" value="false"/>
+										<input type="hidden" name="validate" id="validate" value=""/>
 
 										<div class="form-group">
 
@@ -1831,6 +1832,7 @@ $group = (isset($group) ? $group : "guest");
 							$("#userPassForm").toggle();
 							$("#registration").toggle();
 							$("#welcomeGoBack3").toggle();
+							$("#validate").val($('input[name=registerPasswordValue]').val());
 
 						}
 
