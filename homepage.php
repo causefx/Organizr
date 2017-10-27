@@ -143,19 +143,27 @@ foreach(loadAppearance() as $key => $value) {
             .slick-image-tall{
                 /*width: 125px;
                 height: 180px;*/
-				width: 100%;
+				width: 95%;
 				height: 200px;
 				padding: 0 2px;
             }
-			.slick-bottom-title {
-				width: 100%;
+            .slick-image-short{
+                /*width: 125px;
+                height: 130px;
+                margin-top: 50px;*/
+				width: 95%;
+				height: 130px;
+				margin-top: 70px;
 				padding: 0 2px;
-			}
-			.requestBottom {
-				width: 100%;
+            }
+            .requestBottom {
+				width: 95%;
 				padding: 0 2px;
 			    display: inline-flex;
-
+			}
+			.slick-bottom-title {
+				width: 95%;
+				padding: 0 2px;
 			}
 			.requestLast {
 				border-radius: 0 0 5px 5px;
@@ -182,15 +190,6 @@ foreach(loadAppearance() as $key => $value) {
 			.requestGroup:last-child {
 				border-radius: 0 0 5px 0;
 			}
-            .slick-image-short{
-                /*width: 125px;
-                height: 130px;
-                margin-top: 50px;*/
-				width: 100%;
-				height: 130px;
-				margin-top: 70px;
-				padding: 0 2px;
-            }
             .overlay{
                 position: absolute;
                 top: 0;
