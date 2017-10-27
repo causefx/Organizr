@@ -558,24 +558,6 @@
 				$this->error("Hack attempt has been made. What are you doing? Logging your IP now...");
 				return false;
 			}
-			if($username && User::use_mail)
-			{
-				// send email notification
-				$subject = "Welcome to ".DOMAIN;
-				$language = new setLanguage;
-				$domain = getServerPath();
-				$body = orgEmail(
-					$header = $language->translate('EMAIL_NEWUSER_HEADER'),
-					$title = $language->translate('EMAIL_NEWUSER_TITLE'),
-					$user = $username,
-					$mainMessage =$language->translate('EMAIL_NEWUSER_MESSAGE'),
-					$button = $language->translate('EMAIL_NEWUSER_BUTTON'),
-					$buttonURL = $domain,
-					$subTitle = $language->translate('EMAIL_NEWUSER_SUBTITLE'),
-					$subMessage = $language->translate('EMAIL_NEWUSER_SUBMESSAGE')
-					);
-                $this->startEmail($email, $username, $subject, $body);
-			}
 			// Does user already exist? (see notes on safe reporting)
 			if(User::unsafe_reporting) {
 				$query = "SELECT username FROM users WHERE username LIKE '$username' COLLATE NOCASE";
@@ -623,7 +605,27 @@
 				// if there is a callback, call it
 				if($registration_callback !== false) { $registration_callback($username, $email, $dir); }
                 if($settings !== 'true' && $settings !== true) { $this->login_user($username, $sha1, true, '', false); }
-				return true; }
+				//send email
+				if($username && User::use_mail)
+				{
+					// send email notification
+					$subject = "Welcome to ".DOMAIN;
+					$language = new setLanguage;
+					$domain = getServerPath();
+					$body = orgEmail(
+						$header = $language->translate('EMAIL_NEWUSER_HEADER'),
+						$title = $language->translate('EMAIL_NEWUSER_TITLE'),
+						$user = $username,
+						$mainMessage =$language->translate('EMAIL_NEWUSER_MESSAGE'),
+						$button = $language->translate('EMAIL_NEWUSER_BUTTON'),
+						$buttonURL = $domain,
+						$subTitle = $language->translate('EMAIL_NEWUSER_SUBTITLE'),
+						$subMessage = $language->translate('EMAIL_NEWUSER_SUBMESSAGE')
+						);
+					$this->startEmail($email, $username, $subject, $body);
+				}
+				return true;
+			}
 			$this->error = "unknown database error occured.";
             $this->error("unknown database error occured.");
 			return false;
