@@ -536,6 +536,14 @@
 		 * needs to be, in the user's profile section
 		 */
 		function register_user($username, $email, $sha1, &$registration_callback = false, $settings, $validate) {
+			//Admin bypass
+			if(in_arrayi($_SESSION["username"], $this->get_admin_list())){
+				$token = $this->get_user_token($_SESSION["username"]);
+				if($token == $_SESSION["token"]) {
+					$validate = true;
+					writeLog("success", "Admin Override on registration for $username info");
+				}
+			}
 			$username = strtolower($username);
 			$dbpassword = $this->token_hash_password($username, $sha1, "");
 			if($dbpassword==$sha1) die("password hashing is not implemented.");
@@ -546,7 +554,7 @@
             }
 			if($newRole == "user" && $validate == null){
 				writeLog("error", "$username on IP ".$_SERVER['REMOTE_ADDR']." is trying to hack your Organizr");
-				$this->error = "Hack attempt has been made. What are you doing? Logging your IP now...?";
+				$this->error = "Hack attempt has been made. What are you doing? Logging your IP now...";
 				$this->error("Hack attempt has been made. What are you doing? Logging your IP now...");
 				return false;
 			}
