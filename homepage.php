@@ -143,7 +143,7 @@ foreach(loadAppearance() as $key => $value) {
             .slick-image-tall{
                 /*width: 125px;
                 height: 180px;*/
-				width: 95%;
+				width: 93.5%;
 				height: 200px;
 				padding: 0 2px;
             }
@@ -151,18 +151,18 @@ foreach(loadAppearance() as $key => $value) {
                 /*width: 125px;
                 height: 130px;
                 margin-top: 50px;*/
-				width: 95%;
+				width: 93.5%;
 				height: 130px;
 				margin-top: 70px;
 				padding: 0 2px;
             }
             .requestBottom {
-				width: 95%;
+				width: 93.5%;
 				padding: 0 2px;
 			    display: inline-flex;
 			}
 			.slick-bottom-title {
-				width: 95%;
+				width: 93.5%;
 				padding: 0 2px;
 			}
 			.requestLast {
