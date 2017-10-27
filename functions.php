@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.50');
+ define('INSTALLEDVERSION', '1.5001');
 // ===================================
 use Kryptonit3\Sonarr\Sonarr;
 use Kryptonit3\SickRage\SickRage;
@@ -169,7 +169,7 @@ if (function_exists('curl_version')) :
 
 		// Get A User
 		$connectId = '';
-		$userIds = json_decode(file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
+		$userIds = json_decode(@file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
 		if (is_array($userIds)) {
 			foreach ($userIds as $key => $value) { // Scan for this user
 				if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
@@ -394,6 +394,47 @@ if (function_exists('curl_version')) :
 		return array('content'=>$result, 'http_code'=>$httpcode);
 	}
 
+	// Curl Put
+	function curl_put($url, $data, $headers = array(), $referer='') {
+		// Initiate cURL
+		$curlReq = curl_init($url);
+		// As post request
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "PUT");
+		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
+		if(localURL($url)){
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYPEER, 0);
+		}
+		// Format Data
+		switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
+			case 'application/json':
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
+				break;
+			case 'application/x-www-form-urlencoded':
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+				break;
+			default:
+				$headers['Content-Type'] = 'application/x-www-form-urlencoded';
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+		}
+		// Format Headers
+		$cHeaders = array();
+		foreach ($headers as $k => $v) {
+			$cHeaders[] = $k.': '.$v;
+		}
+		if (count($cHeaders)) {
+			curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+		}
+		// Execute
+		$result = curl_exec($curlReq);
+		$httpcode = curl_getinfo($curlReq);
+		// Close
+		curl_close($curlReq);
+		// Return
+		return array('content'=>$result, 'http_code'=>$httpcode);
+	}
+
 	//Curl Get Function
 	function curl_get($url, $headers = array()) {
 		// Initiate cURL
@@ -544,7 +585,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 	$height = 444;
 
 	// Get Item Details
-	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&api_key='.$token),true)['Items'][0];
+	$itemDetails = json_decode(@file_get_contents($address.'/Items?Ids='.$item['Id'].'&api_key='.$token),true)['Items'][0];
 	/*if (substr_count(EMBYURL, ':') == 2) {
 		$URL = "http://app.emby.media/itemdetails.html?id=".$itemDetails['Id'];
 	}else{
@@ -957,9 +998,9 @@ function outputRecentAdded($header, $items, $script = false, $array, $type) {
 function outputNowPlaying($header, $size, $type, $items, $script = false) {
 	// If None Populate Empty Item
 	if (!count($items)) {
-		return '<div id='.$type.'></div>'.($script?'<script>'.$script.'</script>':'');
+		return '<div id="'.$type.'"></div>'.($script?'<script>'.$script.'</script>':'');
 	}else{
-	   return '<div id='.$type.'><h5 class="zero-m big-box"><strong>'.$header.'</strong></h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
+	   return '<div id="'.$type.'"><h5 class="zero-m big-box"><strong>'.$header.'</strong></h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
  }
 
 }
@@ -978,16 +1019,7 @@ function getEmbyStreams($size, $showNames, $role) {
 		}
 	}
 
-	return outputNowPlaying(translate('PLAYING_NOW_ON_EMBY')." ( ".count($playingItems)." Streams )", $size, 'streams-emby', $playingItems, "
-		setInterval(function() {
-			$('<div></div>').load('ajax.php?a=emby-streams',function() {
-				var element = $(this).find('[id]');
-				var loadedID = 	element.attr('id');
-				$('#'+loadedID).replaceWith(element);
-				console.log('Loaded updated: '+loadedID);
-			});
-		}, ".NOWPLAYINGREFRESH.");
-	");
+	return outputNowPlaying(translate('PLAYING_NOW_ON_EMBY')." ( ".count($playingItems)." Streams )", $size, 'streams-emby', $playingItems, ajaxLoop('emby-streams',NOWPLAYINGREFRESH));
 }
 
 // Get Now Playing Streams From Plex
@@ -1011,16 +1043,7 @@ function getPlexStreams($size, $showNames, $role){
 				$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames, $role);
 			}
 
-			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX')." ( ".count($items)." Streams )", $size, 'streams-plex', $items, "
-				setInterval(function() {
-					$('<div></div>').load('ajax.php?a=plex-streams',function() {
-						var element = $(this).find('[id]');
-						var loadedID = 	element.attr('id');
-						$('#'+loadedID).replaceWith(element);
-						console.log('Loaded updated: '+loadedID);
-					});
-				}, ".NOWPLAYINGREFRESH.");
-			");
+			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX')." ( ".count($items)." Streams )", $size, 'streams-plex', $items, ajaxLoop('plex-streams',NOWPLAYINGREFRESH));
 		}else{
 			writeLog("error", "PLEX STREAM ERROR: could not connect - check token - if HTTPS, is cert valid");
 		}
@@ -1056,7 +1079,7 @@ function getEmbyRecent($array) {
     }
 
     // Get the latest Items
-    $latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?EnableImages=false&Limit='.EMBYRECENTITEMS.'&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
+    $latest = json_decode(@file_get_contents($address.'/Users/'.$userId.'/Items/Latest?EnableImages=false&Limit='.EMBYRECENTITEMS.'&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
 
     // For Each Item In Category
     $items = array();
@@ -1075,18 +1098,7 @@ function getEmbyRecent($array) {
     unset($array["MusicAlbum"]);
     unset($array["Series"]);
 
-    return outputRecentAdded($header, $items, "
-	setInterval(function() {
-		$('<div></div>').load('ajax.php?a=emby-recent',function() {
-			var element = $(this).find('#recentMediaEmby');
-			var loadedID = 	element.attr('id');
-			$('#recentMediaEmby').replaceWith(element);
-			console.log('Loaded recent: '+loadedID);
-			loadSlick();
-		});
-
-	}, ".RECENTREFRESH.");
-	", $array, 'Emby');
+    return outputRecentAdded($header, $items, ajaxLoop('emby-recent',RECENTREFRESH,'loadSlick();'), $array, 'Emby');
 }
 
 // Get Recent Content From Plex
@@ -1114,18 +1126,7 @@ function getPlexRecent($array){
 				}
 			}
 
-			return outputRecentAdded($header, $items, "
-			setInterval(function() {
-				$('<div></div>').load('ajax.php?a=plex-recent',function() {
-					var element = $(this).find('#recentMediaPlex');
-					var loadedID = 	element.attr('id');
-					$('#recentMediaPlex').replaceWith(element);
-					console.log('Loaded recent: '+loadedID);
-					loadSlick();
-				});
-
-			}, ".RECENTREFRESH.");
-			", $array, 'Plex');
+			return outputRecentAdded($header, $items, ajaxLoop('plex-recent',RECENTREFRESH,'loadSlick();'), $array, 'Plex');
 		}else{
 			writeLog("error", "PLEX RECENT-ITEMS ERROR: could not connect - check token - if HTTPS, is cert valid");
 		}
@@ -1165,7 +1166,8 @@ function getEmbyImage() {
 	    }
         ob_start(); // Start the output buffer
         header('Content-type: image/jpeg');
-        @readfile($image_src);
+        //@readfile($image_src);
+		echo @curl_get($image_src);
         // Cache the output to a file
         $fp = fopen($cachefile, 'wb');
         fwrite($fp, ob_get_contents());
@@ -1206,7 +1208,8 @@ function getPlexImage() {
         }
 		ob_start(); // Start the output buffer
         header('Content-type: image/jpeg');
-		@readfile($image_src);
+		//@readfile($image_src);
+		echo @curl_get($image_src);
         // Cache the output to a file
         $fp = fopen($cachefile, 'wb');
         fwrite($fp, ob_get_contents());
@@ -4677,7 +4680,31 @@ function errormessage($msg) {
 	echo $msg;
 	echo "</div>";
 }
-
+function ajaxLoop($ajaxFunction, $refresh, $extraFunction = ''){
+	return "
+	setInterval(function() {
+		$.ajax({
+			url: 'ajax.php?a=".$ajaxFunction."',
+			timeout: 10000,
+			type: 'GET',
+			success: function(response) {
+				var getDiv = response;
+				var loadedID = 	$(getDiv).attr('id');
+				if (typeof loadedID !== 'undefined') {
+					$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+					".$extraFunction."
+					console.log('".$ajaxFunction." has been updated');
+				}else{
+					console.log('".$ajaxFunction." data was not sufficent or is offline');
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				console.error('".$ajaxFunction." could not be updated');
+			}
+		});
+	}, ".$refresh.");
+	";
+}
 function getOrgUsers(){
 	$file_db = DATABASE_LOCATION."users.db";
 	if(file_exists($file_db)){
@@ -4767,8 +4794,14 @@ function ombiAction($id, $action, $type){
 		case 'approve':
 			$api = curl_post(OMBIURL."/api/v1/Request/".$type."/approve", $body, $headers);
 			break;
+		case 'available':
+				$api = curl_post(OMBIURL."/api/v1/Request/".$type."/available", $body, $headers);
+				break;
+		case 'unavailable':
+				$api = curl_post(OMBIURL."/api/v1/Request/".$type."/unavailable", $body, $headers);
+				break;
 		case 'deny':
-			$api = curl_post(OMBIURL."/api/v1/Request/".$type."/deny", $body, $headers);
+			$api = curl_put(OMBIURL."/api/v1/Request/".$type."/deny", $body, $headers);
 			break;
 		case 'delete':
 			$api = curl_delete(OMBIURL."/api/v1/Request/".$type."/".$id, $headers);
@@ -4783,11 +4816,11 @@ function ombiAction($id, $action, $type){
 			return false;
 			break;
 		case 200:
-			writeLog("success", "OMBI: action completed successfully");
+			writeLog("success", "OMBI: action completed successfully for [type: $type - action: $action - id: $id]");
 			return true;
 			break;
 		default:
-			writeLog("error", "OMBI: unknown error with request [type: $type | action: $action | id: $id]");
+			writeLog("error", "OMBI: unknown error with request [type: $type - action: $action - id: $id]");
 			return false;
 	}
     //return (!empty($result) ? $result : null );
@@ -4813,33 +4846,47 @@ function getOmbiRequests($type = "both"){
 			break;
 	}
 	if(isset($movie)){
+		//$movie = array_reverse($movie);
 		foreach ($movie as $key => $value) {
-			$requests['movie'][] = array(
+			$poster = explode('/',$value['posterPath']);
+			$requests[] = array(
 				'id' => $value['theMovieDbId'],
 				'title' => $value['title'],
-				'poster' => (strpos($value['posterPath'], "http") !== false) ? $value['posterPath'] : 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'],
+				'poster' => (strpos($value['posterPath'], "/") !== false) ? 'https://image.tmdb.org/t/p/w300/'.end($poster) : 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'],
 				'approved' => $value['approved'],
 				'available' => $value['available'],
 				'denied' => $value['denied'],
 				'deniedReason' => $value['deniedReason'],
 				'user' => $value['requestedUser']['userName'],
 				'request_id' => $value['id'],
+				'request_date' => $value['requestedDate'],
+				'release_date' => $value['releaseDate'],
+				'type' => 'movie',
+				'icon' => 'mdi mdi-filmstrip',
+				'color' => 'palette-Deep-Purple-900 bg white',
 			);
 		}
 	}
 	if(isset($tv) && (is_array($tv) || is_object($tv))){
 		foreach ($tv as $key => $value) {
-			$requests['tv'][] = array(
-				'id' => $value['tvDbId'],
-				'title' => $value['title'],
-				'poster' => $value['posterPath'],
-				'approved' => $value['childRequests'][0]['approved'],
-				'available' => $key['childRequests'][0]['available'],
-				'denied' => $key['childRequests'][0]['denied'],
-				'deniedReason' => $key['childRequests'][0]['deniedReason'],
-				'user' => $value['childRequests'][0]['requestedUser']['userName'],
-				'request_id' => $value['id'],
-			);
+			if(is_array($value['childRequests'][0])){
+				$requests[] = array(
+					'id' => $value['tvDbId'],
+					'title' => $value['title'],
+					'poster' => $value['posterPath'],
+					'approved' => $value['childRequests'][0]['approved'],
+					'available' => $value['childRequests'][0]['available'],
+					'denied' => $value['childRequests'][0]['denied'],
+					'deniedReason' => $value['childRequests'][0]['deniedReason'],
+					'user' => $value['childRequests'][0]['requestedUser']['userName'],
+					'request_id' => $value['id'],
+					'request_date' => $value['childRequests'][0]['requestedDate'],
+					'release_date' => $value['releaseDate'],
+					'type' => 'tv',
+					'icon' => 'mdi mdi-television',
+					'color' => 'grayish-blue-bg',
+				);
+			}
 		}
 	}
     return (empty($requests)) ? '' : $requests;
@@ -4897,7 +4944,7 @@ function buildOmbiItem($type, $group, $user, $request){
 		$actions = '';
 		if($request['denied']){
 			$status = 1;
-			//$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve</a></li>';
+			$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve</a></li>';
 		}else{
 			if($request['approved']){
 				$status = 2;
@@ -4907,18 +4954,33 @@ function buildOmbiItem($type, $group, $user, $request){
 				$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="deny"><a class="requestAction" href="javascript:void(0)">Deny</a></li>';
 			}
 		}
+		if($request['available']){
+			$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="unavailable"><a class="requestAction" href="javascript:void(0)">Mark as Unavailable</a></li>';
+		}else{
+			$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="available"><a class="requestAction" href="javascript:void(0)">Mark as Available</a></li>';
+		}
 		$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="delete"><a class="requestAction" href="javascript:void(0)">Delete</a></li>';
 		if(isset($group) && $group == 'admin'){
+			$actionMenu = '
+			<div class="requestOptions">
+				<div class="btn-group transparent" role="group">
+					<button type="button" class="btn waves btn-success  btn-sm dropdown-toggle waves-effect waves-float transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-dots-vertical mdi-24px"></i></button>
+					<ul class="dropdown-menu"><h6 class="text-center requestHeader gray-bg">'.$request['user'].'</h6>'.$actions.'</ul>
+				</div>
+			</div>
+			';
+		}else{
+			$actionMenu = '';
+		}
+		if((isset($group)) && $group == 'admin' || REQUESTEDUSERONLY == 'false'){
 			return '
 			<div class="item-'.$type.'-'.convertOmbiString('approved', $request['approved'])['string'].'">
-				<div class="requestOptions">
-					<div class="btn-group transparent" role="group">
-						<button type="button" class="btn waves btn-success  btn-sm dropdown-toggle waves-effect waves-float transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-dots-vertical mdi-24px"></i></button>
-						<ul class="dropdown-menu"><h6 class="text-center">'.$request['user'].'</h6>'.$actions.'</ul>
-					</div>
-				</div>
+				'.$actionMenu.'
 				<a class="openTab" extraTitle="'.$request['title'].'" extraType="'.$type.'" openTab="true"><img alt="" class="slick-image-tall" data-lazy="'.$request['poster'].'"></a>
 				<div class="requestBottom text-center">
+					<div data-toggle="tooltip" data-placement="top" data-original-title="'.$request['type'].'" class="zero-m requestGroup '.$request['color'].'">
+						<i class="'.$request['icon'].'"></i>
+					</div>
 					<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('status', $status)['string'].'" class="zero-m requestGroup '.convertOmbiString('status', $status)['color'].'">
 						<i class="'.convertOmbiString('status', $status)['icon'].'"></i>
 					</div>
@@ -4928,12 +4990,16 @@ function buildOmbiItem($type, $group, $user, $request){
 				</div>
 				<small class="elip slick-bottom-title">'.$request['title'].'</small>
 			</div>';
-		}elseif(isset($group) && $group == 'user'){
+		}else{
 			if(strtolower($request['user']) == strtolower($user)){
 				return '
 				<div class="item-'.$type.'-'.convertOmbiString('approved', $request['approved'])['string'].'">
+					'.$actionMenu.'
 					<a class="openTab" extraTitle="'.$request['title'].'" extraType="'.$type.'" openTab="true"><img alt="" class="slick-image-tall" data-lazy="'.$request['poster'].'"></a>
 					<div class="requestBottom text-center">
+						<div data-toggle="tooltip" data-placement="top" data-original-title="'.$request['type'].'" class="zero-m requestGroup '.$request['color'].'">
+							<i class="'.$request['icon'].'"></i>
+						</div>
 						<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('status', $status)['string'].'" class="zero-m requestGroup '.convertOmbiString('status', $status)['color'].'">
 							<i class="'.convertOmbiString('status', $status)['icon'].'"></i>
 						</div>
@@ -4949,31 +5015,33 @@ function buildOmbiItem($type, $group, $user, $request){
 }
 function buildOmbiList($group, $user){
 	$requests = array();
-	$openTab = 'true';
 	$movieList = getOmbiRequests('movie');
 	$tvList = getOmbiRequests('tv');
-	if (is_array($movieList) || is_object($movieList)){
-		foreach ($movieList['movie'] as $request) {
-			$requests[] = buildOmbiItem('movie', $group, $user, $request);
+	if(is_array($movieList) && is_array($tvList)){
+		$result = array_merge($movieList , $tvList );
+	}else{
+		if(is_array($movieList)){
+			$result = $movieList;
+		}elseif(is_array($movieList)){
+			$result = $tvList;
+		}else{
+			$result = false;
 		}
 	}
-	if (is_array($tvList) || is_object($tvList)){
-		foreach ($tvList['tv'] as $request) {
-			$requests[] = buildOmbiItem('season', $group, $user, $request);
-		}
-	}
-	return outputOmbiRequests("Requested Content", $requests, "
-	setInterval(function() {
-		$('<div></div>').load('ajax.php?a=ombi-requests',function() {
-			var element = $(this).find('#recentRequests');
-			var loadedID = 	element.attr('id');
-			$('#recentRequests').replaceWith(element);
-			console.log('Loaded updated: '+loadedID);
-			loadSlick();
+	if (is_array($result) || is_object($result)){
+		usort($result, function ($item1, $item2) {
+			if ($item1['request_date'] == $item2['request_date']) return 0;
+			return $item1['request_date'] > $item2['request_date'] ? -1 : 1;
 		});
-
-	}, ".RECENTREFRESH.");
-	", false);
+		foreach ($result as $request) {
+			if($request['type'] == 'movie'){
+		        $requests[] = buildOmbiItem('movie', $group, $user, $request);
+		    }elseif($request['type'] == 'tv'){
+		        $requests[] = buildOmbiItem('season', $group, $user, $request);
+		    }
+		}
+	}
+	return outputOmbiRequests("Requested Content", $requests, ajaxLoop('ombi-requests',REQUESTREFRESH,'loadSlick();'), false);
 }
 
 function outputOmbiRequests($header = "Requested Content", $items, $script = false, $array) {
@@ -4999,6 +5067,25 @@ function outputOmbiRequests($header = "Requested Content", $items, $script = fal
 		$className = str_replace(' ', '', $header);
         return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 id="requestContent-title" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-request" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
+}
+
+function loadIcons(){
+	$dirname = "images/";
+	$images = scandir($dirname);
+	$ignore = Array(".", "..", "favicon", "settings", "cache", "platforms", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "no-np.png", "no-list.png", "no-np.psd", "no-list.psd", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
+	$allIcons = '';
+	foreach($images as $curimg){
+		if(!in_array($curimg, $ignore)) {
+			$allIcons .= '
+			<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">
+				<a data-toggle="tooltip" data-placement="bottom" title="'.$dirname.$curimg.'" class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+					<img style="width: 50px; height: 50px;" data-src="'.$dirname.$curimg.'" alt="thumbnail" class="allIcons lazyload shadow">
+				</a>
+			</div>
+			';
+		}
+	}
+	return $allIcons;
 }
 
 function buildHomepageSettings(){

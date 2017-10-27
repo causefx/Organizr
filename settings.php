@@ -57,44 +57,37 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="msapplication-tap-highlight" content="no" />
-
         <title>Settings</title>
-
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="bower_components/mdi/css/materialdesignicons.min.css">
         <link rel="stylesheet" href="bower_components/metisMenu/dist/metisMenu.min.css">
         <link rel="stylesheet" href="bower_components/Waves/dist/waves.min.css">
         <link rel="stylesheet" href="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
-
         <link rel="stylesheet" href="js/selects/cs-select.css">
         <link rel="stylesheet" href="js/selects/cs-skin-elastic.css">
-        <link href="bower_components/iconpick/dist/css/fontawesome-iconpicker.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="bower_components/iconpick/dist/css/fontawesome-iconpicker.min.css">
         <link rel="stylesheet" href="bower_components/google-material-color/dist/palette.css">
         <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
         <link rel="stylesheet" href="bower_components/smoke/dist/css/smoke.min.css">
-
-        <script src="js/menu/modernizr.custom.js"></script>
-        <script type="text/javascript" src="js/sha1.js"></script>
-        <script type="text/javascript" src="js/user.js"></script>
         <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
         <link rel="stylesheet" href="bower_components/DataTables/media/css/jquery.dataTables.css">
         <link rel="stylesheet" href="bower_components/datatables-tabletools/css/dataTables.tableTools.css">
         <link rel="stylesheet" href="bower_components/numbered/jquery.numberedtextarea.css">
-
         <link rel="stylesheet" href="css/style.css?v=<?php echo INSTALLEDVERSION; ?>">
-        <link rel="stylesheet" href="css/settings.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/summernote/dist/summernote.css">
-        <link href="css/jquery.filer.css" rel="stylesheet">
-	    <link href="css/jquery.filer-dragdropbox-theme.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/jquery.filer.css">
+	    <link rel="stylesheet" href="css/jquery.filer-dragdropbox-theme.css">
         <link rel="stylesheet" href="bower_components/morris.js/morris.css">
-
+		<link rel="stylesheet" href="css/settings.css?v=<?php echo INSTALLEDVERSION; ?>">
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
         <![endif]-->
-
         <!--Scripts-->
+		<script src="js/menu/modernizr.custom.js"></script>
+        <script src="js/sha1.js"></script>
+        <script src="js/user.js"></script>
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
         <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
@@ -104,26 +97,19 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
         <script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
         <script src="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
         <script src="bower_components/cta/dist/cta.min.js"></script>
-
         <!--Menu-->
         <script src="js/menu/classie.js"></script>
         <script src="bower_components/iconpick/dist/js/fontawesome-iconpicker.js"></script>
-
-
         <!--Selects-->
         <script src="js/selects/selectFx.js"></script>
         <script src="js/jscolor.js"></script>
         <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
-
         <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
         <script src="bower_components/numbered/jquery.numberedtextarea.js"></script>
-
         <!--Other-->
         <script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <script src="bower_components/raphael/raphael-min.js"></script>
         <script src="bower_components/morris.js/morris.min.js"></script>
-
-
         <!--Notification-->
         <script src="js/notifications/notificationFx.js"></script>
 
@@ -137,8 +123,8 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
         <script src="bower_components/datatables-tabletools/js/dataTables.tableTools.js"></script>
          <!--Summernote-->
         <script src="bower_components/summernote/dist/summernote.min.js"></script>
-
 		<!--Other-->
+		<script src="js/lazyload.min.js"></script>
 		<script>
 			function addTab() {
 				var idNumber = Math.round(Math.random() * 999999999) + 1000000000;
@@ -166,7 +152,6 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 			function submitTabs(form) {
 				var formData = {};
 				var ids = [];
-
 				$.each($(form).serializeArray(), function(i,v) {
 					var regmatch = /(\w+)\[((?:new-)?\d+)\]/i.exec(v.name);
 					if (regmatch) {
@@ -183,17 +168,19 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 				});
 				console.log(formData);
 				ajax_request('POST', 'submit-tabs', formData);
-
 				return false;
 			}
 		</script>
-
         <style>
             body{
                 background: #273238;
             }
-			.sort-placeholder {
-
+			.tabs-with-bg .dropdown-menu a:hover {
+				color: black !important;
+			}
+			.shadow {
+				-webkit-filter: drop-shadow(0px 0px 0px black);
+				filter: drop-shadow(0px 0px 0px black);
 			}
 			.faded {
 				opacity: .5;
@@ -256,7 +243,6 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
                     position: fixed;
                     height:100% !important;
                     margin-top:0;
-
                 }.email-content .email-header, .email-new .email-header{
                     padding: 10px 30px;
                     z-index: 1000;
@@ -356,13 +342,11 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
                 border-bottom: 0;
                 border-radius: 5px;
                 top: 3px;
-}<?php customCSS(); ?>
+			}<?php customCSS(); ?>
         </style>
     </head>
-
     <body id="body-settings" class="scroller-body group-<?php echo $group;?>" style="padding: 0; overflow: hidden">
         <div id="main-wrapper" class="main-wrapper">
-
             <!--Content-->
             <div id="content"  style="margin:0 10px; overflow:hidden">
 				<!-- Update -->
@@ -389,7 +373,7 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 				</div>
 				<!-- Check Frame Modal -->
                 <div class="modal fade checkFrame" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-lg" role="document">
+                	<div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -423,114 +407,108 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 					}else{
 						echo '<div class="col-sm-2">';
 						echo '<button id="apply" style="width: 100%; display: none;" class="btn waves btn-success btn-sm text-uppercase waves-effect waves-float animated tada" type="submit">'.$language->translate("APPLY_CHANGES").'</button>';
-					}?>
-
-
-<?php
-$buildMenu = array(
-	array(
-		'id' => 'open-tabs',
-		'box' => 'tab-box',
-		'name' => 'Edit Tabs',
-		'icon_1' => 'view-list',
-		'icon_2' => 'th-list',
-		'color' => 'red-orange',
-		'color2' => 'palette-Red-A700 bg',
-		'padding' => '2',
-	),
-	array(
-		'id' => 'open-colors',
-		'box' => 'color-box',
-		'name' => 'Edit Colors',
-		'icon_1' => 'format-paint',
-		'icon_2' => 'paint-brush',
-		'color' => 'red',
-		'color2' => 'palette-Indigo-A700 bg',
-		'padding' => '2',
-	),
-	array(
-		'id' => 'open-users',
-		'box' => 'users-box',
-		'name' => 'Manage Users',
-		'icon_1' => 'account-multiple',
-		'icon_2' => 'user',
-		'color' => 'green',
-		'color2' => 'palette-Blue-Grey-700 bg',
-		'padding' => '2',
-    ),
-    array(
-		'id' => 'open-email',
-		'box' => 'email-box',
-		'name' => 'Email Users',
-		'icon_1' => 'email',
-		'icon_2' => 'envelope',
-		'color' => 'yellow',
-		'color2' => 'palette-Pink-A700 bg',
-		'padding' => '2',
-	),
-	array(
-		'id' => 'open-logs',
-		'box' => 'logs-box',
-		'name' => 'View Logs',
-		'icon_1' => 'file-document-box',
-		'icon_2' => 'list-alt',
-		'color' => 'blue',
-		'color2' => 'palette-Teal-A700 bg',
-		'padding' => '2',
-	),
-	array(
-		'id' => 'open-homepage',
-		'box' => 'homepage-box',
-		'name' => 'Edit Homepage',
-		'icon_1' => 'television-guide',
-		'icon_2' => 'home',
-		'color' => 'yellow',
-		'color2' => 'palette-Deep-Orange-A400 bg',
-		'padding' => '2',
-    ),
-	array(
-		'id' => 'open-invites',
-		'box' => 'invites-box',
-		'name' => 'Plex Invites',
-		'icon_1' => 'account-multiple-plus',
-		'icon_2' => 'user-plus',
-		'color' => 'light-blue',
-		'color2' => 'palette-Amber-A700 bg',
-		'padding' => '2',
-	),
-	array(
-		'id' => 'open-advanced',
-		'box' => 'advanced-box',
-		'name' => 'Advanced',
-		'icon_1' => 'settings',
-		'icon_2' => 'cog',
-		'color' => 'gray',
-		'color2' => 'palette-Grey-600 bg',
-		'padding' => '2',
-	),array(
-		'id' => 'open-info',
-		'box' => 'info-box',
-		'name' => 'About',
-		'icon_1' => 'information',
-		'icon_2' => 'info-circle',
-		'color' => 'orange',
-		'color2' => 'palette-Light-Blue-A700 bg',
-		'padding' => '2',
-	),array(
-		'id' => 'open-donate',
-		'box' => 'donate-box',
-		'name' => 'Donate',
-		'icon_1' => 'cash-usd',
-		'icon_2' => 'money',
-		'color' => 'red',
-		'color2' => 'palette-Green-A700 bg',
-		'padding' => '2',
-	),
-);
-if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ echo buildMenuPhone($buildMenu); }
-?>
-
-
+					}
+					$buildMenu = array(
+						array(
+							'id' => 'open-tabs',
+							'box' => 'tab-box',
+							'name' => 'Edit Tabs',
+							'icon_1' => 'view-list',
+							'icon_2' => 'th-list',
+							'color' => 'red-orange',
+							'color2' => 'palette-Red-A700 bg',
+							'padding' => '2',
+						),
+						array(
+							'id' => 'open-colors',
+							'box' => 'color-box',
+							'name' => 'Edit Colors',
+							'icon_1' => 'format-paint',
+							'icon_2' => 'paint-brush',
+							'color' => 'red',
+							'color2' => 'palette-Indigo-A700 bg',
+							'padding' => '2',
+						),
+						array(
+							'id' => 'open-users',
+							'box' => 'users-box',
+							'name' => 'Manage Users',
+							'icon_1' => 'account-multiple',
+							'icon_2' => 'user',
+							'color' => 'green',
+							'color2' => 'palette-Blue-Grey-700 bg',
+							'padding' => '2',
+					    ),
+					    array(
+							'id' => 'open-email',
+							'box' => 'email-box',
+							'name' => 'Email Users',
+							'icon_1' => 'email',
+							'icon_2' => 'envelope',
+							'color' => 'yellow',
+							'color2' => 'palette-Pink-A700 bg',
+							'padding' => '2',
+						),
+						array(
+							'id' => 'open-logs',
+							'box' => 'logs-box',
+							'name' => 'View Logs',
+							'icon_1' => 'file-document-box',
+							'icon_2' => 'list-alt',
+							'color' => 'blue',
+							'color2' => 'palette-Teal-A700 bg',
+							'padding' => '2',
+						),
+						array(
+							'id' => 'open-homepage',
+							'box' => 'homepage-box',
+							'name' => 'Edit Homepage',
+							'icon_1' => 'television-guide',
+							'icon_2' => 'home',
+							'color' => 'yellow',
+							'color2' => 'palette-Deep-Orange-A400 bg',
+							'padding' => '2',
+					    ),
+						array(
+							'id' => 'open-invites',
+							'box' => 'invites-box',
+							'name' => 'Plex Invites',
+							'icon_1' => 'account-multiple-plus',
+							'icon_2' => 'user-plus',
+							'color' => 'light-blue',
+							'color2' => 'palette-Amber-A700 bg',
+							'padding' => '2',
+						),
+						array(
+							'id' => 'open-advanced',
+							'box' => 'advanced-box',
+							'name' => 'Advanced',
+							'icon_1' => 'settings',
+							'icon_2' => 'cog',
+							'color' => 'gray',
+							'color2' => 'palette-Grey-600 bg',
+							'padding' => '2',
+						),array(
+							'id' => 'open-info',
+							'box' => 'info-box',
+							'name' => 'About',
+							'icon_1' => 'information',
+							'icon_2' => 'info-circle',
+							'color' => 'orange',
+							'color2' => 'palette-Light-Blue-A700 bg',
+							'padding' => '2',
+						),array(
+							'id' => 'open-donate',
+							'box' => 'donate-box',
+							'name' => 'Donate',
+							'icon_1' => 'cash-usd',
+							'icon_2' => 'money',
+							'color' => 'red',
+							'color2' => 'palette-Green-A700 bg',
+							'padding' => '2',
+						),
+					);
+					if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ echo buildMenuPhone($buildMenu); }?>
                     </div>
 					<?php if($userDevice !== "phone"){?>
                     <div class="col-lg-10" style="position: absolute;top: 50%;left: 10%;width: 80%;">
@@ -543,8 +521,8 @@ if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ e
                         <div class="email-header gray-bg">
                             <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
                             <button type="button" class="btn waves btn-labeled btn-success btn btn-sm text-uppercase waves-effect waves-float save-btn-form submitTabBtn">
-												<span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo translate('SAVE_TABS'); ?>
-											</button>
+								<span class="btn-label"><i class="fa fa-floppy-o"></i></span><?php echo translate('SAVE_TABS'); ?>
+							</button>
                             <h1>Edit Tabs</h1>
                         </div>
                         <div class="email-inner small-box">
@@ -573,37 +551,23 @@ if($userDevice !== "phone"){ echo "<br><br><br>".buildMenu($buildMenu); }else{ e
 											<h4><strong><?php echo $language->translate("ALL_ICONS");?></strong> [<?php echo $language->translate("CLICK_ICON");?>]</h4>
 											<div class="row">
 												<textarea id="copyTarget" class="hideCopy" style="left: -9999px; top: 0; position: absolute;"></textarea>
-<?php
-$dirname = "images/";
-$images = scandir($dirname);
-$ignore = Array(".", "..", "favicon", "settings", "cache", "platforms", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "no-np.png", "no-list.png", "no-np.psd", "no-list.psd", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
-foreach($images as $curimg){
-	if(!in_array($curimg, $ignore)) { ?>
-												<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">
-													<a data-toggle="tooltip" data-placement="bottom" title="<?=$dirname.$curimg;?>" class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
-														<img style="width: 50px; height: 50px;" src="<?=$dirname.$curimg;?>" alt="thumbnail" class="allIcons">
-													</a>
-												</div>
-<?php
-	}
-}
-?>
+												<?php echo loadIcons();?>
 											</div>
 										</div>
 										<div class="panel">
                                             <div class="panel-body todo">
                                                 <ul class="list-group ui-sortable">
-<?php
-foreach($file_db->query('SELECT * FROM tabs ORDER BY `order` asc') as $key => $row) {
-	if (!isset($row['id'])) { $row['id'] = $key + 1; }
-	echo printTabRow($row);
-}
-?>
+													<?php
+													foreach($file_db->query('SELECT * FROM tabs ORDER BY `order` asc') as $key => $row) {
+														if (!isset($row['id'])) { $row['id'] = $key + 1; }
+														echo printTabRow($row);
+													}
+													?>
                                                 </ul>
                                             </div>
 										</div>
 									</form>
-<?php echo printTabRow(false); ?>
+									<?php echo printTabRow(false); ?>
                                 </div>
                             </div>
                         </div>
@@ -626,38 +590,37 @@ echo buildSettings(
 					array(
 						array(
 							'type' => 'button',
-							'labelTranslate' => 'CHOOSE_THEME',
+							'labelTranslate' => 'COLOR_TEMPLATE',
 							'icon' => 'css3',
 							'id' => 'themeSelector',
 							'buttonType' => 'dark',
 							'buttonDrop' => '
-		<ul class="dropdown-menu gray-bg">
-			<li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
-			<li class="chooseTheme" id="newPlexTheme" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" href="#">New Plex<span><img class="themeImage" src="images/themes/newplex.png"></span></a></li>
-			<li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
-			<li class="chooseTheme" id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook<span><img class="themeImage" src="images/themes/facebook.png"></span></a></li>
-			<li class="chooseTheme" id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa<span><img class="themeImage" src="images/themes/spa.png"></span></a></li>
-			<li class="chooseTheme" id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly<span><img class="themeImage" src="images/themes/darkly.png"></span></a></li>
-			<li class="chooseTheme" id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate<span><img class="themeImage" src="images/themes/slate.png"></span></a></li>
-			<li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
-			<li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
-			<li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
-		</ul>
+							<ul class="dropdown-menu gray-bg">
+								<li class="chooseTheme" id="plexTheme" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" href="#">Plex<span><img class="themeImage" src="images/themes/plex.png"></span></a></li>
+								<li class="chooseTheme" id="newPlexTheme" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" href="#">New Plex<span><img class="themeImage" src="images/themes/newplex.png"></span></a></li>
+								<li class="chooseTheme" id="embyTheme" style="border: 1px #FFFFFF; border-style: groove; background: #212121; border-radius: 5px; margin: 5px;"><a style="color: #52B54B !important;" href="#">Emby<span><img class="themeImage" src="images/themes/emby.png"></span></a></li>
+								<li class="chooseTheme" id="bookTheme" style="border: 1px #FFFFFF; border-style: groove; background: #3B5998; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Facebook<span><img class="themeImage" src="images/themes/facebook.png"></span></a></li>
+								<li class="chooseTheme" id="spaTheme" style="border: 1px #66BBAE; border-style: groove; background: #66BBAE; border-radius: 5px; margin: 5px;"><a style="color: #5B391E !important;" href="#">Spa<span><img class="themeImage" src="images/themes/spa.png"></span></a></li>
+								<li class="chooseTheme" id="darklyTheme" style="border: 1px #464545; border-style: groove; background: #375A7F; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Darkly<span><img class="themeImage" src="images/themes/darkly.png"></span></a></li>
+								<li class="chooseTheme" id="slateTheme" style="border: 1px #58C0DE; border-style: groove; background: #272B30; border-radius: 5px; margin: 5px;"><a style="color: #C8C8C8 !important;" href="#">Slate<span><img class="themeImage" src="images/themes/slate.png"></span></a></li>
+								<li class="chooseTheme" id="monokaiTheme" style="border: 1px #AD80FD; border-style: groove; background: #333333; border-radius: 5px; margin: 5px;"><a style="color: #66D9EF !important;" href="#">Monokai<span><img class="themeImage" src="images/themes/monokai.png"></span></a></li>
+								<li class="chooseTheme" id="thejokerTheme" style="border: 1px #CCC6CC; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #CCCCCC !important;" href="#">The Joker<span><img class="themeImage" src="images/themes/joker.png"></span></a></li>
+								<li class="chooseTheme" id="redTheme" style="border: 1px #eb6363; border-style: groove; background: #eb6363; border-radius: 5px; margin: 5px;"><a style="color: #FFFFFF !important;" href="#">Original Red<span><img class="themeImage" src="images/themes/original.png"></span></a></li>
+							</ul>
 							',
                         ),
                         array(
 							'type' => 'button',
-							'label' => 'LAYER#CAKE',
+							'labelTranslate' => 'CHOOSE_THEME',
 							'icon' => 'birthday-cake',
 							'id' => 'layerCake',
 							'buttonType' => 'dark',
 							'buttonDrop' => '
-        <ul class="dropdown-menu gray-bg">
-        <p class="text-center">Powered by Leram</p>
-			<li id="layerCakeDefault" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 7 color theme based on Organizr" style="border: 1px #FFFFFF; border-style: groove; background: #000000; border-radius: 5px; margin: 5px;"><a style="color: #E49F0C !important;" onclick="layerCake(\'Basic\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">Basic</a></li>
-			<li id="layerCakeCustom" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 32 color theme based on Organizr" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" onclick="layerCake(\'Advanced\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">Advanced</a></li>
-			<li id="open-themes" box="themes-box" onclick"" data-toggle="tooltip" data-placement="top" title="" data-original-title="Custom Themes Created by The Community" style="border: 1px #E5A00D; border-style: groove; background: #282A2D; border-radius: 5px; margin: 5px;"><a style="color: #E5A00D !important;" onclick="" href="#">Themes</a></li>
-		</ul>
+							<ul class="dropdown-menu">
+								<li id="open-themes" box="themes-box" onclick"" data-toggle="tooltip" data-placement="top" title="" data-original-title="Custom Themes Created by The Community"><a onclick="" href="#">Themes</a></li>
+								<li id="layerCakeDefault" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 7 color theme based on Organizr"><a onclick="layerCake(\'Basic\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">LAYER#CAKE Basic</a></li>
+								<li id="layerCakeCustom" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 32 color theme based on Organizr"><a onclick="layerCake(\'Advanced\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">LAYER#CAKE Advanced</a></li>
+							</ul>
 							',
 						),
 					),
@@ -1586,9 +1549,15 @@ echo buildSettings(
 						'value' => REQUESTREFRESH,
 						'options' => $refreshSeconds,
 					),
+                    array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'REQUESTED_ONLY',
+						'name' => 'requestedUserOnly',
+						'value' => REQUESTEDUSERONLY,
+					),
 					array(
 						'type' => 'custom',
-						'html' => '<h2>Requires Ombi V3.0.2151 & Above</h2>',
+						'html' => '<h2>Requires Ombi V3.0.2165 & Above</h2>',
 					),
 				),
 			),
@@ -2184,7 +2153,7 @@ echo buildSettings(
                     <div class="email-body">
                         <div class="email-header gray-bg">
                             <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
-                            <h1>layer.Cake Themes</h1>
+                            <h1>Themes</h1>
                         </div>
                         <div class="email-inner small-box">
                             <div class="email-inner-section">
@@ -3102,6 +3071,7 @@ echo buildSettings(
         <?php endif; ?>
 
 		<script>
+		lazyload();
 			<?php echo speedTestDisplay(speedTestData(),"graph");?>
 			$(".settingsMenu").click(function() {
 				$(".settingsMenu").removeClass("settingsMenuActive");

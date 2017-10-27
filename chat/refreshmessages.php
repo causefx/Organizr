@@ -17,7 +17,7 @@ if( $result = $db->query("SELECT * FROM
                          (SELECT id, timestamp, user, avatar, message
                           FROM chatpack_log ORDER BY id DESC LIMIT 125)
                           ORDER BY id ASC") )
-{   
+{
     $newmessages = array();
 
     while( $row = $result->fetchArray() )
@@ -27,16 +27,17 @@ if( $result = $db->query("SELECT * FROM
         $user = $row["user"];
         $avatar = $row["avatar"];
         $message = $row["message"];
-        
+
         $timenow = time();
         $messagetime = date("h:iA", intval($timestamp));
         $messagedate = date("m-d", intval($timestamp));
+        $messagenewtime = date("Y-m-d H:i:s", intval($timestamp));
         $message = utf8_encode($message);
-        
+
         $msgstr = "";  // message components
 
         if( strlen($user) > 0 && strlen($message) > 0 )
-        {  
+        {
             // catch emoticon
 
             $emoticon = false;
@@ -63,12 +64,12 @@ if( $result = $db->query("SELECT * FROM
                 $ending = substr($imagename, $endingpos+1);
                 $originalimg = $originalname . "." . $ending;
             }
-            
+
             if( !$emoticon && !$image )
             {
                 $message = decryptmessage($message);
             }
-            
+
             // catch URLs
 
             /*$message = str_replace("https://", "http://", $message);
@@ -91,7 +92,7 @@ if( $result = $db->query("SELECT * FROM
                                     "<span style=\"color: #d89334;\"><strong>$1</strong></span>", $message);
 
             // user online avatar
-            
+
             //$avatar = "<img class=\"avatarimg\" id=\"$timestamp\" src=\"" . $avatar . "\">";
 
             // unique message key
@@ -101,9 +102,9 @@ if( $result = $db->query("SELECT * FROM
 
             // show user avatar and message
             if($user == $currentuser){
-                $msgstr = $msgstr . "<p class=\"avatarandtext\" id=\"$messagekey\"><li><img src=\"$avatar\" id=\"$timestamp\" class=\"img-circle user-avatar $user\" alt=\"$user\"><div class=\"chat-panel blue-bg messagelike\" id=\"$id\"><div class=\"chat-heading clearfix\"><h4 class=\"pull-left zero-m\">$user</h4><p class=\"pull-right\"><i class=\"fa fa-clock-o\"></i>$messagedate $messagetime </p></div><div class=\"chat-body\">$message</div><span class=\"readed\"><i class=\"fa fa-heart red\" id=\"like$id\"></i></span></div></li></p>";//class="chat-inverted"
+                $msgstr = $msgstr . "<p class=\"avatarandtext\" id=\"$messagekey\"><li><img src=\"$avatar\" id=\"$timestamp\" class=\"img-circle user-avatar $user\" alt=\"$user\"><div class=\"chat-panel blue-bg messagelike\" id=\"$id\"><div class=\"chat-heading clearfix\"><h4 class=\"pull-left zero-m\">$user</h4><p class=\"pull-right\"><i class=\"fa fa-clock-o\"></i><timestamp time=\"$messagenewtime\" class=\"chat-timestamp\">$messagenewtime</timestamp></p></div><div class=\"chat-body\">$message</div></div></li></p>";//class="chat-inverted"
             }else{
-                $msgstr = $msgstr . "<p class=\"avatarandtext\" id=\"$messagekey\"><li class=\"chat-inverted\"><img src=\"$avatar\" id=\"$timestamp\" class=\"img-circle user-avatar $user\" alt=\"$user\"><div class=\"chat-panel red-bg messagelike\" id=\"$id\"><div class=\"chat-heading clearfix\"><h4 class=\"pull-left zero-m\">$user</h4><p class=\"pull-right\"><i class=\"fa fa-clock-o\"></i>$messagedate $messagetime </p></div><div class=\"chat-body\">$message</div><span class=\"readed\"><i class=\"fa fa-heart red liked\" id=\"like$id\"></i></span></div></li></p>";//class="chat-inverted"
+                $msgstr = $msgstr . "<p class=\"avatarandtext\" id=\"$messagekey\"><li class=\"chat-inverted\"><img src=\"$avatar\" id=\"$timestamp\" class=\"img-circle user-avatar $user\" alt=\"$user\"><div class=\"chat-panel red-bg messagelike\" id=\"$id\"><div class=\"chat-heading clearfix\"><h4 class=\"pull-left zero-m\">$user</h4><p class=\"pull-right\"><i class=\"fa fa-clock-o\"></i><timestamp time=\"$messagenewtime\" class=\"chat-timestamp\">$messagenewtime</timestamp></p></div><div class=\"chat-body\">$message</div></div></li></p>";//class="chat-inverted"
             }
 
             array_push($newmessages, $msgstr);
@@ -126,7 +127,7 @@ function decryptmessage($msg)
     $initvector = "aC92eG1PdGhuMXN6";
     $decryptedmessage = openssl_decrypt($msg, "AES-256-CBC", $key, 0, $initvector);
     $decryptedmessage = utf8_encode($decryptedmessage);
-    
+
     return $decryptedmessage;
 }
 

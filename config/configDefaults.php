@@ -132,4 +132,5 @@ return array(
 	"homepageOrderembyrecent" => '11',
 	"homepageOrderombi" => '12',
 	"homepageOrdercalendar" => '13',
+	'requestedUserOnly' => 'true',
 );

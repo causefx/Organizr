@@ -538,7 +538,7 @@ $group = (isset($group) ? $group : "guest");
 									<li window="<?=$row['window'];?>" class="tab-item <?=$defaultz;?>" id="<?=$row['url'];?>x" data-title="<?=$row['name'];?>" name="<?php echo strtolower($row['name']);?>">
 										<a class="tab-link">
 											<?php if($row['iconurl']) { ?>
-												<i style="font-size: 19px; padding: 0 10px; font-size: 19px;">
+												<i style="font-size: 19px; padding: 0 10px; font-size: 19px" data-toggle="tooltip" data-placement="bottom" data-original-title="<?=$row['name'];?>">
 													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 													<img src="<?=$row['iconurl'];?>" style="height: 30px; width: 30px; margin-top: -2px;">
 													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["image".$name] = $row['ping_url']; ?>
@@ -546,7 +546,7 @@ $group = (isset($group) ? $group : "guest");
 													<?php }?>
 												</i>
 											<?php }else { ?>
-												<i class="fa <?=$row['icon'];?> fa-lg">
+												<i class="fa <?=$row['icon'];?> fa-lg" data-toggle="tooltip" data-placement="bottom" data-original-title="<?=$row['name'];?>">
 													<span id="<?=$row['url'];?>s" class="badge badge-success" style="position: absolute;z-index: 100;right: 0px;"></span>
 													<?php if($row['ping'] == "true" && $row['ping_url']){ $allPings["icon".$name] = $row['ping_url']; ?>
 														<ping class="ping-<?=$name;?> startPingTimer"></ping>
@@ -797,8 +797,8 @@ $group = (isset($group) ? $group : "guest");
 										<h1 class="zero-m text-uppercase" style="color:<?=$topbartext;?>;"><?php echo $language->translate("HOLD_UP");?></h1>
 									</div>
 									<div class="big-box text-left">
-										<center><img src="images/sowwy.png" style="height: 200px;"></center>
-										<h2 class="text-center"><?php echo $language->translate("LOOKS_LIKE_YOU_DONT_HAVE_ACCESS");?></h2>
+										<!--<center><img src="images/sowwy.png" style="height: 200px;"></center>
+										<h2 class="text-center"><?php echo $language->translate("LOOKS_LIKE_YOU_DONT_HAVE_ACCESS");?></h2>-->
 										<?php if(!$USER->authenticated) : ?>
 										<button style="background:<?=$topbar;?>;" type="submit" class="btn log-in btn-block btn-primary text-uppercase waves waves-effect waves-float"><text style="color:<?=$topbartext;?>;"><?php echo $language->translate("LOGIN");?></text></button>
 										<?php endif; ?>
@@ -897,6 +897,7 @@ $group = (isset($group) ? $group : "guest");
 										<input type="hidden" name="op" value="register"/>
 										<input type="hidden" name="sha1" value=""/>
 										<input type="hidden" name="settings" value="false"/>
+										<input type="hidden" name="validate" id="validate" value=""/>
 
 										<div class="form-group">
 
@@ -949,7 +950,7 @@ $group = (isset($group) ? $group : "guest");
 									<form name="log out" id="logout" action="" method="POST">
 										<input type="hidden" name="op" value="logout">
 										<input type="hidden" name="username"value="<?php echo $_SESSION["username"]; ?>" >
-										<center><img src="images/sowwy.png" style="height: 200px;"></center>
+										<!--<center><img src="images/sowwy.png" style="height: 200px;"></center>-->
 										<h3 style="color:<?=$topbar;?>;" class="zero-m text-uppercase"><?php echo $language->translate("DO_YOU_WANT_TO_LOGOUT");?></h3>
 										<a style="color:<?=$topbar;?>;" id="logoutSubmit" class="i-block" data-dismiss="modal"><?php echo $language->translate("YES_WORD");?></a>
 										<a style="color:<?=$topbar;?>;" class="i-block" data-dismiss="modal"><?php echo $language->translate("NO_WORD");?></a>
@@ -1057,7 +1058,7 @@ $group = (isset($group) ? $group : "guest");
 						<div class="row">
 							<?php if($tabSetup == "No") : $tabCount = 1; foreach($splash as $row) :
 								$name = str_replace(array(':', '\\', '/', '*'), 'x', $row['ping_url']);?>
-							<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2" id="splash-<?php echo strtolower($row['name']);?>">
+							<div class="col-xs-6 col-md-2 col-lg-2 splashContainer" id="splash-<?php echo strtolower($row['name']);?>">
 								<li style="list-style-type: none; cursor: pointer;" window="<?=$row['window'];?>" class="splash-item content-box small-box ultra-widget gray-bg" name="<?php echo strtolower($row['name']);?>">
 									<div class="w-content">
 										<div class="w-icon">
@@ -1083,13 +1084,13 @@ $group = (isset($group) ? $group : "guest");
 							</div>
 							<?php $tabCount++; endforeach; endif;?>
 							<?php if( $USER->authenticated && $USER->role == "admin" ){ ?>
-								<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+								<div class="col-xs-6 col-md-2 col-lg-2 splashContainer">
 									<li style="list-style-type: none; cursor: pointer;" class="splash-item content-box small-box ultra-widget gray-bg" data-title="" name="settings">
 										<div class="w-content">
 											<div class="w-icon">
 												<center>
 													<i style="">
-														<img src="images/settings.png" style="height: 100px; margin-top: -10px;" class="">
+														<img src="images/<?=$settingsIcon;?>" style="height: 100px; margin-top: -10px;" class="">
 													</i>
 												</center>
 											</div>
@@ -1559,8 +1560,10 @@ $group = (isset($group) ? $group : "guest");
 		update();
 		setInterval(update, 60000);
 		console.log(date);
+		<?php if($userDevice !== "phone"){?>
 		//Tooltips
 		$('[data-toggle="tooltip"]').tooltip();
+		<?php } ?>
 		$(".box").niceScroll({
             railpadding: {top:0,right:0,left:0,bottom:0},
             scrollspeed: 30,
@@ -1829,6 +1832,7 @@ $group = (isset($group) ? $group : "guest");
 							$("#userPassForm").toggle();
 							$("#registration").toggle();
 							$("#welcomeGoBack3").toggle();
+							$("#validate").val($('input[name=registerPasswordValue]').val());
 
 						}
 

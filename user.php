@@ -281,6 +281,14 @@
 			$email = $_POST["email"];
 			$sha1 = $_POST["sha1"];
 			$settings = $_POST["settings"];
+			$validate = (isset($_POST["validate"])) ? $_POST["validate"] : null;
+			if(REGISTERPASSWORD != ""){
+				if($validate == REGISTERPASSWORD){
+					$validate = true;
+				}
+			}else{
+				$validate = null;
+			}
 			// step 1: someone could have bypassed the javascript validation, so validate again.
 			if(!$this->validate_user_name($username)) {
 				$this->info("<strong>registration error:</strong> user name did not pass validation");
@@ -292,25 +300,7 @@
 				$this->info("<strong>registration error:</strong> password did not pass validation");
 				return false; }
 			// step 2: if validation passed, register user
-			$registered = $this->register_user($username, $email, $sha1, $registration_callback, $settings);
-			if($registered && User::use_mail)
-			{
-				// send email notification
-				$subject = "Welcome to ".DOMAIN;
-				$language = new setLanguage;
-				$domain = getServerPath();
-				$body = orgEmail(
-					$header = $language->translate('EMAIL_NEWUSER_HEADER'),
-					$title = $language->translate('EMAIL_NEWUSER_TITLE'),
-					$user = $username,
-					$mainMessage =$language->translate('EMAIL_NEWUSER_MESSAGE'),
-					$button = $language->translate('EMAIL_NEWUSER_BUTTON'),
-					$buttonURL = $domain,
-					$subTitle = $language->translate('EMAIL_NEWUSER_SUBTITLE'),
-					$subMessage = $language->translate('EMAIL_NEWUSER_SUBMESSAGE')
-					);
-                $this->startEmail($email, $username, $subject, $body);
-			}
+			$registered = $this->register_user($username, $email, $sha1, $registration_callback, $settings, $validate);
 			return $registered;
 		}
 		/**
@@ -543,7 +533,7 @@
 		 * is profile information that can be set, but in no way
 		 * needs to be, in the user's profile section
 		 */
-		function register_user($username, $email, $sha1, &$registration_callback = false, $settings) {
+		function register_user($username, $email, $sha1, &$registration_callback = false, $settings, $validate) {
 			$username = strtolower($username);
 			$dbpassword = $this->token_hash_password($username, $sha1, "");
 			if($dbpassword==$sha1) die("password hashing is not implemented.");
@@ -552,6 +542,30 @@
             foreach($this->database->query($queryAdmin) as $data) {
                 $newRole = "user";
             }
+			if($newRole == "user" && $validate == null){
+				writeLog("error", "$username on IP ".$_SERVER['REMOTE_ADDR']." is trying to hack your Organizr");
+				$this->error = "Hack attempt has been made. What are you doing? Logging your IP now...?";
+				$this->error("Hack attempt has been made. What are you doing? Logging your IP now...");
+				return false;
+			}
+			if($username && User::use_mail)
+			{
+				// send email notification
+				$subject = "Welcome to ".DOMAIN;
+				$language = new setLanguage;
+				$domain = getServerPath();
+				$body = orgEmail(
+					$header = $language->translate('EMAIL_NEWUSER_HEADER'),
+					$title = $language->translate('EMAIL_NEWUSER_TITLE'),
+					$user = $username,
+					$mainMessage =$language->translate('EMAIL_NEWUSER_MESSAGE'),
+					$button = $language->translate('EMAIL_NEWUSER_BUTTON'),
+					$buttonURL = $domain,
+					$subTitle = $language->translate('EMAIL_NEWUSER_SUBTITLE'),
+					$subMessage = $language->translate('EMAIL_NEWUSER_SUBMESSAGE')
+					);
+                $this->startEmail($email, $username, $subject, $body);
+			}
 			// Does user already exist? (see notes on safe reporting)
 			if(User::unsafe_reporting) {
 				$query = "SELECT username FROM users WHERE username LIKE '$username' COLLATE NOCASE";
@@ -695,7 +709,7 @@
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
 					// Create User
 					$falseByRef = false;
-					$this->register_user($username, (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''), $sha1, $falseByRef, !$remember);
+					$this->register_user($username, (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''), $sha1, $falseByRef, !$remember, true);
 				} else {
 					// authentication failed
 					//$this->info("Successful Backend Auth, No User in DB, Create Set to False");
@@ -729,6 +743,15 @@
 		 */
 		function update_user($username, $email, $sha1, $role)
 		{
+			// logged in, but do the tokens match?
+			$token = $this->get_user_token($username);
+			writeLog("success", "$username has requested info update using token: $token");
+			if($token != $_SESSION["token"]) {
+				$this->error("token mismatch for $username");
+				return false;
+			}else{
+				writeLog("success", "$username token has been validated");
+			}
 			if($email !="") {
 				$update = "UPDATE users SET email = '$email' WHERE username = '$username' COLLATE NOCASE";
 				$this->database->exec($update); }
