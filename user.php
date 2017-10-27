@@ -119,6 +119,7 @@
 		// the user's email address, if logged in.
 		var $email = "";
 		var $adminEmail = "";
+		var $adminList = array();
 		// the user's role in the system
 		var $role = "";
 		var $group = "";
@@ -214,6 +215,7 @@
 			$this->userdir = ($this->username !=User::GUEST_USER? USER_HOME . $this->username : false);
 			$this->email = $this->get_user_email($this->username);
 			$this->adminEmail = $this->get_admin_email();
+			$this->adminList = $this->get_admin_list();
 			$this->role = $this->get_user_role($this->username);
 			//$this->group = $this->get_user_group($this->username);
 			// clear database
@@ -743,14 +745,26 @@
 		 */
 		function update_user($username, $email, $sha1, $role)
 		{
-			// logged in, but do the tokens match?
-			$token = $this->get_user_token($username);
-			writeLog("success", "$username has requested info update using token: $token");
-			if($token != $_SESSION["token"]) {
-				$this->error("token mismatch for $username");
-				return false;
+			//Admin bypass
+			if(!in_arrayi($_SESSION["username"], $this->get_admin_list())){
+				// logged in, but do the tokens match?
+				$token = $this->get_user_token($username);
+				if($token != $_SESSION["token"]) {
+					writeLog("error", "$username has requested info update using token: $token");
+					$this->error("token mismatch for $username");
+					return false;
+				}else{
+					writeLog("success", "$username token has been validated");
+				}
 			}else{
-				writeLog("success", "$username token has been validated");
+				$token = $this->get_user_token($_SESSION["username"]);
+				if($token != $_SESSION["token"]) {
+					writeLog("error", $_SESSION["username"]." has requested info update using token: $token");
+					$this->error("token mismatch for ".$_SESSION["username"]);
+					return false;
+				}else{
+					writeLog("success", "Admin Override on update for $username info");
+				}
 			}
 			if($email !="") {
 				$update = "UPDATE users SET email = '$email' WHERE username = '$username' COLLATE NOCASE";
@@ -882,6 +896,12 @@
 			$query = "SELECT email FROM users WHERE role = 'admin' COLLATE NOCASE LIMIT 1";
 			foreach($this->database->query($query) as $data) { return $data["email"]; }
 			return "";
+		}
+		function get_admin_list()
+		{
+			$query = "SELECT username FROM users WHERE role = 'admin' COLLATE NOCASE";
+			foreach($this->database->query($query) as $data) { $list[] =  $data['username']; }
+			if(!empty($list)){ return $list; } else { return false; }
 		}
 		/**
 		 * Get a user's role
