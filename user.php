@@ -543,7 +543,7 @@
                 $newRole = "user";
             }
 			if($newRole == "user" && $validate == null){
-				writeLog("error", "$username on IP ".$_SERVER['REMOTE_ADDR']." trying hacking your Organizr");
+				writeLog("error", "$username on IP ".$_SERVER['REMOTE_ADDR']." is trying to hack your Organizr");
 				$this->error = "Hack attempt has been made. What are you doing? Logging your IP now...?";
 				$this->error("Hack attempt has been made. What are you doing? Logging your IP now...");
 				return false;

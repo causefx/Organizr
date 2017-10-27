@@ -175,6 +175,9 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
             body{
                 background: #273238;
             }
+			.tabs-with-bg .dropdown-menu a:hover {
+				color: black !important;
+			}
 			.shadow {
 				-webkit-filter: drop-shadow(0px 0px 0px black);
 				filter: drop-shadow(0px 0px 0px black);
