@@ -46,6 +46,9 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# Files from my local computer
+php_errors.log
+
 # =========================
 # Organizr files
 # =========================
@@ -58,6 +61,8 @@ org.log
 org*.log
 test.php
 users.db
+speedtest.db
+chatpack.db
 config/cacert.pem
 config/config.php
 config/config*.bak.php
@@ -67,3 +72,7 @@ config/users*.db
 config/users*.bak.db
 config/tmp/*
 images/cache/*
+backups/*
+backups/
+backups
+test*.php

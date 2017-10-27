@@ -3,20 +3,22 @@ if (file_exists('config/config.php')) {
     require_once("user.php");
     $db = DATABASE_LOCATION.'users.db';
     $folder = USER_HOME;
+	$USER = new User("registration_callback");
+	qualifyUser("admin", true);
 }
 
 function check($extension) {
-    
-    if (extension_loaded($extension)) : 
+
+    if (extension_loaded($extension)) :
         echo '<div class="col-lg-3">';
         echo '<div class="panel panel-success">';
         echo '<div class="panel-heading">';
         echo '<h3 class="panel-title">'. $extension . '</h3>';
         echo '</div>';
         echo '<div style="color: gray" class="panel-body">';
-        echo $extension . ' is loaded and ready to rock-n-roll!  Good 2 Go!';
-        echo '</div></div></div>'; 
-    
+        echo $extension . ' is installed!';
+        echo '</div></div></div>';
+
     else :
         echo '<div class="col-lg-3">';
         echo '<div class="panel panel-danger">';
@@ -25,38 +27,38 @@ function check($extension) {
         echo '</div>';
         echo '<div style="color: gray" class="panel-body">';
         echo $extension . ' is NOT loaded!  Please install it before proceeding';
-        
+
         if($extension == "PDO_SQLITE") :
-            
+
             echo '<br/> If you are on Windows, please uncomment this line in php.ini: ;extension=php_pdo_sqlite.dll<br/>If you are on Ununtu, please install php5.3-sqlite or php7-sqlite depending on your version of PHP, then restart PHP service';
-        
+
         endif;
-    
-        echo '</div></div></div>'; 
-    
-    endif;  
-    
+
+        echo '</div></div></div>';
+
+    endif;
+
 }
 
 function checkFunction($function) {
-    
-    if (function_exists($function)) : 
+
+    if (function_exists($function)) :
         echo '<div class="col-lg-3">';
         echo '<div class="panel panel-success">';
         echo '<div class="panel-heading">';
         echo '<h3 class="panel-title">'. $function . '</h3>';
         echo '</div>';
         echo '<div style="color: gray" class="panel-body">';
-        echo $function . ' is loaded and ready to rock-n-roll!  Good 2 Go!';
-    
+        echo $function . ' is installed!';
+
         if($function == "MAIL") :
-            
+
             echo '<br/> **Please make sure you can send email prior to installing as this is needed for password resets**';
-        
+
         endif;
-    
-        echo '</div></div></div>'; 
-    
+
+        echo '</div></div></div>';
+
     else :
         echo '<div class="col-lg-3">';
         echo '<div class="panel panel-danger">';
@@ -64,26 +66,26 @@ function checkFunction($function) {
         echo '<h3 class="panel-title">'. $function . '</h3>';
         echo '</div>';
         echo '<div style="color: gray" class="panel-body">';
-        echo $function . ' is NOT loaded!  Please install it before proceeding'; 
-    
+        echo $function . ' is NOT loaded!  Please install it before proceeding';
+
         if($function == "MAIL") :
-            
+
             echo '<br/> **If you do not want to use password resets, this is okay not being installed**  EDIT LINE 31 on user.php to "false" [const use_mail = false]';
-        
+
         endif;
-    
-        echo '</div></div></div>'; 
-    
-    endif;  
-    
+
+        echo '</div></div></div>';
+
+    endif;
+
 }
 
 function getFilePermission($file) {
-        
+
     if (file_exists($file)) :
-    
+
         $length = strlen(decoct(fileperms($file)))-3;
-    
+
         if($file{strlen($file)-1}=='/') :
 
             $name = "Folder";
@@ -101,8 +103,8 @@ function getFilePermission($file) {
             echo '<h3 class="panel-title">'. $file . '<permissions style="float: right;">Permissions: ' . substr(decoct(fileperms($file)),$length) . '</permissions></h3>';
             echo '</div>';
             echo '<div style="color: gray" class="panel-body">';
-            echo $file . ' is writable and ready to rock-n-roll!  Good 2 Go!';
-            echo '</div></div></div>'; 
+            echo $file . ' is writable!';
+            echo '</div></div></div>';
         else :
             echo '<div class="col-lg-6">';
             echo '<div class="panel panel-danger">';
@@ -111,10 +113,10 @@ function getFilePermission($file) {
             echo '</div>';
             echo '<div style="color: gray" class="panel-body">';
             echo $file . ' is NOT writable!  Please change the permissions to make it writtable by the PHP User.';
-            echo '</div></div></div>'; 
+            echo '</div></div></div>';
 
         endif;
-        
+
     endif;
 }
 
@@ -125,7 +127,7 @@ function getFilePermission($file) {
 <html lang="en" class="no-js">
 
     <head>
-        
+
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -138,7 +140,7 @@ function getFilePermission($file) {
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
         <script src="bower_components/jquery.nicescroll/jquery.nicescroll.min.js"></script>
 		<script src="bower_components/slimScroll/jquery.slimscroll.min.js"></script>
-        
+
     </head>
 
     <body id="body-check" class="gray-bg" style="padding: 0;">
@@ -147,13 +149,13 @@ function getFilePermission($file) {
 
             <!--Content-->
             <div id="content"  style="margin:0 20px; overflow:hidden">
-                
+
                 <h1><center>Check Requirements & Permissions</center></h1>
 
                 <div class="row">
-                
+
                 <?php
-                
+
                 check("PDO_SQLITE");
                 check("PDO");
                 check("SQLITE3");
@@ -166,6 +168,12 @@ function getFilePermission($file) {
                 checkFunction("hash");
                 checkFunction("fopen");
                 checkFunction("fsockopen");
+				checkFunction("ob_start");
+				checkFunction("ob_get_contents");
+				checkFunction("ob_end_flush");
+				checkFunction("fwrite");
+				checkFunction("fclose");
+				checkFunction("readfile");
                 ?>
                 </div>
                 <div class="row">

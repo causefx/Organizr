@@ -64,9 +64,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				echo getPlexStreams(12, PLEXSHOWNAMES, $GLOBALS['USER']->role);
 				die();
 				break;
+			case 'ombi-requests':
+				qualifyUser(PLEXHOMEAUTH, true);
+				echo buildOmbiList($GLOBALS['USER']->role, $GLOBALS['USER']->username);
+				die();
+				break;
 			case 'emby-recent':
 				qualifyUser(EMBYHOMEAUTH, true);
-				echo getEmbyRecent($_GET['type'], 12);
+				echo getEmbyRecent(array("Movie" => EMBYRECENTMOVIE, "Episode" => EMBYRECENTTV, "MusicAlbum" => EMBYRECENTMUSIC, "Series" => EMBYRECENTTV));
 				die();
 				break;
 			case 'plex-recent':
@@ -123,6 +128,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
             default: // Stuff that you need admin for
                 qualifyUser('admin', true);
                 switch ($action) {
+					case 'ombi-action':
+                        sendResult(ombiAction($_POST['id'], $_POST['action_type'], $_POST['type']), "search", "OMBI ", "action completed successfully", "an error occured");
+                        break;
 					case 'get-emails':
 						$response = printEmails(getEmails($_POST['type']));
 						break;
@@ -149,6 +157,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
                         break;
                     case 'remove-images':
                         removeFiles('images/'.(isset($_POST['file'])?$_POST['file']:''));
+                        sendNotification(true);
+                        break;
+					case 'remove-file':
+                        removeFiles($_POST['file']);
                         sendNotification(true);
                         break;
                     case 'update-config':
@@ -226,4 +238,3 @@ if ($response) {
 } else {
 	sendNotification(false, 'Error: No Output Specified!');
 }
-

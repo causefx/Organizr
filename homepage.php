@@ -8,6 +8,7 @@ ini_set("error_reporting", E_ALL | E_STRICT);
 require_once("user.php");
 require_once("functions.php");
 $USER = new User("registration_callback");
+$group = $USER->role;
 
 // Check if connection to homepage is allowed
 qualifyUser(HOMEPAGEAUTHNEEDED, true);
@@ -33,7 +34,7 @@ foreach(loadAppearance() as $key => $value) {
 
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css"> 
+        <link rel="stylesheet" href="bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
         <script src="js/menu/modernizr.custom.js"></script>
 
         <link rel="stylesheet" href="bower_components/animate.css/animate.min.css">
@@ -46,8 +47,8 @@ foreach(loadAppearance() as $key => $value) {
         <link rel="stylesheet" type="text/css" href="bower_components/slick/slick.css?v=<?php echo INSTALLEDVERSION; ?>">
         <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
         <link rel="stylesheet" href="bower_components/smoke/dist/css/smoke.min.css?v=<?php echo INSTALLEDVERSION; ?>">
-        
-       
+
+
 
         <!--Scripts-->
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -62,17 +63,76 @@ foreach(loadAppearance() as $key => $value) {
 
         <script src="js/jqueri_ui_custom/jquery-ui.min.js"></script>
 	    <script src="js/jquery.mousewheel.min.js" type="text/javascript"></script>
-		
+
 		<!--Other-->
 		<script src="js/ajax.js?v=<?php echo INSTALLEDVERSION; ?>"></script>
         <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
         <script src="bower_components/smoke/dist/js/smoke.min.js"></script>
-		
+
         <!--[if lt IE 9]>
         <script src="bower_components/html5shiv/dist/html5shiv.min.js"></script>
         <script src="bower_components/respondJs/dest/respond.min.js"></script>
         <![endif]-->
         <style>
+			<?php if($USER->role !== "admin"){ echo '.refreshImage { display: none; }';}?>
+            .requestOptions ul.dropdown-menu {
+                max-width: 160px;
+            }
+			.requestHeader {
+				padding: 5px;
+				margin-top: -10px;
+				border-radius: 5px 5px 0 0;
+                margin-bottom: 0;
+			}
+			.requestOptions {
+				position: absolute;
+			    top: 5px;
+			    margin-left: 5px;
+				opacity: 1;
+				z-index: 1;
+			}
+			.slick-slide:focus {
+			    outline: transparent;
+			}
+			.requestOptions:hover {
+				opacity: 1;
+			}
+			.refreshImage{
+				top: -10px;
+				opacity: 0;
+				z-index: 1000;
+			}
+
+			.refreshNP {
+				z-index: 1001;
+			}
+			.w-refresh {
+				opacity: 1;
+			}
+			.ultra-widget.refreshImage .w-refresh.w-p-icon {
+			    opacity: 1;
+			}
+			.refreshImage:hover, .refreshNP:hover{
+				opacity: 1 !important;
+			}
+			.refreshImage .w-refresh {
+			    font-size: 36px;
+			    opacity: 1;
+			    right: 0;
+			    left: 5px;
+			}
+			.refreshImage span.w-refresh:hover::before {
+				content: "Refresh";
+			    font-size: 17px;
+			    float: right;
+			    top: 18px;
+			    position: absolute;
+			    left: 15px;
+			    color: white;
+			    background: black;
+			    border-radius: 5px;
+			    padding: 0px 20px;
+			}
             .fc-day-grid-event{
                 cursor: pointer;
             }
@@ -81,14 +141,55 @@ foreach(loadAppearance() as $key => $value) {
                 margin: 5px 0;
             }
             .slick-image-tall{
-                width: 125px;
-                height: 180px;
+                /*width: 125px;
+                height: 180px;*/
+				width: 93.5%;
+				height: 200px;
+				padding: 0 2px;
             }
             .slick-image-short{
-                width: 125px;
+                /*width: 125px;
                 height: 130px;
-                margin-top: 50px;
+                margin-top: 50px;*/
+				width: 93.5%;
+				height: 130px;
+				margin-top: 70px;
+				padding: 0 2px;
             }
+            .requestBottom {
+				width: 93.5%;
+				padding: 0 2px;
+			    display: inline-flex;
+			}
+			.slick-bottom-title {
+				width: 93.5%;
+				padding: 0 2px;
+			}
+			.requestLast {
+				border-radius: 0 0 5px 5px;
+			    border-top: 1px solid;
+			}
+			.transparent {
+				background: transparent !important;
+				-webkit-box-shadow: none;
+    			box-shadow: none;
+			}
+			.requestGroup {
+				width: 50%;
+				vertical-align: top !important;
+				margin: 0 0px !important;
+				display: inline-block;
+			}
+			i.mdi.mdi-dots-vertical.mdi-24px {
+			    -webkit-filter: drop-shadow(1px 2px 3px black);
+			    filter: drop-shadow(1px 2px 3px black);
+			}
+			.requestGroup:first-child {
+				border-radius: 0 0 0 5px;
+			}
+			.requestGroup:last-child {
+				border-radius: 0 0 5px 0;
+			}
             .overlay{
                 position: absolute;
                 top: 0;
@@ -130,11 +231,11 @@ foreach(loadAppearance() as $key => $value) {
             }.carousel-image{
                 width: 100px !important;
                 height: 150px !important;
-                border-radius: 3px 0 0 3px;  
+                border-radius: 3px 0 0 3px;
             }.carousel-image.album{
                 width: 150px !important;
                 height: 150px !important;
-                border-radius: 3px 0 0 3px;  
+                border-radius: 3px 0 0 3px;
             }.carousel-control.album {
                 top: 5px !important;
                 width: 4% !important;
@@ -186,7 +287,7 @@ foreach(loadAppearance() as $key => $value) {
 				white-space: normal !important;
 				width: 0% !important;
 				font-size: 12px; !important;
-			}<?php customCSS(); ?>       
+			}<?php customCSS(); ?>
         </style>
     </head>
 
@@ -194,291 +295,33 @@ foreach(loadAppearance() as $key => $value) {
         <div class="main-wrapper" style="position: initial;">
             <div id="content" class="container-fluid">
                 <br/>
-                
-                <?php if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) { echo buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE); } ?>
-                <?php if((PLEXSEARCH == "true" && qualifyUser(PLEXHOMEAUTH))) { ?>
-                <div id="searchPlexRow" class="row">
-                    <div class="col-lg-12">
-                        <div class="content-box box-shadow big-box todo-list">                        
-                            <form id="plexSearchForm" onsubmit="return false;" autocomplete="off">
-                                <div class="">
-                                    <div class="input-group">
-                                        <div style="border-radius: 25px 0 0 25px; border:0" class="input-group-addon gray-bg"><i class="fa fa-search white"></i></div>
-                                        <input id="searchInput" type="text" style="border-radius: 0;" autocomplete="off" name="search-title" class="form-control input-group-addon gray-bg" placeholder="Media Search">
-										<div id="clearSearch" style="border-radius: 0 25px 25px 0;border:0; cursor: pointer;" class="input-group-addon gray-bg"><i class="fa fa-close white"></i></div>
-                                        <button style="display:none" id="plexSearchForm_submit" class="btn btn-primary waves"></button>
-                                    </div>
-                                </div>
-                            </form>
-                            <div id="resultshere" class="table-responsive"></div>
-                        </div>
-                    </div>
-                </div>
-                <?php } ?>
-                <?php if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) { echo "<div>" . HOMEPAGECUSTOMHTML1 . "</div>"; } ?>
+				<?php echo buildHomepage($USER->role, $USER->username);?>
 
-                <?php if(SPEEDTEST == "true"){ ?>
-                <style type="text/css">
-
-                    .flash {
-                        animation: flash 0.6s linear infinite;
-                    }
-
-                    @keyframes flash {
-                        0% { opacity: 0.6; }
-                        50% { opacity: 1; }
-                    }
-
-                </style>
-                <script type="text/javascript">
-                    var w = null
-                    function runTest() {
-                        document.getElementById('startBtn').style.display = 'none'
-                        document.getElementById('testArea').style.display = ''
-                        document.getElementById('abortBtn').style.display = ''
-                        w = new Worker('bower_components/speed/speedtest_worker.js')
-                        var interval = setInterval(function () { w.postMessage('status') }, 100)
-                        w.onmessage = function (event) {
-                            var data = event.data.split(';')
-                            var status = Number(data[0])
-                            var dl = document.getElementById('download')
-                            var ul = document.getElementById('upload')
-                            var ping = document.getElementById('ping')
-                            var jitter = document.getElementById('jitter')
-                            dl.className = status === 1 ? 'w-name flash' : 'w-name'
-                            ping.className = status === 2 ? 'w-name flash' : 'w-name'
-                            jitter.className = ul.className = status === 3 ? 'w-name flash' : 'w-name'
-                            if (status >= 4) {
-                                clearInterval(interval)
-                                document.getElementById('abortBtn').style.display = 'none'
-                                document.getElementById('startBtn').style.display = ''
-                                w = null
-                            }
-                            if (status === 5) {
-                                document.getElementById('testArea').style.display = 'none'
-                            }
-                            dl.textContent = data[1] + " Mbit/s";
-                            $("#downloadpercent").attr("style", "width: " + data[1] + "%;");
-                            $("#uploadpercent").attr("style", "width: " + data[2] + "%;");
-                            $("#pingpercent").attr("style", "width: " + data[3] + "%;");
-                            $("#jitterpercent").attr("style", "width: " + data[5] + "%;");
-                            ul.textContent = data[2] + " Mbit/s";
-                            ping.textContent = data[3] + " ms";
-                            jitter.textContent = data[5] + " ms";
-                        }
-                        w.postMessage('start {"telemetry_level":"basic"}')
-                        //w.postMessage('start')
-                    }
-                    function abortTest() {
-                        if (w) w.postMessage('abort')
-                    }
-                </script>
-
-                <div class="row" id="testArea" style="display:none">
-
-                    <div class="test col-sm-3 col-lg-3">
-                        <div class="content-box ultra-widget green-bg" data-counter="">
-                            <div id="downloadpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
-                            <div class="w-content">
-                                <div class="w-icon right pull-right"><i class="mdi mdi-cloud-download"></i></div>
-                                <div class="w-descr left pull-left text-center">
-                                    <span class="testName text-uppercase w-name">Download</span>
-                                    <br>
-                                    <span class="w-name counter" id="download" ></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="test col-sm-3 col-lg-3">
-                        <div class="content-box ultra-widget red-bg" data-counter="">
-                            <div id="uploadpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
-                            <div class="w-content">
-                                <div class="w-icon right pull-right"><i class="mdi mdi-cloud-upload"></i></div>
-                                <div class="w-descr left pull-left text-center">
-                                    <span class="testName text-uppercase w-name">Upload</span>
-                                    <br>
-                                    <span class="w-name counter" id="upload" ></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="test col-sm-3 col-lg-3">
-                        <div class="content-box ultra-widget yellow-bg" data-counter="">
-                            <div id="pingpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
-                            <div class="w-content">
-                                <div class="w-icon right pull-right"><i class="mdi mdi-timer"></i></div>
-                                <div class="w-descr left pull-left text-center">
-                                    <span class="testName text-uppercase w-name">Latency</span>
-                                    <br>
-                                    <span class="w-name counter" id="ping" ></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="test col-sm-3 col-lg-3">
-                        <div class="content-box ultra-widget blue-bg" data-counter="">
-                            <div id="jitterpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
-                            <div class="w-content">
-                                <div class="w-icon right pull-right"><i class="mdi mdi-pulse"></i></div>
-                                <div class="w-descr left pull-left text-center">
-                                    <span class="testName text-uppercase w-name">Jitter</span>
-                                    <br>
-                                    <span class="w-name counter" id="jitter" ></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br/>
-
-                </div>
-
-                <div id="abortBtn" class="row" style="display: none" onclick="javascript:abortTest()">
-                    <div class="col-lg-12">
-                        <div class="content-box red-bg" style="cursor: pointer;">
-                            <h1 style="margin: 10px" class="text-uppercase text-center">Abort Speed Test</h1>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="startBtn" class="row" onclick="javascript:runTest()">
-                    <div class="col-lg-12">
-                        <div class="content-box green-bg" style="cursor: pointer;">
-                            <h1 style="margin: 10px" class="text-uppercase text-center">Run Speed Test</h1>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                </div>
-                <?php } ?>
-                                
-                <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))) { ?>
-                <div id="downloadClientRow" class="row">
-                    <div class="col-xs-12 col-md-12">
-                        <div class="content-box">
-                            <div class="tabbable panel with-nav-tabs panel-default">
-                                <div class="panel-heading">
-                                    <div class="content-tools i-block pull-right">
-                                        <a id="getDownloader" class="repeat-btn">
-                                            <i class="fa fa-repeat"></i>
-                                        </a>
-                                    </div>
-                                    <h3 class="pull-left"><?php if(NZBGETURL != ""){ echo "NZBGet "; } if(SABNZBDURL != ""){ echo "SABnzbd "; } ?></h3>
-                                    <ul class="nav nav-tabs pull-right">
-                                        <li class="active"><a href="#downloadQueue" data-toggle="tab" aria-expanded="true"><?php echo $language->translate("QUEUE");?></a></li>
-                                        <li class=""><a href="#downloadHistory" data-toggle="tab" aria-expanded="false"><?php echo $language->translate("HISTORY");?></a></li>
-                                    </ul>
-                                    <div class="clearfix"></div>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="tab-content">
-                                        <div class="tab-pane fade active in" id="downloadQueue">
-                                            <div class="table-responsive" style="max-height: 300px">
-                                                <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="col-xs-7 nzbtable-file-row"><?php echo $language->translate("FILE");?></th>
-                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("STATUS");?></th>
-                                                            <th class="col-xs-1 nzbtable"><?php echo $language->translate("CATEGORY");?></th>
-                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("PROGRESS");?></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="dl-queue sabnzbd"></tbody>
-                                                    <tbody class="dl-queue nzbget"></tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="downloadHistory">
-                                            <div class="table-responsive" style="max-height: 300px">
-                                                <table class="table table-striped progress-widget zero-m" style="max-height: 300px">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="col-xs-7 nzbtable-file-row"><?php echo $language->translate("FILE");?></th>
-                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("STATUS");?></th>
-                                                            <th class="col-xs-1 nzbtable"><?php echo $language->translate("CATEGORY");?></th>
-                                                            <th class="col-xs-2 nzbtable"><?php echo $language->translate("PROGRESS");?></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="dl-history sabnzbd"></tbody>
-                                                    <tbody class="dl-history nzbget"></tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php } ?>
-				<?php if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) { ?>
-                <div id="plexRowNowPlaying" class="row">
-                    <?php if(PLEXPLAYINGNOW == "true"){ echo getPlexStreams(12, PLEXSHOWNAMES, $USER->role); } ?>
-                </div>
-                <div id="plexRow" class="row">
-                    <div class="col-lg-12">
-                    <?php
-                    if(PLEXRECENTMOVIE == "true" || PLEXRECENTTV == "true" || PLEXRECENTMUSIC == "true"){  
-                        $plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
-                        echo getPlexRecent($plexArray);
-                    } 
-                    ?>
-                    </div>
-                </div>
-                <div id="plexPlaylists" class="row">
-                    <div class="col-lg-12">
-                    <?php if(PLEXPLAYLISTS == "true"){ echo getPlexPlaylists($plexArray); } ?>
-                    </div>
-                </div>
-                <?php } ?>
-    
-				<?php if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) { ?>
-                <div id="embyRowNowPlaying" class="row">
-                    <?php if(EMBYPLAYINGNOW == "true"){ echo getEmbyStreams(12, EMBYSHOWNAMES, $USER->role); } ?>
-                </div>
-                <div id="embyRow" class="row">
-                    <div class="col-lg-12">
-                    <?php
-                    if(EMBYRECENTMOVIE == "true" || EMBYRECENTTV == "true" || EMBYRECENTMUSIC == "true"){  
-                        $embyArray = array("Movie" => EMBYRECENTMOVIE, "Episode" => EMBYRECENTTV, "MusicAlbum" => EMBYRECENTMUSIC, "Series" => EMBYRECENTTV);
-                        echo getEmbyRecent($embyArray);
-                    }
-                    ?>
-                    </div>
-
-                </div>
-				<?php } ?>
-                <?php if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)) || (COUCHURL != "" && qualifyUser(COUCHHOMEAUTH))) { ?>
-                <div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
-                    <div class="col-lg-12 content-form form-inline">
-                        <div class="form-group pull-right">
-                            <span class="swal-legend label label-primary well-sm">Legend</span>&nbsp;
-                            <div class="btn-group" role="group">
-                                <button id="calendarSelected" style="margin-right: 0px;" type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">View All&nbsp;<span class="caret"></span></button>
-                                <ul style="right:0; left: auto" class="dropdown-menu">
-                                    <li><a class="calendarOption" calendarOption="all" href="javascript:void(0)">View All</a></li>
-                                    <?php if(RADARRURL != ""){ echo '<li><a class="calendarOption" calendarOption="film" href="javascript:void(0)">Movies</a></li>'; }?>
-                                    <?php if(SONARRURL != ""){ echo '<li><a class="calendarOption" calendarOption="tv" href="javascript:void(0)">TV Shows</a></li>'; }?>
-                                    <?php if(HEADPHONESURL != ""){ echo '<li><a class="calendarOption" calendarOption="music" href="javascript:void(0)">Music</a></li>'; }?>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="calendarRow" class="row">
-                    <div class="col-lg-12">
-                        <div id="calendar" class="fc-calendar box-shadow fc fc-ltr fc-unthemed"></div>
-                    </div>
-                </div>
-                <?php } ?>
-            </div>    
+            </div>
         </div>
         <script>
         //Tooltips
         $('[data-toggle="tooltip"]').tooltip();
+
+		$(document).on("click", ".refreshImage", function(e) {
+			parent.$.smkAlert({
+                text: 'Refreshing Image...',
+                type: 'info',
+                time: 1
+            });
+			e.preventDefault;
+			var orginalElement = $(this).parent().find('.refreshImageSource');
+			var original = orginalElement.attr('original-image');
+			orginalElement.attr('src', original);
+			console.log('replaced image with : '+original);
+			setTimeout(function(){
+				parent.$.smkAlert({
+	                text: 'Image Refreshed - Clear Cache Please.',
+	                type: 'info',
+	                time: 3
+	            });
+			}, 1000);
+		});
         $(".swal-legend").click(function () {
             swal({
                 title: "Calendar Legend",
@@ -497,7 +340,7 @@ foreach(loadAppearance() as $key => $value) {
             $('#searchInput').focus();
             e.preventDefault();
         });
-        
+
 		$(document).on("click", ".openTab", function(e) {
             parent.$.smkAlert({
                 text: 'Loading...',
@@ -513,13 +356,13 @@ foreach(loadAppearance() as $key => $value) {
                 SearchType = "show";
             }else if( Type === 'movie'){
                 Type = "movie";
-                SearchType = "movie";            
+                SearchType = "movie";
             }
             if( Type === 'tv' || Type === 'movie' ){
                 ajax_request('POST', 'tvdb-search', {
                     name: Title,
                     type: SearchType,
-                }).done(function(data){ 
+                }).done(function(data){
                     if( data.trakt && data.trakt.tmdb !== null) {
                         $('#calendarExtra').modal('show');
                         var refreshBox = $('#calendarMainID');
@@ -529,7 +372,7 @@ foreach(loadAppearance() as $key => $value) {
                             deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
                                 refreshPreloader.remove();
                             });
-                        },600);               
+                        },600);
                         $.ajax({
                             type: 'GET',
                             url: 'https://api.themoviedb.org/3/'+Type+'/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits&language=<?php echo $userLanguage; ?>',
@@ -538,13 +381,18 @@ foreach(loadAppearance() as $key => $value) {
                             complete: function(xhr, status) {
                                 var result = $.parseJSON(xhr.responseText);
                                 if (xhr.statusText === "OK") {
-                                    if( Type === "movie"){ 
+									if(typeof location !== 'undefined'){
+										$('#calendarTrailer').html(convertTrailer(result.videos)+'&nbsp;<span class="label openPlex palette-Amber-600 bg" openTab="'+openTab+'" location="'+location+'" style="width:100%;display:block;cursor:pointer;"><i style="vertical-align:sub;" class="fa fa-play white"></i><text style="vertical-align:sub;"> Watch Now on PLEX</text></span>');
+									}else{
+										$('#calendarTrailer').html(convertTrailer(result.videos));
+									}
+                                    if( Type === "movie"){
                                         $('#calendarTitle').html(result.title);
                                         $('#calendarRating').html('<span class="label label-gray"><i class="fa fa-thumbs-up white"></i> '+result.vote_average+'</span>&nbsp;');
                                         $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(result.runtime)+'</span>&nbsp;');
                                         $('#calendarSummary').text(result.overview);
                                         $('#calendarTagline').text(result.tagline);
-                                        $('#calendarTrailer').html(convertTrailer(result.videos)+'&nbsp;<span class="label openPlex palette-Amber-600 bg" openTab="'+openTab+'" location="'+location+'" style="width:100%;display:block;cursor:pointer;"><i style="vertical-align:sub;" class="fa fa-play white"></i><text style="vertical-align:sub;"> Watch Now on PLEX</text></span>');
+
                                         $('#calendarCast').html(convertCast(result.credits));
                                         $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
                                         $('#calendarLang').html(convertArray(result.spoken_languages, "MOVIE"));
@@ -557,7 +405,7 @@ foreach(loadAppearance() as $key => $value) {
                                         $('#calendarRuntime').html('<span class="label label-gray"><i class="fa fa-clock-o white"></i> '+convertTime(whatWasIt(result.episode_run_time))+'</span>&nbsp;');
                                         $('#calendarSummary').text(result.overview);
                                         $('#calendarTagline').text("");
-                                        $('#calendarTrailer').html(convertTrailer(result.videos)+'&nbsp;<span class="label openPlex palette-Amber-600 bg" openTab="'+openTab+'" location="'+location+'" style="width:100%;display:block;cursor:pointer;"><i style="vertical-align:sub;" class="fa fa-play white"></i><text style="vertical-align:sub;"> Watch Now on PLEX</text></span>');
+
                                         $('#calendarCast').html(convertCast(result.credits));
                                         $('#calendarGenres').html(convertArray(result.genres, "MOVIE"));
                                         $('#calendarLang').html(convertArray(result.languages, "TV"));
@@ -610,11 +458,214 @@ foreach(loadAppearance() as $key => $value) {
 				window.open(source, '_blank');
 			}
         });
-        
-            
+
+
         function localStorageSupport() {
             return (('localStorage' in window) && window['localStorage'] !== null)
         }
+
+		function loadSlick(){
+			$('div[class*=recentItems-]').each(function() {
+				var needsSlick = true;
+				var name = $(this).attr("data-name");
+				if($(this).hasClass('slick-initialized')){
+					console.log('skipping slick addon for: '+name);
+					needsSlick = false;
+				}
+				if(needsSlick === true){
+	                console.log('creating slick for '+name);
+	                $(this).slick({
+
+	                    slidesToShow: 27,
+	                    slidesToScroll: 27,
+	                    infinite: true,
+						//speed: 900,
+	                    lazyLoad: 'ondemand',
+	                    prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
+	                    nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
+	                    appendArrows: $('.'+name),
+	                    arrows: true,
+	                    responsive: [
+							{
+								breakpoint: 3744,
+								settings: {
+									slidesToShow: 26,
+									slidesToScroll: 26,
+								}
+							},
+							{
+								breakpoint: 3600,
+								settings: {
+									slidesToShow: 25,
+									slidesToScroll: 25,
+								}
+							},
+							{
+								breakpoint: 3456,
+								settings: {
+									slidesToShow: 24,
+									slidesToScroll: 24,
+								}
+							},
+							{
+								breakpoint: 3312,
+								settings: {
+									slidesToShow: 23,
+									slidesToScroll: 23,
+								}
+							},
+							{
+								breakpoint: 3168,
+								settings: {
+									slidesToShow: 22,
+									slidesToScroll: 22,
+								}
+							},
+							{
+								breakpoint: 3024,
+								settings: {
+									slidesToShow: 21,
+									slidesToScroll: 21,
+								}
+							},
+							{
+								breakpoint: 2880,
+								settings: {
+									slidesToShow: 20,
+									slidesToScroll: 20,
+								}
+							},
+							{
+								breakpoint: 2736,
+								settings: {
+									slidesToShow: 19,
+									slidesToScroll: 19,
+								}
+							},
+							{
+								breakpoint: 2592,
+								settings: {
+									slidesToShow: 18,
+									slidesToScroll: 18,
+								}
+							},
+							{
+								breakpoint: 2448,
+								settings: {
+									slidesToShow: 17,
+									slidesToScroll: 17,
+								}
+							},
+							{
+			                    breakpoint: 2304,
+			                    settings: {
+			                        slidesToShow: 16,
+			                        slidesToScroll: 16,
+			                    }
+		                    },
+							{
+								breakpoint: 2160,
+								settings: {
+									slidesToShow: 15,
+									slidesToScroll: 15,
+								}
+							},
+							{
+			                    breakpoint: 2016,
+			                    settings: {
+			                        slidesToShow: 14,
+			                        slidesToScroll: 14,
+			                    }
+		                    },
+							{
+			                    breakpoint: 1872,
+			                    settings: {
+			                        slidesToShow: 13,
+			                        slidesToScroll: 13,
+			                    }
+		                    },
+							{
+			                    breakpoint: 1728,
+			                    settings: {
+			                        slidesToShow: 12,
+			                        slidesToScroll: 12,
+			                    }
+		                    },
+							{
+			                    breakpoint: 1584,
+			                    settings: {
+			                        slidesToShow: 11,
+			                        slidesToScroll: 11,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 1440,
+			                    settings: {
+			                        slidesToShow: 10,
+			                        slidesToScroll: 10,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 1296,
+			                    settings: {
+			                        slidesToShow: 9,
+			                        slidesToScroll: 9,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 1152,
+			                    settings: {
+			                        slidesToShow: 8,
+			                        slidesToScroll: 8,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 1008,
+			                    settings: {
+			                        slidesToShow: 7,
+			                        slidesToScroll: 7,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 864,
+			                    settings: {
+			                        slidesToShow: 6,
+			                        slidesToScroll: 6,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 720,
+			                    settings: {
+			                        slidesToShow: 5,
+			                        slidesToScroll: 5,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 576,
+			                    settings: {
+			                        slidesToShow: 4,
+			                        slidesToScroll: 4,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 432,
+			                    settings: {
+			                        slidesToShow: 3,
+			                        slidesToScroll: 3,
+			                    }
+		                    },
+		                    {
+			                    breakpoint: 288,
+			                    settings: {
+			                        slidesToShow: 2,
+			                        slidesToScroll: 2,
+			                    }
+		                    }
+		                ]
+	                });
+				}
+            });
+		}
 
         $( document ).ready(function() {
             $('#plexSearchForm').on('submit', function () {
@@ -631,6 +682,33 @@ foreach(loadAppearance() as $key => $value) {
                 }).done(function(data){ $('#resultshere').html(data);});
 
             });
+			$(document).on('click', '.requestAction', function(){
+				var type = $(this).parent().attr('request-type');
+				var action = $(this).parent().attr('request-name');
+				var id = $(this).parent().attr('request-id');
+				console.log('OMBI Action: [type: '+type+' | action: '+action+' | id: '+id+']');
+				ajax_request('POST', 'ombi-action', {
+                    id: id,
+					action_type: action,
+					type: type,
+                }).done(function(data){
+                    $.ajax({
+        				url: 'ajax.php?a=ombi-requests',
+        				timeout: 10000,
+        				type: 'GET',
+        				success: function(response) {
+        					var getDiv = response;
+        					var loadedID = 	$(getDiv).attr('id');
+        					$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+        					console.log('OMBI ACTION Submited and reloaded: '+loadedID);
+                            loadSlick();
+        				},
+        				error: function(jqXHR, textStatus, errorThrown) {
+        					console.error(loadedID+' could not be updated');
+        				}
+        			});
+				});
+			});
             $('.repeat-btn').click(function(){
                 var refreshBox = $(this).closest('div.content-box');
                 $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
@@ -645,110 +723,52 @@ foreach(loadAppearance() as $key => $value) {
                 var id = $(this).attr("link");
                 $("div[np^='"+id+"']").toggle();
             });
+			//load slick
+			loadSlick();
 
-            $('div[class*=recentItems-]').each(function() {
-                var name = $(this).attr("data-name");
-                console.log(name);
-                $(this).slick({
-                
-                    slidesToShow: 13,
-                    slidesToScroll: 13,
-                    infinite: true,
-                    lazyLoad: 'ondemand',
-                    prevArrow: '<a class="zero-m pull-left prev-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-left"></i></a>',
-                    nextArrow: '<a class="pull-left next-mail btn btn-default waves waves-button btn-sm waves-effect waves-float"><i class="fa fa-angle-right"></i></a>',
-                    appendArrows: $('.'+name),
-                    arrows: true,
-                    responsive: [
-                    {
-                    breakpoint: 1750,
-                    settings: {
-                        slidesToShow: 12,
-                        slidesToScroll: 12,
-                    }
-                    },
-                    {
-                    breakpoint: 1600,
-                    settings: {
-                        slidesToShow: 11,
-                        slidesToScroll: 11,
-                    }
-                    },
-                    {
-                    breakpoint: 1450,
-                    settings: {
-                        slidesToShow: 10,
-                        slidesToScroll: 10,
-                    }
-                    },
-                    {
-                    breakpoint: 1300,
-                    settings: {
-                        slidesToShow: 9,
-                        slidesToScroll: 9,
-                    }
-                    },
-                    {
-                    breakpoint: 1150,
-                    settings: {
-                        slidesToShow: 8,
-                        slidesToScroll: 8,
-                    }
-                    },
-                    {
-                    breakpoint: 1000,
-                    settings: {
-                        slidesToShow: 7,
-                        slidesToScroll: 7,
-                    }
-                    },
-                    {
-                    breakpoint: 850,
-                    settings: {
-                        slidesToShow: 6,
-                        slidesToScroll: 6,
-                    }
-                    },
-                    {
-                    breakpoint: 700,
-                    settings: {
-                        slidesToShow: 5,
-                        slidesToScroll: 5,
-                    }
-                    },
-                    {
-                    breakpoint: 675,
-                    settings: {
-                        slidesToShow: 4,
-                        slidesToScroll: 4
-                    }
-                    },
-                    {
-                    breakpoint: 480,
-                    settings: {
-                        slidesToShow: 3,
-                        slidesToScroll: 3
-                    }
-                    }
-                    // You can unslick at a given breakpoint now by adding:
-                    // settings: "unslick"
-                    // instead of a settings object
-                ]
-                });
-            });
             //RECENT ITEMS
-            // each filter we click on
+            // each filter we click on for plex
             $(".filter-recent-event > li").on("click", function() {
                 var name = $(this).attr('data-name');
                 var filter = $(this).attr('data-filter');
-                $('#recentContent-title').text('Recently Added '+name);
+                $('#recentContent-title-Plex').text('Plex Recently Added '+name);
                 // now filter the slides.
                 if(filter !== 'item-all'){
-                    $('.recentItems-recent')
+                    $('.recentItems-recent-Plex')
                         .slick('slickUnfilter')
                         .slick('slickFilter' , '.'+filter );
                 }else{
-                    $('.recentItems-recent')
+                    $('.recentItems-recent-Plex')
+                        .slick('slickUnfilter')
+                }
+            });
+			$(".filter-recent-event > li").on("click", function() {
+                var name = $(this).attr('data-name');
+                var filter = $(this).attr('data-filter');
+                $('#recentContent-title-Emby').text('Emby Recently Added '+name);
+                // now filter the slides.
+                if(filter !== 'item-all'){
+                    $('.recentItems-recent-Emby')
+                        .slick('slickUnfilter')
+                        .slick('slickFilter' , '.'+filter );
+                }else{
+                    $('.recentItems-recent-Emby')
+                        .slick('slickUnfilter')
+                }
+            });
+			//REQUEST ITEMS
+            // each filter we click on for emby
+            $(".filter-request-event > li").on("click", function() {
+                var name = $(this).attr('data-name');
+                var filter = $(this).attr('data-filter');
+                $('#requestContent-title').text('Requested '+name);
+                // now filter the slides.
+                if(filter !== 'item-all'){
+                    $('.recentItems-request')
+                        .slick('slickUnfilter')
+                        .slick('slickFilter' , '.'+filter );
+                }else{
+                    $('.recentItems-request')
                         .slick('slickUnfilter')
                 }
             });
@@ -758,7 +778,7 @@ foreach(loadAppearance() as $key => $value) {
                 var name = $(this).attr('data-name');
                 var filter = $(this).attr('data-filter');
                 $('#playlist-title').text(name);
-                
+
                 // now filter the slides.
                 $('.recentItems-playlists')
                     .slick('slickUnfilter')
@@ -829,7 +849,7 @@ foreach(loadAppearance() as $key => $value) {
                 var y = date.getFullYear();
 
                 $('#calendar').fullCalendar({
-                    eventLimit: false, 
+                    eventLimit: false,
                     firstDay: <?php echo CALENDARSTART;?>,
                     height: "auto",
                     defaultView: '<?php echo CALENDARVIEW;?>',
@@ -889,8 +909,8 @@ foreach(loadAppearance() as $key => $value) {
                 {
                     newData =  $.parseJSON(data);
                     $('#calendar').fullCalendar('removeEvents');
-                    $('#calendar').fullCalendar('addEventSource', newData);   
-                    console.log('Calendar Entries Added');      
+                    $('#calendar').fullCalendar('addEventSource', newData);
+                    console.log('Calendar Entries Added');
                 }
             });
             setInterval(function() {
@@ -901,8 +921,8 @@ foreach(loadAppearance() as $key => $value) {
                     {
                         newData =  $.parseJSON(data);
                         $('#calendar').fullCalendar('removeEvents');
-                        $('#calendar').fullCalendar('addEventSource', newData);  
-                        console.log('Calendar refreshed');       
+                        $('#calendar').fullCalendar('addEventSource', newData);
+                        console.log('Calendar refreshed');
                     }
                 });
             }, <?php echo CALENDARREFRESH; ?>);
@@ -990,8 +1010,8 @@ foreach(loadAppearance() as $key => $value) {
                     var type = "TV";
                     ajax_request('POST', 'tvdb-get', {
                         id: ID,
-                    }).done(function(data){ 
-                        if( data.trakt && data.trakt.tmdb !== null) {    
+                    }).done(function(data){
+                        if( data.trakt && data.trakt.tmdb !== null) {
                             $('#calendarExtra').modal('show');
                             var refreshBox = $('#calendarMainID');
                             $("<div class='refresh-preloader'><div class='la-timer la-dark'><div></div></div></div>").appendTo(refreshBox).fadeIn(300);
@@ -1000,7 +1020,7 @@ foreach(loadAppearance() as $key => $value) {
                                 deletedRefreshBox = refreshPreloader.fadeOut(300, function(){
                                     refreshPreloader.remove();
                                 });
-                            },600);                    
+                            },600);
                             $.ajax({
                                 type: 'GET',
                                 url: 'https://api.themoviedb.org/3/tv/'+data.trakt.tmdb+'?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&append_to_response=videos,credits&language=<?php echo $userLanguage; ?>',
@@ -1083,10 +1103,10 @@ foreach(loadAppearance() as $key => $value) {
                    <div style="position: inherit; padding: 15px 0px 30px 0px; margin-top: -20px;">
                         <div class="col-sm-4">
                             <span id="calendarTrailer" class="pull-left" style="width:100%;display: flex;"></span>
-                        </div> 
-                        <div class="col-sm-8">   
+                        </div>
+                        <div class="col-sm-8">
                             <span id="calendarLang" class="pull-right"></span>
-                        </div>                        
+                        </div>
                     </div>
                 </div>
             </div>

@@ -749,7 +749,7 @@ a.text-info:hover {
   font-size: 19px;
   text-align: center;
   text-align: -webkit-center;
-    
+
 }
 
 .gn-menu .label {
@@ -958,7 +958,7 @@ button::-moz-focus-inner {
 html, body {
   height: 100%;
 }
-::-webkit-scrollbar { 
+::-webkit-scrollbar {
    display: none;
 }
 
@@ -971,10 +971,10 @@ body {
   position: relative;
   background: #F1F4F5;
   overflow-x: hidden;
-  overflow-x:hidden; 
+  overflow-x:hidden;
   /*MS Edge */
   -ms-overflow-style: -ms-autohiding-scrollbar;
-  -ms-overflow-style: none; 
+  -ms-overflow-style: none;
 }
 
 .main-wrapper {
@@ -1017,6 +1017,10 @@ body {
 
 .zero-m {
   margin: 0 !important;
+}
+
+.zero-p {
+  padding: 0 !important;
 }
 
 .green {
@@ -1062,7 +1066,9 @@ body {
 .grayish-blue {
   color: #37474f;
 }
-
+.white {
+	color: #fff;
+}
 .white-bg {
   background: #fff !important;
 }
@@ -1167,7 +1173,7 @@ body {
 }
 
 .small-box {
-  padding: 20px 5px;
+  padding: 20px 8px;
 }
 
 .small-box .info {
@@ -2218,7 +2224,7 @@ table.dataTable.no-footer, table.dataTable thead th, table.dataTable thead td {
     .fc-title {
      text-overflow: ellipsis;
      white-space: nowrap;
-     overflow: hidden;   
+     overflow: hidden;
     }
 }
 
@@ -3530,7 +3536,7 @@ ul.inbox-pagination li {
 
 .ns-effect-bouncyflip p {
   padding: 0.5em 0.8em 0.8em 3.5em;
-  padding-left: 0px !important;    
+  padding-left: 0px !important;
 }
 
 .ns-effect-bouncyflip .ns-close::after,
@@ -5964,17 +5970,17 @@ label {
   z-index: 1;
   /*right: -425px;*/
   right: calc(-105%);
-  right: -webkit-calc(-105%);    
+  right: -webkit-calc(-105%);
   -webkit-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.13);
           box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.13);
-  
+
 }
 
 .mini-nav .members-sidebar {
   width: calc(100% - 50px);
   width: -webkit-calc(100% - 50px);
   right: calc(-100%);
-  right: -webkit-calc(-100%); 
+  right: -webkit-calc(-100%);
 }
 
 .members-sidebar .messages {
@@ -6195,7 +6201,7 @@ label {
 }
 
 .content-tools a {
-  color: #76828E; 
+  color: #76828E;
 }
 
 .flot-tooltip {
@@ -6214,7 +6220,7 @@ label {
   }
   .mdi-window-restore {
     display: none !important;
-  }    
+  }
   /*Remove margins from content block*/
   .content {
     margin: 0;

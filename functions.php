@@ -2,11 +2,30 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.50');
+ define('INSTALLEDVERSION', '1.6');
 // ===================================
 use Kryptonit3\Sonarr\Sonarr;
 use Kryptonit3\SickRage\SickRage;
-
+//homepage order
+function homepageOrder(){
+	$homepageOrder = array(
+		"homepageOrdercustomhtml" => homepageOrdercustomhtml,
+		"homepageOrdernotice" => homepageOrdernotice,
+		"homepageOrderplexsearch" => homepageOrderplexsearch,
+		"homepageOrderspeedtest" => homepageOrderspeedtest,
+		"homepageOrdernzbget" => homepageOrdernzbget,
+		"homepageOrdersabnzbd" => homepageOrdersabnzbd,
+		"homepageOrderplexnowplaying" => homepageOrderplexnowplaying,
+		"homepageOrderplexrecent" => homepageOrderplexrecent,
+		"homepageOrderplexplaylist" => homepageOrderplexplaylist,
+		"homepageOrderembynowplaying" => homepageOrderembynowplaying,
+		"homepageOrderembyrecent" => homepageOrderembyrecent,
+		"homepageOrderombi" => homepageOrderombi,
+		"homepageOrdercalendar" => homepageOrdercalendar,
+	);
+	asort($homepageOrder);
+	return $homepageOrder;
+}
 // Debugging output functions
 function debug_out($variable, $die = false) {
 	$trace = debug_backtrace()[0];
@@ -27,34 +46,34 @@ if (function_exists('ldap_connect')) :
 			$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:'ldap'));
 			$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
 			$port = (isset($digest['port'])?$digest['port']:(strtolower($scheme)=='ldap'?389:636));
-			
+
 			// Reassign
 			$ldapServers[$key] = $scheme.'://'.$host.':'.$port;
 		}
-		
+
 		// returns true or false
 		$ldap = ldap_connect(implode(' ',$ldapServers));
 		if(empty(AUTHBACKENDDOMAINFORMAT)){
 			if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
-				writeLog("success", "LDAP authentication success"); 
+				writeLog("success", "LDAP authentication success");
 				return true;
 			} else {
-				writeLog("error", "LDAP could not authenticate"); 
+				writeLog("error", "LDAP could not authenticate");
 				return false;
 			}
 		}else{
 			ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 			ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
-			$bind = ldap_bind($ldap, sprinf(AUTHBACKENDDOMAINFORMAT, $username), $password);
+			$bind = @ldap_bind($ldap, sprintf(AUTHBACKENDDOMAINFORMAT, $username), $password);
 			if ($bind) {
-				writeLog("success", "LDAP authentication success"); 
+				writeLog("success", "LDAP authentication success");
 				return true;
 			} else {
-				writeLog("error", "LDPA could not authenticate"); 
+				writeLog("error", "LDPA could not authenticate");
 				return false;
-			}			
+			}
 		}
-  		writeLog("error", "LDAP could not authenticate");      
+  		writeLog("error", "LDAP could not authenticate");
 		return false;
 	}
 else :
@@ -71,7 +90,7 @@ function plugin_auth_ftp($username, $password) {
 	$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:(function_exists('ftp_ssl_connect')?'ftps':'ftp')));
 	$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
 	$port = (isset($digest['port'])?$digest['port']:21);
-	
+
 	// Determine Connection Type
 	if ($scheme == 'ftps') {
 		$conn_id = ftp_ssl_connect($host, $port, 20);
@@ -79,22 +98,22 @@ function plugin_auth_ftp($username, $password) {
 		$conn_id = ftp_connect($host, $port, 20);
 	} else {
 		debug_out('Invalid FTP scheme. Use ftp or ftps');
-  		writeLog("error", "invalid FTP scheme"); 
+  		writeLog("error", "invalid FTP scheme");
 		return false;
 	}
-	
+
 	// Check if valid FTP connection
 	if ($conn_id) {
 		// Attempt login
 		@$login_result = ftp_login($conn_id, $username, $password);
 		ftp_close($conn_id);
-		
+
 		// Return Result
 		if ($login_result) {
-   			writeLog("success", "$username authenticated");       
+   			writeLog("success", "$username authenticated");
 			return true;
 		} else {
-   			writeLog("error", "$username could not authenticate");      
+   			writeLog("error", "$username could not authenticate");
 			return false;
 		}
 	} else {
@@ -106,7 +125,7 @@ function plugin_auth_ftp($username, $password) {
 // Pass credentials to Emby Backend
 function plugin_auth_emby_local($username, $password) {
 	$embyAddress = qualifyURL(EMBYURL);
-	
+
 	$headers = array(
 		'Authorization'=> 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
 		'Content-Type' => 'application/json',
@@ -116,9 +135,9 @@ function plugin_auth_emby_local($username, $password) {
 		'Password' => sha1($password),
 		'PasswordMd5' => md5($password),
 	);
-	
+
 	$response = post_router($embyAddress.'/Users/AuthenticateByName', $body, $headers);
-	
+
 	if (isset($response['content'])) {
 		$json = json_decode($response['content'], true);
 		if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
@@ -143,14 +162,14 @@ if (function_exists('curl_version')) :
 			return plugin_auth_emby_connect($username, $password);
 		}
 	}
-	
+
 	// Authenicate against emby connect
 	function plugin_auth_emby_connect($username, $password) {
 		$embyAddress = qualifyURL(EMBYURL);
-		
+
 		// Get A User
 		$connectId = '';
-		$userIds = json_decode(file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
+		$userIds = json_decode(@file_get_contents($embyAddress.'/Users?api_key='.EMBYTOKEN),true);
 		if (is_array($userIds)) {
 			foreach ($userIds as $key => $value) { // Scan for this user
 				if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
@@ -158,10 +177,10 @@ if (function_exists('curl_version')) :
 						$connectId = $value['ConnectUserId'];
 						break;
 					}
-					
+
 				}
 			}
-			
+
 			if ($connectId) {
 				$connectURL = 'https://connect.emby.media/service/user/authenticate';
 				$headers = array(
@@ -172,9 +191,9 @@ if (function_exists('curl_version')) :
 					'nameOrEmail' => $username,
 					'rawpw' => $password,
 				);
-				
+
 				$result = curl_post($connectURL, $body, $headers);
-				
+
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
 					if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
@@ -186,26 +205,28 @@ if (function_exists('curl_version')) :
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
 	// Pass credentials to Plex Backend
 	function plugin_auth_plex($username, $password) {
 		// Quick out
+		$isAdmin = false;
 		if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
-   			writeLog("success", $username." authenticated by plex");
-			return true;
+   			writeLog("success", "Admin: ".$username." authenticated by plex");
+			//return true;
+			$isAdmin = true;
 		}
-		
+
 		//Get User List
 		$userURL = 'https://plex.tv/pms/friends/all';
 		$userHeaders = array(
-			'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD), 
+			'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD),
 		);
 		libxml_use_internal_errors(true);
 		$userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
-		
+
 		if (is_array($userXML) || is_object($userXML)) {
 			$isUser = false;
 			$usernameLower = strtolower($username);
@@ -216,8 +237,8 @@ if (function_exists('curl_version')) :
 					break;
 				}
 			}
-			
-			if ($isUser) {
+
+			if ($isUser || $isAdmin) {
 				//Login User
 				$connectURL = 'https://plex.tv/users/sign_in.json';
 				$headers = array(
@@ -238,7 +259,8 @@ if (function_exists('curl_version')) :
 						writeLog("success", $json['user']['username']." was logged into organizr using plex credentials");
                         return array(
 							'email' => $json['user']['email'],
-							'image' => $json['user']['thumb']
+							'image' => $json['user']['thumb'],
+							'token' => $json['user']['authToken']
 						);
 					}
 				}
@@ -246,7 +268,7 @@ if (function_exists('curl_version')) :
 				writeLog("error", "$username is not an authorized PLEX user or entered invalid password");
 			}
 		}else{
-  			writeLog("error", "error occured logging into plex might want to check curl.cainfo=/path/to/downloaded/cacert.pem in php.ini");   
+  			writeLog("error", "error occured logging into plex might want to check curl.cainfo=/path/to/downloaded/cacert.pem in php.ini");
 		}
 		return false;
 	}
@@ -255,12 +277,12 @@ else :
 	function plugin_auth_plex_disabled() {
 		return 'Plex - Disabled (Dependancy: php-curl missing!)';
 	}
-	
+
 	// Emby Connect Auth Missing Dependancy
 	function plugin_auth_emby_connect_disabled() {
 		return 'Emby Connect - Disabled (Dependancy: php-curl missing!)';
 	}
-	
+
 	// Emby Both Auth Missing Dependancy
 	function plugin_auth_emby_both_disabled() {
 		return 'Emby Both - Disabled (Dependancy: php-curl missing!)';
@@ -269,14 +291,14 @@ endif;
 // ==== Auth Plugins END ====
 // ==== General Class Definitions START ====
 $userLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : "en";
-class setLanguage { 
+class setLanguage {
     private $language = null;
 	   private $langCode = null;
-    
+
 	   function __construct($language = false) {
         // Default
         if (!$language) {
-            $language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : "en"; 
+            $language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : "en";
         }
 
         if (!file_exists("lang/{$language}.ini")) {
@@ -292,19 +314,19 @@ class setLanguage {
             }
         }
     }
-    
-	
+
+
 	public function getLang() {
 		return $this->langCode;
 	}
-    
+
     public function translate($originalWord) {
         $getArg = func_num_args();
         if ($getArg > 1) {
             $allWords = func_get_args();
-            array_shift($allWords); 
+            array_shift($allWords);
         } else {
-            $allWords = array(); 
+            $allWords = array();
         }
 
         $translatedWord = isset($this->language[$originalWord]) ? $this->language[$originalWord] : null;
@@ -314,10 +336,10 @@ class setLanguage {
         }
 
         $translatedWord = htmlspecialchars($translatedWord, ENT_QUOTES);
-        
+
         return vsprintf($translatedWord, $allWords);
     }
-} 
+}
 $language = new setLanguage;
 // ==== General Class Definitions END ====
 
@@ -336,7 +358,7 @@ if (function_exists('curl_version')) :
 		// Initiate cURL
 		$curlReq = curl_init($url);
 		// As post request
-		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST"); 
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
 		if(localURL($url)){
@@ -345,10 +367,51 @@ if (function_exists('curl_version')) :
 		}
 		// Format Data
 		switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
-			case 'application/json': 
+			case 'application/json':
 				curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
 				break;
-			case 'application/x-www-form-urlencoded';
+			case 'application/x-www-form-urlencoded':
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+				break;
+			default:
+				$headers['Content-Type'] = 'application/x-www-form-urlencoded';
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+		}
+		// Format Headers
+		$cHeaders = array();
+		foreach ($headers as $k => $v) {
+			$cHeaders[] = $k.': '.$v;
+		}
+		if (count($cHeaders)) {
+			curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+		}
+		// Execute
+		$result = curl_exec($curlReq);
+		$httpcode = curl_getinfo($curlReq);
+		// Close
+		curl_close($curlReq);
+		// Return
+		return array('content'=>$result, 'http_code'=>$httpcode);
+	}
+
+	// Curl Put
+	function curl_put($url, $data, $headers = array(), $referer='') {
+		// Initiate cURL
+		$curlReq = curl_init($url);
+		// As post request
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "PUT");
+		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
+		if(localURL($url)){
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($curlReq, CURLOPT_SSL_VERIFYPEER, 0);
+		}
+		// Format Data
+		switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
+			case 'application/json':
+				curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
+				break;
+			case 'application/x-www-form-urlencoded':
 				curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
 				break;
 			default:
@@ -377,7 +440,7 @@ if (function_exists('curl_version')) :
 		// Initiate cURL
 		$curlReq = curl_init($url);
 		// As post request
-		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "GET"); 
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "GET");
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
   		curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
@@ -400,13 +463,13 @@ if (function_exists('curl_version')) :
 		// Return
 		return $result;
 	}
-	
+
 	//Curl Delete Function
 	function curl_delete($url, $headers = array()) {
 		// Initiate cURL
 		$curlReq = curl_init($url);
 		// As post request
-		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "DELETE"); 
+		curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, "DELETE");
 		curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
   		curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
 		curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
@@ -440,7 +503,7 @@ function in_arrayi($needle, $haystack) {
 // HTTP post request (Removes need for curl, probably useless)
 function post_request($url, $data, $headers = array(), $referer='') {
 	// Adapted from http://stackoverflow.com/a/28387011/6810513
-	
+
     // Convert the data array into URL Parameters like a=b&foo=bar etc.
 	if (isset($headers['Content-Type'])) {
 		switch ($headers['Content-Type']) {
@@ -455,14 +518,14 @@ function post_request($url, $data, $headers = array(), $referer='') {
 		$headers['Content-Type'] = 'application/x-www-form-urlencoded';
 		$data = http_build_query($data);
 	}
-    
+
     // parse the given URL
     $urlDigest = parse_url($url);
 
     // extract host and path:
     $host = $urlDigest['host'];
     $path = $urlDigest['path'];
-	
+
     if ($urlDigest['scheme'] != 'http') {
         die('Error: Only HTTP request are supported, please use cURL to add HTTPS support! ('.$urlDigest['scheme'].'://'.$host.')');
     }
@@ -478,7 +541,7 @@ function post_request($url, $data, $headers = array(), $referer='') {
 
         if ($referer != '')
             fputs($fp, "Referer: $referer\r\n");
-		
+
         fputs($fp, "Content-length: ". strlen($data) ."\r\n");
 		foreach($headers as $k => $v) {
 			fputs($fp, $k.": ".$v."\r\n");
@@ -520,9 +583,9 @@ function post_request($url, $data, $headers = array(), $referer='') {
 function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showNames = false, $role = false, $moreInfo = false) {
 	// Static Height
 	$height = 444;
-	
+
 	// Get Item Details
-	$itemDetails = json_decode(file_get_contents($address.'/Items?Ids='.$item['Id'].'&api_key='.$token),true)['Items'][0];
+	$itemDetails = json_decode(@file_get_contents($address.'/Items?Ids='.$item['Id'].'&api_key='.$token),true)['Items'][0];
 	/*if (substr_count(EMBYURL, ':') == 2) {
 		$URL = "http://app.emby.media/itemdetails.html?id=".$itemDetails['Id'];
 	}else{
@@ -531,14 +594,16 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 	$URL = EMBYURL."/web/itemdetails.html?id=".$itemDetails['Id'];
 	switch ($itemDetails['Type']) {
 		case 'Episode':
+		case 'Series':
 			$title = (isset($itemDetails['SeriesName'])?$itemDetails['SeriesName']:"");
 			$imageId = (isset($itemDetails['SeriesId'])?$itemDetails['SeriesId']:$itemDetails['Id']);
 			$width = 300;
 			$style = '';
 			$image = 'slick-image-tall';
-			if(!$nowPlaying){ 
+			if(!$nowPlaying){
 				$imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
 				$key = $itemDetails['Id'] . "-list";
+				$itemType = 'season';
 			}else{
 				$height = 281;
 				$width = 500;
@@ -572,9 +637,10 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 			$width = 444;
     		$style = '';
     		$image = 'slick-image-short';
-			if(!$nowPlaying){ 
+			if(!$nowPlaying){
 				$imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
 				$key = $itemDetails['Id'] . "-list";
+				$itemType = 'album';
 			}else{
 				$height = 281;
 				$width = 500;
@@ -606,7 +672,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 			$width = 300;
 			$style = '';
 			$image = 'slick-image-tall';
-			if(!$nowPlaying){ 
+			if(!$nowPlaying){
 				$imageType = "Primary";
 				$key = $itemDetails['Id'] . "-list";
 			}else{
@@ -638,9 +704,10 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 			$width = 300;
 			$style = '';
 			$image = 'slick-image-tall';
-			if(!$nowPlaying){ 
+			if(!$nowPlaying){
 				$imageType = (isset($itemDetails['ImageTags']['Primary']) ? "Primary" : false);
 				$key = $itemDetails['Id'] . "-list";
+				$itemType = 'movie';
 			}else{
 				$height = 281;
 				$width = 500;
@@ -666,40 +733,41 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 				if($showNames == "true"){ $bottomTitle .= '</small><small class="zero-m pull-right">'.$user.'</small>'; }
 			}
 	}
-	
+
 	// If No Overview
 	if (!isset($itemDetails['Overview'])) {
 		$itemDetails['Overview'] = '';
 	}
-    
+	$original_image_url = 'ajax.php?a=emby-image&type='.$imageType.'&img='.$imageId.'&height='.$height.'&width='.$width.'&key='.$key.'$'.randString();
 	if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key.'.jpg'; }
     if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
-        $image_url = 'ajax.php?a=emby-image&type='.$imageType.'&img='.$imageId.'&height='.$height.'&width='.$width.'&key='.$key.'';        
+        $image_url = 'ajax.php?a=emby-image&type='.$imageType.'&img='.$imageId.'&height='.$height.'&width='.$width.'&key='.$key.'';
     }
-    
+
     if($nowPlaying){
-        if(!$imageType){ $image_url = "images/no-np.png"; $key = "no-np"; }
-        if(!$imageId){ $image_url = "images/no-np.png"; $key = "no-np"; }
+        if(!$imageType){ $original_image_url = $image_url = "images/no-np.png"; $key = "no-np"; }
+        if(!$imageId){ $original_image_url = $image_url = "images/no-np.png"; $key = "no-np"; }
     }else{
-        if(!$imageType){ $image_url = "images/no-list.png"; $key = "no-list"; }
-        if(!$imageId){ $image_url = "images/no-list.png"; $key = "no-list"; }
+        if(!$imageType){ $original_image_url = $image_url = "images/no-list.png"; $key = "no-list"; }
+        if(!$imageId){ $original_image_url = $image_url = "images/no-list.png"; $key = "no-list"; }
     }
     if(isset($useImage)){ $image_url = $useImage; }
-	
-	// Assemble Item And Cache Into Array     
+
+	// Assemble Item And Cache Into Array
 	if($nowPlaying){
     	//prettyPrint($itemDetails);
-    	return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$URL.'" target="_blank"><img style="width: 100%; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+    	return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="refreshNP w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a href="'.$URL.'" target="_blank"><img style="width: 100%; display:inherit;" src="'.$image_url.'" alt="'.$itemDetails['Name'].'" original-image="'.$original_image_url.'" class="refreshImageSource"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: 0%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
-		 return '<div class="item-'.$itemDetails['Type'].'"><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+		 return '<div class="item-'.$itemType.'"><div class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a href="'.$URL.'" target="_blank"><img alt="'.$itemDetails['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small class="elip slick-bottom-title">'.$title.'</small></div>';
 	}
 }
 
 // Format item from Plex for Carousel
 function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames = false, $role = false, $playlist = false) {
     // Static Height
-    $height = 444;  
-	$playlist = ($playlist) ? " playlist-$playlist" : "";  
+    $height = 444;
+	$widthOverride = 100;
+	$playlist = ($playlist) ? " playlist-$playlist" : "";
 
     switch ($item['type']) {
     	case 'season':
@@ -708,10 +776,10 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
             $width = 300;
             $image = 'slick-image-tall';
             $style = '';
-            if(!$nowPlaying){ 
+            if(!$nowPlaying){
                 $thumb = $item['thumb'];
                 $key = $item['ratingKey'] . "-list";
-            }else { 
+            }else {
                 $height = 281;
                 $width = 500;
                 $thumb = $item['art'];
@@ -739,10 +807,10 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
             $width = 300;
             $image = 'slick-image-tall';
             $style = '';
-            if(!$nowPlaying){ 
+            if(!$nowPlaying){
                 $thumb = ($item['parentThumb'] ? $item['parentThumb'] : $item['grandparentThumb']);
                 $key = $item['ratingKey'] . "-list";
-            }else { 
+            }else {
                 $height = 281;
                 $width = 500;
                 $thumb = $item['art'];
@@ -773,10 +841,10 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
             $width = 300;
             $image = 'slick-image-tall';
             $style = '';
-            if(!$nowPlaying){ 
+            if(!$nowPlaying){
                 $thumb = $item['thumb'];
                 $key = $item['ratingKey'] . "-list";
-            }else { 
+            }else {
                 $height = 281;
                 $width = 500;
                 $thumb = $item['art'];
@@ -810,14 +878,15 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
             $image = 'slick-image-short';
             $style = 'left: 160px !important;';
 			$item['ratingKey'] = $item['parentRatingKey'];
-            if(!$nowPlaying){ 
+            if(!$nowPlaying){
                 $width = 444;
                 $thumb = $item['thumb'];
                 $key = $item['ratingKey'] . "-list";
-            }else { 
+            }else {
                 $height = 281;
                 $width = 500;
-                $thumb = $item['art'];
+				$thumb = ($item['art']) ? $item['art'] :  $item['parentThumb'];
+				$widthOverride = ($item['art']) ? 100 :  56;
                 $key = $item['ratingKey'] . "-np";
                 $elapsed = $item['viewOffset'];
                 $duration = ($item['duration']) ? $item['duration'] : $item->Media['duration'];
@@ -843,11 +912,11 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
             $summary = $item['summary'];
             $image = 'slick-image-tall';
             $style = '';
-            if(!$nowPlaying){ 
+            if(!$nowPlaying){
                 $width = 300;
                 $thumb = $item['thumb'];
                 $key = $item['ratingKey'] . "-list";
-            }else { 
+            }else {
                 $height = 281;
                 $width = 500;
                 $thumb = $item['art'];
@@ -872,37 +941,37 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
                 if($showNames == "true"){ $bottomTitle .= '<small class="zero-m pull-right">'.$user.'</small>'; }
             }
 		}
-	
-		if (substr_count(PLEXURL, '.') != 2) {
-			$address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
+
+		if (PLEXTABURL) {
+			$address = PLEXTABURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
 		}else{
-			$address = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
+			$address = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$item['ratingKey'];
 		}
 
     // If No Overview
     if (!isset($itemDetails['Overview'])) { $itemDetails['Overview'] = ''; }
-
+	$original_image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'$'.randString();
     if (file_exists('images/cache/'.$key.'.jpg')){ $image_url = 'images/cache/'.$key.'.jpg'; }
     if (file_exists('images/cache/'.$key.'.jpg') && (time() - 604800) > filemtime('images/cache/'.$key.'.jpg') || !file_exists('images/cache/'.$key.'.jpg')) {
-        $image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'';        
+        $image_url = 'ajax.php?a=plex-image&img='.$thumb.'&height='.$height.'&width='.$width.'&key='.$key.'';
     }
     if($nowPlaying){
-        if(!$thumb){ $image_url = "images/no-np.png"; $key = "no-np"; }
+        if(!$thumb){ $original_image_url = $image_url = "images/no-np.png"; $key = "no-np"; }
     }else{
-        if(!$thumb){ $image_url = "images/no-list.png"; $key = "no-list"; }
+        if(!$thumb){ $original_image_url = $image_url = "images/no-list.png"; $key = "no-list"; }
     }
 	if(isset($useImage)){ $image_url = $useImage; }
 	$openTab = (PLEXTABNAME) ? "true" : "false";
-    // Assemble Item And Cache Into Array 
+    // Assemble Item And Cache Into Array
     if($nowPlaying){
-        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img style="width: 100%; display:inherit;" src="'.$image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="refreshNP w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><div class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img class="refreshImageSource" style="width: '.$widthOverride.'%; display:block;" src="'.$image_url.'" original-image="'.$original_image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
-        return '<div class="item-'.$item['type'].$playlist.'"><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.'" data-lazy="'.$image_url.'"></a><small style="margin-right: 13px" class="elip">'.$title.'</small></div>';
+        return '<div class="item-'.$item['type'].$playlist.'"><div style="" class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small class="elip slick-bottom-title">'.$title.'</small></div>';
     }
 }
 //$hideMenu .= '<li data-filter="playlist-'.$className.'" data-name="'.$api['title'].'"><a class="js-filter-'.$className.'" href="javascript:void(0)">'.$api['title'].'</a></li>';
 //Recent Added
-function outputRecentAdded($header, $items, $script = false, $array) {
+function outputRecentAdded($header, $items, $script = false, $array, $type) {
     $hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter &nbsp;<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu filter-recent-event">';
     if(preg_grep("/item-movie/", $items)){
         $hideMenu .= '<li data-filter="item-movie" data-name="Movies" data-filter-on="false"><a class="js-filter-movie" href="javascript:void(0)">Movies</a></li>';
@@ -917,55 +986,46 @@ function outputRecentAdded($header, $items, $script = false, $array) {
     $hideMenu .= '</ul></div></div>';
     // If None Populate Empty Item
     if (!count($items)) {
-        return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
+        return '<div id="recentMedia'.$type.'" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
     }else{
-		$className = str_replace(' ', '', $header);
-        return '<div id="recentMedia" class="content-box box-shadow big-box"><h5 id="recentContent-title" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-recent" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+		$className = str_replace(' ', '', $header.' on '.$type);
+        return '<div id="recentMedia'.$type.'" class="content-box box-shadow big-box"><h5 id="recentContent-title-'.$type.'" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-recent-'.$type.'" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
-    
+
 }
 
 // Create Carousel
 function outputNowPlaying($header, $size, $type, $items, $script = false) {
 	// If None Populate Empty Item
 	if (!count($items)) {
-		return '<div id=streamz></div>'.($script?'<script>'.$script.'</script>':'');
+		return '<div id="'.$type.'"></div>'.($script?'<script>'.$script.'</script>':'');
 	}else{
-	   return '<div id=streamz><h5 class="zero-m big-box"><strong>'.$header.'</strong></h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
+	   return '<div id="'.$type.'"><h5 class="zero-m big-box"><strong>'.$header.'</strong></h5>'.implode('',$items).'</div>'.($script?'<script>'.$script.'</script>':'');
  }
-    
+
 }
 
 // Get Now Playing Streams From Emby
 function getEmbyStreams($size, $showNames, $role) {
 	$address = qualifyURL(EMBYURL);
-	
+
 	$api = json_decode(@file_get_contents($address.'/Sessions?api_key='.EMBYTOKEN),true);
 	if (!is_array($api)) { return 'Could not load!'; }
-	
+
 	$playingItems = array();
 	foreach($api as $key => $value) {
 		if (isset($value['NowPlayingItem'])) {
 			$playingItems[] = resolveEmbyItem($address, EMBYTOKEN, $value['NowPlayingItem'], true, $showNames, $role, $value);
 		}
 	}
-	
-	return outputNowPlaying(translate('PLAYING_NOW_ON_EMBY'), $size, 'streams-emby', $playingItems, "
-		setInterval(function() {
-			$('<div></div>').load('ajax.php?a=emby-streams',function() {
-				var element = $(this).find('[id]');
-				var loadedID = 	element.attr('id');
-				$('#'+loadedID).replaceWith(element);
-				console.log('Loaded updated: '+loadedID);
-			});
-		}, 15000);
-	");
+
+	return outputNowPlaying(translate('PLAYING_NOW_ON_EMBY')." ( ".count($playingItems)." Streams )", $size, 'streams-emby', $playingItems, ajaxLoop('emby-streams',NOWPLAYINGREFRESH));
 }
 
 // Get Now Playing Streams From Plex
 function getPlexStreams($size, $showNames, $role){
     $address = qualifyURL(PLEXURL);
-    
+
 	// Perform API requests
 	$api = @curl_get($address."/status/sessions?X-Plex-Token=".PLEXTOKEN);
 	libxml_use_internal_errors(true);
@@ -983,16 +1043,7 @@ function getPlexStreams($size, $showNames, $role){
 				$items[] = resolvePlexItem($gotServer, PLEXTOKEN, $child, true, $showNames, $role);
 			}
 
-			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX')." ( ".count($items)." Streams )", $size, 'streams-plex', $items, "
-				setInterval(function() {
-					$('<div></div>').load('ajax.php?a=plex-streams',function() {
-						var element = $(this).find('[id]');
-						var loadedID = 	element.attr('id');
-						$('#'+loadedID).replaceWith(element);
-						console.log('Loaded updated: '+loadedID);
-					});
-				}, 15000);
-			");
+			return outputNowPlaying(translate('PLAYING_NOW_ON_PLEX')." ( ".count($items)." Streams )", $size, 'streams-plex', $items, ajaxLoop('plex-streams',NOWPLAYINGREFRESH));
 		}else{
 			writeLog("error", "PLEX STREAM ERROR: could not connect - check token - if HTTPS, is cert valid");
 		}
@@ -1028,8 +1079,8 @@ function getEmbyRecent($array) {
     }
 
     // Get the latest Items
-    $latest = json_decode(file_get_contents($address.'/Users/'.$userId.'/Items/Latest?EnableImages=false&Limit='.EMBYRECENTITEMS.'&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
-	
+    $latest = json_decode(@file_get_contents($address.'/Users/'.$userId.'/Items/Latest?EnableImages=false&Limit='.EMBYRECENTITEMS.'&api_key='.EMBYTOKEN.($showPlayed?'':'&IsPlayed=false')),true);
+
     // For Each Item In Category
     $items = array();
     foreach ($latest as $k => $v) {
@@ -1047,14 +1098,14 @@ function getEmbyRecent($array) {
     unset($array["MusicAlbum"]);
     unset($array["Series"]);
 
-    return outputRecentAdded($header, $items, "", $array);
+    return outputRecentAdded($header, $items, ajaxLoop('emby-recent',RECENTREFRESH,'loadSlick();'), $array, 'Emby');
 }
 
 // Get Recent Content From Plex
 function getPlexRecent($array){
     $address = qualifyURL(PLEXURL);
 	$header = translate('RECENT_CONTENT');
-	
+
 	// Perform Requests
 	$api = @curl_get($address."/library/recentlyAdded?limit=".PLEXRECENTITEMS."&X-Plex-Token=".PLEXTOKEN);
 	libxml_use_internal_errors(true);
@@ -1075,7 +1126,7 @@ function getPlexRecent($array){
 				}
 			}
 
-			return outputRecentAdded($header, $items, "", $array);
+			return outputRecentAdded($header, $items, ajaxLoop('plex-recent',RECENTREFRESH,'loadSlick();'), $array, 'Plex');
 		}else{
 			writeLog("error", "PLEX RECENT-ITEMS ERROR: could not connect - check token - if HTTPS, is cert valid");
 		}
@@ -1086,6 +1137,7 @@ function getPlexRecent($array){
 
 // Get Image From Emby
 function getEmbyImage() {
+	$refresh = false;
 	$embyAddress = qualifyURL(EMBYURL);
     if (!file_exists('images/cache')) {
         mkdir('images/cache', 0777, true);
@@ -1093,24 +1145,29 @@ function getEmbyImage() {
 
 	$itemId = $_GET['img'];
  	$key = $_GET['key'];
+	if(strpos($key, '$') !== false){
+		$key = explode('$', $key)[0];
+		$refresh = true;
+	}
 	$itemType = $_GET['type'];
 	$imgParams = array();
 	if (isset($_GET['height'])) { $imgParams['height'] = 'maxHeight='.$_GET['height']; }
 	if (isset($_GET['width'])) { $imgParams['width'] = 'maxWidth='.$_GET['width']; }
 
 	if(isset($itemId)) {
-     $image_src = $embyAddress . '/Items/'.$itemId.'/Images/'.$itemType.'?'.implode('&', $imgParams);
-    $cachefile = 'images/cache/'.$key.'.jpg';
-    $cachetime = 604800;
-    // Serve from the cache if it is younger than $cachetime
-    if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
-        header("Content-type: image/jpeg");
-        @readfile($cachefile);
-        exit;
-    }
+	    $image_src = $embyAddress . '/Items/'.$itemId.'/Images/'.$itemType.'?'.implode('&', $imgParams);
+	    $cachefile = 'images/cache/'.$key.'.jpg';
+	    $cachetime = 604800;
+	    // Serve from the cache if it is younger than $cachetime
+	    if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh !== true) {
+	        header("Content-type: image/jpeg");
+	        @readfile($cachefile);
+	        exit;
+	    }
         ob_start(); // Start the output buffer
         header('Content-type: image/jpeg');
-        @readfile($image_src);
+        //@readfile($image_src);
+		echo @curl_get($image_src);
         // Cache the output to a file
         $fp = fopen($cachefile, 'wb');
         fwrite($fp, ob_get_contents());
@@ -1124,29 +1181,35 @@ function getEmbyImage() {
 
 // Get Image From Plex
 function getPlexImage() {
+	$refresh = false;
 	$plexAddress = qualifyURL(PLEXURL);
     if (!file_exists('images/cache')) {
         mkdir('images/cache', 0777, true);
     }
-	
+
 	$image_url = $_GET['img'];
 	$key = $_GET['key'];
+	if(strpos($key, '$') !== false){
+		$key = explode('$', $key)[0];
+		$refresh = true;
+	}
 	$image_height = $_GET['height'];
 	$image_width = $_GET['width'];
-	
+
 	if(isset($image_url) && isset($image_height) && isset($image_width)) {
 		$image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . PLEXTOKEN;
         $cachefile = 'images/cache/'.$key.'.jpg';
         $cachetime = 604800;
         // Serve from the cache if it is younger than $cachetime
-        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) {
+        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh == false) {
             header("Content-type: image/jpeg");
             @readfile($cachefile);
             exit;
         }
 		ob_start(); // Start the output buffer
         header('Content-type: image/jpeg');
-		@readfile($image_src);
+		//@readfile($image_src);
+		echo @curl_get($image_src);
         // Cache the output to a file
         $fp = fopen($cachefile, 'wb');
         fwrite($fp, ob_get_contents());
@@ -1154,7 +1217,7 @@ function getPlexImage() {
         ob_end_flush(); // Send the output to the browser
 		die();
 	} else {
-		echo "Invalid Plex Request";	
+		echo "Invalid Plex Request";
 	}
 }
 
@@ -1180,10 +1243,10 @@ function randString($length = 10, $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
 function createConfig($array, $path = 'config/config.php', $nest = 0) {
 	// Define Initial Value
 	$output = array();
-	
+
 	// Sort Items
 	ksort($array);
-	
+
 	// Update the current config version
 	if (!$nest) {
 		// Inject Current Version
@@ -1191,7 +1254,7 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 	}
 	unset($array['CONFIG_VERSION']);
 	unset($array['apply_CONFIG_VERSION']);
-	
+
 	// Process Settings
 	foreach ($array as $k => $v) {
 		$allowCommit = true;
@@ -1214,24 +1277,24 @@ function createConfig($array, $path = 'config/config.php', $nest = 0) {
 			default:
 				$allowCommit = false;
 		}
-		
+
 		if($allowCommit) {
 			$output[] = str_repeat("\t",$nest+1)."'$k' => $item";
 		}
 	}
-	
+
 	// Build output
 	$output = (!$nest?"<?php\nreturn ":'')."array(\n".implode(",\n",$output)."\n".str_repeat("\t",$nest).')'.(!$nest?';':'');
-	
+
 	if (!$nest && $path) {
 		$pathDigest = pathinfo($path);
-		
+
 		@mkdir($pathDigest['dirname'], 0770, true);
-		
+
 		if (file_exists($path)) {
 			rename($path, $pathDigest['dirname'].'/'.$pathDigest['filename'].'.bak.php');
 		}
-		
+
 		$file = fopen($path, 'w');
 		fwrite($file, $output);
 		fclose($file);
@@ -1266,12 +1329,12 @@ function updateConfig($new, $current = false) {
 	} else if (is_string($current) && is_file($current)) {
 		$current = loadConfig($current);
 	}
-	
+
 	// Inject Parts
 	foreach ($new as $k => $v) {
 		$current[$k] = $v;
 	}
-	
+
 	// Return Create
 	return createConfig($current);
 }
@@ -1283,7 +1346,7 @@ function fillDefaultConfig($array, $path = 'config/configDefaults.php') {
 	} else {
 		$loadedDefaults = $path;
 	}
-	
+
 	return (is_array($loadedDefaults) ? fillDefaultConfig_recurse($array, $loadedDefaults) : false);
 }
 
@@ -1300,7 +1363,7 @@ function fillDefaultConfig_recurse($current, $defaults) {
 };
 
 // Define Scalar Variables (nest non-secular with underscores)
-function defineConfig($array, $anyCase = true, $nest_prefix = false) {	
+function defineConfig($array, $anyCase = true, $nest_prefix = false) {
 	foreach($array as $k => $v) {
 		if (is_scalar($v) && !defined($nest_prefix.$k)) {
 			define($nest_prefix.$k, $v, $anyCase);
@@ -1318,7 +1381,7 @@ function configLazy($path = 'config/config.php') {
 	} else {
 		$config = loadConfig('config/configDefaults.php');
 	}
-	
+
 	if (is_array($config)) {
 		defineConfig($config);
 	}
@@ -1329,16 +1392,16 @@ function configLazy($path = 'config/config.php') {
 function qualifyURL($url) {
  //local address?
  if(substr($url, 0,1) == "/"){
-     if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
-        $protocol = "https://"; 
-    } else {  
-        $protocol = "http://"; 
+     if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+        $protocol = "https://";
+    } else {
+        $protocol = "http://";
     }
      $url = $protocol.getServer().$url;
  }
 	// Get Digest
 	$digest = parse_url($url);
-	
+
 	// http/https
 	if (!isset($digest['scheme'])) {
 		if (isset($digest['port']) && in_array($digest['port'], array(80,8080,8096,32400,7878,8989,8182,8081,6789))) {
@@ -1349,16 +1412,16 @@ function qualifyURL($url) {
 	} else {
 		$scheme = $digest['scheme'];
 	}
-	
+
 	// Host
 	$host = (isset($digest['host'])?$digest['host']:'');
-	
+
 	// Port
 	$port = (isset($digest['port'])?':'.$digest['port']:'');
-	
+
 	// Path
 	$path = (isset($digest['path'])?$digest['path']:'');
-	
+
 	// Output
 	return $scheme.'://'.$host.$port.$path;
 }
@@ -1369,31 +1432,31 @@ function upgradeCheck() {
 	if (file_exists('homepageSettings.ini.php')) {
 		$databaseConfig = parse_ini_file('databaseLocation.ini.php', true);
 		$homepageConfig = parse_ini_file('homepageSettings.ini.php', true);
-		
+
 		$databaseConfig = array_merge($databaseConfig, $homepageConfig);
-		
+
 		$databaseData = '; <?php die("Access denied"); ?>' . "\r\n";
 		foreach($databaseConfig as $k => $v) {
 			if(substr($v, -1) == "/") : $v = rtrim($v, "/"); endif;
 			$databaseData .= $k . " = \"" . $v . "\"\r\n";
 		}
-		
+
 		write_ini_file($databaseData, 'databaseLocation.ini.php');
 		unlink('homepageSettings.ini.php');
 		unset($databaseData);
 		unset($homepageConfig);
 	}
-	
+
 	// Upgrade to 1.32
 	if (file_exists('databaseLocation.ini.php')) {
 		// Load Existing
 		$config = parse_ini_file('databaseLocation.ini.php', true);
-		
+
 		// Refactor
 		$config['database_Location'] = preg_replace('/\/\/$/','/',$config['databaseLocation'].'/');
 		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['databaseLocation']);
-		
+
 		// Turn Off Emby And Plex Recent
 		$config["embyURL"] = $config["embyURL"].(!empty($config["embyPort"])?':'.$config["embyPort"]:'');
 		unset($config["embyPort"]);
@@ -1405,12 +1468,12 @@ function upgradeCheck() {
 		unset($config["sabnzbdPort"]);
 		$config["headphonesURL"] = $config["headphonesURL"].(!empty($config["headphonesPort"])?':'.$config["headphonesPort"]:'');
 		unset($config["headphonesPort"]);
-		
+
 		// Write config file
 		$config['CONFIG_VERSION'] = '1.32';
 		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][pre1.32].bak.php');
 		$createConfigSuccess = createConfig($config);
-		
+
 		// Create new config
 		if ($createConfigSuccess) {
 			if (file_exists('config/config.php')) {
@@ -1423,7 +1486,7 @@ function upgradeCheck() {
 			debug_out('Couldn\'t create updated configuration.' ,1);
 		}
 	}
-	
+
 	// Upgrade to 1.33
 	$config = loadConfig();
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.33')) {
@@ -1431,47 +1494,47 @@ function upgradeCheck() {
 		$config['database_Location'] = preg_replace('/\/\/$/','/',$config['database_Location'].'/');
 		$config['user_home'] = $config['database_Location'].'users/';
 		unset($config['USER_HOME']);
-		
+
 		// Backend auth merge
 		if (isset($config['authBackendPort']) && !isset(parse_url($config['authBackendHost'])['port'])) {
 			$config['authBackendHost'] .= ':'.$config['authBackendPort'];
 		}
 		unset($config['authBackendPort']);
-		
+
 		// If auth is being used move it to embyURL as that is now used in auth functions
 		if ((isset($config['authType']) && $config['authType'] == 'true') && (isset($config['authBackendHost']) && $config['authBackendHost'] == 'true') && (isset($config['authBackend']) && in_array($config['authBackend'], array('emby_all','emby_local','emby_connect')))) {
 			$config['embyURL'] = $config['authBackendHost'];
 		}
-		
+
 		// Upgrade database to latest version
 		updateSQLiteDB($config['database_Location'],'1.32');
-		
+
 		// Update Version and Commit
 		$config['apply_CONFIG_VERSION'] = '1.33';
 		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.32].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
 	}
-	
+
 	// Upgrade to 1.34
 	$config = loadConfig();
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.34')) {
 		// Upgrade database to latest version
 		updateSQLiteDB($config['database_Location'],'1.33');
-		
+
 		// Update Version and Commit
 		$config['CONFIG_VERSION'] = '1.34';
 		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.33].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
 	}
-	
+
 	// Upgrade to 1.40
 	$config = loadConfig();
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.40')) {
 		// Upgrade database to latest version
 		updateSQLiteDB($config['database_Location'],'1.38');
-		
+
 		// Update Version and Commit
 		$config['CONFIG_VERSION'] = '1.40';
 		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.38].bak.php');
@@ -1484,14 +1547,14 @@ function upgradeCheck() {
 	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.50')) {
 		// Upgrade database to latest version
 		updateSQLiteDB($config['database_Location'],'1.40');
-		
+
 		// Update Version and Commit
 		$config['CONFIG_VERSION'] = '1.50';
 		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.40].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
 	}
-	
+
 	return true;
 }
 
@@ -1525,7 +1588,7 @@ function getError($os, $error){
 			'win' => '<b>PHP Zip</b> not enabled, uncomment ;extension=php_zip.dll in the file php.ini, if that doesn\'t work remove that line',
 			'nix' => '<b>PHP Zip</b> not enabled, PHP7 -> run sudo apt-get install php7.0-zip | PHP5 -> run sudo apt-get install php5.6-zip',
 		),
-		
+
 	);
 	return (isset($errors[$error][$os]) ? $errors[$error][$os] : 'No Error Info Found');
 }
@@ -1538,10 +1601,10 @@ function dependCheck() {
 	if (!extension_loaded('curl')) { $output["Step $i"] = getError(getOS(),'curl'); $i++; }
 	if (!extension_loaded('zip')) { $output["Step $i"] = getError(getOS(),'zip'); $i++; }
 	//if (!extension_loaded('sqlite3')) { $output[] = getError(getOS(),'sqlite3'); }
-	
+
 	if ($output) {
-		$output["Step $i"] = "<b>Restart PHP and/or Webserver to apply changes</b>"; $i++; 
-		$output["Step $i"] = "<b>Please visit here to also check status of necessary components after you fix them: <a href='check.php'>check.php<a/></b>"; $i++; 
+		$output["Step $i"] = "<b>Restart PHP and/or Webserver to apply changes</b>"; $i++;
+		$output["Step $i"] = "<b>Please visit here to also check status of necessary components after you fix them: <a href='check.php'>check.php<a/></b>"; $i++;
 		debug_out($output,1);
 	}
 	return true;
@@ -1575,7 +1638,7 @@ function uploadFiles($path, $ext_mask = null) {
    			writeLog("error", $files['metas'][0]['name']." was not able to upload");
 			echo json_encode($errors);
 		}
-	} else { 
+	} else {
   		writeLog("error", "image was not uploaded");
 		echo json_encode('No files submitted!');
 	}
@@ -1608,7 +1671,7 @@ function uploadAvatar($path, $ext_mask = null) {
    			writeLog("error", $files['metas'][0]['name']." was not able to upload");
 			echo json_encode($errors);
 		}
-	} else { 
+	} else {
   		writeLog("error", "image was not uploaded");
 		echo json_encode('No files submitted!');
 	}
@@ -1617,10 +1680,10 @@ function uploadAvatar($path, $ext_mask = null) {
 // Remove file
 function removeFiles($path) {
     if(is_file($path)) {
-        writeLog("success", "image was removed");
+        writeLog("success", "file was removed");
         unlink($path);
     } else {
-  		writeLog("error", "image was not removed");
+  		writeLog("error", "file was not removed");
 		echo json_encode('No file specified for removal!');
 	}
 }
@@ -1642,7 +1705,7 @@ function resolveSelectOptions($array, $selected = '', $multi = false) {
 		} else {
 			$output[] = '<option value="'.$value.'"'.($selected===$value||in_array($value,$selectedArr)?' selected':'').'>'.$key.'</option>';
 		}
-		
+
 	}
 	return implode('',$output);
 }
@@ -1653,7 +1716,7 @@ function qualifyUser($type, $errOnFail = false) {
 		require_once("user.php");
 		$GLOBALS['USER'] = new User('registration_callback');
 	}
-	
+
 	if (is_bool($type)) {
 		if ($type === true) {
 			$authorized = ($GLOBALS['USER']->authenticated == true);
@@ -1672,7 +1735,7 @@ function qualifyUser($type, $errOnFail = false) {
 	} else {
 		debug_out('Invalid Syntax!',1);
 	}
-	
+
 	if (!$authorized && $errOnFail) {
 		if ($GLOBALS['USER']->authenticated) {
 			header('Location: '.rtrim(dirname($_SERVER['SCRIPT_NAME']), '/').'/error.php?error=401');
@@ -1705,9 +1768,9 @@ function buildSettings($array) {
 		),
 	);
 	*/
-	
+
 	$notifyExplode = explode("-", NOTIFYEFFECT);
-	
+
 	$fieldFunc = function($fieldArr) {
 		$fields = '<div class="row">';
 		foreach($fieldArr as $key => $value) {
@@ -1724,9 +1787,9 @@ function buildSettings($array) {
 		$fields .= '</div>';
 		return $fields;
 	};
-	
+
 	$fields = (isset($array['fields'])?$fieldFunc($array['fields']):'');
-	
+
 	$tabSelectors = array();
 	$tabContent = array();
 	if (isset($array['tabs'])) {
@@ -1736,10 +1799,10 @@ function buildSettings($array) {
 			$tabContent[$key] = '<div class="tab-pane big-box fade'.($tabContent?'':' active in').'" id="tab-'.$id.'">'.$fieldFunc($value['fields']).'</div>';
 		}
 	}
-	
+
 	$pageID = (isset($array['id'])?$array['id']:str_replace(array(' ','"',"'"),array('_'),strtolower($array['id'])));
 	$extraClick = ($pageID == 'appearance_settings' ? "$('#advanced_settings_form_submit').click();console.log('add theme settings');" : "");
-	
+
 	return '
 	<div class="email-body">
 		<div class="email-header gray-bg">
@@ -1778,7 +1841,7 @@ function buildSettings($array) {
 			var '.$pageID.'Validate = function() { if (this.value && !RegExp(\'^\'+this.pattern+\'$\').test(this.value)) { $(this).addClass(\'invalid\'); } else { $(this).removeClass(\'invalid\'); } };
 			$(\'#'.$pageID.'_form\').find(\'input[pattern]\').each('.$pageID.'Validate).on(\'keyup\', '.$pageID.'Validate);
 			$(\'#'.$pageID.'_form\').find(\'select[multiple]\').on(\'change click\', function() { $(this).attr(\'data-changed\', \'true\'); });
-			
+
 			$(\'#'.$pageID.'_form_submit\').on(\'click\', function () {
 				var newVals = {};
 				var hasVals = false;
@@ -1837,7 +1900,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 		),
 	)
 	*/
-	
+
 	// Tags
 	$tags = array();
 	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href','onclick') as $value) {
@@ -1846,7 +1909,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 			} else if ($params[$value] === true) { $tags[] = $value; }
 		}
 	}
-	
+
 	$format = (isset($params['format']) && in_array($params['format'],array(false,'colour','color'))?$params['format']:false);
 	$name = (isset($params['name'])?$params['name']:(isset($params['id'])?$params['id']:''));
 	$id = (isset($params['id'])?$params['id']:(isset($params['name'])?$params['name'].'_id':randString(32)));
@@ -1856,7 +1919,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 	$assist = (isset($params['assist'])?' - i.e. '.$params['assist']:'');
 	$label = (isset($params['labelTranslate'])?translate($params['labelTranslate']):(isset($params['label'])?$params['label']:''));
 	$labelOut = '<p class="help-text">'.$label.$assist.'</p>';
-	
+
 	// Field Design
 	switch ($params['type']) {
 		case 'text':
@@ -1934,7 +1997,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 			$field = 'Unsupported field type';
 			break;
 	}
-	
+
 	// Field Formats
 	switch ($format) {
 		case 'colour': // Fuckin Eh, Canada!
@@ -1948,7 +2011,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 			$labelBef = '';
 			$labelAft = $labelOut;
 	}
-	
+
 	return '<div class="'.$wrapClass.' col-sm-'.$sizeSm.' col-md-'.$sizeMd.' col-lg-'.$sizeLg.'">'.$labelBef.$field.$labelAft.'</div>';
 }
 
@@ -1974,7 +2037,7 @@ function printTabRow($data) {
 		);
 	}
 	$image = '<span style="font: normal normal normal 30px/1 FontAwesome;" class="fa fa-hand-paper-o"></span>';
-	
+
 	$output = '
 		<li id="tab-'.$data['id'].'" class="list-group-item" style="position: relative; left: 0px; top: 0px; '.($hidden?' display: none;':'').'">
 			<tab class="content-form form-inline">
@@ -2019,11 +2082,13 @@ function printTabRow($data) {
 						'class' => 'darkBold',
 					),12,2,1).'
 					'.buildField(array(
-						'type' => 'custom',
+						'type' => 'text',
 						'id' => 'tab-'.$data['id'].'-icon',
 						'name' => 'icon['.$data['id'].']',
-						'html' => '- '.translate('OR').' - <div class="input-group"><input data-placement="bottomRight" class="form-control material icp-auto'.($hidden?'-pend':'').'" id="$id" name="$name" value="$val" type="text" /><span class="input-group-addon"></span></div>',
+						'placeholder' => 'fa-icon',
+						'labelTranslate' => 'OR_ICON_NAME',
 						'value' => $data['icon'],
+						'class' => 'iconpickeradd darkBold',
 					),12,1,1).'
 					'.buildField(array(
 						'type' => 'text',
@@ -2046,7 +2111,7 @@ function printTabRow($data) {
 						'icon' => 'chevron-down',
                         'buttonType' => 'success',
 						'labelTranslate' => 'MORE',
-						'onclick' => "$('#tab-".$data['id']."-row').toggle();",
+						'onclick' => "$(this).parent().parent().parent().find('.slideInUp').toggle()",
 						'class' => 'toggleTabExtra',
 					),12,1,1).'
 					'.buildField(array(
@@ -2120,17 +2185,17 @@ function timezoneOptions() {
         'Indian' => DateTimeZone::INDIAN,
         'Pacific' => DateTimeZone::PACIFIC
     );
-    
+
     foreach ($regions as $name => $mask) {
         $zones = DateTimeZone::listIdentifiers($mask);
         foreach($zones as $timezone) {
             $time = new DateTime(NULL, new DateTimeZone($timezone));
             $ampm = $time->format('H') > 12 ? ' ('. $time->format('g:i a'). ')' : '';
-			
+
 			$output[$name]['optgroup'][substr($timezone, strlen($name) + 1) . ' - ' . $time->format('H:i') . $ampm]['value'] = $timezone;
         }
-    }   
-	
+    }
+
 	return $output;
 }
 
@@ -2143,13 +2208,13 @@ function createSQLiteDB($path = false) {
 			debug_out('No Path Specified!');
 		}
 	}
-	
+
 	if (!is_file($path.'users.db') || filesize($path.'users.db') <= 0) {
 		if (!isset($GLOBALS['file_db'])) {
 			$GLOBALS['file_db'] = new PDO('sqlite:'.$path.'users.db');
 			$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}
-		
+
 		// Create Users
 		$users = $GLOBALS['file_db']->query('CREATE TABLE `users` (
 			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -2162,7 +2227,7 @@ function createSQLiteDB($path = false) {
 			`last`	TEXT,
 			`auth_service`	TEXT DEFAULT \'internal\'
 		);');
-		
+
 		// Create Tabs
 		$tabs = $GLOBALS['file_db']->query('CREATE TABLE `tabs` (
 			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -2181,7 +2246,7 @@ function createSQLiteDB($path = false) {
 			`ping`		TEXT,
 			`ping_url`	TEXT
 		);');
-		
+
 		// Create Options
 		$options = $GLOBALS['file_db']->query('CREATE TABLE `options` (
 			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -2200,7 +2265,7 @@ function createSQLiteDB($path = false) {
 			`loading`	TEXT,
 			`hovertext`	TEXT
 		);');
-		
+
 		// Create Invites
 		$invites = $GLOBALS['file_db']->query('CREATE TABLE `invites` (
 			`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -2213,7 +2278,7 @@ function createSQLiteDB($path = false) {
 			`ip`	TEXT,
 			`valid`	TEXT
 		);');
-		
+
 		writeLog("success", "database created/saved");
 		return $users && $tabs && $options && $invites;
 	} else {
@@ -2235,7 +2300,7 @@ function updateSQLiteDB($db_path = false, $oldVerNum = false) {
 		$GLOBALS['file_db'] = new PDO('sqlite:'.$db_path.'users.db');
 		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
-	
+
 	// Cache current DB
 	$cache = array();
 	foreach($GLOBALS['file_db']->query('SELECT name FROM sqlite_master WHERE type="table";') as $table) {
@@ -2247,17 +2312,17 @@ function updateSQLiteDB($db_path = false, $oldVerNum = false) {
 			}
 		}
 	}
-	
+
 	// Remove Current Database
 	$GLOBALS['file_db'] = null;
 	$pathDigest = pathinfo($db_path.'users.db');
 	if (file_exists($db_path.'users.db')) {
 		rename($db_path.'users.db', $pathDigest['dirname'].'/'.$pathDigest['filename'].'['.date('Y-m-d_H-i-s').']'.($oldVerNum?'['.$oldVerNum.']':'').'.bak.db');
 	}
-	
+
 	// Create New Database
 	$success = createSQLiteDB($db_path);
-	
+
 	// Restore Items
 	if ($success) {
 		foreach($cache as $table => $tableData) {
@@ -2266,7 +2331,7 @@ function updateSQLiteDB($db_path = false, $oldVerNum = false) {
 				$insertValues = array();
 				reset($tableData);
 				foreach($tableData as $key => $value) {
-					$insertValues[] = '('.implode(',',array_map(function($d) { 
+					$insertValues[] = '('.implode(',',array_map(function($d) {
 						return (isset($d)?$GLOBALS['file_db']->quote($d):'null');
 					}, $value)).')';
 				}
@@ -2287,9 +2352,9 @@ function updateDBOptions($values) {
 		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
 		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
-	
+
 	// Commit new values to database
-	if ($GLOBALS['file_db']->query('UPDATE options SET '.implode(',',array_map(function($d, $k) { 
+	if ($GLOBALS['file_db']->query('UPDATE options SET '.implode(',',array_map(function($d, $k) {
 		return '`'.$k.'` = '.(isset($d)?"'".addslashes($d)."'":'null');
 	}, $values, array_keys($values))).';')->rowCount()) {
 		return true;
@@ -2324,7 +2389,7 @@ function sendNotification($success, $message = false, $send = true) {
 			'effect' => $notifyExplode[1],
 		);
 	}
-	
+
 	// Send and kill script?
 	if ($send) {
 		header('Content-Type: application/json');
@@ -2359,7 +2424,7 @@ function loadAppearance() {
 				$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
 				$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			}
-			
+
 			// Database Lookup
 			$options = $GLOBALS['file_db']->query('SELECT * FROM options');
 			// Replace defaults with filled options
@@ -2383,14 +2448,14 @@ function deleteDatabase() {
     setcookie('Organizr', '', time() - 3600, '/');
     unset($_COOKIE['OrganizrU']);
     setcookie('OrganizrU', '', time() - 3600, '/');
-	
+
     $GLOBALS['file_db'] = null;
 
-    unlink(DATABASE_LOCATION.'users.db'); 
-	
+    unlink(DATABASE_LOCATION.'users.db');
+
     foreach(glob(substr_replace($userdirpath, "", -1).'/*') as $file) {
         if(is_dir($file)) {
-            rmdir($file); 
+            rmdir($file);
         } elseif (!is_dir($file)) {
             unlink($file);
         }
@@ -2451,7 +2516,7 @@ function upgradeInstall($branch = 'master') {
         $zip->close();
     }
 
-    // Function to remove folders and files 
+    // Function to remove folders and files
     function rrmdir($dir) {
         if (is_dir($dir)) {
             $files = scandir($dir);
@@ -2462,7 +2527,7 @@ function upgradeInstall($branch = 'master') {
         else if (file_exists($dir)) unlink($dir);
     }
 
-    // Function to Copy folders and files       
+    // Function to Copy folders and files
     function rcopy($src, $dst) {
         if (is_dir ( $src )) {
             if (!file_exists($dst)) : mkdir ( $dst ); endif;
@@ -2473,7 +2538,7 @@ function upgradeInstall($branch = 'master') {
         } else if (file_exists ( $src ))
             copy ( $src, $dst );
     }
-	
+
     $url = 'https://github.com/causefx/Organizr/archive/'.$branch.'.zip';
     $file = "upgrade.zip";
     $source = __DIR__ . '/upgrade/Organizr-'.$branch.'/';
@@ -2493,8 +2558,8 @@ function upgradeInstall($branch = 'master') {
 // NzbGET Items
 function nzbgetConnect($list = 'listgroups') {
     $url = qualifyURL(NZBGETURL);
-    
-    $api = curl_get($url.'/'.NZBGETUSERNAME.':'.NZBGETPASSWORD.'/jsonrpc/'.$list);          
+
+    $api = curl_get($url.'/'.NZBGETUSERNAME.':'.NZBGETPASSWORD.'/jsonrpc/'.$list);
     $api = json_decode($api, true);
     $gotNZB = array();
     if (is_array($api) || is_object($api)){
@@ -2504,18 +2569,19 @@ function nzbgetConnect($list = 'listgroups') {
 			$downloadCategory = $child['Category'];
 			if($list == "history"){ $downloadPercent = "100"; $progressBar = ""; }
 			if($list == "listgroups"){ $downloadPercent = (($child['FileSizeMB'] - $child['RemainingSizeMB']) / $child['FileSizeMB']) * 100; $progressBar = "progress-bar-striped active"; }
-			if($child['Health'] <= "750"){ 
-				$downloadHealth = "danger"; 
-			}elseif($child['Health'] <= "900"){ 
-				$downloadHealth = "warning"; 
-			}elseif($child['Health'] <= "1000"){ 
-				$downloadHealth = "success"; 
+			if($child['Health'] <= "750"){
+				$downloadHealth = "danger";
+			}elseif($child['Health'] <= "900"){
+				$downloadHealth = "warning";
+			}elseif($child['Health'] <= "1000"){
+				$downloadHealth = "success";
 			}
 
 			$gotNZB[] = '<tr>
-							<td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
+							<td class="col-xs-6 nzbtable-file-row">'.$downloadName.'</td>
 							<td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
 							<td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
+							<td class="col-xs-1 nzbtable nzbtable-row">'.realSize(($child['FileSizeMB']*1024)*1024).'</td>
 							<td class="col-xs-2 nzbtable nzbtable-row">
 								<div class="progress">
 									<div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
@@ -2530,7 +2596,7 @@ function nzbgetConnect($list = 'listgroups') {
 		if ($gotNZB) {
 			return implode('',$gotNZB);
 		} else {
-			return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+			return '<tr><td colspan="5"><p class="text-center">No Results</p></td></tr>';
 		}
 	}else{
 		writeLog("error", "NZBGET ERROR: could not connect - check URL and/or check token and/or Username and Password - if HTTPS, is cert valid");
@@ -2540,21 +2606,22 @@ function nzbgetConnect($list = 'listgroups') {
 // Sabnzbd Items
 function sabnzbdConnect($list = 'queue') {
     $url = qualifyURL(SABNZBDURL);
-	
-    $api = file_get_contents($url.'/api?mode='.$list.'&output=json&apikey='.SABNZBDKEY); 
+
+    $api = file_get_contents($url.'/api?mode='.$list.'&output=json&apikey='.SABNZBDKEY);
     $api = json_decode($api, true);
-    
+
     $gotNZB = array();
-    
+
     foreach ($api[$list]['slots'] AS $child) {
-        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; } 
+        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; }
         if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
         $downloadStatus = $child['status'];
-        
+
         $gotNZB[] = '<tr>
-						<td class="col-xs-7 nzbtable-file-row">'.$downloadName.'</td>
+						<td class="col-xs-6 nzbtable-file-row">'.$downloadName.'</td>
 						<td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
 						<td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
+						<td class="col-xs-1 nzbtable nzbtable-row">'.$child['size'].'</td>
 						<td class="col-xs-2 nzbtable nzbtable-row">
 							<div class="progress">
 								<div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
@@ -2565,11 +2632,11 @@ function sabnzbdConnect($list = 'queue') {
 						</td>
 					</tr>';
     }
-    
+
 	if ($gotNZB) {
 		return implode('',$gotNZB);
 	} else {
-		return '<tr><td colspan="4"><p class="text-center">No Results</p></td></tr>';
+		return '<tr><td colspan="5"><p class="text-center">No Results</p></td></tr>';
 	}
 }
 
@@ -2599,13 +2666,13 @@ function updateTabs($tabs) {
 			}
 			$GLOBALS['file_db']->query('INSERT INTO tabs (`'.implode('`,`',array_keys($fields)).'`) VALUES (\''.implode("','",$fields).'\');');
 		}
-  		writeLog("success", "tabs successfully saved");     
+  		writeLog("success", "tabs successfully saved");
 		return $totalValid;
 	} else {
-  		writeLog("error", "tabs could not save");     
+  		writeLog("error", "tabs could not save");
 		return false;
 	}
- 	writeLog("error", "tabs could not save");     
+ 	writeLog("error", "tabs could not save");
 	return false;
 }
 
@@ -2641,54 +2708,54 @@ function clean($strin) {
     }
 
     return $strout;
-    
+
 }
 
 function registration_callback($username, $email, $userdir){
-    
+
     global $data;
-    
+
     $data = array($username, $email, $userdir);
 
 }
 
 function printArray($arrayName){
-    
+
     $messageCount = count($arrayName);
-    
+
     $i = 0;
-    
+
     foreach ( $arrayName as $item ) :
-    
-        $i++; 
-    
+
+        $i++;
+
         if($i < $messageCount) :
-    
+
             echo "<small class='text-uppercase'>" . $item . "</small> & ";
-    
+
         elseif($i = $messageCount) :
-    
+
             echo "<small class='text-uppercase'>" . $item . "</small>";
-    
+
         endif;
-        
+
     endforeach;
-    
+
 }
 
-function write_ini_file($content, $path) { 
-    
+function write_ini_file($content, $path) {
+
     if (!$handle = fopen($path, 'w')) {
-        
-        return false; 
-    
+
+        return false;
+
     }
-    
+
     $success = fwrite($handle, trim($content));
-    
-    fclose($handle); 
-    
-    return $success; 
+
+    fclose($handle);
+
+    return $success;
 
 }
 
@@ -2706,11 +2773,11 @@ function gotTimezone(){
         'Indian' => DateTimeZone::INDIAN,
         'Pacific' => DateTimeZone::PACIFIC
     );
-    
+
     $timezones = array();
 
     foreach ($regions as $name => $mask) {
-        
+
         $zones = DateTimeZone::listIdentifiers($mask);
 
         foreach($zones as $timezone) {
@@ -2722,29 +2789,29 @@ function gotTimezone(){
             $timezones[$name][$timezone] = substr($timezone, strlen($name) + 1) . ' - ' . $time->format('H:i') . $ampm;
 
         }
-        
-    }   
-    
-    print '<select name="timezone" id="timezone" class="form-control material input-sm" required>';
-    
-    foreach($timezones as $region => $list) {
-    
-        print '<optgroup label="' . $region . '">' . "\n";
-    
-        foreach($list as $timezone => $name) {
-            
-            if($timezone == TIMEZONE) : $selected = " selected"; else : $selected = ""; endif;
-            
-            print '<option value="' . $timezone . '"' . $selected . '>' . $name . '</option>' . "\n";
-    
-        }
-    
-        print '</optgroup>' . "\n";
-    
+
     }
-    
+
+    print '<select name="timezone" id="timezone" class="form-control material input-sm" required>';
+
+    foreach($timezones as $region => $list) {
+
+        print '<optgroup label="' . $region . '">' . "\n";
+
+        foreach($list as $timezone => $name) {
+
+            if($timezone == TIMEZONE) : $selected = " selected"; else : $selected = ""; endif;
+
+            print '<option value="' . $timezone . '"' . $selected . '>' . $name . '</option>' . "\n";
+
+        }
+
+        print '</optgroup>' . "\n";
+
+    }
+
     print '</select>';
-    
+
 }
 
 function getTimezone(){
@@ -2761,11 +2828,11 @@ function getTimezone(){
         'Indian' => DateTimeZone::INDIAN,
         'Pacific' => DateTimeZone::PACIFIC
     );
-    
+
     $timezones = array();
 
     foreach ($regions as $name => $mask) {
-        
+
         $zones = DateTimeZone::listIdentifiers($mask);
 
         foreach($zones as $timezone) {
@@ -2777,43 +2844,43 @@ function getTimezone(){
             $timezones[$name][$timezone] = substr($timezone, strlen($name) + 1) . ' - ' . $time->format('H:i') . $ampm;
 
         }
-        
-    }   
-    
-    print '<select name="timezone" id="timezone" class="form-control material" required>';
-    
-    foreach($timezones as $region => $list) {
-    
-        print '<optgroup label="' . $region . '">' . "\n";
-    
-        foreach($list as $timezone => $name) {
-            
-            print '<option value="' . $timezone . '">' . $name . '</option>' . "\n";
-    
-        }
-    
-        print '</optgroup>' . "\n";
-    
+
     }
-    
+
+    print '<select name="timezone" id="timezone" class="form-control material" required>';
+
+    foreach($timezones as $region => $list) {
+
+        print '<optgroup label="' . $region . '">' . "\n";
+
+        foreach($list as $timezone => $name) {
+
+            print '<option value="' . $timezone . '">' . $name . '</option>' . "\n";
+
+        }
+
+        print '</optgroup>' . "\n";
+
+    }
+
     print '</select>';
-    
+
 }
 
 function explosion($string, $position){
-    
+
     $getWord = explode("|", $string);
     return $getWord[$position];
-    
+
 }
 
 function getServerPath() {
 	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https"){
 		$protocol = "https://";
-	}elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { 
-        $protocol = "https://"; 
-    } else {  
-        $protocol = "http://"; 
+	}elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+        $protocol = "https://";
+    } else {
+        $protocol = "http://";
     }
 	$domain = '';
     if (isset($_SERVER['SERVER_NAME']) && strpos($_SERVER['SERVER_NAME'], '.') !== false){
@@ -2831,26 +2898,26 @@ function getServerPath() {
         	$domain = $_SERVER['HTTP_HOST'];
 		}
 	}
-    return $protocol . $domain . dirname($_SERVER['REQUEST_URI']);
+    return $protocol . $domain . str_replace("\\", "/", dirname($_SERVER['REQUEST_URI']));
 }
 
 function get_browser_name() {
-    
+
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
-    
+
     if (strpos($user_agent, 'Opera') || strpos($user_agent, 'OPR/')) return 'Opera';
     elseif (strpos($user_agent, 'Edge')) return 'Edge';
     elseif (strpos($user_agent, 'Chrome')) return 'Chrome';
     elseif (strpos($user_agent, 'Safari')) return 'Safari';
     elseif (strpos($user_agent, 'Firefox')) return 'Firefox';
     elseif (strpos($user_agent, 'MSIE') || strpos($user_agent, 'Trident/7')) return 'Internet Explorer';
-    
+
     return 'Other';
-    
+
 }
 
 function getSickrageCalendarWanted($array){
-    
+
     $array = json_decode($array, true);
     //$gotCalendar = "";
     $gotCalendar = array();
@@ -2872,14 +2939,14 @@ function getSickrageCalendarWanted($array){
             //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
 			array_push($gotCalendar, array(
 				"id" => "Sick-Miss-".$i,
-				"title" => $seriesName, 
-				"start" => $episodeAirDate, 
-				"className" => $downloaded." tvID--".$episodeID, 
+				"title" => $seriesName,
+				"start" => $episodeAirDate,
+				"className" => $downloaded." tvID--".$episodeID,
 				"imagetype" => "tv",
 			));
-        
+
     }
-    
+
     foreach($array['data']['today'] AS $child) {
 
             $i++;
@@ -2896,13 +2963,13 @@ function getSickrageCalendarWanted($array){
             //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
 			array_push($gotCalendar, array(
 				"id" => "Sick-Today-".$i,
-				"title" => $seriesName, 
-				"start" => $episodeAirDate, 
-				"className" => $downloaded." tvID--".$episodeID, 
+				"title" => $seriesName,
+				"start" => $episodeAirDate,
+				"className" => $downloaded." tvID--".$episodeID,
 				"imagetype" => "tv",
 			));
     }
-    
+
     foreach($array['data']['soon'] AS $child) {
 
             $i++;
@@ -2919,13 +2986,13 @@ function getSickrageCalendarWanted($array){
             //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
 			array_push($gotCalendar, array(
 				"id" => "Sick-Soon-".$i,
-				"title" => $seriesName, 
-				"start" => $episodeAirDate, 
-				"className" => $downloaded." tvID--".$episodeID, 
+				"title" => $seriesName,
+				"start" => $episodeAirDate,
+				"className" => $downloaded." tvID--".$episodeID,
 				"imagetype" => "tv",
 			));
     }
-    
+
     foreach($array['data']['later'] AS $child) {
 
             $i++;
@@ -2942,12 +3009,12 @@ function getSickrageCalendarWanted($array){
             //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
 			array_push($gotCalendar, array(
 				"id" => "Sick-Later-".$i,
-				"title" => $seriesName, 
-				"start" => $episodeAirDate, 
-				"className" => $downloaded." tvID--".$episodeID, 
+				"title" => $seriesName,
+				"start" => $episodeAirDate,
+				"className" => $downloaded." tvID--".$episodeID,
 				"imagetype" => "tv",
 			));
-        
+
     }
 
     if ($i != 0){ return $gotCalendar; }
@@ -2955,7 +3022,7 @@ function getSickrageCalendarWanted($array){
 }
 
 function getSickrageCalendarHistory($array){
-    
+
     $array = json_decode($array, true);
     //$gotCalendar = "";
     $gotCalendar = array();
@@ -2971,12 +3038,12 @@ function getSickrageCalendarHistory($array){
             //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
 			array_push($gotCalendar, array(
 				"id" => "Sick-History-".$i,
-				"title" => $seriesName, 
-				"start" => $episodeAirDate, 
-				"className" => $downloaded." tvID--".$episodeID, 
+				"title" => $seriesName,
+				"start" => $episodeAirDate,
+				"className" => $downloaded." tvID--".$episodeID,
 				"imagetype" => "tv",
 			));
-        
+
     }
 
     if ($i != 0){ return $gotCalendar; }
@@ -2984,7 +3051,7 @@ function getSickrageCalendarHistory($array){
 }
 
 function getSonarrCalendar($array){
-    
+
     $array = json_decode($array, true);
     //$gotCalendar = "";
     $gotCalendar = array();
@@ -3000,18 +3067,18 @@ function getSonarrCalendar($array){
         $episodeAirDate = $child['airDateUtc'];
         $episodeAirDate = strtotime($episodeAirDate);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
-        
+
         if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
 
         $downloaded = $child['hasFile'];
         if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "light-blue-bg"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
-        
+
         //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
 		array_push($gotCalendar, array(
 			"id" => "Sonarr-".$i,
-			"title" => $seriesName, 
-			"start" => $episodeAirDate, 
-			"className" => $downloaded." tvID--".$episodeID, 
+			"title" => $seriesName,
+			"start" => $episodeAirDate,
+			"className" => $downloaded." tvID--".$episodeID,
 			"imagetype" => "tv",
 		));
 
@@ -3022,7 +3089,7 @@ function getSonarrCalendar($array){
 }
 
 function getCouchCalendar(){
-	$url = qualifyURL(COUCHURL);    
+	$url = qualifyURL(COUCHURL);
     $api = curl_get($url."/api/".COUCHAPI."/media.list");
     $api = json_decode($api, true);
     $i = 0;
@@ -3034,8 +3101,8 @@ function getCouchCalendar(){
 				$movieName = $child['info']['original_title'];
 				$movieID = $child['info']['tmdb_id'];
 				if(!isset($movieID)){ $movieID = ""; }
-				$physicalRelease = (isset($child['info']['released']) ? $child['info']['released'] : null); 
-				$backupRelease = (isset($child['info']['release_date']['theater']) ? $child['info']['release_date']['theater'] : null); 
+				$physicalRelease = (isset($child['info']['released']) ? $child['info']['released'] : null);
+				$backupRelease = (isset($child['info']['release_date']['theater']) ? $child['info']['release_date']['theater'] : null);
 				$physicalRelease = (isset($physicalRelease) ? $physicalRelease : $backupRelease);
 				$physicalRelease = strtotime($physicalRelease);
 				$physicalRelease = date("Y-m-d", $physicalRelease);
@@ -3044,9 +3111,9 @@ function getCouchCalendar(){
 				if($downloaded == "0" && $notReleased == "true"){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
 				array_push($gotCalendar, array(
 					"id" => "CouchPotato-".$i,
-					"title" => $movieName, 
-					"start" => $physicalRelease, 
-					"className" => $downloaded." movieID--".$movieID, 
+					"title" => $movieName,
+					"start" => $physicalRelease,
+					"className" => $downloaded." movieID--".$movieID,
 					"imagetype" => "film",
 				));
 			}
@@ -3057,7 +3124,7 @@ function getCouchCalendar(){
 	}
 }
 
-function getRadarrCalendar($array){  
+function getRadarrCalendar($array){
     $array = json_decode($array, true);
     $gotCalendar = array();
     $i = 0;
@@ -3067,7 +3134,7 @@ function getRadarrCalendar($array){
             $movieName = $child['title'];
             $movieID = $child['tmdbId'];
             if(!isset($movieID)){ $movieID = ""; }
-			$physicalRelease = $child['physicalRelease']; 
+			$physicalRelease = $child['physicalRelease'];
 			$physicalRelease = strtotime($physicalRelease);
 			$physicalRelease = date("Y-m-d", $physicalRelease);
 			if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
@@ -3075,9 +3142,9 @@ function getRadarrCalendar($array){
 			if($downloaded == "0" && $notReleased == "true"){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg"; }else{ $downloaded = "red-bg"; }
 			array_push($gotCalendar, array(
 				"id" => "Radarr-".$i,
-				"title" => $movieName, 
-				"start" => $physicalRelease, 
-				"className" => $downloaded." movieID--".$movieID, 
+				"title" => $movieName,
+				"start" => $physicalRelease,
+				"className" => $downloaded." movieID--".$movieID,
 				"imagetype" => "film",
 			));
         }
@@ -3086,7 +3153,7 @@ function getRadarrCalendar($array){
 }
 
 function getHeadphonesCalendar($url, $key, $list){
-	$url = qualifyURL(HEADPHONESURL);    
+	$url = qualifyURL(HEADPHONESURL);
     $api = curl_get($url."/api?apikey=".$key."&cmd=$list");
     $api = json_decode($api, true);
     $i = 0;
@@ -3111,8 +3178,8 @@ function getHeadphonesCalendar($url, $key, $list){
 				//$gotCalendar .= "{ title: \"$albumArtist - $albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
 				array_push($gotCalendar, array(
 					"id" => "Headphones-".$i,
-					"title" => $albumArtist.' - '.$albumName, 
-					"start" => $albumDate, 
+					"title" => $albumArtist.' - '.$albumName,
+					"start" => $albumDate,
 					"className" => $albumStatusColor,
 					"imagetype" => "music",
 					'url' => "https://musicbrainz.org/release-group/".$albumID,
@@ -3133,8 +3200,8 @@ function getHeadphonesCalendar($url, $key, $list){
 				//$gotCalendar .= "{ title: \"$albumName\", start: \"$albumDate\", className: \"$albumStatusColor\", imagetype: \"music\", url: \"https://musicbrainz.org/release-group/$albumID\" }, \n";
 				array_push($gotCalendar, array(
 					"id" => "Headphones-".$i,
-					"title" => $albumName, 
-					"start" => $albumDate, 
+					"title" => $albumName,
+					"start" => $albumDate,
 					"className" => $albumStatusColor,
 					"imagetype" => "music",
 					'url' => "https://musicbrainz.org/release-group/".$albumID,
@@ -3161,11 +3228,13 @@ function strip($string){
 }
 
 function writeLog($type, $message){
-	if(filesize("org.log") > 500000){
-		rename('org.log','org['.date('Y-m-d').'].log');
-		$message2 = date("Y-m-d H:i:s")."|".$type."|".strip("ORG LOG: Creating backup of org.log to org[".date('Y-m-d')."].log ")."\n";
-		file_put_contents("org.log", $message2, FILE_APPEND | LOCK_EX);
+	if(file_exists("org.log")){
+		if(filesize("org.log") > 500000){
+			rename('org.log','org['.date('Y-m-d').'].log');
+			$message2 = date("Y-m-d H:i:s")."|".$type."|".strip("ORG LOG: Creating backup of org.log to org[".date('Y-m-d')."].log ")."\n";
+			file_put_contents("org.log", $message2, FILE_APPEND | LOCK_EX);
 
+		}
 	}
     $message = date("Y-m-d H:i:s")."|".$type."|".strip($message)."\n";
     file_put_contents("org.log", $message, FILE_APPEND | LOCK_EX);
@@ -3247,7 +3316,7 @@ function getPlatform($platform){
 
 function getServer(){
     $server = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"];
-    return $server;    
+    return $server;
 }
 
 function prettyPrint($array) {
@@ -3275,7 +3344,7 @@ function checkFrame($array, $url){
             return false;
         }
         return true;
-    }    
+    }
 }
 
 function frameTest($url){
@@ -3309,7 +3378,7 @@ function sendResult($result, $icon = "floppy-o", $message = false, $success = "W
 			'effect' => $notifyExplode[1],
 		);
 	}
-	
+
 	// Send and kill script?
 	if ($send) {
 		header('Content-Type: application/json');
@@ -3385,7 +3454,7 @@ function embyArray($array, $type) {
                 $codec = $array["Codec"];
                 $channels = $array["Channels"];
         }
-        return ($type == "video" ?  "(".$codec.") (".$width."x".$height.")" : "(".$codec.") (".$channels."ch)");        
+        return ($type == "video" ?  "(".$codec.") (".$width."x".$height.")" : "(".$codec.") (".$channels."ch)");
     }
     foreach ($array as $element) {
         if (is_array($element)) {
@@ -3407,13 +3476,13 @@ function searchPlex($query){
     $api = simplexml_load_string($api);
 	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
     if (!$getServer) { return 'Could not load!'; }
-	
+
 	// Identify the local machine
     $server = $getServer['machineIdentifier'];
     $pre = "<table  class=\"table table-hover table-stripped\"><thead><tr><th>Cover</th><th>Title</th><th>Genre</th><th>Year</th><th>Type</th><th>Added</th><th>Extra Info</th></tr></thead><tbody>";
     $items = "";
     $albums = $movies = $shows = 0;
-    
+
     $style = 'style="vertical-align: middle"';
     foreach($api AS $child) {
         if($child['type'] != "artist" && $child['type'] != "episode" && isset($child['librarySectionID'])){
@@ -3434,37 +3503,37 @@ function searchPlex($query){
                 case "album":
                     $push = array(
                         "title" => (string)$child['parentTitle']." - ".(string)$child['title'],
-                    );  
+                    );
                     $results = array_replace($results,$push);
                     $albums++;
                     break;
                 case "movie":
 					$push = array(
                         "extra" => "Content Rating: ".(string)$child['contentRating']."<br/>Movie Rating: ".(string)$child['rating'],
-                    ); 
+                    );
 			  		$results = array_replace($results,$push);
                     $movies++;
                     break;
                 case "show":
 			  		$push = array(
                         "extra" => "Seasons: ".(string)$child['childCount']."<br/>Episodes: ".(string)$child['leafCount'],
-                    ); 
+                    );
 			  		$results = array_replace($results,$push);
                     $shows++;
                     break;
             }
 			if (file_exists('images/cache/'.$results['key'].'.jpg')){ $image_url = 'images/cache/'.$results['key'].'.jpg'; }
-    		if (file_exists('images/cache/'.$results['key'].'.jpg') && (time() - 604800) > filemtime('images/cache/'.$results['key'].'.jpg') || !file_exists('images/cache/'.$results['key'].'.jpg')) {       
-        		$image_url = 'ajax.php?a=plex-image&img='.$results['image'].'&height=150&width=100&key='.$results['key'];        
+    		if (file_exists('images/cache/'.$results['key'].'.jpg') && (time() - 604800) > filemtime('images/cache/'.$results['key'].'.jpg') || !file_exists('images/cache/'.$results['key'].'.jpg')) {
+        		$image_url = 'ajax.php?a=plex-image&img='.$results['image'].'&height=150&width=100&key='.$results['key'];
     		}
     		if(!$results['image']){ $image_url = "images/no-search.png"; $key = "no-search"; }
-			
-			if (substr_count(PLEXURL, '.') != 2) {
-				$link = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
+
+			if (PLEXTABURL) {
+				$link = PLEXTABURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
 			}else{
-				$link = PLEXURL."/web/index.html#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
+				$link = "https://app.plex.tv/web/app#!/server/$server/details?key=/library/metadata/".$results['ratingkey'];
 			}
-			
+
             $items .= '<tr style="cursor: pointer;" class="openTab" extraTitle="'.$results['title'].'" extraType="'.$child['type'].'" openTab="'.$openTab.'" href="'.$link.'">
             <th scope="row"><img src="'.$image_url.'"></th>
             <td class="col-xs-2 nzbtable nzbtable-row"'.$style.'>'.$results['title'].'</td>
@@ -3492,16 +3561,16 @@ function searchPlex($query){
 
 function getBannedUsers($string){
     if (strpos($string, ',') !== false) {
-        $banned = explode(",", $string);     
+        $banned = explode(",", $string);
     }else{
-        $banned = array($string);  
+        $banned = array($string);
     }
     return $banned;
 }
 
 function getWhitelist($string){
     if (strpos($string, ',') !== false) {
-        $whitelist = explode(",", $string); 
+        $whitelist = explode(",", $string);
     }else{
         $whitelist = array($string);
     }
@@ -3602,13 +3671,13 @@ function sendTestEmail($to, $from, $host, $auth, $username, $password, $type, $p
 function libraryList(){
     $address = qualifyURL(PLEXURL);
 	$headers = array(
-		"Accept" => "application/json", 
+		"Accept" => "application/json",
 		"X-Plex-Token" => PLEXTOKEN
 	);
 	libxml_use_internal_errors(true);
 	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
     if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
-	
+
 	$api = simplexml_load_string(@curl_get("https://plex.tv/api/servers/$gotServer/shared_servers", $headers));
 	$libraryList = array();
     foreach($api->SharedServer->Section AS $child) {
@@ -3629,14 +3698,14 @@ function libraryList(){
 function plexUserShare($username){
     $address = qualifyURL(PLEXURL);
 	$headers = array(
-		"Accept" => "application/json", 
-		"Content-Type" => "application/json", 
+		"Accept" => "application/json",
+		"Content-Type" => "application/json",
 		"X-Plex-Token" => PLEXTOKEN
 	);
 	libxml_use_internal_errors(true);
 	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
     if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
-	
+
 	$json = array(
 		"server_id" => $gotServer,
 		"shared_server" => array(
@@ -3644,9 +3713,9 @@ function plexUserShare($username){
 			"invited_email" => $username
 		)
 	);
-	
+
 	$api = curl_post("https://plex.tv/api/servers/$gotServer/shared_servers/", $json, $headers);
-	
+
 	switch ($api['http_code']['http_code']){
 		case 400:
 			writeLog("error", "PLEX INVITE: $username already has access to the shared libraries");
@@ -3670,17 +3739,17 @@ function plexUserShare($username){
 function plexUserDelete($username){
     $address = qualifyURL(PLEXURL);
 	$headers = array(
-		"Accept" => "application/json", 
-		"Content-Type" => "application/json", 
+		"Accept" => "application/json",
+		"Content-Type" => "application/json",
 		"X-Plex-Token" => PLEXTOKEN
 	);
 	libxml_use_internal_errors(true);
 	$getServer = simplexml_load_string(@curl_get($address."/?X-Plex-Token=".PLEXTOKEN));
     if (!$getServer) { return 'Could not load!'; }else { $gotServer = $getServer['machineIdentifier']; }
 	$id = (is_numeric($username) ? $id : convertPlexName($username, "id"));
-	
+
 	$api = curl_delete("https://plex.tv/api/servers/$gotServer/shared_servers/$id", $headers);
-	
+
 	switch ($api['http_code']['http_code']){
 		case 401:
 			writeLog("error", "PLEX INVITE: Invalid Plex Token");
@@ -3738,7 +3807,7 @@ function inviteCodes($action, $code = null, $usedBy = null) {
 		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
 	$now = date("Y-m-d H:i:s");
-	
+
 	switch ($action) {
 		case "get":
 			// Start Array
@@ -3777,7 +3846,7 @@ function inviteCodes($action, $code = null, $usedBy = null) {
 			return (!empty($invites) ? true : false );
 			break;
 	}
-	
+
 }
 
 function plexJoin($username, $email, $password){
@@ -3794,7 +3863,7 @@ function plexJoin($username, $email, $password){
 		'user[username]' => $username,
 		'user[password]' => $password,
 	);
-	
+
 	$api = curl_post($connectURL, $body, $headers);
 	$json = json_decode($api['content'], true);
 	$errors = (!empty($json['errors']) ? true : false);
@@ -3809,7 +3878,7 @@ function plexJoin($username, $email, $password){
 		if($emailError){ $errorMessage .= "[Email Error: ". $emailError ."]"; }
 		if($passwordError){ $errorMessage .= "[Password Error: ". $passwordError ."]"; }
 	}
-	
+
 	switch ($api['http_code']['http_code']){
 		case 400:
 			writeLog("error", "PLEX JOIN: Error: ".$api['http_code']['http_code']." $username already has access to the shared libraries $errorMessage");
@@ -3833,7 +3902,7 @@ function plexJoin($username, $email, $password){
 	//prettyPrint($api);
 	//prettyPrint(json_decode($api['content'], true));
     return (!empty($success) && empty($errors) ? true : false );
-	
+
 }
 
 function getCert(){
@@ -3864,7 +3933,7 @@ function customCSS(){
 
 function tvdbToken(){
 	$headers = array(
-		"Accept" => "application/json", 
+		"Accept" => "application/json",
 		"Content-Type" => "application/json"
 	);
 	$json = array(
@@ -3878,7 +3947,7 @@ function tvdbToken(){
 
 function tvdbGet($id){
 	$headers = array(
-		"Accept" => "application/json", 
+		"Accept" => "application/json",
 		"Authorization" => "Bearer ".tvdbToken(),
 		"trakt-api-key" => "4502cfdf8f7282fe454878ff8583f5636392cdc5fcac30d0cc4565f7173bf443",
 		"trakt-api-version" => "2"
@@ -3886,7 +3955,7 @@ function tvdbGet($id){
 
 	$trakt = curl_get("https://api.trakt.tv/search/tvdb/$id?type=show", $headers);
 	@$api['trakt'] = json_decode($trakt, true)[0]['show']['ids'];
-	
+
 	if(empty($api['trakt'])){
 		$series = curl_get("https://api.thetvdb.com/series/$id", $headers);
 		$poster = curl_get("https://api.thetvdb.com/series/$id/images/query?keyType=poster", $headers);
@@ -3901,7 +3970,7 @@ function tvdbGet($id){
 function tvdbSearch($name, $type){
 	$name = rawurlencode(preg_replace("/\(([^()]*+|(?R))*\)/","", $name));
 	$headers = array(
-		"Accept" => "application/json", 
+		"Accept" => "application/json",
 		"Authorization" => "Bearer ".tvdbToken(),
 		"trakt-api-key" => "4502cfdf8f7282fe454878ff8583f5636392cdc5fcac30d0cc4565f7173bf443",
 		"trakt-api-version" => "2"
@@ -3915,7 +3984,7 @@ function tvdbSearch($name, $type){
 
 function getPlexPlaylists(){
     $address = qualifyURL(PLEXURL);
-    
+
 	// Perform API requests
 	$api = @curl_get($address."/playlists?X-Plex-Token=".PLEXTOKEN);
 	libxml_use_internal_errors(true);
@@ -3942,7 +4011,7 @@ function getPlexPlaylists(){
 							}
 							if (count($items)) {
 								$output .= ''.implode('',$items).'';
-							}							
+							}
 						}
 					}
 				}
@@ -4020,47 +4089,47 @@ function getCalendar(){
 	$radarr = new Sonarr(RADARRURL, RADARRKEY);
 	$sickrage = new SickRage(SICKRAGEURL, SICKRAGEKEY);
 	$startDate = date('Y-m-d',strtotime("-".CALENDARSTARTDAY." days"));
-	$endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days")); 
+	$endDate = date('Y-m-d',strtotime("+".CALENDARENDDAY." days"));
 	$calendarItems = array();
 	if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){
 		try {
 			$sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate));
 			if(!empty($sonarrCalendar)) { $calendarItems = array_merge($calendarItems, $sonarrCalendar); }
-		} catch (Exception $e) { 
-			writeLog("error", "SONARR ERROR: ".strip($e->getMessage())); 
+		} catch (Exception $e) {
+			writeLog("error", "SONARR ERROR: ".strip($e->getMessage()));
 		}
 	}
-	if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){ 
-		try { 
+	if (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)){
+		try {
 			$radarrCalendar = getRadarrCalendar($radarr->getCalendar($startDate, $endDate));
-			if(!empty($radarrCalendar)) { $calendarItems = array_merge($calendarItems, $radarrCalendar); } 
-		} catch (Exception $e) { 
-			writeLog("error", "RADARR ERROR: ".strip($e->getMessage())); 
+			if(!empty($radarrCalendar)) { $calendarItems = array_merge($calendarItems, $radarrCalendar); }
+		} catch (Exception $e) {
+			writeLog("error", "RADARR ERROR: ".strip($e->getMessage()));
 		}
 	}
 	if (COUCHURL != "" && qualifyUser(COUCHHOMEAUTH)){
-		$couchCalendar = getCouchCalendar(); 
+		$couchCalendar = getCouchCalendar();
 		if(!empty($couchCalendar)) { $calendarItems = array_merge($calendarItems, $couchCalendar); }
 
 	}
 	if (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)){
-		$headphonesHistory = getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory"); 
-		$headphonesWanted = getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted"); 
+		$headphonesHistory = getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getHistory");
+		$headphonesWanted = getHeadphonesCalendar(HEADPHONESURL, HEADPHONESKEY, "getWanted");
 		if(!empty($headphonesHistory)) { $calendarItems = array_merge($calendarItems, $headphonesHistory); }
 		if(!empty($headphonesWanted)) { $calendarItems = array_merge($calendarItems, $headphonesWanted); }
 
 	}
 	if (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)){
-		try { 
+		try {
 			$sickrageFuture = getSickrageCalendarWanted($sickrage->future());
 			if(!empty($sickrageFuture)) { $calendarItems = array_merge($calendarItems, $sickrageFuture); }
-		} catch (Exception $e) { 
-			writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
-		} try { 
+		} catch (Exception $e) {
+			writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage()));
+		} try {
 			$sickrageHistory = getSickrageCalendarHistory($sickrage->history("100","downloaded"));
 			if(!empty($sickrageHistory)) { $calendarItems = array_merge($calendarItems, $sickrageHistory); }
-		} catch (Exception $e) { 
-			writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage())); 
+		} catch (Exception $e) {
+			writeLog("error", "SICKRAGE/BEARD ERROR: ".strip($e->getMessage()));
 		}
 	}
 	return $calendarItems;
@@ -4080,7 +4149,7 @@ function fileArray($files){
 			$list[] = $file;
 		}
 	}
-	if(!empty($list)){ return $list; } 
+	if(!empty($list)){ return $list; }
 }
 
 function backupDB(){
@@ -4088,12 +4157,12 @@ function backupDB(){
 		$directory = DATABASE_LOCATION."backups/";
 		@mkdir($directory, 0770, true);
 		$orgFiles = array(
-			'css' => 'custom.css', 
-			'temp' => 'cus.sd', 
-			'orgLog' => 'org.log', 
-			'loginLog' => 'loginLog.json', 
-			'chatDB' => 'chatpack.db', 
-			'config' => 'config/config.php', 
+			'css' => 'custom.css',
+			'temp' => 'cus.sd',
+			'orgLog' => 'org.log',
+			'loginLog' => 'loginLog.json',
+			'chatDB' => 'chatpack.db',
+			'config' => 'config/config.php',
 			'database' => DATABASE_LOCATION.'users.db'
 		);
 		$files = fileArray($orgFiles);
@@ -4498,18 +4567,18 @@ function ping($pings, $type = "string") {
 }
 
 function getPing($url, $style, $refresh = null){
-	if(ping($url) !== 0){ 
-		$class = 'success'; 
+	if(ping($url) !== 0){
+		$class = 'success';
 		if(!$refresh){
 			$class .= " animated slideInLeft";
 		}
-	}else{ 
+	}else{
 		$class = "warning";
 		if(!$refresh){
 			$class .= " animated flash loop-animation-timeout";
-		} 
+		}
 	}
-	echo '<span class="badge ping-'.$class.'" style="position: absolute;z-index: 100;right: 5px; padding: 0px 0px;'.$style.';font-size: 10px;">&nbsp;</span>';
+	echo '<span class="pingcheck badge ping-'.$class.'" style="position: absolute;z-index: 100;right: 5px; padding: 0px 0px;'.$style.';font-size: 10px;">&nbsp;</span>';
 }
 
 function speedTestData(){
@@ -4552,7 +4621,7 @@ function buildMenuPhone($array){
 			<img src="images/organizr-logo-h-d.png" width="100%" style="margin-top: -10px;">
 			<div class="profile-usermenu">
 				<ul class="nav" id="settings-list">
-		'; 
+		';
 		foreach($array as $k => $v){
 			if($v['id'] == 'open-invites' && empty(PLEXURL)){
 				continue;
@@ -4611,7 +4680,31 @@ function errormessage($msg) {
 	echo $msg;
 	echo "</div>";
 }
-
+function ajaxLoop($ajaxFunction, $refresh, $extraFunction = ''){
+	return "
+	setInterval(function() {
+		$.ajax({
+			url: 'ajax.php?a=".$ajaxFunction."',
+			timeout: 10000,
+			type: 'GET',
+			success: function(response) {
+				var getDiv = response;
+				var loadedID = 	$(getDiv).attr('id');
+				if (typeof loadedID !== 'undefined') {
+					$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+					".$extraFunction."
+					console.log('".$ajaxFunction." has been updated');
+				}else{
+					console.log('".$ajaxFunction." data was not sufficent or is offline');
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				console.error('".$ajaxFunction." could not be updated');
+			}
+		});
+	}, ".$refresh.");
+	";
+}
 function getOrgUsers(){
 	$file_db = DATABASE_LOCATION."users.db";
 	if(file_exists($file_db)){
@@ -4665,6 +4758,768 @@ function q2a($q){
 	}
 }
 
+function getOmbiToken($username, $password){
+	$headers = array(
+		"Accept" => "application/json",
+		"Content-Type" => "application/json"
+	);
+	$json = array(
+		"username" => $username,
+        "password" => $password,
+		"rememberMe" => "true",
+         );
+	$api = curl_post(OMBIURL."/api/v1/Token", $json, $headers);
+    return json_decode($api['content'], true)['access_token'];
+}
+
+function ombiAction($id, $action, $type){
+	$headers = array(
+		"Accept" => "application/json",
+		"Content-Type" => "application/json",
+		"Apikey" => OMBIKEY
+	);
+	$body = array(
+		'id' => $id,
+	);
+	switch ($type) {
+		case 'season':
+		case 'tv':
+			$type = 'tv';
+			break;
+		default:
+			$type = 'movie';
+			break;
+	}
+	switch ($action) {
+		case 'approve':
+			$api = curl_post(OMBIURL."/api/v1/Request/".$type."/approve", $body, $headers);
+			break;
+		case 'available':
+				$api = curl_post(OMBIURL."/api/v1/Request/".$type."/available", $body, $headers);
+				break;
+		case 'unavailable':
+				$api = curl_post(OMBIURL."/api/v1/Request/".$type."/unavailable", $body, $headers);
+				break;
+		case 'deny':
+			$api = curl_put(OMBIURL."/api/v1/Request/".$type."/deny", $body, $headers);
+			break;
+		case 'delete':
+			$api = curl_delete(OMBIURL."/api/v1/Request/".$type."/".$id, $headers);
+			break;
+		default:
+			# code...
+			break;
+	}
+	switch ($api['http_code']['http_code']){
+		case 401:
+			writeLog("error", "OMBI: Invalid API KEY");
+			return false;
+			break;
+		case 200:
+			writeLog("success", "OMBI: action completed successfully for [type: $type - action: $action - id: $id]");
+			return true;
+			break;
+		default:
+			writeLog("error", "OMBI: unknown error with request [type: $type - action: $action - id: $id]");
+			return false;
+	}
+    //return (!empty($result) ? $result : null );
+}
+
+function getOmbiRequests($type = "both"){
+	$headers = array(
+		"Accept" => "application/json",
+		"Apikey" => OMBIKEY,
+	);
+	$requests = array();
+	switch ($type) {
+		case 'movie':
+			$movie = json_decode(curl_get(OMBIURL."/api/v1/Request/movie", $headers), true);
+			break;
+		case 'tv':
+			$tv = json_decode(curl_get(OMBIURL."/api/v1/Request/tv", $headers), true);
+			break;
+
+		default:
+			$movie = json_decode(curl_get(OMBIURL."/api/v1/Request/movie", $headers), true);
+			$tv = json_decode(curl_get(OMBIURL."/api/v1/Request/tv", $headers), true);
+			break;
+	}
+	if(isset($movie)){
+		//$movie = array_reverse($movie);
+		foreach ($movie as $key => $value) {
+			$poster = explode('/',$value['posterPath']);
+			$requests[] = array(
+				'id' => $value['theMovieDbId'],
+				'title' => $value['title'],
+				'poster' => (strpos($value['posterPath'], "/") !== false) ? 'https://image.tmdb.org/t/p/w300/'.end($poster) : 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'],
+				'approved' => $value['approved'],
+				'available' => $value['available'],
+				'denied' => $value['denied'],
+				'deniedReason' => $value['deniedReason'],
+				'user' => $value['requestedUser']['userName'],
+				'request_id' => $value['id'],
+				'request_date' => $value['requestedDate'],
+				'release_date' => $value['releaseDate'],
+				'type' => 'movie',
+				'icon' => 'mdi mdi-filmstrip',
+				'color' => 'palette-Deep-Purple-900 bg white',
+			);
+		}
+	}
+	if(isset($tv) && (is_array($tv) || is_object($tv))){
+		foreach ($tv as $key => $value) {
+			if(is_array($value['childRequests'][0])){
+				$requests[] = array(
+					'id' => $value['tvDbId'],
+					'title' => $value['title'],
+					'poster' => $value['posterPath'],
+					'approved' => $value['childRequests'][0]['approved'],
+					'available' => $value['childRequests'][0]['available'],
+					'denied' => $value['childRequests'][0]['denied'],
+					'deniedReason' => $value['childRequests'][0]['deniedReason'],
+					'user' => $value['childRequests'][0]['requestedUser']['userName'],
+					'request_id' => $value['id'],
+					'request_date' => $value['childRequests'][0]['requestedDate'],
+					'release_date' => $value['releaseDate'],
+					'type' => 'tv',
+					'icon' => 'mdi mdi-television',
+					'color' => 'grayish-blue-bg',
+				);
+			}
+		}
+	}
+    return (empty($requests)) ? '' : $requests;
+}
+
+function convertOmbiString($type, $value){
+	switch ($type) {
+		case 'approved':
+			$string['string'] = ($value) ? 'Approved' : 'Approval-Pending';
+			$string['icon'] = ($value) ? 'mdi mdi-check' : 'mdi mdi-clock';
+			$string['color'] = ($value) ? 'green-bg' : 'yellow-bg';
+			break;
+		case 'available':
+			$string['string'] = ($value) ? 'Available' : 'Not Downloaded';
+			$string['icon'] = ($value) ? 'mdi mdi-server' : 'mdi mdi-server-off';
+			$string['color'] = ($value) ? 'green-bg' : 'red-bg';
+			break;
+		case 'denied':
+			$string['string'] = ($value) ? 'Denied' : 'Approved';
+			$string['icon'] = ($value) ? 'mdi mdi-emoticon-sad' : 'mdi mdi-emoticon-happy';
+			$string['color'] = ($value) ? 'red-bg' : 'green-bg';
+			break;
+		case 'status':
+			switch ($value) {
+				case '1':
+					$string['string'] = 'Denied';
+					$string['icon'] = 'mdi mdi-window-close';
+					$string['color'] = 'red-bg';
+					break;
+				case '2':
+					$string['string'] = 'Approved';
+					$string['icon'] = 'mdi mdi-check';
+					$string['color'] = 'green-bg';
+					break;
+				case '3':
+					$string['string'] = 'Not Approved';
+					$string['icon'] = 'mdi mdi-clock';
+					$string['color'] = 'yellow-bg';
+					break;
+
+				default:
+					# code...
+					break;
+			}
+			break;
+		default:
+			$string['string'] = ($value) ? 'Approved' : 'Approval-Pending';
+			$string['color'] = ($value) ? 'green-bg' : 'red-bg';
+			break;
+	}
+	return $string;
+}
+function buildOmbiItem($type, $group, $user, $request){
+	if (is_array($request) || is_object($request)){
+		$actions = '';
+		if($request['denied']){
+			$status = 1;
+			$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve</a></li>';
+		}else{
+			if($request['approved']){
+				$status = 2;
+			}else{
+				$status = 3;
+				$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="approve"><a class="requestAction" href="javascript:void(0)">Approve</a></li>';
+				$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="deny"><a class="requestAction" href="javascript:void(0)">Deny</a></li>';
+			}
+		}
+		if($request['available']){
+			$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="unavailable"><a class="requestAction" href="javascript:void(0)">Mark as Unavailable</a></li>';
+		}else{
+			$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="available"><a class="requestAction" href="javascript:void(0)">Mark as Available</a></li>';
+		}
+		$actions .= '<li request-type="'.$type.'" request-id="'.$request['request_id'].'" request-name="delete"><a class="requestAction" href="javascript:void(0)">Delete</a></li>';
+		if(isset($group) && $group == 'admin'){
+			$actionMenu = '
+			<div class="requestOptions">
+				<div class="btn-group transparent" role="group">
+					<button type="button" class="btn waves btn-success  btn-sm dropdown-toggle waves-effect waves-float transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-dots-vertical mdi-24px"></i></button>
+					<ul class="dropdown-menu"><h6 class="text-center requestHeader gray-bg">'.$request['user'].'</h6>'.$actions.'</ul>
+				</div>
+			</div>
+			';
+		}else{
+			$actionMenu = '';
+		}
+		if((isset($group)) && $group == 'admin' || REQUESTEDUSERONLY == 'false'){
+			return '
+			<div class="item-'.$type.'-'.convertOmbiString('approved', $request['approved'])['string'].'">
+				'.$actionMenu.'
+				<a class="openTab" extraTitle="'.$request['title'].'" extraType="'.$type.'" openTab="true"><img alt="" class="slick-image-tall" data-lazy="'.$request['poster'].'"></a>
+				<div class="requestBottom text-center">
+					<div data-toggle="tooltip" data-placement="top" data-original-title="'.$request['type'].'" class="zero-m requestGroup '.$request['color'].'">
+						<i class="'.$request['icon'].'"></i>
+					</div>
+					<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('status', $status)['string'].'" class="zero-m requestGroup '.convertOmbiString('status', $status)['color'].'">
+						<i class="'.convertOmbiString('status', $status)['icon'].'"></i>
+					</div>
+					<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('available', $request['available'])['string'].'" class="zero-m requestGroup '.convertOmbiString('available', $request['available'])['color'].'">
+						<i class="'.convertOmbiString('available', $request['available'])['icon'].'"></i>
+					</div>
+				</div>
+				<small class="elip slick-bottom-title">'.$request['title'].'</small>
+			</div>';
+		}else{
+			if(strtolower($request['user']) == strtolower($user)){
+				return '
+				<div class="item-'.$type.'-'.convertOmbiString('approved', $request['approved'])['string'].'">
+					'.$actionMenu.'
+					<a class="openTab" extraTitle="'.$request['title'].'" extraType="'.$type.'" openTab="true"><img alt="" class="slick-image-tall" data-lazy="'.$request['poster'].'"></a>
+					<div class="requestBottom text-center">
+						<div data-toggle="tooltip" data-placement="top" data-original-title="'.$request['type'].'" class="zero-m requestGroup '.$request['color'].'">
+							<i class="'.$request['icon'].'"></i>
+						</div>
+						<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('status', $status)['string'].'" class="zero-m requestGroup '.convertOmbiString('status', $status)['color'].'">
+							<i class="'.convertOmbiString('status', $status)['icon'].'"></i>
+						</div>
+						<div data-toggle="tooltip" data-placement="top" data-original-title="'.convertOmbiString('available', $request['available'])['string'].'" class="zero-m requestGroup '.convertOmbiString('available', $request['available'])['color'].'">
+							<i class="'.convertOmbiString('available', $request['available'])['icon'].'"></i>
+						</div>
+					</div>
+					<small class="elip slick-bottom-title">'.$request['title'].'</small>
+				</div>';
+			}
+		}
+	}
+}
+function buildOmbiList($group, $user){
+	$requests = array();
+	$movieList = getOmbiRequests('movie');
+	$tvList = getOmbiRequests('tv');
+	if(is_array($movieList) && is_array($tvList)){
+		$result = array_merge($movieList , $tvList );
+	}else{
+		if(is_array($movieList)){
+			$result = $movieList;
+		}elseif(is_array($movieList)){
+			$result = $tvList;
+		}else{
+			$result = false;
+		}
+	}
+	if (is_array($result) || is_object($result)){
+		usort($result, function ($item1, $item2) {
+			if ($item1['request_date'] == $item2['request_date']) return 0;
+			return $item1['request_date'] > $item2['request_date'] ? -1 : 1;
+		});
+		foreach ($result as $request) {
+			if($request['type'] == 'movie'){
+		        $requests[] = buildOmbiItem('movie', $group, $user, $request);
+		    }elseif($request['type'] == 'tv'){
+		        $requests[] = buildOmbiItem('season', $group, $user, $request);
+		    }
+		}
+	}
+	return outputOmbiRequests("Requested Content", $requests, ajaxLoop('ombi-requests',REQUESTREFRESH,'loadSlick();'), false);
+}
+
+function outputOmbiRequests($header = "Requested Content", $items, $script = false, $array) {
+    $hideMenu = '<div class="pull-right"><div class="btn-group" role="group"><button type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter &nbsp;<span class="caret"></span></button><ul style="right:0; left: auto" class="dropdown-menu filter-request-event">';
+	if(preg_grep("/item-movie-Approved/", $items)){
+        $hideMenu .= '<li data-filter="item-movie-Approved" data-name="Approved Movies" data-filter-on="false"><a class="js-filter-movie" href="javascript:void(0)">Approved Movies</a></li>';
+    }
+	if(preg_grep("/item-movie-Approval-Pending/", $items)){
+        $hideMenu .= '<li data-filter="item-movie-Approval-Pending" data-name="Approval Pending Movies" data-filter-on="false"><a class="js-filter-movie" href="javascript:void(0)">Approval Pending Movies</a></li>';
+    }
+	if(preg_grep("/item-season-Approved/", $items)){
+        $hideMenu .= '<li data-filter="item-season-Approved" data-name="Approved TV Shows" data-filter-on="false"><a class="js-filter-season" href="javascript:void(0)">Approved Shows</a></li>';
+    }
+	if(preg_grep("/item-season-Approval-Pending/", $items)){
+        $hideMenu .= '<li data-filter="item-season-Approval-Pending" data-name="Approval Pending TV Shows" data-filter-on="false"><a class="js-filter-season" href="javascript:void(0)">Approval Pending Shows</a></li>';
+    }
+	$hideMenu .= '<li data-filter="item-all" data-name="Content" data-filter-on="false"><a class="js-filter-all" href="javascript:void(0)">All</a></li>';
+    $hideMenu .= '</ul></div></div>';
+    // If None Populate Empty Item
+    if (!count($items)) {
+        return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Requests Found</p></div>';
+    }else{
+		$className = str_replace(' ', '', $header);
+        return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 id="requestContent-title" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-request" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+    }
+}
+
+function loadIcons(){
+	$dirname = "images/";
+	$images = scandir($dirname);
+	$ignore = Array(".", "..", "favicon", "settings", "cache", "platforms", "._.DS_Store", ".DS_Store", "confused.png", "sowwy.png", "sort-btns", "loading.png", "titlelogo.png", "default.svg", "login.png", "no-np.png", "no-list.png", "no-np.psd", "no-list.psd", "themes", "nadaplaying.jpg", "organizr-logo-h-d.png", "organizr-logo-h.png");
+	$allIcons = '';
+	foreach($images as $curimg){
+		if(!in_array($curimg, $ignore)) {
+			$allIcons .= '
+			<div class="col-xs-2" style="width: 75px; height: 75px; padding-right: 0px;">
+				<a data-toggle="tooltip" data-placement="bottom" title="'.$dirname.$curimg.'" class="thumbnail" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+					<img style="width: 50px; height: 50px;" data-src="'.$dirname.$curimg.'" alt="thumbnail" class="allIcons lazyload shadow">
+				</a>
+			</div>
+			';
+		}
+	}
+	return $allIcons;
+}
+
+function buildHomepageSettings(){
+	$homepageOrder = homepageOrder();
+	$homepageList = '<h4>Drag Homepage Items to Order Them</h4><div id="homepage-items" class="external-events">';
+	$inputList = '<div id="homepage-values" class="row">';
+	foreach ($homepageOrder as $key => $val) {
+		switch ($key) {
+			case 'homepageOrdercustomhtml':
+				$class = 'palette-Deep-Purple-100 bg gray';
+				$image = 'images/html.png';
+				if(empty(HOMEPAGECUSTOMHTML1)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdernotice':
+				$class = 'palette-Cyan-A400 bg gray';
+				$image = 'images/pin.png';
+				if(empty(HOMEPAGENOTICETITLE) && empty(HOMEPAGENOTICEMESSAGE)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderspeedtest':
+				$class = 'red-bg';
+				$image = 'images/settings/full-color/png/64px/speedometer.png';
+				if(SPEEDTEST !== "true"){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdernzbget':
+				$class = 'green-bg';
+				$image = 'images/nzbget.png';
+				if(empty(NZBGETURL)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdersabnzbd':
+				$class = 'yellow-bg';
+				$image = 'images/sabnzbd.png';
+				if(empty(SABNZBDURL)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderplexsearch':
+			case 'homepageOrderplexnowplaying':
+			case 'homepageOrderplexrecent':
+			case 'homepageOrderplexplaylist':
+				$class = 'palette-Amber-A700 bg gray';
+				$image = 'images/plex.png';
+				if(empty(PLEXURL)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderembynowplaying':
+			case 'homepageOrderembyrecent':
+				$class = 'palette-Green-A700 bg gray';
+				$image = 'images/emby.png';
+				if(empty(EMBYURL)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderombi':
+				$class = 'orange-bg';
+				$image = 'images/ombi.png';
+				if(empty(OMBIURL)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdercalendar':
+				$class = 'palette-Blue-400 bg gray';
+				$image = 'images/calendar.png';
+				if(SONARRURL == "" && RADARRURL == "" && HEADPHONESURL == "" && SICKRAGEURL == "" && COUCHURL == "" ){
+					$class .= ' faded';
+				}
+				break;
+			default:
+				$class = 'blue-bg';
+				$image = '';
+				break;
+		}
+		$homepageList .= '
+		<div class="col-md-3 sort-homepage"><div class="fc-event '.$class.'">
+			<span class="ordinal-position text-uppercase badge badge-gray" data-link="'.$key.'" style="float:left;width: 30px;">'.$val.'</span>
+			&nbsp; '.strtoupper(substr($key, 13)).'
+			<span class="remove-event"><img style="width: 22px;" src="'.$image.'"></span>
+		</div></div>';
+		$inputList .= '<input type="hidden" name="'.$key.'">';
+	}
+	$homepageList .= '</div>';
+	$inputList .= '</div>';
+	return $homepageList.$inputList;
+}
+
+function buildHomepage($group, $user){
+	$homepageOrder = homepageOrder();
+	$homepageBuilt = '';
+	foreach ($homepageOrder as $key => $value) {
+		$homepageBuilt .= buildHomepageItem($key, $group, $user);
+	}
+	return $homepageBuilt;
+}
+
+function realSize($bytes, $decimals = 2) {
+    $size = array('B','kB','MB','GB','TB','PB','EB','ZB','YB');
+    $factor = floor((strlen($bytes) - 1) / 3);
+    return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . ' '.@$size[$factor];
+}
+
+function buildHomepageItem($homepageItem, $group, $user){
+	$homepageItemBuilt = '';
+	switch ($homepageItem) {
+		case 'homepageOrderplexsearch':
+			if((qualifyUser(PLEXSEARCHAUTH) && PLEXSEARCH == "true" && qualifyUser(PLEXHOMEAUTH))) {
+				$homepageItemBuilt .= '
+				<div id="searchPlexRow" class="row">
+					<div class="col-lg-12">
+						<div class="content-box box-shadow big-box todo-list">
+							<form id="plexSearchForm" onsubmit="return false;" autocomplete="off">
+								<div class="">
+									<div class="input-group">
+										<div style="border-radius: 25px 0 0 25px; border:0" class="input-group-addon gray-bg"><i class="fa fa-search white"></i></div>
+										<input id="searchInput" type="text" style="border-radius: 0;" autocomplete="off" name="search-title" class="form-control input-group-addon gray-bg" placeholder="Media Search">
+										<div id="clearSearch" style="border-radius: 0 25px 25px 0;border:0; cursor: pointer;" class="input-group-addon gray-bg"><i class="fa fa-close white"></i></div>
+										<button style="display:none" id="plexSearchForm_submit" class="btn btn-primary waves"></button>
+									</div>
+								</div>
+							</form>
+							<div id="resultshere" class="table-responsive"></div>
+						</div>
+					</div>
+				</div>
+				';
+			}
+			break;
+		case 'homepageOrdercustomhtml':
+			if (qualifyUser(HOMEPAGECUSTOMHTML1AUTH) && HOMEPAGECUSTOMHTML1) {
+				$homepageItemBuilt .= "<div>" . HOMEPAGECUSTOMHTML1 . "</div>";
+			}
+			break;
+		case 'homepageOrdernotice':
+			if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) {
+				$homepageItemBuilt .= buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE);
+			}
+			break;
+		case 'homepageOrderspeedtest':
+			if(SPEEDTEST == "true" && qualifyUser(SPEEDTESTAUTH)){
+				$homepageItemBuilt .= '
+				<style type="text/css">
+					.flash {
+						animation: flash 0.6s linear infinite;
+					}
+					@keyframes flash {
+						0% { opacity: 0.6; }
+						50% { opacity: 1; }
+					}
+				</style>
+				<script type="text/javascript">
+				var w = null
+					function runTest() {
+						document.getElementById("startBtn").style.display = "none"
+						document.getElementById("testArea").style.display = ""
+						document.getElementById("abortBtn").style.display = ""
+						w = new Worker("bower_components/speed/speedtest_worker.js")
+						var interval = setInterval(function () { w.postMessage("status") }, 100)
+						w.onmessage = function (event) {
+							var data = event.data.split(";")
+							var status = Number(data[0])
+							var dl = document.getElementById("download")
+							var ul = document.getElementById("upload")
+							var ping = document.getElementById("ping")
+							var jitter = document.getElementById("jitter")
+							dl.className = status === 1 ? "w-name flash" : "w-name"
+							ping.className = status === 2 ? "w-name flash" : "w-name"
+							jitter.className = ul.className = status === 3 ? "w-name flash" : "w-name"
+							if (status >= 4) {
+								clearInterval(interval)
+								document.getElementById("abortBtn").style.display = "none"
+								document.getElementById("startBtn").style.display = ""
+								w = null
+							}
+							if (status === 5) {
+								document.getElementById("testArea").style.display = "none"
+							}
+							dl.textContent = data[1] + " Mbit/s";
+							$("#downloadpercent").attr("style", "width: " + data[1] + "%;");
+							$("#uploadpercent").attr("style", "width: " + data[2] + "%;");
+							$("#pingpercent").attr("style", "width: " + data[3] + "%;");
+							$("#jitterpercent").attr("style", "width: " + data[5] + "%;");
+							ul.textContent = data[2] + " Mbit/s";
+							ping.textContent = data[3] + " ms";
+							jitter.textContent = data[5] + " ms";
+						}
+						w.postMessage(\'start {"telemetry_level":"basic"}\')
+						//w.postMessage("start")
+					}
+					function abortTest() {
+						if (w) w.postMessage("abort")
+					}
+				</script>
+				<div class="row" id="testArea" style="display:none">
+					<div class="test col-sm-3 col-lg-3">
+						<div class="content-box ultra-widget green-bg" data-counter="">
+							<div id="downloadpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+							<div class="w-content">
+								<div class="w-icon right pull-right"><i class="mdi mdi-cloud-download"></i></div>
+								<div class="w-descr left pull-left text-center">
+									<span class="testName text-uppercase w-name">Download</span>
+									<br>
+									<span class="w-name counter" id="download" ></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="test col-sm-3 col-lg-3">
+						<div class="content-box ultra-widget red-bg" data-counter="">
+							<div id="uploadpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+							<div class="w-content">
+								<div class="w-icon right pull-right"><i class="mdi mdi-cloud-upload"></i></div>
+								<div class="w-descr left pull-left text-center">
+									<span class="testName text-uppercase w-name">Upload</span>
+									<br>
+									<span class="w-name counter" id="upload" ></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="test col-sm-3 col-lg-3">
+						<div class="content-box ultra-widget yellow-bg" data-counter="">
+							<div id="pingpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+							<div class="w-content">
+								<div class="w-icon right pull-right"><i class="mdi mdi-timer"></i></div>
+								<div class="w-descr left pull-left text-center">
+									<span class="testName text-uppercase w-name">Latency</span>
+									<br>
+									<span class="w-name counter" id="ping" ></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="test col-sm-3 col-lg-3">
+						<div class="content-box ultra-widget blue-bg" data-counter="">
+							<div id="jitterpercent" class="progress-bar progress-bar-striped active w-used" style=""></div>
+							<div class="w-content">
+								<div class="w-icon right pull-right"><i class="mdi mdi-pulse"></i></div>
+								<div class="w-descr left pull-left text-center">
+									<span class="testName text-uppercase w-name">Jitter</span>
+									<br>
+									<span class="w-name counter" id="jitter" ></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<br/>
+				</div>
+				<div id="abortBtn" class="row" style="display: none" onclick="javascript:abortTest()">
+					<div class="col-lg-12">
+						<div class="content-box red-bg" style="cursor: pointer;">
+							<h1 style="margin: 10px" class="text-uppercase text-center">Abort Speed Test</h1>
+							<div class="clearfix"></div>
+						</div>
+					</div>
+				</div>
+				<div id="startBtn" class="row" onclick="javascript:runTest()">
+					<div class="col-lg-12">
+						<div class="content-box green-bg" style="cursor: pointer;">
+							<h1 style="margin: 10px" class="text-uppercase text-center">Run Speed Test</h1>
+							<div class="clearfix"></div>
+						</div>
+					</div>
+				</div>
+				';
+			}
+			break;
+		case 'homepageOrdernzbget':
+			if(NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)){
+				$homepageItemBuilt .= buildDownloader('nzbget');
+			}
+			break;
+		case 'homepageOrdersabnzbd':
+			if(SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH)) {
+				$homepageItemBuilt .= buildDownloader('sabnzbd');
+			}
+			break;
+		case 'homepageOrderplexnowplaying':
+			if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) {
+				if(qualifyUser(PLEXPLAYINGNOWAUTH) && PLEXPLAYINGNOW == "true"){
+					$homepageItemBuilt .= '<div id="plexRowNowPlaying" class="row">';
+					$homepageItemBuilt .= getPlexStreams(12, PLEXSHOWNAMES, $group);
+					$homepageItemBuilt .= '</div>';
+				}
+			}
+			break;
+		case 'homepageOrderplexrecent':
+			if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) {
+				if(qualifyUser(PLEXRECENTMOVIEAUTH) && PLEXRECENTMOVIE == "true" || qualifyUser(PLEXRECENTTVAUTH) && PLEXRECENTTV == "true" || qualifyUser(PLEXRECENTMUSICAUTH) &&  PLEXRECENTMUSIC == "true"){
+					$plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
+					$homepageItemBuilt .= '<div id="plexRow" class="row"><div class="col-lg-12">';
+					$homepageItemBuilt .= getPlexRecent($plexArray);
+					$homepageItemBuilt .= '</div></div>';
+				}
+			}
+			break;
+		case 'homepageOrderplexplaylist':
+			if (qualifyUser(PLEXHOMEAUTH) && PLEXTOKEN) {
+				if(qualifyUser(PLEXPLAYLISTSAUTH) && PLEXPLAYLISTS == "true"){
+					$homepageItemBuilt .= '<div id="plexPlaylists" class="row"><div class="col-lg-12">';
+					$plexArray = array("movie" => PLEXRECENTMOVIE, "season" => PLEXRECENTTV, "album" => PLEXRECENTMUSIC);
+					$homepageItemBuilt .= getPlexPlaylists($plexArray);
+					$homepageItemBuilt .= '</div> </div>';
+				}
+			}
+			break;
+		case 'homepageOrderembynowplaying':
+			if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) {
+				if(qualifyUser(EMBYPLAYINGNOWAUTH) && EMBYPLAYINGNOW == "true"){
+					$homepageItemBuilt .= '<div id="embyRowNowPlaying" class="row">';
+					$homepageItemBuilt .= getEmbyStreams(12, EMBYSHOWNAMES, $group);
+					$homepageItemBuilt .= '</div>';
+				}
+			}
+			break;
+		case 'homepageOrderembyrecent':
+			if (qualifyUser(EMBYHOMEAUTH) && EMBYTOKEN) {
+				if(qualifyUser(EMBYRECENTMOVIEAUTH) && EMBYRECENTMOVIE == "true" || qualifyUser(EMBYRECENTTVAUTH) && EMBYRECENTTV == "true" || qualifyUser(EMBYRECENTMUSICAUTH) && EMBYRECENTMUSIC == "true"){
+					$embyArray = array("Movie" => EMBYRECENTMOVIE, "Episode" => EMBYRECENTTV, "MusicAlbum" => EMBYRECENTMUSIC, "Series" => EMBYRECENTTV);
+					$homepageItemBuilt .= '<div id="embyRow" class="row"><div class="col-lg-12">';
+					$homepageItemBuilt .= getEmbyRecent($embyArray);
+					$homepageItemBuilt .= '</div></div>';
+				}
+			}
+			break;
+		case 'homepageOrderombi':
+			if (qualifyUser(OMBIAUTH) && OMBIURL) {
+				$homepageItemBuilt .= '<div id="ombiRequests" class="row"><div class="col-lg-12">';
+				$homepageItemBuilt .= buildOmbiList($group, $user);
+				$homepageItemBuilt .= '</div></div>';
+			}
+			break;
+		case 'homepageOrdercalendar':
+			if ((SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)) || (RADARRURL != "" && qualifyUser(RADARRHOMEAUTH)) || (HEADPHONESURL != "" && qualifyUser(HEADPHONESHOMEAUTH)) || (SICKRAGEURL != "" && qualifyUser(SICKRAGEHOMEAUTH)) || (COUCHURL != "" && qualifyUser(COUCHHOMEAUTH))) {
+				$calendarItems = '';
+				if(RADARRURL != ""){ $calendarItems .= '<li><a class="calendarOption" calendarOption="film" href="javascript:void(0)">Movies</a></li>'; }
+				if(SONARRURL != ""){ $calendarItems .= '<li><a class="calendarOption" calendarOption="tv" href="javascript:void(0)">TV Shows</a></li>'; }
+				if(HEADPHONESURL != ""){ $calendarItems .= '<li><a class="calendarOption" calendarOption="music" href="javascript:void(0)">Music</a></li>'; }
+				$homepageItemBuilt .= '
+				<div id="calendarLegendRow" class="row" style="padding: 0 0 10px 0;">
+					<div class="col-lg-12 content-form form-inline">
+						<div class="form-group pull-right">
+							<span class="swal-legend label label-primary well-sm">Legend</span>&nbsp;
+							<div class="btn-group" role="group">
+								<button id="calendarSelected" style="margin-right: 0px;" type="button" class="btn waves btn-default btn-sm dropdown-toggle waves-effect waves-float" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">View All&nbsp;<span class="caret"></span></button>
+								<ul style="right:0; left: auto" class="dropdown-menu">
+									<li><a class="calendarOption" calendarOption="all" href="javascript:void(0)">View All</a></li>
+									'.$calendarItems.'
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="calendarRow" class="row">
+					<div class="col-lg-12">
+						<div id="calendar" class="fc-calendar box-shadow fc fc-ltr fc-unthemed"></div>
+					</div>
+				</div>
+				';
+			}
+			break;
+		default:
+			# code...
+			break;
+	}
+	return $homepageItemBuilt;
+}
+
+function buildDownloader($name){
+	return '
+<div id="downloadClientRow" class="row">
+	<div class="col-xs-12 col-md-12">
+		<div class="content-box">
+			<div class="tabbable panel with-nav-tabs panel-default">
+				<div class="panel-heading">
+					<div class="content-tools i-block pull-right">
+						<a id="getDownloader" class="repeat-btn">
+							<i class="fa fa-repeat"></i>
+						</a>
+					</div>
+					<h3 class="pull-left">'.strtoupper($name).'</h3>
+					<ul class="nav nav-tabs pull-right">
+						<li class="active"><a href="#downloadQueue-'.$name.'" data-toggle="tab" aria-expanded="true">'.translate("QUEUE").'</a></li>
+						<li class=""><a href="#downloadHistory-'.$name.'" data-toggle="tab" aria-expanded="false">'.translate("HISTORY").'</a></li>
+					</ul>
+					<div class="clearfix"></div>
+				</div>
+				<div class="panel-body">
+					<div class="tab-content">
+						<div class="tab-pane fade active in" id="downloadQueue-'.$name.'">
+							<div class="table-responsive" style="max-height: 300px">
+								<table class="table table-striped progress-widget zero-m" style="max-height: 300px">
+									<thead>
+										<tr>
+											<th class="col-xs-7 nzbtable-file-row">'.translate("FILE").'</th>
+											<th class="col-xs-2 nzbtable">'.translate("STATUS").'</th>
+											<th class="col-xs-1 nzbtable">'.translate("CATEGORY").'</th>
+											<th class="col-xs-1 nzbtable">'.translate("SIZE").'</th>
+											<th class="col-xs-2 nzbtable">'.translate("PROGRESS").'</th>
+										</tr>
+									</thead>
+									<tbody class="dl-queue '.$name.'"></tbody>
+								</table>
+							</div>
+						</div>
+						<div class="tab-pane fade" id="downloadHistory-'.$name.'">
+							<div class="table-responsive" style="max-height: 300px">
+								<table class="table table-striped progress-widget zero-m" style="max-height: 300px">
+									<thead>
+										<tr>
+											<th class="col-xs-7 nzbtable-file-row">'.translate("FILE").'</th>
+											<th class="col-xs-2 nzbtable">'.translate("STATUS").'</th>
+											<th class="col-xs-1 nzbtable">'.translate("CATEGORY").'</th>
+											<th class="col-xs-1 nzbtable">'.translate("SIZE").'</th>
+											<th class="col-xs-2 nzbtable">'.translate("PROGRESS").'</th>
+										</tr>
+									</thead>
+									<tbody class="dl-history '.$name.'"></tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>';
+}
 class Mobile_Detect
 {
     /**
@@ -5256,7 +6111,7 @@ class Mobile_Detect
         'Coast'         => array('Coast/[VER]'),
         'Dolfin'        => 'Dolfin/[VER]',
         // @reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent/Firefox
-        'Firefox'       => array('Firefox/[VER]', 'FxiOS/[VER]'), 
+        'Firefox'       => array('Firefox/[VER]', 'FxiOS/[VER]'),
         'Fennec'        => 'Fennec/[VER]',
         // http://msdn.microsoft.com/en-us/library/ms537503(v=vs.85).aspx
         // https://msdn.microsoft.com/en-us/library/ie/hh869301(v=vs.85).aspx
@@ -7478,8 +8333,10 @@ function mimeTypes(){
 		'zir' => 'application/vnd.zul',
 		'zirz' => 'application/vnd.zul',
 		'zmm' => 'application/vnd.handheld-entertainment+xml'
-	);	
+	);
 }
 
 // Always run this
-dependCheck();
+if(strpos($_SERVER['SCRIPT_NAME'], 'check.php') == false){
+	dependCheck();
+}
