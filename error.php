@@ -39,7 +39,7 @@ foreach(loadAppearance() as $key => $value) {
 	$$key = $value;
 }
 //error stuff
-$requested = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+$requested = $_SERVER['REQUEST_URI'];
 $codes = array(
        400 => array('Bad Request', 'The server cannot or will not process the request due to an apparent client error.', 'sowwy'),
        401 => array('Unauthorized', 'You do not have access to this page.', 'sowwy'),
