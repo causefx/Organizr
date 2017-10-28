@@ -537,11 +537,16 @@
 		 */
 		function register_user($username, $email, $sha1, &$registration_callback = false, $settings, $validate) {
 			//Admin bypass
-			if(in_arrayi($_SESSION["username"], $this->get_admin_list())){
-				$token = $this->get_user_token($_SESSION["username"]);
-				if($token == $_SESSION["token"]) {
-					$validate = true;
-					writeLog("success", "Admin Override on registration for $username info");
+			if($validate == null){
+				$adminList = $this->get_admin_list();
+				if($adminList){
+					if(in_arrayi($_SESSION["username"], $adminList)){
+						$token = $this->get_user_token($_SESSION["username"]);
+						if($token == $_SESSION["token"]) {
+							$validate = true;
+							writeLog("success", "Admin Override on registration for $username info");
+						}
+					}
 				}
 			}
 			$username = strtolower($username);
