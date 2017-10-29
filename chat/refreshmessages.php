@@ -1,11 +1,4 @@
 <?php
-// Load USER
-//require_once("../user.php");
-//$USER = new User("registration_callback");
-
-// Some PHP config stuff
-ini_set("display_errors", 1);
-ini_set("error_reporting", E_ALL | E_STRICT);
 
 $currentuser = $_POST["user"];
 

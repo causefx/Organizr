@@ -2,8 +2,10 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.6');
+ define('INSTALLEDVERSION', '1.601');
 // ===================================
+$debugOrganizr = true;
+if($debugOrganizr == true && file_exists('debug.php')){ require_once('debug.php'); }
 use Kryptonit3\Sonarr\Sonarr;
 use Kryptonit3\SickRage\SickRage;
 //homepage order
@@ -2607,36 +2609,39 @@ function nzbgetConnect($list = 'listgroups') {
 function sabnzbdConnect($list = 'queue') {
     $url = qualifyURL(SABNZBDURL);
 
-    $api = file_get_contents($url.'/api?mode='.$list.'&output=json&apikey='.SABNZBDKEY);
+    $api = @file_get_contents($url.'/api?mode='.$list.'&output=json&apikey='.SABNZBDKEY);
     $api = json_decode($api, true);
 
     $gotNZB = array();
+	if (is_array($api) || is_object($api)){
+	    foreach ($api[$list]['slots'] AS $child) {
+	        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; }
+	        if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
+	        $downloadStatus = $child['status'];
 
-    foreach ($api[$list]['slots'] AS $child) {
-        if($list == "queue"){ $downloadName = $child['filename']; $downloadCategory = $child['cat']; $downloadPercent = (($child['mb'] - $child['mbleft']) / $child['mb']) * 100; $progressBar = "progress-bar-striped active"; }
-        if($list == "history"){ $downloadName = $child['name']; $downloadCategory = $child['category']; $downloadPercent = "100"; $progressBar = ""; }
-        $downloadStatus = $child['status'];
-
-        $gotNZB[] = '<tr>
-						<td class="col-xs-6 nzbtable-file-row">'.$downloadName.'</td>
-						<td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
-						<td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
-						<td class="col-xs-1 nzbtable nzbtable-row">'.$child['size'].'</td>
-						<td class="col-xs-2 nzbtable nzbtable-row">
-							<div class="progress">
-								<div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
-									<p class="text-center">'.round($downloadPercent).'%</p>
-									<span class="sr-only">'.$downloadPercent.'% Complete</span>
+	        $gotNZB[] = '<tr>
+							<td class="col-xs-6 nzbtable-file-row">'.$downloadName.'</td>
+							<td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
+							<td class="col-xs-1 nzbtable nzbtable-row">'.$downloadCategory.'</td>
+							<td class="col-xs-1 nzbtable nzbtable-row">'.$child['size'].'</td>
+							<td class="col-xs-2 nzbtable nzbtable-row">
+								<div class="progress">
+									<div class="progress-bar progress-bar-success '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+										<p class="text-center">'.round($downloadPercent).'%</p>
+										<span class="sr-only">'.$downloadPercent.'% Complete</span>
+									</div>
 								</div>
-							</div>
-						</td>
-					</tr>';
-    }
+							</td>
+						</tr>';
+	    }
 
-	if ($gotNZB) {
-		return implode('',$gotNZB);
-	} else {
-		return '<tr><td colspan="5"><p class="text-center">No Results</p></td></tr>';
+		if ($gotNZB) {
+			return implode('',$gotNZB);
+		} else {
+			return '<tr><td colspan="5"><p class="text-center">No Results</p></td></tr>';
+		}
+	}else{
+		writeLog("error", "SABNZBD ERROR: could not connect - check URL and/or check token - if HTTPS, is cert valid");
 	}
 }
 
