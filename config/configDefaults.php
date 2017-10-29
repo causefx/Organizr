@@ -78,7 +78,7 @@ return array(
 	"smtpHostSenderName" => "Organizr",
 	"smtpHostSenderEmail" => "no-reply@Organizr.tld",
 	"notifyEffect" => "bar-slidetop",
-	"multipleLogin" => "true",
+	"multipleLogin" => "false",
 	"loadingScreen" => "true",
 	"enableMail" => "false",
 	"slimBar" => "true",

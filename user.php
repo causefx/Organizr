@@ -448,54 +448,42 @@
 		{
 			// actually logged in?
 			if($this->is_user_active($username)===false) { return false; }
-
 			// logged in, but do the tokens match?
 			$token = $this->get_user_token($username);
-            if(MULTIPLELOGIN == "false"){
-
-                if(isset($_COOKIE["Organizr"])){
-                    if($_COOKIE["Organizr"] == $token){
-                        return true;
-                    }else{
-                        $this->error("cookie token mismatch for $username");
-                        unset($_COOKIE['Organizr']);
-                        setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
-                        setcookie('Organizr', '', time() - 3600, '/');
-                        unset($_COOKIE['OrganizrU']);
-                        setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
-                        setcookie('OrganizrU', '', time() - 3600, '/');
-                        unset($_COOKIE['cookiePassword']);
-                        setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
-                        setcookie("cookiePassword", '', time() - 3600, '/');
-						unset($_COOKIE['Auth']);
-			            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
-			            setcookie("Auth", '', time() - 3600, '/');
-						unset($_COOKIE['mpt']);
-			            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
-			            setcookie("mpt", '', time() - 3600, '/');
-                        return false;
-                    }
+            if(isset($_COOKIE["Organizr"])){
+                if($_COOKIE["Organizr"] == $token){
+					// active, using the correct token -> authenticated
+					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
+					return true;
                 }else{
-                    if($token != $_SESSION["token"]) {
-
-                        $this->error("token mismatch for $username");
-                        return false;
-
-                    }
-                    // active, using the correct token -> authenticated
-                     setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
-                     return true;
-
+                    $this->error("cookie token mismatch for $username");
+                    unset($_COOKIE['Organizr']);
+                    setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
+                    setcookie('Organizr', '', time() - 3600, '/');
+                    unset($_COOKIE['OrganizrU']);
+                    setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
+                    setcookie('OrganizrU', '', time() - 3600, '/');
+                    unset($_COOKIE['cookiePassword']);
+                    setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
+                    setcookie("cookiePassword", '', time() - 3600, '/');
+					unset($_COOKIE['Auth']);
+		            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
+		            setcookie("Auth", '', time() - 3600, '/');
+					unset($_COOKIE['mpt']);
+		            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
+		            setcookie("mpt", '', time() - 3600, '/');
+                    return false;
                 }
-
             }else{
-
-                setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
-                //return true;
-				return false;
-
+                if($token != $_SESSION["token"]) {
+                    $this->error("token mismatch for $username");
+                    return false;
+                }else{
+					// active, using the correct token -> authenticated
+	                 setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
+	                 return true;
+				}
             }
-
 		}
 		/**
 		 * Unicode friendly(ish) version of strtolower
