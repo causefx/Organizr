@@ -1733,7 +1733,23 @@ $group = (isset($group) ? $group : "guest");
 					$name = str_replace(array(':', '\\', '/', '*'), 'x', $ping);
 					if(strpos($type, 'image') !== false){ $style = "margin-top:28px"; }else{ $style = ""; }?>
 					var  pingTab<?php echo $pingCount;?> = function() {
-						$("ping[class^='ping-<?php echo $name;?>']").load("ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>");
+						//$("ping[class^='ping-<?php echo $name;?>']").load("ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>");
+						$.ajax({
+							url: 'ajax.php?a=get-ping&url=<?php echo $ping;?>&style=<?php echo $style;?>',
+							timeout: 10000,
+							type: 'GET',
+							success: function(response) {
+								var getDiv = response;
+								if (typeof getDiv !== 'undefined') {
+									$("ping[class^='ping-<?php echo $name;?>']").html($(getDiv).prop('outerHTML'));
+								}else{
+									console.log('ping-<?php echo $name;?> data was not sufficent or is offline');
+								}
+							},
+							error: function(jqXHR, textStatus, errorThrown) {
+								console.error('ping-<?php echo $name;?> could not be updated');
+							}
+						});
 					};
 					// Initial Loads
 					pingTab<?php echo $pingCount;?>();
