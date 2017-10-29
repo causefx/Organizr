@@ -491,7 +491,8 @@
             }else{
 
                 setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
-                return true;
+                //return true;
+				return false;
 
             }
 
