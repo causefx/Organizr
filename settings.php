@@ -2850,14 +2850,14 @@ echo buildSettings(
                             <div class="email-inner-section">
                                 <div class="small-box" id="loginlog">
                                     <div>
-                                        <?php if(file_exists("org.log")){ ?>
+                                        <?php if(file_exists(DATABASE_LOCATION."org.log")){ ?>
                                         <button id="viewOrgLogs" class="btn waves btn-labeled gray-bg text-uppercase waves-effect waves-float" type="button"><span class="btn-label"><i class="fa fa-terminal"></i></span>Organizr Log </button>
                                         <?php } if(file_exists(FAIL_LOG)){ ?>
                                         <button id="viewLoginLogs" class="btn waves btn-labeled grayish-blue-bg text-uppercase waves-effect waves-float" type="button" style="display: none"><span class="btn-label"><i class="fa fa-user"></i></span>Login Log </button>
                                         <?php } ?>
                                     </div>
 
-                                    <?php if(file_exists("org.log")){ ?>
+                                    <?php if(file_exists(DATABASE_LOCATION."org.log")){ ?>
                                     <div id="orgLogTable" class="table-responsive" style="display: none">
                                         <table id="orgLogs" class="datatable display">
                                             <thead>

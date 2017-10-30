@@ -19,7 +19,7 @@
 
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif;
     $notifyExplode = explode("-", NOTIFYEFFECT);
-    define('FAIL_LOG', 'loginLog.json');
+    define('FAIL_LOG', DATABASE_LOCATION.'loginLog.json');
     @date_default_timezone_set(TIMEZONE);
     function guestHash($start, $end){
         $ip   = $_SERVER['REMOTE_ADDR'];
