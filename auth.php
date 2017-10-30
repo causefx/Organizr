@@ -4,6 +4,7 @@ require_once("user.php");
 $USER = new User("registration_callback");
 $ban = isset($_GET['ban']) ? strtoupper($_GET['ban']) : "";
 $whitelist = isset($_GET['whitelist']) ? $_GET['whitelist'] : false;
+$blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
 $currentIP = get_client_ip();
 
 if ($whitelist) {
@@ -12,6 +13,11 @@ if ($whitelist) {
        !$debug ? exit(http_response_code(200)) : die("$currentIP Whitelist Authorized");
 	}else{
 		$skipped = true;
+	}
+}
+if ($blacklist) {
+    if(in_array($currentIP, getWhitelist($blacklist))) {
+       !$debug ? exit(http_response_code(401)) : die("$currentIP Blacklisted");
 	}
 }
 if (isset($_GET['admin'])) {

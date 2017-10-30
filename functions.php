@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.601');
+ define('INSTALLEDVERSION', '1.603');
 // ===================================
 $debugOrganizr = true;
 if($debugOrganizr == true && file_exists('debug.php')){ require_once('debug.php'); }
@@ -1555,6 +1555,23 @@ function upgradeCheck() {
 		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.40].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
+	}
+	// Upgrade to 1.603
+	$config = loadConfig();
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.603')) {
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.603';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.601].bak.php');
+		$createConfigSuccess = createConfig($config);
+		unset($config);
+		if(file_exists('org.log')){
+			copy('org.log', DATABASE_LOCATION.'org.log');
+			unlink('org.log');
+		}
+		if(file_exists('loginLog.json')){
+			copy('loginLog.json', DATABASE_LOCATION.'loginLog.json');
+			unlink('loginLog.json');
+		}
 	}
 
 	return true;
@@ -3233,20 +3250,20 @@ function strip($string){
 }
 
 function writeLog($type, $message){
-	if(file_exists("org.log")){
-		if(filesize("org.log") > 500000){
-			rename('org.log','org['.date('Y-m-d').'].log');
+	if(file_exists(DATABASE_LOCATION."org.log")){
+		if(filesize(DATABASE_LOCATION."org.log") > 500000){
+			rename(DATABASE_LOCATION.'org.log',DATABASE_LOCATION.'org['.date('Y-m-d').'].log');
 			$message2 = date("Y-m-d H:i:s")."|".$type."|".strip("ORG LOG: Creating backup of org.log to org[".date('Y-m-d')."].log ")."\n";
-			file_put_contents("org.log", $message2, FILE_APPEND | LOCK_EX);
+			file_put_contents(DATABASE_LOCATION."org.log", $message2, FILE_APPEND | LOCK_EX);
 
 		}
 	}
     $message = date("Y-m-d H:i:s")."|".$type."|".strip($message)."\n";
-    file_put_contents("org.log", $message, FILE_APPEND | LOCK_EX);
+    file_put_contents(DATABASE_LOCATION."org.log", $message, FILE_APPEND | LOCK_EX);
 }
 
 function readLog(){
-    $log = file("org.log",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $log = file(DATABASE_LOCATION."org.log",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     $log = array_reverse($log);
     foreach($log as $line){
 		if(substr_count($line, '|') == 2){
@@ -4164,8 +4181,8 @@ function backupDB(){
 		$orgFiles = array(
 			'css' => 'custom.css',
 			'temp' => 'cus.sd',
-			'orgLog' => 'org.log',
-			'loginLog' => 'loginLog.json',
+			'orgLog' => DATABASE_LOCATION.'org.log',
+			'loginLog' => DATABASE_LOCATION.'loginLog.json',
 			'chatDB' => 'chatpack.db',
 			'config' => 'config/config.php',
 			'database' => DATABASE_LOCATION.'users.db'

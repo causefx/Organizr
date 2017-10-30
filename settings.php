@@ -617,6 +617,7 @@ echo buildSettings(
 							'buttonType' => 'dark',
 							'buttonDrop' => '
 							<ul class="dropdown-menu">
+								<li class="dropdown-header">Choose a Theme Below</li>
 								<li id="open-themes" box="themes-box" onclick"" data-toggle="tooltip" data-placement="top" title="" data-original-title="Custom Themes Created by The Community"><a onclick="" href="#">Themes</a></li>
 								<li id="layerCakeDefault" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 7 color theme based on Organizr"><a onclick="layerCake(\'Basic\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">LAYER#CAKE Basic</a></li>
 								<li id="layerCakeCustom" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 32 color theme based on Organizr"><a onclick="layerCake(\'Advanced\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">LAYER#CAKE Advanced</a></li>
@@ -1824,12 +1825,6 @@ echo buildSettings(
 							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { performUpdate(); ajax_request(\'POST\', \'forceBranchInstall\'); } }',
 						),
 					),
-					array(
-						'type' => 'checkbox',
-						'labelTranslate' => 'MULTIPLE_LOGINS',
-						'name' => 'multipleLogin',
-						'value' => MULTIPLELOGIN,
-					),
 				),
 			),
 			array(
@@ -2855,14 +2850,14 @@ echo buildSettings(
                             <div class="email-inner-section">
                                 <div class="small-box" id="loginlog">
                                     <div>
-                                        <?php if(file_exists("org.log")){ ?>
+                                        <?php if(file_exists(DATABASE_LOCATION."org.log")){ ?>
                                         <button id="viewOrgLogs" class="btn waves btn-labeled gray-bg text-uppercase waves-effect waves-float" type="button"><span class="btn-label"><i class="fa fa-terminal"></i></span>Organizr Log </button>
                                         <?php } if(file_exists(FAIL_LOG)){ ?>
                                         <button id="viewLoginLogs" class="btn waves btn-labeled grayish-blue-bg text-uppercase waves-effect waves-float" type="button" style="display: none"><span class="btn-label"><i class="fa fa-user"></i></span>Login Log </button>
                                         <?php } ?>
                                     </div>
 
-                                    <?php if(file_exists("org.log")){ ?>
+                                    <?php if(file_exists(DATABASE_LOCATION."org.log")){ ?>
                                     <div id="orgLogTable" class="table-responsive" style="display: none">
                                         <table id="orgLogs" class="datatable display">
                                             <thead>

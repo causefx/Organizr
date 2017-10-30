@@ -19,7 +19,7 @@
 
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif;
     $notifyExplode = explode("-", NOTIFYEFFECT);
-    define('FAIL_LOG', 'loginLog.json');
+    define('FAIL_LOG', DATABASE_LOCATION.'loginLog.json');
     @date_default_timezone_set(TIMEZONE);
     function guestHash($start, $end){
         $ip   = $_SERVER['REMOTE_ADDR'];
@@ -450,11 +450,11 @@
 			if($this->is_user_active($username)===false) { return false; }
 			// logged in, but do the tokens match?
 			$token = $this->get_user_token($username);
-            if(isset($_COOKIE["Organizr"])){
-                if($_COOKIE["Organizr"] == $token){
-					// active, using the correct token -> authenticated
-					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
-					return true;
+			//Check Token with Session
+			if($token == $_SESSION["token"]) { setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN); return true; }
+            if(isset($_COOKIE["Organizr"]) && isset($_COOKIE["OrganizrU"]) && isset($_COOKIE["cookiePassword"])){
+                if($_COOKIE["cookiePassword"] == COOKIEPASSWORD && strlen($_COOKIE["Organizr"]) == 32){
+                    return true;
                 }else{
                     $this->error("cookie token mismatch for $username");
                     unset($_COOKIE['Organizr']);
@@ -474,16 +474,8 @@
 		            setcookie("mpt", '', time() - 3600, '/');
                     return false;
                 }
-            }else{
-                if($token != $_SESSION["token"]) {
-                    $this->error("token mismatch for $username");
-                    return false;
-                }else{
-					// active, using the correct token -> authenticated
-	                 setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
-	                 return true;
-				}
-            }
+			}
+			return false;
 		}
 		/**
 		 * Unicode friendly(ish) version of strtolower
@@ -527,11 +519,20 @@
 		function register_user($username, $email, $sha1, &$registration_callback = false, $settings, $validate) {
 			//Admin bypass
 			if($validate == null){
+				$override = false;
 				$adminList = $this->get_admin_list();
 				if($adminList){
 					if(in_arrayi($_SESSION["username"], $adminList)){
 						$token = $this->get_user_token($_SESSION["username"]);
 						if($token == $_SESSION["token"]) {
+							$override = true;
+						}
+						if(isset($_COOKIE["Organizr"]) && isset($_COOKIE["OrganizrU"]) && isset($_COOKIE["cookiePassword"])){
+			                if($_COOKIE["cookiePassword"] == COOKIEPASSWORD && strlen($_COOKIE["Organizr"]) == 32){
+			                    $override = true;
+			                }
+						}
+						if($override == true) {
 							$validate = true;
 							writeLog("success", "Admin Override on registration for $username info");
 						}
