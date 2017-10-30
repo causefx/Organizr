@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.601');
+ define('INSTALLEDVERSION', '1.603');
 // ===================================
 $debugOrganizr = true;
 if($debugOrganizr == true && file_exists('debug.php')){ require_once('debug.php'); }
@@ -1555,6 +1555,23 @@ function upgradeCheck() {
 		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.40].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
+	}
+	// Upgrade to 1.603
+	$config = loadConfig();
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.603')) {
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.603';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.601].bak.php');
+		$createConfigSuccess = createConfig($config);
+		unset($config);
+		if(file_exists('org.log')){
+			copy('org.log', DATABASE_LOCATION.'org.log');
+			unlink('org.log');
+		}
+		if(file_exists('loginLog.json')){
+			copy('loginLog.json', DATABASE_LOCATION.'loginLog.json');
+			unlink('loginLog.json');
+		}
 	}
 
 	return true;
