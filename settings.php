@@ -617,6 +617,7 @@ echo buildSettings(
 							'buttonType' => 'dark',
 							'buttonDrop' => '
 							<ul class="dropdown-menu">
+								<li class="dropdown-header">Choose a Theme Below</li>
 								<li id="open-themes" box="themes-box" onclick"" data-toggle="tooltip" data-placement="top" title="" data-original-title="Custom Themes Created by The Community"><a onclick="" href="#">Themes</a></li>
 								<li id="layerCakeDefault" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 7 color theme based on Organizr"><a onclick="layerCake(\'Basic\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">LAYER#CAKE Basic</a></li>
 								<li id="layerCakeCustom" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 32 color theme based on Organizr"><a onclick="layerCake(\'Advanced\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">LAYER#CAKE Advanced</a></li>

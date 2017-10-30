@@ -41,16 +41,16 @@ foreach(loadAppearance() as $key => $value) {
 //error stuff
 $requested = $_SERVER['REQUEST_URI'];
 $codes = array(
-       400 => array('Bad Request', 'The server cannot or will not process the request due to an apparent client error.', 'sowwy'),
-       401 => array('Unauthorized', 'You do not have access to this page.', 'sowwy'),
-       403 => array('Forbidden', 'The server has refused to fulfill your request.', 'sowwy'),
-       404 => array('Not Found', $requested . ' was not found on this server.', 'confused'),
-       405 => array('Method Not Allowed', 'The method specified in the Request-Line is not allowed for the specified resource.', 'confused'),
-       408 => array('Request Timeout', 'Your browser failed to send a request in the time allowed by the server.', 'sowwy'),
-       500 => array('Internal Server Error', 'The request was unsuccessful due to an unexpected condition encountered by the server.', 'confused'),
-       502 => array('Bad Gateway', 'The server received an invalid response from the upstream server while trying to fulfill the request.', 'confused'),
-       503 => array('Service Unavailable', 'The server is currently unavailable (because it is overloaded or down for maintenance).', 'confused'),
-       504 => array('Gateway Timeout', 'The upstream server failed to send a request in the time allowed by the server.', 'confused'),
+       400 => array('Bad Request', 'The server cannot or will not process the request due to an apparent client error.', 'sowwy','400'),
+       401 => array('Unauthorized', 'You do not have access to this page.', 'sowwy','401'),
+       403 => array('Forbidden', 'The server has refused to fulfill your request.', 'sowwy','403'),
+       404 => array('Not Found', $requested . ' was not found on this server.', 'confused','404'),
+       405 => array('Method Not Allowed', 'The method specified in the Request-Line is not allowed for the specified resource.', 'confused','405'),
+       408 => array('Request Timeout', 'Your browser failed to send a request in the time allowed by the server.', 'sowwy','408'),
+       500 => array('Internal Server Error', 'The request was unsuccessful due to an unexpected condition encountered by the server.', 'confused','500'),
+       502 => array('Bad Gateway', 'The server received an invalid response from the upstream server while trying to fulfill the request.', 'confused','502'),
+       503 => array('Service Unavailable', 'The server is currently unavailable (because it is overloaded or down for maintenance).', 'confused','503'),
+       504 => array('Gateway Timeout', 'The upstream server failed to send a request in the time allowed by the server.', 'confused','504'),
        999 => array('Not Logged In', 'You need to be logged in to access this page.', 'confused', '401'),
 );
 $errorTitle = ($codes[$status][0]) ? $codes[$status][0] : "Error";
