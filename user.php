@@ -451,7 +451,7 @@
 			// logged in, but do the tokens match?
 			$token = $this->get_user_token($username);
 			//Check Token with Session
-			if($token == $_SESSION["token"]) { return true; }
+			if($token == $_SESSION["token"]) { setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN); return true; }
             if(isset($_COOKIE["Organizr"]) && isset($_COOKIE["OrganizrU"]) && isset($_COOKIE["cookiePassword"])){
                 if($_COOKIE["cookiePassword"] == COOKIEPASSWORD && strlen($_COOKIE["Organizr"]) == 32){
                     return true;
