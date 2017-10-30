@@ -519,11 +519,20 @@
 		function register_user($username, $email, $sha1, &$registration_callback = false, $settings, $validate) {
 			//Admin bypass
 			if($validate == null){
+				$override = false;
 				$adminList = $this->get_admin_list();
 				if($adminList){
 					if(in_arrayi($_SESSION["username"], $adminList)){
 						$token = $this->get_user_token($_SESSION["username"]);
 						if($token == $_SESSION["token"]) {
+							$override = true;
+						}
+						if(isset($_COOKIE["Organizr"]) && isset($_COOKIE["OrganizrU"]) && isset($_COOKIE["cookiePassword"])){
+			                if($_COOKIE["cookiePassword"] == COOKIEPASSWORD && strlen($_COOKIE["Organizr"]) == 32){
+			                    $override = true;
+			                }
+						}
+						if($override == true) {
 							$validate = true;
 							writeLog("success", "Admin Override on registration for $username info");
 						}
