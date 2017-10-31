@@ -2665,13 +2665,16 @@ echo buildSettings(
                                                             <th scope="row"><?=$countUsers;?></th>
 
                                                             <td><?php if(GRAVATAR == "true") : ?><i class="userpic"><img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=25&d=mm" class="img-circle"></i> &nbsp; <?php endif; ?><?=$row['username'];?></td>
-                                                            <td><?=$row['email'];?></td>
+                                                            <td><input type="text" class="form-control material newemail" name="newemail" value="<?=$row['email'];?>">
+                                                                <button style="display: none" class="btn btn-success btn-sm waves editUserEmail"><i class="fa fa-check"></i></button>
+                                                                <button style="display: none" type="button" class="btn btn-danger btn-sm waves closeEditUserEmail"><i class="fa fa-close"></i></button>
+                                                            </td>
 
                                                             <td><span class="label label-<?=$userActiveColor;?>"><?=$userActive;?></span></td>
 
                                                             <td><?=$lastActive;?></td>
 
-                                                            <td><span class="text-uppercase <?=$userColor;?>"><?=$row['role'];?></span></td>
+                                                            <td><span class="userRole text-uppercase <?=$userColor;?>"><?=$row['role'];?></span></td>
 
                                                             <td id="<?=$row['username'];?>">
 
@@ -3365,6 +3368,23 @@ echo buildSettings(
                 var parent_id = $(this).parent().attr('id');
                 editUsername = $('#unregister').find('#inputUsername');
                 $(editUsername).html('<input type="hidden" name="op" value="unregister"/><input type="hidden" name="username"value="' + parent_id + '" />');
+            });
+            $(".newemail").click(function(){
+                $(".editUserEmail").show();
+                $(".closeEditUserEmail").show();
+            });
+            $(".closeEditUserEmail").click(function(){
+                $(".editUserEmail").hide();
+                $(".closeEditUserEmail").hide();
+            });
+            $(".editUserEmail").click(function(){
+
+                var parent_ids = $(this).parent().parent().attr('id');
+                newemail = $(this).parent().parent().find('input[name=newemail]').val();
+                role = $(this).parent().parent().find('.userRole').text();
+                editUsername = $('#unregister').find('#inputUsername');
+                console.log('user: '+parent_ids+' email: '+newemail+' role: '+role);
+                $(editUsername).html('<input type="hidden" name="op" value="update"/><input type="hidden" name="email" value="'+newemail+'"/><input type="hidden" name="role" value="'+role+'"/><input type="hidden" name="username"value="' + parent_ids + '" />');
             });
             $(".promoteUser").click(function(){
 

@@ -4791,7 +4791,12 @@ function getOmbiToken($username, $password){
 		"rememberMe" => "true",
          );
 	$api = curl_post(OMBIURL."/api/v1/Token", $json, $headers);
-    return json_decode($api['content'], true)['access_token'];
+	if (isset($result['content'])) {
+		return json_decode($api['content'], true)['access_token'];
+	}else{
+		return false;
+	}
+
 }
 
 function ombiAction($id, $action, $type){
