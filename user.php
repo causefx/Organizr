@@ -157,6 +157,8 @@
 
         }
 		function jwtParse(){
+			$result = array();
+			$result['valid'] = false;
 			//Check Token with JWT
 			if(isset($_COOKIE['Organizr_Token'])){
 				//Set key
@@ -173,12 +175,13 @@
 					$data->setAudience('Organizr');
 					//$data->setId('4f1g23a12aas');
 					if($jwttoken->validate($data)){
+						$result['valid'] = true;
 						$result['username'] = $jwttoken->getClaim('username');
 						$result['role'] = $jwttoken->getClaim('role');
 					}
 				}
 			}
-			if($result){ return $result; }else{ return null; }
+			if($result['valid'] == true){ return $result; }else{ return null; }
 		}
 		// class object constructor
 		function __construct($registration_callback=false)
@@ -188,7 +191,7 @@
             if(!isset($_COOKIE['Organizr_Token'])) {
                 if (empty($_SESSION["username"]) || empty($_SESSION["token"])) $this->resetSession();
             }else{
-				if(is_array($this->jwtParse())){
+				if($this->jwtParse()){
 					$_SESSION["username"] = $this->jwtParse()['username'];
 				}else{
 					$this->resetSession();
@@ -558,16 +561,10 @@
 							$override = true;
 						}
 						if(isset($_COOKIE['Organizr_Token'])) {
-							if(is_array($this->jwtParse())){
+							if($this->jwtParse()){
 								$override = true;
 							}
 			            }
-						/*
-						if(isset($_COOKIE["Organizr"]) && isset($_COOKIE["OrganizrU"]) && isset($_COOKIE["cookiePassword"])){
-			                if($_COOKIE["cookiePassword"] == COOKIEPASSWORD && strlen($_COOKIE["Organizr"]) == 32){
-			                    $override = true;
-			                }
-						}*/
 						if($override == true) {
 							$validate = true;
 							writeLog("success", "Admin Override on registration for $username info");
@@ -822,7 +819,7 @@
 					$override = false;
 				}
 				if(isset($_COOKIE['Organizr_Token'])) {
-					if(is_array($this->jwtParse())){
+					if($this->jwtParse()){
 						$override = true;
 					}
 				}
