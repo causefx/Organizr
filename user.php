@@ -431,12 +431,6 @@
 		{
 			$_SESSION["username"] = User::GUEST_USER;
 			$_SESSION["token"] = -1;
-			unset($_COOKIE['Organizr']);
-            setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
-            setcookie('Organizr', '', time() - 3600, '/');
-            unset($_COOKIE['OrganizrU']);
-            setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
-            setcookie('OrganizrU', '', time() - 3600, '/');
             unset($_COOKIE['cookiePassword']);
             setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
             setcookie("cookiePassword", '', time() - 3600, '/');
@@ -752,13 +746,12 @@
 					                        ->getToken(); // Retrieves the generated token
 					$jwttoken->getHeaders(); // Retrieves the token headers
 					$jwttoken->getClaims(); // Retrieves the token claims
-					setcookie("Organizr_Token", $jwttoken, time() + (86400 * 7), "/", DOMAIN);
 					$_SESSION["Organizr_Token"] = $jwttoken;
 					// authentication passed - 2) signal authenticated
 					if($remember == "true") {
-						setcookie("Organizr", $this->get_user_token($username), time() + (86400 * 7), "/", DOMAIN);
-						setcookie("OrganizrU", $username, time() + (86400 * 7), "/", DOMAIN);
-
+						setcookie("Organizr_Token", $jwttoken, time() + (86400 * 7), "/", DOMAIN);
+					}else{
+						setcookie("Organizr_Token", $jwttoken, time() + (86400 * 1), "/", DOMAIN);
 					}
 					if(OMBIURL){
 						$ombiToken = getOmbiToken($username, $password);
