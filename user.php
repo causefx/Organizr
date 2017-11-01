@@ -434,18 +434,11 @@
 		{
 			$_SESSION["username"] = User::GUEST_USER;
 			$_SESSION["token"] = -1;
-            unset($_COOKIE['cookiePassword']);
-            setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
-            setcookie("cookiePassword", '', time() - 3600, '/');
-			unset($_COOKIE['Auth']);
-            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
-            setcookie("Auth", '', time() - 3600, '/');
-			unset($_COOKIE['mpt']);
-            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
-            setcookie("mpt", '', time() - 3600, '/');
-			unset($_COOKIE['Organizr_Token']);
-            setcookie("Organizr_Token", '', time() - 3600, '/', DOMAIN);
-            setcookie("Organizr_Token", '', time() - 3600, '/');
+			coookie('delete','cookiePassword');
+			coookie('delete','Auth');
+			coookie('delete','mpt');
+			coookie('delete','Organizr_Token');
+
 		}
 		/**
 		 * Validate a username. Empty usernames or names
@@ -483,7 +476,7 @@
 			$token = $this->get_user_token($username);
 			//Check Token with Session
 			if(isset($_SESSION["token"])){
-				if($token == $_SESSION["token"]) { setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN); return true; }
+				if($token == $_SESSION["token"]) { coookie('set','cookiePassword',COOKIEPASSWORD,7); return true; }
 			}
 			//Check Token with JWT
 			if(isset($_COOKIE['Organizr_Token'])){
@@ -746,23 +739,23 @@
 					$_SESSION["Organizr_Token"] = $jwttoken;
 					// authentication passed - 2) signal authenticated
 					if($remember == "true") {
-						setcookie("Organizr_Token", $jwttoken, time() + (86400 * 7), "/", DOMAIN);
+						coookie('set','Organizr_Token',$jwttoken,7);
 					}else{
-						setcookie("Organizr_Token", $jwttoken, time() + (86400 * 1), "/", DOMAIN);
+						coookie('set','Organizr_Token',$jwttoken,1);
 					}
 					if(OMBIURL){
 						$ombiToken = getOmbiToken($username, $password);
 						if($ombiToken){
-							setcookie("Auth", $ombiToken, time() + (86400 * 7), "/", DOMAIN);
+							coookie('set','Auth',$ombiToken,7);
 						}
 					}
 					if(PLEXURL && isset($authSuccess['token'])){
-						setcookie("mpt", $authSuccess['token'], time() + (86400 * 7), "/", DOMAIN);
+						coookie('set','mpt',$authSuccess['token'],7);
 					}
 					$this->info("Welcome $username");
 					file_put_contents(FAIL_LOG, $buildLog($username, "good_auth"));
 					chmod(FAIL_LOG, 0660);
-					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
+					coookie('set','cookiePassword',COOKIEPASSWORD,7);
      				writeLog("success", "$username has logged in");
 					return true;
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
