@@ -3370,8 +3370,10 @@ echo buildSettings(
                 $(editUsername).html('<input type="hidden" name="op" value="unregister"/><input type="hidden" name="username"value="' + parent_id + '" />');
             });
             $(".newemail").click(function(){
-                $(".editUserEmail").show();
-                $(".closeEditUserEmail").show();
+                $(".editUserEmail").hide();
+                $(".closeEditUserEmail").hide();
+				$(this).parent().find('.editUserEmail').show();
+                $(this).parent().find('.closeEditUserEmail').show();
             });
             $(".closeEditUserEmail").click(function(){
                 $(".editUserEmail").hide();
