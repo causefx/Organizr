@@ -1349,14 +1349,11 @@ $group = (isset($group) ? $group : "guest");
 			if($USER->authenticated){ ?>
 				if (localStorageSupport) {
 					<?php if(isset($_COOKIE['mpt'])){
-						echo 'localStorage.setItem("myPlexAccessToken",'.$_COOKIE['mpt'].');';
-					}?>
-				/*	if(getCookie('mpt') !== ''){
-						localStorage.setItem("myPlexAccessToken",getCookie('mpt'));
-					}*/
-					if(getCookie('Auth') !== ''){
-						localStorage.setItem("id_token",getCookie('Auth'));
+						echo 'localStorage.setItem("myPlexAccessToken","'.$_COOKIE['mpt'].'");';
 					}
+					if(isset($_COOKIE['Auth'])){
+						echo 'localStorage.setItem("id_token","'.$_COOKIE['Auth'].'");';
+					}?>
 				}
 		<?php }else{?>
 			if (localStorageSupport) {
