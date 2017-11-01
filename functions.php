@@ -69,7 +69,7 @@ function coookie($type, $name, $value = '', $days = -1){
 		$Domain = '';
 	}
 	if($type = 'set'){
-
+		$_COOKIE[$name] = $value;
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 							. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + (86400 * $days)) . ' GMT')
 							. (empty($Path) ? '' : '; path=' . $Path)
