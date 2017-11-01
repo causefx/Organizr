@@ -37,6 +37,56 @@ function debug_out($variable, $die = false) {
 	if ($die) { http_response_code(503); die(); }
 }
 
+//Cookie Function
+function coookie($type, $name, $value = '', $days = -1){
+	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https"){
+		$Secure = true;
+ 	   	$HTTPOnly = true;
+	}elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+		$Secure = true;
+ 	   	$HTTPOnly = true;
+	} else {
+		$Secure = false;
+ 	   	$HTTPOnly = false;
+   }
+	$Path = '/';
+	$Domain = $_SERVER['HTTP_HOST'];
+	$Port = strpos($Domain, ':');
+	if ($Port !== false)  $Domain = substr($Domain, 0, $Port);
+	$Port = strpos($Domain, ':');
+	$check = substr_count($Domain, '.');
+	if($check >= 3){
+		if(is_numeric($Domain[0])){
+			$Domain = '';
+		}else{
+			$Domain = '.'.explode('.',$Domain)[1].'.'.explode('.',$Domain)[2].'.'.explode('.',$Domain)[3];
+		}
+	}elseif($check == 2){
+		$Domain = '.'.explode('.',$Domain)[1].'.'.explode('.',$Domain)[2];
+	}elseif($check == 1){
+		$Domain = '.' . $Domain;
+	}else{
+		$Domain = '';
+	}
+	if($type = 'set'){
+
+		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
+							. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + (86400 * $days)) . ' GMT')
+							. (empty($Path) ? '' : '; path=' . $Path)
+							. (empty($Domain) ? '' : '; domain=' . $Domain)
+							. (!$Secure ? '' : '; secure')
+							. (!$HTTPOnly ? '' : '; HttpOnly'), false);
+	}elseif($type = 'delete'){
+		unset($_COOKIE[$name]);
+		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
+							. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
+							. (empty($Path) ? '' : '; path=' . $Path)
+							. (empty($Domain) ? '' : '; domain=' . $Domain)
+							. (!$Secure ? '' : '; secure')
+							. (!$HTTPOnly ? '' : '; HttpOnly'), false);
+	}
+
+}
 // ==== Auth Plugins START ====
 if (function_exists('ldap_connect')) :
 	// Pass credentials to LDAP backend
