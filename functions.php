@@ -5138,7 +5138,8 @@ function outputOmbiRequests($header = "Requested Content", $items, $script = fal
 	$hideMenu .= '<li data-filter="item-all" data-name="Content" data-filter-on="false"><a class="js-filter-all" href="javascript:void(0)">All</a></li>';
     $hideMenu .= '</ul></div></div>';
     // If None Populate Empty Item
-    if (count(array_flip($items)) < 1) {
+    //if (count(array_flip($items)) < 1) {
+	if (!count($items)) {
         return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Requests Found</p></div>';
     }else{
 		$className = str_replace(' ', '', $header);
