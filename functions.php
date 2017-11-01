@@ -38,7 +38,7 @@ function debug_out($variable, $die = false) {
 }
 
 //Cookie Function
-function coookie($type, $name, $value = '', $days = -1){
+function coookie($type, $name, $value = '', $days = -1, $http = true){
 	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https"){
 		$Secure = true;
  	   	$HTTPOnly = true;
@@ -49,6 +49,7 @@ function coookie($type, $name, $value = '', $days = -1){
 		$Secure = false;
  	   	$HTTPOnly = false;
    }
+   if(!$http){ $HTTPOnly = false; }
 	$Path = '/';
 	$Domain = $_SERVER['HTTP_HOST'];
 	$Port = strpos($Domain, ':');

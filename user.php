@@ -746,7 +746,7 @@
 					if(OMBIURL){
 						$ombiToken = getOmbiToken($username, $password);
 						if($ombiToken){
-							coookie('set','Auth',$ombiToken,7);
+							coookie('set','Auth',$ombiToken,7, false);
 						}
 					}
 					if(PLEXURL && isset($authSuccess['token'])){
