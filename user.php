@@ -136,7 +136,7 @@
             $mail = new PHPMailer;
             $mail->isSMTP();
             $mail->Host = SMTPHOST;
-            $mail->SMTPAuth = SMTPHOSTAUTH;
+            $mail->SMTPAuth = (SMTPHOSTAUTH == "true" || SMTPHOSTAUTH == true) ? true : false;
             $mail->Username = SMTPHOSTUSERNAME;
             $mail->Password = SMTPHOSTPASSWORD;
             $mail->SMTPSecure = SMTPHOSTTYPE;
@@ -746,7 +746,7 @@
 					if(OMBIURL){
 						$ombiToken = getOmbiToken($username, $password);
 						if($ombiToken){
-							coookie('set','Auth',$ombiToken,7);
+							coookie('set','Auth',$ombiToken,7, false);
 						}
 					}
 					if(PLEXURL && isset($authSuccess['token'])){

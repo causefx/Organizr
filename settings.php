@@ -1513,6 +1513,46 @@ echo buildSettings(
 		 				'labelTranslate' => 'NOTICE_MESSAGE',
 						'html' => '<div class="summernote" name="homepageNoticeMessage">'.HOMEPAGENOTICEMESSAGE.'</div>',
 					),
+                    array(
+						'type' => 'custom',
+						'html' => '<h2>Not Logged In/Guest Notice</h2>',
+					),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'NOTICE_LAYOUT',
+						'name' => 'homepageNoticeLayoutGuest',
+						'value' => HOMEPAGENOTICELAYOUTGUEST,
+						'options' => array(
+							'Elegant' => 'elegant',
+							'Basic' => 'basic',
+							'Jumbotron' => 'jumbotron',
+						),
+					),
+     				array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'NOTICE_COLOR',
+						'name' => 'homepageNoticeTypeGuest',
+						'value' => HOMEPAGENOTICETYPEGUEST,
+						'options' => array(
+							'Green' => 'success',
+							'Blue' => 'primary',
+							'Gray' => 'gray',
+							'Red' => 'danger',
+							'Yellow' => 'warning',
+							'Light Blue' => 'info',
+						),
+					),
+     				array(
+						'type' => 'text',
+						'labelTranslate' => 'NOTICE_TITLE',
+						'name' => 'homepageNoticeTitleGuest',
+						'value' => HOMEPAGENOTICETITLEGUEST,
+					),
+        			array(
+						'type' => 'custom',
+		 				'labelTranslate' => 'NOTICE_MESSAGE',
+						'html' => '<div class="summernote" name="homepageNoticeMessageGuest">'.HOMEPAGENOTICEMESSAGEGUEST.'</div>',
+					),
 				),
 			),
 			array(
@@ -3370,8 +3410,10 @@ echo buildSettings(
                 $(editUsername).html('<input type="hidden" name="op" value="unregister"/><input type="hidden" name="username"value="' + parent_id + '" />');
             });
             $(".newemail").click(function(){
-                $(".editUserEmail").show();
-                $(".closeEditUserEmail").show();
+                $(".editUserEmail").hide();
+                $(".closeEditUserEmail").hide();
+				$(this).parent().find('.editUserEmail').show();
+                $(this).parent().find('.closeEditUserEmail').show();
             });
             $(".closeEditUserEmail").click(function(){
                 $(".editUserEmail").hide();
