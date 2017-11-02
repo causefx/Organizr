@@ -24,6 +24,7 @@ function homepageOrder(){
 		"homepageOrderembyrecent" => homepageOrderembyrecent,
 		"homepageOrderombi" => homepageOrderombi,
 		"homepageOrdercalendar" => homepageOrdercalendar,
+		"homepageOrdernoticeguest" => homepageOrdernoticeguest,
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -5187,6 +5188,13 @@ function buildHomepageSettings(){
 					$class .= ' faded';
 				}
 				break;
+			case 'homepageOrdernoticeguest':
+				$class = 'palette-Cyan-A400 bg gray';
+				$image = 'images/pin.png';
+				if(empty(HOMEPAGENOTICETITLEGUEST) && empty(HOMEPAGENOTICEMESSAGEGUEST)){
+					$class .= ' faded';
+				}
+				break;
 			case 'homepageOrderspeedtest':
 				$class = 'red-bg';
 				$image = 'images/settings/full-color/png/64px/speedometer.png';
@@ -5307,6 +5315,11 @@ function buildHomepageItem($homepageItem, $group, $user){
 		case 'homepageOrdernotice':
 			if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) {
 				$homepageItemBuilt .= buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE);
+			}
+			break;
+		case 'homepageOrdernoticeguest':
+			if ($group == 'guest' && HOMEPAGENOTICETITLEGUEST && HOMEPAGENOTICETYPEGUEST && HOMEPAGENOTICEMESSAGEGUEST && HOMEPAGENOTICELAYOUTGUEST) {
+				$homepageItemBuilt .= buildHomepageNotice(HOMEPAGENOTICELAYOUTGUEST, HOMEPAGENOTICETYPEGUEST, HOMEPAGENOTICETITLEGUEST, HOMEPAGENOTICEMESSAGEGUEST);
 			}
 			break;
 		case 'homepageOrderspeedtest':

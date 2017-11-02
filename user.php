@@ -136,7 +136,7 @@
             $mail = new PHPMailer;
             $mail->isSMTP();
             $mail->Host = SMTPHOST;
-            $mail->SMTPAuth = SMTPHOSTAUTH;
+            $mail->SMTPAuth = (SMTPHOSTAUTH == "true" || SMTPHOSTAUTH == true) ? true : false;
             $mail->Username = SMTPHOSTUSERNAME;
             $mail->Password = SMTPHOSTPASSWORD;
             $mail->SMTPSecure = SMTPHOSTTYPE;
