@@ -5140,8 +5140,8 @@ function outputOmbiRequests($header = "Requested Content", $items, $script = fal
     $hideMenu .= '</ul></div></div>';
     // If None Populate Empty Item
     //if (count(array_flip($items)) < 1) {
-	if (!count($items)) {
-        return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Requests Found</p></div>';
+	if(!array_filter($items)) {
+        return '<div id="recentRequests"></div>';
     }else{
 		$className = str_replace(' ', '', $header);
         return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 id="requestContent-title" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-request" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
