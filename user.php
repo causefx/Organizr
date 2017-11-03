@@ -19,7 +19,7 @@
 
     if(file_exists('custom.css')) : define('CUSTOMCSS', 'true'); else : define('CUSTOMCSS', 'false'); endif;
     $notifyExplode = explode("-", NOTIFYEFFECT);
-    define('FAIL_LOG', 'loginLog.json');
+    define('FAIL_LOG', DATABASE_LOCATION.'loginLog.json');
     @date_default_timezone_set(TIMEZONE);
     function guestHash($start, $end){
         $ip   = $_SERVER['REMOTE_ADDR'];
@@ -28,7 +28,11 @@
     }
 
 	define('GUEST_HASH', "guest-".guestHash(0, 5));
-
+	//JWT tokens
+	use Lcobucci\JWT\Builder;
+	use Lcobucci\JWT\Signer\Hmac\Sha256;
+	use Lcobucci\JWT\ValidationData;
+	use Lcobucci\JWT\Parser;
 	class User
 	{
 		// =======================================================================
@@ -132,7 +136,7 @@
             $mail = new PHPMailer;
             $mail->isSMTP();
             $mail->Host = SMTPHOST;
-            $mail->SMTPAuth = SMTPHOSTAUTH;
+            $mail->SMTPAuth = (SMTPHOSTAUTH == "true" || SMTPHOSTAUTH == true) ? true : false;
             $mail->Username = SMTPHOSTUSERNAME;
             $mail->Password = SMTPHOSTPASSWORD;
             $mail->SMTPSecure = SMTPHOSTTYPE;
@@ -152,16 +156,46 @@
             }
 
         }
-
+		function jwtParse(){
+			$result = array();
+			$result['valid'] = false;
+			//Check Token with JWT
+			if(isset($_COOKIE['Organizr_Token'])){
+				//Set key
+				$key = (COOKIEPASSWORD != '') ? COOKIEPASSWORD : DATABASE_LOCATION;
+				//HSA256 Encyption
+				$signer = new Sha256();
+				$jwttoken = (new Parser())->parse((string) $_COOKIE['Organizr_Token']); // Parses from a string
+				$jwttoken->getHeaders(); // Retrieves the token header
+				$jwttoken->getClaims(); // Retrieves the token claims
+				//Start Validation
+				if($jwttoken->verify($signer, $key)){
+					$data = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
+					$data->setIssuer('Organizr');
+					$data->setAudience('Organizr');
+					//$data->setId('4f1g23a12aas');
+					if($jwttoken->validate($data)){
+						$result['valid'] = true;
+						$result['username'] = $jwttoken->getClaim('username');
+						$result['role'] = $jwttoken->getClaim('role');
+					}
+				}
+			}
+			if($result['valid'] == true){ return $result; }else{ return null; }
+		}
 		// class object constructor
 		function __construct($registration_callback=false)
 		{
 			// session management comes first. Warnings are repressed with @ because it will warn if something else already called session_start()
 			@session_start();
-            if(!isset($_COOKIE['Organizr'])) {
+            if(!isset($_COOKIE['Organizr_Token'])) {
                 if (empty($_SESSION["username"]) || empty($_SESSION["token"])) $this->resetSession();
             }else{
-                $_SESSION["username"] = $_COOKIE['OrganizrU'];
+				if($this->jwtParse()){
+					$_SESSION["username"] = $this->jwtParse()['username'];
+				}else{
+					$this->resetSession();
+				}
             }
 			// file location for the user database
 			$dbfile = DATABASE_LOCATION.'users.db';
@@ -400,21 +434,11 @@
 		{
 			$_SESSION["username"] = User::GUEST_USER;
 			$_SESSION["token"] = -1;
-            unset($_COOKIE['Organizr']);
-            setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
-            setcookie('Organizr', '', time() - 3600, '/');
-            unset($_COOKIE['OrganizrU']);
-            setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
-            setcookie('OrganizrU', '', time() - 3600, '/');
-            unset($_COOKIE['cookiePassword']);
-            setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
-            setcookie("cookiePassword", '', time() - 3600, '/');
-			unset($_COOKIE['Auth']);
-            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
-            setcookie("Auth", '', time() - 3600, '/');
-			unset($_COOKIE['mpt']);
-            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
-            setcookie("mpt", '', time() - 3600, '/');
+			coookie('delete','cookiePassword');
+			coookie('delete','Auth');
+			coookie('delete','mpt');
+			coookie('delete','Organizr_Token');
+
 		}
 		/**
 		 * Validate a username. Empty usernames or names
@@ -450,40 +474,34 @@
 			if($this->is_user_active($username)===false) { return false; }
 			// logged in, but do the tokens match?
 			$token = $this->get_user_token($username);
-            if(isset($_COOKIE["Organizr"])){
-                if($_COOKIE["Organizr"] == $token){
-					// active, using the correct token -> authenticated
-					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
-					return true;
-                }else{
-                    $this->error("cookie token mismatch for $username");
-                    unset($_COOKIE['Organizr']);
-                    setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
-                    setcookie('Organizr', '', time() - 3600, '/');
-                    unset($_COOKIE['OrganizrU']);
-                    setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
-                    setcookie('OrganizrU', '', time() - 3600, '/');
-                    unset($_COOKIE['cookiePassword']);
-                    setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
-                    setcookie("cookiePassword", '', time() - 3600, '/');
-					unset($_COOKIE['Auth']);
-		            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
-		            setcookie("Auth", '', time() - 3600, '/');
-					unset($_COOKIE['mpt']);
-		            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
-		            setcookie("mpt", '', time() - 3600, '/');
-                    return false;
-                }
-            }else{
-                if($token != $_SESSION["token"]) {
-                    $this->error("token mismatch for $username");
-                    return false;
-                }else{
-					// active, using the correct token -> authenticated
-	                 setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
-	                 return true;
+			//Check Token with Session
+			if(isset($_SESSION["token"])){
+				if($token == $_SESSION["token"]) { coookie('set','cookiePassword',COOKIEPASSWORD,7); return true; }
+			}
+			//Check Token with JWT
+			if(isset($_COOKIE['Organizr_Token'])){
+				//Set key
+				$key = (COOKIEPASSWORD != '') ? COOKIEPASSWORD : DATABASE_LOCATION;
+				//HSA256 Encyption
+				$signer = new Sha256();
+				$jwttoken = (new Parser())->parse((string) $_COOKIE['Organizr_Token']); // Parses from a string
+				$jwttoken->getHeaders(); // Retrieves the token header
+				$jwttoken->getClaims(); // Retrieves the token claims
+				//Start Validation
+				if($jwttoken->verify($signer, $key)){
+					$data = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
+					$data->setIssuer('Organizr');
+					$data->setAudience('Organizr');
+					//$data->setId('4f1g23a12aas');
+					if($jwttoken->validate($data)){
+						return true;
+					}
 				}
-            }
+			}
+            $this->error("token mismatch for $username");
+            $this->resetSession();
+			return false;
+
 		}
 		/**
 		 * Unicode friendly(ish) version of strtolower
@@ -527,11 +545,20 @@
 		function register_user($username, $email, $sha1, &$registration_callback = false, $settings, $validate) {
 			//Admin bypass
 			if($validate == null){
+				$override = false;
 				$adminList = $this->get_admin_list();
 				if($adminList){
 					if(in_arrayi($_SESSION["username"], $adminList)){
 						$token = $this->get_user_token($_SESSION["username"]);
 						if($token == $_SESSION["token"]) {
+							$override = true;
+						}
+						if(isset($_COOKIE['Organizr_Token'])) {
+							if($this->jwtParse()){
+								$override = true;
+							}
+			            }
+						if($override == true) {
 							$validate = true;
 							writeLog("success", "Admin Override on registration for $username info");
 						}
@@ -680,7 +707,7 @@
 
 			if ($authSuccess) {
 				// Make sure user exists in database
-				$query = "SELECT username FROM users WHERE username = '".$username."' COLLATE NOCASE";
+				$query = "SELECT role FROM users WHERE username = '".$username."' COLLATE NOCASE";
 				$userExists = false;
 				foreach($this->database->query($query) as $data) {
 					$userExists = true;
@@ -691,25 +718,44 @@
 					// authentication passed - 1) mark active and update token
 					$this->mark_user_active($username);
 					$this->setSession($username, $this->update_user_token($username, $sha1, false));
+					$gotUserRole = $this->get_user_role($username);
+					//Create JWT
+					//Set key
+					$key = (COOKIEPASSWORD != '') ? COOKIEPASSWORD : DATABASE_LOCATION;
+					//HSA256 Encyption
+					$signer = new Sha256();
+					//Start Builder
+					$jwttoken = (new Builder())->setIssuer('Organizr') // Configures the issuer (iss claim)
+					                        ->setAudience('Organizr') // Configures the audience (aud claim)
+					                        ->setId('4f1g23a12aa', true) // Configures the id (jti claim), replicating as a header item
+					                        ->setIssuedAt(time()) // Configures the time that the token was issue (iat claim)
+					                        ->setExpiration(time() + (86400 * 7)) // Configures the expiration time of the token (exp claim)
+					                        ->set('username', $username) // Configures a new claim, called "username"
+					                        ->set('role', $gotUserRole) // Configures a new claim, called "role"
+					                        ->sign($signer, $key) // creates a signature using "testing" as key
+					                        ->getToken(); // Retrieves the generated token
+					$jwttoken->getHeaders(); // Retrieves the token headers
+					$jwttoken->getClaims(); // Retrieves the token claims
+					$_SESSION["Organizr_Token"] = $jwttoken;
 					// authentication passed - 2) signal authenticated
 					if($remember == "true") {
-						setcookie("Organizr", $this->get_user_token($username), time() + (86400 * 7), "/", DOMAIN);
-						setcookie("OrganizrU", $username, time() + (86400 * 7), "/", DOMAIN);
-
+						coookie('set','Organizr_Token',$jwttoken,7);
+					}else{
+						coookie('set','Organizr_Token',$jwttoken,1);
 					}
 					if(OMBIURL){
 						$ombiToken = getOmbiToken($username, $password);
 						if($ombiToken){
-							setcookie("Auth", $ombiToken, time() + (86400 * 7), "/", DOMAIN);
+							coookie('set','Auth',$ombiToken,7, false);
 						}
 					}
 					if(PLEXURL && isset($authSuccess['token'])){
-						setcookie("mpt", $authSuccess['token'], time() + (86400 * 7), "/", DOMAIN);
+						coookie('set','mpt',$authSuccess['token'],7);
 					}
 					$this->info("Welcome $username");
 					file_put_contents(FAIL_LOG, $buildLog($username, "good_auth"));
 					chmod(FAIL_LOG, 0660);
-					setcookie("cookiePassword", COOKIEPASSWORD, time() + (86400 * 7), "/", DOMAIN);
+					coookie('set','cookiePassword',COOKIEPASSWORD,7);
      				writeLog("success", "$username has logged in");
 					return true;
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
@@ -763,11 +809,18 @@
 			}else{
 				$token = $this->get_user_token($_SESSION["username"]);
 				if($token != $_SESSION["token"]) {
+					$override = false;
+				}
+				if(isset($_COOKIE['Organizr_Token'])) {
+					if($this->jwtParse()){
+						$override = true;
+					}
+				}
+				if($override){
+					writeLog("success", "Admin Override on update for $username info");
+				}else{
 					writeLog("error", $_SESSION["username"]." has requested info update using token: $token");
 					$this->error("token mismatch for ".$_SESSION["username"]);
-					return false;
-				}else{
-					writeLog("success", "Admin Override on update for $username info");
 				}
 			}
 			if($email !="") {
@@ -843,21 +896,6 @@
 			$this->database->exec($update);
 			$this->resetSession();
 			$this->info("Buh-Bye <strong>$username</strong>!");
-            unset($_COOKIE['Organizr']);
-            setcookie('Organizr', '', time() - 3600, '/', DOMAIN);
-            setcookie('Organizr', '', time() - 3600, '/');
-            unset($_COOKIE['OrganizrU']);
-            setcookie('OrganizrU', '', time() - 3600, '/', DOMAIN);
-            setcookie('OrganizrU', '', time() - 3600, '/');
-            unset($_COOKIE['cookiePassword']);
-            setcookie("cookiePassword", '', time() - 3600, '/', DOMAIN);
-            setcookie("cookiePassword", '', time() - 3600, '/');
-			unset($_COOKIE['Auth']);
-            setcookie("Auth", '', time() - 3600, '/', DOMAIN);
-            setcookie("Auth", '', time() - 3600, '/');
-			unset($_COOKIE['mpt']);
-            setcookie("mpt", '', time() - 3600, '/', DOMAIN);
-            setcookie("mpt", '', time() - 3600, '/');
    			writeLog("success", "$username has signed out");
 			return true;
 		}

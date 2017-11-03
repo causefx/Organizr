@@ -617,6 +617,7 @@ echo buildSettings(
 							'buttonType' => 'dark',
 							'buttonDrop' => '
 							<ul class="dropdown-menu">
+								<li class="dropdown-header">Choose a Theme Below</li>
 								<li id="open-themes" box="themes-box" onclick"" data-toggle="tooltip" data-placement="top" title="" data-original-title="Custom Themes Created by The Community"><a onclick="" href="#">Themes</a></li>
 								<li id="layerCakeDefault" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 7 color theme based on Organizr"><a onclick="layerCake(\'Basic\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">LAYER#CAKE Basic</a></li>
 								<li id="layerCakeCustom" data-toggle="tooltip" data-placement="top" title="" data-original-title="A 32 color theme based on Organizr"><a onclick="layerCake(\'Advanced\',\'layerCake\');$(\'#customCSS_id\').attr(\'data-changed\', \'true\');" href="#">LAYER#CAKE Advanced</a></li>
@@ -1512,6 +1513,46 @@ echo buildSettings(
 		 				'labelTranslate' => 'NOTICE_MESSAGE',
 						'html' => '<div class="summernote" name="homepageNoticeMessage">'.HOMEPAGENOTICEMESSAGE.'</div>',
 					),
+                    array(
+						'type' => 'custom',
+						'html' => '<h2>Not Logged In/Guest Notice</h2>',
+					),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'NOTICE_LAYOUT',
+						'name' => 'homepageNoticeLayoutGuest',
+						'value' => HOMEPAGENOTICELAYOUTGUEST,
+						'options' => array(
+							'Elegant' => 'elegant',
+							'Basic' => 'basic',
+							'Jumbotron' => 'jumbotron',
+						),
+					),
+     				array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'NOTICE_COLOR',
+						'name' => 'homepageNoticeTypeGuest',
+						'value' => HOMEPAGENOTICETYPEGUEST,
+						'options' => array(
+							'Green' => 'success',
+							'Blue' => 'primary',
+							'Gray' => 'gray',
+							'Red' => 'danger',
+							'Yellow' => 'warning',
+							'Light Blue' => 'info',
+						),
+					),
+     				array(
+						'type' => 'text',
+						'labelTranslate' => 'NOTICE_TITLE',
+						'name' => 'homepageNoticeTitleGuest',
+						'value' => HOMEPAGENOTICETITLEGUEST,
+					),
+        			array(
+						'type' => 'custom',
+		 				'labelTranslate' => 'NOTICE_MESSAGE',
+						'html' => '<div class="summernote" name="homepageNoticeMessageGuest">'.HOMEPAGENOTICEMESSAGEGUEST.'</div>',
+					),
 				),
 			),
 			array(
@@ -1823,12 +1864,6 @@ echo buildSettings(
 							'icon' => 'gear',
 							'onclick' => 'if ($(\'#git_branch_id[data-changed]\').length) { alert(\'Branch was altered, save settings first!\') } else { if (confirm(\''.translate('GIT_FORCE_CONFIRM').'\')) { performUpdate(); ajax_request(\'POST\', \'forceBranchInstall\'); } }',
 						),
-					),
-					array(
-						'type' => 'checkbox',
-						'labelTranslate' => 'MULTIPLE_LOGINS',
-						'name' => 'multipleLogin',
-						'value' => MULTIPLELOGIN,
 					),
 				),
 			),
@@ -2273,7 +2308,7 @@ echo buildSettings(
                                         <a href='https://reddit.com/r/organizr' target='_blank' type='button' style="background: #AD80FD" class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-reddit'></i></span>SUBREDDIT</a>
                                         <a href='https://github.com/causefx/Organizr/issues/new' target='_blank' type='button' class='btn waves btn-labeled btn-success btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github-alt'></i></span><?php echo $language->translate("SUBMIT_ISSUE");?></a>
                                         <a href='https://github.com/causefx/Organizr' target='_blank' type='button' class='btn waves btn-labeled btn-primary btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-github'></i></span><?php echo $language->translate("VIEW_ON_GITHUB");?></a>
-                                        <a href='https://gitter.im/Organizrr/Lobby' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span><?php echo $language->translate("CHAT_WITH_US");?></a>
+                                        <a href='https://discord.gg/XvbT6nz' target='_blank' type='button' class='btn waves btn-labeled btn-dark btn text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-comments-o'></i></span><?php echo $language->translate("CHAT_WITH_US");?></a>
                                         <button type="button" class="class='btn waves btn-labeled btn-warning btn text-uppercase waves-effect waves-float" data-toggle="modal" data-target=".Help-Me-modal-lg"><span class='btn-label'><i class='fa fa-life-ring'></i></span><?php echo $language->translate("HELP");?></button>
                                         <!--<button id="deleteToggle" type="button" class="class='btn waves btn-labeled btn-danger btn text-uppercase waves-effect waves-float" ><span class='btn-label'><i class='fa fa-trash'></i></span><?php echo $language->translate("DELETE_DATABASE");?></button>-->
                                     </p>
@@ -2670,13 +2705,16 @@ echo buildSettings(
                                                             <th scope="row"><?=$countUsers;?></th>
 
                                                             <td><?php if(GRAVATAR == "true") : ?><i class="userpic"><img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=25&d=mm" class="img-circle"></i> &nbsp; <?php endif; ?><?=$row['username'];?></td>
-                                                            <td><?=$row['email'];?></td>
+                                                            <td><input type="text" class="form-control material newemail" name="newemail" value="<?=$row['email'];?>">
+                                                                <button style="display: none" class="btn btn-success btn-sm waves editUserEmail"><i class="fa fa-check"></i></button>
+                                                                <button style="display: none" type="button" class="btn btn-danger btn-sm waves closeEditUserEmail"><i class="fa fa-close"></i></button>
+                                                            </td>
 
                                                             <td><span class="label label-<?=$userActiveColor;?>"><?=$userActive;?></span></td>
 
                                                             <td><?=$lastActive;?></td>
 
-                                                            <td><span class="text-uppercase <?=$userColor;?>"><?=$row['role'];?></span></td>
+                                                            <td><span class="userRole text-uppercase <?=$userColor;?>"><?=$row['role'];?></span></td>
 
                                                             <td id="<?=$row['username'];?>">
 
@@ -2855,14 +2893,14 @@ echo buildSettings(
                             <div class="email-inner-section">
                                 <div class="small-box" id="loginlog">
                                     <div>
-                                        <?php if(file_exists("org.log")){ ?>
+                                        <?php if(file_exists(DATABASE_LOCATION."org.log")){ ?>
                                         <button id="viewOrgLogs" class="btn waves btn-labeled gray-bg text-uppercase waves-effect waves-float" type="button"><span class="btn-label"><i class="fa fa-terminal"></i></span>Organizr Log </button>
                                         <?php } if(file_exists(FAIL_LOG)){ ?>
                                         <button id="viewLoginLogs" class="btn waves btn-labeled grayish-blue-bg text-uppercase waves-effect waves-float" type="button" style="display: none"><span class="btn-label"><i class="fa fa-user"></i></span>Login Log </button>
                                         <?php } ?>
                                     </div>
 
-                                    <?php if(file_exists("org.log")){ ?>
+                                    <?php if(file_exists(DATABASE_LOCATION."org.log")){ ?>
                                     <div id="orgLogTable" class="table-responsive" style="display: none">
                                         <table id="orgLogs" class="datatable display">
                                             <thead>
@@ -3370,6 +3408,25 @@ echo buildSettings(
                 var parent_id = $(this).parent().attr('id');
                 editUsername = $('#unregister').find('#inputUsername');
                 $(editUsername).html('<input type="hidden" name="op" value="unregister"/><input type="hidden" name="username"value="' + parent_id + '" />');
+            });
+            $(".newemail").click(function(){
+                $(".editUserEmail").hide();
+                $(".closeEditUserEmail").hide();
+				$(this).parent().find('.editUserEmail').show();
+                $(this).parent().find('.closeEditUserEmail').show();
+            });
+            $(".closeEditUserEmail").click(function(){
+                $(".editUserEmail").hide();
+                $(".closeEditUserEmail").hide();
+            });
+            $(".editUserEmail").click(function(){
+
+                var parent_ids = $(this).parent().parent().attr('id');
+                newemail = $(this).parent().parent().find('input[name=newemail]').val();
+                role = $(this).parent().parent().find('.userRole').text();
+                editUsername = $('#unregister').find('#inputUsername');
+                console.log('user: '+parent_ids+' email: '+newemail+' role: '+role);
+                $(editUsername).html('<input type="hidden" name="op" value="update"/><input type="hidden" name="email" value="'+newemail+'"/><input type="hidden" name="role" value="'+role+'"/><input type="hidden" name="username"value="' + parent_ids + '" />');
             });
             $(".promoteUser").click(function(){
 

@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'SparkPost\\' => array($vendorDir . '/sparkpost/sparkpost/lib/SparkPost'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
+    'Lcobucci\\JWT\\' => array($vendorDir . '/lcobucci/jwt/src'),
     'Kryptonit3\\Sonarr\\' => array($vendorDir . '/kryptonit3/sonarr/src'),
     'Kryptonit3\\SickRage\\' => array($vendorDir . '/kryptonit3/sickrage/src'),
     'Kryptonit3\\CouchPotato\\' => array($vendorDir . '/kryptonit3/couchpotato/src'),

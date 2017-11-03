@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.601');
+ define('INSTALLEDVERSION', '1.61');
 // ===================================
 $debugOrganizr = true;
 if($debugOrganizr == true && file_exists('debug.php')){ require_once('debug.php'); }
@@ -24,6 +24,7 @@ function homepageOrder(){
 		"homepageOrderembyrecent" => homepageOrderembyrecent,
 		"homepageOrderombi" => homepageOrderombi,
 		"homepageOrdercalendar" => homepageOrdercalendar,
+		"homepageOrdernoticeguest" => homepageOrdernoticeguest,
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -37,6 +38,57 @@ function debug_out($variable, $die = false) {
 	if ($die) { http_response_code(503); die(); }
 }
 
+//Cookie Function
+function coookie($type, $name, $value = '', $days = -1, $http = true){
+	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https"){
+		$Secure = true;
+ 	   	$HTTPOnly = true;
+	}elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+		$Secure = true;
+ 	   	$HTTPOnly = true;
+	} else {
+		$Secure = false;
+ 	   	$HTTPOnly = false;
+   }
+   if(!$http){ $HTTPOnly = false; }
+	$Path = '/';
+	$Domain = $_SERVER['HTTP_HOST'];
+	$Port = strpos($Domain, ':');
+	if ($Port !== false)  $Domain = substr($Domain, 0, $Port);
+	$Port = strpos($Domain, ':');
+	$check = substr_count($Domain, '.');
+	if($check >= 3){
+		if(is_numeric($Domain[0])){
+			$Domain = '';
+		}else{
+			$Domain = '.'.explode('.',$Domain)[1].'.'.explode('.',$Domain)[2].'.'.explode('.',$Domain)[3];
+		}
+	}elseif($check == 2){
+		$Domain = '.'.explode('.',$Domain)[1].'.'.explode('.',$Domain)[2];
+	}elseif($check == 1){
+		$Domain = '.' . $Domain;
+	}else{
+		$Domain = '';
+	}
+	if($type = 'set'){
+		$_COOKIE[$name] = $value;
+		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
+							. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + (86400 * $days)) . ' GMT')
+							. (empty($Path) ? '' : '; path=' . $Path)
+							. (empty($Domain) ? '' : '; domain=' . $Domain)
+							. (!$Secure ? '' : '; secure')
+							. (!$HTTPOnly ? '' : '; HttpOnly'), false);
+	}elseif($type = 'delete'){
+		unset($_COOKIE[$name]);
+		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
+							. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
+							. (empty($Path) ? '' : '; path=' . $Path)
+							. (empty($Domain) ? '' : '; domain=' . $Domain)
+							. (!$Secure ? '' : '; secure')
+							. (!$HTTPOnly ? '' : '; HttpOnly'), false);
+	}
+
+}
 // ==== Auth Plugins START ====
 if (function_exists('ldap_connect')) :
 	// Pass credentials to LDAP backend
@@ -1555,6 +1607,23 @@ function upgradeCheck() {
 		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.40].bak.php');
 		$createConfigSuccess = createConfig($config);
 		unset($config);
+	}
+	// Upgrade to 1.603
+	$config = loadConfig();
+	if (isset($config['database_Location']) && (!isset($config['CONFIG_VERSION']) || $config['CONFIG_VERSION'] < '1.603')) {
+		// Update Version and Commit
+		$config['CONFIG_VERSION'] = '1.603';
+		copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.601].bak.php');
+		$createConfigSuccess = createConfig($config);
+		unset($config);
+		if(file_exists('org.log')){
+			copy('org.log', DATABASE_LOCATION.'org.log');
+			unlink('org.log');
+		}
+		if(file_exists('loginLog.json')){
+			copy('loginLog.json', DATABASE_LOCATION.'loginLog.json');
+			unlink('loginLog.json');
+		}
 	}
 
 	return true;
@@ -3233,20 +3302,20 @@ function strip($string){
 }
 
 function writeLog($type, $message){
-	if(file_exists("org.log")){
-		if(filesize("org.log") > 500000){
-			rename('org.log','org['.date('Y-m-d').'].log');
+	if(file_exists(DATABASE_LOCATION."org.log")){
+		if(filesize(DATABASE_LOCATION."org.log") > 500000){
+			rename(DATABASE_LOCATION.'org.log',DATABASE_LOCATION.'org['.date('Y-m-d').'].log');
 			$message2 = date("Y-m-d H:i:s")."|".$type."|".strip("ORG LOG: Creating backup of org.log to org[".date('Y-m-d')."].log ")."\n";
-			file_put_contents("org.log", $message2, FILE_APPEND | LOCK_EX);
+			file_put_contents(DATABASE_LOCATION."org.log", $message2, FILE_APPEND | LOCK_EX);
 
 		}
 	}
     $message = date("Y-m-d H:i:s")."|".$type."|".strip($message)."\n";
-    file_put_contents("org.log", $message, FILE_APPEND | LOCK_EX);
+    file_put_contents(DATABASE_LOCATION."org.log", $message, FILE_APPEND | LOCK_EX);
 }
 
 function readLog(){
-    $log = file("org.log",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $log = file(DATABASE_LOCATION."org.log",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     $log = array_reverse($log);
     foreach($log as $line){
 		if(substr_count($line, '|') == 2){
@@ -4164,8 +4233,8 @@ function backupDB(){
 		$orgFiles = array(
 			'css' => 'custom.css',
 			'temp' => 'cus.sd',
-			'orgLog' => 'org.log',
-			'loginLog' => 'loginLog.json',
+			'orgLog' => DATABASE_LOCATION.'org.log',
+			'loginLog' => DATABASE_LOCATION.'loginLog.json',
 			'chatDB' => 'chatpack.db',
 			'config' => 'config/config.php',
 			'database' => DATABASE_LOCATION.'users.db'
@@ -4774,7 +4843,12 @@ function getOmbiToken($username, $password){
 		"rememberMe" => "true",
          );
 	$api = curl_post(OMBIURL."/api/v1/Token", $json, $headers);
-    return json_decode($api['content'], true)['access_token'];
+	if (isset($api['content'])) {
+		return json_decode($api['content'], true)['access_token'];
+	}else{
+		return false;
+	}
+
 }
 
 function ombiAction($id, $action, $type){
@@ -5066,12 +5140,40 @@ function outputOmbiRequests($header = "Requested Content", $items, $script = fal
 	$hideMenu .= '<li data-filter="item-all" data-name="Content" data-filter-on="false"><a class="js-filter-all" href="javascript:void(0)">All</a></li>';
     $hideMenu .= '</ul></div></div>';
     // If None Populate Empty Item
-    if (!count($items)) {
-        return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Requests Found</p></div>';
+    //if (count(array_flip($items)) < 1) {
+	if(!array_filter($items)) {
+        return '<div id="recentRequests"></div>';
     }else{
 		$className = str_replace(' ', '', $header);
         return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 id="requestContent-title" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-request" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
+}
+
+function ombiAPI($action){
+	$headers = array(
+		"Accept" => "application/json",
+		"Content-Type" => "application/json",
+		"Apikey" => OMBIKEY
+	);
+	$body = array();
+	switch ($action) {
+		case 'plex-cache':
+			$api = curl_post(OMBIURL."/api/v1/Job/plexcontentcacher", $body, $headers);
+			break;
+		default:
+			break;
+	}
+	if(is_array($api) || is_object($api)){
+		switch ($api['http_code']['http_code']){
+			case 200:
+				return true;
+				break;
+			default:
+				return false;
+		}
+	}else{
+		return false;
+	}
 }
 
 function loadIcons(){
@@ -5110,6 +5212,13 @@ function buildHomepageSettings(){
 				$class = 'palette-Cyan-A400 bg gray';
 				$image = 'images/pin.png';
 				if(empty(HOMEPAGENOTICETITLE) && empty(HOMEPAGENOTICEMESSAGE)){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdernoticeguest':
+				$class = 'palette-Cyan-A400 bg gray';
+				$image = 'images/pin.png';
+				if(empty(HOMEPAGENOTICETITLEGUEST) && empty(HOMEPAGENOTICEMESSAGEGUEST)){
 					$class .= ' faded';
 				}
 				break;
@@ -5233,6 +5342,11 @@ function buildHomepageItem($homepageItem, $group, $user){
 		case 'homepageOrdernotice':
 			if (qualifyUser(HOMEPAGENOTICEAUTH) && HOMEPAGENOTICETITLE && HOMEPAGENOTICETYPE && HOMEPAGENOTICEMESSAGE && HOMEPAGENOTICELAYOUT) {
 				$homepageItemBuilt .= buildHomepageNotice(HOMEPAGENOTICELAYOUT, HOMEPAGENOTICETYPE, HOMEPAGENOTICETITLE, HOMEPAGENOTICEMESSAGE);
+			}
+			break;
+		case 'homepageOrdernoticeguest':
+			if ($group == 'guest' && HOMEPAGENOTICETITLEGUEST && HOMEPAGENOTICETYPEGUEST && HOMEPAGENOTICEMESSAGEGUEST && HOMEPAGENOTICELAYOUTGUEST) {
+				$homepageItemBuilt .= buildHomepageNotice(HOMEPAGENOTICELAYOUTGUEST, HOMEPAGENOTICETYPEGUEST, HOMEPAGENOTICETITLEGUEST, HOMEPAGENOTICEMESSAGEGUEST);
 			}
 			break;
 		case 'homepageOrderspeedtest':

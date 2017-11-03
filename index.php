@@ -1045,7 +1045,7 @@ $group = (isset($group) ? $group : "guest");
 			</div>
 		</div>
 		<?php } ?>
-		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true" && $splash) {?>
+		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true" && $splash && count($splash) > 1) {?>
 		<div id="splashScreen" class="splash-modal modal fade">
 			<div style="background:<?=$sidebar;?>;" class="table-wrapper big-box">
 
@@ -1348,12 +1348,12 @@ $group = (isset($group) ? $group : "guest");
 		<?php if($configReady == "Yes") {
 			if($USER->authenticated){ ?>
 				if (localStorageSupport) {
-					if(getCookie('mpt') !== ''){
-						localStorage.setItem("myPlexAccessToken",getCookie('mpt'));
+					<?php if(isset($_COOKIE['mpt'])){
+						echo 'localStorage.setItem("myPlexAccessToken","'.$_COOKIE['mpt'].'");';
 					}
-					if(getCookie('Auth') !== ''){
-						localStorage.setItem("id_token",getCookie('Auth'));
-					}
+					if(isset($_COOKIE['Auth'])){
+						echo 'localStorage.setItem("id_token","'.$_COOKIE['Auth'].'");';
+					}?>
 				}
 		<?php }else{?>
 			if (localStorageSupport) {
