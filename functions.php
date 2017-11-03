@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.603');
+ define('INSTALLEDVERSION', '1.61');
 // ===================================
 $debugOrganizr = true;
 if($debugOrganizr == true && file_exists('debug.php')){ require_once('debug.php'); }
@@ -5147,6 +5147,33 @@ function outputOmbiRequests($header = "Requested Content", $items, $script = fal
 		$className = str_replace(' ', '', $header);
         return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 id="requestContent-title" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-request" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
+}
+
+function ombiAPI($action){
+	$headers = array(
+		"Accept" => "application/json",
+		"Content-Type" => "application/json",
+		"Apikey" => OMBIKEY
+	);
+	$body = array();
+	switch ($action) {
+		case 'plex-cache':
+			$api = curl_post(OMBIURL."/api/v1/Job/plexcontentcacher", $body, $headers);
+			break;
+		default:
+			break;
+	}
+	if(is_array($api) || is_object($api)){
+		switch ($api['http_code']['http_code']){
+			case 200:
+				return true;
+				break;
+			default:
+				return false;
+		}
+	}else{
+		return false;
+	}
 }
 
 function loadIcons(){
