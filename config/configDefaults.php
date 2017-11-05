@@ -105,6 +105,7 @@ return array(
 	"downloadRefresh" => "30000",
 	"organizrAPI" => "",
 	"splash" => "false",
+	"splashAuth" => false,
 	"chat" => "false",
 	"chatAuth" => "false",
 	"installedTheme" => "",

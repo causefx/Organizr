@@ -1045,7 +1045,7 @@ $group = (isset($group) ? $group : "guest");
 			</div>
 		</div>
 		<?php } ?>
-		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true" && $splash && count($splash) > 1) {?>
+		<?php if (file_exists('config/config.php') && $configReady == "Yes" && $tabSetup == "No" && SPLASH == "true" && $splash && count($splash) > 1 && qualifyUser(SPLASHAUTH)) {?>
 		<div id="splashScreen" class="splash-modal modal fade">
 			<div style="background:<?=$sidebar;?>;" class="table-wrapper big-box">
 
@@ -1935,7 +1935,7 @@ $group = (isset($group) ? $group : "guest");
 		$("li[class^='tab-item']").dblclick(function(){
 			var thisidfull = $(this).attr("id");
 			var thisid = thisidfull.substr(0, thisidfull.length-1);
-			var thisframe = $("#content div[data-content-url^='"+thisid+"']").children('iframe');
+			var thisframe = $("#content div[data-content-url='"+thisid+"']").children('iframe');
 			$(thisframe).attr('src', $(thisframe).attr('src'));
 			var refreshBox = $('#content').find('.active');
 
@@ -2097,7 +2097,7 @@ $group = (isset($group) ? $group : "guest");
 
 			var thisid = thisidfull.substr(0, thisidfull.length-1);
 
-			var currentframe = $("#content div[data-content-url^='"+thisid+"']");
+			var currentframe = $("#content div[data-content-url='"+thisid+"']");
 
 			if (currentframe.attr("class") == "iframe active") {
 
@@ -2154,7 +2154,7 @@ $group = (isset($group) ? $group : "guest");
 
 			var thisid = thisidfull.substr(0, thisidfull.length-1);
 
-			var currentframe = $("#contentRight div[data-content-url^='"+thisid+"']");
+			var currentframe = $("#contentRight div[data-content-url='"+thisid+"']");
 
 			if (currentframe.attr("class") == "iframe active") {
 

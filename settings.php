@@ -498,6 +498,15 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 							'color2' => 'palette-Light-Blue-A700 bg',
 							'padding' => '2',
 						),array(
+							'id' => 'open-help',
+							'box' => 'help-box',
+							'name' => 'Help & Chat',
+							'icon_1' => 'help-circle',
+							'icon_2' => 'question-circle',
+							'color' => 'orange',
+							'color2' => 'palette-Light-Blue-900 bg',
+							'padding' => '2',
+						),array(
 							'id' => 'open-donate',
 							'box' => 'donate-box',
 							'name' => 'Donate',
@@ -1993,13 +2002,22 @@ echo buildSettings(
 							'Sliding' => 'other-thumbslider',
 						),
 					),
-					array(
-						array(
+                    array(
+                        array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'ENABLE_SPLASH_SCREEN',
 							'name' => 'splash',
 							'value' => SPLASH,
 						),
+                        array(
+    						'type' => $userSelectType,
+    						'labelTranslate' => 'MINIMUM_SPLASH_ACCESS',
+    						'name' => 'splashAuth',
+    						'value' => SPLASHAUTH,
+    						'options' => $userTypes,
+    					),
+                    ),
+					array(
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'ENABLE_LOADING_SCREEN',
@@ -2288,6 +2306,23 @@ echo buildSettings(
                                         </table>
                                     </div>
                                     <?php } ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="email-content help-box white-bg">
+                    <div class="email-body">
+                        <div class="email-header gray-bg">
+                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+                            <h1>Help & Chat</h1>
+                        </div>
+                        <div class="email-inner small-box">
+                            <div class="email-inner-section">
+                                <div class="small-box fade in">
+
+                                    <embed style="height:calc(100vh - 100px);width:calc(100%)" src='https://widgetbot.io/embed/374648602632388610/374648603127578628/0002/' />
+
                                 </div>
                             </div>
                         </div>
@@ -3823,7 +3858,7 @@ echo buildSettings(
                 }
             });
 
-            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites , #open-themes, #open-speedtest, #open-email").on("click",function (e) {
+            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites , #open-themes, #open-speedtest, #open-email, #open-help").on("click",function (e) {
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
                 if($(window).width() < 768){
