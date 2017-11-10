@@ -2130,7 +2130,7 @@ echo buildSettings(
                                 <div class="small-box fade in" id="donate-org">
                                     <div class="row">
                                         <div class="col-lg-12">
-                                            <div class="big-box">
+
                                                 <div class="jumbotron">
                                                     <div class="container">
                                                         <h2><strong>Hey There <em class="gray"><?php echo ucwords($USER->username);?></em>,</strong></h2>
@@ -2142,11 +2142,11 @@ echo buildSettings(
                                                         <p class="pull-right"><i class="fa fa-heart fa-1x red loop-animation animated pulse" aria-hidden="true"></i> CauseFX</p>
                                                     </div>
                                                 </div>
-                                            </div>
+
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-4 col-lg-4">
+                                        <div class="col-sm-6 col-lg-6">
                                             <div class="content-box ultra-widget blue-bg" style="cursor: pointer;" onclick="window.open('https://paypal.me/causefx', '_blank')">
                                                 <div class="w-content big-box">
                                                     <div class="w-progress">
@@ -2162,8 +2162,6 @@ echo buildSettings(
                                                     </span>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-sm-4 col-lg-4">
                                             <div class="content-box ultra-widget green-bg" style="cursor: pointer;" onclick="window.open('https://cash.me/$causefx', '_blank')">
                                                 <div class="w-content big-box">
                                                     <div class="w-progress">
@@ -2179,12 +2177,11 @@ echo buildSettings(
                                                     </span>
                                                 </div>
                                             </div>
-                                        </div>
-										 <div class="col-sm-4 col-lg-4">
                                             <div class="content-box ultra-widget red-bg">
                                                 <div class="w-content big-box">
                                                     <div class="w-progress">
                                                         <span class="w-amount">BitCoin</span>
+                                                        <br>
                                                         <small class="text-uppercase">1JLWKsSgDDKdnLjPWbnxfQmCxi8uUohzVv</small>
                                                     </div>
                                                     <span class="w-refresh w-p-icon">
@@ -2195,7 +2192,26 @@ echo buildSettings(
                                                     </span>
                                                 </div>
                                             </div>
+										</div>
+                                        <div class="col-sm-6 col-lg-6">
+                                            <div class="jumbotron">
+                                                <div class="container">
+                                                    <h2><strong>Want to become an  <em class="gray">ORGANIZR</em> Patreon?</strong></h2>
+                                                    <small>By becoming a Patreon, you will get some perks on Discord as well as other things...</small>
+                                                    <br/><br/>
+                                                    <small>Some of the perks are:</small>
+                                                    <br/><br/>
+                                                    <ul>
+                                                        <li>One on One RDP Sessions</li>
+                                                        <li>Help with Custom CSS</li>
+                                                        <li>Feature Request Priority</li>
+                                                        <li>And more..</li>
+                                                    </ul>
+                                                    <p class="pull-right"><a class="btn btn-default" target='_blank' href="https://www.patreon.com/organizr"><i class="fa fa-hand-o-right fa-1x red loop-animation animated pulse" aria-hidden="true"></i> Become Patreon</a></p>
+                                                </div>
+                                            </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>

@@ -4765,9 +4765,13 @@ function ajaxLoop($ajaxFunction, $refresh, $extraFunction = ''){
 				var getDiv = response;
 				var loadedID = 	$(getDiv).attr('id');
 				if (typeof loadedID !== 'undefined') {
-					$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
-					".$extraFunction."
-					console.log('".$ajaxFunction." has been updated');
+					var oldElement = $('#'+loadedID).prop('outerHTML');
+					var newElement = $(getDiv).prop('outerHTML');
+					if(oldElement !== newElement){
+						$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+						".$extraFunction."
+						console.log('".$ajaxFunction." has been updated');
+					}
 				}else{
 					console.log('".$ajaxFunction." data was not sufficent or is offline');
 				}
@@ -5101,7 +5105,7 @@ function buildOmbiList($group, $user){
 	}else{
 		if(is_array($movieList)){
 			$result = $movieList;
-		}elseif(is_array($movieList)){
+		}elseif(is_array($tvList)){
 			$result = $tvList;
 		}else{
 			$result = false;

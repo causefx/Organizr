@@ -122,7 +122,7 @@ foreach(loadAppearance() as $key => $value) {
 			    left: 5px;
 			}
 			.refreshImage span.w-refresh:hover::before {
-				content: "Refresh";
+				/*content: "Refresh";
 			    font-size: 17px;
 			    float: right;
 			    top: 18px;
@@ -131,7 +131,7 @@ foreach(loadAppearance() as $key => $value) {
 			    color: white;
 			    background: black;
 			    border-radius: 5px;
-			    padding: 0px 20px;
+			    padding: 0px 20px;*/
 			}
             .fc-day-grid-event{
                 cursor: pointer;
@@ -469,7 +469,7 @@ foreach(loadAppearance() as $key => $value) {
 				var needsSlick = true;
 				var name = $(this).attr("data-name");
 				if($(this).hasClass('slick-initialized')){
-					console.log('skipping slick addon for: '+name);
+					//console.log('skipping slick addon for: '+name);
 					needsSlick = false;
 				}
 				if(needsSlick === true){
