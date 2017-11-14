@@ -265,6 +265,14 @@ $group = (isset($group) ? $group : "guest");
 		<![endif]-->
 	</head>
 	<style>
+		.la-ball-scale-multiple.la-3x {
+			width: auto !important;
+			height: auto !important;
+		}
+		.logo img {
+		    display: block;
+		    margin: auto;
+		}
 		#splashScreen ping span {
 		    margin-top: 0 !important;
 		    font-size: 10px;

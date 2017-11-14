@@ -853,6 +853,10 @@ echo buildSettings(
 				'image' => 'images/gear.png',
 				'fields' => array(
 					array(
+						'type' => 'custom',
+						'html' => '<h2>To Enable, please add new tab with url of homepage.php</h2>',
+					),
+					array(
 						'type' => $userSelectType,
 						'labelTranslate' => 'SHOW_HOMEPAGE',
 						'name' => 'homePageAuthNeeded',
