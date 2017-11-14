@@ -1043,7 +1043,7 @@ function outputRecentAdded($header, $items, $script = false, $array, $type) {
         return '<div id="recentMedia'.$type.'" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
     }else{
 		$className = str_replace(' ', '', $header.' on '.$type);
-        return '<div id="recentMedia'.$type.'" class="content-box box-shadow big-box"><h5 id="recentContent-title-'.$type.'" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-recent-'.$type.'" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+        return '<div id="recentMedia'.$type.'" class="content-box box-shadow big-box"><h5 id="recentContent-title-'.$type.'" style="margin-bottom: -20px" class="text-center"><span>'.$header.'</span></h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-recent-'.$type.'" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
 
 }
@@ -5149,7 +5149,7 @@ function outputOmbiRequests($header = "Requested Content", $items, $script = fal
         return '<div id="recentRequests"></div>';
     }else{
 		$className = str_replace(' ', '', $header);
-        return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 id="requestContent-title" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-request" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+        return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 id="requestContent-title" style="margin-bottom: -20px" class="text-center"><span>'.$header.'</span></h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-request" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
 }
 
@@ -5595,7 +5595,7 @@ function buildDownloader($name){
 							<i class="fa fa-repeat"></i>
 						</a>
 					</div>
-					<h3 class="pull-left">'.strtoupper($name).'</h3>
+					<h3 class="pull-left"><span>'.strtoupper($name).'</span></h3>
 					<ul class="nav nav-tabs pull-right">
 						<li class="active"><a href="#downloadQueue-'.$name.'" data-toggle="tab" aria-expanded="true">'.translate("QUEUE").'</a></li>
 						<li class=""><a href="#downloadHistory-'.$name.'" data-toggle="tab" aria-expanded="false">'.translate("HISTORY").'</a></li>
