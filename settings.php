@@ -2341,7 +2341,7 @@ echo buildSettings(
                             <div class="email-inner-section">
                                 <div class="small-box fade in">
 
-                                    <embed style="height:calc(100vh - 100px);width:calc(100%)" src='https://widgetbot.io/embed/374648602632388610/374648603127578628/0002/' />
+                                    <embed style="height:calc(100vh - 100px);width:calc(100%)" src='https://titanembeds.com/embed/374648602632388610' />
 
                                 </div>
                             </div>
