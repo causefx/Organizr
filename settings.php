@@ -1384,7 +1384,7 @@ echo buildSettings(
 						'labelTranslate' => 'PASSWORD',
 						'name' => 'nzbgetPassword',
 						'value' => (empty(NZBGETPASSWORD)?'':randString(20)),
-                        'autocomplete' => 'newpassword',
+                        'autocomplete' => 'new-password',
 					),
                     array(
 						'type' => $userSelectType,
@@ -1795,7 +1795,7 @@ echo buildSettings(
 						'name' => 'plexPassword',
 						'class' => 'be-auth be-auth-plex',
 						'value' => (empty(PLEXPASSWORD)?'':randString(20)),
-						'autocomplete' => 'newpassword',
+						'autocomplete' => 'new-password',
 					),
                     array(
 						'type' => 'text',
@@ -1848,7 +1848,7 @@ echo buildSettings(
 						'labelTranslate' => 'COOKIE_PASSWORD',
 						'name' => 'cookiePassword',
 						'value' => (empty(COOKIEPASSWORD)?'':randString(20)),
-                        'autocomplete' => 'newpassword',
+                        'autocomplete' => 'new-password',
 					),
                     array(
 						'type' => 'text',
@@ -1914,7 +1914,7 @@ echo buildSettings(
 						'labelTranslate' => 'SMTP_HOST_PASSWORD',
 						'name' => 'smtpHostPassword',
 						'value' => (empty(SMTPHOSTPASSWORD)?'':randString(20)),
-                        'autocomplete' => 'newpassword',
+                        'autocomplete' => 'new-password',
 					),
 					array(
 						'type' => 'text',
