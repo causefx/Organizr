@@ -1974,7 +1974,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 
 	// Tags
 	$tags = array();
-	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href','onclick') as $value) {
+	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href','onclick','autocomplete') as $value) {
 		if (isset($params[$value])) {
 			if (is_string($params[$value])) { $tags[] = $value.'="'.$params[$value].'"';
 			} else if ($params[$value] === true) { $tags[] = $value; }
