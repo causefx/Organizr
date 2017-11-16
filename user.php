@@ -542,7 +542,7 @@
 		 * is profile information that can be set, but in no way
 		 * needs to be, in the user's profile section
 		 */
-		function register_user($username, $email, $sha1, &$registration_callback = false, $settings, $validate) {
+		function register_user($username, $email, $sha1, &$registration_callback = false, $settings, $validate, $roleOverride = 'user') {
 			//Admin bypass
 			if($validate == null){
 				$override = false;
@@ -573,6 +573,7 @@
             foreach($this->database->query($queryAdmin) as $data) {
                 $newRole = "user";
             }
+			if($roleOverride == 'admin'){ $newRole = "admin"; }
 			if($newRole == "user" && $validate == null){
 				writeLog("error", "$username on IP ".$_SERVER['REMOTE_ADDR']." is trying to hack your Organizr");
 				$this->error = "Hack attempt has been made. What are you doing? Logging your IP now...";
@@ -761,7 +762,8 @@
 				} else if (AUTHBACKENDCREATE !== 'false' && $surface) {
 					// Create User
 					$falseByRef = false;
-					$this->register_user($username, (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''), $sha1, $falseByRef, !$remember, true);
+					if(isset($authSuccess['type'])){ $roleOverride = $authSuccess['type']; }else{ $roleOverride = 'user'; }
+					$this->register_user($username, (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''), $sha1, $falseByRef, !$remember, true, $roleOverride);
 				} else {
 					// authentication failed
 					//$this->info("Successful Backend Auth, No User in DB, Create Set to False");

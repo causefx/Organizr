@@ -268,8 +268,7 @@ if (function_exists('curl_version')) :
 		// Quick out
 		$isAdmin = false;
 		if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
-   			writeLog("success", "Admin: ".$username." authenticated by plex");
-			//return true;
+   			writeLog("success", "Admin: ".$username." authenticated as plex Admin");
 			$isAdmin = true;
 		}
 
@@ -314,7 +313,8 @@ if (function_exists('curl_version')) :
                         return array(
 							'email' => $json['user']['email'],
 							'image' => $json['user']['thumb'],
-							'token' => $json['user']['authToken']
+							'token' => $json['user']['authToken'],
+							'type' => $isAdmin ? 'admin' : 'user',
 						);
 					}
 				}
