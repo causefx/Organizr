@@ -2632,9 +2632,10 @@ function transmissionConnect($list = 'listgroups') {
 	$digest = parse_url($url);
 	$scheme = (isset($digest['scheme'])) ? $digest['scheme'].'://' : 'http://';
 	$host = (isset($digest['host'])) ? $digest['host'] : '';
+	$port = (isset($digest['port'])) ? ':'.$digest['port'] : '';
 	$path = (isset($digest['path'])) ? $digest['path'] : '';
 	$passwordInclude = (TRANSMISSIONUSERNAME != '' && TRANSMISSIONPASSWORD != '') ? TRANSMISSIONUSERNAME.':'.TRANSMISSIONPASSWORD."@" : '';
-	$url = $scheme.$passwordInclude.$host.$path.'/rpc';
+	$url = $scheme.$passwordInclude.$host.$port.$path.'/rpc';
 	$contextopts = array(
 		'http' => array(
 			'user_agent'  => 'HTTP_UA',
