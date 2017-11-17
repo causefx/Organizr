@@ -25,6 +25,7 @@ function homepageOrder(){
 		"homepageOrderombi" => homepageOrderombi,
 		"homepageOrdercalendar" => homepageOrdercalendar,
 		"homepageOrdernoticeguest" => homepageOrdernoticeguest,
+		"homepageOrdertransmisson" => homepageOrdertransmisson,
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -2624,6 +2625,91 @@ function upgradeInstall($branch = 'master') {
     writeLog("success", "organizr upgrade folder removed");
 	writeLog("success", "organizr has been updated");
 	return true;
+}
+// Transmission Items
+function transmissionConnect($list = 'listgroups') {
+    $url = qualifyURL(TRANSMISSIONURL);
+	$digest = parse_url($url);
+	$scheme = (isset($digest['scheme'])) ? $digest['scheme'].'://' : 'http://';
+	$host = (isset($digest['host'])) ? $digest['host'] : '';
+	$path = (isset($digest['path'])) ? $digest['path'] : '';
+	$passwordInclude = (TRANSMISSIONUSERNAME != '' && TRANSMISSIONPASSWORD != '') ? TRANSMISSIONUSERNAME.':'.TRANSMISSIONPASSWORD."@" : '';
+	$url = $scheme.$passwordInclude.$host.$path.'/rpc';
+	$contextopts = array(
+		'http' => array(
+			'user_agent'  => 'HTTP_UA',
+			'ignore_errors' => true,
+		)
+	);
+	$context  = stream_context_create( $contextopts );
+	$fp = @fopen( $url, 'r', false, $context );
+	$stream_meta = stream_get_meta_data( $fp );
+    fclose( $fp );
+	foreach( $stream_meta['wrapper_data'] as $header ){
+		if( strpos( $header, 'X-Transmission-Session-Id: ' ) === 0 ){
+			$session_id = trim( substr( $header, 27 ) );
+			break;
+		}
+	}
+
+	$headers = array(
+		'X-Transmission-Session-Id' => $session_id,
+		'Content-Type' => 'application/json'
+	);
+	$data = array(
+		'method' => 'torrent-get',
+		'arguments' => array(
+			'fields' => array(
+				"id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir"
+			),
+		),
+		'tags' => ''
+	);
+    $api = curl_post($url, $data, $headers);
+    $api = json_decode($api['content'], true);
+    $gotTorrent = array();
+    if (is_array($api) || is_object($api)){
+		foreach ($api['arguments']['torrents'] AS $child) {
+			$downloadName = htmlentities($child['name'], ENT_QUOTES);
+			$downloadDirectory = $child['downloadDir'];
+			$downloadPercent = $child['percentDone'] * 100;
+			$progressBar = "progress-bar-striped active";
+			if($child['status'] == "6"){
+				$downloadStatus = "Seeding";
+				$downloadHealth = "success";
+			}elseif($child['status'] == "4"){
+				$downloadStatus = "Downloading";
+				$downloadHealth = "danger";
+			}elseif($child['status'] == "3"){
+				$downloadStatus = "Queued";
+				$downloadHealth = "warning";
+			}elseif($child['status'] == "0"){
+				$downloadStatus = "Complete";
+				$downloadHealth = "success";
+			}
+			$gotTorrent[] = '<tr>
+							<td class="col-xs-6 nzbtable-file-row">'.$downloadName.'</td>
+							<td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
+							<td class="col-xs-1 nzbtable nzbtable-row">'.$downloadDirectory.'</td>
+							<td class="col-xs-1 nzbtable nzbtable-row">'.realSize($child['totalSize']).'</td>
+							<td class="col-xs-2 nzbtable nzbtable-row">
+								<div class="progress">
+									<div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+										<p class="text-center">'.round($downloadPercent).'%</p>
+										<span class="sr-only">'.$downloadPercent.'% Complete</span>
+									</div>
+								</div>
+							</td>
+						</tr>';
+		}
+		if ($gotTorrent) {
+			return implode('',$gotTorrent);
+		} else {
+			return '<tr><td colspan="5"><p class="text-center">No Results</p></td></tr>';
+		}
+	}else{
+		writeLog("error", "TRANSMISSION ERROR: could not connect - check URL and/or check token and/or Username and Password - if HTTPS, is cert valid");
+	}
 }
 
 // NzbGET Items
@@ -5233,6 +5319,13 @@ function buildHomepageSettings(){
 					$class .= ' faded';
 				}
 				break;
+			case 'homepageOrdertransmisson':
+				$class = 'green-bg';
+				$image = 'images/transmission.png';
+				if(empty(TRANSMISSIONURL)){
+					$class .= ' faded';
+				}
+				break;
 			case 'homepageOrdernzbget':
 				$class = 'green-bg';
 				$image = 'images/nzbget.png';
@@ -5482,6 +5575,11 @@ function buildHomepageItem($homepageItem, $group, $user){
 				';
 			}
 			break;
+		case 'homepageOrdertransmisson':
+			if(TRANSMISSIONURL != "" && qualifyUser(TRANSMISSIONHOMEAUTH)){
+				$homepageItemBuilt .= buildDownloader('transmission', 'no');
+			}
+			break;
 		case 'homepageOrdernzbget':
 			if(NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)){
 				$homepageItemBuilt .= buildDownloader('nzbget');
@@ -5583,7 +5681,36 @@ function buildHomepageItem($homepageItem, $group, $user){
 	return $homepageItemBuilt;
 }
 
-function buildDownloader($name){
+function buildDownloader($name, $type = 'both'){
+	if($type == 'both'){
+		$tabs = '
+		<ul class="nav nav-tabs pull-right">
+			<li class="active"><a href="#downloadQueue-'.$name.'" data-toggle="tab" aria-expanded="true">'.translate("QUEUE").'</a></li>
+			<li class=""><a href="#downloadHistory-'.$name.'" data-toggle="tab" aria-expanded="false">'.translate("HISTORY").'</a></li>
+		</ul>
+		';
+		$bodyHistory = '
+		<div class="tab-pane fade" id="downloadHistory-'.$name.'">
+			<div class="table-responsive" style="max-height: 300px">
+				<table class="table table-striped progress-widget zero-m" style="max-height: 300px">
+					<thead>
+						<tr>
+							<th class="col-xs-7 nzbtable-file-row">'.translate("FILE").'</th>
+							<th class="col-xs-2 nzbtable">'.translate("STATUS").'</th>
+							<th class="col-xs-1 nzbtable">'.translate("CATEGORY").'</th>
+							<th class="col-xs-1 nzbtable">'.translate("SIZE").'</th>
+							<th class="col-xs-2 nzbtable">'.translate("PROGRESS").'</th>
+						</tr>
+					</thead>
+					<tbody class="dl-history '.$name.'"></tbody>
+				</table>
+			</div>
+		</div>
+		';
+	}else{
+		$tabs = '';
+		$bodyHistory = '';
+	}
 	return '
 <div id="downloadClientRow" class="row">
 	<div class="col-xs-12 col-md-12">
@@ -5596,10 +5723,7 @@ function buildDownloader($name){
 						</a>
 					</div>
 					<h3 class="pull-left">'.strtoupper($name).'</h3>
-					<ul class="nav nav-tabs pull-right">
-						<li class="active"><a href="#downloadQueue-'.$name.'" data-toggle="tab" aria-expanded="true">'.translate("QUEUE").'</a></li>
-						<li class=""><a href="#downloadHistory-'.$name.'" data-toggle="tab" aria-expanded="false">'.translate("HISTORY").'</a></li>
-					</ul>
+					'.$tabs.'
 					<div class="clearfix"></div>
 				</div>
 				<div class="panel-body">
@@ -5620,22 +5744,7 @@ function buildDownloader($name){
 								</table>
 							</div>
 						</div>
-						<div class="tab-pane fade" id="downloadHistory-'.$name.'">
-							<div class="table-responsive" style="max-height: 300px">
-								<table class="table table-striped progress-widget zero-m" style="max-height: 300px">
-									<thead>
-										<tr>
-											<th class="col-xs-7 nzbtable-file-row">'.translate("FILE").'</th>
-											<th class="col-xs-2 nzbtable">'.translate("STATUS").'</th>
-											<th class="col-xs-1 nzbtable">'.translate("CATEGORY").'</th>
-											<th class="col-xs-1 nzbtable">'.translate("SIZE").'</th>
-											<th class="col-xs-2 nzbtable">'.translate("PROGRESS").'</th>
-										</tr>
-									</thead>
-									<tbody class="dl-history '.$name.'"></tbody>
-								</table>
-							</div>
-						</div>
+						'.$bodyHistory.'
 					</div>
 				</div>
 			</div>

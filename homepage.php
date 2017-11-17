@@ -804,13 +804,14 @@ foreach(loadAppearance() as $key => $value) {
                 grabcursorenabled: false
             });
 
-            <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>
+            <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH)) || (TRANSMISSIONURL != "" && qualifyUser(TRANSMISSIONHOMEAUTH))){ ?>
             var queueRefresh = <?php echo DOWNLOADREFRESH; ?>;
             var historyRefresh = <?php echo HISTORYREFRESH; ?>; // This really doesn't need to happen that often
 
             var queueLoad = function() {
             <?php if(SABNZBDURL != "") { echo '$("tbody.dl-queue.sabnzbd").load("ajax.php?a=sabnzbd-update&list=queue");'; } ?>
             <?php if(NZBGETURL != "") { echo '$("tbody.dl-queue.nzbget").load("ajax.php?a=nzbget-update&list=listgroups");'; } ?>
+			<?php if(TRANSMISSIONURL != "") { echo '$("tbody.dl-queue.transmission").load("ajax.php?a=transmission-update&list=listgroups");'; } ?>
             };
 
             var historyLoad = function() {

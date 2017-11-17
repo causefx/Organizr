@@ -89,6 +89,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				echo nzbgetConnect($_GET['list'] ? $_GET['list'] : die('Error!'));
 				die();
 				break;
+			case 'transmission-update':
+				qualifyUser(TRANSMISSIONHOMEAUTH, true);
+				echo transmissionConnect($_GET['list'] ? $_GET['list'] : die('Error!'));
+				die();
+				break;
 			case 'show-image':
 				qualifyUser(NZBGETHOMEAUTH, true);
 				header('Content-type: image/jpeg');

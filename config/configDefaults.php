@@ -45,6 +45,10 @@ return array(
 	"nzbgetUsername" => "",
 	"nzbgetPassword" => "",
 	"nzbgetHomeAuth" => false,
+	"transmissionURL" => "",
+	"transmissionUsername" => "",
+	"transmissionPassword" => "",
+	"transmissionHomeAuth" => false,
 	"sabnzbdURL" => "",
 	"sabnzbdKey" => "",
 	"sabnzbdHomeAuth" => false,
@@ -138,5 +142,6 @@ return array(
 	"homepageOrderombi" => '12',
 	"homepageOrdercalendar" => '13',
 	"homepageOrdernoticeguest" => '14',
+	"homepageOrdertransmisson" => '15',
 	'requestedUserOnly' => 'true',
 );
