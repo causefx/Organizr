@@ -4829,8 +4829,6 @@ function buildMenu($array){
 }
 
 function requestInvite($email, $username){
-	//sendEmail($email, $username = "Organizr User", $subject, $body, $cc = null){
-	//orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){
 	sendEmail($GLOBALS['USER']->adminEmail, "Admin", "Plex Invite Request", orgEmail("PLEX Invite Request", "Look who wants to join the cool club", "Admin", "Hey, The User: $user has requested access to your Plex Library.", "Generate Invite", null, "What Next?", "Well, That is up to you.  You can go check on them if you like."));
 
 }
@@ -5680,6 +5678,69 @@ function buildHomepageItem($homepageItem, $group, $user){
 			break;
 	}
 	return $homepageItemBuilt;
+}
+
+function buildAccordion($items){
+	$i = 1;
+	$variables = '&nbsp; Available Variables: ';
+	$accordion = '<div style="margin-bottom: 0px;" class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
+	foreach ($items as $key => $value) {
+		foreach ($value['variables'] as $variable) {
+			$variables .= '<mark>'.$variable.'</mark>';
+		}
+		$accordion .= '
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="heading-'.$i.'">
+				<h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-'.$i.'" aria-expanded="true" aria-controls="collapse-'.$i.'">'.$value['title'].'</h4>
+			</div>
+			<div id="collapse-'.$i.'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-'.$i.'" aria-expanded="true">
+				<br/>'.$variables.'<br/></br/>
+				<div class="form-content col-sm-12 col-md-12 col-lg-12">
+					<input id="'.$value['template'].'Subject_id" name="'.$value['template'].'Subject" type="text" class="form-control material input-sm" autocorrect="off" autocapitalize="off" value="'.$value['subject'].'">
+					<p class="help-text">Email Subject</p>
+					</div>
+					<br/></br/>
+				<div class="summernote" name="'.$value['template'].'">'.$value['body'].'</div>
+			</div>
+		</div>
+		';
+		$i++;
+		$variables = '&nbsp; Available Variables: ';
+	}
+	$accordion .= '</div>';
+	return $accordion;
+}
+
+function emailTemplate($emailTemplate){
+	$variables = [
+		'{user}' => $emailTemplate['user'],
+		'{domain}' => DOMAIN,
+		'{password}' => $emailTemplate['password'],
+		'{inviteCode}' => $emailTemplate['inviteCode'],
+		'{fullDomain}' => getServerPath(),
+	];
+	$emailTemplate['body'] = strtr($emailTemplate['body'], $variables);
+	$emailTemplate['subject'] = strtr($emailTemplate['subject'], $variables);
+	return $emailTemplate;
+}
+
+function buildEmail($email){
+	$subject = (isset($email['subject'])) ? $email['subject'] : 'Message from Server';
+	$body = (isset($email['body'])) ? $email['body'] : 'Message Error Occured';
+	$type = (isset($email['type'])) ? $email['type'] : 'No Type';
+	switch ($type) {
+		case 'invite':
+			$extra = 'invite';
+			break;
+		case 'reset':
+			$extra = 'reset';
+			break;
+		default:
+			$extra = null;
+			break;
+	}
+	include('email.php');
+	return $email;
 }
 
 function buildDownloader($name, $type = 'both'){

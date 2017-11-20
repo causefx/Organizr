@@ -144,4 +144,24 @@ return array(
 	"homepageOrdernoticeguest" => '14',
 	"homepageOrdertransmisson" => '15',
 	'requestedUserOnly' => 'true',
+	'emailTemplateCSS' => '',
+	'emailTempateLogo' => 'https://raw.githubusercontent.com/causefx/Organizr/master/images/organizr-logo-h.png',
+	'emailTemplateResetPassword' => '
+	<h2>Hey there {user}!</h2><br />
+	Looks like you forgot your password.  Well, I got you...  Here is your new password: {password}<br />
+	If you want to change it once you log in, you can.  Head over to my website: {domain}<br />
+	',
+	'emailTemplateResetPasswordSubject' => 'Password Reset',
+	'emailTemplateInviteUser' => '
+	<h2>Hey there {user}!</h2><br />
+	Here is the invite code to join my cool media server: {inviteCode}<br/>
+	Head over to my website and enter the code to join: {domain}<br />
+	',
+	'emailTemplateInviteUserSubject' => 'You have been invited to join my server',
+	'emailTemplateRegisterUser' => '
+	<h2>Hey there {user}!</h2><br />
+	Welcome to me site.<br/>
+	If you need anything, please let me know.<br />
+	',
+	'emailTemplateRegisterUserSubject' => 'Thank you For Registering',
 );

@@ -403,21 +403,17 @@
 			$update = "UPDATE users SET password = '$dbpassword' WHERE email= '$email'";
    			writeLog("success", "$username has reset their password");
 			$this->database->exec($update);
-            //$this->info("Email has been sent with new password");
-			// step 3: notify the user of the new password
-			$subject = DOMAIN . " Password Reset";
-			$language = new setLanguage;
-			$domain = getServerPath();
-			$body = orgEmail(
-					$header = $language->translate('EMAIL_RESET_HEADER'),
-					$title = $language->translate('EMAIL_RESET_TITLE'),
-					$user = $username,
-					$mainMessage =$language->translate('EMAIL_RESET_MESSAGE')."<br/>".$newpassword,
-					$button = $language->translate('EMAIL_RESET_BUTTON'),
-					$buttonURL = $domain,
-					$subTitle = $language->translate('EMAIL_RESET_SUBTITLE'),
-					$subMessage = $language->translate('EMAIL_RESET_SUBMESSAGE')
-					);
+			$emailTemplate = array(
+				'type' => 'reset',
+				'body' => emailTemplateResetPassword,
+				'subject' => emailTemplateResetPasswordSubject,
+				'user' => $username,
+				'password' => $newpassword,
+				'inviteCode' => null,
+			);
+			$emailTemplate = emailTemplate($emailTemplate);
+			$subject = $emailTemplate['subject'];
+			$body = buildEmail($emailTemplate);
             $this->startEmail($email, $username, $subject, $body);
 		}
 	// ------------------
@@ -630,20 +626,17 @@
 				//send email
 				if($username && User::use_mail)
 				{
-					// send email notification
-					$subject = "Welcome to ".DOMAIN;
-					$language = new setLanguage;
-					$domain = getServerPath();
-					$body = orgEmail(
-						$header = $language->translate('EMAIL_NEWUSER_HEADER'),
-						$title = $language->translate('EMAIL_NEWUSER_TITLE'),
-						$user = $username,
-						$mainMessage =$language->translate('EMAIL_NEWUSER_MESSAGE'),
-						$button = $language->translate('EMAIL_NEWUSER_BUTTON'),
-						$buttonURL = $domain,
-						$subTitle = $language->translate('EMAIL_NEWUSER_SUBTITLE'),
-						$subMessage = $language->translate('EMAIL_NEWUSER_SUBMESSAGE')
-						);
+					$emailTemplate = array(
+						'type' => 'registration',
+						'body' => emailTemplateRegisterUser,
+						'subject' => emailTemplateRegisterUserSubject,
+						'user' => $username,
+						'password' => null,
+						'inviteCode' => null,
+					);
+					$emailTemplate = emailTemplate($emailTemplate);
+					$subject = $emailTemplate['subject'];
+					$body = buildEmail($emailTemplate);
 					$this->startEmail($email, $username, $subject, $body);
 				}
 				return true;
@@ -874,18 +867,17 @@
 			$this->info("$email has been invited to the $server server");
 			if($insert && User::use_mail)
 			{
-				// send email notification
-				$subject = DOMAIN . " $uServer ".$language->translate('INVITE_CODE');
-				$body = orgEmail(
-					$header = explosion($language->translate('EMAIL_INVITE_HEADER'), 0)." ".$uServer." ".explosion($language->translate('EMAIL_INVITE_HEADER'), 1),
-					$title = $language->translate('EMAIL_INVITE_TITLE'),
-					$user = $username,
-					$mainMessage = explosion($language->translate('EMAIL_INVITE_MESSAGE'), 0)." ".$uServer." ".explosion($language->translate('EMAIL_INVITE_MESSAGE'), 1)." ".$inviteCode,
-					$button = explosion($language->translate('EMAIL_INVITE_BUTTON'), 0)." ".$uServer." ".explosion($language->translate('EMAIL_INVITE_BUTTON'), 1),
-					$buttonURL = $link,
-					$subTitle = $language->translate('EMAIL_INVITE_SUBTITLE'),
-					$subMessage = explosion($language->translate('EMAIL_INVITE_SUBMESSAGE'), 0)." <a href='".$domain."?inviteCode'>".$domain."</a> ".explosion($language->translate('EMAIL_INVITE_SUBMESSAGE'), 1)
-					);
+				$emailTemplate = array(
+					'type' => 'invite',
+					'body' => emailTemplateInviteUser,
+					'subject' => emailTemplateInviteUserSubject,
+					'user' => $username,
+					'password' => null,
+					'inviteCode' => $inviteCode,
+				);
+				$emailTemplate = emailTemplate($emailTemplate);
+				$subject = $emailTemplate['subject'];
+				$body = buildEmail($emailTemplate);
                 $this->startEmail($email, $username, $subject, $body);
 			}
 		}

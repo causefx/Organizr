@@ -1443,13 +1443,6 @@ echo buildSettings(
 						'value' => DOWNLOADREFRESH,
 						'options' => $refreshSeconds,
 					),
-                    array(
-						'type' => $userSelectType,
-						'labelTranslate' => 'HISTORY_REFRESH',
-						'name' => 'historyRefresh',
-						'value' => HISTORYREFRESH,
-						'options' => $refreshSeconds,
-					),
 				),
 			),
 			array(
@@ -1745,7 +1738,29 @@ foreach (array_filter(get_defined_functions()['user'],function($v) { return strp
 	}
 }
 ksort($backendOptions);
-
+$emailTemplates = array(
+	array(
+		'title' => 'Password Reset',
+        'variables' => array('{user}','{domain}','{fullDomain}','{password}'),
+        'subject' => emailTemplateResetPasswordSubject,
+		'body' => emailTemplateResetPassword,
+        'template' => 'emailTemplateResetPassword',
+	),
+	array(
+		'title' => 'New Registration',
+        'variables' => array('{user}','{domain}','{fullDomain}'),
+        'subject' => emailTemplateRegisterUserSubject,
+		'body' => emailTemplateRegisterUser,
+        'template' => 'emailTemplateRegisterUser',
+	),
+    array(
+		'title' => 'Invite User',
+        'variables' => array('{user}','{domain}','{fullDomain}','{inviteCode}'),
+        'subject' => emailTemplateInviteUserSubject,
+		'body' => emailTemplateInviteUser,
+        'template' => 'emailTemplateInviteUser',
+	),
+);
 echo buildSettings(
 	array(
 		'title' => 'Advanced Settings',
@@ -2008,6 +2023,32 @@ echo buildSettings(
 							'name' => 'enableMail',
 							'value' => ENABLEMAIL,
 						),
+					),
+				),
+			),
+            array(
+				'title' => 'Mail Template Settings',
+				'id' => 'mail_settings_templates',
+				'image' => 'images/settings/full-color/png/64px/clipboard.png',
+				'fields' => array(
+                    array(
+						'type' => 'text',
+						'labelTranslate' => 'LOGO_URL_TITLE',
+						'name' => 'emailTempateLogo',
+						'value' => emailTempateLogo,
+					),
+                    array(
+						'type' => 'custom',
+						'html' => buildAccordion($emailTemplates),
+					),
+                    array(
+						'type' => 'textarea',
+						'name' => 'emailTemplateCSS',
+						'value' => emailTemplateCSS,
+                        'labelTranslate' => 'EDIT_CUSTOM_CSS',
+                        'placeholder' => 'Please Include <script></script> tags',
+						'rows' => 25,
+						'style' => 'background: #000; color: #FFF;',
 					),
 				),
 			),
