@@ -2414,6 +2414,9 @@ echo buildSettings(
 												<ul class="dropdown-menu">
 													<li class="dropdown-header">Choose a Template Below</li>
 													<li><a onclick="customEmail('one');" href="#">Template #1</a></li>
+													<li><a onclick="customEmail('two');" href="#">Template #2</a></li>
+													<li><a onclick="customEmail('three');" href="#">Template #3</a></li>
+													<li><a onclick="customEmail('four');" href="#">Template #4</a></li>
 												</ul>
 											</div>
                                         </div>
