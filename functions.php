@@ -4002,7 +4002,18 @@ function inviteCodes($action, $code = null, $usedBy = null) {
 					require_once("user.php");
 					$GLOBALS['USER'] = new User('registration_callback');
 				}
-				sendEmail($GLOBALS['USER']->adminEmail, "Admin", "Plex Invite Used", orgEmail("PLEX Invite Used", "Look who joined the cool club", "Admin", "Hey, The User: $usedBy has redeemd their invite code: [$code], their IP Address was: $currentIP", null, null, "What Next?", "Well, That is up to you.  You can go check on them if you like."));
+				$emailTemplate = array(
+					'type' => 'mass',
+					'body' => 'The user: {user} has reddemed the code: {inviteCode} his IP Address was '.$currentIP,
+					'subject' => 'Invite Code '.$code.' Has Been Used',
+					'user' => $usedBy,
+					'password' => null,
+					'inviteCode' => $code,
+				);
+				$emailTemplate = emailTemplate($emailTemplate);
+				$subject = $emailTemplate['subject'];
+				$body = buildEmail($emailTemplate);
+				sendEmail($GLOBALS['USER']->adminEmail, "Admin", $subject, $body);
 			}
 			return (!empty($invites) ? true : false );
 			break;
@@ -4829,6 +4840,7 @@ function buildMenu($array){
 }
 
 function requestInvite($email, $username){
+	//sendEmail($email, $username = "Organizr User", $subject, $body, $cc = null, $bcc = null)
 	sendEmail($GLOBALS['USER']->adminEmail, "Admin", "Plex Invite Request", orgEmail("PLEX Invite Request", "Look who wants to join the cool club", "Admin", "Hey, The User: $user has requested access to your Plex Library.", "Generate Invite", null, "What Next?", "Well, That is up to you.  You can go check on them if you like."));
 
 }
@@ -4907,7 +4919,18 @@ function massEmail($to, $subject, $message){
 		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
 		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
-	sendEmail(null, null, $subject, orgEmail("Message From Admin", "Important Information", "There", $message, null, null, "Thank You!", "Thanks for taking the time to read this message from me."),$GLOBALS['USER']->adminEmail,$to);
+	$emailTemplate = array(
+		'type' => 'mass',
+		'body' => $message,
+		'subject' => $subject,
+		'user' => null,
+		'password' => null,
+		'inviteCode' => null,
+	);
+	$emailTemplate = emailTemplate($emailTemplate);
+	$subject = $emailTemplate['subject'];
+	$body = buildEmail($emailTemplate);
+	sendEmail(null, null, $subject, $body, $GLOBALS['USER']->adminEmail,$to);
 }
 
 function q2a($q){
