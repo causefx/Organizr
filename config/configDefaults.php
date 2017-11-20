@@ -164,4 +164,12 @@ return array(
 	If you need anything, please let me know.<br />
 	',
 	'emailTemplateRegisterUserSubject' => 'Thank you For Registering',
+	'emailTemplateCustomOne' => '',
+	'emailTemplateCustomOneSubject' => '',
+	'emailTemplateCustomTwo' => '',
+	'emailTemplateCustomTwoSubject' => '',
+	'emailTemplateCustomThree' => '',
+	'emailTemplateCustomThreeSubject' => '',
+	'emailTemplateCustomFour' => '',
+	'emailTemplateCustomFourSubject' => '',
 );

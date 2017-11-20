@@ -1740,6 +1740,12 @@ foreach (array_filter(get_defined_functions()['user'],function($v) { return strp
 ksort($backendOptions);
 $emailTemplates = array(
 	array(
+		'type' => 'inputbox',
+		'name' => 'emailTempateLogo',
+		'value' => emailTempateLogo,
+	),
+	array(
+		'type' => 'template',
 		'title' => 'Password Reset',
         'variables' => array('{user}','{domain}','{fullDomain}','{password}'),
         'subject' => emailTemplateResetPasswordSubject,
@@ -1747,6 +1753,7 @@ $emailTemplates = array(
         'template' => 'emailTemplateResetPassword',
 	),
 	array(
+		'type' => 'template',
 		'title' => 'New Registration',
         'variables' => array('{user}','{domain}','{fullDomain}'),
         'subject' => emailTemplateRegisterUserSubject,
@@ -1754,11 +1761,44 @@ $emailTemplates = array(
         'template' => 'emailTemplateRegisterUser',
 	),
     array(
+		'type' => 'template',
 		'title' => 'Invite User',
         'variables' => array('{user}','{domain}','{fullDomain}','{inviteCode}'),
         'subject' => emailTemplateInviteUserSubject,
 		'body' => emailTemplateInviteUser,
         'template' => 'emailTemplateInviteUser',
+	),
+	array(
+		'type' => 'template',
+		'title' => 'Custom Email Template #1',
+        'variables' => array('{domain}','{fullDomain}'),
+        'subject' => emailTemplateCustomOneSubject,
+		'body' => emailTemplateCustomOne,
+        'template' => 'emailTemplateCustomOne',
+	),
+	array(
+		'type' => 'template',
+		'title' => 'Custom Email Template #2',
+        'variables' => array('{domain}','{fullDomain}'),
+        'subject' => emailTemplateCustomTwoSubject,
+		'body' => emailTemplateCustomTwo,
+        'template' => 'emailTemplateCustomTwo',
+	),
+	array(
+		'type' => 'template',
+		'title' => 'Custom Email Template #3',
+        'variables' => array('{domain}','{fullDomain}'),
+        'subject' => emailTemplateCustomThreeSubject,
+		'body' => emailTemplateCustomThree,
+        'template' => 'emailTemplateCustomThree',
+	),
+	array(
+		'type' => 'template',
+		'title' => 'Custom Email Template #4',
+        'variables' => array('{domain}','{fullDomain}'),
+        'subject' => emailTemplateCustomFourSubject,
+		'body' => emailTemplateCustomFour,
+        'template' => 'emailTemplateCustomFour',
 	),
 );
 echo buildSettings(
@@ -2024,31 +2064,30 @@ echo buildSettings(
 							'value' => ENABLEMAIL,
 						),
 					),
-				),
-			),
-            array(
-				'title' => 'Mail Template Settings',
-				'id' => 'mail_settings_templates',
-				'image' => 'images/settings/full-color/png/64px/clipboard.png',
-				'fields' => array(
-                    array(
+					array(
 						'type' => 'text',
 						'labelTranslate' => 'LOGO_URL_TITLE',
 						'name' => 'emailTempateLogo',
 						'value' => emailTempateLogo,
 					),
-                    array(
+					array(
 						'type' => 'custom',
-						'html' => buildAccordion($emailTemplates),
+						'html' => '<h2>Custom Mail Options</h2>',
 					),
-                    array(
-						'type' => 'textarea',
-						'name' => 'emailTemplateCSS',
-						'value' => emailTemplateCSS,
-                        'labelTranslate' => 'EDIT_CUSTOM_CSS',
-                        'placeholder' => 'Please Include <script></script> tags',
-						'rows' => 25,
-						'style' => 'background: #000; color: #FFF;',
+					array(
+	                    array(
+							'type' => 'custom',
+							'html' => buildAccordion($emailTemplates),
+						),
+	                    array(
+							'type' => 'textarea',
+							'name' => 'emailTemplateCSS',
+							'value' => emailTemplateCSS,
+	                        'labelTranslate' => 'EDIT_CUSTOM_CSS',
+	                        'placeholder' => 'Please Include <script></script> tags',
+							'rows' => 25,
+							'style' => 'background: #000; color: #FFF;',
+						),
 					),
 				),
 			),
@@ -2359,26 +2398,36 @@ echo buildSettings(
                                 <div class="small-box fade in">
 
 
-                                        <div class="mail-header">
-                                            <p>
-                                                <button class="btn btn-success waves generateEmails">Choose Users</button>
-                                                <button id="selectAllEmail" style="display: none;" class="btn btn-success waves">Select All</button>
-                                            </p>
-                                            <div style="display: none;"class="form-group" id="emailSelect">
-                                            <select multiple="true" size="10" id="email-users" class="form-control"></select>
-                                            </div>
-                                            <div class="form-group">
-                                                <input type="text" class="form-control material" id="mailTo" placeholder="To">
-                                            </div>
-                                            <div class="form-group">
-                                                <input type="text" class="form-control material" id="subject" placeholder="Subject">
-                                            </div>
+                                    <div class="mail-header">
+                                        <div class="sort-todo">
+                                            <button class="btn btn-success btn-labeled waves btn-sm text-uppercase waves-effect waves-float generateEmails">
+												<span class="btn-label"><i class="fa fa-users"></i></span><span class="btn-text">Choose Users</span>
+											</button>
+                                            <button id="selectAllEmail" style="display: none;" class="btn btn-success btn-labeled waves btn-sm text-uppercase waves-effect waves-float">
+												<span class="btn-label"><i class="fa fa-users"></i></span><span class="btn-text">Select All</span>
+											</button>
+											<button id="sendEmail" class="btn btn-success btn-labeled waves btn-sm text-uppercase waves-effect waves-float pull-right">
+												<span class="btn-label"><i class="fa fa-paper-plane"></i></span><span class="btn-text">Send</span>
+											</button>
+											<div class="btn-group">
+												<button id="emailCustom" type="button" class="btn waves btn-labeled btn-dark btn-sm text-uppercase waves-effect waves-float dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="btn-label"><i class="fa fa-envelope"></i></span><span class="btn-text">Custom Email Templates</span></button>
+												<ul class="dropdown-menu">
+													<li class="dropdown-header">Choose a Template Below</li>
+													<li><a onclick="customEmail('one');" href="#">Template #1</a></li>
+												</ul>
+											</div>
                                         </div>
-
-                                        <div class="summernote"></div>
-                                        <button id="sendEmail" class="btn btn-success waves">Send</button>
-
-
+                                        <div style="display: none;"class="form-group" id="emailSelect">
+                                        <select multiple="true" size="10" id="email-users" class="form-control"></select>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control material" id="mailTo" placeholder="To">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control material" id="subject" placeholder="Subject">
+                                        </div>
+                                    </div>
+                                    <div class="summernote"></div>
                             	</div>
                         	</div>
                     	</div>
@@ -4003,6 +4052,26 @@ echo buildSettings(
                 },600);
                 e.preventDefault();
             });
+
+			function customEmail(id){
+				if(id == 'one'){
+					var Body = '<?php echo emailTemplateCustomOne; ?>';
+					var Subject = '<?php echo emailTemplateCustomOneSubject; ?>';
+				}else if(id == 'two'){
+					var Body = '<?php echo emailTemplateCustomTwo; ?>';
+					var Subject = '<?php echo emailTemplateCustomTwoSubject; ?>';
+				}else if(id == 'three'){
+					var Body = '<?php echo emailTemplateCustomThree; ?>';
+					var Subject = '<?php echo emailTemplateCustomThreeSubject; ?>';
+				}else if(id == 'four'){
+					var Body = '<?php echo emailTemplateCustomFour; ?>';
+					var Subject = '<?php echo emailTemplateCustomFourSubject; ?>';
+				}
+				console.log(Body);
+				console.log(Subject);
+				$('#subject').val(Subject);
+				$('.email-box .note-editable.panel-body').html(Body);
+			}
 
             function checkGithub() {
                 $.ajax({

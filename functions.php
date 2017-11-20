@@ -5708,27 +5708,45 @@ function buildAccordion($items){
 	$variables = '&nbsp; Available Variables: ';
 	$accordion = '<div style="margin-bottom: 0px;" class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
 	foreach ($items as $key => $value) {
-		foreach ($value['variables'] as $variable) {
-			$variables .= '<mark>'.$variable.'</mark>';
-		}
-		$accordion .= '
-		<div class="panel panel-default">
-			<div class="panel-heading" role="tab" id="heading-'.$i.'">
-				<h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-'.$i.'" aria-expanded="true" aria-controls="collapse-'.$i.'">'.$value['title'].'</h4>
-			</div>
-			<div id="collapse-'.$i.'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-'.$i.'" aria-expanded="true">
-				<br/>'.$variables.'<br/></br/>
-				<div class="form-content col-sm-12 col-md-12 col-lg-12">
-					<input id="'.$value['template'].'Subject_id" name="'.$value['template'].'Subject" type="text" class="form-control material input-sm" autocorrect="off" autocapitalize="off" value="'.$value['subject'].'">
-					<p class="help-text">Email Subject</p>
+		if($value['type'] == 'template'){
+			foreach ($value['variables'] as $variable) {
+				$variables .= '<mark>'.$variable.'</mark>';
+			}
+			$accordion .= '
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="heading-'.$i.'">
+					<h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-'.$i.'" aria-expanded="true" aria-controls="collapse-'.$i.'">'.$value['title'].'</h4>
+				</div>
+				<div id="collapse-'.$i.'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-'.$i.'" aria-expanded="true">
+					<br/>'.$variables.'<br/></br/>
+					<div class="form-content col-sm-12 col-md-12 col-lg-12">
+						<input id="'.$value['template'].'Subject_id" name="'.$value['template'].'Subject" type="text" class="form-control material input-sm" autocorrect="off" autocapitalize="off" value="'.$value['subject'].'">
+						<p class="help-text">Email Subject</p>
 					</div>
 					<br/></br/>
-				<div class="summernote" name="'.$value['template'].'">'.$value['body'].'</div>
+					<div class="summernote" name="'.$value['template'].'">'.$value['body'].'</div>
+				</div>
 			</div>
-		</div>
-		';
-		$i++;
-		$variables = '&nbsp; Available Variables: ';
+			';
+			$i++;
+			$variables = '&nbsp; Available Variables: ';
+		}else{
+			$accordion .= '
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="heading-'.$i.'">
+					<h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-'.$i.'" aria-expanded="true" aria-controls="collapse-'.$i.'">Logo URL For Title</h4>
+				</div>
+				<div id="collapse-'.$i.'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-'.$i.'" aria-expanded="true">
+					<div class="form-content col-sm-12 col-md-12 col-lg-12">
+						<input id="'.$value['name'].'_id" name="'.$value['name'].'" type="text" class="form-control material input-sm" autocorrect="off" autocapitalize="off" value="'.$value['value'].'">
+						<p class="help-text">Logo URL For Title</p>
+					</div>
+					<br/></br/><br/>
+				</div>
+			</div>
+			';
+			$i++;
+		}
 	}
 	$accordion .= '</div>';
 	return $accordion;
