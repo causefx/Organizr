@@ -285,7 +285,7 @@ if (function_exists('curl_version')) :
 			$isUser = false;
 			$usernameLower = strtolower($username);
 			foreach($userXML AS $child) {
-				if(isset($child['username']) && strtolower($child['username']) == $usernameLower) {
+				if(isset($child['username']) && strtolower($child['username']) == $usernameLower || isset($child['email']) && strtolower($child['email']) == $usernameLower) {
 					$isUser = true;
      				writeLog("success", $usernameLower." was found in plex friends list");
 					break;
@@ -309,7 +309,7 @@ if (function_exists('curl_version')) :
 				$result = curl_post($connectURL, $body, $headers);
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
-					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && strtolower($json['user']['username']) == $usernameLower) {
+					if ((is_array($json) && isset($json['user']) && isset($json['user']['username'])) && strtolower($json['user']['username']) == $usernameLower || strtolower($json['user']['email']) == $usernameLower) {
 						writeLog("success", $json['user']['username']." was logged into organizr using plex credentials");
                         return array(
 							'email' => $json['user']['email'],
@@ -318,6 +318,8 @@ if (function_exists('curl_version')) :
 							'type' => $isAdmin ? 'admin' : 'user',
 						);
 					}
+				}else{
+					writeLog("error", "error occured while trying to sign $username into plex");
 				}
 			}else{
 				writeLog("error", "$username is not an authorized PLEX user or entered invalid password");

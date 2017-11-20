@@ -538,7 +538,7 @@
 		 * is profile information that can be set, but in no way
 		 * needs to be, in the user's profile section
 		 */
-		function register_user($username, $email, $sha1, &$registration_callback = false, $settings, $validate, $roleOverride = 'user') {
+		function register_user($username, $email, $sha1, &$registration_callback = false, $settings, $validate, $roleOverride = 'user', $password = null) {
 			//Admin bypass
 			if($validate == null){
 				$override = false;
@@ -622,7 +622,7 @@
 				//$this->info("created user directory $dir");
 				// if there is a callback, call it
 				if($registration_callback !== false) { $registration_callback($username, $email, $dir); }
-                if($settings !== 'true' && $settings !== true) { $this->login_user($username, $sha1, true, '', false); }
+                if($settings !== 'true' && $settings !== true) { $this->login_user($username, $sha1, true, $password, false); }
 				//send email
 				if($username && User::use_mail)
 				{
@@ -701,10 +701,11 @@
 
 			if ($authSuccess) {
 				// Make sure user exists in database
-				$query = "SELECT role FROM users WHERE username = '".$username."' COLLATE NOCASE";
+				$query = "SELECT username FROM users WHERE username = '".$username."' OR email = '".$username."' COLLATE NOCASE";
 				$userExists = false;
 				foreach($this->database->query($query) as $data) {
 					$userExists = true;
+					$username = $data['username'];
 					break;
 				}
 
@@ -756,7 +757,7 @@
 					// Create User
 					$falseByRef = false;
 					if(isset($authSuccess['type'])){ $roleOverride = $authSuccess['type']; }else{ $roleOverride = 'user'; }
-					$this->register_user($username, (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''), $sha1, $falseByRef, !$remember, true, $roleOverride);
+					$this->register_user($username, (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''), $sha1, $falseByRef, !$remember, true, $roleOverride, $password);
 				} else {
 					// authentication failed
 					//$this->info("Successful Backend Auth, No User in DB, Create Set to False");
