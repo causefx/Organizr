@@ -2065,12 +2065,6 @@ echo buildSettings(
 						),
 					),
 					array(
-						'type' => 'text',
-						'labelTranslate' => 'LOGO_URL_TITLE',
-						'name' => 'emailTempateLogo',
-						'value' => emailTempateLogo,
-					),
-					array(
 						'type' => 'custom',
 						'html' => '<h2>Custom Mail Options</h2>',
 					),
