@@ -2078,7 +2078,7 @@ echo buildSettings(
 							'name' => 'emailTemplateCSS',
 							'value' => emailTemplateCSS,
 	                        'labelTranslate' => 'EDIT_CUSTOM_CSS',
-	                        'placeholder' => 'Please Include <script></script> tags',
+	                        'placeholder' => 'Please Include <style></style> tags',
 							'rows' => 25,
 							'style' => 'background: #000; color: #FFF;',
 						),
