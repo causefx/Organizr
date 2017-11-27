@@ -3782,6 +3782,16 @@ echo buildSettings(
                     emailtype: $('#smtpHostType_id').val(),
                     emailauth: $('#smtpHostAuth_id').attr("data-value"),
                 });
+				console.log(
+					'TO: <?php echo $USER->email;?>\n'+
+					'HOST: '+$('#smtpHost_id').val()+'\n'+
+					'PORT: '+$('#smtpHostPort_id').val()+'\n'+
+					'USERNAME: '+$('#smtpHostUsername_id').val()+'\n'+
+					'SENDER NAME: '+$('#smtpHostSenderName_id').val()+'\n'+
+					'SENDER EMAIL: '+$('#smtpHostSenderEmail_id').val()+'\n'+
+					'TYPE: '+$('#smtpHostType_id').val()+'\n'+
+					'AUTH: '+$('#smtpHostAuth_id').attr("data-value")+'\n'
+				);
                 console.log("ajax done");
             });
             //Custom Themes
