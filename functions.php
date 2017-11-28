@@ -5710,10 +5710,16 @@ function buildAccordion($items){
 	$variables = '&nbsp; Available Variables: ';
 	$accordion = '<div style="margin-bottom: 0px;" class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
 	foreach ($items as $key => $value) {
-		if($value['type'] == 'template'){
+		if($value['type'] == 'template' || $value['type'] == 'templateCustom'){
 			foreach ($value['variables'] as $variable) {
 				$variables .= '<mark>'.$variable.'</mark>';
 			}
+			$templateCustom = '
+			<div class="form-content col-sm-12 col-md-12 col-lg-12">
+				<input id="'.$value['template'].'Name_id" name="'.$value['template'].'Name" type="text" class="form-control material input-sm" autocorrect="off" autocapitalize="off" value="'.$value['title'].'">
+				<p class="help-text">Custom Template Name</p>
+			</div>
+			';
 			$accordion .= '
 			<div class="panel panel-default">
 				<div class="panel-heading" role="tab" id="heading-'.$i.'">
@@ -5721,6 +5727,7 @@ function buildAccordion($items){
 				</div>
 				<div id="collapse-'.$i.'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-'.$i.'" aria-expanded="true">
 					<br/>'.$variables.'<br/></br/>
+					'.$templateCustom.'
 					<div class="form-content col-sm-12 col-md-12 col-lg-12">
 						<input id="'.$value['template'].'Subject_id" name="'.$value['template'].'Subject" type="text" class="form-control material input-sm" autocorrect="off" autocapitalize="off" value="'.$value['subject'].'">
 						<p class="help-text">Email Subject</p>

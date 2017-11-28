@@ -1769,32 +1769,32 @@ $emailTemplates = array(
         'template' => 'emailTemplateInviteUser',
 	),
 	array(
-		'type' => 'template',
-		'title' => 'Custom Email Template #1',
+		'type' => 'templateCustom',
+		'title' => emailTemplateCustomOneName,
         'variables' => array('{domain}','{fullDomain}'),
         'subject' => emailTemplateCustomOneSubject,
 		'body' => emailTemplateCustomOne,
         'template' => 'emailTemplateCustomOne',
 	),
 	array(
-		'type' => 'template',
-		'title' => 'Custom Email Template #2',
+		'type' => 'templateCustom',
+		'title' => emailTemplateCustomTwoName,
         'variables' => array('{domain}','{fullDomain}'),
         'subject' => emailTemplateCustomTwoSubject,
 		'body' => emailTemplateCustomTwo,
         'template' => 'emailTemplateCustomTwo',
 	),
 	array(
-		'type' => 'template',
-		'title' => 'Custom Email Template #3',
+		'type' => 'templateCustom',
+		'title' => emailTemplateCustomThreeName,
         'variables' => array('{domain}','{fullDomain}'),
         'subject' => emailTemplateCustomThreeSubject,
 		'body' => emailTemplateCustomThree,
         'template' => 'emailTemplateCustomThree',
 	),
 	array(
-		'type' => 'template',
-		'title' => 'Custom Email Template #4',
+		'type' => 'templateCustom',
+		'title' => emailTemplateCustomFourName,
         'variables' => array('{domain}','{fullDomain}'),
         'subject' => emailTemplateCustomFourSubject,
 		'body' => emailTemplateCustomFour,
@@ -2407,10 +2407,10 @@ echo buildSettings(
 												<button id="emailCustom" type="button" class="btn waves btn-labeled btn-dark btn-sm text-uppercase waves-effect waves-float dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="btn-label"><i class="fa fa-envelope"></i></span><span class="btn-text">Custom Email Templates</span></button>
 												<ul class="dropdown-menu">
 													<li class="dropdown-header">Choose a Template Below</li>
-													<li><a onclick="customEmail('one');" href="#">Template #1</a></li>
-													<li><a onclick="customEmail('two');" href="#">Template #2</a></li>
-													<li><a onclick="customEmail('three');" href="#">Template #3</a></li>
-													<li><a onclick="customEmail('four');" href="#">Template #4</a></li>
+													<li><a onclick="customEmail('one');" href="#"><?php echo emailTemplateCustomOneName; ?></a></li>
+													<li><a onclick="customEmail('two');" href="#"><?php echo emailTemplateCustomTwoName; ?></a></li>
+													<li><a onclick="customEmail('three');" href="#"><?php echo emailTemplateCustomThreeName; ?></a></li>
+													<li><a onclick="customEmail('four');" href="#"><?php echo emailTemplateCustomFourName; ?></a></li>
 												</ul>
 											</div>
                                         </div>
