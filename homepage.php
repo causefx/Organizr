@@ -197,7 +197,7 @@ foreach(loadAppearance() as $key => $value) {
                 width: 100%;
                 height: 100%;
                 display: none;
-                z-index: 0;
+                z-index: 1;
                 opacity: .98;
             }
             sort {
