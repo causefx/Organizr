@@ -2362,7 +2362,7 @@ echo buildSettings(
                                     <div class="row">
                                         <div class="col-lg-2">
                                             <div class="content-box profile-sidebar box-shadow">
-                                                <img src="images/organizr-logo-h-d.png" width="100%" style="margin-top: -10px;">
+                                                <img src="images/layercake.png" width="50%" style="margin-top: -10px; margin-bottom: 10px;">
                                                 <div class="profile-usermenu">
                                                     <ul class="nav" id="theme-list"></ul>
                                                 </div>
