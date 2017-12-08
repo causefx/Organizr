@@ -3484,11 +3484,9 @@ function getServer(){
     return $server;
 }
 
-function prettyPrint($array) {
-    echo "<pre>";
-    print_r($array);
-    echo "</pre>";
-    echo "<br/>";
+function prettyPrint($v) {
+	$trace = debug_backtrace()[0];
+	echo '<pre style="white-space: pre; text-overflow: ellipsis; overflow: hidden; background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line'].' '.gettype($v)."\n\n".print_r($v, 1).'</pre><br/>';
 }
 
 function checkFrame($array, $url){
