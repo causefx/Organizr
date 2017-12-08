@@ -1214,14 +1214,6 @@ $group = (isset($group) ? $group : "guest");
 												<span style="display: block" class="current-time gray text-center"></span>
 											</div>
 											<div class="content-box">
-											<!--
-											<div class="member-info zero-m">
-												<img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=50&d=mm" alt="user" class="img-circle pull-left">
-												<p><i class="fa fa-user green zero-m"></i><span class="member-name gray"><strong><?php echo strtoupper($USER->username); ?></strong></span></p>
-												<p><i class="fa fa-group green zero-m"></i><span class="member-name gray"><strong> <?php echo strtoupper($USER->role); ?></strong></span></p>
-
-											</div>
-											-->
 												<div class="profile-usertitle">
 													<?php if(GRAVATAR == "true") : ?>
 													<img src="https://www.gravatar.com/avatar/<?=$userpic;?>?s=100&d=mm" class="img-responsive img-circle center-block" alt="user">
