@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.61');
+ define('INSTALLEDVERSION', '1.7');
 // ===================================
 $debugOrganizr = true;
 if($debugOrganizr == true && file_exists('debug.php')){ require_once('debug.php'); }
@@ -25,6 +25,7 @@ function homepageOrder(){
 		"homepageOrderombi" => homepageOrderombi,
 		"homepageOrdercalendar" => homepageOrdercalendar,
 		"homepageOrdernoticeguest" => homepageOrdernoticeguest,
+		"homepageOrdertransmisson" => homepageOrdertransmisson,
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -268,8 +269,7 @@ if (function_exists('curl_version')) :
 		// Quick out
 		$isAdmin = false;
 		if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
-   			writeLog("success", "Admin: ".$username." authenticated by plex");
-			//return true;
+   			writeLog("success", "Admin: ".$username." authenticated as plex Admin");
 			$isAdmin = true;
 		}
 
@@ -285,7 +285,7 @@ if (function_exists('curl_version')) :
 			$isUser = false;
 			$usernameLower = strtolower($username);
 			foreach($userXML AS $child) {
-				if(isset($child['username']) && strtolower($child['username']) == $usernameLower) {
+				if(isset($child['username']) && strtolower($child['username']) == $usernameLower || isset($child['email']) && strtolower($child['email']) == $usernameLower) {
 					$isUser = true;
      				writeLog("success", $usernameLower." was found in plex friends list");
 					break;
@@ -309,14 +309,17 @@ if (function_exists('curl_version')) :
 				$result = curl_post($connectURL, $body, $headers);
 				if (isset($result['content'])) {
 					$json = json_decode($result['content'], true);
-					if (is_array($json) && isset($json['user']) && isset($json['user']['username']) && strtolower($json['user']['username']) == $usernameLower) {
+					if ((is_array($json) && isset($json['user']) && isset($json['user']['username'])) && strtolower($json['user']['username']) == $usernameLower || strtolower($json['user']['email']) == $usernameLower) {
 						writeLog("success", $json['user']['username']." was logged into organizr using plex credentials");
                         return array(
 							'email' => $json['user']['email'],
 							'image' => $json['user']['thumb'],
-							'token' => $json['user']['authToken']
+							'token' => $json['user']['authToken'],
+							'type' => $isAdmin ? 'admin' : 'user',
 						);
 					}
+				}else{
+					writeLog("error", "error occured while trying to sign $username into plex");
 				}
 			}else{
 				writeLog("error", "$username is not an authorized PLEX user or entered invalid password");
@@ -939,8 +942,8 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
             }else {
                 $height = 281;
                 $width = 500;
-				$thumb = ($item['art']) ? $item['art'] :  $item['parentThumb'];
-				$widthOverride = ($item['art']) ? 100 :  56;
+				$thumb = ($item['parentThumb']) ? $item['parentThumb'] :  $item['art'];
+				$widthOverride = ($item['parentThumb']) ? 56 :  100;
                 $key = $item['ratingKey'] . "-np";
                 $elapsed = $item['viewOffset'];
                 $duration = ($item['duration']) ? $item['duration'] : $item->Media['duration'];
@@ -1018,7 +1021,9 @@ function resolvePlexItem($server, $token, $item, $nowPlaying = false, $showNames
 	$openTab = (PLEXTABNAME) ? "true" : "false";
     // Assemble Item And Cache Into Array
     if($nowPlaying){
-        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="refreshNP w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><div class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img class="refreshImageSource" style="width: '.$widthOverride.'%; display:block;" src="'.$image_url.'" original-image="'.$original_image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
+		$musicOverlay = ($widthOverride == 56) ? '<img class="" style="width: 55%;display:block;position: absolute;top: 4px;left:5px;overflow: hidden;filter: blur(0px) grayscale(1);" src="'.$image_url.'">
+		<img class="" style="width: 55%;display:block;position: absolute;top: 4px;right:5px;overflow: hidden;filter: blur(0px) grayscale(1);" src="'.$image_url.'">' : '';
+        return '<div class="col-sm-6 col-md-3"><div class="thumbnail ultra-widget"><div style="display: none;" np="'.$id.'" class="overlay content-box small-box gray-bg">'.$streamInfo.'</div><span class="refreshNP w-refresh w-p-icon gray" link="'.$id.'"><span class="fa-stack fa-lg" style="font-size: .5em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-info-circle fa-stack-1x fa-inverse"></i></span></span><div class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank">'.$musicOverlay.'<img class="refreshImageSource" style="width: '.$widthOverride.'%; display:block; position: relative" src="'.$image_url.'" original-image="'.$original_image_url.'" alt="'.$item['Name'].'"></a><div class="progress progress-bar-sm zero-m"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'.$watched.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$watched.'%"></div><div class="progress-bar palette-Grey-500 bg" style="width: '.$transcoded.'%"></div></div><div class="caption"><i style="float:left" class="fa fa-'.$state.'"></i>'.$topTitle.''.$bottomTitle.'</div></div></div>';
     }else{
         return '<div class="item-'.$item['type'].$playlist.'"><div style="" class="ultra-widget refreshImage"><span class="w-refresh w-p-icon gray"><span class="fa-stack fa-lg" style="font-size: .4em"><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-refresh fa-stack-1x fa-inverse"></i></span></span></div><a class="openTab" extraTitle="'.$title.'" extraType="'.$item['type'].'" openTab="'.$openTab.'" href="'.$address.'" target="_blank"><img alt="'.$item['Name'].'" class="'.$image.' refreshImageSource" data-lazy="'.$image_url.'" original-image="'.$original_image_url.'"></a><small class="elip slick-bottom-title">'.$title.'</small></div>';
     }
@@ -1043,7 +1048,7 @@ function outputRecentAdded($header, $items, $script = false, $array, $type) {
         return '<div id="recentMedia'.$type.'" class="content-box box-shadow big-box"><h5 class="text-center">'.$header.'</h5><p class="text-center">No Media Found</p></div>';
     }else{
 		$className = str_replace(' ', '', $header.' on '.$type);
-        return '<div id="recentMedia'.$type.'" class="content-box box-shadow big-box"><h5 id="recentContent-title-'.$type.'" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-recent-'.$type.'" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+        return '<div id="recentMedia'.$type.'" class="content-box box-shadow big-box"><h5 id="recentContent-title-'.$type.'" style="margin-bottom: -20px" class="text-center"><span>'.$header.'</span></h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-recent-'.$type.'" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
 
 }
@@ -1974,7 +1979,7 @@ function buildField($params, $sizeSm = 12, $sizeMd = 12, $sizeLg = 12) {
 
 	// Tags
 	$tags = array();
-	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href','onclick') as $value) {
+	foreach(array('placeholder','style','disabled','readonly','pattern','min','max','required','onkeypress','onchange','onfocus','onleave','href','onclick','autocomplete') as $value) {
 		if (isset($params[$value])) {
 			if (is_string($params[$value])) { $tags[] = $value.'="'.$params[$value].'"';
 			} else if ($params[$value] === true) { $tags[] = $value; }
@@ -2624,6 +2629,92 @@ function upgradeInstall($branch = 'master') {
     writeLog("success", "organizr upgrade folder removed");
 	writeLog("success", "organizr has been updated");
 	return true;
+}
+// Transmission Items
+function transmissionConnect($list = 'listgroups') {
+    $url = qualifyURL(TRANSMISSIONURL);
+	$digest = parse_url($url);
+	$scheme = (isset($digest['scheme'])) ? $digest['scheme'].'://' : 'http://';
+	$host = (isset($digest['host'])) ? $digest['host'] : '';
+	$port = (isset($digest['port'])) ? ':'.$digest['port'] : '';
+	$path = (isset($digest['path'])) ? $digest['path'] : '';
+	$passwordInclude = (TRANSMISSIONUSERNAME != '' && TRANSMISSIONPASSWORD != '') ? TRANSMISSIONUSERNAME.':'.TRANSMISSIONPASSWORD."@" : '';
+	$url = $scheme.$passwordInclude.$host.$port.$path.'/rpc';
+	$contextopts = array(
+		'http' => array(
+			'user_agent'  => 'HTTP_UA',
+			'ignore_errors' => true,
+		)
+	);
+	$context  = stream_context_create( $contextopts );
+	$fp = @fopen( $url, 'r', false, $context );
+	$stream_meta = stream_get_meta_data( $fp );
+    fclose( $fp );
+	foreach( $stream_meta['wrapper_data'] as $header ){
+		if( strpos( $header, 'X-Transmission-Session-Id: ' ) === 0 ){
+			$session_id = trim( substr( $header, 27 ) );
+			break;
+		}
+	}
+
+	$headers = array(
+		'X-Transmission-Session-Id' => $session_id,
+		'Content-Type' => 'application/json'
+	);
+	$data = array(
+		'method' => 'torrent-get',
+		'arguments' => array(
+			'fields' => array(
+				"id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir"
+			),
+		),
+		'tags' => ''
+	);
+    $api = curl_post($url, $data, $headers);
+    $api = json_decode($api['content'], true);
+    $gotTorrent = array();
+    if (is_array($api) || is_object($api)){
+		foreach ($api['arguments']['torrents'] AS $child) {
+			$downloadName = htmlentities($child['name'], ENT_QUOTES);
+			$downloadDirectory = $child['downloadDir'];
+			$downloadPercent = $child['percentDone'] * 100;
+			$progressBar = "progress-bar-striped active";
+			if($child['status'] == "6"){
+				$downloadStatus = "Seeding";
+				$downloadHealth = "success";
+			}elseif($child['status'] == "4"){
+				$downloadStatus = "Downloading";
+				$downloadHealth = "danger";
+			}elseif($child['status'] == "3"){
+				$downloadStatus = "Queued";
+				$downloadHealth = "warning";
+			}elseif($child['status'] == "0"){
+				$downloadStatus = "Complete";
+				$downloadHealth = "success";
+			}
+			$gotTorrent[] = '<tr>
+							<td class="col-xs-6 nzbtable-file-row">'.$downloadName.'</td>
+							<td class="col-xs-2 nzbtable nzbtable-row">'.$downloadStatus.'</td>
+							<td class="col-xs-1 nzbtable nzbtable-row">'.$downloadDirectory.'</td>
+							<td class="col-xs-1 nzbtable nzbtable-row">'.realSize($child['totalSize']).'</td>
+							<td class="col-xs-2 nzbtable nzbtable-row">
+								<div class="progress">
+									<div class="progress-bar progress-bar-'.$downloadHealth.' '.$progressBar.'" role="progressbar" aria-valuenow="'.$downloadPercent.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$downloadPercent.'%">
+										<p class="text-center">'.round($downloadPercent).'%</p>
+										<span class="sr-only">'.$downloadPercent.'% Complete</span>
+									</div>
+								</div>
+							</td>
+						</tr>';
+		}
+		if ($gotTorrent) {
+			return implode('',$gotTorrent);
+		} else {
+			return '<tr><td colspan="5"><p class="text-center">No Results</p></td></tr>';
+		}
+	}else{
+		writeLog("error", "TRANSMISSION ERROR: could not connect - check URL and/or check token and/or Username and Password - if HTTPS, is cert valid");
+	}
 }
 
 // NzbGET Items
@@ -3393,11 +3484,9 @@ function getServer(){
     return $server;
 }
 
-function prettyPrint($array) {
-    echo "<pre>";
-    print_r($array);
-    echo "</pre>";
-    echo "<br/>";
+function prettyPrint($v) {
+	$trace = debug_backtrace()[0];
+	echo '<pre style="white-space: pre; text-overflow: ellipsis; overflow: hidden; background-color: #f2f2f2; border: 2px solid black; border-radius: 5px; padding: 5px; margin: 5px;">'.$trace['file'].':'.$trace['line'].' '.gettype($v)."\n\n".print_r($v, 1).'</pre><br/>';
 }
 
 function checkFrame($array, $url){
@@ -3915,7 +4004,18 @@ function inviteCodes($action, $code = null, $usedBy = null) {
 					require_once("user.php");
 					$GLOBALS['USER'] = new User('registration_callback');
 				}
-				sendEmail($GLOBALS['USER']->adminEmail, "Admin", "Plex Invite Used", orgEmail("PLEX Invite Used", "Look who joined the cool club", "Admin", "Hey, The User: $usedBy has redeemd their invite code: [$code], their IP Address was: $currentIP", null, null, "What Next?", "Well, That is up to you.  You can go check on them if you like."));
+				$emailTemplate = array(
+					'type' => 'mass',
+					'body' => 'The user: {user} has reddemed the code: {inviteCode} his IP Address was '.$currentIP,
+					'subject' => 'Invite Code '.$code.' Has Been Used',
+					'user' => $usedBy,
+					'password' => null,
+					'inviteCode' => $code,
+				);
+				$emailTemplate = emailTemplate($emailTemplate);
+				$subject = $emailTemplate['subject'];
+				$body = buildEmail($emailTemplate);
+				sendEmail($GLOBALS['USER']->adminEmail, "Admin", $subject, $body);
 			}
 			return (!empty($invites) ? true : false );
 			break;
@@ -4742,8 +4842,7 @@ function buildMenu($array){
 }
 
 function requestInvite($email, $username){
-	//sendEmail($email, $username = "Organizr User", $subject, $body, $cc = null){
-	//orgEmail($header = "Message From Admin", $title = "Important Message", $user = "Organizr User", $mainMessage = "", $button = null, $buttonURL = null, $subTitle = "", $subMessage = ""){
+	//sendEmail($email, $username = "Organizr User", $subject, $body, $cc = null, $bcc = null)
 	sendEmail($GLOBALS['USER']->adminEmail, "Admin", "Plex Invite Request", orgEmail("PLEX Invite Request", "Look who wants to join the cool club", "Admin", "Hey, The User: $user has requested access to your Plex Library.", "Generate Invite", null, "What Next?", "Well, That is up to you.  You can go check on them if you like."));
 
 }
@@ -4765,9 +4864,13 @@ function ajaxLoop($ajaxFunction, $refresh, $extraFunction = ''){
 				var getDiv = response;
 				var loadedID = 	$(getDiv).attr('id');
 				if (typeof loadedID !== 'undefined') {
-					$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
-					".$extraFunction."
-					console.log('".$ajaxFunction." has been updated');
+					var oldElement = $('#'+loadedID).prop('outerHTML');
+					var newElement = $(getDiv).prop('outerHTML');
+					if(oldElement !== newElement){
+						$('#'+loadedID).replaceWith($(getDiv).prop('outerHTML'));
+						".$extraFunction."
+						console.log('".$ajaxFunction." has been updated');
+					}
 				}else{
 					console.log('".$ajaxFunction." data was not sufficent or is offline');
 				}
@@ -4818,7 +4921,18 @@ function massEmail($to, $subject, $message){
 		$GLOBALS['file_db'] = new PDO('sqlite:'.DATABASE_LOCATION.'users.db');
 		$GLOBALS['file_db']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
-	sendEmail(null, null, $subject, orgEmail("Message From Admin", "Important Information", "There", $message, null, null, "Thank You!", "Thanks for taking the time to read this message from me."),$GLOBALS['USER']->adminEmail,$to);
+	$emailTemplate = array(
+		'type' => 'mass',
+		'body' => $message,
+		'subject' => $subject,
+		'user' => null,
+		'password' => null,
+		'inviteCode' => null,
+	);
+	$emailTemplate = emailTemplate($emailTemplate);
+	$subject = $emailTemplate['subject'];
+	$body = buildEmail($emailTemplate);
+	sendEmail(null, null, $subject, $body, $GLOBALS['USER']->adminEmail,$to);
 }
 
 function q2a($q){
@@ -5101,7 +5215,7 @@ function buildOmbiList($group, $user){
 	}else{
 		if(is_array($movieList)){
 			$result = $movieList;
-		}elseif(is_array($movieList)){
+		}elseif(is_array($tvList)){
 			$result = $tvList;
 		}else{
 			$result = false;
@@ -5145,7 +5259,7 @@ function outputOmbiRequests($header = "Requested Content", $items, $script = fal
         return '<div id="recentRequests"></div>';
     }else{
 		$className = str_replace(' ', '', $header);
-        return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 id="requestContent-title" style="margin-bottom: -20px" class="text-center">'.$header.'</h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-request" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
+        return '<div id="recentRequests" class="content-box box-shadow big-box"><h5 id="requestContent-title" style="margin-bottom: -20px" class="text-center"><span>'.$header.'</span></h5><div class="recentHeader inbox-pagination '.$className.'">'.$hideMenu.'</div><br/><br/><div class="recentItems-request" data-name="'.$className.'">'.implode('',$items).'</div></div>'.($script?'<script>'.$script.'</script>':'');
     }
 }
 
@@ -5226,6 +5340,13 @@ function buildHomepageSettings(){
 				$class = 'red-bg';
 				$image = 'images/settings/full-color/png/64px/speedometer.png';
 				if(SPEEDTEST !== "true"){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdertransmisson':
+				$class = 'green-bg';
+				$image = 'images/transmission.png';
+				if(empty(TRANSMISSIONURL)){
 					$class .= ' faded';
 				}
 				break;
@@ -5478,6 +5599,11 @@ function buildHomepageItem($homepageItem, $group, $user){
 				';
 			}
 			break;
+		case 'homepageOrdertransmisson':
+			if(TRANSMISSIONURL != "" && qualifyUser(TRANSMISSIONHOMEAUTH)){
+				$homepageItemBuilt .= buildDownloader('transmission', 'no');
+			}
+			break;
 		case 'homepageOrdernzbget':
 			if(NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)){
 				$homepageItemBuilt .= buildDownloader('nzbget');
@@ -5579,7 +5705,124 @@ function buildHomepageItem($homepageItem, $group, $user){
 	return $homepageItemBuilt;
 }
 
-function buildDownloader($name){
+function buildAccordion($items){
+	$i = 1;
+	$variables = '&nbsp; Available Variables: ';
+	$accordion = '<div style="margin-bottom: 0px;" class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
+	foreach ($items as $key => $value) {
+		if($value['type'] == 'template' || $value['type'] == 'templateCustom'){
+			foreach ($value['variables'] as $variable) {
+				$variables .= '<mark>'.$variable.'</mark>';
+			}
+			$templateCustom = '
+			<div class="form-content col-sm-12 col-md-12 col-lg-12">
+				<input id="'.$value['template'].'Name_id" name="'.$value['template'].'Name" type="text" class="form-control material input-sm" autocorrect="off" autocapitalize="off" value="'.$value['title'].'">
+				<p class="help-text">Custom Template Name</p>
+			</div>
+			';
+			$accordion .= '
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="heading-'.$i.'">
+					<h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-'.$i.'" aria-expanded="true" aria-controls="collapse-'.$i.'">'.$value['title'].'</h4>
+				</div>
+				<div id="collapse-'.$i.'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-'.$i.'" aria-expanded="true">
+					<br/>'.$variables.'<br/></br/>
+					'.$templateCustom.'
+					<div class="form-content col-sm-12 col-md-12 col-lg-12">
+						<input id="'.$value['template'].'Subject_id" name="'.$value['template'].'Subject" type="text" class="form-control material input-sm" autocorrect="off" autocapitalize="off" value="'.$value['subject'].'">
+						<p class="help-text">Email Subject</p>
+					</div>
+					<br/></br/>
+					<div class="summernote" name="'.$value['template'].'">'.$value['body'].'</div>
+				</div>
+			</div>
+			';
+			$i++;
+			$variables = '&nbsp; Available Variables: ';
+		}else{
+			$accordion .= '
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="heading-'.$i.'">
+					<h4 class="panel-title" style="text-decoration: none;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-'.$i.'" aria-expanded="true" aria-controls="collapse-'.$i.'">Logo URL For Title</h4>
+				</div>
+				<div id="collapse-'.$i.'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-'.$i.'" aria-expanded="true">
+					<div class="form-content col-sm-12 col-md-12 col-lg-12">
+						<input id="'.$value['name'].'_id" name="'.$value['name'].'" type="text" class="form-control material input-sm" autocorrect="off" autocapitalize="off" value="'.$value['value'].'">
+						<p class="help-text">Logo URL For Title</p>
+					</div>
+					<br/></br/><br/>
+				</div>
+			</div>
+			';
+			$i++;
+		}
+	}
+	$accordion .= '</div>';
+	return $accordion;
+}
+
+function emailTemplate($emailTemplate){
+	$variables = [
+		'{user}' => $emailTemplate['user'],
+		'{domain}' => DOMAIN,
+		'{password}' => $emailTemplate['password'],
+		'{inviteCode}' => $emailTemplate['inviteCode'],
+		'{fullDomain}' => getServerPath(),
+	];
+	$emailTemplate['body'] = strtr($emailTemplate['body'], $variables);
+	$emailTemplate['subject'] = strtr($emailTemplate['subject'], $variables);
+	return $emailTemplate;
+}
+
+function buildEmail($email){
+	$subject = (isset($email['subject'])) ? $email['subject'] : 'Message from Server';
+	$body = (isset($email['body'])) ? $email['body'] : 'Message Error Occured';
+	$type = (isset($email['type'])) ? $email['type'] : 'No Type';
+	switch ($type) {
+		case 'invite':
+			$extra = 'invite';
+			break;
+		case 'reset':
+			$extra = 'reset';
+			break;
+		default:
+			$extra = null;
+			break;
+	}
+	include('email.php');
+	return $email;
+}
+
+function buildDownloader($name, $type = 'both'){
+	if($type == 'both'){
+		$tabs = '
+		<ul class="nav nav-tabs pull-right">
+			<li class="active"><a href="#downloadQueue-'.$name.'" data-toggle="tab" aria-expanded="true">'.translate("QUEUE").'</a></li>
+			<li class=""><a href="#downloadHistory-'.$name.'" data-toggle="tab" aria-expanded="false">'.translate("HISTORY").'</a></li>
+		</ul>
+		';
+		$bodyHistory = '
+		<div class="tab-pane fade" id="downloadHistory-'.$name.'">
+			<div class="table-responsive" style="max-height: 300px">
+				<table class="table table-striped progress-widget zero-m" style="max-height: 300px">
+					<thead>
+						<tr>
+							<th class="col-xs-7 nzbtable-file-row">'.translate("FILE").'</th>
+							<th class="col-xs-2 nzbtable">'.translate("STATUS").'</th>
+							<th class="col-xs-1 nzbtable">'.translate("CATEGORY").'</th>
+							<th class="col-xs-1 nzbtable">'.translate("SIZE").'</th>
+							<th class="col-xs-2 nzbtable">'.translate("PROGRESS").'</th>
+						</tr>
+					</thead>
+					<tbody class="dl-history '.$name.'"></tbody>
+				</table>
+			</div>
+		</div>
+		';
+	}else{
+		$tabs = '';
+		$bodyHistory = '';
+	}
 	return '
 <div id="downloadClientRow" class="row">
 	<div class="col-xs-12 col-md-12">
@@ -5591,11 +5834,8 @@ function buildDownloader($name){
 							<i class="fa fa-repeat"></i>
 						</a>
 					</div>
-					<h3 class="pull-left">'.strtoupper($name).'</h3>
-					<ul class="nav nav-tabs pull-right">
-						<li class="active"><a href="#downloadQueue-'.$name.'" data-toggle="tab" aria-expanded="true">'.translate("QUEUE").'</a></li>
-						<li class=""><a href="#downloadHistory-'.$name.'" data-toggle="tab" aria-expanded="false">'.translate("HISTORY").'</a></li>
-					</ul>
+					<h3 class="pull-left"><span>'.strtoupper($name).'</span></h3>
+					'.$tabs.'
 					<div class="clearfix"></div>
 				</div>
 				<div class="panel-body">
@@ -5616,22 +5856,7 @@ function buildDownloader($name){
 								</table>
 							</div>
 						</div>
-						<div class="tab-pane fade" id="downloadHistory-'.$name.'">
-							<div class="table-responsive" style="max-height: 300px">
-								<table class="table table-striped progress-widget zero-m" style="max-height: 300px">
-									<thead>
-										<tr>
-											<th class="col-xs-7 nzbtable-file-row">'.translate("FILE").'</th>
-											<th class="col-xs-2 nzbtable">'.translate("STATUS").'</th>
-											<th class="col-xs-1 nzbtable">'.translate("CATEGORY").'</th>
-											<th class="col-xs-1 nzbtable">'.translate("SIZE").'</th>
-											<th class="col-xs-2 nzbtable">'.translate("PROGRESS").'</th>
-										</tr>
-									</thead>
-									<tbody class="dl-history '.$name.'"></tbody>
-								</table>
-							</div>
-						</div>
+						'.$bodyHistory.'
 					</div>
 				</div>
 			</div>
