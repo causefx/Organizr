@@ -10,7 +10,7 @@ require_once("user.php");
 $USER = new User("registration_callback");
 if(isset($_GET['error']) && $_GET['error'] !== '404'){
     $status = (isset($_GET['error'])?$_GET['error']:404);
-    setcookie('lec', $status, time() + (5), "/", DOMAIN);
+	coookie('set','lec',$status,0.00006);
     http_response_code($status);
     //get file name
     if(!empty($_SERVER['PHP_SELF'])){
