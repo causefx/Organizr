@@ -4062,17 +4062,17 @@ echo buildSettings(
 
 			function customEmail(id){
 				if(id == 'one'){
-					var Body = '<?php echo emailTemplateCustomOne; ?>';
-					var Subject = '<?php echo emailTemplateCustomOneSubject; ?>';
+					var Body = <?php echo json_encode(emailTemplateCustomOne); ?>;
+					var Subject = <?php echo json_encode(emailTemplateCustomOneSubject); ?>;
 				}else if(id == 'two'){
-					var Body = '<?php echo emailTemplateCustomTwo; ?>';
-					var Subject = '<?php echo emailTemplateCustomTwoSubject; ?>';
+					var Body = <?php echo json_encode(emailTemplateCustomTwo); ?>;
+					var Subject = <?php echo json_encode(emailTemplateCustomTwoSubject); ?>;
 				}else if(id == 'three'){
-					var Body = '<?php echo emailTemplateCustomThree; ?>';
-					var Subject = '<?php echo emailTemplateCustomThreeSubject; ?>';
+					var Body = <?php echo json_encode(emailTemplateCustomThree); ?>;
+					var Subject = <?php echo json_encode(emailTemplateCustomThreeSubject); ?>;
 				}else if(id == 'four'){
-					var Body = '<?php echo emailTemplateCustomFour; ?>';
-					var Subject = '<?php echo emailTemplateCustomFourSubject; ?>';
+					var Body = <?php echo json_encode(emailTemplateCustomFour); ?>;
+					var Subject = <?php echo json_encode(emailTemplateCustomFourSubject); ?>;
 				}
 				console.log(Body);
 				console.log(Subject);
