@@ -701,7 +701,7 @@
 
 			if ($authSuccess) {
 				// Make sure user exists in database
-				$query = "SELECT username FROM users WHERE username = '".$username."' OR email = '".$username."' COLLATE NOCASE";
+				$query = "SELECT username FROM users WHERE username = '".$username."' COLLATE NOCASE OR email = '".$username."' COLLATE NOCASE";
 				$userExists = false;
 				foreach($this->database->query($query) as $data) {
 					$userExists = true;
