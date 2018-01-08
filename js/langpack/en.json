@@ -134,6 +134,14 @@
 		"Deleted Category":"Deleted Category",
 		"Add New User":"Add New User",
 		"EMAIL":"EMAIL",
-		"Deleted User":"Deleted User"
+		"Deleted User":"Deleted User",
+		"Category Order Saved":"Category Order Saved",
+		"Group Image":"Group Image",
+		"Group Name":"Group Name",
+		"Add Group":"Add Group",
+		"Add New Group":"Add New Group",
+		"USERS":"USERS",
+		"GROUP NAME":"GROUP NAME",
+		"MANAGE GROUPS":"MANAGE GROUPS"
 	}
 }

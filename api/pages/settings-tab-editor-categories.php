@@ -69,7 +69,7 @@ $( \'#categoryEditorTable\' ).sortable({
                 </div>
                 <div class="panel-wrapper collapse" aria-expanded="false">
                     <div class="panel-body">
-                        <p lang="en">You may use an image or icon in thie field</p>
+                        <p lang="en">You may use an image or icon in this field</p>
                         <p lang="en">For images, use the following format:</p><code>url::path/to/image</code>
                         <p lang="en">For icons, use the following format:</p><code>icon-type::icon-name</code> i.e. <code>fontawesome::home</code>
                     </div>
