@@ -1,8 +1,0 @@
-/vendor/
-.project
-.settings
-.buildpath
-test/output/
-.idea
-/composer.phar
-test.php

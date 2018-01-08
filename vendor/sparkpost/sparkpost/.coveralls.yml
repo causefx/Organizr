@@ -1,3 +1,0 @@
-# single file
-coverage_clover: test/output/clover.xml
-json_path: test/output/coveralls-upload.json
