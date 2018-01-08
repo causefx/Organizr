@@ -67,7 +67,7 @@
 		"Hash Key:":"Hash Key:",
 		"Hash Key":"Hash Key",
 		"Password:":"Password:",
-		"Attenetion":"Attenetion",
+		"Attention":"Attention",
 		"The Hash Key will be used to decrypt all passwords etc... on the server.":"The Hash Key will be used to decrypt all passwords etc... on the server.",
 		"The API Key will be used for all calls to organizr for the UI. [Auto-Generated]":"The API Key will be used for all calls to organizr for the UI. [Auto-Generated]",
 		"Notice":"Notice",
