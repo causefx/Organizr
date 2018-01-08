@@ -406,6 +406,7 @@ switch ($function) {
                 $status['categories'] = loadTabs()['categories'];
                 $status['tabs'] = loadTabs()['tabs'];
                 $result['data'] = $status;
+				$result['branch'] = $GLOBALS['branch'];
                 break;
             default:
                 $result['status'] = 'error';

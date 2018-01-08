@@ -1050,8 +1050,9 @@ function loadCategoryEditor(){
 	});
 }
 function updateCheck(){
-	organizrAPI('get','js/version.json').success(function(data) {
-		for (var a in reverseObject(data)){
+	githubVersions().success(function(data) {
+		var json = JSON.parse(data);
+		for (var a in reverseObject(json)){
 			var latest = a;
 			break;
 		}
@@ -1061,7 +1062,7 @@ function updateCheck(){
 		}else{
 			console.log('Update Function: '+latest+' is the newest version');
 		}
-		$('#githubVersions').html(buildVersion(reverseObject(data)));
+		$('#githubVersions').html(buildVersion(reverseObject(json)));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Github Connection Failed");
 	});
@@ -1102,7 +1103,7 @@ function organizrAPI(type,path,data=null){
 }
 function githubVersions() {
 	return $.ajax({
-		url: "js/version.json",
+		url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/version.json",
 	});
 }
 function organizrConnect(path){
@@ -1308,7 +1309,8 @@ function launch(){
 			osVersion:bowser.osversion,
 			serverOS:json.data.status.os,
 			phpVersion:json.data.status.php,
-			token:json.data.user.token
+			token:json.data.user.token,
+			branch:json.branch
 		};
 		console.log("%cOrganizr","background: #000; color: #66D9EF; font-size: 24px; font-family: Monospace; padding : 5px 234px 5px 10px; border-radius: 5px 5px 0 0;");
 		console.log("%cVersion: "+currentVersion,"background: #AD80FD; color: #333333; font-size: 12px; font-family: Monospace; padding : 2px 207.5px 5px 10px;");

@@ -1,7 +1,7 @@
 <?php
 // ===================================
 // Organizr Version
-$GLOBALS['installedVersion'] = '2.0.0-alpha';
+$GLOBALS['installedVersion'] = '2.0.0-alpha-100';
 // ===================================
 //Set GLOBALS from config file
 $GLOBALS['userConfigPath'] = __DIR__.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'config.php';
@@ -1207,7 +1207,7 @@ function validateToken($token,$global=false){
                 "groupID"=>$userInfo['groupID'],
                 "email"=>$userInfo['email'],
                 "image"=>$userInfo['image'],
-                "loggedin"=>true
+                "loggedin"=>true,
             );
         }
     }else{
