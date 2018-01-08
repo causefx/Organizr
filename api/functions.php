@@ -3,29 +3,29 @@
 // Organizr Version
 $GLOBALS['installedVersion'] = '2.0.0-alpha.100';
 // ===================================
-//Set GLOBALS from config file
+// Set GLOBALS from config file
 $GLOBALS['userConfigPath'] = __DIR__.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'config.php';
 $GLOBALS['defaultConfigPath'] = __DIR__.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'default.php';
 $GLOBALS['currentTime'] = gmdate("Y-m-d\TH:i:s\Z");
-//Add in default and custom settings
+// Add in default and custom settings
 configLazy();
-//Define Logs and files after db location is set
+// Define Logs and files after db location is set
 if(isset($GLOBALS['dbLocation'])){
     $GLOBALS['organizrLog'] = $GLOBALS['dbLocation'].'organizrLog.json';
     $GLOBALS['organizrLoginLog'] = $GLOBALS['dbLocation'].'organizrLoginLog.json';
 }
-//Set UTC timeZone
+// Set UTC timeone
 date_default_timezone_set("UTC");
 // Autoload frameworks
 require_once(__DIR__ . '/vendor/autoload.php');
-//framework uses
+// Framework uses
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\ValidationData;
 use Lcobucci\JWT\Parser;
-//Validate Token if set and set guest if not - sets GLOBALS
+// Validate Token if set and set guest if not - sets GLOBALS
 getOrganizrUserToken();
-//include all pages files
+// Include all pages files
 foreach (glob(__DIR__.DIRECTORY_SEPARATOR.'pages' . DIRECTORY_SEPARATOR . "*.php") as $filename){
     require_once $filename;
 }
@@ -33,18 +33,18 @@ function jwtParse($token){
     try {
         $result = array();
         $result['valid'] = false;
-        //Check Token with JWT
-        //Set key
+        // Check Token with JWT
+        // Set key
         if(!isset($GLOBALS['organizrHash'])){
             return null;
         }
         $key = $GLOBALS['organizrHash'];
-        //HSA256 Encyption
+        // SHA256 Encryption
         $signer = new Sha256();
         $jwttoken = (new Parser())->parse((string) $token); // Parses from a string
         $jwttoken->getHeaders(); // Retrieves the token header
         $jwttoken->getClaims(); // Retrieves the token claims
-        //Start Validation
+        // Start Validation
         if($jwttoken->verify($signer, $key)){
             $data = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
             $data->setIssuer('Organizr');
@@ -73,11 +73,11 @@ function jwtParse($token){
     }
 }
 function createToken($username,$email,$image,$group,$groupID,$key,$days = 1){
-    //Create JWT
-    //Set key
-    //HSA256 Encyption
+    // Create JWT
+    // Set key
+    // SHA256 Encryption
     $signer = new Sha256();
-    //Start Builder
+    // Start Builder
     $jwttoken = (new Builder())->setIssuer('Organizr') // Configures the issuer (iss claim)
                                 ->setAudience('Organizr') // Configures the audience (aud claim)
                                 ->setId('4f1g23a12aa', true) // Configures the id (jti claim), replicating as a header item
@@ -163,10 +163,10 @@ function createConfig($array, $path = null, $nest = 0) {
 		if (file_exists($path)) {
 			return true;
 		}
-		//writeLog("error", "config was unable to write");
+		// writeLog("error", "config was unable to write");
 		return false;
 	} else {
-  		//writeLog("success", "config was updated with new values");
+  		// writeLog("success", "config was updated with new values");
 		return $output;
 	}
 }
@@ -283,11 +283,11 @@ return array(
     \"registrationPassword\" => \"$registrationPassword\"
 );");
 */
-    //Create Config
+    // Create Config
     if(createConfig($configArray)){
-        //Call DB Create
+        // Call DB Create
         if(createDB($location,$dbName)){
-            //Add in first user
+            // Add in first user
             if(createFirstAdmin($location,$dbName,$username,$password,$email)){
                 if(createToken($username,$email,gravatar($email),'Admin',0,$hashKey,1)){
                     return true;
@@ -303,7 +303,7 @@ function gravatar($email = '') {
     return $gravurl;
 }
 function login($array){
-    //Grab username and Password from login form
+    // Grab username and Password from login form
     foreach ($array['data'] as $items) {
         foreach ($items as $key => $value) {
             if($key == 'name'){
@@ -581,7 +581,7 @@ function createFirstAdmin($path,$filename,$username,$password,$email) {
     }
 }
 function register($array){
-    //Grab username and Password from login form
+    // Grab username and password from login form
     foreach ($array['data'] as $items) {
         foreach ($items as $key => $value) {
             if($key == 'name'){
@@ -1093,7 +1093,7 @@ function allUsers(){
         $users = $connect->fetchAll('SELECT * FROM users');
         $groups = $connect->fetchAll('SELECT * FROM groups ORDER BY group_id ASC');
         foreach ($users as $k => $v) {
-            //clear password from array
+            // clear password from array
             unset($users[$k]['password']);
         }
         $all['users'] = $users;
@@ -1142,7 +1142,7 @@ function createUser($username,$password,$defaults,$email=null) {
         return false;
     }
 }
-//Cookie Function
+// Cookie Function
 function coookie($type, $name, $value = '', $days = -1, $http = true){
 	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https"){
 		$Secure = true;
@@ -1193,7 +1193,7 @@ function coookie($type, $name, $value = '', $days = -1, $http = true){
 	}
 }
 function validateToken($token,$global=false){
-    //validate script
+    // Validate script
     $userInfo = jwtParse($token);
     $validated = $userInfo ? true : false;
     if($validated == true){
@@ -1211,7 +1211,7 @@ function validateToken($token,$global=false){
             );
         }
     }else{
-        //delete cookie & reload page
+        // Delete cookie & reload page
         coookie('delete','organizrToken');
         $GLOBALS['organizrUser'] = false;
     }
@@ -1223,7 +1223,7 @@ function logout(){
 }
 function getOrganizrUserToken(){
     if(isset($_COOKIE['organizrToken'])){
-        //get token form cookie and validate
+        // Get token form cookie and validate
         validateToken($_COOKIE['organizrToken'],true);
     }else{
         $GLOBALS['organizrUser'] = array(
@@ -1248,15 +1248,15 @@ function qualifyRequest($accessLevelNeeded){
 }
 function getUserLevel(){
     $requesterToken = isset(getallheaders()['Token']) ? getallheaders()['Token'] : false;
-    //check token or API key
-    //If API key, return 0 for admin
+    // Check token or API key
+    // If API key, return 0 for admin
     if(strlen($requesterToken) == 20 && $requesterToken == $GLOBALS['organizrAPI']){
         //DO API CHECK
         return 0;
     }elseif(isset($GLOBALS['organizrUser'])){
         return $GLOBALS['organizrUser']['groupID'];
     }
-    //all else fails?  return guest id
+    // All else fails?  return guest id
     return 999;
 }
 function getOS(){
@@ -1469,7 +1469,7 @@ function arrayIP($string){
     return $result;
 }
 function auth(){
-    $debug = false; //CAREFUL WHEN SETTING TO TRUE AS THIS OPENS AUTH UP
+    $debug = false; // CAREFUL WHEN SETTING TO TRUE AS THIS OPENS AUTH UP
     $ban = isset($_GET['ban']) ? strtoupper($_GET['ban']) : "";
     $whitelist = isset($_GET['whitelist']) ? $_GET['whitelist'] : false;
     $blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
