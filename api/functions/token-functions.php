@@ -1,0 +1,110 @@
+<?php
+
+function jwtParse($token){
+    try {
+        $result = array();
+        $result['valid'] = false;
+        // Check Token with JWT
+        // Set key
+        if(!isset($GLOBALS['organizrHash'])){
+            return null;
+        }
+        $key = $GLOBALS['organizrHash'];
+        // SHA256 Encryption
+        $signer = new Lcobucci\JWT\Signer\Hmac\Sha256();
+        $jwttoken = (new Lcobucci\JWT\Parser())->parse((string) $token); // Parses from a string
+        $jwttoken->getHeaders(); // Retrieves the token header
+        $jwttoken->getClaims(); // Retrieves the token claims
+        // Start Validation
+        if($jwttoken->verify($signer, $key)){
+            $data = new Lcobucci\JWT\ValidationData(); // It will use the current time to validate (iat, nbf and exp)
+            $data->setIssuer('Organizr');
+            $data->setAudience('Organizr');
+            if($jwttoken->validate($data)){
+                $result['valid'] = true;
+                $result['username'] = $jwttoken->getClaim('username');
+                $result['group'] = $jwttoken->getClaim('group');
+                $result['groupID'] = $jwttoken->getClaim('groupID');
+                $result['email'] = $jwttoken->getClaim('email');
+                $result['image'] = $jwttoken->getClaim('image');
+                $result['tokenExpire'] = $jwttoken->getClaim('exp');
+                $result['tokenDate'] = $jwttoken->getClaim('iat');
+                $result['token'] = $jwttoken->getClaim('exp');
+            }
+        }
+        if($result['valid'] == true){ return $result; }else{ return false; }
+    } catch(\RunException $e) {
+        return false;
+    } catch(\OutOfBoundsException $e) {
+        return false;
+    } catch(\RunTimeException $e) {
+        return false;
+    } catch(\InvalidArgumentException $e) {
+        return false;
+    }
+}
+function createToken($username,$email,$image,$group,$groupID,$key,$days = 1){
+    // Create JWT
+    // Set key
+    // SHA256 Encryption
+    $signer = new Lcobucci\JWT\Signer\Hmac\Sha256();
+    // Start Builder
+    $jwttoken = (new Lcobucci\JWT\Builder())->setIssuer('Organizr') // Configures the issuer (iss claim)
+                                ->setAudience('Organizr') // Configures the audience (aud claim)
+                                ->setId('4f1g23a12aa', true) // Configures the id (jti claim), replicating as a header item
+                                ->setIssuedAt(time()) // Configures the time that the token was issue (iat claim)
+                                ->setExpiration(time() + (86400 * $days)) // Configures the expiration time of the token (exp claim)
+                                ->set('username', $username) // Configures a new claim, called "username"
+                                ->set('group', $group) // Configures a new claim, called "group"
+                                ->set('groupID', $groupID) // Configures a new claim, called "groupID"
+                                ->set('email', $email) // Configures a new claim, called "email"
+                                ->set('image', $image) // Configures a new claim, called "image"
+                                ->sign($signer, $key) // creates a signature using "testing" as key
+                                ->getToken(); // Retrieves the generated token
+    $jwttoken->getHeaders(); // Retrieves the token headers
+    $jwttoken->getClaims(); // Retrieves the token claims
+    coookie('set','organizrToken',$jwttoken,$days);
+    return $jwttoken;
+}
+function validateToken($token,$global=false){
+    // Validate script
+    $userInfo = jwtParse($token);
+    $validated = $userInfo ? true : false;
+    if($validated == true){
+        if($global == true){
+            $GLOBALS['organizrUser'] = array(
+                "token"=>$token,
+                "tokenDate"=>$userInfo['tokenDate'],
+                "tokenExpire"=>$userInfo['tokenExpire'],
+                "username"=>$userInfo['username'],
+                "group"=>$userInfo['group'],
+                "groupID"=>$userInfo['groupID'],
+                "email"=>$userInfo['email'],
+                "image"=>$userInfo['image'],
+                "loggedin"=>true,
+            );
+        }
+    }else{
+        // Delete cookie & reload page
+        coookie('delete','organizrToken');
+        $GLOBALS['organizrUser'] = false;
+    }
+}
+function getOrganizrUserToken(){
+    if(isset($_COOKIE['organizrToken'])){
+        // Get token form cookie and validate
+        validateToken($_COOKIE['organizrToken'],true);
+    }else{
+        $GLOBALS['organizrUser'] = array(
+            "token"=>null,
+            "tokenDate"=>null,
+            "tokenExpire"=>null,
+            "username"=>"Guest",
+            "group"=>getGuest()['group'],
+            "groupID"=>getGuest()['group_id'],
+            "email"=>null,
+            "image"=>getGuest()['image'],
+            "loggedin"=>false
+        );
+    }
+}

@@ -1,3 +1,4 @@
+<?php include 'api/functions/static-globals.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,8 +19,8 @@
 	<link href="plugins/bower_components/Magnific-Popup-master/dist/magnific-popup.css" rel="stylesheet">
 	<link href="plugins/bower_components/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
 	<link href="plugins/bower_components/switchery/dist/switchery.min.css" rel="stylesheet" />
-	<link href="css/style.css" rel="stylesheet">
-	<link href="css/colors/blue-dark.css" id="theme" rel="stylesheet">
+	<link href="css/style.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
+	<link href="css/colors/blue-dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" id="theme" rel="stylesheet">
 	<!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
@@ -120,7 +121,7 @@
 	<script src="plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min.js"></script>
 	<script src="plugins/bower_components/sweetalert/sweetalert.min.js"></script>
 	<script src="plugins/bower_components/switchery/dist/switchery.min.js"></script>
-	<script src="js/functions.js"></script>
-	<script src="js/custom.js"></script>
+	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
+	<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 </body>
 </html>

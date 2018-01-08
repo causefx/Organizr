@@ -89,6 +89,16 @@
 		"MANAGE USERS":"MANAGE USERS",
 		"Add User":"Add User",
 		"Manage Groups":"Manage Groups",
-		"about":""
+		"Choose Language":"Choose Language",
+		"Welcome":"Welcome",
+		"License":"License",
+		"Webserver Version":"Webserver Version",
+		"PHP Version":"PHP Version",
+		"Organizr Branch":"Organizr Branch",
+		"Organizr Version":"Organizr Version",
+		"Information":"Information",
+		"Below you will find all the links for everything that has to do with Organizr":"Below you will find all the links for everything that has to do with Organizr",
+		"Loading...":"Loading...",
+		"Donate":"Donate"
 	}
 }
