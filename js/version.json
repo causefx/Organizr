@@ -1,9 +1,9 @@
 {
     "2.0.0-alpha.100": {
-        "date":"20171201",
-        "title": "Relase Title1",
-        "new": "awesome things|that thing",
-        "fixed": "this|that",
-        "notes": ""
+        "date":"20170108",
+        "title": "First Public Alpha",
+        "new": "Everything is new",
+        "fixed": "API Calls in settings page being to fast for refresh|Signup form submit issue in Wizard",
+        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
     }
 }
