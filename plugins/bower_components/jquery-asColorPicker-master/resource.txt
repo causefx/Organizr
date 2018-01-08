@@ -1,0 +1,8 @@
+
+https://github.com/websanova/wColorPicker#wcolorpickerjs
+http://labs.abeautifulsite.net/jquery-miniColors/
+http://acko.net/blog/farbtastic-jquery-color-picker-plug-in/
+http://belelros.github.io/jQuery-ColorPicker/
+
+http://automattic.github.io/Iris/
+http://bgrins.github.io/spectrum/

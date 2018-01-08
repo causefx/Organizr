@@ -1,0 +1,38 @@
+{
+  "name": "jquery-wizard",
+  "title": "jQuery wizard",
+  "description": "jquery wizard is a lightweight jquery plugin for creating step-by-step wizards.",
+  "version": "0.3.1",
+  "homepage": "https://github.com/amazingSurge/jquery-wizard",
+  "author": {
+    "name": "amazingSurge",
+    "email": "amazingSurge@yahoo.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:amazingSurge/jquery-wizard.git"
+  },
+  "bugs": "https://github.com/amazingSurge/jquery-wizard/issues",
+  "licenses": [
+    {
+      "type": "GPL",
+      "url": "https://github.com/amazingSurge/jquery-wizard/blob/master/LICENSE-GPL"
+    }
+  ],
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-jsbeautifier": "*",
+    "grunt-text-replace": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-less": "*",
+    "grunt-csscomb": "*",
+    "grunt-autoprefixer": "*",
+    "load-grunt-tasks": "*",
+    "grunt-contrib-less": "*"
+  }
+}

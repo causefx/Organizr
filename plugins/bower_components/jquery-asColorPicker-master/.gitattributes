@@ -1,0 +1,24 @@
+# Automatically normalize line endings for all text-based files
+# http://git-scm.com/docs/gitattributes#_end_of_line_conversion
+* text=auto
+
+# Enforce Unix newlines
+*.css   text eol=lf
+*.html  text eol=lf
+*.js    text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.sh    text eol=lf
+*.txt   text eol=lf
+*.xml   text eol=lf
+
+*.map binary
+*.jpg binary
+*.gif binary
+*.png binary
+*.jpeg binary
+*.ttf binary
+
+# https://github.com/github/linguist#using-gitattributes
+libs/* linguist-vendored
+demo/* linguist-documentation

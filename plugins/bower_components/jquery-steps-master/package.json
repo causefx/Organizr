@@ -1,0 +1,54 @@
+{
+  "name": "jquery-steps",
+  "title": "jQuery Steps",
+  "version": "1.1.0",
+  "description": "A powerful jQuery wizard plugin that supports accessibility and HTML5",
+  "homepage": "http://www.jquery-steps.com",
+  "author": {
+    "name": "Rafael Staib",
+    "email": "me@rafaelstaib.com",
+    "url": "http://www.rafaelstaib.com"
+  },
+  "bugs": "https://github.com/rstaib/jquery-steps/issues",
+  "scripts": {
+    "test": "grunt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rstaib/jquery-steps.git"
+  },
+  "keywords": [
+    "jQuery",
+    "Wizard",
+    "Tabs",
+    "Steps",
+    "Plugin"
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/MIT"
+    }
+  ],
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.9",
+    "grunt-contrib-qunit": "~0.2.1",
+    "grunt-contrib-jshint": "~0.4.3",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-yuidoc": "~0.4.0",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-compress": "~0.5.2",
+    "grunt-regex-replace": "~0.2.5",
+    "grunt-exec": "~0.4.2"
+  },
+  "readmeFilename": "README.md",
+  "gitHead": "0d9f4f8b6a0c3d3b8a73eabf6a4b8cececd52f7a",
+  "folders": {
+    "dist": "build",
+    "src": "src",
+    "docs": "docs",
+    "nuget": "nuget"
+  }
+}

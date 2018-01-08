@@ -1,0 +1,625 @@
+<!DOCTYPE html>  
+<!--[if lt IE 7]>            <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>                 <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>                 <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>jQuery Wizard</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width">
+
+<link rel="stylesheet" href="../libs/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="../css/wizard.css">
+
+<!-- jQuery v1.9.1 or higher -->
+<script src="../libs/jquery/jquery.js"></script>
+
+<!-- jQuery Wizard JS -->
+<script src="../dist/jquery-wizard.js"></script>
+
+<!-- FormValidation -->
+<link rel="stylesheet" href="../libs/formvalidation/formValidation.min.css">
+
+<!-- Bootstrap JS -->
+<script src="../libs/bootstrap/bootstrap.min.js"></script>
+
+<!-- FormValidation plugin and the class supports validating Bootstrap form -->
+<script src="../libs/formvalidation/formValidation.min.js"></script>
+<script src="../libs/formvalidation/bootstrap.min.js"></script>
+
+<style>
+section {
+    margin: 60px;
+}
+</style>
+</head>
+<body>
+<!--[if lt IE 7]>
+    <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+<![endif]-->
+<div class="container">
+    <section>
+        <h3>Basic</h3>
+        <div id="exampleBasic" class="wizard">
+            <ul class="wizard-steps" role="tablist">
+                <li class="active" role="tab">
+                    Step 1
+                </li>
+                <li role="tab">
+                    Step 2
+                </li>
+                <li role="tab">
+                    Step 3
+                </li>
+            </ul>
+            <div class="wizard-content">
+                <div class="wizard-pane active" role="tabpanel">Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</div>
+                <div class="wizard-pane" role="tabpanel">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</div>
+                <div class="wizard-pane" role="tabpanel">Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth chambray yr.</div>
+            </div>
+        </div>
+<script type="text/javascript">
+(function(){
+    $('#exampleBasic').wizard({
+        onFinish: function(){
+            alert('finish');
+        }
+    });
+})();
+</script>
+    </section>
+
+    <section>
+        <h3>Step target</h3>
+        <div id="exampleTarget" class="wizard">
+            <ul class="wizard-steps" role="tablist">
+                <li data-target="#step1" class="active" role="tab">
+                    Step 1
+                </li>
+                <li data-target="#step2" role="tab">
+                    Step 2
+                </li>
+                <li data-target="#step3" role="tab">
+                    Step 3
+                </li>
+            </ul>
+            <div class="wizard-content">
+                <div class="wizard-pane active" id="step1" role="tabpanel">Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</div>
+                <div class="wizard-pane" id="step2" role="tabpanel">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</div>
+                <div class="wizard-pane" id="step3" role="tabpanel">Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth chambray yr.</div>
+            </div>
+        </div>
+<script type="text/javascript">
+(function(){
+    $('#exampleTarget').wizard({
+        onFinish: function(){
+            alert('finish');
+        }
+    });
+
+    var i = 1;
+
+    $('#exampleTarget').wizard('get', '#step2').setValidator(function(){
+        i ++;
+        if(i % 2 == 1){
+            return true;
+        } else {
+            return false;
+        }
+    });
+})();
+</script>
+    </section>
+
+    <section>
+        <h3>Enable When Visited</h3>
+        <div id="exampleEnableWhenVisited" class="wizard">
+            <ul class="wizard-steps" role="tablist">
+                <li class="active" role="tab">
+                    Step 1
+                </li>
+                <li role="tab">
+                    Step 2
+                </li>
+                <li role="tab">
+                    Step 3
+                </li>
+            </ul>
+            <div class="wizard-content">
+                <div class="wizard-pane active" role="tabpanel">Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</div>
+                <div class="wizard-pane" role="tabpanel">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</div>
+                <div class="wizard-pane" role="tabpanel">Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth chambray yr.</div>
+            </div>
+        </div>
+<script type="text/javascript">
+(function(){
+    $('#exampleEnableWhenVisited').wizard({
+        enableWhenVisited: true,
+
+        onFinish: function(){
+            alert('finish');
+        }
+    });
+})();
+</script>
+    </section>
+
+    <section>
+        <h3>Validator</h3>
+        <p>This example using <a href="http://formvalidation.io/api/#validate-container">FormValidation</a> Plugin. You can also code your own validate function or using another form validation plugin.</p>
+
+        <div id="exampleValidator" class="wizard">
+            <ul class="wizard-steps" role="tablist">
+                <li class="active" role="tab">
+                    Step 1
+                </li>
+                <li role="tab">
+                    Step 2
+                </li>
+                <li role="tab">
+                    Step 3
+                </li>
+            </ul>
+            <form id="validation" class="form-horizontal">
+                <div class="wizard-content">
+                    <div class="wizard-pane active" role="tabpanel">
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label">Username</label>
+                            <div class="col-xs-5">
+                                <input type="text" class="form-control" name="username" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wizard-pane" role="tabpanel">
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label">Email address</label>
+                            <div class="col-xs-5">
+                                <input type="text" class="form-control" name="email" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wizard-pane" role="tabpanel">
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label">Password</label>
+                            <div class="col-xs-5">
+                                <input type="password" class="form-control" name="password" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+<script type="text/javascript">
+(function(){
+    $('#exampleValidator').wizard({
+        onInit: function(){
+            $('#validation').formValidation({
+                framework: 'bootstrap',
+                fields: {
+                    username: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The username is required'
+                            },
+                            stringLength: {
+                                min: 6,
+                                max: 30,
+                                message: 'The username must be more than 6 and less than 30 characters long'
+                            },
+                            regexp: {
+                                regexp: /^[a-zA-Z0-9_\.]+$/,
+                                message: 'The username can only consist of alphabetical, number, dot and underscore'
+                            }
+                        }
+                    },
+                    email: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The email address is required'
+                            },
+                            emailAddress: {
+                                message: 'The input is not a valid email address'
+                            }
+                        }
+                    },
+                    password: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The password is required'
+                            },
+                            different: {
+                                field: 'username',
+                                message: 'The password cannot be the same as username'
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        validator: function(){
+            var fv = $('#validation').data('formValidation');
+
+            var $this = $(this);
+
+            // Validate the container
+            fv.validateContainer($this);
+
+            var isValidStep = fv.isValidContainer($this);
+            if (isValidStep === false || isValidStep === null) {
+                return false;
+            }
+
+            return true;
+        },
+        onFinish: function(){
+            $('#validation').submit();
+            alert('finish');
+        }
+    });
+})();
+</script>
+    </section>
+
+    <section>
+        <h3>SetValidator</h3>
+        <p>You can set validator for step respectively.</p>
+
+        <div id="exampleSetValidator" class="wizard">
+            <ul class="wizard-steps" role="tablist">
+                <li data-target="#form1" class="active" role="tab">
+                    Form 1
+                </li>
+                <li data-target="#form2" role="tab">
+                    Form 2
+                </li>
+                <li data-target="#form3" role="tab">
+                    Form 3
+                </li>
+            </ul>
+            <div class="wizard-content">
+                <div class="wizard-pane active" id="form1" role="tabpanel">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Please input 'a'" name="a" />
+                    </div>
+                </div>
+                <div class="wizard-pane" id="form2" role="tabpanel">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Please input 'b'" name="b" />
+                    </div>
+                </div>
+                <div class="wizard-pane" id="form3" role="tabpanel">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Please input 'c'" name="c" />
+                    </div>
+                </div>
+            </div>
+        </div>
+<script type="text/javascript">
+(function(){
+    var wizard = $('#exampleSetValidator').wizard({
+        onFinish: function(){
+            alert('finish');
+        }
+    }).data('wizard');
+
+    wizard.get('#form1').setValidator(function(){
+        if($(this).find('[name="a"]').val() === 'a'){
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    wizard.get('#form2').setValidator(function(){
+        if($(this).find('[name="b"]').val() === 'b'){
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    wizard.get('#form3').setValidator(function(){
+        if($(this).find('[name="c"]').val() === 'c'){
+            return true;
+        } else {
+            return false;
+        }
+    });
+})();
+</script>
+    </section>
+
+    <section>
+        <h3>SetValidator using Data Attr</h3>
+
+        <div id="exampleSetValidatorAttr" class="wizard">
+            <ul class="wizard-steps" role="tablist">
+                <li class="active" role="tab">
+                    Form 1
+                </li>
+                <li role="tab">
+                    Form 2
+                </li>
+                <li role="tab">
+                    Form 3
+                </li>
+            </ul>
+            <div class="wizard-content">
+                <div class="wizard-pane active" data-validator="validateCallbackA" role="tabpanel">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Please input 'a'" name="a" />
+                    </div>
+                </div>
+                <div class="wizard-pane" data-validator="validateCallbackB" role="tabpanel">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Please input 'b'" name="b" />
+                    </div>
+                </div>
+                <div class="wizard-pane" data-validator="validateCallbackC" role="tabpanel">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Please input 'c'" name="c" />
+                    </div>
+                </div>
+            </div>
+        </div>
+<script type="text/javascript">
+
+    function validateCallbackA(){
+        if($(this).find('[name="a"]').val() === 'a'){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function validateCallbackB(){
+        if($(this).find('[name="b"]').val() === 'b'){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function validateCallbackC(){
+        if($(this).find('[name="c"]').val() === 'c'){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $('#exampleSetValidatorAttr').wizard({
+        onFinish: function(){
+            alert('finish');
+        }
+    });
+
+</script>
+    </section>
+
+    <section>
+        <h3>Loader</h3>
+        <div id="exampleLoader" class="wizard">
+            <ul class="wizard-steps" role="tablist">
+                <li data-target="#loader1" class="active" role="tab">
+                    Loader 1
+                </li>
+                <li data-target="#loader2" role="tab">
+                    Loader 2
+                </li>
+                <li data-target="#loader3" role="tab">
+                    Loader 3
+                </li>
+            </ul>
+            <div class="wizard-content">
+                <div class="wizard-pane active" id="loader1" role="tabpanel"></div>
+                <div class="wizard-pane" id="loader2" role="tabpanel"></div>
+                <div class="wizard-pane" id="loader3" role="tabpanel"></div>
+            </div>
+        </div>
+<script type="text/javascript">
+(function(){
+    var wizard = $('#exampleLoader').wizard({
+        onFinish: function(){
+            alert('finish');
+        }
+    }).data('wizard');
+
+
+    wizard.get('#loader1').setLoader(function(){
+        return '<h4>Hello World</h4>'+
+        '<p>some content</p>';
+    });
+
+    // use jquery ajax object
+    // http://api.jquery.com/jQuery.ajax/
+    wizard.get('#loader2').setLoader({
+        url: 'ajax/1.html',
+        settings: {
+            type: 'GET',
+            dataType: 'html'
+        }
+    });
+
+    // We can using callback process the ajax object. It will be called when we load the content.
+    wizard.get('#loader3').setLoader(function(){
+        return {
+            url: 'ajax/2.html',
+            settings: {
+                type: 'POST',
+                data: {
+                    email: $("#inputEmail").val(),
+                    password: $('#inputPassword').val()
+                }
+            }
+        };
+    });
+})();
+</script>
+    </section>
+
+    <section>
+        <h3>Set Loader Using Pane Data Attr</h3>
+        <div id="exampleLoaderAttr" class="wizard">
+            <ul class="wizard-steps" role="tablist">
+                <li class="active" role="tab">
+                    Loader 1
+                </li>
+                <li role="tab">
+                    Loader 2
+                </li>
+                <li role="tab">
+                    Loader 3
+                </li>
+            </ul>
+            <div class="wizard-content">
+                <div class="wizard-pane active" data-loader="loaderCallback" role="tabpanel"></div>
+                <div class="wizard-pane" data-loader-url="ajax/1.html" data-loader-setting='{"type": "GET","dataType": "html"}' role="tabpanel"></div>
+                <div class="wizard-pane" data-loader="loaderAjaxCallback" role="tabpanel"></div>
+            </div>
+        </div>
+<script type="text/javascript">
+    function loaderCallback(){
+        return '<h4>Hello World</h4>'+
+        '<p>some content</p>';
+    }
+
+    function loaderAjaxCallback(){
+        return {
+            url: 'ajax/2.html',
+            settings: {
+                type: 'POST',
+                data: {
+                    email: $("#inputEmail").val(),
+                    password: $('#inputPassword').val()
+                }
+            }
+        };
+    }
+
+    $('#exampleLoaderAttr').wizard({
+        cacheContent: true, // loader will only excute once
+        onFinish: function(){
+            alert('finish');
+        }
+    });
+</script>
+    </section>
+
+    <section>
+        <h3>Events</h3>
+        <div id="exampleEvents" class="wizard">
+            <ul class="wizard-steps" role="tablist">
+                <li class="active" role="tab">
+                    Step 1
+                </li>
+                <li role="tab">
+                    Step 2
+                </li>
+                <li role="tab">
+                    Step 3
+                </li>
+            </ul>
+            <div class="wizard-content">
+                <div class="wizard-pane active" role="tabpanel">Step 1 Content</div>
+                <div class="wizard-pane" role="tabpanel">Step 2 Content</div>
+                <div class="wizard-pane" data-loader-url="ajax/3.html" role="tabpanel"></div>
+            </div>
+        </div>
+<script type="text/javascript">
+(function(){
+    $('#exampleEvents').wizard({
+        onInit: function(){
+            console.info('init');
+        },
+        onNext: function(from, to){
+            console.info('next:'+from.index+' to '+to.index);
+        },
+        onBack: function(from, to){
+            console.info('back:'+from.index+' to '+to.index);
+        },
+        onReset: function(){
+            console.info('reset');
+        },
+        onBeforeShow: function(step){
+            console.info('beforeShow:'+step.index);
+        },
+        onAfterShow: function(step){
+            console.info('afterShow:'+step.index);
+        },
+        onBeforeHide: function(step){
+            console.info('beforeHide:'+step.index);
+        },
+        onAfterHide: function(step){
+            console.info('afterHide:'+step.index);
+        },
+        onBeforeLoad: function(step){
+            console.info('beforeLoad:'+step.index);
+        },
+        onAfterLoad: function(step){
+            console.info('afterLoad:'+step.index);
+        },
+        onBeforeChange: function(from, to){
+            console.info('BeforeChange:'+from.index+' to '+to.index);
+        },
+        onAfterChange: function(from, to){
+            console.info('AfterChange:'+from.index+' to '+to.index);
+        },
+        onFinish: function(){
+            console.info('finish');
+            alert('finish');
+        }
+    });
+})();
+</script>
+    </section>
+
+    <section>
+        <h3>StateChange Event</h3>
+        <div id="exampleStateChange" class="wizard">
+            <ul class="wizard-steps" role="tablist">
+                <li class="active" role="tab">
+                    Step 1
+                </li>
+                <li role="tab">
+                    Step 2
+                </li>
+                <li role="tab">
+                    Step 3
+                </li>
+            </ul>
+            <div class="wizard-content">
+                <div class="wizard-pane active" data-validator="validateCallbackA" role="tabpanel">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Please input 'a'" name="a" />
+                    </div>
+                </div>
+                <div class="wizard-pane" role="tabpanel">Step 2 Content</div>
+                <div class="wizard-pane" role="tabpanel">Step 3 Content</div>
+            </div>
+        </div>
+<script type="text/javascript">
+(function(){
+    $('#exampleStateChange').wizard({
+        onStateChange: function(step, enter, state){
+            switch(state){
+                case 'error':
+                    if(enter){
+                        alert('Get a error on step ' + step.index);
+                    } else {
+                        alert('Resolved the error');
+                    }
+                break;
+            }
+        },
+
+        onFinish: function(){
+            alert('finish');
+        }
+    });
+})();
+</script>
+    </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>  
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TableSaw Sortable Table</title>
+    <link rel="stylesheet" href="/tablesaw/dist/tablesaw.css">
+    <script src="http://code.jquery.com/jquery-1.10.1.js"></script>
+    <script src="/tablesaw/dist/tablesaw.js"></script>
+    <script src="/tablesaw/dist/tablesaw-init.js"></script>
+	<script>
+	  $( document ).ready(function() {
+		var mydata = [
+			{"Name":"A", "P1":"1", "P2":"2", "P3":"3", "P4":"1", "P5":"2", "P6":"3"},
+			{"Name":"B", "P1":"4", "P2":"5", "P3":"6", "P4":"1", "P5":"2", "P6":"3"},
+			{"Name":"C", "P1":"7", "P2":"8", "P3":"9", "P4":"1", "P5":"2", "P6":"3"}
+		];
+
+		$( '#ajaxed' ).html( "<table class='tablesaw' data-tablesaw-mode='columntoggle' id='mytable'><thead><tr><th scope='col' data-tablesaw-priority='persist'>Name</th><th scope='col' data-tablesaw-priority='1'>P1</th><th scope='col' data-tablesaw-priority='1'>P2</th><th scope='col' data-tablesaw-priority='2'>P3</th><th scope='col' data-tablesaw-priority='3'>P4</th><th scope='col' data-tablesaw-priority='4'>P5</th><th scope='col' data-tablesaw-priority='5'>P6</th></tr></thead><tbody id='place1'></tbody></table>" );
+
+		var tbody = $( '#mytable tbody' ), props = ["Name","P1","P2","P3","P4","P5","P6"];
+
+		$.each( mydata, function(i, value){
+			var tr = $('<tr>');
+
+			$.each(props, function(i, prop){
+				$('<td>').html(value[prop]).appendTo(tr);
+			});
+
+			tbody.append(tr);
+		});
+		$(document).trigger( "enhance.tablesaw" );
+
+		window.setTimeout(function() {
+			var mydata = [
+				{"Name":"D", "P1":"1", "P2":"2", "P3":"3", "P4":"1", "P5":"2", "P6":"3"},
+				{"Name":"E", "P1":"4", "P2":"5", "P3":"6", "P4":"1", "P5":"2", "P6":"3"},
+				{"Name":"F", "P1":"7", "P2":"8", "P3":"9", "P4":"1", "P5":"2", "P6":"3"}
+			];
+			var tbody = $( '#mytable tbody' ), props = ["Name","P1","P2","P3","P4","P5","P6"];
+
+			$.each( mydata, function(i, value){
+				var tr = $('<tr>');
+
+				$.each(props, function(i, prop){
+					$('<td>').html(value[prop]).appendTo(tr);
+				});
+
+				tbody.append(tr);
+				$('#mytable').table().data( "table" ).refresh();
+			});
+		}, 5000);
+	});
+	</script>
+  </head>
+  <body cz-shortcut-listen="true">
+	<div class="docs-main">
+		<h2>Swipe Table</h2>
+		<div id="ajaxed"></div>
+	</div>
+  </body>
+</html>

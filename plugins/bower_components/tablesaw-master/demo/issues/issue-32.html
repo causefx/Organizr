@@ -1,0 +1,526 @@
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TableSaw Sortable Table</title>
+
+	<link rel="stylesheet" href="../../dist/tablesaw.css">
+
+	<style>
+/*		.spec-detail-table {
+			width: 100%;
+			border-collapse: collapse;
+			border: solid 1px #c9c9c9;
+			text-align: left;
+		}
+		.spec-detail-table  td, .spec-detail-table  th {
+			border-right: solid 1px #c9c9c9;
+			border-bottom: solid 1px #c9c9c9;
+			border-top: solid 1px #ffffff;
+			vertical-align: top;
+			background-color: #ffffff;
+			font-size: 16px;
+			color: #000000;
+			line-height: 22px;
+			padding: 15px;
+			text-align: inherit;
+			white-space: inherit;
+			font-family: 'Roboto Condensed', sans-serif;
+			font-weight: 400;
+		}
+		.spec-detail-table  td.column-1, .spec-detail-table  th.column-1 {
+			background-color: #e2e2e2;
+			font-family: 'Roboto Condensed', sans-serif;
+			font-weight: 700;
+		}
+		.spec-detail-table  td:nth-child(last), .spec-detail-table  th:nth-child(last) {
+			border-right: none;
+			width: 150px;
+		}*/
+	</style>
+
+	<!--[if lt IE 9]><script src="../../dist/dependencies/respond.js"></script><![endif]-->
+	<script src="../../dist/dependencies/jquery.js"></script>
+	<script src="../../dist/tablesaw.js"></script>
+	<script src="../../dist/tablesaw-init.js"></script>
+
+</head>
+<body>
+	<h1>Issue 32</h1>
+<table class="tablesaw" data-tablesaw-mode="swipe">
+	<tbody>
+		<tr>
+			<th class="column-1" data-tablesaw-priority="persist">
+				Ad Type
+			</th>
+			<th class="column-2">
+				Desktop Billboard
+			</th>
+			<th class="column-3">
+				Desktop Tablet / Rectangle
+			</th>
+			<th class="column-4">
+				Tablet Leaderboard
+			</th>
+			<th class="column-5">
+				
+					Smart Phone<br />
+					Standart Wide<br/>
+					Banner
+				
+			</th>
+			<th class="column-6">
+				
+					Smarth Phone<br />
+					Rectangle
+				
+			</th>
+			<th class="column-7">
+				Data point
+			</th>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Ad Size
+			</td>
+			<td class="column-2">
+				970x250
+			</td>
+			<td class="column-3">
+				300x250
+			</td>
+			<td class="column-4">
+				728x90
+			</td>
+			<td class="column-5">
+				320x50
+			</td>
+			<td class="column-6">
+				300x250
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Retina Ad Size
+			</td>
+			<td class="column-2">
+				970x250
+			</td>
+			<td class="column-3">
+				300x250
+			</td>
+			<td class="column-4">
+				728x90
+			</td>
+			<td class="column-5">
+				320x50
+			</td>
+			<td class="column-6">
+				300x250
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Expanded Size
+			</td>
+			<td class="column-2">
+				N/A
+			</td>
+			<td class="column-3">
+				N/A
+			</td>
+			<td class="column-4">
+				N/A
+			</td>
+			<td class="column-5">
+				N/A
+			</td>
+			<td class="column-6">
+				640x960
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Expanded Direction
+			</td>
+			<td class="column-2">
+				None(Leave behind 970x90)
+			</td>
+			<td class="column-3">
+				N/A
+			</td>
+			<td class="column-4">
+				N/A
+			</td>
+			<td class="column-5">
+				Up
+			</td>
+			<td class="column-6">
+				N/A
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Looping & Max. Length of Anim.
+			</td>
+			<td class="column-2">
+				:15max
+			</td>
+			<td class="column-3">
+				3 loop limit, 15 sec max
+			</td>
+			<td class="column-4">
+				3 loop limit, 15 sec max
+			</td>
+			<td class="column-5">
+				3 loop limit, 15 sec max
+			</td>
+			<td class="column-6">
+				3 loop limit, 15 sec max
+			</td>
+			<td class="column-7">
+				Datapoint
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Frames per Second
+			</td>
+			<td class="column-2">
+				18fps
+			</td>
+			<td class="column-3">
+				24fps
+			</td>
+			<td class="column-4">
+				24fps
+			</td>
+			<td class="column-5">
+				24fps
+			</td>
+			<td class="column-6">
+				24fps
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Max Initial Load File Size(k)
+			</td>
+			<td class="column-2">
+				60k
+			</td>
+			<td class="column-3">
+				50k
+			</td>
+			<td class="column-4">
+				50k
+			</td>
+			<td class="column-5">
+				100k
+			</td>
+			<td class="column-6">
+				200k
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Max Full Load File Size Flash/Rich Media (k)
+			</td>
+			<td class="column-2">
+				100k (1.2MB for video)
+			</td>
+			<td class="column-3">
+				100k (2.2MB for video)
+			</td>
+			<td class="column-4">
+				100k (2.2MB for video)
+			</td>
+			<td class="column-5">
+				60k
+			</td>
+			<td class="column-6">
+				60k
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Max Expanded File Size
+			</td>
+			<td class="column-2">
+				60k
+			</td>
+			<td class="column-3">
+				60k
+			</td>
+			<td class="column-4">
+				60k
+			</td>
+			<td class="column-5">
+				60k
+			</td>
+			<td class="column-6">
+				60k
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Max Expanded File Size: HQ, Double Density/Retina
+			</td>
+			<td class="column-2">
+				N/A
+			</td>
+			<td class="column-3">
+				N/A
+			</td>
+			<td class="column-4">
+				N/A
+			</td>
+			<td class="column-5">
+				60k
+			</td>
+			<td class="column-6">
+				60k
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Accepted formats
+			</td>
+			<td class="column-2">
+				
+					Panel: Layered PSDs built to size
+					or fla's & swf's (both fla & swf
+					needed together)
+				
+				
+					Video: .mov or .avi
+					(.mov preferred)
+				
+			</td>
+			<td class="column-3">
+				gif/.jpeg, .swf, rich media, html
+			</td>
+			<td class="column-4">
+				.gif/.jpeg, .
+					swf, rich
+					media, html
+			</td>
+			<td class="column-5">
+				GIF, JPG,
+					Animating
+					GIF, PNG
+			</td>
+			<td class="column-6">
+				GIF, JPG,
+					Animating
+					GIF, PNG
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				3rd Party Tracking
+					Accepted
+			</td>
+			<td class="column-2">
+				yes
+			</td>
+			<td class="column-3">
+				yes
+			</td>
+			<td class="column-4">
+				yes
+			</td>
+			<td class="column-5">
+				
+					Y (1 click & 1
+					impression
+					tracker per
+					each ad size,
+					both standard
+					& expanded
+					states)
+				
+			</td>
+			<td class="column-6">
+				
+					Y (1 click & 1
+					impression
+					tracker per
+					each ad size,
+					both standard
+					& expanded
+					states)
+				
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Sound Allowed
+			</td>
+			<td class="column-2">
+				Yes, on click
+			</td>
+			<td class="column-3">
+				Yes, on click
+			</td>
+			<td class="column-4">
+				Yes, on click
+			</td>
+			<td class="column-5">
+				N/A
+			</td>
+			<td class="column-6">
+				N/A
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Video Allowed
+			</td>
+			<td class="column-2">
+				See Notes
+			</td>
+			<td class="column-3">
+				Yes, on click
+			</td>
+			<td class="column-4">
+				Yes, on click
+			</td>
+			<td class="column-5">
+				N/A
+			</td>
+			<td class="column-6">
+				N/A
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+		<tr>
+			<td class="column-1" data-tablesaw-priority="persist">
+				Notes
+			</td>
+			<td class="column-2">
+				
+					CTA: Include a "(X) close"
+					button at the top right of the
+					panel
+					<br />
+					970x90 leave-behind: include
+					applicable branding. Format:
+					.gif or .jpg.
+					<br />
+					Video: Panel should be
+					designed with an area reserved
+					for video. Must have coding for
+					player controls (minimum of
+					stop/play, mute/unmute).
+					Video files cannot be third-party
+					served.
+					<br />
+					For more information, including
+					style guides please visit :
+					<a href="www.iab.net/risingstars">www.iab.net/risingstars</a>
+				
+			</td>
+			<td class="column-3">
+				
+					Cannot expand on Homepage or
+					Leaderboard. (For Video Enabled
+					300x250s: Minimum required
+					controls = Play, Pause, Mute
+					(volume control to zero (0)
+					output may be included instead
+					of or in addition to Mute control).
+					<br />
+					Audio must be user initiated
+					(on click: mute/ un-mute);
+					default state is muted.)
+				
+			</td>
+			<td class="column-4">
+				
+					Cannot
+					expand on
+					Leaderboard.
+					<br />
+					Must provide
+					backup .gif/
+					.jpg along
+					with any
+					swf/html
+					5 creative
+				
+			</td>
+			<td class="column-5">
+				
+					Expandable
+					Ads Should
+					be HTML5.
+					<br />
+					Please see
+					list of certified
+					vendors for
+					Mobile Rich
+					Media.
+				
+			</td>
+			<td class="column-6">
+				
+					Expandable
+					Ads Should
+					be HTML5.
+					<br />
+					Please see
+					list of certified
+					vendors for
+					Mobile Rich
+					Media.
+				
+			</td>
+			<td class="column-7">
+				Data point
+			</td>
+		</tr>
+	</tbody>
+</table>
+</body>
+</html>

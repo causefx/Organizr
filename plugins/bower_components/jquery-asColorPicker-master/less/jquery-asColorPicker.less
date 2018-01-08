@@ -1,0 +1,437 @@
+
+
+@trigger-width: 18px;
+@trigger-height: 20px;
+@saturation-size: 175px;
+@hue-alpha-width: 20px;
+@hue-alpha-height: 175px;
+@line-color: #bbb;
+
+@active-color: #41a9e5;
+
+@wheel-size : 20px;
+@wheel-pointer-size: 3px;
+@inner-border-color: rgba(0, 0, 0, 0.05);
+
+
+// core
+.asColorPicker {
+	&-wrap {
+		position: relative;
+		display: inline-block;
+	}
+
+	&_hideInput {
+		display: none;
+	}
+
+	&_hideInput &-clear {
+		display: none;
+	}
+	
+	&-dropdown {
+		user-select: none;
+		display: none;
+		position: absolute;
+		z-index: 9999;
+		* {
+			margin: 0;
+			padding: 0;
+		}
+	}
+
+	&_open {
+		display: block;
+	}
+
+	&-mask {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 9998;
+	}
+
+	&-trigger {
+		display: inline-block;
+		position: relative;
+	}
+
+	&-trigger {
+		cursor: pointer;
+		width: @trigger-width;
+		height: @trigger-height;
+		background-image: url('../images/transparent.png');
+
+		span {
+			width: 100%;
+			height: 100%;
+			display: inline-block;
+		}
+	}
+
+	&-input, &-trigger {
+		vertical-align: middle;
+	}
+
+	&-clear {
+		display: none;
+		position: absolute;
+		top: 0;
+		right: 26px;
+		color: #777;
+		text-decoration: none;
+
+		&:after{
+			content: 'x';
+		}
+	}
+
+	&-wrap:hover &-clear {
+		display: inline-block;
+	}
+
+	&-preview {
+		float: left;
+		list-style: none;
+
+		li {
+			span {
+				height: 100%;
+				display: block;
+			}
+			background-image: url('../images/transparent.png');
+			vertical-align: top;
+			display: inline-block;
+			*display: inline;
+			*zoom: 1;
+		}
+
+		&-previous {
+			cursor: pointer;
+		}
+
+	}
+
+	&-palettes {
+		ul {
+			display: block;
+
+			&:before, &:after {
+				content: "";
+				display: table;
+			}
+			&:after {
+				clear: both;
+			}
+		}
+
+		li {
+			span {
+				height: 100%;
+				display: block;
+			}
+
+			background-image: url('../images/transparent.png');
+			display: block;
+			float: left;
+
+			text-indent: 100%;
+			white-space: nowrap;
+			overflow: hidden;
+			cursor: pointer;
+
+		}
+	}
+
+	&-saturation {
+		clear: both;
+		//cursor: crosshair;
+		position: relative;
+		display: inline-block;
+		*display: inline;
+		*zoom: 1;
+
+		width: @saturation-size;
+		height: @saturation-size;
+
+		background-image: url("../images/saturation.png");
+
+		i {
+			position: absolute;
+		}
+	}
+
+	&-hue, &-alpha {
+		cursor: pointer;
+		position: relative;
+		display: inline-block;
+
+		*display: inline;
+		*zoom: 1;
+		width: @hue-alpha-width;
+		height: @hue-alpha-height;
+
+		i {
+			position: absolute;
+			cursor: row-resize;
+		}
+	}
+
+	&-hue {
+		background-image: url('../images/hue.png');
+	}
+
+	&-alpha {
+		background-image: url('../images/alpha.png');
+	}
+
+	&-buttons, &-gradient-control {
+		a {
+			text-decoration: none;
+			cursor: pointer;
+		}
+	}
+
+	&-gradient {
+		display: none;
+
+		&_enable {
+			display: block;
+		}
+		&-preview {
+			float: left;
+			height: 20px;
+		}
+
+		&-markers {
+			position: relative;
+			width: 100%;
+		}
+
+		&-marker {
+			position: absolute;
+			outline: none;
+		}
+
+		&-wheel {
+			float: left;
+
+			position: relative;
+			border: 1px solid @line-color;
+			border-radius: 100%;
+			width: @wheel-size;
+			height: @wheel-size;
+
+			i {
+				width: @wheel-pointer-size;
+				height: @wheel-pointer-size;
+
+				position: absolute;
+				border-radius: 100%;
+			}
+		}
+		&-angle {
+			float: left;
+		}
+	}
+}
+
+// skin
+.asColorPicker {
+	&-dropdown {
+		background: #fefefe;
+		padding: 10px;
+		border: 1px solid @line-color;
+
+		min-width: 205px;
+		max-width: 235px;
+
+		[data-mode="palettes"] & {
+			min-width: auto;
+			max-width: auto;
+		}
+	}
+
+	&-trigger {
+		border: 1px solid @line-color;
+	}
+
+	&-saturation {
+		i {
+			width: 5px;
+			height:5px;
+			margin-left: -2px;
+			margin-top: -2px;
+			border-radius: 100%;
+			border: 2px
+			solid #fff;
+		}
+
+		box-shadow: inset 0 0 0 1px @inner-border-color;
+	}
+
+	&-hue, &-alpha {
+		margin-left: 10px;
+		i {
+			width: 20px;
+			height: 2px;
+			margin-top: -2px;
+			left:-2px;
+			border: 2px solid #fff;
+		}
+
+		box-shadow: inset 0 0 0 1px @inner-border-color;
+	}
+
+	&-preview {
+		position: relative;
+		&:after {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			box-shadow: inset 0 0 0 1px @inner-border-color;
+			content: '';
+			pointer-events: none;
+		}
+		
+		height: 33px;
+		margin-bottom: 10px;
+		margin-right: 10px;
+
+		li {
+			width: 48px;
+			height: 33px;
+		}
+	}
+
+	&-hex {
+		width: 100px;
+
+		border-color: @inner-border-color;
+	}
+
+	&-palettes {
+		li {
+			width: 21px;
+			height: 15px;
+			margin-right: 6px;
+			margin-bottom: 3px;
+
+			span {
+				box-sizing: border-box;
+				border: 1px solid @inner-border-color;
+			}
+
+			&:nth-child(5n) {
+				margin-right: 0;
+
+				[data-mode="palettes"] & {
+					margin-right: 6px;
+				}
+			}
+		}
+	}
+
+	&-buttons, &-gradient-control {
+		float: right;
+
+		a {
+			margin-left: 5px;
+		}
+	}
+
+	&-gradient {
+		margin-top: 10px;
+		padding-top: 20px;
+		border-top: 1px solid @inner-border-color;
+
+		&-preview {
+			position: relative;
+			width: 160px;
+
+			border: 1px solid @inner-border-color;
+
+			&:after {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-image: url('../images/transparent.png');
+				content: '';
+				z-index: -1;
+			}
+		}
+
+		&-markers {
+			top: -16px;
+            width: 160px;
+            height: 16px;
+            display: block;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+		}
+
+		&-marker {
+			width: 10px;
+			height: 10px;
+
+			margin-left: -6px;
+			border: 1px solid @line-color;
+			background: #fff;
+
+			span {
+				display: block;
+				width: 100%;
+				height: 100%;
+				
+			}
+			
+            i {
+                position: absolute;
+                left: 2px;
+                bottom: -3px;
+
+                width: 4px;
+                height: 4px;
+                border: 1px solid transparent;
+                border-right-color: @inner-border-color;
+                border-bottom-color: @inner-border-color;
+                background: #fff;
+                -webkit-transform: rotate(45deg);
+                   -moz-transform: rotate(45deg);
+                        transform: rotate(45deg);
+            }
+
+            &_active {
+                border: 2px solid @active-color;
+                z-index: 1;
+
+                i {
+                	left: 1px;
+                	border: 2px solid transparent;
+                	border-right-color: @active-color;
+                	border-bottom-color: @active-color;
+                }
+            }
+		}
+
+		&-wheel {
+			margin-left: 10px;
+
+			i {
+				background-color: darken(@line-color, 20%);
+			}
+		}
+
+		&-angle {
+			margin-left: 10px;
+			width: 24px;
+		}
+	}
+}

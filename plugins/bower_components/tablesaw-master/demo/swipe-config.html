@@ -1,0 +1,255 @@
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TableSaw Sortable Table</title>
+
+	<link rel="stylesheet" href="../dist/tablesaw.css">
+	<link rel="stylesheet" href="demo.css">
+	<link rel="stylesheet" href="//filamentgroup.github.io/demo-head/demohead.css">
+
+	<!--[if lt IE 9]><script src="../dist/dependencies/respond.js"></script><![endif]-->
+	<script src="../dist/dependencies/jquery.js"></script>
+	<script src="../dist/tablesaw.js"></script>
+	<script src="../dist/tablesaw-init.js"></script>
+	<script>
+	Tablesaw.config = {
+		swipe: {
+			horizontalThreshold: 20, // default is 15
+			verticalThreshold: 40 // default is 30
+		}
+	};
+	</script>
+	<script src="//filamentgroup.github.io/demo-head/loadfont.js"></script>
+</head>
+<body>
+	<div class="demo-header">
+		<div class="company">
+			<img src="http://filamentgroup.com/images/fg-logo-positive-sm-crop.png">
+		</div>
+		<div class="details">
+			<h1 class="description-container">Demo of <span class="repo-name">Tablesaw</span>
+				<span class="description">A group of plugins for responsive tables.</span>
+			</h1>
+			<ul class="outbound-links">
+				<li><a href="https://github.com/filamentgroup/tablesaw">Code</a></li>
+				<li><a href="https://github.com/filamentgroup/tablesaw/issues">Issues</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="nav-container">
+		<div class="docs-globalnav">
+			<nav class="docs-nav">
+			<a href="kitchensink.html">Kitchen Sink</a>
+			<a href="modeswitch.html">Mode Switch</a>
+			<a href="sort.html">Sortable</a>
+			<a href="stack.html">Stack</a>
+			<a href="stackonly.html">Stack Only</a>
+			<a href="swipe.html" class="current">Swipe Table</a>
+			<a href="toggle.html">Toggle</a>
+			<a href="bare.html">Bare</a>
+			</nav>
+		</div>
+	</div>
+	<div class="docs-main">
+		<h2>Swipe Table</h2>
+
+		<table class="tablesaw" data-tablesaw-mode="swipe" data-minimap>
+			<thead>
+				<tr>
+					<th scope="col" data-tablesaw-priority="persist">Name</th>
+					<th scope="col">Rank</th>
+					<th scope="col">Money</th>
+					<th scope="col">Money</th>
+					<th scope="col">A (1&ndash;5)</th>
+					<th scope="col">B (1&ndash;5)</th>
+					<th scope="col">C (%)</th>
+					<th scope="col">D (1&ndash;5)</th>
+					<th scope="col">E (1&ndash;5)</th>
+					<th scope="col">F (1&ndash;5)</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="ranked-name">
+						<a href="#">
+							Amanda
+						</a>
+					</td>
+					<td class="current-ranking">1</td>
+					<td>19.45</td>
+					<td>18.72</td>
+					<td>5</td>
+					<td>5</td>
+					<td>98</td>
+					<td>5</td>
+					<td>4</td>
+					<td>3</td>
+				</tr>
+				<tr>
+					<td class="ranked-name">
+						<a href="#">
+							Dave
+						</a>
+					</td>
+					<td>2</td>
+					<td>36.32</td>
+					<td>20.52</td>
+					<td>4</td>
+					<td>3</td>
+					<td>87</td>
+					<td>5</td>
+					<td>4</td>
+					<td>3</td>
+				</tr>
+				<tr>
+					<td class="ranked-name">
+						<a href="#">
+							Kristen
+						</a>
+					</td>
+					<td>3</td>
+					<td>35.23</td>
+					<td>21.36</td>
+					<td>2</td>
+					<td>5</td>
+					<td>89</td>
+					<td>5</td>
+					<td>4</td>
+					<td>3</td>
+				</tr>
+				<tr>
+					<td class="ranked-name">
+						<a href="#">
+							Kenny
+						</a>
+					</td>
+					<td>4</td>
+					<td>34.65</td>
+					<td>27.15</td>
+					<td>4</td>
+					<td>4</td>
+					<td>98</td>
+					<td>5</td>
+					<td>4</td>
+					<td>3</td>
+				</tr>
+				<tr>
+					<td class="ranked-name">
+						<a href="#">
+							Kenny
+						</a>
+					</td>
+					<td>4</td>
+					<td>34.65</td>
+					<td>27.15</td>
+					<td>4</td>
+					<td>4</td>
+					<td>98</td>
+					<td>5</td>
+					<td>4</td>
+					<td>3</td>
+				</tr>
+				<tr>
+					<td class="ranked-name">
+						<a href="#">
+							Kenny
+						</a>
+					</td>
+					<td>4</td>
+					<td>34.65</td>
+					<td>27.15</td>
+					<td>4</td>
+					<td>4</td>
+					<td>98</td>
+					<td>5</td>
+					<td>4</td>
+					<td>3</td>
+				</tr>
+				<tr>
+					<td class="ranked-name">
+						<a href="#">
+							Kenny
+						</a>
+					</td>
+					<td>4</td>
+					<td>34.65</td>
+					<td>27.15</td>
+					<td>4</td>
+					<td>4</td>
+					<td>98</td>
+					<td>5</td>
+					<td>4</td>
+					<td>3</td>
+				</tr>
+				<tr>
+					<td class="ranked-name">
+						<a href="#">
+							Kenny
+						</a>
+					</td>
+					<td>4</td>
+					<td>34.65</td>
+					<td>27.15</td>
+					<td>4</td>
+					<td>4</td>
+					<td>98</td>
+					<td>5</td>
+					<td>4</td>
+					<td>3</td>
+				</tr>
+				<tr>
+					<td class="ranked-name">
+						<a href="#">
+							Kenny
+						</a>
+					</td>
+					<td>4</td>
+					<td>34.65</td>
+					<td>27.15</td>
+					<td>4</td>
+					<td>4</td>
+					<td>98</td>
+					<td>5</td>
+					<td>4</td>
+					<td>3</td>
+				</tr>
+				<tr>
+					<td class="ranked-name">
+						<a href="#">
+							Kenny
+						</a>
+					</td>
+					<td>4</td>
+					<td>34.65</td>
+					<td>27.15</td>
+					<td>4</td>
+					<td>4</td>
+					<td>98</td>
+					<td>5</td>
+					<td>4</td>
+					<td>3</td>
+				</tr>
+				<tr>
+					<td class="ranked-name">
+						<a href="#">
+							Kenny
+						</a>
+					</td>
+					<td>4</td>
+					<td>34.65</td>
+					<td>27.15</td>
+					<td>4</td>
+					<td>4</td>
+					<td>98</td>
+					<td>5</td>
+					<td>4</td>
+					<td>3</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

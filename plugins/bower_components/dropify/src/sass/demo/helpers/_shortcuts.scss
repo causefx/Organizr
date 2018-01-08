@@ -1,0 +1,57 @@
+.text-left {
+    text-align: left;
+}
+.text-right {
+    text-align: right;
+}
+.text-center {
+    text-align: center;
+}
+.text-justify {
+    text-align: justify;
+}
+
+.pull-right {
+    float: right !important;
+}
+.pull-left {
+    float: left !important;
+}
+
+.hidden {
+    display: none;
+}
+
+.hide-text {
+    font: #{0/0} a;
+    color: transparent;
+    text-shadow: none;
+    background-color: transparent;
+    border: 0;
+}
+
+.strong, .bold {
+    font-weight: 700
+}
+
+.italic {
+    font-style: italic;
+}
+
+.clearfix {
+    @include clearfix();
+}
+
+hr {
+    margin-top: $base-line-height;
+    margin-bottom: $base-line-height;
+    border: 0;
+    border-top: 1px solid #CCC;
+
+    &.big {
+        border-top: 2px solid #DDD;
+        margin-top: $base-line-height*2;
+        margin-bottom: $base-line-height*2;
+    }
+}
+

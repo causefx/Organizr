@@ -1,0 +1,15 @@
+{
+	"token": {
+		"Navigation":"Navigation",
+		"Date":"Date",
+		"Type":"Type",
+		"IP Address":"IP Address",
+		"Username":"Username",
+		"Message":"Message",
+		"My Profile":"My Profile",
+		"Account Settings":"Account Settings",
+		"Login/Register":"Login/Register",
+		"Logout":"Logout",
+		"Inbox":"Inbox"
+	}
+}

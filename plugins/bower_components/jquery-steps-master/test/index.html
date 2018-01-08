@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>jQuery Steps Test Suite</title>
+		<link rel="stylesheet" href="qunit/qunit-1.11.0.css">
+	</head>
+	<body>
+		<h1 id="qunit-header">
+			<a href="http://rstaib.github.io/jquery-steps">jQuery Steps Plugin</a> Test Suite
+		</h1>
+		<div id="qunit-banner"></div>
+		<div id="qunit-testrunner-toolbar"><span>jQuery Versions: <input id="version-191" name="version" type="radio" value="1.9.1" /><label for="version-191">jQuery 1.9.1</label>
+            <input id="version-1102" name="version" type="radio" value="1.10.2" /><label for="version-1102">jQuery 1.10.2</label>
+            <input id="version-1111" name="version" type="radio" value="1.11.1" /><label for="version-1111">jQuery 1.11.1</label>
+			<input id="version-latest" name="version" type="radio" value="latest" /><label for="version-latest">jQuery Latest (git)</label></span></div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture">
+			<div id="contentModeWithEmptyStringArgument">
+				<h1>contentModeWithEmptyStringArgument</h1>
+				<div data-mode="">
+					<p>contentModeWithEmptyStringArgument</p>
+				</div>
+			</div>
+
+			<div id="contentModeWithWrongNumberArgument">
+				<h1>contentModeWithWrongNumberArgument</h1>
+				<div data-mode="3">
+					<p>contentModeWithWrongNumberArgument</p>
+				</div>
+			</div>
+
+			<div id="contentModeWithWrongStringArgument">
+				<h1>contentModeWithWrongStringArgument</h1>
+				<div data-mode="none">
+					<p>contentModeWithWrongStringArgument</p>
+				</div>
+			</div>
+
+			<div id="contentModeWithNumberArgument">
+				<h1>contentModeWithNumberArgument</h1>
+				<div data-mode="0">
+					<p>contentModeWithNumberArgument</p>
+				</div>
+			</div>
+
+			<div id="contentModeWithStringArgument">
+				<h1>contentModeWithStringArgument</h1>
+				<div data-mode="html">
+					<p>contentModeWithStringArgument</p>
+				</div>
+			</div>
+		</div>
+		<script src="qunit/qunit-1.11.0.js"></script>
+		<script src="tests.js"></script>
+		<script src="jquery.js"></script>
+		<script src="../build/jquery.steps.js"></script>
+		<script src="../src/privates.js"></script>
+		<script src="../src/enums.js"></script>
+		<script src="../src/model.js"></script>
+		<script src="../src/defaults.js"></script>
+		<script>
+			$(function ()
+			{
+				$("input[name='version']").click(function ()
+				{
+					location.href = "?version=" + $(this).val();
+				});
+
+				var versionPattern = /^[\?|\&]{1}version=(\d{1,2}\.\d{1,2}\.\d{1,2}|latest)/,
+					version = versionPattern.exec(location.search),
+					defaultVersion = "1.11.1";
+
+				if (version != null && version.length > 0)
+				{
+					version = version[1];
+				}
+				else
+				{
+					version = defaultVersion;
+				}
+
+				$("input[value='" + version + "']").attr("checked", "checked");
+			});
+		</script>
+	</body>
+</html>

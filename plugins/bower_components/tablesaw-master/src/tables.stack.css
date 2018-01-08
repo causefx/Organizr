@@ -1,0 +1,53 @@
+/*
+ Styles for the table stack mode
+*/
+
+/* Table rows have a gray bottom stroke by default */
+.tablesaw-stack tbody tr {
+	border-bottom: 1px solid #dfdfdf;
+}
+
+.tablesaw-stack td .tablesaw-cell-label,
+.tablesaw-stack th .tablesaw-cell-label {
+	display: none;
+}
+
+/* Mobile first styles: Begin with the stacked presentation at narrow widths */
+@media only all {
+	/* Show the table cells as a block level element */
+	.tablesaw-stack td,
+	.tablesaw-stack th {
+		text-align: left;
+		display: block;
+	}
+	.tablesaw-stack tr {
+		clear: both;
+		display: table-row;
+	}
+	/* Make the label elements a percentage width */
+	.tablesaw-stack td .tablesaw-cell-label,
+	.tablesaw-stack th .tablesaw-cell-label {
+		display: block;
+		padding: 0 .6em 0 0;
+		width: 30%;
+		display: inline-block;
+	}
+	/* For grouped headers, have a different style to visually separate the levels by classing the first label in each col group */
+	.tablesaw-stack th .tablesaw-cell-label-top,
+	.tablesaw-stack td .tablesaw-cell-label-top {
+		display: block;
+		padding: .4em 0;
+		margin: .4em 0;
+	}
+	.tablesaw-cell-label {
+		display: block;
+	}
+	/* Avoid double strokes when stacked */
+	.tablesaw-stack tbody th.group {
+		margin-top:-1px;
+	}
+	/* Avoid double strokes when stacked */
+	.tablesaw-stack th.group b.tablesaw-cell-label {
+		display: none !important;
+	}
+}

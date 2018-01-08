@@ -1,0 +1,245 @@
+.jsgrid-grid-header,
+.jsgrid-grid-body,
+.jsgrid-header-row > th,
+.jsgrid-filter-row > td,
+.jsgrid-insert-row > td,
+.jsgrid-edit-row > td {
+    border: 1px solid #e9e9e9;
+}
+
+.jsgrid-header-row > th {
+    border-top: 0;
+}
+
+.jsgrid-header-row > th, .jsgrid-filter-row > td, .jsgrid-insert-row > td {
+    border-bottom: 0;
+}
+
+.jsgrid-header-row > th:first-child, .jsgrid-filter-row > td:first-child, .jsgrid-insert-row > td:first-child {
+    border-left: none;
+}
+
+.jsgrid-header-row > th:last-child, .jsgrid-filter-row > td:last-child, .jsgrid-insert-row > td:last-child {
+    border-right: none;
+}
+
+.jsgrid-header-row .jsgrid-align-right,
+.jsgrid-header-row .jsgrid-align-left {
+    text-align: center;
+}
+
+.jsgrid-grid-header {
+    background: #f9f9f9;
+}
+
+.jsgrid-header-scrollbar {
+    scrollbar-arrow-color: #f1f1f1;
+    scrollbar-base-color: #f1f1f1;
+    scrollbar-3dlight-color: #f1f1f1;
+    scrollbar-highlight-color: #f1f1f1;
+    scrollbar-track-color: #f1f1f1;
+    scrollbar-shadow-color: #f1f1f1;
+    scrollbar-dark-shadow-color: #f1f1f1;
+}
+
+.jsgrid-header-scrollbar::-webkit-scrollbar {
+    visibility: hidden;
+}
+
+.jsgrid-header-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.jsgrid-header-sortable:hover {
+    cursor: pointer;
+    background: #fcfcfc;
+}
+
+.jsgrid-header-row .jsgrid-header-sort {
+    background: #c4e2ff;
+}
+
+.jsgrid-header-sort:before {
+    content: " ";
+    display: block;
+    float: left;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.jsgrid-header-sort-asc:before {
+    border-width: 0 5px 5px 5px;
+    border-color: transparent transparent #009a67 transparent;
+}
+
+.jsgrid-header-sort-desc:before {
+    border-width: 5px 5px 0 5px;
+    border-color: #009a67 transparent transparent transparent;
+}
+
+.jsgrid-grid-body {
+    border-top: none;
+}
+
+.jsgrid-grid-body td {
+    border: #f3f3f3 1px solid;
+}
+
+.jsgrid-grid-body tr:first-child td {
+    border-top: none;
+}
+
+.jsgrid-grid-body tr td:first-child {
+    border-left: none;
+}
+
+.jsgrid-grid-body tr td:last-child {
+    border-right: none;
+}
+
+.jsgrid-row > td {
+    background: #fff;
+}
+
+.jsgrid-alt-row > td {
+    background: #fcfcfc;
+}
+
+.jsgrid-header-row > th {
+    background: #f9f9f9;
+}
+
+.jsgrid-filter-row > td {
+    background: #fcfcfc;
+}
+
+.jsgrid-insert-row > td {
+    background: #e3ffe5;
+}
+
+.jsgrid-edit-row > td {
+    background: #fdffe3;
+}
+
+.jsgrid-selected-row > td {
+    background: #c4e2ff;
+    border-color: #c4e2ff;
+}
+
+.jsgrid-nodata-row td {
+    background: #fff;
+}
+
+.jsgrid-invalid input,
+.jsgrid-invalid select,
+.jsgrid-invalid textarea {
+    background: #ffe3e5;
+    border: 1px solid #ff808a;
+}
+
+.jsgrid-pager-current-page {
+    font-weight: bold;
+}
+
+.jsgrid-pager-nav-inactive-button a {
+    color: #d3d3d3;
+}
+
+.jsgrid-button + .jsgrid-button {
+    margin-left: 5px;
+}
+
+.jsgrid-button:hover {
+    opacity: .5;
+    transition: opacity 200ms linear;
+}
+
+.jsgrid .jsgrid-button {
+    width: 16px;
+    height: 16px;
+    border: none;
+    cursor: pointer;
+    background-image: url(icons.png);
+    background-repeat: no-repeat;
+    background-color: transparent;
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+    .jsgrid .jsgrid-button {
+        background-image: url(icons-2x.png);
+        background-size: 24px 352px;
+    }
+}
+
+.jsgrid .jsgrid-mode-button {
+    width: 24px;
+    height: 24px;
+}
+
+.jsgrid-mode-on-button {
+    opacity: .5;
+}
+
+.jsgrid-cancel-button { background-position: 0 0; width: 16px; height: 16px; }
+.jsgrid-clear-filter-button { background-position: 0 -40px; width: 16px; height: 16px; }
+.jsgrid-delete-button { background-position: 0 -80px; width: 16px; height: 16px; }
+.jsgrid-edit-button { background-position: 0 -120px; width: 16px; height: 16px; }
+.jsgrid-insert-mode-button { background-position: 0 -160px; width: 24px; height: 24px; }
+.jsgrid-insert-button { background-position: 0 -208px; width: 16px; height: 16px; }
+.jsgrid-search-mode-button { background-position: 0 -248px; width: 24px; height: 24px; }
+.jsgrid-search-button { background-position: 0 -296px; width: 16px; height: 16px; }
+.jsgrid-update-button { background-position: 0 -336px; width: 16px; height: 16px; }
+
+
+.jsgrid-load-shader {
+    background: #ddd;
+    opacity: .5;
+    filter: alpha(opacity=50);
+}
+
+.jsgrid-load-panel {
+    width: 15em;
+    height: 5em;
+    background: #fff;
+    border: 1px solid #e9e9e9;
+    padding-top: 3em;
+    text-align: center;
+}
+
+.jsgrid-load-panel:before {
+    content: ' ';
+    position: absolute;
+    top: .5em;
+    left: 50%;
+    margin-left: -1em;
+    width: 2em;
+    height: 2em;
+    border: 2px solid #009a67;
+    border-right-color: transparent;
+    border-radius: 50%;
+    -webkit-animation: indicator 1s linear infinite;
+    animation: indicator 1s linear infinite;
+}
+
+@-webkit-keyframes indicator
+{
+    from { -webkit-transform: rotate(0deg); }
+    50%  { -webkit-transform: rotate(180deg); }
+    to   { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes indicator
+{
+    from { transform: rotate(0deg); }
+    50%  { transform: rotate(180deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* old IE */
+.jsgrid-load-panel {
+    padding-top: 1.5em\9;
+}
+.jsgrid-load-panel:before {
+    display: none\9;
+}

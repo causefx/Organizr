@@ -1,0 +1,61 @@
+.container {
+    width: 100%;
+    max-width: $container-max-width;
+    margin-right: auto;
+    margin-left: auto;
+    padding-left:  ($grid-gutter-width / 2);
+    padding-right: ($grid-gutter-width / 2);
+    @include clearfix;
+}
+
+
+.row {
+    margin-left:  ($grid-gutter-width / -2);
+    margin-right: ($grid-gutter-width / -2);
+    @include clearfix;
+}
+
+.col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12 {
+    position: relative;
+    min-height: 1px;
+    padding-left:  ($grid-gutter-width / 2);
+    padding-right: ($grid-gutter-width / 2);
+    padding-bottom: $grid-gutter-width;
+
+    &.no-padding-bottom, &.no-pb {
+        padding-bottom: 0;
+    }
+}
+
+
+.col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11 {
+    float: left;
+}
+
+.col-xs-1  { width: percentage((1 / $grid-columns)); }
+.col-xs-2  { width: percentage((2 / $grid-columns)); }
+.col-xs-3  { width: percentage((3 / $grid-columns)); }
+.col-xs-4  { width: percentage((4 / $grid-columns)); }
+.col-xs-5  { width: percentage((5 / $grid-columns)); }
+.col-xs-6  { width: percentage((6 / $grid-columns)); }
+.col-xs-7  { width: percentage((7 / $grid-columns)); }
+.col-xs-8  { width: percentage((8 / $grid-columns)); }
+.col-xs-9  { width: percentage((9 / $grid-columns)); }
+.col-xs-10 { width: percentage((10/ $grid-columns)); }
+.col-xs-11 { width: percentage((11/ $grid-columns)); }
+.col-xs-12 { width: 100%; }
+
+
+@media (min-width: $screen-sm) {
+    @include row-sizes('sm');
+}
+
+
+@media (min-width: $screen-md) {
+    @include row-sizes('md');
+}
+
+
+@media (min-width: $screen-lg-desktop) {
+    @include row-sizes('lg');
+}

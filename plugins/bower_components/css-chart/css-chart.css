@@ -1,0 +1,757 @@
+
+/* -------------------------------------
+ * Bar container
+ * ------------------------------------- */
+.css-bar {
+  position: relative;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 50%;
+  background-color: transparent;
+  margin-bottom: 20px;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  width: 80px;
+  height: 80px;
+  font-size: 18px;
+}
+.css-bar:after,
+.css-bar > img {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  text-align: center;
+  font-weight: light;
+  color: #a1a2a3;
+}
+.css-bar:after {
+  content: attr(data-label);
+  background-color: #fff;
+  z-index: 101;
+}
+.css-bar > img {
+  z-index: 102;
+}
+.css-bar:after,
+.css-bar > img {
+  width: 70px;
+  height: 70px;
+  margin-left: 5px;
+  margin-top: 5px;
+  line-height: 70px;
+}
+
+.css-bar.css-bar-0 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(90deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-5 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(108deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-10 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(126deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-15 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(144deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-20 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(162deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-25 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(180deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-30 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(198deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-35 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(216deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-40 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(234deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-45 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(252deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-50 {
+  background-image: linear-gradient(270deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-55 {
+  background-image: linear-gradient(288deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-60 {
+  background-image: linear-gradient(306deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-65 {
+  background-image: linear-gradient(324deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-70 {
+  background-image: linear-gradient(342deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-75 {
+  background-image: linear-gradient(360deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-80 {
+  background-image: linear-gradient(378deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-85 {
+  background-image: linear-gradient(396deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-90 {
+  background-image: linear-gradient(414deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-95 {
+  background-image: linear-gradient(432deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar.css-bar-100 {
+  background-image: linear-gradient(450deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-0 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(90deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-5 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(108deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-10 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(126deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-15 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(144deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-20 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(162deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-25 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(180deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-30 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(198deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-35 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(216deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-40 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(234deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-45 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(252deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-50 {
+  background-image: linear-gradient(270deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-55 {
+  background-image: linear-gradient(288deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-60 {
+  background-image: linear-gradient(306deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-65 {
+  background-image: linear-gradient(324deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-70 {
+  background-image: linear-gradient(342deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-75 {
+  background-image: linear-gradient(360deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-80 {
+  background-image: linear-gradient(378deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-85 {
+  background-image: linear-gradient(396deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-90 {
+  background-image: linear-gradient(414deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-95 {
+  background-image: linear-gradient(432deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-primary.css-bar-100 {
+  background-image: linear-gradient(450deg, #6164c1 50%, transparent 50%, transparent), linear-gradient(270deg, #6164c1 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-0 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(90deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-5 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(108deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-10 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(126deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-15 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(144deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-20 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(162deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-25 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(180deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-30 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(198deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-35 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(216deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-40 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(234deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-45 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(252deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-50 {
+  background-image: linear-gradient(270deg, #53e69d 50%, transparent 50%, transparent), linear-gradient(270deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-55 {
+  background-image: linear-gradient(288deg, #53e69d 50%, transparent 50%, transparent), linear-gradient(270deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-60 {
+  background-image: linear-gradient(306deg, #53e69d 50%, transparent 50%, transparent), linear-gradient(270deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-65 {
+  background-image: linear-gradient(324deg, #53e69d 50%, transparent 50%, transparent), linear-gradient(270deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-70 {
+  background-image: linear-gradient(342deg, #53e69d 50%, transparent 50%, transparent), linear-gradient(270deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-75 {
+  background-image: linear-gradient(360deg, #53e69d 50%, transparent 50%, transparent), linear-gradient(270deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-80 {
+  background-image: linear-gradient(378deg, #53e69d 50%, transparent 50%, transparent), linear-gradient(270deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-85 {
+  background-image: linear-gradient(396deg, #53e69d 50%, transparent 50%, transparent), linear-gradient(270deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-90 {
+  background-image: linear-gradient(414deg, #53e69d 50%, transparent 50%, transparent), linear-gradient(270deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-95 {
+  background-image: linear-gradient(432deg, #53e69d 50%, transparent 50%, transparent), linear-gradient(270deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-success.css-bar-100 {
+  background-image: linear-gradient(450deg, #53e69d 50%, transparent 50%, transparent), linear-gradient(270deg, #53e69d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-0 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(90deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-5 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(108deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-10 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(126deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-15 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(144deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-20 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(162deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-25 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(180deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-30 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(198deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-35 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(216deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-40 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(234deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-45 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(252deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-50 {
+  background-image: linear-gradient(270deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-55 {
+  background-image: linear-gradient(288deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-60 {
+  background-image: linear-gradient(306deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-65 {
+  background-image: linear-gradient(324deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-70 {
+  background-image: linear-gradient(342deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-75 {
+  background-image: linear-gradient(360deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-80 {
+  background-image: linear-gradient(378deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-85 {
+  background-image: linear-gradient(396deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-90 {
+  background-image: linear-gradient(414deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-95 {
+  background-image: linear-gradient(432deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-info.css-bar-100 {
+  background-image: linear-gradient(450deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-0 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(90deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-5 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(108deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-10 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(126deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-15 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(144deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-20 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(162deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-25 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(180deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-30 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(198deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-35 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(216deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-40 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(234deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-45 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(252deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-50 {
+  background-image: linear-gradient(270deg, #ffc36d 50%, transparent 50%, transparent), linear-gradient(270deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-55 {
+  background-image: linear-gradient(288deg, #ffc36d 50%, transparent 50%, transparent), linear-gradient(270deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-60 {
+  background-image: linear-gradient(306deg, #ffc36d 50%, transparent 50%, transparent), linear-gradient(270deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-65 {
+  background-image: linear-gradient(324deg, #ffc36d 50%, transparent 50%, transparent), linear-gradient(270deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-70 {
+  background-image: linear-gradient(342deg, #ffc36d 50%, transparent 50%, transparent), linear-gradient(270deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-75 {
+  background-image: linear-gradient(360deg, #ffc36d 50%, transparent 50%, transparent), linear-gradient(270deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-80 {
+  background-image: linear-gradient(378deg, #ffc36d 50%, transparent 50%, transparent), linear-gradient(270deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-85 {
+  background-image: linear-gradient(396deg, #ffc36d 50%, transparent 50%, transparent), linear-gradient(270deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-90 {
+  background-image: linear-gradient(414deg, #ffc36d 50%, transparent 50%, transparent), linear-gradient(270deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-95 {
+  background-image: linear-gradient(432deg, #ffc36d 50%, transparent 50%, transparent), linear-gradient(270deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-warning.css-bar-100 {
+  background-image: linear-gradient(450deg, #ffc36d 50%, transparent 50%, transparent), linear-gradient(270deg, #ffc36d 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-0 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(90deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-5 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(108deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-10 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(126deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-15 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(144deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-20 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(162deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-25 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(180deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-30 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(198deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-35 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(216deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-40 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(234deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-45 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(252deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-50 {
+  background-image: linear-gradient(270deg, #ff7676 50%, transparent 50%, transparent), linear-gradient(270deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-55 {
+  background-image: linear-gradient(288deg, #ff7676 50%, transparent 50%, transparent), linear-gradient(270deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-60 {
+  background-image: linear-gradient(306deg, #ff7676 50%, transparent 50%, transparent), linear-gradient(270deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-65 {
+  background-image: linear-gradient(324deg, #ff7676 50%, transparent 50%, transparent), linear-gradient(270deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-70 {
+  background-image: linear-gradient(342deg, #ff7676 50%, transparent 50%, transparent), linear-gradient(270deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-75 {
+  background-image: linear-gradient(360deg, #ff7676 50%, transparent 50%, transparent), linear-gradient(270deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-80 {
+  background-image: linear-gradient(378deg, #ff7676 50%, transparent 50%, transparent), linear-gradient(270deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-85 {
+  background-image: linear-gradient(396deg, #ff7676 50%, transparent 50%, transparent), linear-gradient(270deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-90 {
+  background-image: linear-gradient(414deg, #ff7676 50%, transparent 50%, transparent), linear-gradient(270deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-95 {
+  background-image: linear-gradient(432deg, #ff7676 50%, transparent 50%, transparent), linear-gradient(270deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-danger.css-bar-100 {
+  background-image: linear-gradient(450deg, #ff7676 50%, transparent 50%, transparent), linear-gradient(270deg, #ff7676 50%, #fafafa 50%, #fafafa);
+}
+
+
+/* -- Radial Default -- */
+.css-bar-default.css-bar-0 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(90deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-5 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(108deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-10 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(126deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-15 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(144deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-20 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(162deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-25 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(180deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-30 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(198deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-35 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(216deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-40 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(234deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-45 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(252deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-50 {
+  background-image: linear-gradient(270deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-55 {
+  background-image: linear-gradient(288deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-60 {
+  background-image: linear-gradient(306deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-65 {
+  background-image: linear-gradient(324deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-70 {
+  background-image: linear-gradient(342deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-75 {
+  background-image: linear-gradient(360deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-80 {
+  background-image: linear-gradient(378deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-85 {
+  background-image: linear-gradient(396deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-90 {
+  background-image: linear-gradient(414deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-95 {
+  background-image: linear-gradient(432deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-default.css-bar-100 {
+  background-image: linear-gradient(450deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #2cabe3 50%, #fafafa 50%, #fafafa);
+}
+
+
+
+/* -- Radial Pink -- */
+.css-bar-pink.css-bar-0 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(90deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-5 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(108deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-10 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(126deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-15 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(144deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-20 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(162deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-25 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(180deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-30 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(198deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-35 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(216deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-40 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(234deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-45 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(252deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-50 {
+  background-image: linear-gradient(270deg, #fd5e94 50%, transparent 50%, transparent), linear-gradient(270deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-55 {
+  background-image: linear-gradient(288deg, #fd5e94 50%, transparent 50%, transparent), linear-gradient(270deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-60 {
+  background-image: linear-gradient(306deg, #fd5e94 50%, transparent 50%, transparent), linear-gradient(270deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-65 {
+  background-image: linear-gradient(324deg, #fd5e94 50%, transparent 50%, transparent), linear-gradient(270deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-70 {
+  background-image: linear-gradient(342deg, #fd5e94 50%, transparent 50%, transparent), linear-gradient(270deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-75 {
+  background-image: linear-gradient(360deg, #fd5e94 50%, transparent 50%, transparent), linear-gradient(270deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-80 {
+  background-image: linear-gradient(378deg, #fd5e94 50%, transparent 50%, transparent), linear-gradient(270deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-85 {
+  background-image: linear-gradient(396deg, #fd5e94 50%, transparent 50%, transparent), linear-gradient(270deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-90 {
+  background-image: linear-gradient(414deg, #fd5e94 50%, transparent 50%, transparent), linear-gradient(270deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-95 {
+  background-image: linear-gradient(432deg, #fd5e94 50%, transparent 50%, transparent), linear-gradient(270deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-pink.css-bar-100 {
+  background-image: linear-gradient(450deg, #2cabe3 50%, transparent 50%, transparent), linear-gradient(270deg, #fd5e94 50%, #fafafa 50%, #fafafa);
+}
+
+
+
+/* -- Radial Purple -- */
+.css-bar-purple.css-bar-0 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(90deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-5 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(108deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-10 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(126deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-15 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(144deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-20 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(162deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-25 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(180deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-30 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(198deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-35 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(216deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-40 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(234deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-45 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(252deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-50 {
+  background-image: linear-gradient(270deg, #7266ba 50%, transparent 50%, transparent), linear-gradient(270deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-55 {
+  background-image: linear-gradient(288deg, #7266ba 50%, transparent 50%, transparent), linear-gradient(270deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-60 {
+  background-image: linear-gradient(306deg, #7266ba 50%, transparent 50%, transparent), linear-gradient(270deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-65 {
+  background-image: linear-gradient(324deg, #7266ba 50%, transparent 50%, transparent), linear-gradient(270deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-70 {
+  background-image: linear-gradient(342deg, #7266ba 50%, transparent 50%, transparent), linear-gradient(270deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-75 {
+  background-image: linear-gradient(360deg, #7266ba 50%, transparent 50%, transparent), linear-gradient(270deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-80 {
+  background-image: linear-gradient(378deg, #7266ba 50%, transparent 50%, transparent), linear-gradient(270deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-85 {
+  background-image: linear-gradient(396deg, #7266ba 50%, transparent 50%, transparent), linear-gradient(270deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-90 {
+  background-image: linear-gradient(414deg, #7266ba 50%, transparent 50%, transparent), linear-gradient(270deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-95 {
+  background-image: linear-gradient(432deg, #7266ba 50%, transparent 50%, transparent), linear-gradient(270deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-purple.css-bar-100 {
+  background-image: linear-gradient(450deg, #7266ba 50%, transparent 50%, transparent), linear-gradient(270deg, #7266ba 50%, #fafafa 50%, #fafafa);
+}
+
+
+
+/* -- Radial Inverse -- */
+.css-bar-inverse.css-bar-0 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(90deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-5 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(108deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-10 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(126deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-15 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(144deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-20 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(162deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-25 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(180deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-30 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(198deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-35 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(216deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-40 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(234deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-45 {
+  background-image: linear-gradient(90deg, #fafafa 50%, transparent 50%, transparent), linear-gradient(252deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-50 {
+  background-image: linear-gradient(270deg, #4c5667 50%, transparent 50%, transparent), linear-gradient(270deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-55 {
+  background-image: linear-gradient(288deg, #4c5667 50%, transparent 50%, transparent), linear-gradient(270deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-60 {
+  background-image: linear-gradient(306deg, #4c5667 50%, transparent 50%, transparent), linear-gradient(270deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-65 {
+  background-image: linear-gradient(324deg, #4c5667 50%, transparent 50%, transparent), linear-gradient(270deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-70 {
+  background-image: linear-gradient(342deg, #4c5667 50%, transparent 50%, transparent), linear-gradient(270deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-75 {
+  background-image: linear-gradient(360deg, #4c5667 50%, transparent 50%, transparent), linear-gradient(270deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-80 {
+  background-image: linear-gradient(378deg, #4c5667 50%, transparent 50%, transparent), linear-gradient(270deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-85 {
+  background-image: linear-gradient(396deg, #4c5667 50%, transparent 50%, transparent), linear-gradient(270deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-90 {
+  background-image: linear-gradient(414deg, #4c5667 50%, transparent 50%, transparent), linear-gradient(270deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-95 {
+  background-image: linear-gradient(432deg, #4c5667 50%, transparent 50%, transparent), linear-gradient(270deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+.css-bar-inverse.css-bar-100 {
+  background-image: linear-gradient(450deg, #4c5667 50%, transparent 50%, transparent), linear-gradient(270deg, #4c5667 50%, #fafafa 50%, #fafafa);
+}
+
+.css-bar-lg {
+  width: 100px;
+  height: 100px;
+  font-size: 20px;
+}
+.css-bar-lg:after,
+.css-bar-lg > img {
+  width: 90px;
+  height: 90px;
+  margin-left: 5px;
+  margin-top: 5px;
+  line-height: 90px;
+}
+.css-bar-lg > img {
+  width: 70px;
+  height: 70px;
+  margin-left: 15px;
+  margin-top: 15px;
+  line-height: 70px;
+}
+
+.css-bar-sm {
+  width: 50px;
+  height: 50px;
+  font-size: 12px;
+}
+.css-bar-sm:after,
+.css-bar-sm > img {
+  width: 40px;
+  height: 40px;
+  margin-left: 5px;
+  margin-top: 5px;
+  line-height: 40px;
+}
+.css-bar-xs {
+  width: 30px;
+  height: 30px;
+  font-size: 8px;
+}
+.css-bar-xs:after,
+.css-bar-xs > img {
+  width: 24px;
+  height: 24px;
+  margin-left: 3px;
+  margin-top: 3px;
+  line-height: 21px;
+}
+
+.css-bar {
+  background-clip: content-box;
+}
+
+.css-bar-xxl {
+  width: 250px;
+  height: 250px;
+  font-size: 20px;
+}
+.css-bar-xxl:after,
+.css-bar-xxl > img {
+  width: 240px;
+  height: 240px;
+  margin-left: 5px;
+  margin-top: 5px;
+  line-height: 30px;
+}

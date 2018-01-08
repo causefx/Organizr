@@ -1,0 +1,12 @@
+# This will create service named 'dibi.connection'.
+# Requires Nette Framework 2.2 or later
+
+extensions:
+	dibi: Dibi\Bridges\Nette\DibiExtension22
+
+dibi:
+	host: localhost
+	username: root
+	password: ***
+	database: foo
+	lazy: true

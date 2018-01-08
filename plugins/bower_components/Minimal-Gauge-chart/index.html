@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>jQuery cmGauge Demo</title>
+    <link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/cmGauge.css">
+    
+</head>
+<body>
+
+<div class="container">
+<h1>jQuery cmGauge Demo</h1>
+<div id="gaugeDemo" class="gauge gauge-big gauge-green">
+    <div class="gauge-arrow" data-percentage="40"
+         style="transform: rotate(0deg);"></div>
+</div>
+
+<div style="margin-top: 30px;">
+    <button class="btn btn-primary">Update The Gauge</button>
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="js/cmGauge.js"></script>
+<script type="text/javascript">
+	$(function () {
+		$("button").click(function () {
+			var randomNum = Math.floor((Math.random() * 100));
+			$('#gaugeDemo .gauge-arrow').trigger('updateGauge', randomNum);
+		});
+
+		$('#gaugeDemo .gauge-arrow').cmGauge();
+	});
+</script>
+
+</body>
+</html>

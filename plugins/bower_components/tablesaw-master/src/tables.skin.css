@@ -1,0 +1,96 @@
+:root {
+	--thead-background: #e2dfdc;
+	--thead-background-to-gradient: #fff;
+}
+
+table.tablesaw tbody th {
+	font-weight: bold;
+}
+table.tablesaw thead th,
+table.tablesaw thead td {
+	color: #444;
+	font-size: .9em;
+}
+
+.tablesaw th,
+.tablesaw td {
+	line-height: 1em;
+	text-align: left;
+	vertical-align: middle;
+}
+.tablesaw td,
+.tablesaw tbody th {
+	vertical-align: middle;
+	font-size: 1.17em; /* 19px */
+}
+.tablesaw td .btn,
+.tablesaw tbody th .btn {
+	margin:0;
+}
+
+.tablesaw thead {
+	border: 1px solid #e5e5e4;
+	background: var(--thead-background);
+	background-image: linear-gradient(to bottom, var(--thead-background-to-gradient), var(--thead-background));
+}
+.tablesaw thead th {
+	font-weight: 100;
+	color: #777;
+	text-transform: uppercase;
+	text-shadow: 0 1px 0 #fff;
+	text-align: left;
+}
+.tablesaw thead tr:first-child th {
+	font-weight: normal;
+	font-family: sans-serif;
+	border-right: 1px solid #e4e1de;
+}
+
+/* Table rows have a gray bottom stroke by default */ 
+.tablesaw tbody tr {
+	border-bottom: 1px solid #dfdfdf;
+}
+
+.tablesaw caption {
+	text-align: left;
+	margin-bottom: 0;
+	opacity: .5;
+	filter: alpha(opacity=50);
+	line-height: 2.4;
+}
+
+@media (min-width: 25em) {
+	.tablesaw caption {
+		margin-bottom: .6em;
+		line-height: 1.2;
+	}
+}
+
+/* Stack */
+.tablesaw-cell-label-top {
+	text-transform: uppercase;
+	font-size: .9em;
+	font-weight: normal;
+}
+
+.tablesaw-cell-label {
+	font-size: .65em;
+	text-transform: uppercase;
+	color: #888;
+	font-family: sans-serif;
+}
+
+@media (min-width: 40em) {
+	.tablesaw td {
+		line-height: 2em;
+	}
+}
+
+@media only all {
+	.tablesaw-swipe .tablesaw-cell-persist {
+		border-right: 1px solid #e4e1de;
+	}
+	.tablesaw-swipe .tablesaw-cell-persist {
+		box-shadow: 3px 0 4px -1px #e4e1de;
+	}
+}

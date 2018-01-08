@@ -1,0 +1,140 @@
+/*
+ Styles for the table columntoggle mode
+*/
+.btn.tablesaw-columntoggle-btn span {
+	text-indent: -9999px;
+	display: inline-block;
+}
+
+.tablesaw-columntoggle-btnwrap {
+	position: relative; /* for dialog positioning */
+}
+.tablesaw-columntoggle-btnwrap .dialog-content {
+	padding: .5em;
+}
+.tablesaw-columntoggle tbody td {
+	line-height: 1.5;
+}
+
+
+/* Remove top/bottom margins around the fieldcontain on check list */
+.tablesaw-columntoggle-popup {
+	display: none;
+}
+.tablesaw-columntoggle-btnwrap.visible .tablesaw-columntoggle-popup {
+	display: block;
+	position: absolute;
+	top: 2em;
+	right: 0;
+	background-color: #fff;
+	padding: .5em .8em;
+	border: 1px solid #ccc;
+	box-shadow: 0 1px 2px #ccc;
+	border-radius: .2em;
+	z-index: 1;
+}
+.tablesaw-columntoggle-popup fieldset {
+	margin:0;
+}
+
+/* Hide all prioritized columns by default */
+@media only all {
+	.tablesaw-columntoggle th.tablesaw-priority-6,
+	.tablesaw-columntoggle td.tablesaw-priority-6,
+	.tablesaw-columntoggle th.tablesaw-priority-5,
+	.tablesaw-columntoggle td.tablesaw-priority-5,
+	.tablesaw-columntoggle th.tablesaw-priority-4,
+	.tablesaw-columntoggle td.tablesaw-priority-4,
+	.tablesaw-columntoggle th.tablesaw-priority-3,
+	.tablesaw-columntoggle td.tablesaw-priority-3,
+	.tablesaw-columntoggle th.tablesaw-priority-2,
+	.tablesaw-columntoggle td.tablesaw-priority-2,
+	.tablesaw-columntoggle th.tablesaw-priority-1,
+	.tablesaw-columntoggle td.tablesaw-priority-1 {
+		display: none;
+	}
+}
+
+.tablesaw-columntoggle-btnwrap .dialog-content {
+	top: 0 !important;
+	right: 1em;
+	left: auto !important;
+	width: 12em;
+	max-width: 18em;
+	margin: -.5em auto 0;
+}
+.tablesaw-columntoggle-btnwrap .dialog-content:focus {
+	outline-style: none;
+}
+
+/* Preset breakpoints if "" class added to table */
+
+/* Show priority 1 at 320px (20em x 16px) */
+@media (min-width: 20em) {
+	.tablesaw-columntoggle th.tablesaw-priority-1,
+	.tablesaw-columntoggle td.tablesaw-priority-1 {
+		display: table-cell;
+	}
+}
+/* Show priority 2 at 480px (30em x 16px) */
+@media (min-width: 30em) {
+	.tablesaw-columntoggle th.tablesaw-priority-2,
+	.tablesaw-columntoggle td.tablesaw-priority-2 {
+		display: table-cell;
+	}
+}
+/* Show priority 3 at 640px (40em x 16px) */
+@media (min-width: 40em) {
+	.tablesaw-columntoggle th.tablesaw-priority-3,
+	.tablesaw-columntoggle td.tablesaw-priority-3 {
+		display: table-cell;
+	}
+
+	.tablesaw-columntoggle tbody td {
+		line-height: 2;
+	}
+}
+/* Show priority 4 at 800px (50em x 16px) */
+@media (min-width: 50em) {
+	.tablesaw-columntoggle th.tablesaw-priority-4,
+	.tablesaw-columntoggle td.tablesaw-priority-4 {
+		display: table-cell;
+	}
+}
+/* Show priority 5 at 960px (60em x 16px) */
+@media (min-width: 60em) {
+	.tablesaw-columntoggle th.tablesaw-priority-5,
+	.tablesaw-columntoggle td.tablesaw-priority-5 {
+		display: table-cell;
+	}
+}
+/* Show priority 6 at 1,120px (70em x 16px) */
+@media (min-width: 70em) {
+	.tablesaw-columntoggle th.tablesaw-priority-6,
+	.tablesaw-columntoggle td.tablesaw-priority-6 {
+		display: table-cell;
+	}
+}
+
+@media only all {
+	/* Unchecked manually: Always hide */
+	.tablesaw-columntoggle th.tablesaw-cell-hidden,
+	.tablesaw-columntoggle td.tablesaw-cell-hidden {
+		display: none;
+	}
+
+	/* Checked manually: Always show */
+	.tablesaw-columntoggle th.tablesaw-cell-visible,
+	.tablesaw-columntoggle td.tablesaw-cell-visible {
+		display: table-cell;
+	}
+}
+
+.tablesaw-columntoggle-popup .btn-group > label {
+	display: block;
+	padding: .2em 0;
+	white-space: nowrap;
+}
+.tablesaw-columntoggle-popup .btn-group > label input {
+	margin-right: .8em;
+}

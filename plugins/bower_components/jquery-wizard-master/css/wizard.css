@@ -1,0 +1,68 @@
+.hide {
+  display: none;
+}
+.wizard-pane {
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+}
+.wizard-pane.active {
+  position: relative;
+  visibility: visible;
+  opacity: 1;
+}
+.wizard-pane.activing {
+  visibility: visible;
+}
+.wizard-content {
+  position: relative;
+  padding: 0;
+  transition: height 0.2s ease;
+}
+.current {
+  color: blue !important;
+}
+.error {
+  color: red !important;
+}
+.done {
+  color: green !important;
+}
+.disabled {
+  cursor: not-allowed !important;
+}
+.wizard-pane {
+  padding: 10px;
+}
+.wizard-content {
+  border: 1px solid #aaa;
+}
+.wizard-steps {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.wizard-steps > li {
+  display: inline-block;
+  padding: 5px 10px;
+  cursor: pointer;
+  color: #666;
+}
+.wizard-steps > li:hover {
+  color: #333;
+}
+.wizard-buttons {
+  margin-top: 10px;
+}
+.wizard-buttons > a {
+  margin-right: 5px;
+  padding: 5px 10px;
+  border: 1px solid #aaa;
+  border-radius: 20px;
+}
+.wizard-buttons > a.disabled {
+  color: #aaa;
+  border-color: #aaa;
+}

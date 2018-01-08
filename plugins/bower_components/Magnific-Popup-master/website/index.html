@@ -1,0 +1,101 @@
+---
+layout: default
+title: Magnific Popup&#58; Responsive jQuery Lightbox Plugin
+description: Light and open source responsive lightbox plugin with focus on performance, for jQuery and Zepto.js. High-DPI (retina) display support, fast tap for touch devices.
+canonical_url: http://dimsemenov.com/plugins/magnific-popup/
+include_credit: true
+buildtool: true
+---
+
+<div id="logo">
+  <canvas id="broken-glass"></canvas>
+  <h1 id="logo-title">Magnific Popup</h1>
+</div>
+{% include logo.html %}
+<div>
+  <h2 class="intro">Magnific Popup is a responsive lightbox &amp; dialog script with focus on performance and providing best experience for user with any device<br/>(for jQuery or Zepto.js).</h2>
+  <div id="header-links">
+    <a href="documentation.html">Documentation</a> &middot; <a href="https://github.com/dimsemenov/Magnific-Popup">GitHub</a> &middot; <a href="wordpress.html" class="wp-version-link" data-mfp-src="#mc_embed_signup">WordPress plugin</a> &middot; <a href="#mfp-build-tool" class="mfp-build-tool-link">Build tool</a> &middot; <a class="smashing-link" href="http://coding.smashingmagazine.com/2013/05/02/truly-responsive-lightbox/">How it was made</a>
+  </div>
+</div>
+
+{% include examples.html %}
+
+<p id="smashing">Don't forget to check out <a href="http://coding.smashingmagazine.com/2013/05/02/truly-responsive-lightbox/">my new article</a> about this plugin on the <a class="smashing-link" href="http://coding.smashingmagazine.com/2013/05/02/truly-responsive-lightbox/">Smashing Magazine</a>.</p>
+
+
+<h2>What makes this plugin different?</h2>
+<div class="features grid-c">
+
+  <div class="gc3">
+    <h3>Light and modular</h3>
+    <p>You can choose to include only the features that you need using the <a href="#mfp-build-tool" class="mfp-build-tool-link popup-link">online build tool</a> or by compiling it yourself with <a href="http://gruntjs.com">Grunt.js</a>. Size of core JS file is about <strong>3KB</strong> + each module weighs about 0.5KB (gzipped). Sass CSS preprocessor is used for easier skinning, but you're not obligated to use it.</p>
+  </div>
+  <div class="gc3">
+    <h3>Content is resized with CSS</h3>
+    <p>The majority of lightbox plugins require you to define size of it via JS option. Magnific Popup does not -  feel free to use relative units like EM's or resize lightbox with help of CSS media queries. Update content inside lightbox without worrying about how it'll resize and center.</p>
+  </div>
+  <div class="gc3">
+    <h3>Fast</h3>
+    <p>Magnific Popup displays images before they're completely loaded to take full advantage of progressive loading. For in and out transitions CSS3 is used instead of slow JavaScript animation.</p>
+  </div>
+  <div class="gc3">
+    <h3>High-DPI (Retina) display support</h3>
+    <p>Default controls are made with pure CSS, without external graphics. For the main image there is a built in way to provide appropriate source for different pixel density displays.</p>
+  </div>
+  <div class="gc3">
+    <h3>Conditional lightbox</h3>
+    <p>Plugin has an option to automatically switch to alternative mobile-friendly source on small screen size. Brad Frost has a <a href="http://bradfrostweb.com/blog/post/conditional-lightbox/">terrific article</a> about this technique.</p>
+  </div>
+  <div class="gc3">
+    <h3>Memory management</h3>
+    <p>Popup has an extendable micro templating engine that reuses existing DOM elements (<a href="http://codepen.io/dimsemenov/pen/sHoxp">example</a>), which is especially useful when your popups same pattern.</p>
+  </div>
+</div><br/>
+
+{% include signup.html %}
+
+
+<h2>Browser support</h2>
+<p>Tested on desktop: Chrome, Safari, FF, Opera, IE8+, partial support of IE7 (works, but some visual layout features, like vertical centering, are missing). Mobile: default browser in Android 2.3+, iOS5+, Blackberry
+10+, WP7+, mobile Opera and Chrome on Android. If you noticed any bug, please open an <a href="https://github.com/dimsemenov/Magnific-Popup/issues?state=open">issue on GitHub</a></p>
+
+<h2 id="license">License</h2>
+<p>Script is available under MIT license and will always be kept this way.<br/>But please do me a favor and do not create a public WordPress plugin based on it,  because I will make it soon and it will be open souce too. (<a href="http://dimsemenov.com/subscribe.html">Want to get notified?</a>).
+</p>
+
+<h2>Bugs & contributing</h2>
+<p>Please report bugs via <a href="https://github.com/dimsemenov/Magnific-Popup/issues">GitHub</a> and ask general questions through <a href="http://stackoverflow.com/questions/ask?tags=magnific-popup">StackOverflow</a>. Feel free to submit commit, even the tiniest contributions to the script or to the documentation are very welcome.</p>
+<p>Special thanks to:</p>
+<ul>
+  <li><a href="https://twitter.com/lokesh">Lokesh Dhakar</a> for original Lightbox script.</li>
+  <li><a href="https://twitter.com/chriscoyier">Chris Coyier</a> for awesome CSS techniques.</li>
+  <li><a href="https://twitter.com/brad_frost">Brad Frost</a> for conditional lightbox technique.</li>
+</uL>
+
+<h2>Updates</h2>
+<p>If you wish to get notified about important plugin updates, you may star and watch the repository on <a href="https://github.com/dimsemenov/Magnific-Popup">GitHub</a>, follow <a href="http://twitter.com/dimsemenov">me on Twitter</a>, or join my tiny Mailchimp <a href="http://dimsemenov.com/subscribe.html">email newsletter</a> that I send 3-4 times a year.</p>
+
+
+<div class="share-buttons">
+  <h2>Please spread the word if you find the plugin useful</h2>
+  <div id="buttons-row">
+    <a id="tweet" rel="nofollow" href="https://twitter.com/intent/tweet?text=Magnific%20Popup%20-%20responsive%20lightbox%20plugin&amp;url=http%3A%2F%2Fbit.ly%2Fmagnificpopup&amp;via=dimsemenov">Tweet!</a>
+    <a id="like" rel="nofollow" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fdimsemenov.com%2Fplugins%2Fmagnific-popup%2F%3Futm_source%3Dfb%26utm_medium%3Dsocial%26utm_campaign%3Dmfp">Like!</a> 
+    <a id="gplus" rel="nofollow" href="https://plus.google.com/share?url=http%3A%2F%2Fdimsemenov.com%2Fplugins%2Fmagnific-popup%2F%3Futm_source%3Dgplus%26utm_medium%3Dsocial%26utm_campaign%3Dmfp">+1</a>
+    <iframe src="http://ghbtns.com/github-btn.html?user=dimsemenov&amp;repo=magnific-popup&amp;type=watch&amp;count=true&amp;size=large" allowtransparency="true" frameborder="0" scrolling="0" width="155" height="30" style="transform: translateY(8px);-moz-transform: translateY(8px);-webkit-transform: translateY(8px); margin-left: 9px;"></iframe>
+  </div>
+</div>
+<script>
+(function(){
+  var openWindowPopup = function(e) {
+    if(!e) return;
+    e.preventDefault();
+    window.open(e.target.href, "intent", "scrollbars=yes,resizable=yes,toolbar=no,location=yes,width=550,height=420,left=" + (window.screen ? Math.round(screen.width / 2 - 275) : 50) + ",top=" + 100);
+  };
+  var ids = ['tweet', 'like', 'gplus'];
+  for(var i = 0; i < ids.length; i++) {
+    document.getElementById(ids[i]).onclick = openWindowPopup;
+  }
+})();
+</script>

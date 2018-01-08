@@ -1,0 +1,64 @@
+/* Tablesaw Sass Mixins */
+
+@mixin tablesaw-stack-max {
+  .tablesaw-stack thead td,
+  .tablesaw-stack thead th {
+    display: none;
+  }
+  .tablesaw-stack tbody td,
+  .tablesaw-stack tbody th {
+    clear: left;
+    float: left;
+    width: 100%;
+  }
+  .tablesaw-cell-label {
+    vertical-align: top;
+  }
+  .tablesaw-cell-content {
+    max-width: 67%;
+    display: inline-block;
+  }
+  .tablesaw-stack td:empty,
+  .tablesaw-stack th:empty {
+    display: none;
+  }
+}
+
+@mixin tablesaw-stack-min {
+  .tablesaw-stack tr {
+    display: table-row;
+  }
+  /* Show the table header rows */
+  .tablesaw-stack td,
+  .tablesaw-stack th,
+  .tablesaw-stack thead td,
+  .tablesaw-stack thead th {
+    display: table-cell;
+    margin: 0;
+  }
+  /* Hide the labels in each cell */
+  .tablesaw-stack td .tablesaw-cell-label,
+  .tablesaw-stack th .tablesaw-cell-label {
+    display: none !important;
+  }
+}
+
+$use-respond-mixins: false !default;
+@mixin tablesaw-stack( $breakpoint: 40em ) {
+  @if $use-respond-mixins {
+    @include respond-max($breakpoint - .0625) {
+      @include tablesaw-stack-max;
+    }
+    @include respond-min($breakpoint) {
+      @include tablesaw-stack-min;
+    }
+  }
+  @else {
+    @media (max-width: ($breakpoint - .0625)) {
+      @include tablesaw-stack-max;
+    }
+    @media (min-width: $breakpoint) {
+      @include tablesaw-stack-min;
+    }
+  }
+}

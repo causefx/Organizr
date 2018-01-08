@@ -1,0 +1,30 @@
+{
+    "2.0.0-alpha": {
+        "date":"20171201",
+        "title": "Relase Title1",
+        "new": "awesome things|that thing",
+        "fixed": "this|that",
+        "notes": ""
+    },
+	"2.0.0-beta": {
+        "date":"20171205",
+        "title": "Relase Title2",
+        "new": "",
+        "fixed": "how|you|doing",
+        "notes": "somehere"
+    },
+	"2.0.0-rc1": {
+        "date":"20171208",
+        "title": "Relase Title3",
+        "new": "nzbget|sonarr",
+        "fixed": "php bug",
+        "notes": ""
+    },
+	"2.0.0-rc2": {
+        "date":"20171215",
+        "title": "Almost Ready for Prime Time",
+        "new": "All new Settings Page|Another Cool ass area|that other thing",
+        "fixed": "bug over here|bug over there|oh yeah and another bug there",
+        "notes": "i sure hope all of this works|if it doesnt i will be mad!"
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "jquery.steps",
+    "description": "A powerful jQuery wizard plugin that supports accessibility and HTML5.",
+    "keywords": [
+        "wizard",
+        "navigation",
+        "forms",
+        "UI",
+        "component",
+        "HTML5",
+        "accessibility",
+        "validation",
+        "tabs",
+        "steps"
+    ],
+    "version": "1.1.0",
+    "authors": [
+        { "name": "Rafael Staib", "email": "me@rafaelstaib.com", "url": "http://www.rafaelstaib.com" }
+    ],
+    "homepage": "http://www.jquery-steps.com",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/rstaib/jquery-steps.git"
+    },
+    "license": "MIT",
+    "main": [
+        "build/jquery.steps.js",
+        "demo/css/jquery.steps.css"
+    ],
+    "ignore": [
+        "**/.*",
+        "build/*.nupkg",
+        "build/*.zip",
+        "lib",
+        "nuget",
+        "src",
+        "test",
+        "*.md",
+        "*.txt",
+        "Gruntfile.js",
+        "package.json",
+        "steps.jquery.json"
+    ],
+    "dependencies": {
+        "jquery": ">=1.9.0"
+    }
+}

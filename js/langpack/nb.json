@@ -1,0 +1,10 @@
+{
+    "token": {
+        "Navigation":"Navigasjon",
+        "Date":"Dato",
+        "Type":"Type",
+        "IP Address":"IP Addresse",
+        "Username":"Brukernavn",
+        "Message":"Melding"
+    }
+}

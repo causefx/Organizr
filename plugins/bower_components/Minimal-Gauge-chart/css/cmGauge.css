@@ -1,0 +1,96 @@
+.gauge {
+    position: relative;
+    display: inline-block;
+    font-size: 33px;
+    line-height: 1em;
+    height: 250px;
+    width: 250px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.gauge.gauge-big {
+    font-size: 117px;
+}
+
+.gauge.gauge-small {
+    font-size: 17px;
+}
+
+.gauge:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    font-size: 100%;
+    height: 250px;
+    width: 250px;
+    line-height: 1em;
+    border: 0.35em solid #666666;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+    -o-border-radius: 100%;
+    border-radius: 100%;
+    clip: rect(auto, auto, 150px, auto);
+}
+
+.gauge .gauge-arrow {
+    height: 150px;
+    width: 5px;
+    top: 20%;
+    margin-left: -.05em;
+    -webkit-transform-origin: 50% 100%;
+    -moz-transform-origin: 50% 100%;
+    -ms-transform-origin: 50% 100%;
+    -o-transform-origin: 50% 100%;
+    transform-origin: 50% 100%;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+.gauge .gauge-arrow, .gauge .gauge-arrow:before {
+    position: absolute;
+    display: inline-block;
+    background: #4e5767;
+    left: 50%;
+    border-radius: 100% 100% 100% 100% / 100% 100% 0 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.gauge .gauge-arrow:before {
+    content: '';
+    height: 0.25em;
+    width: 0.255em;
+    bottom: -0em;
+    margin-left: -0.12em;
+    border-radius: 100%;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+    -o-border-radius: 100%;
+}
+
+.gauge-red.gauge:before {
+    border-color: #2dace2;
+}
+
+.gauge-orange.gauge:before {
+   border-color: #8ceab9; 
+}
+
+.gauge-yellow.gauge:before {
+    border-color: #ff7676;
+}
+
+.gauge-green.gauge:before {
+    border-color: #8ceab9;
+}

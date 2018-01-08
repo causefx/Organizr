@@ -1,0 +1,133 @@
+<!DOCTYPE html>  
+<html>
+    <head>
+        <title>Dropify — Override your input files with style.</title>
+        <meta name="description" content="">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+        <meta name="format-detection" content="telephone=no">
+        <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700,900|Roboto+Condensed:400,300,700' rel='stylesheet' type='text/css'>
+        
+        <link rel="stylesheet" href="dist/css/dropify.min.css">
+    </head>
+    <body>
+        <a href="https://github.com/JeremyFagis/dropify" target="_blank"><img style="position: fixed; top: 0; right: 0; border: 0; z-index: 1000;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+        <header id="header">
+            <hgroup>
+                <h1>Dropify</h1>
+                <h2>Override your input files with style</h2>
+            </hgroup>
+        </header>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">
+                    <h2>Before</h2>
+                    <label for="input-file-before">Basic HTML input file</label>
+                    <input type="file" id="input-file-before" />
+                    <hr class="big" />
+                    <h2>Now</h2>
+                    <label for="input-file-now">Your so fresh input file — Default version</label>
+                    <input type="file" id="input-file-now" class="dropify" />
+                    <br />
+                    <label for="input-file-now-custom-1">You can add a default value</label>
+                    <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="src/images/test-image-1.jpg" />
+                    <br />
+                    <label for="input-file-now-custom-2">You can set the height</label>
+                    <input type="file" id="input-file-now-custom-2" class="dropify" data-height="500" />
+                    <br />
+                    <label for="input-file-now-custom-3">You can combine options</label>
+                    <input type="file" id="input-file-now-custom-3" class="dropify" data-height="500" data-default-file="src/images/test-image-2.jpg" />
+                    <br />
+                    <label for="input-file-now-disabled-1">You can disabled the input</label>
+                    <input type="file" id="input-file-now-disabled-1" class="dropify" disabled="disabled" />
+                    <br />
+                    <label for="input-file-now-disabled-2">Also with a default file</label>
+                    <input type="file" id="input-file-now-disabled-2" class="dropify" disabled="disabled" data-default-file="src/images/test-image-1.jpg" />
+                    <br />
+                    <label for="input-file-max-fs">You can add a max file size</label>
+                    <input type="file" id="input-file-max-fs" class="dropify" data-max-file-size="2M" />
+                    <br />
+                    <label for="input-file-disable-remove">You can disable remove button</label>
+                    <input type="file" id="input-file-disable-remove" class="dropify" data-show-remove="false" />
+                    <br />
+                    <label for="input-file-events">You can use events</label>
+                    <input type="file" id="input-file-events" class="dropify-event" data-default-file="src/images/test-image-1.jpg" />
+                    <br />
+                    <label for="input-file-to-destroy">You can destroy it <button type="button" id="toggleDropify">Init/Destroy</button></label>
+                    <input type="file" id="input-file-to-destroy" class="dropify" data-default-file="src/images/test-image-1.jpg" />
+                    <br />
+                    <label for="input-file-to-destroy">Multiple options are available</label>
+                    <input type="file" id="input-file-to-destroy" class="dropify" data-allowed-formats="portrait square" data-max-file-size="2M" data-max-height="2000" />
+                    <p class="help">Only portrait or square images, 2M max and 2000px max-height.</p>
+                    <br />
+                    <h2>French one</h2>
+                    <label for="input-file-french-1">"Et voilà"</label>
+                    <input type="file" id="input-file-french-1" class="dropify-fr" data-default-file="" />
+                    <br />
+                    <label for="input-file-french-2">"Avec options"</label>
+                    <input type="file" id="input-file-french-2" class="dropify-fr" data-height="350" data-default-file="src/images/test-image-2.jpg" />
+                </div>
+            </div>
+        </div>
+
+        <footer id="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-8 col-xs-6 no-padding-bottom">
+                        <a href="https://github.com/JeremyFagis/dropify" target="_blank">Github repository</a>
+                    </div>
+                    <div class="col-sm-4 col-xs-6 text-right no-padding-bottom">2016 &copy; <a href="http://www.fagis.fr" target="_blank">Jeremy FAGIS</a></div>
+                </div>
+            </div>
+
+        </footer>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="dist/js/dropify.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                // Basic
+                $('.dropify').dropify();
+
+                // Translated
+                $('.dropify-fr').dropify({
+                    messages: {
+                        default: 'Glissez-déposez un fichier ici ou cliquez',
+                        replace: 'Glissez-déposez un fichier ou cliquez pour remplacer',
+                        remove:  'Supprimer',
+                        error:   'Désolé, le fichier trop volumineux'
+                    }
+                });
+
+                // Used events
+                var drEvent = $('#input-file-events').dropify();
+
+                drEvent.on('dropify.beforeClear', function(event, element){
+                    return confirm("Do you really want to delete \"" + element.file.name + "\" ?");
+                });
+
+                drEvent.on('dropify.afterClear', function(event, element){
+                    alert('File deleted');
+                });
+
+                drEvent.on('dropify.errors', function(event, element){
+                    console.log('Has Errors');
+                });
+
+                var drDestroy = $('#input-file-to-destroy').dropify();
+                drDestroy = drDestroy.data('dropify')
+                $('#toggleDropify').on('click', function(e){
+                    e.preventDefault();
+                    if (drDestroy.isDropified()) {
+                        drDestroy.destroy();
+                    } else {
+                        drDestroy.init();
+                    }
+                })
+            });
+        </script>
+    </body>
+</html>

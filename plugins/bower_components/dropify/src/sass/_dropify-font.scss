@@ -1,0 +1,29 @@
+@font-face {
+  font-family: 'dropify';
+  src: url('#{$dropify-font-path}/dropify.eot');
+  src: url('#{$dropify-font-path}/dropify.eot#iefix') format('embedded-opentype'),
+       url('#{$dropify-font-path}/dropify.woff') format('woff'),
+       url('#{$dropify-font-path}/dropify.ttf') format('truetype'),
+       url('#{$dropify-font-path}/dropify.svg#dropify') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+ [class^="dropify-font-"]:before, [class*=" dropify-font-"]:before, .dropify-font:before {
+  font-family: "dropify";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-left: .2em;
+  margin-right: .2em;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+}
+
+.dropify-font-upload:before { content: '\e800'; }
+.dropify-font-file:before { content: '\e801'; }

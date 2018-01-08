@@ -1,0 +1,35 @@
+{
+    "name": "jquery-asColorPicker",
+    "title": "asColorPicker",
+    "description": "a jquery asColorPicker",
+    "version": "0.3.1",
+    "homepage": "https://github.com/amazingSurge/jquery-asColorPicker",
+    "author": {
+        "name": "amazingSurge",
+        "email": "amazingSurge@yahoo.com",
+        "url": "amazingSurge.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/amazingSurge/jquery-asColorPicker.git"
+    },
+    "bugs": "https://github.com/amazingSurge/jquery-asColorPicker/issues",
+    "licenses": [{
+        "type": "GPL",
+        "url": "https://github.com/amazingSurge/jquery-asColorPicker/blob/master/LICENSE-GPL"
+    }],
+    "devDependencies": {
+        "grunt-contrib-jshint": "*",
+        "grunt-contrib-concat": "*",
+        "grunt-contrib-uglify": "*",
+        "grunt-contrib-watch": "*",
+        "grunt-contrib-clean": "*",
+        "grunt": "*",
+        "grunt-jsbeautifier": "*",
+        "load-grunt-tasks": "*",
+        "grunt-text-replace": "*",
+        "grunt-contrib-copy": "*",
+        "grunt-contrib-less": "*",
+        "grunt-autoprefixer": "*"
+    }
+}

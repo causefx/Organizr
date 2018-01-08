@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Diagrams</title>
+		<link href="css/default.css" rel="stylesheet" type="text/css" />
+		<link href="http://fonts.googleapis.com/css?family=Cabin+Sketch:bold" rel="stylesheet" type="text/css" />
+		<script src="js/jquery.js" type="text/javascript"></script>
+		<script src="js/raphael.js" type="text/javascript"></script>
+		<script src="js/init.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div id="content">
+			<div class="legend">
+				<h1>Legend:</h1>
+				<div class="skills">
+					<ul>
+						<li class="jq">JavaScript</li>
+						<li class="css">CSS3</li>
+						<li class="html">HTML5</li>
+						<li class="php">PHP</li>
+						<li class="sql">MySQL</li>
+					</ul>
+				</div>	
+			</div>
+			<div id="diagram"></div>
+		</div>
+
+		<div class="footer">
+			<div class="inside">
+				<a href="http://playground.mobily.pl">Marcin Dziewulski</a> for <a href="http://tympanus.net/codrops/2011/04/22/animated-skills-diagram/">Codrops</a>
+			</div>
+		</div>
+
+		<div class="get">
+			<div class="arc">
+				<span class="text">JavaScript</span>
+				<input type="hidden" class="percent" value="95" />
+				<input type="hidden" class="color" value="#97BE0D" />
+			</div>
+			<div class="arc">
+				<span class="text">CSS3</span>
+				<input type="hidden" class="percent" value="90" />
+				<input type="hidden" class="color" value="#D84F5F" />
+			</div>
+			<div class="arc">
+				<span class="text">HTML5</span>
+				<input type="hidden" class="percent" value="80" />
+				<input type="hidden" class="color" value="#88B8E6" />
+			</div>
+			<div class="arc">
+				<span class="text">PHP</span>
+				<input type="hidden" class="percent" value="53" />
+				<input type="hidden" class="color" value="#BEDBE9" />
+			</div>
+			<div class="arc">
+				<span class="text">MySQL</span>
+				<input type="hidden" class="percent" value="45" />
+				<input type="hidden" class="color" value="#EDEBEE" />
+			</div>
+		</div>
+	</body>
+</html>

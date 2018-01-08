@@ -1,0 +1,229 @@
+<!DOCTYPE html>  
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>asColorPicker</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="css/prism.css">
+        <link rel="stylesheet" href="css/main.css">       
+        <link rel="stylesheet" href="../css/asColorPicker.css">
+
+        <script src="../libs/jquery.min.js"></script>
+        <script src="js/jquery.toc.js"></script>
+        <script src="js/prism.js"></script>
+
+        <script src="../libs/jquery-asColor.js"></script>
+		<script src="../libs/jquery-asGradient.js"></script>
+        <script src="../src/core.js"></script>
+        <script src="../src/trigger.js"></script>
+        <script src="../src/alpha.js"></script>
+        <script src="../src/buttons.js"></script>
+        <script src="../src/gradient.js"></script>
+        <script src="../src/hue.js"></script>
+        <script src="../src/buttons.js"></script>
+        <script src="../src/hex.js"></script>
+        <script src="../src/info.js"></script>
+        <script src="../src/keyboard.js"></script>
+        <script src="../src/palettes.js"></script>
+        <script src="../src/preview.js"></script>
+        <script src="../src/saturation.js"></script>
+        <script src="../src/clear.js"></script>
+    </head>
+<body>
+<!--[if lt IE 7]>
+    <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+<![endif]-->
+
+<div id="toc"></div>
+<div id="wrapper">
+    <section>
+        <h3>Default</h3>
+        <pre class="has-example"><code class="language-javascript">
+$(".example_default").asColorPicker();
+        </code></pre>
+        <div class="example">
+            <input type='text' class="example_default" value="#000" />                
+            <script>
+                $(document).ready(function() {
+                    $(".example_default").asColorPicker();
+                });
+            </script>
+        </div>
+    </section>
+
+    <section>
+        <h3>Mode: palettes</h3>
+        <pre class="has-example"><code class="language-javascript">
+$(".example_palettes").asColorPicker({
+    mode: 'palettes'
+});
+        </code></pre>
+        <div class="example">
+            <input type='text' class="example_palettes" data-mode="palettes" value="#000" />                
+            <script>
+                $(document).ready(function() {
+                    $(".example_palettes").asColorPicker();
+                });
+            </script>
+        </div>
+    </section>
+
+    <section>
+        <h3>Mode: complex</h3>
+        <pre class="has-example"><code class="language-javascript">
+$(".example_complex").asColorPicker({
+    mode: 'complex'
+});
+        </code></pre>
+        <div class="example">
+            <input type='text' class="example_complex" data-mode="complex" value="#000" />                
+            <script>
+                $(document).ready(function() {
+                    $(".example_complex").asColorPicker();
+                });
+            </script>
+        </div>
+    </section>
+
+    <section>
+        <h3>Mode: gradient</h3>
+        <pre class="has-example"><code class="language-javascript">
+$(".example_gradient").asColorPicker({
+    mode: 'gradient'
+});
+        </code></pre>
+        <div class="example">
+            <input type='text' class="example_gradient" data-mode="gradient" value="#000" style="width: 500px" />                
+            <script>
+                $(document).ready(function() {
+                    $(".example_gradient").asColorPicker();
+                });
+            </script>
+        </div>
+    </section>
+
+    <section>
+        <h3>Mode: gradient without switchable</h3>
+        <pre class="has-example"><code class="language-javascript">
+$(".example_gradient_2").asColorPicker({
+    mode: 'gradient',
+    gradient: {
+        switchable: false
+    }
+});
+        </code></pre>
+        <div class="example">
+            <input type='text' class="example_gradient_2" data-mode="gradient" value="#000" style="width: 500px" />                
+            <script>
+                $(document).ready(function() {
+                    $(".example_gradient_2").asColorPicker({
+                        gradient: {
+                            switchable: false
+                        }
+                    });
+                });
+            </script>
+        </div>
+    </section>
+
+    <section>
+        <h3>Mode: gradient with gradient value</h3>
+        <pre class="has-example"><code class="language-javascript">
+$(".example_gradient_value").asColorPicker();
+        </code></pre>
+        <div class="example">
+            <input type='text' class="example_gradient_value" data-mode="gradient" value="linear-gradient(0deg,#ff0000 0%,rgba(25,11,111,1) 50%,rgba(205,240,86,1) 100%)" style="width: 500px" />                
+            <script>
+                $(document).ready(function() {
+                    $(".example_gradient_value").asColorPicker();
+                });
+            </script>
+        </div>
+    </section>
+
+    <section>
+        <h3>Mode: gradient with color value</h3>
+        <pre class="has-example"><code class="language-javascript">
+$(".example_gradient_color").asColorPicker();
+        </code></pre>
+        <div class="example">
+            <input type='text' class="example_gradient_color" data-mode="gradient" value="rgb(50, 50, 50)" style="width: 500px" />                
+            <script>
+                $(document).ready(function() {
+                    $(".example_gradient_color").asColorPicker();
+                });
+            </script>
+        </div>
+    </section>
+
+
+    <section>
+        <h3>Hide Input</h3>
+        <pre class="has-example"><code class="language-javascript">
+$(".example_5").asColorPicker({
+    hideInput: true
+});
+        </code></pre>
+        <div class="example">
+            <input type='text' class="example_5" value="#000" />                
+            <script>
+                $(document).ready(function() {
+                    $(".example_5").asColorPicker({
+                        hideInput: true
+                    });
+                });
+            </script>
+        </div>
+    </section>
+
+    <section>
+        <h3>Read Only</h3>
+        <pre class="has-example"><code class="language-javascript">
+$(".example_6").asColorPicker({
+    readonly: true
+});
+        </code></pre>
+        <div class="example">
+            <input type='text' class="example_6" value="#000" />                
+            <script>
+                $(document).ready(function() {
+                    $(".example_6").asColorPicker({
+                        readonly: true
+                    });
+                });
+            </script>
+        </div>
+    </section>
+    <section>
+        <h3>Disable hideFireChange</h3>
+        <pre class="has-example"><code class="language-javascript">
+$(".example_7").asColorPicker({
+    hideFireChange: false
+});
+        </code></pre>
+        <div class="example">
+            <input type='text' class="example_7" value="#000" />                
+            <script>
+                $(document).ready(function() {
+                    $(".example_7").asColorPicker({
+                        hideFireChange: false
+                    });
+                });
+            </script>
+        </div>
+    </section>
+</div>
+
+<script>
+(function(){
+    $('#toc').toc();
+    })();
+</script>
+</body>
+</html>
