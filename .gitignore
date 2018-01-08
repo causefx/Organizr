@@ -81,3 +81,7 @@ logs/
 debug.php
 OrganizrV2/*
 orgv2/*
+test.php
+organizrLoginLog.json
+organizrLog.json
+api/config/config*
