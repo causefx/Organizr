@@ -1122,23 +1122,23 @@ function updateCheck(){
 }
 function updateNow(){
 	console.log('Organizr Function: Starting Update Process');
-	message('',window.lang.translate('Starting Update Process'),'bottom-right','#FFF','success','10000');
+	message('',window.lang.translate('Starting Update Process [DO NOT CLOSE WINDOW]'),'bottom-right','#FFF','success','10000');
 	organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:1}).success(function(data) {
 		var json = JSON.parse(data);
 		if(json.data == true){
-			messageSingle('',window.lang.translate('Update File Downloaded'),'bottom-right','#FFF','success','10000');
+			messageSingle('',window.lang.translate('Update File Downloaded [DO NOT CLOSE WINDOW]'),'bottom-right','#FFF','success','60000');
 			organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:2}).success(function(data) {
 				var json = JSON.parse(data);
 				if(json.data == true){
-					messageSingle('',window.lang.translate('Update File Unzipped'),'bottom-right','#FFF','success','10000');
+					messageSingle('',window.lang.translate('Update File Unzipped [DO NOT CLOSE WINDOW]'),'bottom-right','#FFF','success','60000');
 					organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:3}).success(function(data) {
 						var json = JSON.parse(data);
 						if(json.data == true){
-							messageSingle('',window.lang.translate('Update Files Copied'),'bottom-right','#FFF','success','10000');
+							messageSingle('',window.lang.translate('Update Files Copied [DO NOT CLOSE WINDOW]'),'bottom-right','#FFF','success','60000');
 							organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:4}).success(function(data) {
 								var json = JSON.parse(data);
 								if(json.data == true){
-									messageSingle('',window.lang.translate('Update Cleanup Finished'),'bottom-right','#FFF','success','10000');
+									messageSingle('',window.lang.translate('Update Cleanup Finished [DO NOT CLOSE WINDOW]'),'bottom-right','#FFF','success','60000');
 									location.reload();
 								}else{
 									message('',window.lang.translate('Update Cleanup Failed'),'bottom-right','#FFF','error','10000');
