@@ -287,6 +287,21 @@ switch ($function) {
                 break;
         }
         break;
+    case 'v1_upgrade':
+    case 'v1_update':
+    case 'v1_force':
+        switch ($method) {
+            case 'POST':
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = upgradeInstall($_POST['data']['branch'],$_POST['data']['stage']);
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_login_page':
         switch ($method) {
             case 'GET':

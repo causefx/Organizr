@@ -8,7 +8,6 @@ function upgradeInstall($branch = 'v2-master', $stage) {
     $source = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'upgrade'.DIRECTORY_SEPARATOR.'Organizr-'.str_replace('v2','2',$branch).DIRECTORY_SEPARATOR;
     $cleanup = dirname(__DIR__,2) .DIRECTORY_SEPARATOR."upgrade".DIRECTORY_SEPARATOR;
     $destination = dirname(__DIR__,2).DIRECTORY_SEPARATOR;
-	echo 'URL: ',$url, '<br/></br/>FILENAME: ',$file,'<br/></br/>SOURCLEFILE: ', $source,'<br/></br/>DELETE DIR: ', $cleanup,'<br/></br/>OVERWRITE: ', $destination;
 	switch ($stage) {
 		case '1':
 			return 'stage1';

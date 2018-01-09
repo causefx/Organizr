@@ -1109,7 +1109,49 @@ function updateCheck(){
 	});
 }
 function updateNow(){
-	alert('update script');
+	console.log('Organizr Function: Starting Update Process');
+	message('',window.lang.translate('Starting Update Process'),'bottom-right','#FFF','success','10000');
+	organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:1}).success(function(data) {
+		var json = JSON.parse(data);
+		if(json.data == 'stage1'){
+			message('',window.lang.translate('Update File Downloaded'),'bottom-right','#FFF','success','10000');
+			organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:2}).success(function(data) {
+				var json = JSON.parse(data);
+				if(json.data == 'stage2'){
+					message('',window.lang.translate('Update File Unzipped'),'bottom-right','#FFF','success','10000');
+					organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:3}).success(function(data) {
+						var json = JSON.parse(data);
+						if(json.data == 'stage3'){
+							message('',window.lang.translate('Update Files Copied'),'bottom-right','#FFF','success','10000');
+							organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:4}).success(function(data) {
+								var json = JSON.parse(data);
+								if(json.data == 'stage4'){
+									message('',window.lang.translate('Update Cleanup Finished'),'bottom-right','#FFF','success','10000');
+									location.reload();
+								}else{
+									message('',window.lang.translate('Update Cleanup Failed'),'bottom-right','#FFF','danger','10000');
+								}
+							}).fail(function(xhr) {
+								console.error("Organizr Function: API Connection Failed");
+							});
+						}else{
+							message('',window.lang.translate('Update File Copy Failed'),'bottom-right','#FFF','danger','10000');
+						}
+					}).fail(function(xhr) {
+						console.error("Organizr Function: API Connection Failed");
+					});
+				}else{
+					message('',window.lang.translate('Update File Unzip Failed'),'bottom-right','#FFF','danger','10000');
+				}
+			}).fail(function(xhr) {
+				console.error("Organizr Function: API Connection Failed");
+			});
+		}else{
+			message('',window.lang.translate('Update File Download Failed'),'bottom-right','#FFF','danger','10000');
+		}
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
 }
 function organizrAPI(type,path,data=null){
 	//console.log('Organizr API: Calling API: '+path);
