@@ -55,6 +55,7 @@ function upgradeInstall($branch = 'v2-master', $stage) {
 }
 function downloadFile($url, $path){
 	ini_set('max_execution_time',0);
+	set_time_limit(0);
 	$folderPath = dirname(__DIR__,2).DIRECTORY_SEPARATOR."upgrade".DIRECTORY_SEPARATOR;
 	if(!mkdir($folderPath)){
 		//writeLog("error", "organizr could not create upgrade folder");

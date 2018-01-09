@@ -87,3 +87,4 @@ organizrLog.json
 api/config/config*
 upgrade/*
 api/upgrade*
+cacert.pem

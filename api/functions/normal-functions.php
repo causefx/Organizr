@@ -150,3 +150,100 @@ function arrayIP($string){
     }
     return $result;
 }
+function getCert(){
+	$url = 'http://curl.haxx.se/ca/cacert.pem';
+	$file = __DIR__.DIRECTORY_SEPARATOR.'cert'.DIRECTORY_SEPARATOR.'cacert.pem';
+	$directory = __DIR__.DIRECTORY_SEPARATOR.'cert'.DIRECTORY_SEPARATOR;
+	if(!file_exists($file)){
+    	file_put_contents( $file, fopen($url, 'r'));
+	}elseif (file_exists($file) && time() - 2592000 > filemtime($file)) {
+		file_put_contents( $file, fopen($url, 'r'));
+	}
+	return $file;
+}
+function curl($curl, $url, $headers=array(), $data=array()){
+    // Initiate cURL
+    $curlReq = curl_init($url);
+    if (in_array(trim(strtoupper($curl)), ["GET","POST","PUT","DELETE"])) {
+        curl_setopt($curlReq, CURLOPT_CUSTOMREQUEST, trim(strtoupper($curl)));
+    } else {
+        return null;
+    }
+    curl_setopt($curlReq, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curlReq, CURLOPT_CAINFO, getCert());
+    curl_setopt($curlReq, CURLOPT_CONNECTTIMEOUT, 5);
+    if(localURL($url)){
+        curl_setopt($curlReq, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($curlReq, CURLOPT_SSL_VERIFYPEER, 0);
+    }
+    // Format Headers
+    $cHeaders = array();
+    foreach ($headers as $k => $v) {
+        $cHeaders[] = $k.': '.$v;
+    }
+    if (count($cHeaders)) {
+        curl_setopt($curlReq, CURLOPT_HTTPHEADER, $cHeaders);
+    }
+    // Format Data
+    switch (isset($headers['Content-Type'])?$headers['Content-Type']:'') {
+        case 'application/json':
+            curl_setopt($curlReq, CURLOPT_POSTFIELDS, json_encode($data));
+            break;
+        case 'application/x-www-form-urlencoded':
+            curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+            break;
+        default:
+            $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            curl_setopt($curlReq, CURLOPT_POSTFIELDS, http_build_query($data));
+    }
+    // Execute
+    $result = curl_exec($curlReq);
+    $httpcode = curl_getinfo($curlReq);
+    // Close
+    curl_close($curlReq);
+    // Return
+    return array('content'=>$result, 'http_code'=>$httpcode);
+}
+function getHeaders($url){
+	$ch = curl_init($url);
+	curl_setopt( $ch, CURLOPT_NOBODY, true );
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, false );
+	curl_setopt( $ch, CURLOPT_HEADER, false );
+	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+	curl_setopt( $ch, CURLOPT_MAXREDIRS, 3 );
+	curl_setopt( $ch, CURLOPT_CAINFO, getCert());
+	if(localURL($url)){
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0);
+	}
+	curl_exec( $ch );
+	$headers = curl_getinfo( $ch );
+	curl_close( $ch );
+
+	return $headers;
+}
+function download($url, $path){
+	ini_set('max_execution_time',0);
+	set_time_limit(0);
+	$ch = curl_init($url);
+	curl_setopt($ch, CURLOPT_HEADER, 1);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt( $ch, CURLOPT_CAINFO, getCert());
+	if(localURL($url)){
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0);
+	}
+	$raw_file_data = curl_exec($ch);
+	curl_close($ch);
+	file_put_contents($path, $raw_file_data);
+	return (filesize($path) > 0)? true : false;
+}
+function localURL($url){
+	if (strpos($url, 'https') !== false) {
+		preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $url, $result);
+		$result = (!empty($result) ? true : false);
+		return $result;
+	}
+}
