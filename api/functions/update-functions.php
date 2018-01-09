@@ -89,6 +89,8 @@ function downloadFile($url, $path){
 	return true;
 }
 function unzipFile($zipFile){
+	ini_set('max_execution_time',0);
+	set_time_limit(0);
 	$zip = new ZipArchive;
 	$extractPath = dirname(__DIR__,2).DIRECTORY_SEPARATOR."upgrade/";
 	if($zip->open($extractPath . $zipFile) != "true"){
@@ -103,6 +105,8 @@ function unzipFile($zipFile){
 }
 // Function to remove folders and files
 function rrmdir($dir) {
+	ini_set('max_execution_time',0);
+	set_time_limit(0);
 	if (is_dir($dir)) {
 		$files = scandir($dir);
 		foreach ($files as $file)
@@ -114,6 +118,8 @@ function rrmdir($dir) {
 }
 // Function to Copy folders and files
 function rcopy($src, $dst) {
+	ini_set('max_execution_time',0);
+	set_time_limit(0);
 	if (is_dir ( $src )) {
 		if (!file_exists($dst)) : mkdir ( $dst ); endif;
 		$files = scandir ( $src );
