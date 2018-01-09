@@ -4,7 +4,7 @@
 // Upgrade the installation
 function upgradeInstall($branch = 'v2-master', $stage) {
     $url = 'https://github.com/causefx/Organizr/archive/'.$branch.'.zip';
-    $file = dirname(__DIR__,2).DIRECTORY_SEPARATOR."upgrade.zip";
+    $file = "upgrade.zip";
     $source = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'upgrade'.DIRECTORY_SEPARATOR.'Organizr-'.str_replace('v2','2',$branch).DIRECTORY_SEPARATOR;
     $cleanup = dirname(__DIR__,2) .DIRECTORY_SEPARATOR."upgrade".DIRECTORY_SEPARATOR;
     $destination = dirname(__DIR__,2).DIRECTORY_SEPARATOR;
@@ -55,7 +55,7 @@ function upgradeInstall($branch = 'v2-master', $stage) {
 }
 function downloadFile($url, $path){
 	ini_set('max_execution_time',0);
-	$folderPath = "upgrade".DIRECTORY_SEPARATOR;
+	$folderPath = dirname(__DIR__,2).DIRECTORY_SEPARATOR."upgrade".DIRECTORY_SEPARATOR;
 	if(!mkdir($folderPath)){
 		//writeLog("error", "organizr could not create upgrade folder");
 	}
