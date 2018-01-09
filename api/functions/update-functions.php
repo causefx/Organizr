@@ -89,7 +89,7 @@ function downloadFile($url, $path){
 }
 function unzipFile($zipFile){
 	$zip = new ZipArchive;
-	$extractPath = "upgrade/";
+	$extractPath = dirname(__DIR__,2).DIRECTORY_SEPARATOR."upgrade/";
 	if($zip->open($extractPath . $zipFile) != "true"){
 		//writeLog("error", "organizr could not unzip upgrade.zip");
 	}else{
