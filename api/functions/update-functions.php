@@ -2,40 +2,61 @@
 
 
 // Upgrade the installation
-function upgradeInstall($branch = 'v2-master') {
+function upgradeInstall($branch = 'v2-master', $stage) {
     $url = 'https://github.com/causefx/Organizr/archive/'.$branch.'.zip';
     $file = "upgrade.zip";
     $source = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'upgrade'.DIRECTORY_SEPARATOR.'Organizr-'.str_replace('v2','2',$branch).DIRECTORY_SEPARATOR;
     $cleanup = dirname(__DIR__,2) .DIRECTORY_SEPARATOR."upgrade".DIRECTORY_SEPARATOR;
     $destination = dirname(__DIR__,2).DIRECTORY_SEPARATOR;
 	echo 'URL: ',$url, '<br/></br/>FILENAME: ',$file,'<br/></br/>SOURCLEFILE: ', $source,'<br/></br/>DELETE DIR: ', $cleanup,'<br/></br/>OVERWRITE: ', $destination;
-	//writeLog("success", "starting organizr upgrade process");
-    if(downloadFile($url, $file)){
-		echo 'downloaded file';
-	}else{
-		echo 'error! download';
+	switch ($stage) {
+		case '1':
+			return 'stage1';
+			writeLog('success', 'Update Function -  Started Upgrade Process', $GLOBALS['organizrUser']['username']);
+			if(downloadFile($url, $file)){
+				writeLog('success', 'Update Function -  Downloaded Update File for Branch: '.$branch, $GLOBALS['organizrUser']['username']);
+				return true;
+			}else{
+				writeLog('error', 'Update Function -  Downloaded Update File Failed  for Branch: '.$branch, $GLOBALS['organizrUser']['username']);
+				return false;
+			}
+			break;
+		case '2':
+			return 'stage2';
+			if(unzipFile($file)){
+				writeLog('success', 'Update Function -  Unzipped Update File for Branch: '.$branch, $GLOBALS['organizrUser']['username']);
+				return true;
+			}else{
+				writeLog('error', 'Update Function -  Unzip Failed for Branch: '.$branch, $GLOBALS['organizrUser']['username']);
+				return false;
+			}
+			break;
+		case '3':
+			return 'stage3';
+			if(rcopy($source, $destination)){
+				writeLog('success', 'Update Function -  Overwrited Files using Updated Files from Branch: '.$branch, $GLOBALS['organizrUser']['username']);
+				return true;
+			}else{
+				writeLog('error', 'Update Function -  Overwrite Failed for Branch: '.$branch, $GLOBALS['organizrUser']['username']);
+				return false;
+			}
+			break;
+		case '4':
+			return 'stage4';
+			if(rrmdir($cleanup)){
+				writeLog('success', 'Update Function -  Deleted Update Files from Branch: '.$branch, $GLOBALS['organizrUser']['username']);
+				writeLog('success', 'Update Function -  Update Completed', $GLOBALS['organizrUser']['username']);
+				return true;
+			}else{
+				writeLog('error', 'Update Function -  Removal of Update Files Failed for Branch: '.$branch, $GLOBALS['organizrUser']['username']);
+				return false;
+			}
+			break;
+		default:
+			# code...
+			break;
 	}
-	if(unzipFile($file)){
-		echo 'unzipped file';
-	}else{
-		echo 'error! zip';
-	}
-	if(rcopy($source, $destination)){
-		echo 'copied file';
-	}else{
-		echo 'error! copy';
-	}
-	if(rrmdir($cleanup)){
-		echo 'removed file';
-	}else{
-		echo 'error! remove';
-	}
-    //;
-    //writeLog("success", "new organizr files copied");
-    //;
-    //writeLog("success", "organizr upgrade folder removed");
-	//writeLog("success", "organizr has been updated");
-	return true;
+	return false;
 }
 function downloadFile($url, $path){
 	ini_set('max_execution_time',0);
@@ -79,7 +100,6 @@ function unzipFile($zipFile){
 	}else{
 		//writeLog("success", "organizr unzipped upgrade.zip");
 	}
-
 	/* Extract Zip File */
 	$zip->extractTo($extractPath);
 	$zip->close();
