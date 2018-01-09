@@ -157,6 +157,13 @@ $pageSettings = '
                                             </ul>
                                         </div>
                                     </div>
+                                    <div class="col-lg-6 col-sm-12 col-md-6">
+                                        <div class="well">
+                                            <h4 lang="en">Want to help translate?</h4>
+                                            <p lang="en">Head on over to POEditor and help us translate Organizr into your language</p>
+                                            <p><a href="https://poeditor.com/join/project/T6l68hksTE" lang="en">Click Me!</a></p>
+                                        </div>
+                                    </div>
     							</div>
                                 <div class="clearfix"></div>
                             </div>

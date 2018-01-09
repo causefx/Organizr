@@ -953,6 +953,37 @@ $(document).on("click", ".changeDefaultCategory", function () {
     callbacks.add( buildCategoryEditor );
     settingsAPI(post,callbacks);
 });
+// CHANGE CUSTOMIZE Options
+$(document).on('change', '#customize-appearance-form :input', function(e) {
+	$(this).attr('data-changed', true);
+    switch ($(this).attr('type')) {
+        case 'switch':
+        case 'checkbox':
+            var value = $(this).prop("checked") ? true : false;
+            break;
+        default:
+            var value = $(this).val();
+    }
+	var post = {
+        action:'editCustomizeAppearance',
+        api:'api/?v1/settings/customize/appearance',
+        name:$(this).attr("name"),
+        value:value,
+        messageTitle:'',
+        messageBody:'Update Value for '+$(this).parent().parent().find('label').text(),
+        error:'Organizr Function: API Connection Failed'
+    };
+    console.log(post);
+    $('#customize-appearance-reload').removeClass('hidden');
+	var callbacks = $.Callbacks();
+    //callbacks.add( buildCustomizeAppearance );
+    settingsAPI(post,callbacks);
+
+});
+// RELOAD Page
+$(document).on("click", ".reload", function () {
+    location.reload();
+});
 /* ===== Open-Close Right Sidebar ===== */
 
 $(document).on("click", ".right-side-toggle", function () {

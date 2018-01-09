@@ -439,12 +439,78 @@ function hasValue(test){
 /* BUILD FUNCTIONS */
 /* END BUILD FUNCTIONS */
 /* ORGANIZR API FUNCTIONS */
+function buildFormItem(item){
+	var placeholder = (item.placeholder) ? ' placeholder="'+item.placeholder+'"' : '';
+	var id = (item.id) ? ' id="'+item.placeholder+'"' : '';
+	var value = (item.value) ? ' value="'+item.value+'"' : '';
+	var name = (item.name) ? ' name="'+item.name+'"' : '';
+	var extraClass = (item.class) ? ' '+item.class : '';
+	//+tof(item.value,'c')+`
+	switch (item.type) {
+		case 'input':
+			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+' />';
+			break;
+		case 'switch':
+		case 'checkbox':
+			return '<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+' /><input data-changed="false" type="hidden"'+name+'value="false">';
+			break;
+		default:
+			return false;
+	}
+}
+function buildCustomizeAppearanceItem(array){
+	/*
+	<!-- FORM GROUP -->
+	<h3 class="box-title">Person Info</h3>
+	<hr class="m-t-0 m-b-40">
+	<div class="row">
+
+		<!-- INPUT BOX -->
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="control-label col-md-3" lang="en">First Name</label>
+				<div class="col-md-9">
+					<input type="text" class="form-control" placeholder="John doe"></div>
+			</div>
+		</div>
+		<!--/ INPUT BOX -->
+
+	</div>
+	<!--/ FORM GROUP -->
+	*/
+	if (Array.isArray(array.config)) {
+		var preRowConfig = `
+			<!-- FORM GROUP -->
+			<h3 class="box-title" lang="en">Config Items</h3>
+			<hr class="m-t-0 m-b-40">
+			<div class="row">
+		`;
+		var customizeItems = preRowConfig;
+		$.each(array.config, function(i,v) {
+			customizeItems += `
+				<!-- INPUT BOX -->
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="control-label col-md-3" lang="en">`+v.label+`</label>
+						<div class="col-md-9">
+							`+buildFormItem(v)+`
+						</div>
+					</div>
+				</div>
+				<!--/ INPUT BOX -->
+			`;
+		});
+		customizeItems += '</div>';
+	}
+
+	return customizeItems;
+}
 function buildCustomizeAppearance(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/customize/appearance').success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response)
-		//$('#manageUserTable').html(buildUserManagementItem(response.data));
+		$('#customize-appearance-form').html(buildCustomizeAppearanceItem(response.data));
+		;
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});

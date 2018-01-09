@@ -745,6 +745,30 @@ function editCategories($array){
             break;
     }
 }
+function editAppearance($array){
+    switch ($array['data']['value']) {
+        case 'true':
+            $array['data']['value'] = (bool) true;
+            break;
+        case 'false':
+            $array['data']['value'] = (bool) false;
+            break;
+        default:
+            $array['data']['value'] = $array['data']['value'];
+    }
+    //return gettype($array['data']['value']).' - '.$array['data']['value'];
+    switch ($array['data']['action']) {
+        case 'editCustomizeAppearance':
+            $newItem = array(
+                $array['data']['name'] => $array['data']['value']
+            );
+            return (updateConfig($newItem)) ? true : false;
+            break;
+        default:
+            # code...
+            break;
+    }
+}
 function allUsers(){
     try {
     	$connect = new Dibi\Connection([
@@ -805,26 +829,41 @@ function createUser($username,$password,$defaults,$email=null) {
 }
 function getCustomizeAppearance(){
     if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
-        $array = array(
-            'config' => array(
-                'branch' => $GLOBALS['branch']
+        return array(
+            'config' => array(/*
+                array(
+                    'type' => 'select',
+                    'name' => 'branch',
+                    'label' => 'Organizr Branch',
+                    'value' => $GLOBALS['branch'],
+                    'options' => array(
+                        'Master' => 'v2-master',
+                        'Develop' => 'v2-develop'
+                    )
+                ),*/
+                array(
+                    'type' => 'input',
+                    'name' => 'logo',
+                    'label' => 'Logo',
+                    'value' => $GLOBALS['logo']
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'title',
+                    'label' => 'Title',
+                    'value' => $GLOBALS['title']
+                ),
+                array(
+                    'type' => 'switch',
+                    'name' => 'useLogo',
+                    'label' => 'Use Logo instead of Title',
+                    'value' => $GLOBALS['useLogo']
+                )
             ),
             'database' => array(
 
             )
         );
-        try {
-        	$connect = new Dibi\Connection([
-        		'driver' => 'sqlite3',
-        		'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
-        	]);
-            //$all['tabs'] = $connect->fetchAll('SELECT * FROM tabs ORDER BY `order` ASC');
-            //$all['categories'] = $connect->fetchAll('SELECT * FROM categories ORDER BY `order` ASC');
-            //$all['groups'] = $connect->fetchAll('SELECT * FROM groups ORDER BY `group_id` ASC');
-            //return $all;
-        } catch (Dibi\Exception $e) {
-            return false;
-        }
     }
 }
 function allTabs(){

@@ -2,33 +2,22 @@
 
 $pageSettingsCustomizeAppearance = '
 <script>
+	$(document).on(\'focusout\', \'#customize-appearance-form :input\', function(e) {
+		if ($(this).attr(\'data-changed\') !== "false") {
+			console.log("changed");
+		}
+	});
 buildCustomizeAppearance();
 </script>
 <div class="panel bg-theme-dark panel-info">
-    <div class="panel-heading" lang="en"> Customize Appearance</div>
+    <div class="panel-heading">
+		<span lang="en">Customize Appearance</span>
+		<button type="button" id="customize-appearance-reload" class="btn btn-primary btn-circle pull-right reload hidden m-r-5"><i class="fa fa-spin fa-refresh"></i> </button>
+		<button id="customize-appearance-reload" class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right reload hidden" type="button"><span class="btn-label"><i class="fa fa-spin fa-refresh"></i></span><span lang="en">Reload</span></button>
+	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-theme-dark">
-            <form id="customize-appearance-form" class="form-horizontal" onsbumit="return false;">
-
-                <!-- FORM GROUP -->
-                <h3 class="box-title">Person Info</h3>
-                <hr class="m-t-0 m-b-40">
-                <div class="row">
-
-                    <!-- INPUT BOX -->
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label col-md-3">First Name</label>
-                            <div class="col-md-9">
-                                <input type="text" class="form-control" placeholder="John doe"></div>
-                        </div>
-                    </div>
-                    <!--/ INPUT BOX -->
-
-                </div>
-                <!--/ FORM GROUP -->
-
-            </form>
+            <form id="customize-appearance-form" class="form-horizontal" onsbumit="return false;"></form>
         </div>
     </div>
 </div>

@@ -22,7 +22,7 @@ function createConfig($array, $path = null, $nest = 0) {
 		$allowCommit = true;
 		switch (gettype($v)) {
 			case 'boolean':
-				$item = ($v?true:false);
+				$item = ($v?'true':'false');
 				break;
 			case 'integer':
 			case 'double':
