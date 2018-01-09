@@ -4,7 +4,7 @@
 // Upgrade the installation
 function upgradeInstall($branch = 'v2-master', $stage) {
     $url = 'https://github.com/causefx/Organizr/archive/'.$branch.'.zip';
-    $file = "upgrade.zip";
+    $file = dirname(__DIR__,2).DIRECTORY_SEPARATOR."upgrade.zip";
     $source = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'upgrade'.DIRECTORY_SEPARATOR.'Organizr-'.str_replace('v2','2',$branch).DIRECTORY_SEPARATOR;
     $cleanup = dirname(__DIR__,2) .DIRECTORY_SEPARATOR."upgrade".DIRECTORY_SEPARATOR;
     $destination = dirname(__DIR__,2).DIRECTORY_SEPARATOR;
