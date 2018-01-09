@@ -85,3 +85,4 @@ test.php
 organizrLoginLog.json
 organizrLog.json
 api/config/config*
+upgrade/*
