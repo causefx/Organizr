@@ -292,9 +292,15 @@ switch ($function) {
     case 'v1_force':
         switch ($method) {
             case 'POST':
+                if(qualifyRequest(1)){
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = upgradeInstall($_POST['data']['branch'],$_POST['data']['stage']);
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
                 break;
             default:
                 $result['status'] = 'error';
