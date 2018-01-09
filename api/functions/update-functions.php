@@ -10,7 +10,6 @@ function upgradeInstall($branch = 'v2-master', $stage) {
     $destination = dirname(__DIR__,2).DIRECTORY_SEPARATOR;
 	switch ($stage) {
 		case '1':
-			return 'stage1';
 			writeLog('success', 'Update Function -  Started Upgrade Process', $GLOBALS['organizrUser']['username']);
 			if(downloadFile($url, $file)){
 				writeLog('success', 'Update Function -  Downloaded Update File for Branch: '.$branch, $GLOBALS['organizrUser']['username']);
@@ -21,7 +20,6 @@ function upgradeInstall($branch = 'v2-master', $stage) {
 			}
 			break;
 		case '2':
-			return 'stage2';
 			if(unzipFile($file)){
 				writeLog('success', 'Update Function -  Unzipped Update File for Branch: '.$branch, $GLOBALS['organizrUser']['username']);
 				return true;
@@ -31,7 +29,6 @@ function upgradeInstall($branch = 'v2-master', $stage) {
 			}
 			break;
 		case '3':
-			return 'stage3';
 			if(rcopy($source, $destination)){
 				writeLog('success', 'Update Function -  Overwrited Files using Updated Files from Branch: '.$branch, $GLOBALS['organizrUser']['username']);
 				return true;
@@ -41,7 +38,6 @@ function upgradeInstall($branch = 'v2-master', $stage) {
 			}
 			break;
 		case '4':
-			return 'stage4';
 			if(rrmdir($cleanup)){
 				writeLog('success', 'Update Function -  Deleted Update Files from Branch: '.$branch, $GLOBALS['organizrUser']['username']);
 				writeLog('success', 'Update Function -  Update Completed', $GLOBALS['organizrUser']['username']);
