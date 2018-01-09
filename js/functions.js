@@ -404,6 +404,18 @@ function message(heading,text,position,color,icon,timeout){
 		showHideTransition: 'slide',
 	});
 }
+function messageSingle(heading,text,position,color,icon,timeout){
+	$.toast({
+		heading: heading,
+		text: text,
+		position: position,
+		loaderBg: color,
+		icon: icon,
+		hideAfter: timeout,
+		stack: 1,
+		showHideTransition: 'slide',
+	});
+}
 function tabActions(event,name, type){
 	if(event.ctrlKey){
 		popTab(cleanClass(name), type);
@@ -1114,19 +1126,19 @@ function updateNow(){
 	organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:1}).success(function(data) {
 		var json = JSON.parse(data);
 		if(json.data == true){
-			message('',window.lang.translate('Update File Downloaded'),'bottom-right','#FFF','success','10000');
+			messageSingle('',window.lang.translate('Update File Downloaded'),'bottom-right','#FFF','success','10000');
 			organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:2}).success(function(data) {
 				var json = JSON.parse(data);
 				if(json.data == true){
-					message('',window.lang.translate('Update File Unzipped'),'bottom-right','#FFF','success','10000');
+					messageSingle('',window.lang.translate('Update File Unzipped'),'bottom-right','#FFF','success','10000');
 					organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:3}).success(function(data) {
 						var json = JSON.parse(data);
 						if(json.data == true){
-							message('',window.lang.translate('Update Files Copied'),'bottom-right','#FFF','success','10000');
+							messageSingle('',window.lang.translate('Update Files Copied'),'bottom-right','#FFF','success','10000');
 							organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:4}).success(function(data) {
 								var json = JSON.parse(data);
 								if(json.data == true){
-									message('',window.lang.translate('Update Cleanup Finished'),'bottom-right','#FFF','success','10000');
+									messageSingle('',window.lang.translate('Update Cleanup Finished'),'bottom-right','#FFF','success','10000');
 									location.reload();
 								}else{
 									message('',window.lang.translate('Update Cleanup Failed'),'bottom-right','#FFF','error','10000');
