@@ -7,7 +7,7 @@ $pageLogin = '
   <div class="login-box login-sidebar">
     <div class="white-box">
       <form class="form-horizontal form-material" id="loginform" onsubmit="return false;">
-        <a href="javascript:void(0)" class="text-center db"><img style="max-width: 350px;" src="https://sonflix.com/images/newsonflixlogo.png" alt="Home" /></a>
+        <a href="javascript:void(0)" class="text-center db" id="login-logo">'.logoOrText().'</a>
 
         <div class="form-group m-t-40">
           <div class="col-xs-12">

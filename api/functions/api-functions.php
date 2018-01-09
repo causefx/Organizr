@@ -803,6 +803,30 @@ function createUser($username,$password,$defaults,$email=null) {
         return false;
     }
 }
+function getCustomizeAppearance(){
+    if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
+        $array = array(
+            'config' => array(
+                'branch' => $GLOBALS['branch']
+            ),
+            'database' => array(
+
+            )
+        );
+        try {
+        	$connect = new Dibi\Connection([
+        		'driver' => 'sqlite3',
+        		'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
+        	]);
+            //$all['tabs'] = $connect->fetchAll('SELECT * FROM tabs ORDER BY `order` ASC');
+            //$all['categories'] = $connect->fetchAll('SELECT * FROM categories ORDER BY `order` ASC');
+            //$all['groups'] = $connect->fetchAll('SELECT * FROM groups ORDER BY `group_id` ASC');
+            //return $all;
+        } catch (Dibi\Exception $e) {
+            return false;
+        }
+    }
+}
 function allTabs(){
     if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
         try {

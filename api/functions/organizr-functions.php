@@ -133,8 +133,15 @@ function organizrStatus(){
     $status['dependenciesInactive'] = $dependenciesInactive;
     $status['version'] = $GLOBALS['installedVersion'];
     $status['os'] = getOS();
-    $status['php'] = phpversion();
+	$status['php'] = phpversion();
     return $status;
+}
+function loadAppearance(){
+    $appearance = array();
+    $appearance['logo'] = $GLOBALS['logo'];
+    $appearance['title'] = $GLOBALS['title'];
+    $appearance['useLogo'] = $GLOBALS['useLogo'];
+    return $appearance;
 }
 function auth(){
     $debug = false; // CAREFUL WHEN SETTING TO TRUE AS THIS OPENS AUTH UP
@@ -162,5 +169,12 @@ function auth(){
         }
     }else{
         !$debug ? exit(http_response_code(401)) : die("Not Authorized Due To No Parameters Set");
+    }
+}
+function logoOrText(){
+    if($GLOBALS['useLogo'] == false){
+        return '<h1>'.$GLOBALS['title'].'</h1>';
+    }else{
+        return '<img style="max-width: 350px;" src="'.$GLOBALS['logo'].'" alt="Home" />';
     }
 }

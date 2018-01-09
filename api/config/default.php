@@ -1,6 +1,7 @@
 <?php
 return array(
     'branch' => 'v2-develop',
-    'that' => 'this',
-    'organizrAPI' => 'none'
+    'logo' => 'plugins\images\organizr\logo-wide.png',
+    'title' => 'Organizr',
+    'useLogo' => false
 );

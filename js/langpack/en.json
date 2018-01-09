@@ -142,6 +142,12 @@
 		"Add New Group":"Add New Group",
 		"USERS":"USERS",
 		"GROUP NAME":"GROUP NAME",
-		"MANAGE GROUPS":"MANAGE GROUPS"
+		"MANAGE GROUPS":"MANAGE GROUPS",
+		"Changed Language To":"Changed Language To",
+		"Groups":"Groups",
+		"Users":"Users",
+		"Appearance":"Appearance",
+		"Customize Appearance":"Customize Appearance",
+		"Customize":"Customize"
 	}
 }

@@ -46,10 +46,8 @@
 			<div class="navbar-header">
 				<div class="top-left-part hidden-xs">
 					<!-- Logo -->
-					 <a class="logo" href="#"><!-- Logo text image you can use text also -->
-						 <span class="hidden-xs"><!--This is dark logo text-->
-							<img alt="home" class="dark-logo" height="60px" src="https://sonflix.com/images/newsonflixlogo.png"> <!--This is light logo text-->
-						 </span>
+					 <a class="logo" href="javascript:void(0)"><!-- Logo text image you can use text also -->
+						 <span class="hidden-xs" id="main-logo"></span>
 					 </a>
 				</div><!-- /Logo -->
 				<!-- Search input and Toggle icon -->
@@ -71,9 +69,7 @@
 				<div class="sidebar-head">
 					<h3><span class="fa-fw open-close"><i class="ti-menu hidden-xs"></i><i class="ti-close visible-xs"></i></span>
 					<span class="hide-menu hidden-xs" lang="en">Navigation</span>
-					<span class="hide-menu hidden-sm hidden-md hidden-lg"><!--This is dark logo text-->
-							<img alt="home" height="35px" src="https://sonflix.com/images/newsonflixlogo.png"> <!--This is light logo text-->
-						 </span>
+					<span class="hide-menu hidden-sm hidden-md hidden-lg" id="side-logo"></span>
 					</h3>
 				</div>
 				<ul class="nav" id="side-menu"></ul>

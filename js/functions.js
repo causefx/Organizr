@@ -439,13 +439,24 @@ function hasValue(test){
 /* BUILD FUNCTIONS */
 /* END BUILD FUNCTIONS */
 /* ORGANIZR API FUNCTIONS */
+function buildCustomizeAppearance(){
+	ajaxloader(".content-wrap","in");
+	organizrAPI('GET','api/?v1/customize/appearance').success(function(data) {
+		var response = JSON.parse(data);
+		console.log(response)
+		//$('#manageUserTable').html(buildUserManagementItem(response.data));
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
+}
 function buildUserManagement(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/user/list').success(function(data) {
 		var response = JSON.parse(data);
 		$('#manageUserTable').html(buildUserManagementItem(response.data));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Failed to grab user list from API");
+		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
 }
@@ -455,7 +466,7 @@ function buildGroupManagement(){
 		var response = JSON.parse(data);
 		$('#manageGroupTable').html(buildGroupManagementItem(response.data));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Failed to grab user list from API");
+		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
 }
@@ -465,7 +476,7 @@ function buildTabEditor(){
 		var response = JSON.parse(data);
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Failed to grab user list from API");
+		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
 }
@@ -475,7 +486,7 @@ function buildCategoryEditor(){
 		var response = JSON.parse(data);
 		$('#categoryEditorTable').html(buildCategoryEditorItem(response.data));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Failed to grab user list from API");
+		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
 }
@@ -1004,49 +1015,13 @@ function loadInternal(url,tabName){
 		console.error("Organizr Function: Connection Failed");
 	});
 }
-function loadLogs(){
-	organizrAPI('get','api/?v1/settings/settings/logs').success(function(data) {
+function loadSettingsPage(api,element,organizrFn){
+	organizrAPI('get',api).success(function(data) {
 		var json = JSON.parse(data);
-		console.log('Organizr Function: Loading Organizr Logs');
-		$('#settings-settings-logs').html(json.data);
+		console.log('Organizr Function: Loading '+organizrFn);
+		$(element).html(json.data);
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Log Connection Failed");
-	});
-}
-function loadUserManagement(){
-	organizrAPI('get','api/?v1/settings/user/manage/users').success(function(data) {
-		var json = JSON.parse(data);
-		console.log('Organizr Function: Loading Organizr User Management');
-		$('#settings-user-manage-users').html(json.data);
-	}).fail(function(xhr) {
-		console.error("Organizr Function: API User Management Connection Failed");
-	});
-}
-function loadGroupManagement(){
-	organizrAPI('get','api/?v1/settings/user/manage/groups').success(function(data) {
-		var json = JSON.parse(data);
-		console.log('Organizr Function: Loading Organizr Group Management');
-		$('#settings-user-manage-groups').html(json.data);
-	}).fail(function(xhr) {
-		console.error("Organizr Function: API Group Management Connection Failed");
-	});
-}
-function loadTabEditor(){
-	organizrAPI('get','api/?v1/settings/tab/editor/tabs').success(function(data) {
-		var json = JSON.parse(data);
-		console.log('Organizr Function: Loading Organizr Tab Editor');
-		$('#settings-tab-editor-tabs').html(json.data);
-	}).fail(function(xhr) {
-		console.error("Organizr Function: API Tab Editor Connection Failed");
-	});
-}
-function loadCategoryEditor(){
-	organizrAPI('get','api/?v1/settings/tab/editor/categories').success(function(data) {
-		var json = JSON.parse(data);
-		console.log('Organizr Function: Loading Organizr Category Editor');
-		$('#settings-tab-editor-categories').html(json.data);
-	}).fail(function(xhr) {
-		console.error("Organizr Function: API Category Editor Connection Failed");
+		console.error("Organizr Function: API Connection Failed");
 	});
 }
 function updateCheck(){
@@ -1071,7 +1046,7 @@ function updateNow(){
 	alert('update script');
 }
 function organizrAPI(type,path,data=null){
-	console.log('Organizr API: Calling API: '+path);
+	//console.log('Organizr API: Calling API: '+path);
 	switch (type) {
 		case 'get':
 		case 'GET':
@@ -1283,8 +1258,15 @@ function logIcon(type){
 function radioLoop(element){
 	$('[type=radio][id!="'+element.id+'"]').each(function() { this.checked=false });
 }
-function loadAppearance(){
-	$(document).attr("title", "New Title");
+function loadAppearance(appearance){
+	console.log(appearance);
+	if(appearance.useLogo === false){
+		$('#main-logo').html(appearance.title);
+		$('#side-logo').html(appearance.title);
+	}else{
+		$('#main-logo').html('<img alt="home" class="dark-logo" height="60px" src="'+appearance.logo+'">');
+		$('#side-logo').html('<img alt="home" height="35px" src="'+appearance.logo+'">');
+	}
 	$('.navbar-header').css("background", "#1f1f1f");
 }
 function clearForm(form){
@@ -1312,9 +1294,9 @@ function launch(){
 			token:json.data.user.token,
 			branch:json.branch
 		};
-		console.log("%cOrganizr","background: #000; color: #66D9EF; font-size: 24px; font-family: Monospace; padding : 5px 234px 5px 10px; border-radius: 5px 5px 0 0;");
-		console.log("%cVersion: "+currentVersion,"background: #AD80FD; color: #333333; font-size: 12px; font-family: Monospace; padding : 2px 207.5px 5px 10px;");
-		console.log("%cStarting Up...","background: #F92671; color: #fff; font-size: 12px; font-family: Monospace; padding : 5px 247px 2px 10px; border-radius: 0 0 5px 5px;")
+		console.log("%cOrganizr","color: #66D9EF; font-size: 24px; font-family: Monospace;");
+		console.log("%cVersion: "+currentVersion,"color: #AD80FD; font-size: 12px; font-family: Monospace;");
+		console.log("%cStarting Up...","color: #F92671; font-size: 12px; font-family: Monospace;")
 		switch (json.data.status.status) {
 			case "wizard":
 				buildWizard();
@@ -1324,7 +1306,7 @@ function launch(){
 				buildDependencyCheck(json);
 				break;
 			case "ok":
-				loadAppearance();
+				loadAppearance(json.appearance);
 				userMenu(json);
 				categoryProcess(json);
 				tabProcess(json);

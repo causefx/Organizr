@@ -56,6 +56,25 @@ switch ($function) {
                 break;
         }
         break;
+    case 'v1_settings_customize_appearance':
+        switch ($method) {
+            case 'GET':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = $pageSettingsCustomizeAppearance;
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_settings_tab_editor_tabs':
         switch ($method) {
             case 'GET':
@@ -359,6 +378,25 @@ switch ($function) {
                 break;
         }
         break;
+    case 'v1_customize_appearance':
+        switch ($method) {
+            case 'GET':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = getCustomizeAppearance();
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_user_edit':
         switch ($method) {
             case 'POST':
@@ -402,6 +440,7 @@ switch ($function) {
                 $result['status'] = 'success';
                 $result['statusText'] = 'success';
                 $status['status'] = organizrStatus();
+                $result['appearance'] = loadAppearance();
                 $status['user'] = $GLOBALS['organizrUser'];
                 $status['categories'] = loadTabs()['categories'];
                 $status['tabs'] = loadTabs()['tabs'];

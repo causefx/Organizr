@@ -42,15 +42,15 @@ $pageWizard = '
                                 }
                             }
                         },
-                        key: {
+                        hashKey: {
                             validators: {
                                 notEmpty: {
-                                    message: \'The key hash is required\'
+                                    message: \'The hash key is required\'
                                 },
                                 stringLength: {
                                     min: 3,
                                     max: 30,
-                                    message: \'The key hash must be more than 2 and less than 30 characters long\'
+                                    message: \'The hash key must be more than 2 and less than 30 characters long\'
                                 }
                             }
                         },
@@ -127,7 +127,6 @@ $pageWizard = '
                 console.log( post );
                 organizrAPI(\'POST\',\'api/?v1/wizard_config\',post).success(function(data) {
             		var html = JSON.parse(data);
-                    console.log(html.data);
                     if(html.data == true){
                         location.reload();
                     }else{
@@ -178,7 +177,7 @@ $pageWizard = '
                             <h4><span><i class="ti-check"></i></span><item lang="en">Verify</item></h4>
                         </li>
                     </ul>
-                    <form class="form-horizontal" id="validation" name="validation" onsubmit="return:false;">
+                    <form class="form-horizontal" id="validation" name="validation" onsubmit="return false;">
                         <div class="wizard-content">
                             <div class="wizard-pane active" role="tabpanel">
                                 <div class="form-group">
