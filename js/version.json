@@ -12,5 +12,12 @@
         "new": "3 Options for appearance|Upgrade module completed",
         "fixed": "More API lag times",
         "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+    },
+    "2.0.0-alpha.115": {
+        "date":"20170109",
+        "title": "Updater Fix",
+        "new": "New Updater Progress Bar",
+        "fixed": "Lag Times on updater|Added longer timeouts",
+        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
     }
 }
