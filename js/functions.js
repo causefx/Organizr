@@ -512,8 +512,8 @@ function buildImageManagerViewItem(array){
 						<div class="el-card-avatar el-overlay-1"> <img class="lazyload" data-src="`+v+`">
 							<div class="el-overlay">
 								<ul class="el-info">
-									<li><a class="btn default btn-outline clipboard" data-clipboard-text="`+v+`" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
-									<li><a class="btn default btn-outline deleteImage" href="javascript:void(0);" data-image-path="`+v+`" data-image-name="`+name[0]+`"><i class="icon-trash"></i></a></li>
+									<li><a class="btn default btn-outline clipboard p-5" data-clipboard-text="`+v+`" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
+									<li><a class="btn default btn-outline deleteImage p-5" href="javascript:void(0);" data-image-path="`+v+`" data-image-name="`+name[0]+`"><i class="icon-trash"></i></a></li>
 								</ul>
 							</div>
 						</div>
@@ -1090,7 +1090,7 @@ function buildVersion(array){
 			<div class="row sales-report">
 				<div class="col-md-12 col-sm-12 col-xs-12">
 
-						<span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+moment(v.date).format('LL')+`">`+moment(v.date, "YYYYMMDD").fromNow()+`</span>
+						<span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+moment(v.date).format('LL')+`">`+moment.utc(v.date, "YYYY-MM-DD hh:mm[Z]").local().fromNow()+`</span>
 
 					<p class="text-info p-0">`+v.title+`</p>
 				</div>
