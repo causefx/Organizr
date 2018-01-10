@@ -1120,24 +1120,49 @@ function updateCheck(){
 		console.error("Organizr Function: Github Connection Failed");
 	});
 }
+function updateBar(){
+	return `
+	<div class="white-box m-0">
+        <div class="row">
+            <div class="col-lg-12 p-r-40">
+                <h3 lang="en" id="update-title" class="box-title"></h3>
+                <div class="progress progress-lg">
+                    <div id="update-bar" class="progress-bar progress-bar-primary progress-bar-striped active" style="width: 0%;" role="progressbar">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+	`;
+}
+function updateUpdateBar(title,percent){
+	$('#update-title').text(title);
+	$('#update-bar').text(percent);
+	$('#update-bar').css('width',percent);
+}
 function updateNow(){
 	console.log('Organizr Function: Starting Update Process');
-	message(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),'bottom-right','#FFF','success','60000');
+	$(updateBar()).appendTo('.organizr-area');
+	updateUpdateBar('Starting Download','5%');
+	messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),'bottom-right','#FFF','success','60000');
 	organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:1}).success(function(data) {
 		var json = JSON.parse(data);
 		if(json.data == true){
+			updateUpdateBar('Starting Unzip','50%');
 			messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update File Downloaded'),'bottom-right','#FFF','success','60000');
 			organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:2}).success(function(data) {
 				var json = JSON.parse(data);
 				if(json.data == true){
+					updateUpdateBar('Starting Copy','70%');
 					messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update File Unzipped'),'bottom-right','#FFF','success','60000');
 					organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:3}).success(function(data) {
 						var json = JSON.parse(data);
 						if(json.data == true){
+							updateUpdateBar('Starting Cleanup','90%');
 							messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update Files Copied'),'bottom-right','#FFF','success','60000');
 							organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:4}).success(function(data) {
 								var json = JSON.parse(data);
 								if(json.data == true){
+									updateUpdateBar('Restarting Organizr','100%');
 									messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update Cleanup Finished'),'bottom-right','#FFF','success','60000');
 									location.reload();
 								}else{
