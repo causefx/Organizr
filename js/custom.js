@@ -71,6 +71,7 @@ function pageLoad(){
     //Start Organizr
     $(function () {
         $('#side-menu').metisMenu();
+        lazyload();
     });
     $(".colorpicker").asColorPicker({
         mode: 'complex',

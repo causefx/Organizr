@@ -472,25 +472,6 @@ function buildFormItem(item){
 	}
 }
 function buildCustomizeAppearanceItem(array){
-	/*
-	<!-- FORM GROUP -->
-	<h3 class="box-title">Person Info</h3>
-	<hr class="m-t-0 m-b-40">
-	<div class="row">
-
-		<!-- INPUT BOX -->
-		<div class="col-md-6">
-			<div class="form-group">
-				<label class="control-label col-md-3" lang="en">First Name</label>
-				<div class="col-md-9">
-					<input type="text" class="form-control" placeholder="John doe"></div>
-			</div>
-		</div>
-		<!--/ INPUT BOX -->
-
-	</div>
-	<!--/ FORM GROUP -->
-	*/
 	if (Array.isArray(array.config)) {
 		var preRowConfig = `
 			<!-- FORM GROUP -->
@@ -517,6 +498,47 @@ function buildCustomizeAppearanceItem(array){
 	}
 
 	return customizeItems;
+}
+function buildImageManagerViewItem(array){
+	var imageListing = '';
+	if (Array.isArray(array)) {
+		$.each(array, function(i,v) {
+			var filepath = v.split("/");
+			var name = filepath[3].split(".");
+			imageListing += `
+			<div class="col-lg-2 col-md-3 col-sm-4 col-xs-4">
+				<div class="white-box">
+					<div class="el-card-item p-0">
+						<div class="el-card-avatar el-overlay-1"> <img class="lazyload" data-src="`+v+`">
+							<div class="el-overlay">
+								<ul class="el-info">
+									<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
+									<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-trash"></i></a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="el-card-content">
+							<small class="elip text-uppercase">`+name[0]+`</small>
+							<br> </div>
+					</div>
+				</div>
+			</div>
+			`;
+		});
+	}
+	return imageListing;
+}
+function buildImageManagerView(){
+	ajaxloader(".content-wrap","in");
+	organizrAPI('GET','api/?v1/image/list').success(function(data) {
+		var response = JSON.parse(data);
+		console.log(response);
+		$('#settings-image-manager-list').html(buildImageManagerViewItem(response.data));
+		;
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
 }
 function buildCustomizeAppearance(){
 	ajaxloader(".content-wrap","in");

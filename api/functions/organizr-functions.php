@@ -226,3 +226,16 @@ function logoOrText(){
         return '<img style="max-width: 350px;" src="'.$GLOBALS['logo'].'" alt="Home" />';
     }
 }
+function getImages(){
+    $dirname = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'tabs'.DIRECTORY_SEPARATOR;
+    $path = 'plugins/images/tabs/';
+    $images = scandir($dirname);
+    $ignore = Array(".", "..", "._.DS_Store", ".DS_Store");
+    $allIcons = array();
+    foreach($images as $image){
+        if(!in_array($image, $ignore)) {
+            $allIcons[] = $path.$image;
+        }
+    }
+    return $allIcons;
+}

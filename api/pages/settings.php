@@ -33,6 +33,7 @@ $pageSettings = '
                         <li onclick="changeSettingsMenu(\'Settings::Tab Editor\')"><a href="#settings-main-tab-editor" class="sticon ti-layout-tab-v"><span lang="en">Tab Editor</span></a></li>
                         <li onclick="changeSettingsMenu(\'Settings::Customize\')"><a href="#settings-main-customize" class="sticon ti-paint-bucket"><span lang="en">Customize</span></a></li>
                         <li onclick="changeSettingsMenu(\'Settings::User Management\')"><a href="#settings-main-user-management" class="sticon ti-user"><span lang="en">User Management</span></a></li>
+                        <li onclick="changeSettingsMenu(\'Settings::Image Manager\')"><a href="#settings-main-image-manager" class="sticon ti-image"><span lang="en">Image Manager</span></a></li>
     					<li onclick="changeSettingsMenu(\'Settings::Plugins\')"><a href="#settings-main-plugins" class="sticon ti-plug"><span lang="en">Plugins</span></a></li>
                         <li onclick="changeSettingsMenu(\'Settings::System Settings\')"><a href="#settings-main-system-settings" class="sticon ti-settings"><span lang="en">System Settings</span></a></li>
                     </ul>
@@ -86,6 +87,22 @@ $pageSettings = '
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-user-manage-groups">
+                                <h2 lang="en">Loading...</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </section>
+                    <! -- IMAGE MANAGER -->
+                    <section id="settings-main-image-manager">
+                        <ul class="nav customtab2 nav-tabs" role="tablist">
+                            <li onclick="changeSettingsMenu(\'Settings::Image Manager::View\');loadSettingsPage(\'api/?v1/settings/image/manager/view\',\'#settings-image-manager-view\',\'Image Viewer\');" role="presentation"><a href="#settings-image-manager-view" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-image"></i></span><span class="hidden-xs" lang="en"> View</span></a>
+                            </li>
+                            <li onclick="changeSettingsMenu(\'Settings::Image Manager::Upload\')" role="presentation"><a href="#settings-image-manager-upload" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-upload"></i></span><span class="hidden-xs" lang="en"> Upload</span></a>
+                            </li>
+                        </ul>
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane fade" id="settings-image-manager-view">
                                 <h2 lang="en">Loading...</h2>
                                 <div class="clearfix"></div>
                             </div>

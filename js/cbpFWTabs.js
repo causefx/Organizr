@@ -40,7 +40,7 @@
 		// current index
 		this.current = -1;
 		// show current content item
-		this._show(4);
+		this._show(5);
 		// init events
 		this._initEvents();
 	};
