@@ -378,16 +378,30 @@ body.stop-scrolling {
   background-color: #3a7b98;
 }
 .asColorPicker-wrap {
-    position: relative;
-    display: block;
-    width: calc(100% - 35px);
+  position: relative;
+  display: block;
+  width: calc(100% - 35px);
 }
-
+.asColorPicker-trigger {
+  position: absolute;
+  top: 0;
+  right: -32px;
+  height: 38px;
+  width: 37px;
+  border: 0;
+  border-radius: 0 4px 4px 0;
+}
+.asColorPicker-trigger span {
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+  border-radius: 0 4px 4px 0;
+}
 .top-left-part {
-    width: auto;
-    max-width: 220px;
-    float: left;
-    border-right: transparent;
+  width: auto;
+  max-width: 220px;
+  float: left;
+  border-right: transparent;
 }
 .table-hover>tbody>tr:hover, .table-striped>tbody>tr:nth-of-type(odd), .table>tbody>tr.active>td, .table>tbody>tr.active>th, .table>tbody>tr>td.active, .table>tbody>tr>th.active, .table>tfoot>tr.active>td, .table>tfoot>tr.active>th, .table>tfoot>tr>td.active, .table>tfoot>tr>th.active, .table>thead>tr.active>td, .table>thead>tr.active>th, .table>thead>tr>td.active, .table>thead>tr>th.active {
   background-color: #1f1f1f!important;

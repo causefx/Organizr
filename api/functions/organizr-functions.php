@@ -181,7 +181,8 @@ function getCustomizeAppearance(){
                     'name' => 'headerColor',
                     'label' => 'Nav Bar Color',
                     'value' => $GLOBALS['headerColor'],
-                    'class' => 'colorpicker'
+                    'class' => 'colorpicker',
+                    'disabled' => true
                 )
             ),
             'database' => array(

@@ -73,7 +73,11 @@ function pageLoad(){
         $('#side-menu').metisMenu();
     });
     $(".colorpicker").asColorPicker({
-        mode: 'simple'
+        mode: 'complex',
+        color: {
+            format: false,
+            alphaConvert: false
+        }
     });
 
 

@@ -457,14 +457,15 @@ function buildFormItem(item){
 	var value = (item.value) ? ' value="'+item.value+'"' : '';
 	var name = (item.name) ? ' name="'+item.name+'"' : '';
 	var extraClass = (item.class) ? ' '+item.class : '';
+	var disabled = (item.disabled) ? ' disabled' : '';
 	//+tof(item.value,'c')+`
 	switch (item.type) {
 		case 'input':
-			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+' />';
+			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+' />';
 			break;
 		case 'switch':
 		case 'checkbox':
-			return '<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+' /><input data-changed="false" type="hidden"'+name+'value="false">';
+			return '<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+' /><input data-changed="false" type="hidden"'+name+'value="false">';
 			break;
 		default:
 			return false;
@@ -782,6 +783,7 @@ function buildLogin(){
 	$("#preloader").fadeOut();
 }
 function buildLockscreen(){
+	$("#preloader").fadeIn();
 	closeSideMenu();
 	organizrConnect('api/?v1/lockscreen').success(function(data) {
 		var json = JSON.parse(data);
@@ -790,6 +792,7 @@ function buildLockscreen(){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Lockscreen Connection Failed");
 	});
+	$("#preloader").fadeOut();
 }
 function buildUserGroupSelect(array, userID, groupID){
 	var groupSelect = '';
@@ -1263,8 +1266,10 @@ function buildWizard(){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Wizard Connection Failed");
 	});
+	$("#preloader").fadeOut();
 }
 function buildDependencyCheck(orgdata){
+
 	organizrConnect('api/?v1/dependencies_page').success(function(data) {
 		var json = JSON.parse(data);
 		console.log("Organizr Function: Starting Dependencies Check");
@@ -1275,6 +1280,7 @@ function buildDependencyCheck(orgdata){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Dependencies Connection Failed");
 	});
+	$("#preloader").fadeOut();
 }
 function buildDependencyInfo(arrayItems){
 	var listing = '';

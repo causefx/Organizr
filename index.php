@@ -20,6 +20,7 @@
 	<link href="plugins/bower_components/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
 	<link href="plugins/bower_components/switchery/dist/switchery.min.css" rel="stylesheet" />
 	<link href="plugins/bower_components/jquery-asColorPicker-master/css/asColorPicker.css" rel="stylesheet">
+	<link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css" />
 	<link href="css/style.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<link href="css/colors/blue-dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" id="theme" rel="stylesheet">
 	<!--[if lt IE 9]>
@@ -120,6 +121,7 @@
 	<script src="plugins/bower_components/switchery/dist/switchery.min.js"></script>
 	<script src="plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
     <script src="plugins/bower_components/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
+	<script src="plugins/bower_components/dropzone-master/dist/dropzone.js"></script>
 	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 	<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 </body>
