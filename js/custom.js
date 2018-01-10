@@ -72,6 +72,9 @@ function pageLoad(){
         $("#preloader").fadeOut();
         $('#side-menu').metisMenu();
     });
+    $(".colorpicker").asColorPicker({
+        mode: 'palettes'
+    });
 
 
     /* ===== Theme Settings ===== */
@@ -190,7 +193,6 @@ function pageLoad(){
         size: "0px",
         color: '#dcdcdc'
     });
-
     /* ===== Resize all elements ===== */
 
 
@@ -954,7 +956,7 @@ $(document).on("click", ".changeDefaultCategory", function () {
     settingsAPI(post,callbacks);
 });
 // CHANGE CUSTOMIZE Options
-$(document).on('change', '#customize-appearance-form :input', function(e) {
+$(document).on('change asColorPicker::change', '#customize-appearance-form :input', function(e) {
 	$(this).attr('data-changed', true);
     switch ($(this).attr('type')) {
         case 'switch':

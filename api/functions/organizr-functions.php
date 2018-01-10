@@ -140,8 +140,55 @@ function loadAppearance(){
     $appearance = array();
     $appearance['logo'] = $GLOBALS['logo'];
     $appearance['title'] = $GLOBALS['title'];
-    $appearance['useLogo'] = $GLOBALS['useLogo'];
+	$appearance['useLogo'] = $GLOBALS['useLogo'];
+    $appearance['headerColor'] = $GLOBALS['headerColor'];
     return $appearance;
+}
+function getCustomizeAppearance(){
+    if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
+        return array(
+            'config' => array(/*
+                array(
+                    'type' => 'select',
+                    'name' => 'branch',
+                    'label' => 'Organizr Branch',
+                    'value' => $GLOBALS['branch'],
+                    'options' => array(
+                        'Master' => 'v2-master',
+                        'Develop' => 'v2-develop'
+                    )
+                ),*/
+                array(
+                    'type' => 'input',
+                    'name' => 'logo',
+                    'label' => 'Logo',
+                    'value' => $GLOBALS['logo']
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'title',
+                    'label' => 'Title',
+                    'value' => $GLOBALS['title']
+                ),
+                array(
+                    'type' => 'switch',
+                    'name' => 'useLogo',
+                    'label' => 'Use Logo instead of Title',
+                    'value' => $GLOBALS['useLogo']
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'headerColor',
+                    'label' => 'Nav Bar Color',
+                    'value' => $GLOBALS['headerColor'],
+                    'class' => 'colorpicker'
+                )
+            ),
+            'database' => array(
+
+            )
+        );
+    }
 }
 function auth(){
     $debug = false; // CAREFUL WHEN SETTING TO TRUE AS THIS OPENS AUTH UP

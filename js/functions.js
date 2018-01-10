@@ -775,7 +775,7 @@ function buildLogin(){
 	organizrConnect('api/?v1/login_page').success(function(data) {
 		var json = JSON.parse(data);
 		console.log("Organizr Function: Opening Login Page");
-		$(json.data).appendTo($('.login-area'));
+		$('.login-area').html(json.data);
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Login Connection Failed");
 	});
@@ -1146,6 +1146,7 @@ function updateUpdateBar(title,percent,update=false){
 }
 function countdown(remaining) {
     if(remaining === 0){
+		local('set','message','Organizr Update|Update Successful|update');
         location.reload();
 	}
 	$('#update-seconds').text(remaining);
@@ -1416,7 +1417,7 @@ function radioLoop(element){
 	$('[type=radio][id!="'+element.id+'"]').each(function() { this.checked=false });
 }
 function loadAppearance(appearance){
-	console.log(appearance);
+	//console.log(appearance);
 	if(appearance.useLogo === false){
 		$('#main-logo').html(appearance.title);
 		$('#side-logo').html(appearance.title);
@@ -1424,12 +1425,22 @@ function loadAppearance(appearance){
 		$('#main-logo').html('<img alt="home" class="dark-logo" height="60px" src="'+appearance.logo+'">');
 		$('#side-logo').html('<img alt="home" height="35px" src="'+appearance.logo+'">');
 	}
-	$('.navbar-header').css("background", "#1f1f1f");
+	if(appearance.headerColor !== ''){
+		$('.navbar-header').css("background", appearance.headerColor);
+	}
 }
 function clearForm(form){
 	$(form+" input[type=text]", form+" input[type=password]").each(function() {
         $(this).val('');
     })
+}
+function checkMessage(){
+	var check = (local('get','message')) ? local('get','message') : false;
+	if(check){
+		local('remove', 'message');
+		var message = check.split('|');
+		messageSingle(window.lang.translate(message[0]),window.lang.translate(message[1]),'bottom-right','#FFF',message[2],'10000');
+	}
 }
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
@@ -1472,4 +1483,5 @@ function launch(){
 				console.error('Organizr Function: Action not set or defined');
 		}
 	});
+	checkMessage();
 }

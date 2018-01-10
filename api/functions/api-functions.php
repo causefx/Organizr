@@ -827,45 +827,6 @@ function createUser($username,$password,$defaults,$email=null) {
         return false;
     }
 }
-function getCustomizeAppearance(){
-    if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
-        return array(
-            'config' => array(/*
-                array(
-                    'type' => 'select',
-                    'name' => 'branch',
-                    'label' => 'Organizr Branch',
-                    'value' => $GLOBALS['branch'],
-                    'options' => array(
-                        'Master' => 'v2-master',
-                        'Develop' => 'v2-develop'
-                    )
-                ),*/
-                array(
-                    'type' => 'input',
-                    'name' => 'logo',
-                    'label' => 'Logo',
-                    'value' => $GLOBALS['logo']
-                ),
-                array(
-                    'type' => 'input',
-                    'name' => 'title',
-                    'label' => 'Title',
-                    'value' => $GLOBALS['title']
-                ),
-                array(
-                    'type' => 'switch',
-                    'name' => 'useLogo',
-                    'label' => 'Use Logo instead of Title',
-                    'value' => $GLOBALS['useLogo']
-                )
-            ),
-            'database' => array(
-
-            )
-        );
-    }
-}
 function allTabs(){
     if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
         try {
