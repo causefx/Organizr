@@ -1162,9 +1162,9 @@ function updateNow(){
 							organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:4}).success(function(data) {
 								var json = JSON.parse(data);
 								if(json.data == true){
-									updateUpdateBar('Restarting Organizr','100%');
+									updateUpdateBar('Restarting Organizr in 10 Seconds','100%');
 									messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update Cleanup Finished'),'bottom-right','#FFF','success','60000');
-									location.reload();
+									setTimeout(location.reload.bind(location), 10000);
 								}else{
 									message('',window.lang.translate('Update Cleanup Failed'),'bottom-right','#FFF','error','10000');
 								}
