@@ -28,7 +28,7 @@
         "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
     },
     "2.0.0-alpha.125": {
-        "date":"20180110",
+        "date":"20180110 23:00",
         "title": "Image Manager",
         "new": "Added Image Manager",
         "fixed": "Color Selector|Wizard Preloader",
