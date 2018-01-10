@@ -382,9 +382,7 @@ body.stop-scrolling {
     display: block;
     width: calc(100% - 35px);
 }
-.asColorPicker-dropdown {
-  display: none;
-}
+
 .top-left-part {
     width: auto;
     max-width: 220px;

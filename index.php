@@ -33,7 +33,7 @@
 	<!-- ============================================================== -->
 	<div id="preloader" class="preloader">
 		<svg class="circular" viewbox="25 25 50 50">
-			<circle class="path" cx="50" cy="50" fill="none" r="20" stroke-miterlimit="10" stroke-width="5"></circle>
+			<circle class="path" cx="50" cy="50" fill="none" r="20" stroke-miterlimit="10" stroke-width="10"></circle>
 		</svg>
 	</div>
 	<!-- ============================================================== -->
@@ -45,7 +45,7 @@
 		<!-- ============================================================== -->
 		<nav class="navbar navbar-default navbar-static-top m-b-0">
 			<div class="navbar-header">
-				<div class="top-left-part hidden-xs">
+				<div class="top-left-part hidden-xs p-r-10">
 					<!-- Logo -->
 					 <a class="logo" href="javascript:void(0)"><!-- Logo text image you can use text also -->
 						 <span class="hidden-xs" id="main-logo"></span>
@@ -54,8 +54,8 @@
 				<!-- Search input and Toggle icon -->
 				<ul class="nav navbar-top-links navbar-left">
 					<li><a class="open-close waves-effect waves-light visible-xs" href="javascript:void(0)"><i class="ti-close ti-menu fa-fw"></i></a></li>
-					<li class=""><a class="dropdown-toggle waves-effect waves-light" onclick="reloadCurrentTab();"> <i class="fa fa-refresh fa-fw"></i></a></li>
-					<li class=""><a class="dropdown-toggle waves-effect waves-light" onclick="closeCurrentTab();"> <i class="mdi mdi-close fa-fw"></i></a></li>
+					<li class=""><a class="dropdown-toggle waves-effect waves-light" onclick="reloadCurrentTab();"> <i class="ti-reload"></i></a></li>
+					<li class=""><a class="dropdown-toggle waves-effect waves-light" onclick="closeCurrentTab();"> <i class="ti-close"></i></a></li>
 				</ul>
 				<ul class="nav navbar-top-links navbar-right pull-right"></ul>
 			</div><!-- /.navbar-header -->

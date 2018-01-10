@@ -15,38 +15,39 @@ $(document).ready(function () {
     "use strict";
     var body = $("body");
     $(function () {
+        //$("#preloader").fadeOut();
         var set = function () {
-                var topOffset = 60,
-                    width = (window.innerWidth > 0) ? window.innerWidth : this.screen.width,
-                    height = ((window.innerHeight > 0) ? window.innerHeight : this.screen.height) - 1;
-                if (width < 768) {
-                    $('div.navbar-collapse').addClass('collapse');
-                    topOffset = 100; /* 2-row-menu */
-                } else {
-                    $('div.navbar-collapse').removeClass('collapse');
-                }
+            var topOffset = 60,
+                width = (window.innerWidth > 0) ? window.innerWidth : this.screen.width,
+                height = ((window.innerHeight > 0) ? window.innerHeight : this.screen.height) - 1;
+            if (width < 768) {
+                $('div.navbar-collapse').addClass('collapse');
+                topOffset = 100; /* 2-row-menu */
+            } else {
+                $('div.navbar-collapse').removeClass('collapse');
+            }
 
-                /* ===== This is for resizing window ===== */
+            /* ===== This is for resizing window ===== */
 
-                if (width < 1170) {
-                    body.addClass('content-wrapper');
-                    $(".sidebar-nav, .slimScrollDiv").css("overflow-x", "visible").parent().css("overflow", "visible");
-                } else {
-                    body.removeClass('content-wrapper');
-                }
+            if (width < 1170) {
+                body.addClass('content-wrapper');
+                $(".sidebar-nav, .slimScrollDiv").css("overflow-x", "visible").parent().css("overflow", "visible");
+            } else {
+                body.removeClass('content-wrapper');
+            }
 
-                height = height - topOffset;
-                if (height < 1) {
-                    height = 1;
-                }
-                if (height > topOffset) {
-                    $("#page-wrapper").css("min-height", (height) + "px");
-                }
-            },
-            url = window.location,
-            element = $('ul.nav a').filter(function () {
-                return this.href === url || url.href.indexOf(this.href) === 0;
-            }).addClass('activez').parent().parent().addClass('ok').parent();
+            height = height - topOffset;
+            if (height < 1) {
+                height = 1;
+            }
+            if (height > topOffset) {
+                $("#page-wrapper").css("min-height", (height) + "px");
+            }
+        },
+        url = window.location,
+        element = $('ul.nav a').filter(function () {
+            return this.href === url || url.href.indexOf(this.href) === 0;
+        }).addClass('activez').parent().parent().addClass('ok').parent();
         if (element.is('li')) {
             element.addClass('activezo');
         }
@@ -69,11 +70,10 @@ function pageLoad(){
     "use strict";
     //Start Organizr
     $(function () {
-        $("#preloader").fadeOut();
         $('#side-menu').metisMenu();
     });
     $(".colorpicker").asColorPicker({
-        mode: 'palettes'
+        mode: 'simple'
     });
 
 
@@ -956,7 +956,7 @@ $(document).on("click", ".changeDefaultCategory", function () {
     settingsAPI(post,callbacks);
 });
 // CHANGE CUSTOMIZE Options
-$(document).on('change asColorPicker::change', '#customize-appearance-form :input', function(e) {
+$(document).on('change asColorPicker::close', '#customize-appearance-form :input', function(e) {
 	$(this).attr('data-changed', true);
     switch ($(this).attr('type')) {
         case 'switch':

@@ -608,7 +608,7 @@ function buildLanguage(replace=false,newLang=null){
 	});
 	var lang = `
 		<li class="dropdown" id="languageDropdown">
-			<a class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#" aria-expanded="false"> <i class="fa fa-language"></i><span></span></a>
+			<a class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#" aria-expanded="false"> <i class="fa fa-language fa-lg fa-fw"></i><span></span></a>
 			<ul class="dropdown-menu mailbox animated bounceInDown">
 				<li>
 					<div class="drop-title" lang="en">Choose Language</div>
@@ -779,6 +779,7 @@ function buildLogin(){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Login Connection Failed");
 	});
+	$("#preloader").fadeOut();
 }
 function buildLockscreen(){
 	closeSideMenu();
