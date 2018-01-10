@@ -1125,7 +1125,8 @@ function updateBar(){
 	<div class="white-box m-0">
         <div class="row">
             <div class="col-lg-12 p-r-40">
-                <h3 lang="en" id="update-title" class="box-title"></h3>
+                <h3 lang="en" id="update-title" class="box-title pull-left"></h3><h3 id="update-time" class="box-title pull-right hidden"><span id="update-seconds"></span>&nbsp;<span lang="en">Seconds</span></h3>
+				<div class="clearfix"></div>
                 <div class="progress progress-lg">
                     <div id="update-bar" class="progress-bar progress-bar-primary progress-bar-striped active" style="width: 0%;" role="progressbar">0%</div>
                 </div>
@@ -1134,10 +1135,21 @@ function updateBar(){
     </div>
 	`;
 }
-function updateUpdateBar(title,percent){
+function updateUpdateBar(title,percent,update=false){
 	$('#update-title').text(title);
 	$('#update-bar').text(percent);
 	$('#update-bar').css('width',percent);
+	if(update){
+		$('#update-time').removeClass('hidden');
+		countdown(10);
+	}
+}
+function countdown(remaining) {
+    if(remaining === 0){
+        location.reload();
+	}
+	$('#update-seconds').text(remaining);
+    setTimeout(function(){ countdown(remaining - 1); }, 1000);
 }
 function updateNow(){
 	console.log('Organizr Function: Starting Update Process');
@@ -1162,7 +1174,7 @@ function updateNow(){
 							organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:4}).success(function(data) {
 								var json = JSON.parse(data);
 								if(json.data == true){
-									updateUpdateBar('Restarting Organizr in 10 Seconds','100%');
+									updateUpdateBar('Restarting Organizr in','100%', true);
 									messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update Cleanup Finished'),'bottom-right','#FFF','success','60000');
 									setTimeout(location.reload.bind(location), 10000);
 								}else{
