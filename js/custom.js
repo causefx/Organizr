@@ -7,6 +7,12 @@ $(document).ajaxComplete(function () {
 });
 $(document).ready(function () {
     pageLoad();
+    var clipboard = new Clipboard('.clipboard');
+    clipboard.on('success', function(e) {
+        message('Clipboard',e.text,'bottom-right','#FFF','info','5000');
+        e.clearSelection();
+    });
+
     /* ===========================================================
         Loads the correct sidebar on window load.
         collapses the sidebar on window resize.
@@ -986,6 +992,36 @@ $(document).on('change asColorPicker::close', '#customize-appearance-form :input
     //callbacks.add( buildCustomizeAppearance );
     settingsAPI(post,callbacks);
 
+});
+//DELETE IMAGE
+$(document).on("click", ".deleteImage", function () {
+    var image = $(this);
+    swal({
+        title: window.lang.translate('Delete ')+image.attr("data-image-name")+'?',
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: window.lang.translate('Yes'),
+        cancelButtonText: window.lang.translate('No'),
+        closeOnConfirm: true,
+        closeOnCancel: true
+    }, function(isConfirm){
+        if (isConfirm) {
+            //Create POST Array
+            var post = {
+                action:'deleteImage',
+                api:'api/?v1/settings/image/manager/view',
+                imageName:image.attr("data-image-name"),
+                imagePath:image.attr("data-image-path"),
+                messageTitle:'',
+                messageBody:window.lang.translate('Deleted Image')+': '+image.attr("data-image-name"),
+                error:'Organizr Function: User API Connection Failed'
+            };
+            var callbacks = $.Callbacks();
+            callbacks.add( buildImageManagerView );
+            settingsAPI(post,callbacks);
+        }
+    });
 });
 // RELOAD Page
 $(document).on("click", ".reload", function () {

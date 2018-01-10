@@ -506,14 +506,14 @@ function buildImageManagerViewItem(array){
 			var filepath = v.split("/");
 			var name = filepath[3].split(".");
 			imageListing += `
-			<div class="col-lg-2 col-md-3 col-sm-4 col-xs-4">
-				<div class="white-box">
+			<div class="col-lg-1 col-md-3 col-sm-4 col-xs-4">
+				<div class="white-box bg-theme-dark">
 					<div class="el-card-item p-0">
 						<div class="el-card-avatar el-overlay-1"> <img class="lazyload" data-src="`+v+`">
 							<div class="el-overlay">
 								<ul class="el-info">
-									<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
-									<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-trash"></i></a></li>
+									<li><a class="btn default btn-outline clipboard" data-clipboard-text="`+v+`" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
+									<li><a class="btn default btn-outline deleteImage" href="javascript:void(0);" data-image-path="`+v+`" data-image-name="`+name[0]+`"><i class="icon-trash"></i></a></li>
 								</ul>
 							</div>
 						</div>
@@ -532,7 +532,6 @@ function buildImageManagerView(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/image/list').success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response);
 		$('#settings-image-manager-list').html(buildImageManagerViewItem(response.data));
 		;
 	}).fail(function(xhr) {

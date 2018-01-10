@@ -239,3 +239,23 @@ function getImages(){
     }
     return $allIcons;
 }
+function editImages(){
+    $array = array();
+    $postCheck = array_filter($_POST);
+    $filesCheck = array_filter($_FILES);
+    if(!empty($postCheck)){
+        if($_POST['data']['action'] == 'deleteImage'){
+            if(file_exists(dirname(__DIR__,2).DIRECTORY_SEPARATOR.$_POST['data']['imagePath'])){
+                writeLog('success', 'Image Manager Function -  Deleted Image ['.$_POST['data']['imageName'].']', $GLOBALS['organizrUser']['username']);
+                return (unlink(dirname(__DIR__,2).DIRECTORY_SEPARATOR.$_POST['data']['imagePath'])) ? true : false;
+            }
+        }
+    }
+    if(!empty($filesCheck)){
+        $tempFile = $_FILES['file']['tmp_name'];
+        $targetPath = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'tabs'.DIRECTORY_SEPARATOR;
+        $targetFile =  $targetPath. $_FILES['file']['name'];
+        return (move_uploaded_file($tempFile,$targetFile)) ? true : false;
+    }
+    return false;
+}

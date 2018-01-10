@@ -216,7 +216,7 @@ switch ($function) {
                 if(qualifyRequest(1)){
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
-                    $result['data'] = $pageSettingsImageManagerView;
+                    $result['data'] = $pageSettingsImageManager;
                 }else{
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
@@ -227,37 +227,7 @@ switch ($function) {
                 if(qualifyRequest(1)){
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
-                    $result['data'] = adminEditGroup($_POST);
-                }else{
-                    $result['status'] = 'error';
-                    $result['statusText'] = 'API/Token invalid or not set';
-                    $result['data'] = null;
-                }
-                break;
-            default:
-                $result['status'] = 'error';
-                $result['statusText'] = 'The function requested is not defined for method: '.$method;
-                break;
-        }
-        break;
-    case 'v1_settings_image_manager_upload':
-        switch ($method) {
-            case 'GET':
-                if(qualifyRequest(1)){
-                    $result['status'] = 'success';
-                    $result['statusText'] = 'success';
-                    $result['data'] = $pageSettingsImageManagerUpload;
-                }else{
-                    $result['status'] = 'error';
-                    $result['statusText'] = 'API/Token invalid or not set';
-                    $result['data'] = null;
-                }
-                break;
-            case 'POST':
-                if(qualifyRequest(1)){
-                    $result['status'] = 'success';
-                    $result['statusText'] = 'success';
-                    $result['data'] = adminEditGroup($_POST);
+                    $result['data'] = editImages();
                 }else{
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
