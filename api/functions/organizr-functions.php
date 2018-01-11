@@ -291,14 +291,14 @@ function sendEmail($email = null, $username = "Organizr User", $subject, $body, 
 	try {
 		$mail = new PHPMailer(true);
 		$mail->isSMTP();
-		$mail->Host = SMTPHOST;
-		$mail->SMTPAuth = SMTPHOSTAUTH;
-		$mail->Username = SMTPHOSTUSERNAME;
-		$mail->Password = SMTPHOSTPASSWORD;
-		$mail->SMTPSecure = SMTPHOSTTYPE;
-		$mail->Port = SMTPHOSTPORT;
-		$mail->setFrom(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
-		$mail->addReplyTo(SMTPHOSTSENDEREMAIL, SMTPHOSTSENDERNAME);
+		$mail->Host = $GLOBALS['smtpHost'];
+		$mail->SMTPAuth = $GLOBALS['smtpHostAuth'];
+		$mail->Username = $GLOBALS['smtpHostUsername'];
+		$mail->Password = $GLOBALS['smtpHostPassword'];
+		$mail->SMTPSecure = $GLOBALS['smtpHostType'];
+		$mail->Port = $GLOBALS['smtpHostPort'];
+		$mail->setFrom($GLOBALS['smtpHostSenderEmail'], $GLOBALS['smtpHostSenderName']);
+		$mail->addReplyTo($GLOBALS['smtpHostSenderEmail'], $GLOBALS['smtpHostSenderName']);
 		$mail->isHTML(true);
 		if($email){
 			$mail->addAddress($email, $username);

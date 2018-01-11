@@ -2,11 +2,6 @@
 
 $pageSettingsCustomizeAppearance = '
 <script>
-	$(document).on(\'focusout\', \'#customize-appearance-form :input\', function(e) {
-		if ($(this).attr(\'data-changed\') !== "false") {
-			console.log("changed");
-		}
-	});
 	buildCustomizeAppearance();
 </script>
 <div class="panel bg-theme-dark panel-info">
