@@ -89,3 +89,4 @@ upgrade/*
 api/upgrade*
 cacert.pem
 wallpaper.jpg
+strings.json
