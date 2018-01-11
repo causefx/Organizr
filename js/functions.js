@@ -506,10 +506,10 @@ function buildImageManagerViewItem(array){
 			var filepath = v.split("/");
 			var name = filepath[3].split(".");
 			imageListing += `
-			<div class="col-lg-1 col-md-3 col-sm-4 col-xs-4">
-				<div class="white-box bg-theme-dark">
+			<div class="col-lg-1 col-md-1 col-sm-2 col-xs-4">
+				<div class="white-box bg-theme-dark m-0">
 					<div class="el-card-item p-0">
-						<div class="el-card-avatar el-overlay-1"> <img class="lazyload" data-src="`+v+`">
+						<div class="el-card-avatar el-overlay-1"> <img class="lazyload tabImages" data-src="`+v+`">
 							<div class="el-overlay">
 								<ul class="el-info">
 									<li><a class="btn default btn-outline clipboard p-5" data-clipboard-text="`+v+`" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
@@ -518,8 +518,8 @@ function buildImageManagerViewItem(array){
 							</div>
 						</div>
 						<div class="el-card-content">
-							<small class="elip text-uppercase">`+name[0]+`</small>
-							<br> </div>
+							<small class="elip text-uppercase">`+name[0]+`</small><br>
+						</div>
 					</div>
 				</div>
 			</div>
