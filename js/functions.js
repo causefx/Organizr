@@ -1,11 +1,7 @@
 /* TEST SHIT */
 // Create language switcher instance
 var lang = new Lang();
-//lang.dynamic(language(moment.locale(navigator.languages[0])), 'js/langpack/'+language(moment.locale(navigator.languages[0]))+'.json');
-lang.dynamic('th', 'js/langpack/th.json');
-lang.dynamic('de', 'js/langpack/de.json');
-lang.dynamic('nb', 'js/langpack/nb.json');
-lang.dynamic('strings', 'js/langpack/strings.json');
+loadLanguageList();
 lang.init({
 	defaultLang: 'en',
 	currentLang: language(moment.locale(navigator.languages[0])),
@@ -19,6 +15,45 @@ lang.init({
 // Start Organizr
 launch();
 /* NORMAL FUNCTIONS */
+function loadLanguageList(){
+	var languages = languageList();
+	$.each(languages, function(i,v) {
+		lang.dynamic(i, 'js/langpack/'+i+'.json');
+	});
+	lang.dynamic('strings', 'js/langpack/strings.json');
+}
+function languageList(){
+	return {
+		'en':{
+			'lang':'English',
+			'image':'plugins/images/languages/en.png'
+		},
+		'nb':{
+			'lang':'Bokmål',
+			'image':'plugins/images/languages/nb.png'
+		},
+		'nl':{
+			'lang':'Deutsch',
+			'image':'plugins/images/languages/nl.png'
+		},
+		'fr':{
+			'lang':'French',
+			'image':'plugins/images/languages/fr.png'
+		},
+		'de':{
+			'lang':'German',
+			'image':'plugins/images/languages/de.png'
+		},
+		'de-ch':{
+			'lang':'German (Switzerland)',
+			'image':'plugins/images/languages/de-ch.png'
+		},
+		'it':{
+			'lang':'Italian',
+			'image':'plugins/images/languages/it.png'
+		}
+	};
+}
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -606,20 +641,7 @@ function settingsAPI(post, callbacks=null){
 }
 /* END ORGANIZR API FUNCTIONS */
 function buildLanguage(replace=false,newLang=null){
-	var languages = {
-		'en':{
-			'lang':'English',
-			'image':'plugins/images/languages/en.png'
-		},
-		'de':{
-			'lang':'Deutsch',
-			'image':'plugins/images/languages/de.png'
-		},
-		'nb':{
-			'lang':'Bokmål',
-			'image':'plugins/images/languages/nb.png'
-		}
-	};
+	var languages = languageList();
 	var languageItems = '';
 	var currentLanguage = (getCookie('organizrLanguage')) ? getCookie('organizrLanguage') : window.lang.currentLang;
 	$.each(languages, function(i,v) {
