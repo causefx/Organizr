@@ -12,7 +12,6 @@ $pageSettingsImageManager = '
         });
       }
     });
-
 </script>
 <div class="panel bg-theme-dark panel-info">
     <div class="panel-heading">
