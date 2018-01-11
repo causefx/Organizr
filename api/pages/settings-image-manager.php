@@ -24,7 +24,7 @@ $pageSettingsImageManager = '
         </div>
     </div>
 </div>
-<form action="#" id="new-image-form" class="mfp-hide white-popup-block mfp-with-anim dropzone">
+<form action="#" id="new-image-form" class="mfp-hide white-popup-block mfp-with-anim dropzone" enctype="multipart/form-data">
     <h1 lang="en">Upload Image</h1>
     <div class="fallback">
         <input name="file" type="file" multiple />

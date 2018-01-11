@@ -278,6 +278,8 @@ function editImages(){
         }
     }
     if(!empty($filesCheck)){
+        ini_set('upload_max_filesize', '10M');
+        ini_set('post_max_size', '10M');
         $tempFile = $_FILES['file']['tmp_name'];
         $targetPath = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'tabs'.DIRECTORY_SEPARATOR;
         $targetFile =  $targetPath. $_FILES['file']['name'];

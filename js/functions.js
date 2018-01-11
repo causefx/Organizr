@@ -5,6 +5,7 @@ var lang = new Lang();
 lang.dynamic('th', 'js/langpack/th.json');
 lang.dynamic('de', 'js/langpack/de.json');
 lang.dynamic('nb', 'js/langpack/nb.json');
+lang.dynamic('strings', 'js/langpack/strings.json');
 lang.init({
 	defaultLang: 'en',
 	currentLang: language(moment.locale(navigator.languages[0])),
