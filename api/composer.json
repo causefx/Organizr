@@ -1,6 +1,7 @@
 {
     "require": {
         "dibi/dibi": "^3.1",
-        "lcobucci/jwt": "^3.2"
+        "lcobucci/jwt": "^3.2",
+        "composer/semver": "^1.4"
     }
 }

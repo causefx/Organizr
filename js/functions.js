@@ -25,6 +25,7 @@ function timerIncrement() {
     idleTime = idleTime + 1;
     if (idleTime > 19) { // 20 minutes
         //window.location.reload();
+		console.log('timedout!');
     }
 	//check for cookieExpiry
 	if(hasCookie){
@@ -1455,6 +1456,28 @@ function loadAppearance(appearance){
 	}
 	if(appearance.headerColor !== ''){
 		$('.navbar-header').css("background", appearance.headerColor);
+	}
+	if(appearance.loginWallpaper !== ''){
+		$('#user-appearance').html(`
+		    .login-register {
+			    background: url(`+appearance.loginWallpaper+`) center center/cover no-repeat!important;
+			    height: 100%;
+			    position: fixed;
+		    }
+			.lock-screen {
+				background: url(`+appearance.loginWallpaper+`) center center/cover no-repeat!important;
+			    height: 100%;
+			    position: fixed;
+			    z-index: 999999;
+			    top: 0;
+			    width: 100%;
+			    -webkit-user-select: none;
+			    -moz-user-select: none;
+			    -ms-user-select: none;
+			    -o-user-select: none;
+			    user-select: none;
+			}
+		`);
 	}
 }
 function clearForm(form){

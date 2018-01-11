@@ -146,15 +146,28 @@ function updateDB($path,$filename,$oldVerNum = false) {
     			}
     		}
     	}
-        // Remove Current Database
-        /*
-        $pathDigest = pathinfo($path.$filename);
-        if (file_exists($path.$filename)) {
-            rename($path.$filename, $pathDigest['dirname'].'/'.$pathDigest['filename'].'['.date('Y-m-d_H-i-s').']'.($oldVerNum?'['.$oldVerNum.']':'').'.bak.db');
-        }
+        $connect->disconnect();
+    } catch (Dibi\Exception $e) {
+        return $e;
+    }
 
-        // Create New Database
-        $success = createSQLiteDB($path.$filename);
+        // Remove Current Database
+
+    $pathDigest = pathinfo($path.$filename);
+    if (file_exists($path.$filename)) {
+        copy($path.$filename, $pathDigest['dirname'].'/'.$pathDigest['filename'].'['.date('Y-m-d_H-i-s').']'.($oldVerNum?'['.$oldVerNum.']':'').'.bak.db');
+        unlink($path.$filename);
+        echo 'renaming';
+    }
+
+
+    // Create New Database
+    $success = createDB($path,$filename);
+    try {
+        $GLOBALS['connect'] = new Dibi\Connection([
+            'driver' => 'sqlite3',
+            'database' => $path.$filename,
+        ]);
 
         // Restore Items
         if ($success) {
@@ -165,19 +178,13 @@ function updateDB($path,$filename,$oldVerNum = false) {
                     reset($tableData);
                     foreach($tableData as $key => $value) {
                         $insertValues[] = '('.implode(',',array_map(function($d) {
-                            return (isset($d)?$GLOBALS['file_db']->quote($d):'null');
+                            return (isset($d)?str_replace('\/', '/',json_encode($d)):'null');
                         }, $value)).')';
                     }
-                    $GLOBALS['file_db']->query($queryBase.implode(',',$insertValues).';');
+                    $GLOBALS['connect']->query($queryBase.implode(',',$insertValues).';');
                 }
             }
-      //writeLog("success", "database values have been updated");
-            return true;
-        } else {
-      //writeLog("error", "database values unable to be updated");
-            return false;
         }
-        */
         return $cache;
     } catch (Dibi\Exception $e) {
         return $e;

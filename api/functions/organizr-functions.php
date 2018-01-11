@@ -1,5 +1,24 @@
 <?php
 
+function upgradeCheck() {
+    $compare = new Composer\Semver\Comparator;
+	// Upgrade to 1.50
+	$config = loadConfig();
+	if (isset($config['dbLocation']) && (!isset($config['configVersion']) ||  $compare->lessThan($config['configVersion'], '1.25.0-alpha.101'))) {
+        return 'yup';
+		// Upgrade database to latest version
+		//updateSQLiteDB($config['database_Location'],'1.40');
+
+		// Update Version and Commit
+		//$config['CONFIG_VERSION'] = '1.50';
+		//copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.40].bak.php');
+		//$createConfigSuccess = createConfig($config);
+		//unset($config);
+	}else{
+        return 'no';
+    }
+	//return true;
+}
 function wizardConfig($array){
     foreach ($array['data'] as $items) {
         foreach ($items as $key => $value) {
@@ -142,6 +161,7 @@ function loadAppearance(){
     $appearance['title'] = $GLOBALS['title'];
 	$appearance['useLogo'] = $GLOBALS['useLogo'];
     $appearance['headerColor'] = $GLOBALS['headerColor'];
+    $appearance['loginWallpaper'] = $GLOBALS['loginWallpaper'];
     return $appearance;
 }
 function getCustomizeAppearance(){
@@ -163,6 +183,12 @@ function getCustomizeAppearance(){
                     'name' => 'logo',
                     'label' => 'Logo',
                     'value' => $GLOBALS['logo']
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'loginWallpaper',
+                    'label' => 'Login Wallpaper',
+                    'value' => $GLOBALS['loginWallpaper']
                 ),
                 array(
                     'type' => 'input',
