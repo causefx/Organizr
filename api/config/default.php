@@ -6,5 +6,15 @@ return array(
     'title' => 'Organizr V2',
     'useLogo' => false,
     'headerColor' => '',
-    'headerTextColor' => ''
+    'headerTextColor' => '',
+    'lockScreen' => false,
+    'mail' => false,
+    'smtpHost' => '',
+	'smtpHostPort' => '',
+	'smtpHostAuth' => true,
+	'smtpHostUsername' => '',
+	'smtpHostPassword' => '',
+	'smtpHostSenderName' => 'Organizr',
+	'smtpHostSenderEmail' => 'no-reply@Organizr.tld',
+    'smtpHostType' => 'tls'
 );

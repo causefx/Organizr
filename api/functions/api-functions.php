@@ -56,9 +56,18 @@ function createDB($path,$filename) {
     		`plex_token`	TEXT,
             `group`	TEXT,
             `group_id`	INTEGER,
+            `locked`	INTEGER,
     		`image`	TEXT,
             `register_date` DATE,
     		`auth_service`	TEXT DEFAULT \'internal\'
+    	);');
+        // Create Tokens
+        $jwt = $createDB->query('CREATE TABLE `tokens` (
+    		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    		`token`	TEXT UNIQUE,
+    		`user_id`	INTEGER,
+            `created` DATE,
+            `expires` DATE
     	);');
         $groups = $createDB->query('CREATE TABLE `groups` (
     		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -150,17 +159,12 @@ function updateDB($path,$filename,$oldVerNum = false) {
     } catch (Dibi\Exception $e) {
         return $e;
     }
-
-        // Remove Current Database
-
+    // Remove Current Database
     $pathDigest = pathinfo($path.$filename);
     if (file_exists($path.$filename)) {
         copy($path.$filename, $pathDigest['dirname'].'/'.$pathDigest['filename'].'['.date('Y-m-d_H-i-s').']'.($oldVerNum?'['.$oldVerNum.']':'').'.bak.db');
         unlink($path.$filename);
-        echo 'renaming';
     }
-
-
     // Create New Database
     $success = createDB($path,$filename);
     try {
@@ -185,7 +189,7 @@ function updateDB($path,$filename,$oldVerNum = false) {
                 }
             }
         }
-        return $cache;
+        return true;
     } catch (Dibi\Exception $e) {
         return $e;
     }

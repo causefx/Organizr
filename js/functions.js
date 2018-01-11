@@ -33,7 +33,7 @@ function languageList(){
 			'image':'plugins/images/languages/nb.png'
 		},
 		'nl':{
-			'lang':'Deutsch',
+			'lang':'Dutch',
 			'image':'plugins/images/languages/nl.png'
 		},
 		'fr':{
