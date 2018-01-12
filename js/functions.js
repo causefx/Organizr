@@ -1313,7 +1313,7 @@ function updateUpdateBar(title,percent,update=false){
 function countdown(remaining) {
     if(remaining === 0){
 		local('set','message','Organizr Update|Update Successful|update');
-        location.reload();
+        location.reload(true);
 	}
 	$('#update-seconds').text(remaining);
     setTimeout(function(){ countdown(remaining - 1); }, 1000);
@@ -1343,7 +1343,6 @@ function updateNow(){
 								if(json.data == true){
 									updateUpdateBar('Restarting Organizr in','100%', true);
 									messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update Cleanup Finished'),'bottom-right','#FFF','success','60000');
-									setTimeout(location.reload.bind(location), 10000);
 								}else{
 									message('',window.lang.translate('Update Cleanup Failed'),'bottom-right','#FFF','error','10000');
 								}
