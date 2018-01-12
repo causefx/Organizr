@@ -51,6 +51,7 @@ function phpmBuildSettingsItems(array){
 // EVENTS and LISTENERS
 // CHANGE CUSTOMIZE Options
 $(document).on('change asColorPicker::close', '#PHPMAILER-settings-page :input', function(e) {
+    var input = $(this);
     switch ($(this).attr('type')) {
         case 'switch':
         case 'checkbox':
@@ -68,11 +69,18 @@ $(document).on('change asColorPicker::close', '#PHPMAILER-settings-page :input',
         messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
         error:'Organizr Function: API Connection Failed'
     };
-    //console.log(post);
-    //$('#customize-appearance-reload').removeClass('hidden');
 	var callbacks = $.Callbacks();
     //callbacks.add( buildCustomizeAppearance );
     settingsAPI(post,callbacks);
+    //disable button then renable
+    $('#PHPMAILER-settings-page :input').prop('disabled', 'true');
+    setTimeout(
+        function(){
+            $('#PHPMAILER-settings-page :input').prop('disabled', null);
+            input.emulateTab();
+        },
+        1500
+    );
 
 });
 $(document).on('click', '#PHPMAILER-settings-button', function() {
@@ -100,9 +108,7 @@ $(document).on('click', '.phpmSendTestEmail', function() {
             messageSingle('',window.lang.translate('Email Test Successful'),'bottom-right','#FFF','success','5000');
         }else{
             messageSingle('',response.data,'bottom-right','#FFF','error','5000');
-            console.error(response.data);
         }
-
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
     });
