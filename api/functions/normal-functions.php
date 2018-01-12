@@ -247,3 +247,7 @@ function localURL($url){
 		return $result;
 	}
 }
+function array_filter_key(array $array, $callback){
+	$matchedKeys = array_filter(array_keys($array), $callback);
+	return array_intersect_key($array, array_flip($matchedKeys));
+}

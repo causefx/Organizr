@@ -756,30 +756,6 @@ function editCategories($array){
             break;
     }
 }
-function editAppearance($array){
-    switch ($array['data']['value']) {
-        case 'true':
-            $array['data']['value'] = (bool) true;
-            break;
-        case 'false':
-            $array['data']['value'] = (bool) false;
-            break;
-        default:
-            $array['data']['value'] = $array['data']['value'];
-    }
-    //return gettype($array['data']['value']).' - '.$array['data']['value'];
-    switch ($array['data']['action']) {
-        case 'editCustomizeAppearance':
-            $newItem = array(
-                $array['data']['name'] => $array['data']['value']
-            );
-            return (updateConfig($newItem)) ? true : false;
-            break;
-        default:
-            # code...
-            break;
-    }
-}
 function allUsers(){
     try {
     	$connect = new Dibi\Connection([

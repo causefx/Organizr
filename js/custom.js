@@ -77,6 +77,9 @@ function pageLoad(){
     //Start Organizr
     $(function () {
         $('#side-menu').metisMenu();
+        if($('#preloader:visible').length == 1){
+            $("#preloader").fadeOut();
+        }
         lazyload();
     });
     $(".colorpicker").asColorPicker({
@@ -983,7 +986,7 @@ $(document).on('change asColorPicker::close', '#customize-appearance-form :input
         name:$(this).attr("name"),
         value:value,
         messageTitle:'',
-        messageBody:'Update Value for '+$(this).parent().parent().find('label').text(),
+        messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
         error:'Organizr Function: API Connection Failed'
     };
     console.log(post);
@@ -1026,6 +1029,44 @@ $(document).on("click", ".deleteImage", function () {
 // RELOAD Page
 $(document).on("click", ".reload", function () {
     location.reload();
+});
+// ENABLE PLUGIN
+$(document).on('click', '.enablePlugin', function() {
+	var post = {
+        action:'enable',
+        api:'api/?v1/settings/plugins/list',
+        name:$(this).attr('data-plugin-name'),
+        configName:$(this).attr('data-config-name'),
+        messageTitle:'',
+        messageBody:'Enabling '+$(this).attr('data-plugin-name'),
+        error:'Organizr Function: API Connection Failed'
+    };
+    //$('#customize-appearance-reload').removeClass('hidden');
+	var callbacks = $.Callbacks();
+    //callbacks.add( buildCustomizeAppearance );
+    settingsAPI(post,callbacks);
+    ajaxloader(".content-wrap","in");
+    setTimeout(function(){ buildPlugins();ajaxloader(); }, 3000);
+
+});
+// DISABLE PLUGIN
+$(document).on('click', '.disablePlugin', function() {
+	var post = {
+        action:'disable',
+        api:'api/?v1/settings/plugins/list',
+        name:$(this).attr('data-plugin-name'),
+        configName:$(this).attr('data-config-name'),
+        messageTitle:'',
+        messageBody:'Disabling '+$(this).attr('data-plugin-name'),
+        error:'Organizr Function: API Connection Failed'
+    };
+    //$('#customize-appearance-reload').removeClass('hidden');
+	var callbacks = $.Callbacks();
+    //callbacks.add( buildCustomizeAppearance );
+    settingsAPI(post,callbacks);
+    ajaxloader(".content-wrap","in");
+    setTimeout(function(){ buildPlugins();ajaxloader(); }, 3000);
+
 });
 /* ===== Open-Close Right Sidebar ===== */
 

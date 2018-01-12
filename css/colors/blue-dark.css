@@ -333,7 +333,7 @@ a.mytooltip {
   background: #1f1f1f;
   padding: 20px 30px;
   text-align: left;
-  max-width: 650px;
+  max-width: 90%;
   margin: 40px auto;
   position: relative;
   border: 1px solid #2cabe4;
@@ -415,6 +415,10 @@ body.stop-scrolling {
 }
 .p-5{
   padding:5px!important
+}
+.el-element-overlay .el-card-item .el-overlay-1 .el-info>li a:hover {
+	background: #707cd2;
+	border-color: #707cd2;
 }
 .table-hover>tbody>tr:hover, .table-striped>tbody>tr:nth-of-type(odd), .table>tbody>tr.active>td, .table>tbody>tr.active>th, .table>tbody>tr>td.active, .table>tbody>tr>th.active, .table>tfoot>tr.active>td, .table>tfoot>tr.active>th, .table>tfoot>tr>td.active, .table>tfoot>tr>th.active, .table>thead>tr.active>td, .table>thead>tr.active>th, .table>thead>tr>td.active, .table>thead>tr>th.active {
   background-color: #1f1f1f!important;

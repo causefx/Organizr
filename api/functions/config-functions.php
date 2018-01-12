@@ -114,6 +114,10 @@ function fillDefaultConfig($array) {
 	} else {
 		$loadedDefaults = $path;
 	}
+	// Include all plugin config files
+	foreach (glob(dirname(__DIR__,1).DIRECTORY_SEPARATOR.'plugins' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . "*.php") as $filename){
+		$loadedDefaults = array_merge($loadedDefaults , loadConfig($filename));
+	}
 	return (is_array($loadedDefaults) ? fillDefaultConfig_recurse($array, $loadedDefaults) : false);
 }
 function fillDefaultConfig_recurse($current, $defaults) {

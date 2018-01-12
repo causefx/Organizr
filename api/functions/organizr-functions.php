@@ -165,7 +165,7 @@ function loadAppearance(){
     return $appearance;
 }
 function getCustomizeAppearance(){
-    if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
+    if(file_exists(dirname(__DIR__,1).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'config.php')){
         return array(
             'config' => array(/*
                 array(
@@ -215,6 +215,85 @@ function getCustomizeAppearance(){
 
             )
         );
+    }
+}
+function editAppearance($array){
+    switch ($array['data']['value']) {
+        case 'true':
+            $array['data']['value'] = (bool) true;
+            break;
+        case 'false':
+            $array['data']['value'] = (bool) false;
+            break;
+        default:
+            $array['data']['value'] = $array['data']['value'];
+    }
+    //return gettype($array['data']['value']).' - '.$array['data']['value'];
+    switch ($array['data']['action']) {
+        case 'editCustomizeAppearance':
+            $newItem = array(
+                $array['data']['name'] => $array['data']['value']
+            );
+            return (updateConfig($newItem)) ? true : false;
+            break;
+        default:
+            # code...
+            break;
+    }
+}
+function updateConfigItem($array){
+    switch ($array['data']['value']) {
+        case 'true':
+            $array['data']['value'] = (bool) true;
+            break;
+        case 'false':
+            $array['data']['value'] = (bool) false;
+            break;
+        default:
+            $array['data']['value'] = $array['data']['value'];
+    }
+	// Hash
+	if($array['data']['type'] == 'password'){
+		$array['data']['value'] = encrypt($array['data']['value']);
+	}
+    //return gettype($array['data']['value']).' - '.$array['data']['value'];
+    $newItem = array(
+        $array['data']['name'] => $array['data']['value']
+    );
+    return (updateConfig($newItem)) ? true : false;
+}
+function getPlugins(){
+    if(file_exists(dirname(__DIR__,1).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'config.php')){
+		$pluginList = array();
+        foreach($GLOBALS['plugins'] as $plugin){
+			foreach ($plugin as $key => $value) {
+				$plugin[$key]['enabled'] = $GLOBALS[$value['configPrefix'].'-enabled'];
+			}
+			$pluginList = array_merge($pluginList, $plugin);
+		}
+		return $pluginList;
+    }
+	return false;
+}
+function editPlugins($array){
+	switch ($array['data']['action']) {
+        case 'enable':
+            $newItem = array(
+                $array['data']['configName'] => true
+            );
+			writeLog('success', 'Plugin Function -  Enabled Plugin ['.$_POST['data']['name'].']', $GLOBALS['organizrUser']['username']);
+            return (updateConfig($newItem)) ? true : false;
+            break;
+		case 'disable':
+			$newItem = array(
+				$array['data']['configName'] => false
+			);
+			writeLog('success', 'Plugin Function -  Disabled Plugin ['.$_POST['data']['name'].']', $GLOBALS['organizrUser']['username']);
+			return (updateConfig($newItem)) ? true : false;
+			break;
+        default:
+            # code...
+            break;
     }
 }
 function auth(){
@@ -287,6 +366,7 @@ function editImages(){
     }
     return false;
 }
+/*
 function sendEmail($email = null, $username = "Organizr User", $subject, $body, $cc = null, $bcc = null){
 	try {
 		$mail = new PHPMailer(true);
@@ -353,3 +433,4 @@ function sendTestEmail($to, $from, $host, $auth, $username, $password, $type, $p
 	}
 	return false;
 }
+*/

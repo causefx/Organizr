@@ -20,3 +20,7 @@ getOrganizrUserToken();
 foreach (glob(__DIR__.DIRECTORY_SEPARATOR.'pages' . DIRECTORY_SEPARATOR . "*.php") as $filename){
     require_once $filename;
 }
+// Include all plugin files
+foreach (glob(__DIR__.DIRECTORY_SEPARATOR.'plugins' . DIRECTORY_SEPARATOR . "*.php") as $filename){
+    require_once $filename;
+}

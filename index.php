@@ -23,6 +23,7 @@
 	<link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css" />
 	<link href="css/style.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<link href="css/colors/blue-dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
+	<?php echo pluginFiles('css'); ?>
 	<style type="text/css" id="user-appearance"></style>
 	<link id="theme" rel="stylesheet">
 	<!--[if lt IE 9]>
@@ -128,5 +129,6 @@
 	<script src="plugins/bower_components/dropzone-master/dist/dropzone.js"></script>
 	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 	<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
+	<?php echo pluginFiles('js'); ?>
 </body>
 </html>

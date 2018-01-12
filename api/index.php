@@ -37,6 +37,55 @@ switch ($function) {
                 break;
         }
         break;
+    case 'v1_settings_plugins':
+        switch ($method) {
+            case 'GET':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = $pageSettingsPlugins;
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
+    case 'v1_settings_plugins_list':
+        switch ($method) {
+            case 'GET':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = getPlugins();
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            case 'POST':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = editPlugins($_POST);
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_settings_settings_logs':
         switch ($method) {
             case 'GET':
@@ -74,6 +123,25 @@ switch ($function) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = editAppearance($_POST);
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
+    case 'v1_update_config':
+        switch ($method) {
+            case 'POST':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = updateConfigItem($_POST);
                 }else{
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
@@ -547,42 +615,10 @@ switch ($function) {
         break;
     case 'v1_plugin':
         switch ($method) {
-            case 'GET':
-                if(qualifyRequest(1)){
-                    $result['status'] = 'success';
-                    $result['statusText'] = 'success';
-                    $result['data'] = 'plugin admin';
-                }elseif(qualifyRequest(998)){
-                    $result['status'] = 'success';
-                    $result['statusText'] = 'success';
-                    $result['data'] = 'plugin logged in';
-                }elseif(qualifyRequest(999)){
-                    $result['status'] = 'success';
-                    $result['statusText'] = 'success';
-                    $result['data'] = 'plugin guest';
-                }else{
-                    $result['status'] = 'error';
-                    $result['statusText'] = 'API/Token invalid or not set';
-                    $result['data'] = null;
-                }
-                break;
             case 'POST':
-                if(qualifyRequest(1)){
-                    $result['status'] = 'success';
-                    $result['statusText'] = 'success';
-                    $result['data'] = 'plugin admin';
-                }elseif(qualifyRequest(998)){
-                    $result['status'] = 'success';
-                    $result['statusText'] = 'success';
-                    $result['data'] = 'plugin logged in';
-                }elseif(qualifyRequest(999)){
-                    $result['status'] = 'success';
-                    $result['statusText'] = 'success';
-                    $result['data'] = 'plugin guest';
-                }else{
-                    $result['status'] = 'error';
-                    $result['statusText'] = 'API/Token invalid or not set';
-                    $result['data'] = null;
+                // Include all plugin api Calls
+                foreach (glob(__DIR__.DIRECTORY_SEPARATOR.'plugins' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . "*.php") as $filename){
+                    require_once $filename;
                 }
                 break;
             default:

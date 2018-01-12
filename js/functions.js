@@ -1,4 +1,3 @@
-/* TEST SHIT */
 // Create language switcher instance
 var lang = new Lang();
 loadLanguageList();
@@ -488,25 +487,146 @@ function hasValue(test){
 /* BUILD FUNCTIONS */
 /* END BUILD FUNCTIONS */
 /* ORGANIZR API FUNCTIONS */
+function selectOptions(options, active){
+	var selectOptions = '';
+	$.each(options, function(i,v) {
+		console.log(active);
+		var selected = (active.toString() == v.value) ? 'selected' : '';
+		selectOptions += '<option '+selected+' value="'+v.value+'">'+v.name+'</option>';
+	});
+	return selectOptions;
+}
 function buildFormItem(item){
 	var placeholder = (item.placeholder) ? ' placeholder="'+item.placeholder+'"' : '';
 	var id = (item.id) ? ' id="'+item.placeholder+'"' : '';
+	var type = (item.type) ? ' data-type="'+item.type+'"' : '';
 	var value = (item.value) ? ' value="'+item.value+'"' : '';
 	var name = (item.name) ? ' name="'+item.name+'"' : '';
 	var extraClass = (item.class) ? ' '+item.class : '';
+	var icon = (item.icon) ? ' '+item.icon : '';
+	var text = (item.text) ? ' '+item.text : '';
 	var disabled = (item.disabled) ? ' disabled' : '';
 	//+tof(item.value,'c')+`
 	switch (item.type) {
 		case 'input':
-			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+' />';
+			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+' />';
+			break;
+		case 'password':
+			return '<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+' />';
+			break;
+		case 'hidden':
+			return '<input data-changed="false" lang=en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+' />';
+			break;
+		case 'select':
+			return '<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+'>'+selectOptions(item.options, item.value)+'</select>';
 			break;
 		case 'switch':
 		case 'checkbox':
-			return '<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+' /><input data-changed="false" type="hidden"'+name+'value="false">';
+			return '<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+' /><input data-changed="false" type="hidden"'+name+'value="false">';
+			break;
+		case 'button':
+			return '<button class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none'+extraClass+'" type="button"><span class="btn-label"><i class="'+icon+'"></i></span><span lang="en">'+text+'</span></button>';
 			break;
 		default:
 			return false;
 	}
+}
+function buildPluginsItem(array){
+	var activePlugins = '';
+	var inactivePlugins = '';
+	$.each(array, function(i,v) {
+		var settingsPage = (v.settings == true) ? `
+		<!-- Plugin Settings Page -->
+		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup-block mfp-with-anim">
+			<h1 lang="en">`+v.name+` Settings</h1>
+			<fieldset id="`+v.idPrefix+`-settings-items" style="border:0;"></fieldset>
+			<div class="clearfix"></div>
+		</form>
+		` : '';
+		var href = (v.settings == true) ? '#'+v.idPrefix+'-settings-page' : 'javascript:void(0);';
+		if(v.enabled == true){
+			var activeToggle = `<li><a class="btn default btn-outline disablePlugin" href="javascript:void(0);" data-plugin-name="`+v.name+`" data-config-prefix="`+v.configPrefix+`" data-config-name="`+v.configPrefix+`-enabled"><i class="ti-power-off fa-2x"></i></a></li>`;
+			var settings = `<li><a class="btn default btn-outline popup-with-form" href="`+href+`" data-effect="mfp-3d-unfold"data-plugin-name="`+v.name+`" id="`+v.idPrefix+`-settings-button" data-config-prefix="`+v.configPrefix+`"><i class="ti-panel fa-2x"></i></a></li>`;
+		}else{
+			var activeToggle = `<li><a class="btn default btn-outline enablePlugin" href="javascript:void(0);" data-plugin-name="`+v.name+`" data-config-prefix="`+v.configPrefix+`" data-config-name="`+v.configPrefix+`-enabled"><i class="ti-plug fa-2x"></i></a></li>`;
+			var settings = '';
+		}
+		var plugin = `
+		<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+			<div class="white-box m-0">
+				<div class="el-card-item p-0">
+					<div class="el-card-avatar el-overlay-1 m-0"> <img class="lazyload" data-src="`+v.image+`">
+						<div class="el-overlay">
+							<ul class="el-info">
+								`+settings+activeToggle+`
+							</ul>
+						</div>
+					</div>
+					<div class="el-card-content">
+						<h3 class="box-title">`+v.name+`</h3>
+						<small class="elip text-uppercase p-b-10">`+v.category+`</small>
+					</div>
+				</div>
+			</div>
+		</div>
+		`;
+		if(v.enabled == true){
+			activePlugins += plugin+settingsPage;
+		}else{
+			inactivePlugins += plugin+settingsPage;
+		}
+	});
+	activePlugins = (activePlugins.length !== 0) ? activePlugins : '<h2 class="text-center" lang="en">Nothing Active</h2>';
+	inactivePlugins = (inactivePlugins.length !== 0) ? inactivePlugins : '<h2 class="text-center" lang="en">Everything Active</h2>';
+	var panes = `
+	<ul class="nav customtab2 nav-tabs" role="tablist">
+		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en"> Active</span></a>
+		</li>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en"> Inactive</span></a>
+		</li>
+	</ul>
+	<!-- Tab panes -->
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane fade in active" id="settings-plugins-active">
+			<div class="panel bg-theme-dark panel-info">
+				<div class="panel-heading">
+					<span lang="en">Active Plugins</span>
+				</div>
+				<div class="panel-wrapper collapse in" aria-expanded="true">
+					<div class="panel-body bg-theme-dark">
+						<div class="row el-element-overlay m-b-40">`+activePlugins+`</div>
+					</div>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		<div role="tabpanel" class="tab-pane fade" id="settings-plugins-inactive">
+			<div class="panel bg-theme-dark panel-info">
+				<div class="panel-heading">
+					<span lang="en">Inactive Plugins</span>
+				</div>
+				<div class="panel-wrapper collapse in" aria-expanded="true">
+					<div class="panel-body bg-theme-dark">
+						<div class="row el-element-overlay m-b-40">`+inactivePlugins+`</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	`;
+
+	return panes;
+}
+function buildPlugins(){
+	ajaxloader(".content-wrap","in");
+	organizrAPI('GET','api/?v1/settings/plugins/list').success(function(data) {
+		var response = JSON.parse(data);
+		$('#main-plugin-area').html(buildPluginsItem(response.data));
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
 }
 function buildCustomizeAppearanceItem(array){
 	if (Array.isArray(array.config)) {
@@ -633,7 +753,7 @@ function settingsAPI(post, callbacks=null){
 		var response = JSON.parse(data);
 		console.log(response);
 		message(post.messageTitle,post.messageBody,"bottom-right","#FFF","success","5000");
-		if(callbacks){ callbacks.fire(); console.log('fired'); }
+		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
 		console.error(post.error);
 	});
@@ -1161,8 +1281,6 @@ function updateCheck(){
 		if(latest !== currentVersion){
 			console.log('Update Function: Update to '+latest+' is available');
 			message(window.lang.translate('Update Available'),latest+' '+window.lang.translate('is available, goto')+' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);$.toast().reset(\'all\');"><span lang="en">Update Tab</span></a>','bottom-right','#FFF','update','60000');
-		}else{
-			console.log('Update Function: '+latest+' is the newest version');
 		}
 		$('#githubVersions').html(buildVersion(reverseObject(json)));
 	}).fail(function(xhr) {
@@ -1391,6 +1509,9 @@ function tof(string,type){
 		case 'question':
 		case 'q':
 			return (result == "0") ? ('yes') : ((result == "1") ? ('no') : (string));
+			break;
+		case 'string':
+			return string.toString();
 			break;
 		default:
 			return (result == "0") ? ("false") : ((result == "1") ? ("true") : (string));

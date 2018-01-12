@@ -7,14 +7,5 @@ return array(
     'useLogo' => false,
     'headerColor' => '',
     'headerTextColor' => '',
-    'lockScreen' => false,
-    'mail' => false,
-    'smtpHost' => '',
-	'smtpHostPort' => '',
-	'smtpHostAuth' => true,
-	'smtpHostUsername' => '',
-	'smtpHostPassword' => '',
-	'smtpHostSenderName' => 'Organizr',
-	'smtpHostSenderEmail' => 'no-reply@Organizr.tld',
-    'smtpHostType' => 'tls'
+    'lockScreen' => false
 );
