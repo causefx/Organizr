@@ -490,7 +490,6 @@ function hasValue(test){
 function selectOptions(options, active){
 	var selectOptions = '';
 	$.each(options, function(i,v) {
-		console.log(active);
 		var selected = (active.toString() == v.value) ? 'selected' : '';
 		selectOptions += '<option '+selected+' value="'+v.value+'">'+v.name+'</option>';
 	});
