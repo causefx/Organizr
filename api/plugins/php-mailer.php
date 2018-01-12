@@ -99,7 +99,8 @@ function phpmGetSettings(){
 			'type' => 'input',
 			'name' => 'PHPMAILER-smtpHostSenderEmail',
 			'label' => 'Sender Email',
-			'value' => $GLOBALS['PHPMAILER-smtpHostSenderEmail']
+			'value' => $GLOBALS['PHPMAILER-smtpHostSenderEmail'],
+			'placeholder' => 'i.e. same as username'
 		),
 		array(
 			'type' => 'select',

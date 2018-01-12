@@ -511,7 +511,7 @@ function buildFormItem(item){
 			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+' />';
 			break;
 		case 'password':
-			return '<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+' />';
+			return '<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+' autocomplete="new-password" />';
 			break;
 		case 'hidden':
 			return '<input data-changed="false" lang=en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+' />';
@@ -536,7 +536,7 @@ function buildPluginsItem(array){
 	$.each(array, function(i,v) {
 		var settingsPage = (v.settings == true) ? `
 		<!-- Plugin Settings Page -->
-		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup-block mfp-with-anim">
+		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup-block mfp-with-anim" autocomplete="off">
 			<h1 lang="en">`+v.name+` Settings</h1>
 			<fieldset id="`+v.idPrefix+`-settings-items" style="border:0;"></fieldset>
 			<div class="clearfix"></div>

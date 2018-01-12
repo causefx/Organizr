@@ -2,22 +2,24 @@
 
 function upgradeCheck() {
     $compare = new Composer\Semver\Comparator;
-	// Upgrade to 1.50
+	// Upgrade check start for vserion below
+	$versionCheck = '2.25.0-alpha.101';
 	$config = loadConfig();
-	if (isset($config['dbLocation']) && (!isset($config['configVersion']) ||  $compare->lessThan($config['configVersion'], '1.25.0-alpha.101'))) {
-        return 'yup';
+	if (isset($config['dbLocation']) && (!isset($config['configVersion']) ||  $compare->lessThan($config['configVersion'], $versionCheck))) {
+		$oldVer = $config['configVersion'];
+        return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 		// Upgrade database to latest version
-		//updateSQLiteDB($config['database_Location'],'1.40');
-
+		//updateDB($GLOBALS['dbLocation'],$GLOBALS['dbName'],$oldVer);
 		// Update Version and Commit
-		//$config['CONFIG_VERSION'] = '1.50';
+		//$config['configVersion'] = $versionCheck;
 		//copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.40].bak.php');
 		//$createConfigSuccess = createConfig($config);
 		//unset($config);
 	}else{
-        return 'no';
+		//unset($config);
+        return 'No Upgraded Needed - Current Version Above: '.$versionCheck;
     }
-	//return true;
+	return true;
 }
 function wizardConfig($array){
     foreach ($array['data'] as $items) {
