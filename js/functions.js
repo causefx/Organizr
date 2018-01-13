@@ -1635,6 +1635,63 @@ function checkMessage(){
 		messageSingle(window.lang.translate(message[0]),window.lang.translate(message[1]),'bottom-right','#FFF',message[2],'10000');
 	}
 }
+function setError(error){
+	local('set','error',error);
+	var url = window.location.href.split('?')[0];
+	url = url.split('#')[0];
+	window.location.href = url+'?error';
+}
+function buildErrorPage(error){
+	var description = '';
+	var message = '';
+	var color = '';
+	switch (error) {
+		case '401':
+			description = 'Unauthorized';
+			message = 'Look, you dont belong here';
+			color = 'danger';
+			break;
+		case '404':
+			description = 'Not Found';
+			message = 'I think I lost it...';
+			color = 'primary';
+			break;
+		default:
+			description = 'Something happened';
+			message = 'But I dont know what';
+			color = 'muted';
+	}
+	return `
+	<div class="error-box">
+		<div class="error-body text-center">
+			<h1 class="text-`+color+`">`+error+`</h1>
+			<h3 class="text-uppercase">`+description+`</h3>
+			<p class="text-muted m-t-30 m-b-30" lang="en">`+message+`</p>
+			<a href="javascript:void(0);" class="btn btn-`+color+` btn-rounded waves-effect waves-light m-b-40 closeErrorPage" lang="en">OK</a>
+		</div>
+		<footer class="footer text-center">Organizr</footer>
+	</div>
+	`;
+}
+function errorPage(error=null){
+	if(error){
+		local('set','error',error);
+	}
+	var urlParams = new URLSearchParams(window.location.search);
+	if(urlParams.has('error')){
+		if(urlParams.get('error')){
+			local('set','error',urlParams.get('error'));
+		}
+	}
+	if(local('get', 'error')){
+		//show error page
+		$('.error-page').html(buildErrorPage(local('get', 'error')));
+		$('.error-page').fadeIn();
+		local('remove', 'error');
+		window.history.pushState({}, document.title, "/" );
+	}
+
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
 		var json = JSON.parse(data);
@@ -1677,4 +1734,5 @@ function launch(){
 		}
 	});
 	checkMessage();
+	errorPage();
 }

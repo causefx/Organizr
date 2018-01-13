@@ -23,12 +23,13 @@ function phpmSendTestEmail(){
 	try {
 		$mail = new PHPMailer\PHPMailer\PHPMailer(true);
 		$mail->isSMTP();
+		//$mail->SMTPDebug = 3;
 		$mail->Host = $GLOBALS['PHPMAILER-smtpHost'];
+		$mail->Port = $GLOBALS['PHPMAILER-smtpHostPort'];
+		$mail->SMTPSecure = $GLOBALS['PHPMAILER-smtpHostType'];
 		$mail->SMTPAuth = $GLOBALS['PHPMAILER-smtpHostAuth'];
 		$mail->Username = $GLOBALS['PHPMAILER-smtpHostUsername'];
 		$mail->Password = decrypt($GLOBALS['PHPMAILER-smtpHostPassword']);
-		$mail->SMTPSecure = $GLOBALS['PHPMAILER-smtpHostType'];
-		$mail->Port = $GLOBALS['PHPMAILER-smtpHostPort'];
 		$mail->setFrom($GLOBALS['PHPMAILER-smtpHostSenderEmail'], $GLOBALS['PHPMAILER-smtpHostSenderName']);
 		$mail->addReplyTo($GLOBALS['PHPMAILER-smtpHostSenderEmail'], $GLOBALS['PHPMAILER-smtpHostSenderName']);
 		$mail->isHTML(true);
@@ -103,6 +104,12 @@ function phpmGetSettings(){
 			'placeholder' => 'i.e. same as username'
 		),
 		array(
+			'type' => 'switch',
+			'name' => 'PHPMAILER-smtpHostAuth',
+			'label' => 'Authentication',
+			'value' => $GLOBALS['PHPMAILER-smtpHostAuth']
+		),
+		array(
 			'type' => 'select',
 			'name' => 'PHPMAILER-smtpHostType',
 			'label' => 'Authentication Type',
@@ -121,12 +128,6 @@ function phpmGetSettings(){
 					'value'=>'false'
 				)
 			)
-		),
-		array(
-			'type' => 'switch',
-			'name' => 'PHPMAILER-smtpHostAuth',
-			'label' => 'Authentication',
-			'value' => $GLOBALS['PHPMAILER-smtpHostAuth']
 		),
 		array(
 			'type' => 'button',

@@ -420,6 +420,13 @@ body.stop-scrolling {
 	background: #707cd2;
 	border-color: #707cd2;
 }
+.error-page {
+  width: 100%;
+  background: #1b1a1a;
+  height: 100%;
+  position: fixed;
+  display: none;
+}
 .table-hover>tbody>tr:hover, .table-striped>tbody>tr:nth-of-type(odd), .table>tbody>tr.active>td, .table>tbody>tr.active>th, .table>tbody>tr>td.active, .table>tbody>tr>th.active, .table>tfoot>tr.active>td, .table>tfoot>tr.active>th, .table>tfoot>tr>td.active, .table>tfoot>tr>th.active, .table>thead>tr.active>td, .table>thead>tr.active>th, .table>thead>tr>td.active, .table>thead>tr>th.active {
   background-color: #1f1f1f!important;
 }

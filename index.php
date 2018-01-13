@@ -86,6 +86,7 @@
 		<!-- ============================================================== -->
 		<!-- Page Content -->
 		<!-- ============================================================== -->
+		<div class="error-page"></div>
 		<div class="login-area hidden"></div>
 		<div class="p-0" id="page-wrapper">
 			<div class="organizr-area"></div>

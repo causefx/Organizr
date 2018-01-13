@@ -1051,22 +1051,42 @@ $(document).on('click', '.enablePlugin', function() {
 });
 // DISABLE PLUGIN
 $(document).on('click', '.disablePlugin', function() {
-	var post = {
-        action:'disable',
-        api:'api/?v1/settings/plugins/list',
-        name:$(this).attr('data-plugin-name'),
-        configName:$(this).attr('data-config-name'),
-        messageTitle:'',
-        messageBody:'Disabling '+$(this).attr('data-plugin-name'),
-        error:'Organizr Function: API Connection Failed'
-    };
-    //$('#customize-appearance-reload').removeClass('hidden');
-	var callbacks = $.Callbacks();
-    //callbacks.add( buildCustomizeAppearance );
-    settingsAPI(post,callbacks);
-    ajaxloader(".content-wrap","in");
-    setTimeout(function(){ buildPlugins();ajaxloader(); }, 3000);
+    var plugin = $(this);
+    swal({
+        title: window.lang.translate('Disable')+' '+plugin.attr("data-plugin-name")+'?',
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: window.lang.translate('Yes'),
+        cancelButtonText: window.lang.translate('No'),
+        closeOnConfirm: true,
+        closeOnCancel: true
+    }, function(isConfirm){
+        if (isConfirm) {
+            //Create POST Array
+            var post = {
+                action:'disable',
+                api:'api/?v1/settings/plugins/list',
+                name:plugin.attr('data-plugin-name'),
+                configName:plugin.attr('data-config-name'),
+                messageTitle:'',
+                messageBody:'Disabling '+plugin.attr('data-plugin-name'),
+                error:'Organizr Function: API Connection Failed'
+            };
+            //$('#customize-appearance-reload').removeClass('hidden');
+        	var callbacks = $.Callbacks();
+            //callbacks.add( buildCustomizeAppearance );
+            settingsAPI(post,callbacks);
+            ajaxloader(".content-wrap","in");
+            setTimeout(function(){ buildPlugins();ajaxloader(); }, 3000);
+        }
+    });
 
+});
+
+$(document).on("click", ".closeErrorPage", function () {
+    $('.error-page').html('');
+    $('.error-page').fadeOut();
 });
 /* ===== Open-Close Right Sidebar ===== */
 
