@@ -22,10 +22,9 @@
 	<link href="plugins/bower_components/jquery-asColorPicker-master/css/asColorPicker.css" rel="stylesheet">
 	<link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css" />
 	<link href="css/style.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
-	<link href="css/colors/blue-dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<?php echo pluginFiles('css'); ?>
-	<style type="text/css" id="user-appearance"></style>
 	<link id="theme" rel="stylesheet">
+	<style type="text/css" id="user-appearance"></style>
 	<!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
@@ -86,7 +85,7 @@
 		<!-- ============================================================== -->
 		<!-- Page Content -->
 		<!-- ============================================================== -->
-		<div class="error-page"></div>
+		<div class="error-page bg-theme-dark"></div>
 		<div class="login-area hidden"></div>
 		<div class="p-0" id="page-wrapper">
 			<div class="organizr-area"></div>

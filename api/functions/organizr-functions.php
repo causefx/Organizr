@@ -211,7 +211,15 @@ function getCustomizeAppearance(){
                     'value' => $GLOBALS['headerColor'],
                     'class' => 'colorpicker',
                     'disabled' => true
-                )
+                ),
+				array(
+					'type' => 'select',
+					'name' => 'theme',
+					'label' => 'Theme',
+					'class' => 'themeChanger',
+					'value' => $GLOBALS['theme'],
+					'options' => getThemes()
+				)
             ),
             'database' => array(
 
@@ -367,6 +375,17 @@ function editImages(){
         return (move_uploaded_file($tempFile,$targetFile)) ? true : false;
     }
     return false;
+}
+function getThemes(){
+	$themes = array();
+	foreach (glob(dirname(__DIR__,2).DIRECTORY_SEPARATOR.'css' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . "*.css") as $filename){
+
+		$themes[] = array(
+			'name' => preg_replace('/\\.[^.\\s]{3,4}$/', '', basename($filename)),
+			'value' => preg_replace('/\\.[^.\\s]{3,4}$/', '', basename($filename))
+		);
+	}
+	return $themes;
 }
 /*
 function sendEmail($email = null, $username = "Organizr User", $subject, $body, $cc = null, $bcc = null){

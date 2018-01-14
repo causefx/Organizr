@@ -594,7 +594,9 @@ switch ($function) {
                 $status['categories'] = loadTabs()['categories'];
                 $status['tabs'] = loadTabs()['tabs'];
                 $result['data'] = $status;
-				$result['branch'] = $GLOBALS['branch'];
+                $result['branch'] = $GLOBALS['branch'];
+                $result['theme'] = $GLOBALS['theme'];
+				$result['version'] = $GLOBALS['installedVersion'];
                 break;
             default:
                 $result['status'] = 'error';

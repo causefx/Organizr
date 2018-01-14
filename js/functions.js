@@ -1669,7 +1669,6 @@ function buildErrorPage(error){
 			<p class="text-muted m-t-30 m-b-30" lang="en">`+message+`</p>
 			<a href="javascript:void(0);" class="btn btn-`+color+` btn-rounded waves-effect waves-light m-b-40 closeErrorPage" lang="en">OK</a>
 		</div>
-		<footer class="footer text-center">Organizr</footer>
 	</div>
 	`;
 }
@@ -1692,6 +1691,14 @@ function errorPage(error=null){
 	}
 
 }
+function changeTheme(theme){
+	//$("#preloader").fadeIn();
+	$('#theme').attr({
+        href: 'css/themes/' + theme + '.css?v='+activeInfo.version
+    });
+	//$("#preloader").fadeOut();
+	console.log('Theme: '+theme);
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
 		var json = JSON.parse(data);
@@ -1710,11 +1717,16 @@ function launch(){
 			serverOS:json.data.status.os,
 			phpVersion:json.data.status.php,
 			token:json.data.user.token,
-			branch:json.branch
+			branch:json.branch,
+			theme:json.theme,
+			version:json.version
 		};
 		console.log("%cOrganizr","color: #66D9EF; font-size: 24px; font-family: Monospace;");
 		console.log("%cVersion: "+currentVersion,"color: #AD80FD; font-size: 12px; font-family: Monospace;");
-		console.log("%cStarting Up...","color: #F92671; font-size: 12px; font-family: Monospace;")
+		console.log("%cStarting Up...","color: #F92671; font-size: 12px; font-family: Monospace;");
+		checkMessage();
+		errorPage();
+		changeTheme(activeInfo.theme);
 		switch (json.data.status.status) {
 			case "wizard":
 				buildWizard();
@@ -1733,6 +1745,4 @@ function launch(){
 				console.error('Organizr Function: Action not set or defined');
 		}
 	});
-	checkMessage();
-	errorPage();
 }

@@ -994,6 +994,9 @@ $(document).on('change asColorPicker::close', '#customize-appearance-form :input
 	var callbacks = $.Callbacks();
     //callbacks.add( buildCustomizeAppearance );
     settingsAPI(post,callbacks);
+    if($(this).hasClass('themeChanger')){
+        changeTheme(value);
+    }
 
 });
 //DELETE IMAGE

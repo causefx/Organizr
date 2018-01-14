@@ -7,5 +7,6 @@ return array(
     'useLogo' => false,
     'headerColor' => '',
     'headerTextColor' => '',
-    'lockScreen' => false
+    'lockScreen' => false,
+    'theme'=>'Organizr'
 );
