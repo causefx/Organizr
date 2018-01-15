@@ -40,6 +40,16 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'R' => 
+        array (
+            'Requests' => 
+            array (
+                0 => __DIR__ . '/..' . '/rmccue/requests/library',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'Dibi\\Bridges\\Nette\\DibiExtension22' => __DIR__ . '/..' . '/dibi/dibi/src/Dibi/Bridges/Nette/DibiExtension22.php',
         'Dibi\\Bridges\\Tracy\\Panel' => __DIR__ . '/..' . '/dibi/dibi/src/Dibi/Bridges/Tracy/Panel.php',
@@ -103,6 +113,7 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb::$classMap;
 
         }, null, ClassLoader::class);

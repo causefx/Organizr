@@ -3,6 +3,7 @@
         "dibi/dibi": "^3.1",
         "lcobucci/jwt": "^3.2",
         "composer/semver": "^1.4",
-        "phpmailer/phpmailer": "^6.0"
+        "phpmailer/phpmailer": "^6.0",
+        "rmccue/requests": "^1.7"
     }
 }

@@ -1,26 +1,5 @@
 <?php
 
-function upgradeCheck() {
-    $compare = new Composer\Semver\Comparator;
-	// Upgrade check start for vserion below
-	$versionCheck = '2.25.0-alpha.101';
-	$config = loadConfig();
-	if (isset($config['dbLocation']) && (!isset($config['configVersion']) ||  $compare->lessThan($config['configVersion'], $versionCheck))) {
-		$oldVer = $config['configVersion'];
-        return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
-		// Upgrade database to latest version
-		//updateDB($GLOBALS['dbLocation'],$GLOBALS['dbName'],$oldVer);
-		// Update Version and Commit
-		//$config['configVersion'] = $versionCheck;
-		//copy('config/config.php', 'config/config['.date('Y-m-d_H-i-s').'][1.40].bak.php');
-		//$createConfigSuccess = createConfig($config);
-		//unset($config);
-	}else{
-		//unset($config);
-        return 'No Upgraded Needed - Current Version Above: '.$versionCheck;
-    }
-	return true;
-}
 function wizardConfig($array){
     foreach ($array['data'] as $items) {
         foreach ($items as $key => $value) {
