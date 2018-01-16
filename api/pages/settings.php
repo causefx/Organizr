@@ -111,7 +111,7 @@ $pageSettings = '
                         <ul class="nav customtab2 nav-tabs" role="tablist">
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::About\')" role="presentation" class="active"><a href="#settings-settings-about" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-info-alt"></i></span><span class="hidden-xs" lang="en"> About</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::System Settings::Main\')" role="presentation" class=""><a href="#settings-settings-main" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-settings"></i></span><span class="hidden-xs" lang="en"> Main</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::System Settings::Main\');loadSettingsPage(\'api/?v1/settings/settings/main\',\'#settings-settings-main\',\'Main Settings\');" role="presentation" class=""><a href="#settings-settings-main" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-settings"></i></span><span class="hidden-xs" lang="en"> Main</span></a>
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::SSO\');loadSettingsPage(\'api/?v1/settings/settings/sso\',\'#settings-settings-sso\',\'SSO\');" role="presentation" class=""><a href="#settings-settings-sso" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-receipt"></i></span><span class="hidden-xs" lang="en"> Single Sign-On</span></a>
                             </li>

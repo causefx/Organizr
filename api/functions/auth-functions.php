@@ -1,66 +1,184 @@
 <?php
-
-function plugin_auth_plex($username, $password) {
-	// Quick out
-	$isAdmin = false;
-	if ((strtolower(PLEXUSERNAME) == strtolower($username)) && $password == PLEXPASSWORD) {
-			writeLog("success", "Admin: ".$username." authenticated as plex Admin");
-		$isAdmin = true;
-	}
-
-	//Get User List
-	$userURL = 'https://plex.tv/pms/friends/all';
-	$userHeaders = array(
-		'Authorization' => 'Basic '.base64_encode(PLEXUSERNAME.':'.PLEXPASSWORD),
-	);
-	libxml_use_internal_errors(true);
-	$userXML = simplexml_load_string(curl_get($userURL, $userHeaders));
-
-	if (is_array($userXML) || is_object($userXML)) {
-		$isUser = false;
-		$usernameLower = strtolower($username);
-		foreach($userXML AS $child) {
-			if(isset($child['username']) && strtolower($child['username']) == $usernameLower || isset($child['email']) && strtolower($child['email']) == $usernameLower) {
-				$isUser = true;
- 				writeLog("success", $usernameLower." was found in plex friends list");
-				break;
-			}
-		}
-
-		if ($isUser || $isAdmin) {
-			//Login User
-			$connectURL = 'https://plex.tv/users/sign_in.json';
-			$headers = array(
-				'Accept'=> 'application/json',
-				'Content-Type' => 'application/x-www-form-urlencoded',
-				'X-Plex-Product' => 'Organizr',
-				'X-Plex-Version' => '1.0',
-				'X-Plex-Client-Identifier' => '01010101-10101010',
-			);
-			$body = array(
-				'user[login]' => $username,
-				'user[password]' => $password,
-			);
-			$result = curl_post($connectURL, $body, $headers);
-			if (isset($result['content'])) {
-				$json = json_decode($result['content'], true);
-				if ((is_array($json) && isset($json['user']) && isset($json['user']['username'])) && strtolower($json['user']['username']) == $usernameLower || strtolower($json['user']['email']) == $usernameLower) {
-					writeLog("success", $json['user']['username']." was logged into organizr using plex credentials");
-                    return array(
-						'email' => $json['user']['email'],
-						'image' => $json['user']['thumb'],
-						'token' => $json['user']['authToken'],
-						'type' => $isAdmin ? 'admin' : 'user',
-					);
-				}
-			}else{
-				writeLog("error", "error occured while trying to sign $username into plex");
-			}
-		}else{
-			writeLog("error", "$username is not an authorized PLEX user or entered invalid password");
+function authRegister($username,$password,$defaults,$email){
+	$defaults = defaultUserGroup();
+	if(createUser($username,$password,$defaults,$email)){
+		writeLog('success', 'Registration Function - A User has registered', $username);
+		if(createToken($username,$email,gravatar($email),$defaults['group'],$defaults['group_id'],$GLOBALS['organizrHash'],1)){
+			writeLoginLog($username, 'success');
+			writeLog('success', 'Login Function - A User has logged in', $username);
+			return true;
 		}
 	}else{
-			writeLog("error", "error occured logging into plex might want to check curl.cainfo=/path/to/downloaded/cacert.pem in php.ini");
+		writeLog('error', 'Registration Function - An error occured', $username);
+		return 'username taken';
+	}
+}
+function checkPlexUser($username){
+	if(!empty($GLOBALS['plexToken'])){
+		$url = 'https://plex.tv/pms/friends/all';
+		$headers = array(
+			'X-Plex-Token' => $GLOBALS['plexToken'],
+		);
+		$response = Requests::get($url, $headers);
+		if($response->success){
+			libxml_use_internal_errors(true);
+			$userXML = simplexml_load_string($response->body);
+			if (is_array($userXML) || is_object($userXML)) {
+				$usernameLower = strtolower($username);
+				foreach($userXML AS $child) {
+					if(isset($child['username']) && strtolower($child['username']) == $usernameLower || isset($child['email']) && strtolower($child['email']) == $usernameLower) {
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+function plugin_auth_plex($username, $password) {
+	$usernameLower = strtolower($username);
+	if(checkPlexUser($username)){
+		//Login User
+		$url = 'https://plex.tv/users/sign_in.json';
+		$headers = array(
+			'Accept'=> 'application/json',
+			'Content-Type' => 'application/x-www-form-urlencoded',
+			'X-Plex-Product' => 'Organizr',
+			'X-Plex-Version' => '2.0',
+			'X-Plex-Client-Identifier' => '01010101-10101010',
+		);
+		$data = array(
+			'user[login]' => $username,
+			'user[password]' => $password,
+		);
+		$response = Requests::post($url, $headers, $data);
+		if($response->success){
+			$json = json_decode($response->body, true);
+			if ((is_array($json) && isset($json['user']) && isset($json['user']['username'])) && strtolower($json['user']['username']) == $usernameLower || strtolower($json['user']['email']) == $usernameLower) {
+				//writeLog("success", $json['user']['username']." was logged into organizr using plex credentials");
+                return array(
+					'username' => $json['user']['username'],
+					'email' => $json['user']['email'],
+					'image' => $json['user']['thumb'],
+					'token' => $json['user']['authToken']
+				);
+			}
+		}
+	}
+	return false;
+}
+if (function_exists('ldap_connect')){
+	// Pass credentials to LDAP backend
+	function plugin_auth_ldap($username, $password) {
+		$ldapServers = explode(',',AUTHBACKENDHOST);
+		foreach($ldapServers as $key => $value) {
+			// Calculate parts
+			$digest = parse_url(trim($value));
+			$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:'ldap'));
+			$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
+			$port = (isset($digest['port'])?$digest['port']:(strtolower($scheme)=='ldap'?389:636));
+
+			// Reassign
+			$ldapServers[$key] = $scheme.'://'.$host.':'.$port;
+		}
+
+		// returns true or false
+		$ldap = ldap_connect(implode(' ',$ldapServers));
+		if(empty(AUTHBACKENDDOMAINFORMAT)){
+			if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
+				writeLog("success", "LDAP authentication success");
+				return true;
+			} else {
+				writeLog("error", "LDAP could not authenticate");
+				return false;
+			}
+		}else{
+			ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
+			ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
+			$bind = @ldap_bind($ldap, sprintf(AUTHBACKENDDOMAINFORMAT, $username), $password);
+			if ($bind) {
+				writeLog("success", "LDAP authentication success");
+				return true;
+			} else {
+				writeLog("error", "LDPA could not authenticate");
+				return false;
+			}
+		}
+  		writeLog("error", "LDAP could not authenticate");
+		return false;
+	}
+}else{
+	// Ldap Auth Missing Dependancy
+	function plugin_auth_ldap_disabled() {
+		return 'LDAP - Disabled (Dependancy: php-ldap missing!)';
+	}
+}
+
+// Pass credentials to FTP backend
+function plugin_auth_ftp($username, $password) {
+	// Calculate parts
+	$digest = parse_url(AUTHBACKENDHOST);
+	$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:(function_exists('ftp_ssl_connect')?'ftps':'ftp')));
+	$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
+	$port = (isset($digest['port'])?$digest['port']:21);
+
+	// Determine Connection Type
+	if ($scheme == 'ftps') {
+		$conn_id = ftp_ssl_connect($host, $port, 20);
+	} elseif ($scheme == 'ftp') {
+		$conn_id = ftp_connect($host, $port, 20);
+	} else {
+		debug_out('Invalid FTP scheme. Use ftp or ftps');
+  		writeLog("error", "invalid FTP scheme");
+		return false;
+	}
+
+	// Check if valid FTP connection
+	if ($conn_id) {
+		// Attempt login
+		@$login_result = ftp_login($conn_id, $username, $password);
+		ftp_close($conn_id);
+
+		// Return Result
+		if ($login_result) {
+   			writeLog("success", "$username authenticated");
+			return true;
+		} else {
+   			writeLog("error", "$username could not authenticate");
+			return false;
+		}
+	} else {
+		return false;
+	}
+	return false;
+}
+
+// Pass credentials to Emby Backend
+function plugin_auth_emby_local($username, $password) {
+	$embyAddress = qualifyURL(EMBYURL);
+
+	$headers = array(
+		'Authorization'=> 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
+		'Content-Type' => 'application/json',
+	);
+	$body = array(
+		'Username' => $username,
+		'Password' => sha1($password),
+		'PasswordMd5' => md5($password),
+	);
+
+	$response = post_router($embyAddress.'/Users/AuthenticateByName', $body, $headers);
+
+	if (isset($response['content'])) {
+		$json = json_decode($response['content'], true);
+		if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
+			// Login Success - Now Logout Emby Session As We No Longer Need It
+			$headers = array(
+				'X-Mediabrowser-Token' => $json['AccessToken'],
+			);
+			$response = post_router($embyAddress.'/Sessions/Logout', array(), $headers);
+			return true;
+		}
 	}
 	return false;
 }

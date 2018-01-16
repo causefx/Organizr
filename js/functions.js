@@ -491,7 +491,8 @@ function selectOptions(options, active){
 	var selectOptions = '';
 	$.each(options, function(i,v) {
 		var selected = (active.toString() == v.value) ? 'selected' : '';
-		selectOptions += '<option '+selected+' value="'+v.value+'">'+v.name+'</option>';
+		var disabled = (v.disabled) ? ' disabled' : '';
+		selectOptions += '<option '+selected+disabled+' value="'+v.value+'">'+v.name+'</option>';
 	});
 	return selectOptions;
 }
@@ -695,6 +696,38 @@ function buildSSOItem(array){
     }
     return ssoItems;
 }
+function buildSettingsMainItem(array){
+    if (Array.isArray(array)) {
+		var count = 0;
+        var preRow = `
+            <!-- FORM GROUP -->
+            <h3 class="box-title" lang="en">Main Settings</h3>
+            <hr class="m-t-0 m-b-40">
+            <div class="row">
+        `;
+        var settingsItems = preRow;
+        $.each(array, function(i,v) {
+			count++;
+
+			if(count%2 !== 0 ){ settingsItems += '<div class="row start">'; };
+            settingsItems += `
+                <!-- INPUT BOX -->
+                <div class="col-md-6 p-b-10">
+                    <div class="form-group">
+                        <label class="control-label col-md-3" lang="en">`+v.label+`</label>
+                        <div class="col-md-9">
+                            `+buildFormItem(v)+`
+                        </div>
+                    </div>
+                </div>
+                <!--/ INPUT BOX -->
+            `;
+			if(count%2 == 0 ){ settingsItems += '</div><!--end-->'; };
+        });
+        settingsItems += '</div>';
+    }
+    return settingsItems;
+}
 function buildImageManagerViewItem(array){
 	var imageListing = '';
 	if (Array.isArray(array)) {
@@ -751,6 +784,18 @@ function buildSSO(){
 	organizrAPI('GET','api/?v1/sso').success(function(data) {
 		var response = JSON.parse(data);
 		$('#sso-form').html(buildSSOItem(response.data));
+		;
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
+}
+function buildSettingsMain(){
+	ajaxloader(".content-wrap","in");
+	organizrAPI('GET','api/?v1/settings/main').success(function(data) {
+		var response = JSON.parse(data);
+		console.log(response)
+		$('#settings-main-form').html(buildSettingsMainItem(response.data));
 		;
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");

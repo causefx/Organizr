@@ -1116,7 +1116,40 @@ $(document).on('change asColorPicker::close', '#sso-form :input', function(e) {
             $('#sso-form :input').prop('disabled', null);
             input.emulateTab();
         },
-        1500
+        2000
+    );
+});
+// MAIN SETTINGS PAGE
+$(document).on('change asColorPicker::close', '#settings-main-form :input', function(e) {
+    var input = $(this);
+    switch ($(this).attr('type')) {
+        case 'switch':
+        case 'checkbox':
+            var value = $(this).prop("checked") ? true : false;
+            break;
+        default:
+            var value = $(this).val();
+    }
+	var post = {
+        api:'api/?v1/update/config',
+        name:$(this).attr("name"),
+        type:$(this).attr("data-type"),
+        value:value,
+        messageTitle:'',
+        messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
+        error:'Organizr Function: API Connection Failed'
+    };
+	var callbacks = $.Callbacks();
+    //callbacks.add( buildCustomizeAppearance );
+    settingsAPI(post,callbacks);
+    //disable button then renable
+    $('#settings-main-form :input').prop('disabled', 'true');
+    setTimeout(
+        function(){
+            $('#settings-main-form :input').prop('disabled', null);
+            input.emulateTab();
+        },
+        2000
     );
 });
 $(document).on("click", ".getSSOPlexToken", function () {

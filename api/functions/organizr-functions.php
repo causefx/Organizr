@@ -136,6 +136,79 @@ function organizrStatus(){
 	$status['php'] = phpversion();
     return $status;
 }
+function getSettingsMain(){
+	return array(
+		array(
+			'type' => 'select',
+			'name' => 'branch',
+			'label' => 'Branch',
+			'value' => $GLOBALS['branch'],
+			'options' => getBranches()
+		),
+		array(
+			'type' => 'button',
+			'label' => 'Force Install Branch',
+			'class' => 'popup-with-form getPlexTokenSSO',
+			'icon' => 'fa fa-paper-plane',
+			'text' => 'Retrieve'
+		),
+		array(
+			'type' => 'select',
+			'name' => 'authType',
+			'label' => 'Authentication Type',
+			'value' => $GLOBALS['authType'],
+			'options' => getAuthTypes()
+		),
+        array(
+			'type' => 'select',
+			'name' => 'authBackend',
+			'label' => 'Authentication Backend',
+			'value' => $GLOBALS['authBackend'],
+			'options' => getAuthBackends()
+		),
+        array(
+			'type' => 'input',
+			'name' => 'plexToken',
+            'class' => 'plexAuth',
+			'label' => 'Plex Token',
+			'value' => $GLOBALS['plexToken'],
+			'placeholder' => 'Use Get Token Button'
+		),
+		array(
+			'type' => 'button',
+			'label' => 'Get Plex Token',
+			'class' => 'popup-with-form getPlexTokenAuth plexAuth',
+			'icon' => 'fa fa-paper-plane',
+			'text' => 'Retrieve',
+			'href' => '#auth-plex-token-form',
+			'attr' => 'data-effect="mfp-3d-unfold"'
+		),
+		array(
+			'type' => 'input',
+			'name' => 'plexID',
+            'class' => 'plexAuth',
+			'label' => 'Plex Machine',
+			'value' => $GLOBALS['plexID'],
+			'placeholder' => 'Use Get Plex Machine Button'
+		),
+		array(
+			'type' => 'button',
+			'label' => 'Get Plex Machine',
+			'class' => 'popup-with-form getPlexMachineAuth plexAuth',
+			'icon' => 'fa fa-paper-plane',
+			'text' => 'Retrieve',
+			'href' => '#auth-plex-machine-form',
+			'attr' => 'data-effect="mfp-3d-unfold"'
+		),
+		/*array(
+			'type' => 'button',
+			'label' => 'Send Test',
+			'class' => 'phpmSendTestEmail',
+			'icon' => 'fa fa-paper-plane',
+			'text' => 'Send'
+		)*/
+	);
+}
 function getSSO(){
 	return array(
 		array(
@@ -445,6 +518,59 @@ function getThemes(){
 		);
 	}
 	return $themes;
+}
+function getBranches(){
+    return array(
+        array(
+            'name' => 'Develeop',
+            'value' => 'v2-develop'
+        ),
+        array(
+            'name' => 'Master',
+            'value' => 'v2-master'
+        )
+    );
+}
+function getAuthTypes(){
+    return array(
+        array(
+            'name' => 'Organizr DB',
+            'value' => 'internal'
+        ),
+        array(
+            'name' => 'Organizr DB + Backend',
+            'value' => 'both'
+        ),
+        array(
+            'name' => 'Backend Only',
+            'value' => 'external'
+        )
+    );
+}
+function getAuthBackends(){
+    $backendOptions = array();
+    $backendOptions[] = array(
+        'name' => 'Choose Backend',
+        'value' => false,
+        'disabled' => true
+    );
+    foreach (array_filter(get_defined_functions()['user'],function($v) { return strpos($v, 'plugin_auth_') === 0; }) as $value) {
+    	$name = str_replace('plugin_auth_','',$value);
+    	if (strpos($name, 'disabled') === false) {
+    		$backendOptions[] = array(
+    			'name' => ucwords(str_replace('_',' ',$name)),
+    			'value' => $name
+    		);
+    	} else {
+    		$backendOptions[] = array(
+    			'name' => $value(),
+    			'value' => 'none',
+    			'disabled' => true,
+    		);
+    	}
+    }
+    ksort($backendOptions);
+    return $backendOptions;
 }
 /*
 function sendEmail($email = null, $username = "Organizr User", $subject, $body, $cc = null, $bcc = null){

@@ -1,6 +1,10 @@
 <?php
 return array(
     'branch' => 'v2-develop',
+	'authType' => 'internal',
+    'authBackend' => '',
+	'authBackendHost' => '',
+	'authBackendDomain' => '',
     'logo' => 'plugins/images/organizr/logo-wide.png',
     'loginWallpaper' => '',
     'title' => 'Organizr V2',

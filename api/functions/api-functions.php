@@ -23,6 +23,7 @@ function login($array){
     		'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
     	]);
         $result = $database->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE',$username,$username);
+		//DB User Verify
         if(password_verify($password, $result['password'])){
             if(createToken($result['username'],$result['email'],$result['image'],$result['group'],$result['group_id'],$GLOBALS['organizrHash'],$days)){
                 writeLoginLog($username, 'success');
