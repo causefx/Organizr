@@ -136,6 +136,86 @@ function organizrStatus(){
 	$status['php'] = phpversion();
     return $status;
 }
+function getSSO(){
+	return array(
+		array(
+			'type' => 'input',
+			'name' => 'plexToken',
+			'label' => 'Plex Token',
+			'value' => $GLOBALS['plexToken'],
+			'placeholder' => 'Use Get Token Button'
+		),
+		array(
+			'type' => 'button',
+			'label' => 'Get Plex Token',
+			'class' => 'popup-with-form getPlexTokenSSO',
+			'icon' => 'fa fa-paper-plane',
+			'text' => 'Retrieve',
+			'href' => '#sso-plex-token-form',
+			'attr' => 'data-effect="mfp-3d-unfold"'
+		),
+		array(
+			'type' => 'input',
+			'name' => 'plexID',
+			'label' => 'Plex Machine',
+			'value' => $GLOBALS['plexID'],
+			'placeholder' => 'Use Get Plex Machine Button'
+		),
+		array(
+			'type' => 'button',
+			'label' => 'Get Plex Machine',
+			'class' => 'popup-with-form getPlexMachineSSO',
+			'icon' => 'fa fa-paper-plane',
+			'text' => 'Retrieve',
+			'href' => '#sso-plex-machine-form',
+			'attr' => 'data-effect="mfp-3d-unfold"'
+		),
+		array(
+			'type' => 'html',
+			'label' => 'Plex Note',
+			'html' => '<span lang="en">Please make sure both Token and Machine are filled in</span>'
+		),
+		array(
+			'type' => 'switch',
+			'name' => 'ssoPlex',
+			'label' => 'Enable',
+			'value' => $GLOBALS['ssoPlex']
+		),
+		array(
+			'type' => 'input',
+			'name' => 'ombiURL',
+			'label' => 'Ombi URL',
+			'value' => $GLOBALS['ombiURL'],
+			'placeholder' => 'http(s)://hostname'
+		),
+		array(
+			'type' => 'switch',
+			'name' => 'ssoOmbi',
+			'label' => 'Enable',
+			'value' => $GLOBALS['ssoOmbi']
+		),
+		array(
+			'type' => 'input',
+			'name' => 'tautulliURL',
+			'label' => 'Tautulli URL',
+			'value' => $GLOBALS['tautulliURL'],
+			'placeholder' => 'http(s)://hostname'
+		),
+		array(
+			'type' => 'switch',
+			'name' => 'ssoTautulli',
+			'label' => 'Enable',
+			'value' => $GLOBALS['ssoTautulli']
+		)
+		/*array(
+			'type' => 'button',
+			'label' => 'Send Test',
+			'class' => 'phpmSendTestEmail',
+			'icon' => 'fa fa-paper-plane',
+			'text' => 'Send'
+		)*/
+	);
+}
 function loadAppearance(){
     $appearance = array();
     $appearance['logo'] = $GLOBALS['logo'];

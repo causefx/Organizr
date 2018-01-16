@@ -105,6 +105,25 @@ switch ($function) {
                 break;
         }
         break;
+    case 'v1_settings_settings_sso':
+        switch ($method) {
+            case 'GET':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = $pageSettingsSettingsSSO;
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_settings_customize_appearance':
         switch ($method) {
             case 'GET':
@@ -534,6 +553,25 @@ switch ($function) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = getCustomizeAppearance();
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
+    case 'v1_sso':
+        switch ($method) {
+            case 'GET':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = getSSO();
                 }else{
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';

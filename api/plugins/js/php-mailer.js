@@ -44,7 +44,6 @@ function phpmBuildSettingsItems(array){
         });
         mailItems += '</div>';
     }
-
     return mailItems;
 }
 

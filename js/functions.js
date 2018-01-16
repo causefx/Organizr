@@ -504,27 +504,35 @@ function buildFormItem(item){
 	var extraClass = (item.class) ? ' '+item.class : '';
 	var icon = (item.icon) ? ' '+item.icon : '';
 	var text = (item.text) ? ' '+item.text : '';
+	var attr = (item.attr) ? ' '+item.attr : '';
 	var disabled = (item.disabled) ? ' disabled' : '';
+	var href = (item.href) ? ' href="'+item.href+'"' : '';
 	//+tof(item.value,'c')+`
 	switch (item.type) {
 		case 'input':
-			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+' />';
+			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
 			break;
 		case 'password':
-			return '<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+' autocomplete="new-password" />';
+			return '<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
 			break;
 		case 'hidden':
-			return '<input data-changed="false" lang=en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+' />';
+			return '<input data-changed="false" lang=en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
 			break;
 		case 'select':
-			return '<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+'>'+selectOptions(item.options, item.value)+'</select>';
+			return '<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+'>'+selectOptions(item.options, item.value)+'</select>';
 			break;
 		case 'switch':
 		case 'checkbox':
-			return '<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+' /><input data-changed="false" type="hidden"'+name+'value="false">';
+			return '<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
 			break;
 		case 'button':
-			return '<button class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none'+extraClass+'" type="button"><span class="btn-label"><i class="'+icon+'"></i></span><span lang="en">'+text+'</span></button>';
+			return '<button class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none'+extraClass+'" '+href+attr+'type="button"><span class="btn-label"><i class="'+icon+'"></i></span><span lang="en">'+text+'</span></button>';
+			break;
+		case 'blank':
+			return '';
+			break;
+		case 'html':
+			return item.html;
 			break;
 		default:
 			return false;
@@ -655,6 +663,38 @@ function buildCustomizeAppearanceItem(array){
 
 	return customizeItems;
 }
+function buildSSOItem(array){
+    if (Array.isArray(array)) {
+		var count = 0;
+        var preRow = `
+            <!-- FORM GROUP -->
+            <h3 class="box-title" lang="en">SSO Settings</h3>
+            <hr class="m-t-0 m-b-40">
+            <div class="row">
+        `;
+        var ssoItems = preRow;
+        $.each(array, function(i,v) {
+			count++;
+
+			if(count%2 !== 0 ){ ssoItems += '<div class="row start">'; };
+            ssoItems += `
+                <!-- INPUT BOX -->
+                <div class="col-md-6 p-b-10">
+                    <div class="form-group">
+                        <label class="control-label col-md-3" lang="en">`+v.label+`</label>
+                        <div class="col-md-9">
+                            `+buildFormItem(v)+`
+                        </div>
+                    </div>
+                </div>
+                <!--/ INPUT BOX -->
+            `;
+			if(count%2 == 0 ){ ssoItems += '</div><!--end-->'; };
+        });
+        ssoItems += '</div>';
+    }
+    return ssoItems;
+}
 function buildImageManagerViewItem(array){
 	var imageListing = '';
 	if (Array.isArray(array)) {
@@ -700,6 +740,17 @@ function buildCustomizeAppearance(){
 	organizrAPI('GET','api/?v1/customize/appearance').success(function(data) {
 		var response = JSON.parse(data);
 		$('#customize-appearance-form').html(buildCustomizeAppearanceItem(response.data));
+		;
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
+}
+function buildSSO(){
+	ajaxloader(".content-wrap","in");
+	organizrAPI('GET','api/?v1/sso').success(function(data) {
+		var response = JSON.parse(data);
+		$('#sso-form').html(buildSSOItem(response.data));
 		;
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");

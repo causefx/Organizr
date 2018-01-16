@@ -113,6 +113,8 @@ $pageSettings = '
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Main\')" role="presentation" class=""><a href="#settings-settings-main" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-settings"></i></span><span class="hidden-xs" lang="en"> Main</span></a>
                             </li>
+                            <li onclick="changeSettingsMenu(\'Settings::System Settings::SSO\');loadSettingsPage(\'api/?v1/settings/settings/sso\',\'#settings-settings-sso\',\'SSO\');" role="presentation" class=""><a href="#settings-settings-sso" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-receipt"></i></span><span class="hidden-xs" lang="en"> Single Sign-On</span></a>
+                            </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Logs\');loadSettingsPage(\'api/?v1/settings/settings/logs\',\'#settings-settings-logs\',\'Log Viewer\');" role="presentation" class=""><a href="#settings-settings-logs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-receipt"></i></span><span class="hidden-xs" lang="en"> Logs</span></a>
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Updates\')" role="presentation" class=""><a href="#settings-settings-updates" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-package"></i></span> <span class="hidden-xs" lang="en">Updates</span></a>
@@ -124,6 +126,10 @@ $pageSettings = '
                         <div class="tab-content">
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-main">
                                 <h2 lang="en">Main Settings</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="settings-settings-sso">
+                                <h2 lang="en">Loading...</h2>
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-logs">

@@ -47,24 +47,6 @@ function phpmSendTestEmail(){
 }
 /* GET PHPMAILER SETTINGS */
 function phpmGetSettings(){
-	/*$like = 'PHPMAILER';
-	 return array_filter_key(configLazy(), function ($item) use ($like) {
-		if (stripos($item, $like) !== false) {
-			return true;
-		}
-		return false;
-	});*/
-	/*
-	'PHPMAILER-enabled' => false,
-    'PHPMAILER-smtpHost' => '',
-    'PHPMAILER-smtpHostPort' => '',
-    'PHPMAILER-smtpHostAuth' => true,
-    'PHPMAILER-smtpHostUsername' => '',
-    'PHPMAILER-smtpHostPassword' => '',
-    'PHPMAILER-smtpHostSenderName' => 'Organizr',
-    'PHPMAILER-smtpHostSenderEmail' => 'no-reply@Organizr.tld',
-    'PHPMAILER-smtpHostType' => 'tls'
-	*/
 	return array(
 		array(
 			'type' => 'input',

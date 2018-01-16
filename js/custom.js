@@ -1086,7 +1086,122 @@ $(document).on('click', '.disablePlugin', function() {
     });
 
 });
-
+// SSO Option change
+$(document).on('change asColorPicker::close', '#sso-form :input', function(e) {
+    var input = $(this);
+    switch ($(this).attr('type')) {
+        case 'switch':
+        case 'checkbox':
+            var value = $(this).prop("checked") ? true : false;
+            break;
+        default:
+            var value = $(this).val();
+    }
+	var post = {
+        api:'api/?v1/update/config',
+        name:$(this).attr("name"),
+        type:$(this).attr("data-type"),
+        value:value,
+        messageTitle:'',
+        messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
+        error:'Organizr Function: API Connection Failed'
+    };
+	var callbacks = $.Callbacks();
+    //callbacks.add( buildCustomizeAppearance );
+    settingsAPI(post,callbacks);
+    //disable button then renable
+    $('#sso-form :input').prop('disabled', 'true');
+    setTimeout(
+        function(){
+            $('#sso-form :input').prop('disabled', null);
+            input.emulateTab();
+        },
+        1500
+    );
+});
+$(document).on("click", ".getSSOPlexToken", function () {
+    $('.ssoPlexTokenMessage').text("Grabbing Token");
+    $('.ssoPlexTokenHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
+    var plex_username = $('#sso-plex-token-form [name=username]').val().trim();
+    var plex_password = $('#sso-plex-token-form [name=password]').val().trim();
+    if ((plex_password !== '') && (plex_password !== '')) {
+        $.ajax({
+            type: 'POST',
+            headers: {
+                'X-Plex-Product':'Organizr',
+                'X-Plex-Version':'2.0',
+                'X-Plex-Client-Identifier':'01010101-10101010'
+            },
+            url: 'https://plex.tv/users/sign_in.json',
+            data: {
+                'user[login]': plex_username,
+                'user[password]': plex_password,
+                force: true
+            },
+            cache: false,
+            async: true,
+            complete: function(xhr, status) {
+                var result = $.parseJSON(xhr.responseText);
+                if (xhr.status === 201) {
+                    $('.ssoPlexTokenMessage').text(xhr.statusText);
+                    $('.ssoPlexTokenHeader').addClass('panel-success').removeClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
+                    $('#sso-form [name=plexToken]').val(result.user.authToken);
+                    $('#sso-form [name=plexToken]').change();
+                } else {
+                    $('.ssoPlexTokenMessage').text(xhr.statusText);
+                    $('.ssoPlexTokenHeader').addClass('panel-danger').removeClass('panel-info').removeClass('panel-warning');
+                }
+            }
+        });
+    } else {
+        $('.ssoPlexTokenMessage').text("Enter Username and Password");
+        $('.ssoPlexTokenHeader').addClass('panel-warning').removeClass('panel-info').removeClass('panel-danger');
+    }
+});
+$(document).on("click", ".getPlexMachineSSO", function () {
+    var plex_token = $('#sso-form [name=plexToken]').val().trim();
+    if (plex_token !== '') {
+        $('.ssoPlexMachineMessage').text("Grabbing List");
+        $('.ssoPlexMachineHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
+        $.ajax({
+            type: 'GET',
+            headers: {
+                'X-Plex-Product':'Organizr',
+                'X-Plex-Version':'2.0',
+                'X-Plex-Client-Identifier':'01010101-10101010',
+                'X-Plex-Token':plex_token,
+            },
+            url: 'https://plex.tv/pms/servers.xml',
+            cache: false,
+            async: true,
+            complete: function(xhr, status) {
+                var result = $.parseXML(xhr.responseText);
+                if (xhr.status === 200) {
+                    $('.ssoPlexMachineMessage').text('Choose Plex Server');
+                    $('.ssoPlexMachineHeader').addClass('panel-success').removeClass('panel-info').removeClass('panel-warning');
+                    var machines = '<option lang="en">Choose Plex Machine</option>';
+                    $('Server', result).each(function(){
+                        var name = $(this).attr('name');
+                        var machine = $(this).attr('machineIdentifier');
+                        machines += '<option value="'+machine+'">'+name+'</option>';
+                    })
+                    var listing = `<select class="form-control" id="ssoPlexMachineSelector" data-type="select">`+machines+`</select>`;
+                    $('.ssoPlexMachineListing').html(listing);
+                } else {
+                    $('.ssoPlexTokenMessage').text(xhr.statusText);
+                    $('.ssoPlexTokenHeader').addClass('panel-danger').removeClass('panel-info').removeClass('panel-warning');
+                }
+            }
+        });
+    } else {
+        $('.ssoPlexMachineMessage').text("Plex Token Needed");
+        $('.ssoPlexMachineHeader').addClass('panel-warning').removeClass('panel-info').removeClass('panel-danger');
+    }
+});
+$(document).on('change', '#ssoPlexMachineSelector', function(e) {
+    $('#sso-form [name=plexID]').val($(this).val());
+    $('#sso-form [name=plexID]').change();
+});
 $(document).on("click", ".closeErrorPage", function () {
     $('.error-page').html('');
     $('.error-page').fadeOut();

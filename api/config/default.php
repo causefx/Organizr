@@ -8,5 +8,13 @@ return array(
     'headerColor' => '',
     'headerTextColor' => '',
     'lockScreen' => false,
-    'theme'=>'Organizr'
+    'theme'=>'Organizr',
+    'plexURL' => '',
+    'plexToken' => '',
+    'plexID' => '',
+    'tautulliURL' => '',
+    'ombiURL' => '',
+    'ssoPlex' => false,
+    'ssoOmbi' => false,
+    'ssoTautulli' => false
 );
