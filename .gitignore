@@ -87,7 +87,7 @@ organizrLog.json
 api/config/config*
 upgrade/*
 api/upgrade*
-cacert.pem
+api/functions/cert/cacert.pem
 wallpaper.jpg
 strings.json
 css/themes/*.css
