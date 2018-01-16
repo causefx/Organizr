@@ -1,0 +1,142 @@
+/*Preloader*/
+.preloader {
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  position: fixed;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.88);
+}
+.preloader .cssload-speeding-wheel {
+  position: absolute;
+  top: calc(50% - 3.5px);
+  left: calc(50% - 3.5px);
+}
+.w-100 {
+  width: 100%;
+}
+.iframe{
+  width:100%;
+  height:calc(100vh - 60px);
+  position: inherit;
+  display: block;
+}
+/* Larger Images */
+#side-menu>li>a {
+  padding: 18px 35px 18px 15px;
+  display: block;
+}
+.sidebar .nav-second-level li a {
+  padding: 14px 10px 14px 15px;
+}
+#side-menu .fa-fw {
+  width: 30px!important;
+}
+.sttabs nav a {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+@media screen and (max-width: 767px){
+  .table-responsive {
+    width: 100%;
+    margin-bottom: 0;
+    overflow-y: hidden;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+    border: transparent;
+  }
+}
+.common-list .notify {
+  position: relative;
+  margin-top: .5px;
+  margin-right: 9px;
+}
+.ajaxloader {
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  position: absolute;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.68);
+  margin: 0 auto;
+  border-radius: 10px;
+}
+.lock-screen {
+  background: url(../../plugins/images/login-register.jpg) center center/cover no-repeat!important;
+  height: 100%;
+  position: fixed;
+  z-index: 999999;
+  top: 0;
+  width: 100%;
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  -o-user-select: none;
+  user-select: none;
+}
+body.stop-scrolling {
+  height: 100%;
+  overflow: hidden;
+}
+.tabEditorIcon i {
+  font-size: 35px;
+  text-align: center !important;
+  width: 35px !important;
+}
+.tabEditorIcon img {
+  width: 35px !important;
+}
+.asColorPicker-wrap {
+  position: relative;
+  display: block;
+  width: calc(100% - 35px);
+}
+.asColorPicker-trigger {
+  position: absolute;
+  top: 0;
+  right: -32px;
+  height: 38px;
+  width: 37px;
+  border: 0;
+  border-radius: 0 4px 4px 0;
+}
+.asColorPicker-trigger span {
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+  border-radius: 0 4px 4px 0;
+}
+.top-left-part {
+  width: auto;
+  max-width: 220px;
+  float: left;
+  border-right: transparent;
+}
+.tabs-style-flip {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.elip{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
+.p-5{
+  padding:5px!important
+}
+.error-page {
+  width: 100%;
+  background: #1b1a1a;
+  height: 100%;
+  position: fixed;
+  display: none;
+  z-index: 10;
+}
+img.lazyload.tabImages {
+height: 120px !important;
+object-fit: contain;
+}

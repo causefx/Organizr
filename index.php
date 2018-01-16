@@ -22,6 +22,7 @@
 	<link href="plugins/bower_components/jquery-asColorPicker-master/css/asColorPicker.css" rel="stylesheet">
 	<link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css" />
 	<link href="css/style.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
+	<link href="css/organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<?php echo pluginFiles('css'); ?>
 	<link id="theme" rel="stylesheet">
 	<style type="text/css" id="user-appearance"></style>

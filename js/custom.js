@@ -394,9 +394,11 @@ $(document).on("click", ".depenency-item", function(e) {
 $(document).on("click", ".login-button", function(e) {
     e.preventDefault;
     $('div.login-box').block({
-        message: '<h4><img src="plugins/images/busy.gif" /> Just a moment...</h4>',
+        message: '<h5><img width="20" src="plugins/images/busy.gif" /> Just a moment...</h4>',
         css: {
-            border: '1px solid #000'
+            color: '#fff',
+            border: '1px solid #2cabe3',
+            backgroundColor: '#2cabe3'
         }
     });
     var post = $( '#loginform' ).serializeArray();
