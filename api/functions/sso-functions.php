@@ -2,8 +2,8 @@
 
 function ssoCheck($username, $password, $token=null){
 	$test = '';
-	if($GLOBALS['ssoPlex']){
-		//coookie('set','mpt',$authSuccess['token'],7);
+	if($GLOBALS['ssoPlex'] && $token){
+		coookie('set','mpt',$token,7);
 	}
 	if($GLOBALS['ssoOmbi']){
 		$ombiToken = getOmbiToken($username, $password);

@@ -22,20 +22,56 @@ function login($array){
     		'driver' => 'sqlite3',
     		'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
     	]);
+        $authSuccess = false;
+    	$function = 'plugin_auth_'.$GLOBALS['authBackend'];
         $result = $database->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE',$username,$username);
-		//DB User Verify
-        if(password_verify($password, $result['password'])){
-            if(createToken($result['username'],$result['email'],$result['image'],$result['group'],$result['group_id'],$GLOBALS['organizrHash'],$days)){
-                writeLoginLog($username, 'success');
-                writeLog('success', 'Login Function - A User has logged in', $username);
-                ssoCheck($username, $password);
-                return true;
+    	switch ($GLOBALS['authType']) {
+    		case 'external':
+    			if (function_exists($function)) {
+    				$authSuccess = $function($username, $password);
+    			}
+    			break;
+    		case 'both':
+    			if (function_exists($function)) {
+    				$authSuccess = $function($username, $password);
+    			}
+    		default: // Internal
+    			if (!$authSuccess) {
+    				// perform the internal authentication step
+    				if(password_verify($password, $result['password'])){
+                        $authSuccess = true;
+                    }
+    			}
+    	}
+        if ($authSuccess) {
+			// Make sure user exists in database
+			$userExists = false;
+            $token = (is_array($authSuccess) && isset($authSuccess['token']) ? $authSuccess['token'] : '');
+            if($result['username']){
+                $userExists = true;
+				$username = $result['username'];
             }
-        }else{
+			if ($userExists) {
+				// authentication passed - 1) mark active and update token
+                if(createToken($result['username'],$result['email'],$result['image'],$result['group'],$result['group_id'],$GLOBALS['organizrHash'],$days)){
+                    writeLoginLog($username, 'success');
+                    writeLog('success', 'Login Function - A User has logged in', $username);
+                    ssoCheck($username, $password, $token); //need to work on this
+                    return true;
+                }else{
+                    return 'error';
+                }
+			} else {
+				// Create User
+                ssoCheck($username, $password, $token);
+                return authRegister($username,$password,'',(is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''));
+			}
+		} else {
+			// authentication failed
             writeLoginLog($username, 'error');
             writeLog('error', 'Login Function - Wrong Password', $username);
-            return 'mismatch';
-        }
+			return 'mismatch';
+		}
     } catch (Dibi\Exception $e) {
     	return 'error';
     }

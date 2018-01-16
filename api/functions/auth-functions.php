@@ -3,7 +3,7 @@ function authRegister($username,$password,$defaults,$email){
 	$defaults = defaultUserGroup();
 	if(createUser($username,$password,$defaults,$email)){
 		writeLog('success', 'Registration Function - A User has registered', $username);
-		if(createToken($username,$email,gravatar($email),$defaults['group'],$defaults['group_id'],$GLOBALS['organizrHash'],1)){
+		if(createToken($username,$email,gravatar($email),$defaults['group'],$defaults['group_id'],$GLOBALS['organizrHash'],7)){
 			writeLoginLog($username, 'success');
 			writeLog('success', 'Login Function - A User has logged in', $username);
 			return true;
