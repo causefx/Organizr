@@ -14,7 +14,7 @@ function ssoCheck($username, $password, $token=null){
 	if($GLOBALS['ssoTautulli']){
 		$tautulliToken = getTautulliToken($username, $password);
 		if($tautulliToken){
-			coookie('set','tuatulli_token_'.$tautulliToken['uuid'],$tautulliToken['token'],7, false);
+			coookie('set','tautulli_token_'.$tautulliToken['uuid'],$tautulliToken['token'],7, false);
 		}
 	}
 	return true;

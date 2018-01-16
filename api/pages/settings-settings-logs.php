@@ -26,6 +26,14 @@ $(document).on("click", ".swapLog", function(e) {
                     <th lang="en">Type</th>
                 </tr>
             </thead>
+			<tfoot>
+                <tr>
+                    <th lang="en">Date</th>
+                    <th lang="en">Username</th>
+                    <th lang="en">IP Address</th>
+                    <th lang="en">Type</th>
+                </tr>
+            </tfoot>
             <tbody></tbody>
         </table>
     </div>
@@ -43,6 +51,15 @@ $(document).on("click", ".swapLog", function(e) {
                     <th lang="en">Type</th>
                 </tr>
             </thead>
+            <tfoot>
+                <tr>
+                    <th lang="en">Date</th>
+                    <th lang="en">Username</th>
+                    <th lang="en">IP Address</th>
+                    <th lang="en">Message</th>
+                    <th lang="en">Type</th>
+                </tr>
+            </tfoot>
             <tbody></tbody>
         </table>
     </div>

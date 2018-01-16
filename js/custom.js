@@ -1181,9 +1181,11 @@ $(document).on("click", ".getPlexMachineSSO", function () {
                     $('.ssoPlexMachineHeader').addClass('panel-success').removeClass('panel-info').removeClass('panel-warning');
                     var machines = '<option lang="en">Choose Plex Machine</option>';
                     $('Server', result).each(function(){
-                        var name = $(this).attr('name');
-                        var machine = $(this).attr('machineIdentifier');
-                        machines += '<option value="'+machine+'">'+name+'</option>';
+                        if($(this).attr('owned') == 1){
+                            var name = $(this).attr('name');
+                            var machine = $(this).attr('machineIdentifier');
+                            machines += '<option value="'+machine+'">'+name+'</option>';
+                        }
                     })
                     var listing = `<select class="form-control" id="ssoPlexMachineSelector" data-type="select">`+machines+`</select>`;
                     $('.ssoPlexMachineListing').html(listing);

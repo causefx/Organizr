@@ -1624,13 +1624,13 @@ function language(language){
 function logIcon(type){
 	switch (type) {
 		case "success":
-			return '<i class="fa fa-check text-success"></i>';
+			return '<i class="fa fa-check text-success"></i><span class="hidden">Success</span>';
 			break;
 		case "warning":
-			return '<i class="fa fa-exclamation-triangle text-warning"></i>';
+			return '<i class="fa fa-exclamation-triangle text-warning"></i><span class="hidden">Warning</span>';
 			break;
 		case "error":
-			return '<i class="fa fa-close text-danger"></i>';
+			return '<i class="fa fa-close text-danger"></i><span class="hidden">Error</span>';
 			break;
 		default:
 	}
@@ -1750,6 +1750,21 @@ function changeTheme(theme){
 	//$("#preloader").fadeOut();
 	console.log('Theme: '+theme);
 }
+function setSSO(){
+	$.each(activeInfo.sso, function(i,v) {
+		if(v !== false){
+			local('set', i, v);
+		}
+	});
+}
+//Generate API
+function generateCode() {
+    var code = "";
+    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+    for (var i = 0; i < 20; i++)
+        code += possible.charAt(Math.floor(Math.random() * possible.length));
+    return code;
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
 		var json = JSON.parse(data);
@@ -1769,6 +1784,7 @@ function launch(){
 			phpVersion:json.data.status.php,
 			token:json.data.user.token,
 			branch:json.branch,
+			sso:json.sso,
 			theme:json.theme,
 			version:json.version
 		};
@@ -1778,6 +1794,7 @@ function launch(){
 		checkMessage();
 		errorPage();
 		changeTheme(activeInfo.theme);
+		setSSO();
 		switch (json.data.status.status) {
 			case "wizard":
 				buildWizard();

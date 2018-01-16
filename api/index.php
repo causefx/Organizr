@@ -634,7 +634,11 @@ switch ($function) {
                 $result['data'] = $status;
                 $result['branch'] = $GLOBALS['branch'];
                 $result['theme'] = $GLOBALS['theme'];
-				$result['version'] = $GLOBALS['installedVersion'];
+                $result['version'] = $GLOBALS['installedVersion'];
+				$result['sso'] = array(
+                    'myPlexAccessToken' => isset($_COOKIE['mpt']) ? $_COOKIE['mpt'] : false,
+                    'id_token' => isset($_COOKIE['Auth']) ? $_COOKIE['Auth'] : false
+                );
                 break;
             default:
                 $result['status'] = 'error';

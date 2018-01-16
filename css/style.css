@@ -160,3 +160,7 @@
    display: none;
    z-index: 10;
  }
+ img.lazyload.tabImages {
+height: 120px !important;
+object-fit: contain;
+}
