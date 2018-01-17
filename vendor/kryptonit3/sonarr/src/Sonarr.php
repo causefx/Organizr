@@ -31,7 +31,7 @@ class Sonarr
      * @return array|object|string
      * @throws InvalidException
      */
-    public function getCalendar($start = null, $end = null)
+    public function getCalendar($start = null, $end = null, $sonarrUnmonitored = 'false')
     {
         $uriData = [];
 
@@ -49,7 +49,10 @@ class Sonarr
                 throw new InvalidException('End date string was not recognized as a valid DateTime. Format must be yyyy-mm-dd.');
             }
         }
-
+        if ( $sonarrUnmonitored == 'true' ) {
+            $uriData['unmonitored'] = 'true';
+            }
+            
         try {
             $response = $this->_request(
                 [

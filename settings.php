@@ -1185,6 +1185,12 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => SONARRKEY,
 					),
+          array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'SONARR_UNMONITORED',
+						'name' => 'sonarrUnmonitored',
+						'value' => SONARRUNMONITORED,
+					),
 				),
 			),
 			array(
