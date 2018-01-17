@@ -35,7 +35,7 @@ return array(
 	"sonarrURL" => "",
 	"sonarrKey" => "",
 	"sonarrHomeAuth" => false,
-  "sonarrUnmonitored" => false,
+        "sonarrUnmonitored" => false,
 	"sickrageURL" => "",
 	"sickrageKey" => "",
 	"sickrageHomeAuth" => false,
