@@ -107,68 +107,31 @@ if (function_exists('ldap_connect')){
 // Pass credentials to FTP backend
 function plugin_auth_ftp($username, $password) {
 	// Calculate parts
-	$digest = parse_url(AUTHBACKENDHOST);
+	$digest = parse_url($GLOBALS['authBackendHost']);
 	$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:(function_exists('ftp_ssl_connect')?'ftps':'ftp')));
 	$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
 	$port = (isset($digest['port'])?$digest['port']:21);
-
 	// Determine Connection Type
 	if ($scheme == 'ftps') {
 		$conn_id = ftp_ssl_connect($host, $port, 20);
 	} elseif ($scheme == 'ftp') {
 		$conn_id = ftp_connect($host, $port, 20);
 	} else {
-		debug_out('Invalid FTP scheme. Use ftp or ftps');
-  		writeLog("error", "invalid FTP scheme");
 		return false;
 	}
-
 	// Check if valid FTP connection
 	if ($conn_id) {
 		// Attempt login
 		@$login_result = ftp_login($conn_id, $username, $password);
 		ftp_close($conn_id);
-
 		// Return Result
 		if ($login_result) {
-   			writeLog("success", "$username authenticated");
 			return true;
 		} else {
-   			writeLog("error", "$username could not authenticate");
 			return false;
 		}
 	} else {
 		return false;
-	}
-	return false;
-}
-
-// Pass credentials to Emby Backend
-function plugin_auth_emby_local($username, $password) {
-	$embyAddress = qualifyURL(EMBYURL);
-
-	$headers = array(
-		'Authorization'=> 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
-		'Content-Type' => 'application/json',
-	);
-	$body = array(
-		'Username' => $username,
-		'Password' => sha1($password),
-		'PasswordMd5' => md5($password),
-	);
-
-	$response = post_router($embyAddress.'/Users/AuthenticateByName', $body, $headers);
-
-	if (isset($response['content'])) {
-		$json = json_decode($response['content'], true);
-		if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
-			// Login Success - Now Logout Emby Session As We No Longer Need It
-			$headers = array(
-				'X-Mediabrowser-Token' => $json['AccessToken'],
-			);
-			$response = post_router($embyAddress.'/Sessions/Logout', array(), $headers);
-			return true;
-		}
 	}
 	return false;
 }
