@@ -89,11 +89,14 @@ if(!function_exists('getallheaders')){
         return $headers;
     }
 }
-function random_ascii_string($len){
-	$string = "";
-	$max = strlen($this->ascii)-1;
-	while($len-->0) { $string .= $this->ascii[mt_rand(0, $max)]; }
-	return $string;
+function random_ascii_string($length){
+	$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
 }
 function encrypt($password, $key = null) {
     $key = (isset($GLOBALS['organizrHash'])) ? $GLOBALS['organizrHash'] : $key;

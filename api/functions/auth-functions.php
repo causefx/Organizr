@@ -78,41 +78,23 @@ function plugin_auth_plex($username, $password) {
 if (function_exists('ldap_connect')){
 	// Pass credentials to LDAP backend
 	function plugin_auth_ldap($username, $password) {
-		$ldapServers = explode(',',AUTHBACKENDHOST);
-		foreach($ldapServers as $key => $value) {
-			// Calculate parts
-			$digest = parse_url(trim($value));
-			$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:'ldap'));
-			$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
-			$port = (isset($digest['port'])?$digest['port']:(strtolower($scheme)=='ldap'?389:636));
-
-			// Reassign
-			$ldapServers[$key] = $scheme.'://'.$host.':'.$port;
-		}
-
-		// returns true or false
-		$ldap = ldap_connect(implode(' ',$ldapServers));
-		if(empty(AUTHBACKENDDOMAINFORMAT)){
-			if ($bind = ldap_bind($ldap, AUTHBACKENDDOMAIN.'\\'.$username, $password)) {
-				writeLog("success", "LDAP authentication success");
-				return true;
-			} else {
-				writeLog("error", "LDAP could not authenticate");
-				return false;
+		if(!empty($GLOBALS['authBaseDN']) && !empty($GLOBALS['authBackendHost'])){
+			$ldapServers = explode(',',$GLOBALS['authBackendHost']);
+			foreach($ldapServers as $key => $value) {
+				// Calculate parts
+				$digest = parse_url(trim($value));
+				$scheme = strtolower((isset($digest['scheme'])?$digest['scheme']:'ldap'));
+				$host = (isset($digest['host'])?$digest['host']:(isset($digest['path'])?$digest['path']:''));
+				$port = (isset($digest['port'])?$digest['port']:(strtolower($scheme)=='ldap'?389:636));
+				// Reassign
+				$ldapServers[$key] = $scheme.'://'.$host.':'.$port;
 			}
-		}else{
+			$ldap = ldap_connect(implode(' ',$ldapServers));
 			ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 			ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
-			$bind = @ldap_bind($ldap, sprintf(AUTHBACKENDDOMAINFORMAT, $username), $password);
-			if ($bind) {
-				writeLog("success", "LDAP authentication success");
-				return true;
-			} else {
-				writeLog("error", "LDPA could not authenticate");
-				return false;
-			}
+			$bind = @ldap_bind($ldap, sprintf($GLOBALS['authBaseDN'], $username), $password);
+			return ($bind) ? true : false;
 		}
-  		writeLog("error", "LDAP could not authenticate");
 		return false;
 	}
 }else{

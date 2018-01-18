@@ -200,6 +200,38 @@ function getSettingsMain(){
 			'href' => '#auth-plex-machine-form',
 			'attr' => 'data-effect="mfp-3d-unfold"'
 		),
+        array(
+			'type' => 'input',
+			'name' => 'authBackendHost',
+            'class' => 'temp',
+			'label' => 'Host Address',
+			'value' => $GLOBALS['authBackendHost'],
+			'placeholder' => 'http{s) | ftp(s) | ldap(s) ://hostname:port'
+		),
+        array(
+			'type' => 'input',
+			'name' => 'authBaseDN',
+            'class' => 'temp',
+			'label' => 'Host Base DN',
+			'value' => $GLOBALS['authBaseDN'],
+			'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com'
+		),
+        array(
+			'type' => 'input',
+			'name' => 'authUsername',
+            'class' => 'temp',
+			'label' => 'Host Username',
+			'value' => $GLOBALS['authUsername'],
+			'placeholder' => 'Username if required'
+		),
+        array(
+			'type' => 'password',
+			'name' => 'authPassword',
+            'class' => 'temp',
+			'label' => 'Host Password',
+			'value' => $GLOBALS['authPassword'],
+			'placeholder' => 'Password if required'
+		),
 		/*array(
 			'type' => 'button',
 			'label' => 'Send Test',
