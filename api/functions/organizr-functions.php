@@ -155,6 +155,7 @@ function getSettingsMain(){
 		array(
 			'type' => 'select',
 			'name' => 'authType',
+            'id' => 'authSelect',
 			'label' => 'Authentication Type',
 			'value' => $GLOBALS['authType'],
 			'options' => getAuthTypes()
@@ -162,14 +163,16 @@ function getSettingsMain(){
         array(
 			'type' => 'select',
 			'name' => 'authBackend',
+            'id' => 'authBackendSelect',
 			'label' => 'Authentication Backend',
+            'class' => 'backendAuth switchAuth',
 			'value' => $GLOBALS['authBackend'],
 			'options' => getAuthBackends()
 		),
         array(
 			'type' => 'input',
 			'name' => 'plexToken',
-            'class' => 'plexAuth',
+            'class' => 'plexAuth switchAuth',
 			'label' => 'Plex Token',
 			'value' => $GLOBALS['plexToken'],
 			'placeholder' => 'Use Get Token Button'
@@ -177,7 +180,7 @@ function getSettingsMain(){
 		array(
 			'type' => 'button',
 			'label' => 'Get Plex Token',
-			'class' => 'popup-with-form getPlexTokenAuth plexAuth',
+			'class' => 'popup-with-form getPlexTokenAuth plexAuth switchAuth',
 			'icon' => 'fa fa-paper-plane',
 			'text' => 'Retrieve',
 			'href' => '#auth-plex-token-form',
@@ -186,7 +189,7 @@ function getSettingsMain(){
 		array(
 			'type' => 'input',
 			'name' => 'plexID',
-            'class' => 'plexAuth',
+            'class' => 'plexAuth switchAuth',
 			'label' => 'Plex Machine',
 			'value' => $GLOBALS['plexID'],
 			'placeholder' => 'Use Get Plex Machine Button'
@@ -194,7 +197,7 @@ function getSettingsMain(){
 		array(
 			'type' => 'button',
 			'label' => 'Get Plex Machine',
-			'class' => 'popup-with-form getPlexMachineAuth plexAuth',
+			'class' => 'popup-with-form getPlexMachineAuth plexAuth switchAuth',
 			'icon' => 'fa fa-paper-plane',
 			'text' => 'Retrieve',
 			'href' => '#auth-plex-machine-form',
@@ -203,35 +206,35 @@ function getSettingsMain(){
         array(
 			'type' => 'input',
 			'name' => 'authBackendHost',
-            'class' => 'temp',
+            'class' => 'ldapAuth ftpAuth switchAuth',
 			'label' => 'Host Address',
 			'value' => $GLOBALS['authBackendHost'],
-			'placeholder' => 'http{s) | ftp(s) | ldap(s) ://hostname:port'
+			'placeholder' => 'http{s) | ftp(s) | ldap(s)://hostname:port'
 		),
         array(
 			'type' => 'input',
 			'name' => 'authBaseDN',
-            'class' => 'temp',
+            'class' => 'ldapAuth switchAuth',
 			'label' => 'Host Base DN',
 			'value' => $GLOBALS['authBaseDN'],
 			'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com'
 		),
         array(
 			'type' => 'input',
-			'name' => 'authUsername',
-            'class' => 'temp',
-			'label' => 'Host Username',
-			'value' => $GLOBALS['authUsername'],
-			'placeholder' => 'Username if required'
+			'name' => 'embyURL',
+            'class' => 'embyAuth switchAuth',
+			'label' => 'Emby URL',
+			'value' => $GLOBALS['embyURL'],
+			'placeholder' => ''
 		),
         array(
-			'type' => 'password',
-			'name' => 'authPassword',
-            'class' => 'temp',
-			'label' => 'Host Password',
-			'value' => $GLOBALS['authPassword'],
-			'placeholder' => 'Password if required'
-		),
+			'type' => 'input',
+			'name' => 'embyToken',
+            'class' => 'embyAuth switchAuth',
+			'label' => 'Emby Token',
+			'value' => $GLOBALS['embyToken'],
+			'placeholder' => ''
+		)
 		/*array(
 			'type' => 'button',
 			'label' => 'Send Test',

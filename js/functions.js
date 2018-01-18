@@ -498,7 +498,7 @@ function selectOptions(options, active){
 }
 function buildFormItem(item){
 	var placeholder = (item.placeholder) ? ' placeholder="'+item.placeholder+'"' : '';
-	var id = (item.id) ? ' id="'+item.placeholder+'"' : '';
+	var id = (item.id) ? ' id="'+item.id+'"' : '';
 	var type = (item.type) ? ' data-type="'+item.type+'"' : '';
 	var value = (item.value) ? ' value="'+item.value+'"' : '';
 	var name = (item.name) ? ' name="'+item.name+'"' : '';
@@ -796,6 +796,7 @@ function buildSettingsMain(){
 		var response = JSON.parse(data);
 		console.log(response)
 		$('#settings-main-form').html(buildSettingsMainItem(response.data));
+		changeAuth();
 		;
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -1817,6 +1818,43 @@ function generateCode() {
     for (var i = 0; i < 20; i++)
         code += possible.charAt(Math.floor(Math.random() * possible.length));
     return code;
+}
+//Settings change auth
+function changeAuth(){
+    var type = $('#authSelect').val();
+    var service = $('#authBackendSelect').val();
+    switch (service) {
+        case 'plex':
+            $('.switchAuth').parent().parent().parent().hide();
+            $('.backendAuth').parent().parent().parent().show();
+            $('.plexAuth').parent().parent().parent().show();
+            console.log(service);
+            break;
+        case 'emby_local':
+        case 'emby2':
+        case 'emby3':
+            $('.switchAuth').parent().parent().parent().hide();
+            $('.backendAuth').parent().parent().parent().show();
+            $('.embyAuth').parent().parent().parent().show();
+            console.log(service);
+            break;
+        case 'ftp':
+            $('.switchAuth').parent().parent().parent().hide();
+            $('.backendAuth').parent().parent().parent().show();
+            $('.ftpAuth').parent().parent().parent().show();
+            console.log(service);
+            break;
+        case 'ldap':
+            $('.switchAuth').parent().parent().parent().hide();
+            $('.backendAuth').parent().parent().parent().show();
+            $('.ldapAuth').parent().parent().parent().show();
+            console.log(service);
+            break;
+        default:
+            $('.switchAuth').parent().parent().parent().hide();
+            $('.backendAuth').parent().parent().parent().show();
+    }
+    if(type == 'internal') { $('.switchAuth').parent().parent().parent().hide(); }
 }
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {

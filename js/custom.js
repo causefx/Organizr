@@ -1157,6 +1157,10 @@ $(document).on('change asColorPicker::close', '#settings-main-form :input', func
         2000
     );
 });
+// AUTH BACKEND HIDE SHOW
+$(document).on('change', '#authSelect, #authBackendSelect', function(e) {
+    changeAuth();
+});
 $(document).on("click", ".getSSOPlexToken", function () {
     $('.ssoPlexTokenMessage').text("Grabbing Token");
     $('.ssoPlexTokenHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
