@@ -20,41 +20,49 @@ function ssoCheck($username, $password, $token=null){
 	return true;
 }
 function getOmbiToken($username, $password){
-	$url = $GLOBALS['ombiURL'].'/api/v1/Token';
-	$token = null;
-	$headers = array(
-		"Accept" => "application/json",
-		"Content-Type" => "application/json"
-	);
-	$data = array(
-		"username" => $username,
-		"password" => $password,
-		"rememberMe" => "true",
-	);
-	$options = (localURL($url)) ? array('verify' => false ) : array();
-	$response = Requests::post($url, $headers, json_encode($data), $options);
-	if($response->success){
-		$token = json_decode($response->body, true)['access_token'];
-	}
-	return ($token) ? $token : false;
+	try{
+		$url = $GLOBALS['ombiURL'].'/api/v1/Token';
+		$token = null;
+		$headers = array(
+			"Accept" => "application/json",
+			"Content-Type" => "application/json"
+		);
+		$data = array(
+			"username" => $username,
+			"password" => $password,
+			"rememberMe" => "true",
+		);
+		$options = (localURL($url)) ? array('verify' => false ) : array();
+		$response = Requests::post($url, $headers, json_encode($data), $options);
+		if($response->success){
+			$token = json_decode($response->body, true)['access_token'];
+		}
+		return ($token) ? $token : false;
+	}catch( Requests_Exception $e ) {
+		writeLog('success', 'Ombi Token Function - Error: '.$e->getMessage(), $username);
+	};
 }
 function getTautulliToken($username, $password){
-	$url = $GLOBALS['tautulliURL'].'/auth/signin';
-	$token = null;
-	$headers = array(
-		"Accept" => "application/json",
-		"Content-Type" => "application/x-www-form-urlencoded"
-	);
-	$data = array(
-		"username" => $username,
-		"password" => $password,
-		"remember_me" => 1,
-	);
-	$options = (localURL($url)) ? array('verify' => false ) : array();
-	$response = Requests::post($url, $headers, $data, $options);
-	if($response->success){
-		$token['token'] = json_decode($response->body, true)['token'];
-		$token['uuid'] = json_decode($response->body, true)['uuid'];
-	}
-	return ($token) ? $token : false;
+	try{
+		$url = $GLOBALS['tautulliURL'].'/auth/signin';
+		$token = null;
+		$headers = array(
+			"Accept" => "application/json",
+			"Content-Type" => "application/x-www-form-urlencoded"
+		);
+		$data = array(
+			"username" => $username,
+			"password" => $password,
+			"remember_me" => 1,
+		);
+		$options = (localURL($url)) ? array('verify' => false ) : array();
+		$response = Requests::post($url, $headers, $data, $options);
+		if($response->success){
+			$token['token'] = json_decode($response->body, true)['token'];
+			$token['uuid'] = json_decode($response->body, true)['uuid'];
+		}
+		return ($token) ? $token : false;
+	}catch( Requests_Exception $e ) {
+		writeLog('success', 'Tautulli Token Function - Error: '.$e->getMessage(), $username);
+	};
 }
