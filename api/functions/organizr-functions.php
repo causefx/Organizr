@@ -574,7 +574,7 @@ function getThemes(){
 function getBranches(){
     return array(
         array(
-            'name' => 'Develeop',
+            'name' => 'Develop',
             'value' => 'v2-develop'
         ),
         array(
