@@ -1,0 +1,48 @@
+{
+    "name": "adldap2/adldap2",
+    "type": "library",
+    "description": "A PHP LDAP Package for humans.",
+    "keywords": [
+        "active directory",
+        "directory",
+        "ad",
+        "ldap",
+        "windows",
+        "adldap",
+        "adldap2"
+    ],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/Adldap2/Adldap2/issues",
+        "source": "https://github.com/Adldap2/Adldap2"
+    },
+    "authors": [
+        {
+            "name": "Steve Bauman",
+            "email": "steven_bauman@outlook.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "illuminate/support": "~5.0",
+        "ext-ldap": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.8|~5.6",
+        "mockery/mockery": "~0.9|~1.0"
+    },
+    "archive": {
+        "exclude": ["/examples", "/tests"]
+    },
+    "autoload": {
+        "psr-4": {
+            "Adldap\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Adldap\\Tests\\": "tests/"
+        }
+    }
+}

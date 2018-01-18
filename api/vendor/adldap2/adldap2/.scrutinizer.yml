@@ -1,0 +1,5 @@
+filter:
+    excluded_paths:
+        - examples/*
+        - tests/*
+        - src/Schemas/*
