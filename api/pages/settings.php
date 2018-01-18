@@ -139,7 +139,7 @@ $pageSettings = '
                             <div role="tabpanel" class="tab-pane fade active in" id="settings-settings-about">
     							<div class="row">
     								<div class="col-lg-6 col-sm-12 col-md-6">
-    									<div class="panel bg-theme-dark">
+    									<div class="panel bg-org">
     										<div class="p-30">
     											<div class="row">
     												<div class="col-xs-12"><img src="plugins/images/organizr/logo-wide.png" alt="organizr" class="img-responsive"></div>
@@ -159,7 +159,7 @@ $pageSettings = '
     									</div>
     								</div>
                                     <div class="col-lg-6 col-sm-12 col-md-6">
-                                        <div class="white-box bg-theme-dark">
+                                        <div class="white-box bg-org">
                                             <h3 class="box-title" lang="en">Information</h3>
                                             <ul class="feeds">
                                                 <li><div class="bg-info"><i class="mdi mdi-webpack mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Organizr Version</span> '.$GLOBALS['installedVersion'].'</li>
@@ -175,7 +175,7 @@ $pageSettings = '
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-sm-12 col-md-6">
-                                        <div class="well bg-theme-dark">
+                                        <div class="well bg-org">
                                             <h4 lang="en">Want to help translate?</h4>
                                             <p lang="en">Head on over to POEditor and help us translate Organizr into your language</p>
                                             <button class="fcbtn btn btn-primary btn-outline btn-1b"><a href="https://poeditor.com/join/project/T6l68hksTE" target="_blank" lang="en">I Want to Help</a></button>
@@ -187,7 +187,7 @@ $pageSettings = '
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-donate">
                                 <div class="row">
                                     <div class="col-md-3 col-sm-6 col-xs-12">
-                                        <div class="white-box bg-theme-dark">
+                                        <div class="white-box bg-org">
                                             <h1 class="m-t-0"><i class="fa fa-cc-visa text-info"></i></h1>
                                             <h2>**** **** **** 2150</h2> <span class="pull-right">Expiry date: 10/16</span> <span class="font-500">Johnathan Doe</span> </div>
                                     </div>

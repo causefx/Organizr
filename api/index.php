@@ -671,7 +671,8 @@ switch ($function) {
                 $status['tabs'] = loadTabs()['tabs'];
                 $result['data'] = $status;
                 $result['branch'] = $GLOBALS['branch'];
-                $result['theme'] = $GLOBALS['theme'];
+				$result['theme'] = $GLOBALS['theme'];
+                $result['style'] = $GLOBALS['style'];
                 $result['version'] = $GLOBALS['installedVersion'];
 				$result['sso'] = array(
                     'myPlexAccessToken' => isset($_COOKIE['mpt']) ? $_COOKIE['mpt'] : false,

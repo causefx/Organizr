@@ -13,6 +13,7 @@ return array(
     'headerTextColor' => '',
     'lockScreen' => false,
     'theme'=>'Organizr',
+    'style'=>'dark',
     'plexURL' => '',
     'plexToken' => '',
     'plexID' => '',

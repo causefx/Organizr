@@ -999,6 +999,9 @@ $(document).on('change asColorPicker::close', '#customize-appearance-form :input
     if($(this).hasClass('themeChanger')){
         changeTheme(value);
     }
+	if($(this).hasClass('styleChanger')){
+        changeStyle(value);
+    }
 
 });
 //DELETE IMAGE

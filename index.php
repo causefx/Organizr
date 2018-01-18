@@ -21,10 +21,10 @@
 	<link href="plugins/bower_components/switchery/dist/switchery.min.css" rel="stylesheet" />
 	<link href="plugins/bower_components/jquery-asColorPicker-master/css/asColorPicker.css" rel="stylesheet">
 	<link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css" />
-	<link href="css/style.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
+	<link id="style" href="css/dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<link href="css/organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<?php echo pluginFiles('css'); ?>
-	<link id="theme" rel="stylesheet">
+	<link id="theme" href="css/themes/organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<style type="text/css" id="user-appearance"></style>
 	<!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -86,7 +86,7 @@
 		<!-- ============================================================== -->
 		<!-- Page Content -->
 		<!-- ============================================================== -->
-		<div class="error-page bg-theme-dark"></div>
+		<div class="error-page bg-org"></div>
 		<div class="login-area hidden"></div>
 		<div class="p-0" id="page-wrapper">
 			<div class="organizr-area"></div>

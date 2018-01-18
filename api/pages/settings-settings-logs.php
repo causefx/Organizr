@@ -11,10 +11,10 @@ $(document).on("click", ".swapLog", function(e) {
 });
 </script>
 <div class="btn-group m-b-20">
-    <button type="button" class="btn btn-default btn-outline waves-effect bg-theme-dark swapLog active" data-name="loginLog" lang="en">Login Log</button>
-    <button type="button" class="btn btn-default btn-outline waves-effect bg-theme-dark swapLog" data-name="orgLog" lang="en">Organizr Log</button>
+    <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog active" data-name="loginLog" lang="en">Login Log</button>
+    <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog" data-name="orgLog" lang="en">Organizr Log</button>
 </div>
-<div class="white-box bg-theme-dark logTable loginLogDiv">
+<div class="white-box bg-org logTable loginLogDiv">
     <h3 class="box-title m-b-0" lang="en">Login Logs</h3>
     <div class="table-responsive">
         <table id="loginLogTable" class="table table-striped">
@@ -38,7 +38,7 @@ $(document).on("click", ".swapLog", function(e) {
         </table>
     </div>
 </div>
-<div class="white-box bg-theme-dark logTable orgLogDiv hidden">
+<div class="white-box bg-org logTable orgLogDiv hidden">
     <h3 class="box-title m-b-0" lang="en">Organizr Logs</h3>
     <div class="table-responsive">
         <table id="organizrLogTable" class="table table-striped">

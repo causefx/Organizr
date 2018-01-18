@@ -351,6 +351,23 @@ function getCustomizeAppearance(){
 					'class' => 'themeChanger',
 					'value' => $GLOBALS['theme'],
 					'options' => getThemes()
+				),
+                array(
+					'type' => 'select',
+					'name' => 'style',
+					'label' => 'Style',
+					'class' => 'styleChanger',
+					'value' => $GLOBALS['style'],
+					'options' => array(
+                        array(
+                            'name' => 'Light',
+                            'value' => 'light'
+                        ),
+                        array(
+                            'name' => 'Dark',
+                            'value' => 'dark'
+                        )
+                    )
 				)
             ),
             'database' => array(

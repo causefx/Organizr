@@ -596,12 +596,12 @@ function buildPluginsItem(array){
 	<!-- Tab panes -->
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane fade in active" id="settings-plugins-active">
-			<div class="panel bg-theme-dark panel-info">
+			<div class="panel bg-org panel-info">
 				<div class="panel-heading">
 					<span lang="en">Active Plugins</span>
 				</div>
 				<div class="panel-wrapper collapse in" aria-expanded="true">
-					<div class="panel-body bg-theme-dark">
+					<div class="panel-body bg-org">
 						<div class="row el-element-overlay m-b-40">`+activePlugins+`</div>
 					</div>
 				</div>
@@ -609,12 +609,12 @@ function buildPluginsItem(array){
 			<div class="clearfix"></div>
 		</div>
 		<div role="tabpanel" class="tab-pane fade" id="settings-plugins-inactive">
-			<div class="panel bg-theme-dark panel-info">
+			<div class="panel bg-org panel-info">
 				<div class="panel-heading">
 					<span lang="en">Inactive Plugins</span>
 				</div>
 				<div class="panel-wrapper collapse in" aria-expanded="true">
-					<div class="panel-body bg-theme-dark">
+					<div class="panel-body bg-org">
 						<div class="row el-element-overlay m-b-40">`+inactivePlugins+`</div>
 					</div>
 				</div>
@@ -736,7 +736,7 @@ function buildImageManagerViewItem(array){
 			var name = filepath[3].split(".");
 			imageListing += `
 			<div class="col-lg-1 col-md-1 col-sm-2 col-xs-4">
-				<div class="white-box bg-theme-dark m-0">
+				<div class="white-box bg-org m-0">
 					<div class="el-card-item p-0">
 						<div class="el-card-avatar el-overlay-1"> <img class="lazyload tabImages" data-src="`+v+`" width="22" height="22">
 							<div class="el-overlay">
@@ -1206,7 +1206,7 @@ function buildCategoryEditorItem(array){
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0">
 						<div class="tabEditorIcon">`+iconPrefix(v.image)+`</div>
-						<div class="el-overlay bg-theme-dark">
+						<div class="el-overlay bg-org">
 							<ul class="el-info">
 								<i class="fa fa-bars"></i>
 							</ul>
@@ -1241,7 +1241,7 @@ function buildTabEditorItem(array){
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0">
 						<div class="tabEditorIcon">`+iconPrefix(v.image)+`</div>
-						<div class="el-overlay bg-theme-dark">
+						<div class="el-overlay bg-org">
 							<ul class="el-info">
 								<i class="fa fa-bars"></i>
 							</ul>
@@ -1323,7 +1323,7 @@ function buildVersion(array){
 			button = '<button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none" type="button" onclick="updateNow();"><span class="btn-label"><i class="fa fa-download"></i></span><span lang="en">Install Update</span></button>';
 		}
 		versions += `
-		<div class="white-box bg-theme-dark">
+		<div class="white-box bg-org">
 			<div class="col-md-3 col-sm-4 col-xs-6 pull-right">`+button+`</div>
 			<h3 class="box-title">`+i+`</h3>
 			<div class="row sales-report">
@@ -1795,6 +1795,14 @@ function changeTheme(theme){
 	//$("#preloader").fadeOut();
 	console.log('Theme: '+theme);
 }
+function changeStyle(style){
+	//$("#preloader").fadeIn();
+	$('#style').attr({
+        href: 'css/' + style + '.css?v='+activeInfo.version
+    });
+	//$("#preloader").fadeOut();
+	console.log('Style: '+style);
+}
 function setSSO(){
 	$.each(activeInfo.sso, function(i,v) {
 		if(v !== false){
@@ -1831,6 +1839,7 @@ function launch(){
 			branch:json.branch,
 			sso:json.sso,
 			theme:json.theme,
+			style:json.style,
 			version:json.version
 		};
 		console.log("%cOrganizr","color: #66D9EF; font-size: 24px; font-family: Monospace;");
@@ -1838,6 +1847,7 @@ function launch(){
 		console.log("%cStarting Up...","color: #F92671; font-size: 12px; font-family: Monospace;");
 		checkMessage();
 		errorPage();
+		changeStyle(activeInfo.style);
 		changeTheme(activeInfo.theme);
 		setSSO();
 		switch (json.data.status.status) {

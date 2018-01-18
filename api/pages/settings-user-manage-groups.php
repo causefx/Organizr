@@ -4,7 +4,7 @@ $pageSettingsUserManageGroups = '
 <script>
     buildGroupManagement();
 </script>
-<div class="panel bg-theme-dark panel-info">
+<div class="panel bg-org panel-info">
     <div class="panel-heading">
         <span lang="en">MANAGE GROUPS</span>
         <button type="button" class="btn btn-info btn-circle pull-right popup-with-form" href="#new-group-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
