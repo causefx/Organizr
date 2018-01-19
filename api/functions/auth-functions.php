@@ -162,7 +162,7 @@ function plugin_auth_emby_local($username, $password) {
 		}
 		return false;
 	}catch( Requests_Exception $e ) {
-		writeLog('success', 'Emby Local Auth Function - Error: '.$e->getMessage(), $username);
+		writeLog('error', 'Emby Local Auth Function - Error: '.$e->getMessage(), $username);
 	};
 }
 // Authenicate against emby connect
@@ -179,6 +179,7 @@ function plugin_auth_emby_connect($username, $password) {
 					if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
 						if ($value['ConnectUserName'] == $username || $value['Name'] == $username) {
 							$connectId = $value['ConnectUserId'];
+							writeLog('success', 'Emby Connect Auth Function - Found User', $username);
 							break;
 						}
 					}
@@ -193,7 +194,7 @@ function plugin_auth_emby_connect($username, $password) {
 						'nameOrEmail' => $username,
 						'rawpw' => $password,
 					);
-					$response = Requests::post($connectURL, $headers, json_encode($data));
+					$response = Requests::post($connectURL, $headers, $data);
 					if($response->success){
 						$json = json_decode($response->body, true);
 						if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
@@ -208,7 +209,7 @@ function plugin_auth_emby_connect($username, $password) {
 		}
 		return false;
 	}catch( Requests_Exception $e ) {
-		writeLog('success', 'Emby Connect Auth Function - Error: '.$e->getMessage(), $username);
+		writeLog('error', 'Emby Connect Auth Function - Error: '.$e->getMessage(), $username);
 		return false;
 	};
 }

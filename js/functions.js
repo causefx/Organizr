@@ -1619,6 +1619,7 @@ function logIcon(type){
 			return '<i class="fa fa-close text-danger"></i><span class="hidden">Error</span>';
 			break;
 		default:
+			return '<i class="fa fa-exclamation-triangle text-warning"></i><span class="hidden">Warning</span>';
 	}
 }
 function radioLoop(element){
