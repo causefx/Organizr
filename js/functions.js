@@ -636,17 +636,21 @@ function buildPlugins(){
 	});
 	ajaxloader();
 }
-function buildCustomizeAppearanceItem(array){
-	if (Array.isArray(array.config)) {
-		var preRowConfig = `
+function buildFormGroup(array){
+	var group = '';
+	$.each(array, function(i,v) {
+		var count = 0;
+		var total = v.length;
+		group += `
 			<!-- FORM GROUP -->
-			<h3 class="box-title" lang="en">Config Items</h3>
+			<h3 class="box-title" lang="en">`+i+`</h3>
 			<hr class="m-t-0 m-b-40">
 			<div class="row">
 		`;
-		var customizeItems = preRowConfig;
-		$.each(array.config, function(i,v) {
-			customizeItems += `
+		$.each(v, function(i,v) {
+			count++;
+			if(count%2 !== 0 ){ group += '<div class="row start">'; };
+			group += `
 				<!-- INPUT BOX -->
 				<div class="col-md-6">
 					<div class="form-group">
@@ -658,75 +662,11 @@ function buildCustomizeAppearanceItem(array){
 				</div>
 				<!--/ INPUT BOX -->
 			`;
+			if(count%2 == 0 || count == total ){ group += '</div><!--end-->'; };
 		});
-		customizeItems += '</div>';
-	}
-
-	return customizeItems;
-}
-function buildSSOItem(array){
-    if (Array.isArray(array)) {
-		var count = 0;
-        var preRow = `
-            <!-- FORM GROUP -->
-            <h3 class="box-title" lang="en">SSO Settings</h3>
-            <hr class="m-t-0 m-b-40">
-            <div class="row">
-        `;
-        var ssoItems = preRow;
-        $.each(array, function(i,v) {
-			count++;
-
-			if(count%2 !== 0 ){ ssoItems += '<div class="row start">'; };
-            ssoItems += `
-                <!-- INPUT BOX -->
-                <div class="col-md-6 p-b-10">
-                    <div class="form-group">
-                        <label class="control-label col-md-3" lang="en">`+v.label+`</label>
-                        <div class="col-md-9">
-                            `+buildFormItem(v)+`
-                        </div>
-                    </div>
-                </div>
-                <!--/ INPUT BOX -->
-            `;
-			if(count%2 == 0 ){ ssoItems += '</div><!--end-->'; };
-        });
-        ssoItems += '</div>';
-    }
-    return ssoItems;
-}
-function buildSettingsMainItem(array){
-    if (Array.isArray(array)) {
-		var count = 0;
-        var preRow = `
-            <!-- FORM GROUP -->
-            <h3 class="box-title" lang="en">Main Settings</h3>
-            <hr class="m-t-0 m-b-40">
-            <div class="row">
-        `;
-        var settingsItems = preRow;
-        $.each(array, function(i,v) {
-			count++;
-
-			if(count%2 !== 0 ){ settingsItems += '<div class="row start">'; };
-            settingsItems += `
-                <!-- INPUT BOX -->
-                <div class="col-md-6 p-b-10">
-                    <div class="form-group">
-                        <label class="control-label col-md-3" lang="en">`+v.label+`</label>
-                        <div class="col-md-9">
-                            `+buildFormItem(v)+`
-                        </div>
-                    </div>
-                </div>
-                <!--/ INPUT BOX -->
-            `;
-			if(count%2 == 0 ){ settingsItems += '</div><!--end-->'; };
-        });
-        settingsItems += '</div>';
-    }
-    return settingsItems;
+		group += '</div>';
+	});
+	return group;
 }
 function buildImageManagerViewItem(array){
 	var imageListing = '';
@@ -772,7 +712,7 @@ function buildCustomizeAppearance(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/customize/appearance').success(function(data) {
 		var response = JSON.parse(data);
-		$('#customize-appearance-form').html(buildCustomizeAppearanceItem(response.data));
+		$('#customize-appearance-form').html(buildFormGroup(response.data));
 		;
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -783,7 +723,7 @@ function buildSSO(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/sso').success(function(data) {
 		var response = JSON.parse(data);
-		$('#sso-form').html(buildSSOItem(response.data));
+		$('#sso-form').html(buildFormGroup(response.data));
 		;
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -795,7 +735,7 @@ function buildSettingsMain(){
 	organizrAPI('GET','api/?v1/settings/main').success(function(data) {
 		var response = JSON.parse(data);
 		console.log(response)
-		$('#settings-main-form').html(buildSettingsMainItem(response.data));
+		$('#settings-main-form').html(buildFormGroup(response.data));
 		changeAuth();
 		;
 	}).fail(function(xhr) {
@@ -1160,7 +1100,7 @@ function buildGroupManagementItem(array){
 		    return n + (group.group_id == v.group_id);
 		}, 0);
 		var disabledDefault = (v.group_id == 0 || v.group_id == 999) ? 'disabled' : '';
-		var disabledDelete = (userCount > 0 || v.default == 1 || v.group_id == 999 || v.group_id == 0) ? 'disabled' : '';
+		var disabledDelete = (userCount > 0 || v.default == 1 || v.group_id == 999 || v.group_id <= 1) ? 'disabled' : '';
 		var defaultIcon = (v.default == 1) ? 'icon-user-following' : 'icon-user-follow';
 		var defaultColor = (v.default == 1) ? 'btn-info disabled' : 'btn-warning';
 		userList += `

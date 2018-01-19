@@ -12,6 +12,8 @@ return array(
     'useLogo' => false,
     'headerColor' => '',
     'headerTextColor' => '',
+    'sidebarColor' => '',
+    'sidebarTextColor' => '',
     'lockScreen' => false,
     'theme'=>'Organizr',
     'style'=>'dark',

@@ -138,190 +138,194 @@ function organizrStatus(){
 }
 function getSettingsMain(){
 	return array(
-		array(
-			'type' => 'select',
-			'name' => 'branch',
-			'label' => 'Branch',
-			'value' => $GLOBALS['branch'],
-			'options' => getBranches()
-		),
-		array(
-			'type' => 'button',
-			'label' => 'Force Install Branch',
-			'class' => 'updateNow',
-			'icon' => 'fa fa-paper-plane',
-			'text' => 'Retrieve'
-		),
-		array(
-			'type' => 'select',
-			'name' => 'authType',
-            'id' => 'authSelect',
-			'label' => 'Authentication Type',
-			'value' => $GLOBALS['authType'],
-			'options' => getAuthTypes()
-		),
-        array(
-			'type' => 'select',
-			'name' => 'authBackend',
-            'id' => 'authBackendSelect',
-			'label' => 'Authentication Backend',
-            'class' => 'backendAuth switchAuth',
-			'value' => $GLOBALS['authBackend'],
-			'options' => getAuthBackends()
-		),
-        array(
-			'type' => 'input',
-			'name' => 'plexToken',
-            'class' => 'plexAuth switchAuth',
-			'label' => 'Plex Token',
-			'value' => $GLOBALS['plexToken'],
-			'placeholder' => 'Use Get Token Button'
-		),
-		array(
-			'type' => 'button',
-			'label' => 'Get Plex Token',
-			'class' => 'popup-with-form getPlexTokenAuth plexAuth switchAuth',
-			'icon' => 'fa fa-paper-plane',
-			'text' => 'Retrieve',
-			'href' => '#auth-plex-token-form',
-			'attr' => 'data-effect="mfp-3d-unfold"'
-		),
-		array(
-			'type' => 'input',
-			'name' => 'plexID',
-            'class' => 'plexAuth switchAuth',
-			'label' => 'Plex Machine',
-			'value' => $GLOBALS['plexID'],
-			'placeholder' => 'Use Get Plex Machine Button'
-		),
-		array(
-			'type' => 'button',
-			'label' => 'Get Plex Machine',
-			'class' => 'popup-with-form getPlexMachineAuth plexAuth switchAuth',
-			'icon' => 'fa fa-paper-plane',
-			'text' => 'Retrieve',
-			'href' => '#auth-plex-machine-form',
-			'attr' => 'data-effect="mfp-3d-unfold"'
-		),
-        array(
-			'type' => 'input',
-			'name' => 'authBackendHost',
-            'class' => 'ldapAuth ftpAuth switchAuth',
-			'label' => 'Host Address',
-			'value' => $GLOBALS['authBackendHost'],
-			'placeholder' => 'http{s) | ftp(s) | ldap(s)://hostname:port'
-		),
-        array(
-			'type' => 'input',
-			'name' => 'authBaseDN',
-            'class' => 'ldapAuth switchAuth',
-			'label' => 'Host Base DN',
-			'value' => $GLOBALS['authBaseDN'],
-			'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com'
-		),
-        array(
-			'type' => 'input',
-			'name' => 'embyURL',
-            'class' => 'embyAuth switchAuth',
-			'label' => 'Emby URL',
-			'value' => $GLOBALS['embyURL'],
-			'placeholder' => ''
-		),
-        array(
-			'type' => 'input',
-			'name' => 'embyToken',
-            'class' => 'embyAuth switchAuth',
-			'label' => 'Emby Token',
-			'value' => $GLOBALS['embyToken'],
-			'placeholder' => ''
-		)
-		/*array(
-			'type' => 'button',
-			'label' => 'Send Test',
-			'class' => 'phpmSendTestEmail',
-			'icon' => 'fa fa-paper-plane',
-			'text' => 'Send'
-		)*/
+        'Github' => array(
+    		array(
+    			'type' => 'select',
+    			'name' => 'branch',
+    			'label' => 'Branch',
+    			'value' => $GLOBALS['branch'],
+    			'options' => getBranches()
+    		),
+    		array(
+    			'type' => 'button',
+    			'label' => 'Force Install Branch',
+    			'class' => 'updateNow',
+    			'icon' => 'fa fa-paper-plane',
+    			'text' => 'Retrieve'
+    		)
+        ),
+        'Authentication' => array(
+    		array(
+    			'type' => 'select',
+    			'name' => 'authType',
+                'id' => 'authSelect',
+    			'label' => 'Authentication Type',
+    			'value' => $GLOBALS['authType'],
+    			'options' => getAuthTypes()
+    		),
+            array(
+    			'type' => 'select',
+    			'name' => 'authBackend',
+                'id' => 'authBackendSelect',
+    			'label' => 'Authentication Backend',
+                'class' => 'backendAuth switchAuth',
+    			'value' => $GLOBALS['authBackend'],
+    			'options' => getAuthBackends()
+    		),
+            array(
+    			'type' => 'input',
+    			'name' => 'plexToken',
+                'class' => 'plexAuth switchAuth',
+    			'label' => 'Plex Token',
+    			'value' => $GLOBALS['plexToken'],
+    			'placeholder' => 'Use Get Token Button'
+    		),
+    		array(
+    			'type' => 'button',
+    			'label' => 'Get Plex Token',
+    			'class' => 'popup-with-form getPlexTokenAuth plexAuth switchAuth',
+    			'icon' => 'fa fa-paper-plane',
+    			'text' => 'Retrieve',
+    			'href' => '#auth-plex-token-form',
+    			'attr' => 'data-effect="mfp-3d-unfold"'
+    		),
+    		array(
+    			'type' => 'input',
+    			'name' => 'plexID',
+                'class' => 'plexAuth switchAuth',
+    			'label' => 'Plex Machine',
+    			'value' => $GLOBALS['plexID'],
+    			'placeholder' => 'Use Get Plex Machine Button'
+    		),
+    		array(
+    			'type' => 'button',
+    			'label' => 'Get Plex Machine',
+    			'class' => 'popup-with-form getPlexMachineAuth plexAuth switchAuth',
+    			'icon' => 'fa fa-paper-plane',
+    			'text' => 'Retrieve',
+    			'href' => '#auth-plex-machine-form',
+    			'attr' => 'data-effect="mfp-3d-unfold"'
+    		),
+            array(
+    			'type' => 'input',
+    			'name' => 'authBackendHost',
+                'class' => 'ldapAuth ftpAuth switchAuth',
+    			'label' => 'Host Address',
+    			'value' => $GLOBALS['authBackendHost'],
+    			'placeholder' => 'http{s) | ftp(s) | ldap(s)://hostname:port'
+    		),
+            array(
+    			'type' => 'input',
+    			'name' => 'authBaseDN',
+                'class' => 'ldapAuth switchAuth',
+    			'label' => 'Host Base DN',
+    			'value' => $GLOBALS['authBaseDN'],
+    			'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com'
+    		),
+            array(
+    			'type' => 'input',
+    			'name' => 'embyURL',
+                'class' => 'embyAuth switchAuth',
+    			'label' => 'Emby URL',
+    			'value' => $GLOBALS['embyURL'],
+    			'placeholder' => ''
+    		),
+            array(
+    			'type' => 'input',
+    			'name' => 'embyToken',
+                'class' => 'embyAuth switchAuth',
+    			'label' => 'Emby Token',
+    			'value' => $GLOBALS['embyToken'],
+    			'placeholder' => ''
+    		)
+    		/*array(
+    			'type' => 'button',
+    			'label' => 'Send Test',
+    			'class' => 'phpmSendTestEmail',
+    			'icon' => 'fa fa-paper-plane',
+    			'text' => 'Send'
+    		)*/
+        )
 	);
 }
 function getSSO(){
 	return array(
-		array(
-			'type' => 'input',
-			'name' => 'plexToken',
-			'label' => 'Plex Token',
-			'value' => $GLOBALS['plexToken'],
-			'placeholder' => 'Use Get Token Button'
-		),
-		array(
-			'type' => 'button',
-			'label' => 'Get Plex Token',
-			'class' => 'popup-with-form getPlexTokenSSO',
-			'icon' => 'fa fa-paper-plane',
-			'text' => 'Retrieve',
-			'href' => '#sso-plex-token-form',
-			'attr' => 'data-effect="mfp-3d-unfold"'
-		),
-		array(
-			'type' => 'input',
-			'name' => 'plexID',
-			'label' => 'Plex Machine',
-			'value' => $GLOBALS['plexID'],
-			'placeholder' => 'Use Get Plex Machine Button'
-		),
-		array(
-			'type' => 'button',
-			'label' => 'Get Plex Machine',
-			'class' => 'popup-with-form getPlexMachineSSO',
-			'icon' => 'fa fa-paper-plane',
-			'text' => 'Retrieve',
-			'href' => '#sso-plex-machine-form',
-			'attr' => 'data-effect="mfp-3d-unfold"'
-		),
-		array(
-			'type' => 'html',
-			'label' => 'Plex Note',
-			'html' => '<span lang="en">Please make sure both Token and Machine are filled in</span>'
-		),
-		array(
-			'type' => 'switch',
-			'name' => 'ssoPlex',
-			'label' => 'Enable',
-			'value' => $GLOBALS['ssoPlex']
-		),
-		array(
-			'type' => 'input',
-			'name' => 'ombiURL',
-			'label' => 'Ombi URL',
-			'value' => $GLOBALS['ombiURL'],
-			'placeholder' => 'http(s)://hostname'
-		),
-		array(
-			'type' => 'switch',
-			'name' => 'ssoOmbi',
-			'label' => 'Enable',
-			'value' => $GLOBALS['ssoOmbi']
-		),
-		array(
-			'type' => 'input',
-			'name' => 'tautulliURL',
-			'label' => 'Tautulli URL',
-			'value' => $GLOBALS['tautulliURL'],
-			'placeholder' => 'http(s)://hostname'
-		),
-		array(
-			'type' => 'switch',
-			'name' => 'ssoTautulli',
-			'label' => 'Enable',
-			'value' => $GLOBALS['ssoTautulli']
-		)
-		/*array(
-			'type' => 'button',
-			'label' => 'Send Test',
-			'class' => 'phpmSendTestEmail',
-			'icon' => 'fa fa-paper-plane',
-			'text' => 'Send'
-		)*/
+        'Plex' => array(
+    		array(
+    			'type' => 'input',
+    			'name' => 'plexToken',
+    			'label' => 'Plex Token',
+    			'value' => $GLOBALS['plexToken'],
+    			'placeholder' => 'Use Get Token Button'
+    		),
+    		array(
+    			'type' => 'button',
+    			'label' => 'Get Plex Token',
+    			'class' => 'popup-with-form getPlexTokenSSO',
+    			'icon' => 'fa fa-paper-plane',
+    			'text' => 'Retrieve',
+    			'href' => '#sso-plex-token-form',
+    			'attr' => 'data-effect="mfp-3d-unfold"'
+    		),
+    		array(
+    			'type' => 'input',
+    			'name' => 'plexID',
+    			'label' => 'Plex Machine',
+    			'value' => $GLOBALS['plexID'],
+    			'placeholder' => 'Use Get Plex Machine Button'
+    		),
+    		array(
+    			'type' => 'button',
+    			'label' => 'Get Plex Machine',
+    			'class' => 'popup-with-form getPlexMachineSSO',
+    			'icon' => 'fa fa-paper-plane',
+    			'text' => 'Retrieve',
+    			'href' => '#sso-plex-machine-form',
+    			'attr' => 'data-effect="mfp-3d-unfold"'
+    		),
+    		array(
+    			'type' => 'html',
+    			'label' => 'Plex Note',
+    			'html' => '<span lang="en">Please make sure both Token and Machine are filled in</span>'
+    		),
+    		array(
+    			'type' => 'switch',
+    			'name' => 'ssoPlex',
+    			'label' => 'Enable',
+    			'value' => $GLOBALS['ssoPlex']
+    		)
+        ),
+        'Ombu' => array(
+    		array(
+    			'type' => 'input',
+    			'name' => 'ombiURL',
+    			'label' => 'Ombi URL',
+    			'value' => $GLOBALS['ombiURL'],
+    			'placeholder' => 'http(s)://hostname'
+    		),
+    		array(
+    			'type' => 'switch',
+    			'name' => 'ssoOmbi',
+    			'label' => 'Enable',
+    			'value' => $GLOBALS['ssoOmbi']
+    		)
+        ),
+        'Tautulli' => array(
+    		array(
+    			'type' => 'input',
+    			'name' => 'tautulliURL',
+    			'label' => 'Tautulli URL',
+    			'value' => $GLOBALS['tautulliURL'],
+    			'placeholder' => 'http(s)://hostname'
+    		),
+    		array(
+    			'type' => 'switch',
+    			'name' => 'ssoTautulli',
+    			'label' => 'Enable',
+
+            	'value' => $GLOBALS['ssoTautulli']
+    		)
+        )
 	);
 }
 function loadAppearance(){
@@ -336,28 +340,12 @@ function loadAppearance(){
 function getCustomizeAppearance(){
     if(file_exists(dirname(__DIR__,1).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'config.php')){
         return array(
-            'config' => array(/*
-                array(
-                    'type' => 'select',
-                    'name' => 'branch',
-                    'label' => 'Organizr Branch',
-                    'value' => $GLOBALS['branch'],
-                    'options' => array(
-                        'Master' => 'v2-master',
-                        'Develop' => 'v2-develop'
-                    )
-                ),*/
+            'Top Bar' => array(
                 array(
                     'type' => 'input',
                     'name' => 'logo',
                     'label' => 'Logo',
                     'value' => $GLOBALS['logo']
-                ),
-                array(
-                    'type' => 'input',
-                    'name' => 'loginWallpaper',
-                    'label' => 'Login Wallpaper',
-                    'value' => $GLOBALS['loginWallpaper']
                 ),
                 array(
                     'type' => 'input',
@@ -370,12 +358,46 @@ function getCustomizeAppearance(){
                     'name' => 'useLogo',
                     'label' => 'Use Logo instead of Title',
                     'value' => $GLOBALS['useLogo']
-                ),
+                )
+            ),
+            'Login Page' => array(
+                array(
+                    'type' => 'input',
+                    'name' => 'loginWallpaper',
+                    'label' => 'Login Wallpaper',
+                    'value' => $GLOBALS['loginWallpaper']
+                )
+            ),
+            'Colors & Themes' => array(
                 array(
                     'type' => 'input',
                     'name' => 'headerColor',
                     'label' => 'Nav Bar Color',
                     'value' => $GLOBALS['headerColor'],
+                    'class' => 'colorpicker',
+                    'disabled' => true
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'headerTextColor',
+                    'label' => 'Nav Bar Text Color',
+                    'value' => $GLOBALS['headerTextColor'],
+                    'class' => 'colorpicker',
+                    'disabled' => true
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'sidebarColor',
+                    'label' => 'Side Bar Color',
+                    'value' => $GLOBALS['sidebarColor'],
+                    'class' => 'colorpicker',
+                    'disabled' => true
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'sidebarTextColor',
+                    'label' => 'Side Bar Text Color',
+                    'value' => $GLOBALS['sidebarTextColor'],
                     'class' => 'colorpicker',
                     'disabled' => true
                 ),
@@ -404,9 +426,6 @@ function getCustomizeAppearance(){
                         )
                     )
 				)
-            ),
-            'database' => array(
-
             )
         );
     }
