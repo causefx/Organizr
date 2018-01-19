@@ -103,7 +103,6 @@ if (function_exists('ldap_connect')){
 		return 'LDAP - Disabled (Dependancy: php-ldap missing!)';
 	}
 }
-
 // Pass credentials to FTP backend
 function plugin_auth_ftp($username, $password) {
 	// Calculate parts
@@ -134,4 +133,91 @@ function plugin_auth_ftp($username, $password) {
 		return false;
 	}
 	return false;
+}
+
+// Pass credentials to Emby Backend
+function plugin_auth_emby_local($username, $password) {
+	try{
+		$url = qualifyURL($GLOBALS['embyURL']).'/Users/AuthenticateByName';
+		$headers = array(
+			'Authorization'=> 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
+			'Content-Type' => 'application/json',
+		);
+		$data = array(
+			'Username' => $username,
+			'Password' => sha1($password),
+			'PasswordMd5' => md5($password),
+		);
+		$response = Requests::post($url, $headers, json_encode($data));
+		if($response->success){
+			$json = json_decode($response->body, true);
+			if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
+				// Login Success - Now Logout Emby Session As We No Longer Need It
+				$headers = array(
+					'X-Mediabrowser-Token' => $json['AccessToken'],
+				);
+				$response = Requests::post(qualifyURL($GLOBALS['embyURL']).'/Sessions/Logout', $headers, array());
+				return true;
+			}
+		}
+		return false;
+	}catch( Requests_Exception $e ) {
+		writeLog('success', 'Emby Local Auth Function - Error: '.$e->getMessage(), $username);
+	};
+}
+// Authenicate against emby connect
+function plugin_auth_emby_connect($username, $password) {
+	try{
+		// Get A User
+		$connectId = '';
+		$url = qualifyURL($GLOBALS['embyURL']).'/Users?api_key='.$GLOBALS['embyToken'];
+		$response = Requests::get($url);
+		if($response->success){
+			$json = json_decode($response->body, true);
+			if (is_array($json)) {
+				foreach ($json as $key => $value) { // Scan for this user
+					if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualifty as connect account
+						if ($value['ConnectUserName'] == $username || $value['Name'] == $username) {
+							$connectId = $value['ConnectUserId'];
+							break;
+						}
+					}
+				}
+				if ($connectId) {
+					$connectURL = 'https://connect.emby.media/service/user/authenticate';
+					$headers = array(
+						'Accept'=> 'application/json',
+						'Content-Type' => 'application/x-www-form-urlencoded',
+					);
+					$data = array(
+						'nameOrEmail' => $username,
+						'rawpw' => $password,
+					);
+					$response = Requests::post($connectURL, $headers, json_encode($data));
+					if($response->success){
+						$json = json_decode($response->body, true);
+						if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
+							return array(
+								'email' => $json['User']['Email'],
+								'image' => $json['User']['ImageUrl'],
+							);
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}catch( Requests_Exception $e ) {
+		writeLog('success', 'Emby Connect Auth Function - Error: '.$e->getMessage(), $username);
+		return false;
+	};
+}
+// Authenticate Against Emby Local (first) and Emby Connect
+function plugin_auth_emby_all($username, $password) {
+	$localResult = plugin_auth_emby_local($username, $password);
+	if ($localResult) {
+		return $localResult;
+	} else {
+		return plugin_auth_emby_connect($username, $password);
+	}
 }

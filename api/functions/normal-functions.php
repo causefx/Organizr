@@ -254,3 +254,74 @@ function array_filter_key(array $array, $callback){
 	$matchedKeys = array_filter(array_keys($array), $callback);
 	return array_intersect_key($array, array_flip($matchedKeys));
 }
+// Qualify URL
+function qualifyURL($url) {
+	//local address?
+	if(substr($url, 0,1) == "/"){
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+			$protocol = "https://";
+		} else {
+			$protocol = "http://";
+		}
+		$url = $protocol.getServer().$url;
+	}
+	// Get Digest
+	$digest = parse_url($url);
+	// http/https
+	if (!isset($digest['scheme'])) {
+		if (isset($digest['port']) && in_array($digest['port'], array(80,8080,8096,32400,7878,8989,8182,8081,6789))) {
+			$scheme = 'http';
+		} else {
+			$scheme = 'https';
+		}
+	} else {
+		$scheme = $digest['scheme'];
+	}
+	// Host
+	$host = (isset($digest['host'])?$digest['host']:'');
+	// Port
+	$port = (isset($digest['port'])?':'.$digest['port']:'');
+	// Path
+	$path = (isset($digest['path'])?$digest['path']:'');
+	// Output
+	return $scheme.'://'.$host.$port.$path;
+}
+function getServerPath() {
+	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https"){
+		$protocol = "https://";
+	}elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+        $protocol = "https://";
+    } else {
+        $protocol = "http://";
+    }
+	$domain = '';
+    if (isset($_SERVER['SERVER_NAME']) && strpos($_SERVER['SERVER_NAME'], '.') !== false){
+        $domain = $_SERVER['SERVER_NAME'];
+	}elseif(isset($_SERVER['HTTP_HOST'])){
+		if (strpos($_SERVER['HTTP_HOST'], ':') !== false) {
+			$domain = explode(':', $_SERVER['HTTP_HOST'])[0];
+			$port = explode(':', $_SERVER['HTTP_HOST'])[1];
+			if ($port == "80" || $port == "443"){
+				$domain = $domain;
+			}else{
+				$domain = $_SERVER['HTTP_HOST'];
+			}
+		}else{
+        	$domain = $_SERVER['HTTP_HOST'];
+		}
+	}
+    return $protocol . $domain . str_replace("\\", "/", dirname($_SERVER['REQUEST_URI']));
+}
+function get_browser_name() {
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    if (strpos($user_agent, 'Opera') || strpos($user_agent, 'OPR/')) return 'Opera';
+    elseif (strpos($user_agent, 'Edge')) return 'Edge';
+    elseif (strpos($user_agent, 'Chrome')) return 'Chrome';
+    elseif (strpos($user_agent, 'Safari')) return 'Safari';
+    elseif (strpos($user_agent, 'Firefox')) return 'Firefox';
+    elseif (strpos($user_agent, 'MSIE') || strpos($user_agent, 'Trident/7')) return 'Internet Explorer';
+    return 'Other';
+}
+function getServer(){
+    return isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"];
+}
