@@ -154,6 +154,21 @@ function getSettingsMain(){
     			'text' => 'Retrieve'
     		)
         ),
+        'API' => array(
+            array(
+    			'type' => 'input',
+    			'name' => 'organizrAPI',
+    			'label' => 'Organizr API',
+    			'value' => $GLOBALS['organizrAPI']
+    		),
+    		array(
+    			'type' => 'button',
+    			'label' => 'Generate New API Key',
+    			'class' => 'newAPIKey',
+    			'icon' => 'fa fa-paper-plane',
+    			'text' => 'Generate'
+    		)
+        ),
         'Authentication' => array(
     		array(
     			'type' => 'select',

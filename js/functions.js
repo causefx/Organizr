@@ -652,7 +652,7 @@ function buildFormGroup(array){
 			if(count%2 !== 0 ){ group += '<div class="row start">'; };
 			group += `
 				<!-- INPUT BOX -->
-				<div class="col-md-6">
+				<div class="col-md-6 p-b-10">
 					<div class="form-group">
 						<label class="control-label col-md-3" lang="en">`+v.label+`</label>
 						<div class="col-md-9">

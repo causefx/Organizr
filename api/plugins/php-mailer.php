@@ -48,75 +48,83 @@ function phpmSendTestEmail(){
 /* GET PHPMAILER SETTINGS */
 function phpmGetSettings(){
 	return array(
-		array(
-			'type' => 'input',
-			'name' => 'PHPMAILER-smtpHost',
-			'label' => 'SMTP Host',
-			'value' => $GLOBALS['PHPMAILER-smtpHost']
+		'Host' => array(
+			array(
+				'type' => 'input',
+				'name' => 'PHPMAILER-smtpHost',
+				'label' => 'SMTP Host',
+				'value' => $GLOBALS['PHPMAILER-smtpHost']
+			),
+			array(
+				'type' => 'input',
+				'name' => 'PHPMAILER-smtpHostPort',
+				'label' => 'SMTP Port',
+				'value' => $GLOBALS['PHPMAILER-smtpHostPort']
+			)
 		),
-		array(
-			'type' => 'input',
-			'name' => 'PHPMAILER-smtpHostPort',
-			'label' => 'SMTP Port',
-			'value' => $GLOBALS['PHPMAILER-smtpHostPort']
-		),
-		array(
-			'type' => 'input',
-			'name' => 'PHPMAILER-smtpHostUsername',
-			'label' => 'Username',
-			'value' => $GLOBALS['PHPMAILER-smtpHostUsername']
-		),
-		array(
-			'type' => 'password',
-			'name' => 'PHPMAILER-smtpHostPassword',
-			'label' => 'Password',
-			'value' => $GLOBALS['PHPMAILER-smtpHostPassword']
-		),
-		array(
-			'type' => 'input',
-			'name' => 'PHPMAILER-smtpHostSenderName',
-			'label' => 'Sender Name',
-			'value' => $GLOBALS['PHPMAILER-smtpHostSenderName']
-		),
-		array(
-			'type' => 'input',
-			'name' => 'PHPMAILER-smtpHostSenderEmail',
-			'label' => 'Sender Email',
-			'value' => $GLOBALS['PHPMAILER-smtpHostSenderEmail'],
-			'placeholder' => 'i.e. same as username'
-		),
-		array(
-			'type' => 'switch',
-			'name' => 'PHPMAILER-smtpHostAuth',
-			'label' => 'Authentication',
-			'value' => $GLOBALS['PHPMAILER-smtpHostAuth']
-		),
-		array(
-			'type' => 'select',
-			'name' => 'PHPMAILER-smtpHostType',
-			'label' => 'Authentication Type',
-			'value' => $GLOBALS['PHPMAILER-smtpHostType'],
-			'options' => array(
-				array(
-					'name'=>'tls',
-					'value'=>'tls'
-				),
-				array(
-					'name'=>'ssl',
-					'value'=>'ssl'
-				),
-				array(
-					'name'=>'off',
-					'value'=>'false'
+		'Authentication' => array(
+			array(
+				'type' => 'input',
+				'name' => 'PHPMAILER-smtpHostUsername',
+				'label' => 'Username',
+				'value' => $GLOBALS['PHPMAILER-smtpHostUsername']
+			),
+			array(
+				'type' => 'password',
+				'name' => 'PHPMAILER-smtpHostPassword',
+				'label' => 'Password',
+				'value' => $GLOBALS['PHPMAILER-smtpHostPassword']
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'PHPMAILER-smtpHostAuth',
+				'label' => 'Authentication',
+				'value' => $GLOBALS['PHPMAILER-smtpHostAuth']
+			),
+			array(
+				'type' => 'select',
+				'name' => 'PHPMAILER-smtpHostType',
+				'label' => 'Authentication Type',
+				'value' => $GLOBALS['PHPMAILER-smtpHostType'],
+				'options' => array(
+					array(
+						'name'=>'tls',
+						'value'=>'tls'
+					),
+					array(
+						'name'=>'ssl',
+						'value'=>'ssl'
+					),
+					array(
+						'name'=>'off',
+						'value'=>'false'
+					)
 				)
 			)
 		),
-		array(
-			'type' => 'button',
-			'label' => 'Send Test',
-			'class' => 'phpmSendTestEmail',
-			'icon' => 'fa fa-paper-plane',
-			'text' => 'Send'
+		'Sender Information' => array(
+			array(
+				'type' => 'input',
+				'name' => 'PHPMAILER-smtpHostSenderName',
+				'label' => 'Sender Name',
+				'value' => $GLOBALS['PHPMAILER-smtpHostSenderName']
+			),
+			array(
+				'type' => 'input',
+				'name' => 'PHPMAILER-smtpHostSenderEmail',
+				'label' => 'Sender Email',
+				'value' => $GLOBALS['PHPMAILER-smtpHostSenderEmail'],
+				'placeholder' => 'i.e. same as username'
+			)
+		),
+		'Test' => array(
+			array(
+				'type' => 'button',
+				'label' => 'Send Test',
+				'class' => 'phpmSendTestEmail',
+				'icon' => 'fa fa-paper-plane',
+				'text' => 'Send'
+			)
 		)
 	);
 }

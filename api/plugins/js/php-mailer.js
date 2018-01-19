@@ -19,33 +19,6 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
 */
 
 // FUNCTIONS
-function phpmBuildSettingsItems(array){
-    if (Array.isArray(array)) {
-        var preRow = `
-            <!-- FORM GROUP -->
-            <h3 class="box-title" lang="en">Mail Settings</h3>
-            <hr class="m-t-0 m-b-40">
-            <div class="row">
-        `;
-        var mailItems = preRow;
-        $.each(array, function(i,v) {
-            mailItems += `
-                <!-- INPUT BOX -->
-                <div class="col-md-6 p-b-10">
-                    <div class="form-group">
-                        <label class="control-label col-md-3" lang="en">`+v.label+`</label>
-                        <div class="col-md-9">
-                            `+buildFormItem(v)+`
-                        </div>
-                    </div>
-                </div>
-                <!--/ INPUT BOX -->
-            `;
-        });
-        mailItems += '</div>';
-    }
-    return mailItems;
-}
 
 // EVENTS and LISTENERS
 // CHANGE CUSTOMIZE Options
@@ -89,7 +62,7 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
     ajaxloader(".content-wrap","in");
     organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
         var response = JSON.parse(data);
-        $('#PHPMAILER-settings-items').html(phpmBuildSettingsItems(response.data));
+        $('#PHPMAILER-settings-items').html(buildFormGroup(response.data));
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
     });
