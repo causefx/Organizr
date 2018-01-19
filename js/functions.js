@@ -1771,8 +1771,8 @@ function changeAuth(){
             console.log(service);
             break;
         case 'emby_local':
-        case 'emby2':
-        case 'emby3':
+        case 'emby_connect':
+        case 'emby_all':
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.embyAuth').parent().parent().parent().show();

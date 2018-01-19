@@ -972,7 +972,7 @@ $(document).on("click", ".changeDefaultCategory", function () {
     settingsAPI(post,callbacks);
 });
 // CHANGE CUSTOMIZE Options
-$(document).on('change asColorPicker::close', '#customize-appearance-form :input', function(e) {
+$(document).on('change asColorPicker::clear asColorPicker::close', '#customize-appearance-form :input', function(e) {
 	$(this).attr('data-changed', true);
     switch ($(this).attr('type')) {
         case 'switch':
