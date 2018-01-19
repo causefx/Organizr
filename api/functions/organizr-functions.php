@@ -148,7 +148,7 @@ function getSettingsMain(){
 		array(
 			'type' => 'button',
 			'label' => 'Force Install Branch',
-			'class' => 'popup-with-form getPlexTokenSSO',
+			'class' => 'updateNow',
 			'icon' => 'fa fa-paper-plane',
 			'text' => 'Retrieve'
 		),
