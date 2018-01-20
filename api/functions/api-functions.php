@@ -50,8 +50,18 @@ function login($array){
             if($result['username']){
                 $userExists = true;
 				$username = $result['username'];
+                $passwordMatches = (password_verify($password, $result['password'])) ? true : false;
             }
 			if ($userExists) {
+                //does org password need to be updated
+                if(!$passwordMatches){
+                    $database->query('
+                    	UPDATE users SET', [
+                    		'password' => password_hash($password, PASSWORD_BCRYPT)
+                    	], '
+                    	WHERE id=?', $result['id']);
+                    writeLog('success', 'Login Function - User Password updated from backend', $username);
+                }
 				// authentication passed - 1) mark active and update token
                 if(createToken($result['username'],$result['email'],$result['image'],$result['group'],$result['group_id'],$GLOBALS['organizrHash'],$days)){
                     writeLoginLog($username, 'success');
@@ -64,7 +74,7 @@ function login($array){
 			} else {
 				// Create User
                 ssoCheck($username, $password, $token);
-                return authRegister($username,$password,'',(is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''));
+                return authRegister((is_array($authSuccess) && isset($authSuccess['username']) ? $authSuccess['username'] : $username),$password,'',(is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''));
 			}
 		} else {
 			// authentication failed

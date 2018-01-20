@@ -25,7 +25,7 @@ $pageSettingsSettingsSSO = '
             <input type="text" class="form-control" id="sso-plex-token-form-username" name="username" required="" autofocus>
         </div>
         <div class="form-group">
-            <label class="control-label" for="nsso-plex-token-form-password" lang="en">Plex Password</label>
+            <label class="control-label" for="sso-plex-token-form-password" lang="en">Plex Password</label>
             <input type="password" class="form-control" id="sso-plex-token-form-password" name="password"  required="">
         </div>
     </fieldset>

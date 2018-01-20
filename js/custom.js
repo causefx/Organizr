@@ -1246,6 +1246,92 @@ $(document).on('change', '#ssoPlexMachineSelector', function(e) {
     $('#sso-form [name=plexID]').val($(this).val());
     $('#sso-form [name=plexID]').change();
 });
+$(document).on("click", ".getauthPlexToken", function () {
+    $('.authPlexTokenMessage').text("Grabbing Token");
+    $('.authPlexTokenHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
+    var plex_username = $('#auth-plex-token-form [name=username]').val().trim();
+    var plex_password = $('#auth-plex-token-form [name=password]').val().trim();
+    if ((plex_password !== '') && (plex_password !== '')) {
+        $.ajax({
+            type: 'POST',
+            headers: {
+                'X-Plex-Product':'Organizr',
+                'X-Plex-Version':'2.0',
+                'X-Plex-Client-Identifier':'01010101-10101010'
+            },
+            url: 'https://plex.tv/users/sign_in.json',
+            data: {
+                'user[login]': plex_username,
+                'user[password]': plex_password,
+                force: true
+            },
+            cache: false,
+            async: true,
+            complete: function(xhr, status) {
+                var result = $.parseJSON(xhr.responseText);
+                if (xhr.status === 201) {
+                    $('.authPlexTokenMessage').text(xhr.statusText);
+                    $('.authPlexTokenHeader').addClass('panel-success').removeClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
+                    $('#settings-main-form [name=plexToken]').val(result.user.authToken);
+                    $('#settings-main-form [name=plexToken]').change();
+                } else {
+                    $('.authPlexTokenMessage').text(xhr.statusText);
+                    $('.authPlexTokenHeader').addClass('panel-danger').removeClass('panel-info').removeClass('panel-warning');
+                }
+            }
+        });
+    } else {
+        $('.authPlexTokenMessage').text("Enter Username and Password");
+        $('.authPlexTokenHeader').addClass('panel-warning').removeClass('panel-info').removeClass('panel-danger');
+    }
+});
+$(document).on("click", ".getPlexMachineAuth", function () {
+    var plex_token = $('#settings-main-form [name=plexToken]').val().trim();
+    if (plex_token !== '') {
+        $('.authPlexMachineMessage').text("Grabbing List");
+        $('.authPlexMachineHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
+        $.ajax({
+            type: 'GET',
+            headers: {
+                'X-Plex-Product':'Organizr',
+                'X-Plex-Version':'2.0',
+                'X-Plex-Client-Identifier':'01010101-10101010',
+                'X-Plex-Token':plex_token,
+            },
+            url: 'https://plex.tv/pms/servers.xml',
+            cache: false,
+            async: true,
+            complete: function(xhr, status) {
+                var result = $.parseXML(xhr.responseText);
+                if (xhr.status === 200) {
+                    $('.authPlexMachineMessage').text('Choose Plex Server');
+                    $('.authPlexMachineHeader').addClass('panel-success').removeClass('panel-info').removeClass('panel-warning');
+                    var machines = '<option lang="en">Choose Plex Machine</option>';
+                    $('Server', result).each(function(){
+                        if($(this).attr('owned') == 1){
+                            var name = $(this).attr('name');
+                            var machine = $(this).attr('machineIdentifier');
+                            machines += '<option value="'+machine+'">'+name+'</option>';
+                        }
+                    })
+                    var listing = `<select class="form-control" id="authPlexMachineSelector" data-type="select">`+machines+`</select>`;
+                    $('.authPlexMachineListing').html(listing);
+                } else {
+                    $('.authPlexTokenMessage').text(xhr.statusText);
+                    $('.authPlexTokenHeader').addClass('panel-danger').removeClass('panel-info').removeClass('panel-warning');
+                }
+            }
+        });
+    } else {
+        $('.authPlexMachineMessage').text("Plex Token Needed");
+        $('.authPlexMachineHeader').addClass('panel-warning').removeClass('panel-info').removeClass('panel-danger');
+    }
+});
+$(document).on('change', '#authPlexMachineSelector', function(e) {
+    $('#settings-main-form [name=plexID]').val($(this).val());
+    $('#settings-main-form [name=plexID]').change();
+});
+
 $(document).on("click", ".closeErrorPage", function () {
     $('.error-page').html('');
     $('.error-page').fadeOut();
