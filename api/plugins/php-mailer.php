@@ -14,7 +14,7 @@ $GLOBALS['plugins'][]['PHP Mailer'] = array( // Plugin Name
     'version'=>'1.0.0', // SemVer of plugin
     'image'=>'plugins/images/php-mailer.png', // 1:1 non transparent image for plugin
 	'settings'=>true, // does plugin need a settings page? true or false
-    'homepage'=>false // Is plugin for use on homepage? true or false
+    'homepage'=>false // Is plugin for use on homepage? true or false 
 );
 // INCLUDE/REQUIRE FILES
 
