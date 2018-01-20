@@ -575,6 +575,47 @@ $(document).on("click", ".addNewUser", function () {
         $.magnificPopup.close();
     }
 });
+//EDIT GROUP GET ID
+$(document).on("click", ".editUserButton", function () {
+    $('#edit-user-form [name=username]').val($(this).parent().parent().attr("data-username"));
+    $('#edit-user-form [name=id]').val($(this).parent().parent().attr("data-id"));
+    $('#edit-user-form [name=email]').val($(this).parent().parent().attr("data-email"));
+});
+//EDIT GROUP
+$(document).on("click", ".editUserAdmin", function () {
+    //Create POST Array
+    var post = {
+        action:'editUser',
+        api:'api/?v1/settings/user/manage/users',
+        id:$('#edit-user-form [name=id]').val(),
+        username:$('#edit-user-form [name=username]').val(),
+        email:$('#edit-user-form [name=email]').val(),
+        password:$('#edit-user-form [name=password]').val(),
+        messageTitle:'',
+        messageBody:'Edited User '+$('#edit-user-form [name=username]').val(),
+        error:'Organizr Function: API Connection Failed'
+    };
+    if (typeof post.id == 'undefined' || post.id == '') {
+        message('Edit User Error',' Could not get User ID','bottom-right','#FFF','error','5000');
+    }
+    if (typeof post.username == 'undefined' || post.username == '') {
+        message('Edit User Error',' Please set a Username','bottom-right','#FFF','warning','5000');
+    }
+    if (typeof post.email == 'undefined' || post.email == '') {
+        message('Edit User Error',' Please set a User Email','bottom-right','#FFF','warning','5000');
+    }
+    if (post.password !== '' && post.password !== $('#edit-user-form [name=password2]').val()){
+        message('Edit User Error',' Passwords do not match!','bottom-right','#FFF','warning','5000');
+    }
+    console.log(post);
+    if(post.id !== '' && post.username !== '' && post.email !== '' ){
+        var callbacks = $.Callbacks();
+        callbacks.add( buildUserManagement );
+        settingsAPI(post,callbacks);
+        clearForm('#edit-user-form');
+        $.magnificPopup.close();
+    }
+});
 // CHANGE USER GROUP
 $(document).on("change", ".userGroupSelect", function () {
     //Create POST Array

@@ -477,6 +477,36 @@ function adminEditUser($array){
                 return false;
             }
             break;
+        case 'editUser':
+            try {
+                $connect = new Dibi\Connection([
+                    'driver' => 'sqlite3',
+                    'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
+                ]);
+                if(!usernameTakenExcept($array['data']['username'],$array['data']['email'],$array['data']['id'])){
+                    $connect->query('
+                        UPDATE users SET', [
+                            'username' => $array['data']['username'],
+                            'email' => $array['data']['email'],
+                        ], '
+                        WHERE id=?', $array['data']['id']);
+                    if(!empty($array['data']['password'])){
+                        $connect->query('
+                            UPDATE users SET', [
+                                'password' => password_hash($array['data']['password'], PASSWORD_BCRYPT)
+                            ], '
+                            WHERE id=?', $array['data']['id']);
+                    }
+                    writeLog('success', 'User Management Function - User: '.$array['data']['username'].'\'s info was changed', $GLOBALS['organizrUser']['username']);
+                    return true;
+                }else{
+                    return false;
+                }
+            } catch (Dibi\Exception $e) {
+                writeLog('error', 'User Management Function - Error - User: '.$array['data']['username'].'\'s group was changed from ['.$array['data']['oldGroup'].'] to ['.$array['data']['newGroupName'].']', $GLOBALS['organizrUser']['username']);
+                return false;
+            }
+            break;
         case 'addNewUser':
             $defaults = defaultUserGroup();
             if(createUser($array['data']['username'],$array['data']['password'],$defaults,$array['data']['email'])){
@@ -830,6 +860,18 @@ function usernameTaken($username,$email){
     		'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
     	]);
         $all = $connect->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE',$username,$email);
+        return ($all) ? true : false;
+    } catch (Dibi\Exception $e) {
+        return false;
+    }
+}
+function usernameTakenExcept($username,$email,$id){
+    try {
+    	$connect = new Dibi\Connection([
+    		'driver' => 'sqlite3',
+    		'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
+    	]);
+        $all = $connect->fetch('SELECT * FROM users WHERE id IS NOT ? AND username = ? COLLATE NOCASE OR id IS NOT ? AND email = ? COLLATE NOCASE',$id,$username,$id,$email);
         return ($all) ? true : false;
     } catch (Dibi\Exception $e) {
         return false;

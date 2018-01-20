@@ -1067,7 +1067,7 @@ function buildUserManagementItem(array){
 	$.each(array.users, function(i,v) {
 		var disabledDelete = (v.group_id == 999 || v.group_id == 0) ? 'disabled' : 'deleteUser';
 		userList += `
-		<tr class="userManagement" data-id="`+v.id+`" data-username="`+v.username+`" data-group="`+v.group+`">
+		<tr class="userManagement" data-id="`+v.id+`" data-username="`+v.username+`" data-group="`+v.group+`" data-email="`+v.email+`">
 			<td class="text-center el-element-overlay">
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0">
@@ -1085,7 +1085,7 @@ function buildUserManagementItem(array){
 			<td>`+moment(v.register_date).format('ll')+`
 				<br/><span class="text-muted">`+moment(v.register_date).format('LT')+`</span></td>
 			`+buildUserGroupSelect(array.groups,v.id,v.group_id)+`
-			<td><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editUser"><i class="ti-pencil-alt"></i></button></td>
+			<td><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editUserButton popup-with-form" href="#edit-user-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
 			<td><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-20"><i class="ti-email"></i></button></td>
 			<td><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5 `+disabledDelete+`"><i class="ti-trash"></i></button></td>
 		</tr>

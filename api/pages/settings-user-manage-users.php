@@ -45,4 +45,28 @@ $pageSettingsUserManageUsers = '
     <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none addNewUser" type="button"><span class="btn-label"><i class="fa fa-plus"></i></span><span lang="en">Add User</span></button>
     <div class="clearfix"></div>
 </form>
+<form id="edit-user-form" class="mfp-hide white-popup-block mfp-with-anim">
+    <input type="hidden" name="id" value="">
+    <h1 lang="en">Edit User</h1>
+    <fieldset style="border:0;">
+        <div class="form-group">
+            <label class="control-label" for="edit-user-form-inputUsername" lang="en">Username</label>
+            <input type="text" class="form-control" id="edit-user-form-inputUsername" name="username" required="" autofocus>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="edit-user-form-inputEmail" lang="en">Email</label>
+            <input type="text" class="form-control" id="edit-user-form-inputEmail" name="email" required="" autofocus>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="edit-user-form-inputPassword" lang="en">Password</label>
+            <input type="password" class="form-control" id="edit-user-form-inputPassword" name="password"  required="">
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="edit-user-form-inputPassword2" lang="en">Password Again</label>
+            <input type="password" class="form-control" id="edit-user-form-inputPassword2" name="password2"  required="">
+        </div>
+    </fieldset>
+    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none editUserAdmin" type="button"><span class="btn-label"><i class="fa fa-plus"></i></span><span lang="en">Edit User</span></button>
+    <div class="clearfix"></div>
+</form>
 ';
