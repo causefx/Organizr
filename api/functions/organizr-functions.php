@@ -33,9 +33,17 @@ function wizardConfig($array){
             if(createFirstAdmin($location,$dbName,$username,$password,$email)){
                 if(createToken($username,$email,gravatar($email),'Admin',0,$hashKey,1)){
                     return true;
+                }else{
+                    return 'token';
                 }
+            }else{
+                return 'admin';
             }
+        }else{
+            return 'db';
         }
+    }else{
+        return 'config';
     }
     return false;
 }

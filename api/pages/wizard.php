@@ -127,9 +127,17 @@ $pageWizard = '
                 console.log( post );
                 organizrAPI(\'POST\',\'api/?v1/wizard_config\',post).success(function(data) {
             		var html = JSON.parse(data);
-                    if(html.data == true){
+                    if(html.data == \'true\'){
                         location.reload();
-                    }else{
+                    }else if(html.data == \'token\'){
+						console.error(\'Organizr Function: Could not create Token\');
+					}else if(html.data == \'db\'){
+						console.error(\'Organizr Function: Could not create DB - check permissions\');
+					}else if(html.data == \'admin\'){
+						console.error(\'Organizr Function: Could not create admin acct\');
+					}else if(html.data == \'config\'){
+						console.error(\'Organizr Function: Could not create config files - check permissions\');
+					}else{
                         console.error(\'Organizr Function: Signup Error Occured\');
                     }
             	}).fail(function(xhr) {
