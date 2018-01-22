@@ -397,6 +397,25 @@ switch ($function) {
                 break;
         }
         break;
+    case 'v1_wizard_path':
+        switch ($method) {
+            case 'POST':
+                if(!file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = wizardPath($_POST);
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'Wizard has already been run';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_login':
         switch ($method) {
             case 'POST':

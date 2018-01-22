@@ -666,6 +666,21 @@ function getAuthBackends(){
     ksort($backendOptions);
     return $backendOptions;
 }
+function wizardPath($array){
+    $path = $array['data']['path'];
+    if(file_exists($path)){
+        if(is_writable($path)){
+            return true;
+        }
+    }else{
+        if(is_writable(dirname($path, 1))){
+            if(mkdir($path, 0760, true)) {
+                return true;
+            }
+        }
+    }
+    return 'permissions';
+}
 /*
 function sendEmail($email = null, $username = "Organizr User", $subject, $body, $cc = null, $bcc = null){
 	try {

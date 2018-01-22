@@ -1372,10 +1372,28 @@ $(document).on('change', '#authPlexMachineSelector', function(e) {
     $('#settings-main-form [name=plexID]').val($(this).val());
     $('#settings-main-form [name=plexID]').change();
 });
-
 $(document).on("click", ".closeErrorPage", function () {
     $('.error-page').html('');
     $('.error-page').fadeOut();
+});
+// test Location
+$(document).on("click", ".testPath", function () {
+    var path = $("#form-location").val();
+    if (typeof path == 'undefined' || path == '') {
+        message('Path Error',' Please enter a path for DB','bottom-right','#FFF','warning','10000');
+    }else{
+        organizrAPI('POST','api/?v1/wizard_path',{path:path}).success(function(data) {
+            var html = JSON.parse(data);
+            console.log(html)
+            if(html.data == true){
+                message('Path',' Path is good to go','bottom-right','#FFF','success','10000');
+            }else{
+                message('Path Error',' Path is not writable','bottom-right','#FFF','warning','10000');
+            }
+        }).fail(function(xhr) {
+            console.error("Organizr Function: Connection Failed");
+        });
+    }
 });
 /* ===== Open-Close Right Sidebar ===== */
 

@@ -127,7 +127,7 @@ $pageWizard = '
                 console.log( post );
                 organizrAPI(\'POST\',\'api/?v1/wizard_config\',post).success(function(data) {
             		var html = JSON.parse(data);
-                    if(html.data == \'true\'){
+                    if(html.data == true){
                         location.reload();
                     }else if(html.data == \'token\'){
 						console.error(\'Organizr Function: Could not create Token\');
@@ -261,7 +261,7 @@ $pageWizard = '
                             <div class="wizard-pane" role="tabpanel">
                                 <div class="panel panel-danger">
                                     <div class="panel-heading">
-                                        <i class="ti-alert fa-fw"></i> <span lang="en">Attenetion</span>
+                                        <i class="ti-alert fa-fw"></i> <span lang="en">Attention</span>
                                         <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
                                     </div>
                                     <div class="panel-wrapper collapse in" aria-expanded="true">
@@ -283,6 +283,7 @@ $pageWizard = '
                                     <div class="input-group">
                                         <div class="input-group-addon"><i class="ti-server"></i></div>
                                         <input type="text" class="form-control wizardInput" name="location" id="form-location" placeholder="'.dirname(__DIR__, 3).'">
+                                        <span class="input-group-btn"><button class="btn btn-info testPath" lang="en" type="button">Test</button></span>
                                     </div>
                                 </div>
                             </div>
