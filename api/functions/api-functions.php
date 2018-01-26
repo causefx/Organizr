@@ -331,6 +331,7 @@ function createFirstAdmin($path,$filename,$username,$password,$email) {
         $createDB->query('INSERT INTO [categories]', $unsortedInfo);
         return true;
     } catch (Dibi\Exception $e) {
+        writeLog('error', 'Wizard Function -  Error ['.$e.']', 'Wizard');
         return false;
     }
 }

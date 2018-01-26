@@ -318,7 +318,7 @@ function getSSO(){
     			'value' => $GLOBALS['ssoPlex']
     		)
         ),
-        'Ombu' => array(
+        'Ombi' => array(
     		array(
     			'type' => 'input',
     			'name' => 'ombiURL',
@@ -446,6 +446,10 @@ function getCustomizeAppearance(){
                         array(
                             'name' => 'Dark',
                             'value' => 'dark'
+                        ),
+                        array(
+                            'name' => 'Horizontal',
+                            'value' => 'horizontal'
                         )
                     )
 				)
