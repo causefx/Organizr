@@ -48,6 +48,8 @@ $pageSettings = '
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Homepage Items\');loadSettingsPage(\'api/?v1/settings/tab/editor/homepage\',\'#settings-tab-editor-homepage\',\'Homepage Items\');" role="presentation" class=""><a href="#settings-tab-editor-homepage" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs" lang="en"> Homepage Items</span></a>
                             </li>
+                            <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Homepage Order\');loadSettingsPage(\'api/?v1/settings/tab/editor/homepage/order\',\'#settings-tab-editor-homepage-order\',\'Homepage Order\');" role="presentation" class=""><a href="#settings-tab-editor-homepage-order" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-exchange-vertical"></i></span><span class="hidden-xs" lang="en"> Homepage Order</span></a>
+                            </li>
                         </ul>
                         <!-- Tab panes -->
                         <div class="tab-content">
@@ -60,6 +62,9 @@ $pageSettings = '
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-tab-editor-homepage">
                                 <h2 lang="en">Loading...</h2>
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="settings-tab-editor-homepage-order">
+                                <h2 lang="en">Coming Soon...</h2>
                             </div>
                         </div>
                     </section>

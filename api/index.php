@@ -37,7 +37,7 @@ switch ($function) {
                 break;
         }
         break;
-    case 'v1_homepage':
+    case 'v1_homepage_page':
         switch ($method) {
             case 'GET':
                 $result['status'] = 'success';
