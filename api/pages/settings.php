@@ -46,6 +46,8 @@ $pageSettings = '
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Categories\');loadSettingsPage(\'api/?v1/settings/tab/editor/categories\',\'#settings-tab-editor-categories\',\'Category Editor\');" role="presentation" class=""><a href="#settings-tab-editor-categories" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en"> Categories</span></a>
                             </li>
+                            <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Homepage Items\');loadSettingsPage(\'api/?v1/settings/tab/editor/homepage\',\'#settings-tab-editor-homepage\',\'Homepage Items\');" role="presentation" class=""><a href="#settings-tab-editor-homepage" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs" lang="en"> Homepage Items</span></a>
+                            </li>
                         </ul>
                         <!-- Tab panes -->
                         <div class="tab-content">
@@ -54,6 +56,9 @@ $pageSettings = '
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-tab-editor-categories">
+                                <h2 lang="en">Loading...</h2>
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="settings-tab-editor-homepage">
                                 <h2 lang="en">Loading...</h2>
                             </div>
                         </div>

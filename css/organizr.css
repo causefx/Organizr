@@ -140,3 +140,17 @@ img.lazyload.tabImages {
 height: 120px !important;
 object-fit: contain;
 }
+.recent-cover{
+	background-position: center;background-size: cover;height: 150px;width: 150px;
+  top: 74px;
+    position: absolute;
+}
+.recent-poster{
+	background-position: center;background-size: cover;height: 225px;width: 150px;
+}
+.recent-title{
+  position: absolute;
+  bottom: 0px;
+  background: rgba(31, 31, 31, 0.73);
+  width: inherit;
+}

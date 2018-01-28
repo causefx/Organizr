@@ -54,7 +54,14 @@ function languageList(){
 	};
 }
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+function contains(target, pattern){
+    var value = 0;
+    pattern.forEach(function(word){
+      value = value + target.includes(word);
+    });
+    return (value === 1)
 }
 function timerIncrement() {
     idleTime = idleTime + 1;
@@ -192,6 +199,7 @@ function reloadOrganizr(){
 }
 function hideFrames(){
 	$(".iFrame-listing div[class^='frame-container']").addClass("hidden").removeClass('show');
+	$(".internal-listing div[class^='internal-container']").addClass("hidden").removeClass('show');
 }
 function closeSideMenu(){
 	$('.fix-header').removeClass('show-sidebar');
@@ -238,9 +246,9 @@ function switchTab(tab, type){
 		case '0':
 		case 'internal':
 			swapDisplay('internal');
-			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
 			var newTab = $('#internal-'+tab);
 			var tabURL = newTab.attr('data-url');
+			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
 			if(newTab.hasClass('loaded')){
 				console.log('Tab Function: Switching to tab: '+tab);
 				newTab.addClass("show").removeClass('hidden');
@@ -626,11 +634,50 @@ function buildPluginsItem(array){
 
 	return panes;
 }
+function buildHomepageItem(array){
+	var listing = '';
+	if (Array.isArray(array)) {
+		$.each(array, function(i,v) {
+			listing += `
+			<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+				<div class="white-box bg-org m-0">
+					<div class="el-card-item p-0">
+						<div class="el-card-avatar el-overlay-1">
+							<a class="popup-with-form" href="#homepage-`+v.name+`-form" data-effect="mfp-3d-unfold"><img class="lazyload tabImages" data-src="`+v.image+`"></a>
+						</div>
+						<div class="el-card-content">
+							<h3 class="box-title">`+v.name+`</h3>
+							<small class="elip text-uppercase">`+v.category+`</small><br>
+						</div>
+					</div>
+				</div>
+			</div>
+			<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup-block mfp-with-anim homepageForm">
+			    <h1 lang="en">Edit Settings</h1>
+			    <fieldset style="border:0;">`+buildFormGroup(v.settings)+`</fieldset>
+			    <div class="clearfix"></div>
+			</form>
+			`;
+		});
+	}
+	return listing;
+}
 function buildPlugins(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/settings/plugins/list').success(function(data) {
 		var response = JSON.parse(data);
 		$('#main-plugin-area').html(buildPluginsItem(response.data));
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
+}
+function buildHomepage(){
+	ajaxloader(".content-wrap","in");
+	organizrAPI('GET','api/?v1/settings/homepage/list').success(function(data) {
+		var response = JSON.parse(data);
+		console.log(response);
+		$('#settings-homepage-list').html(buildHomepageItem(response.data));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
@@ -932,7 +979,7 @@ function tabProcess(arrayItems) {
 					case 0:
 					case '0':
 					case 'internal':
-						internalList += buildInternalContainer(v.name,v.url,v.type);
+						internalList = buildInternalContainer(v.name,v.url,v.type);
 						$(internalList).appendTo($('.internal-listing'));
 						break;
 					case 1:
@@ -1751,6 +1798,152 @@ function setSSO(){
 			local('set', i, v);
 		}
 	});
+}
+function buildPlexStreamItem(array){
+	var cards = '';
+	var count = 0;
+	var total = array.length;
+	var start = ['1','5','9','13','17','21'];
+	var end = ['4','8','12','16','20','24'];
+	$.each(array, function(i,v) {
+		var icon = '';
+		var width = 100;
+		var bg = '';
+
+			count++;
+			if(contains(''+count, start)){ cards += '<div class="row">'; };
+
+
+
+
+
+		switch (v.type) {
+			case 'music':
+				icon = 'icon-music-tone-alt';
+				width = 56;
+				bg = `
+				<img class="" style="width: 56%;display:block;position: absolute;left:0px;overflow: hidden;filter: blur(0px) grayscale(1);" src="`+v.nowPlayingImageURL+`">
+				<img class="" style="width: 56%;display:block;position: absolute;right:0px;overflow: hidden;filter: blur(0px) grayscale(1);" src="`+v.nowPlayingImageURL+`">
+				`;
+				break;
+			case 'movie':
+				//title = v.title;
+				//year = v.year;
+				icon = 'icon-film';
+				break;
+			case 'tv':
+				icon = 'icon-screen-desktop';
+				break;
+			default:
+
+		}
+		cards += `
+		<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 nowPlayingItem">
+			<div class="white-box">
+				<div class="el-card-item p-b-10">
+					<div class="el-card-avatar el-overlay-1 m-b-0">`+bg+`<img style="width:`+width+`%;margin-left: auto;margin-right: auto;" src="`+v.nowPlayingImageURL+`">
+						<div class="el-overlay">
+							<ul class="el-info p-t-20 m-t-20">
+								<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-graph"></i></a></li><li><a class="btn default btn-outline image-popup-vertical-fit" href="../plugins/images/users/1.jpg"><i class="icon-info"></i></a></li>
+								<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-share-alt"></i></a></li><li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-refresh"></i></a></li><li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-graph"></i></a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="el-card-content">
+						<div class="progress">
+							<div class="progress-bar progress-bar-primary" style="width: `+v.watched+`%;" role="progressbar"><span class="hidden">`+v.watched+`%</span></div>
+							<div class="progress-bar progress-bar-inverse" style="width: `+v.transcoded+`%;" role="progressbar"></div>
+						</div>
+						<h3 class="box-title pull-left p-l-10 elip" style="width:90%">`+v.nowPlayingTitle+`</h3>
+						<h3 class="box-title pull-right vertical-middle" style="width:10%"><i class="icon-control-`+v.state+` fa-fw text-primary" style=""></i></h3>
+						<div class="clearfix"></div>
+						<small class="pull-left p-l-10"><i class="`+icon+` fa-fw text-primary"></i>`+v.nowPlayingBottom+`</small>
+						<small class="pull-right p-r-10">`+v.user+` <i class="icon-user"></i></small>
+						<br>
+					</div>
+				</div>
+			</div>
+		</div>
+		`;
+		if(contains(''+count, end) || count == total ){ cards += '</div><!--end-->'; };
+
+	});
+	return cards;
+}
+function buildPlexRecentItem(array){
+	var items = '';
+	$.each(array, function(i,v) {
+		var className = '';
+		switch (v.type) {
+			case 'music':
+				className = 'recent-cover';
+				break;
+			case 'movie':
+				className = 'recent-poster';
+				break;
+			case 'tv':
+				className = 'recent-poster';
+				break;
+			default:
+
+		}
+		items += '<div class="item lazyload '+className+'" data-src="'+v.imageURL+'"><span class="elip recent-title">'+v.title+'</span></div>';
+
+	});
+	return items;
+}
+function buildPlexStream(array){
+	var streams = array.content.length;
+	return `
+	<div id="plexStreams" data-check="`+escape(JSON.stringify(array.content))+`">
+		<div class="row el-element-overlay m-b-20">
+		    <div class="col-md-12">
+		        <h4 lang="en">Active Plex Streams `+streams+`</h4>
+		        <hr>
+		    </div>
+		    <!-- .cards -->
+			`+buildPlexStreamItem(array.content)+`
+		    <!-- /.cards-->
+		</div>
+	</div>
+	`;
+}
+function buildPlexRecent(array){
+	var recent = array.content.length;
+	return `
+	<div id="plexRecent" data-check="`+escape(JSON.stringify(array.content))+`" class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading" lang="en">Recently Added to Plex</div>
+                <div class="panel-wrapper p-b-10 collapse in">
+                    <div id="owl-demo2" class="owl-carousel owl-theme">
+						`+buildPlexRecentItem(array.content)+`
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	`;
+}
+function plexStream(){
+	ajaxloader(".content-wrap","in");
+	organizrAPI('POST','api/?v1/homepage/connect',{action:'getPlexStreams'}).success(function(data) {
+		var response = JSON.parse(data);
+		$('#homepageOrderplexnowplaying').html(buildPlexStream(response.data));
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
+}
+function plexRecent(){
+	ajaxloader(".content-wrap","in");
+	organizrAPI('POST','api/?v1/homepage/connect',{action:'getPlexRecent'}).success(function(data) {
+		var response = JSON.parse(data);
+		$('#homepageOrderplexrecent').html(buildPlexRecent(response.data));
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
 }
 //Generate API
 function generateCode() {

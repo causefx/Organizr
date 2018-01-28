@@ -51,7 +51,7 @@ $(document).on('change asColorPicker::close', '#PHPMAILER-settings-page :input',
             $('#PHPMAILER-settings-page :input').prop('disabled', null);
             input.emulateTab();
         },
-        1500
+        2000
     );
 
 });

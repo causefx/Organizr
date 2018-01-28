@@ -37,6 +37,19 @@ switch ($function) {
                 break;
         }
         break;
+    case 'v1_homepage':
+        switch ($method) {
+            case 'GET':
+                $result['status'] = 'success';
+                $result['statusText'] = 'success';
+                $result['data'] = $pageHomepage;
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_settings_plugins':
         switch ($method) {
             case 'GET':
@@ -44,6 +57,55 @@ switch ($function) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettingsPlugins;
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
+    case 'v1_settings_tab_editor_homepage':
+        switch ($method) {
+            case 'GET':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = $pageSettingsTabEditorHomepage;
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
+    case 'v1_settings_homepage_list':
+        switch ($method) {
+            case 'GET':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = getHomepageList();
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            case 'POST':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = editPlugins($_POST);
                 }else{
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
@@ -185,6 +247,19 @@ switch ($function) {
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
                 }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
+    case 'v1_homepage_connect':
+        switch ($method) {
+            case 'POST':
+                $result['status'] = 'success';
+                $result['statusText'] = 'success';
+                $result['data'] = homepageConnect($_POST);
                 break;
             default:
                 $result['status'] = 'error';
@@ -722,6 +797,17 @@ switch ($function) {
                 foreach (glob(__DIR__.DIRECTORY_SEPARATOR.'plugins' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . "*.php") as $filename){
                     require_once $filename;
                 }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
+    case 'v1_image':
+        switch ($method) {
+            case 'GET':
+                getImage();
                 break;
             default:
                 $result['status'] = 'error';

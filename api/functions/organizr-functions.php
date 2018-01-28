@@ -685,6 +685,74 @@ function wizardPath($array){
     }
     return 'permissions';
 }
+function groupSelect(){
+    $groups = allGroups();
+    $select = array();
+    foreach ($groups as $key => $value) {
+        $select[] = array(
+            'name' => $value['group'],
+            'value' => $value['group_id']
+        );
+    }
+    return $select;
+}
+function getImage() {
+	$refresh = false;
+    $cacheDirectory = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
+    if (!file_exists($cacheDirectory)) {
+        mkdir($cacheDirectory, 0777, true);
+    }
+	@$image_url = $_GET['img'];
+	@$key = $_GET['key'];
+    @$image_height = $_GET['height'];
+    @$image_width = $_GET['width'];
+	@$source = $_GET['source'];
+    @$itemType = $_GET['type'];
+	if(strpos($key, '$') !== false){
+		$key = explode('$', $key)[0];
+		$refresh = true;
+	}
+	switch ($source) {
+        case 'plex':
+            $plexAddress = qualifyURL($GLOBALS['plexURL']);
+            $image_src = $plexAddress . '/photo/:/transcode?height='.$image_height.'&width='.$image_width.'&upscale=1&url=' . $image_url . '&X-Plex-Token=' . $GLOBALS['plexToken'];
+            break;
+        case 'emby':
+            $embyAddress = qualifyURL($GLOBALS['embyURL']);
+        	$imgParams = array();
+        	if (isset($_GET['height'])) { $imgParams['height'] = 'maxHeight='.$_GET['height']; }
+        	if (isset($_GET['width'])) { $imgParams['width'] = 'maxWidth='.$_GET['width']; }
+            $image_src = $embyAddress . '/Items/'.$image_url.'/Images/'.$itemType.'?'.implode('&', $imgParams);
+            break;
+        default:
+            # code...
+            break;
+    }
+
+	if(isset($image_url) && isset($image_height) && isset($image_width) && isset($image_src)) {
+
+        $cachefile = $cacheDirectory.$key.'.jpg';
+        $cachetime = 604800;
+        // Serve from the cache if it is younger than $cachetime
+        if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh == false) {
+            header("Content-type: image/jpeg");
+            @readfile($cachefile);
+            exit;
+        }
+		ob_start(); // Start the output buffer
+        header('Content-type: image/jpeg');
+		@readfile($image_src);
+		//echo @curl_get($image_src);
+        // Cache the output to a file
+        $fp = fopen($cachefile, 'wb');
+        fwrite($fp, ob_get_contents());
+        fclose($fp);
+        ob_end_flush(); // Send the output to the browser
+		die();
+	} else {
+		die("Invalid Request");
+	}
+}
 /*
 function sendEmail($email = null, $username = "Organizr User", $subject, $body, $cc = null, $bcc = null){
 	try {

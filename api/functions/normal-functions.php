@@ -98,6 +98,14 @@ function random_ascii_string($length){
     }
     return $randomString;
 }
+// Generate Random string
+function randString($length = 10, $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+	$tmp = '';
+	for ($i = 0; $i < $length; $i++) {
+		$tmp .= substr(str_shuffle($chars), 0, 1);
+	}
+    return $tmp;
+}
 function encrypt($password, $key = null) {
     $key = (isset($GLOBALS['organizrHash'])) ? $GLOBALS['organizrHash'] : $key;
     return openssl_encrypt($password, 'AES-256-CBC', $key, 0, fillString($key,16));

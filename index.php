@@ -129,6 +129,7 @@
 	<script src="plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
     <script src="plugins/bower_components/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
 	<script src="plugins/bower_components/dropzone-master/dist/dropzone.js"></script>
+	<script src="plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>
 	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 	<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 	<?php echo pluginFiles('js'); ?>

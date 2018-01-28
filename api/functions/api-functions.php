@@ -918,6 +918,20 @@ function allTabs(){
         }
     }
 }
+function allGroups(){
+    if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
+        try {
+        	$connect = new Dibi\Connection([
+        		'driver' => 'sqlite3',
+        		'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
+        	]);
+            $all = $connect->fetchAll('SELECT * FROM groups ORDER BY `group_id` ASC');
+            return $all;
+        } catch (Dibi\Exception $e) {
+            return false;
+        }
+    }
+}
 function loadTabs(){
     if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
         try {
