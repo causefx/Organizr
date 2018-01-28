@@ -90,7 +90,7 @@ function pageLoad(){
         }
     });
     $(function () {
-        $('#owl-demo2').owlCarousel({
+        $('.recent-items').owlCarousel({
     	    margin:0,
     	    nav:false,
     		autoplay:false,

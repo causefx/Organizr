@@ -736,13 +736,14 @@ function getImage() {
         // Serve from the cache if it is younger than $cachetime
         if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh == false) {
             header("Content-type: image/jpeg");
-            @readfile($cachefile);
+            //@readfile($cachefile);
+            echo @curl('get',$cachefile)['content'];
             exit;
         }
 		ob_start(); // Start the output buffer
         header('Content-type: image/jpeg');
-		@readfile($image_src);
-		//echo @curl_get($image_src);
+		//@readfile($image_src);
+		echo @curl('get',$image_src)['content'];
         // Cache the output to a file
         $fp = fopen($cachefile, 'wb');
         fwrite($fp, ob_get_contents());

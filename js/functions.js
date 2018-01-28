@@ -1906,6 +1906,7 @@ function buildPlexStream(array){
 		    <!-- /.cards-->
 		</div>
 	</div>
+	<div class="clearfix"></div>
 	`;
 }
 function buildPlexRecent(array){
@@ -1916,9 +1917,10 @@ function buildPlexRecent(array){
             <div class="panel panel-default">
                 <div class="panel-heading" lang="en">Recently Added to Plex</div>
                 <div class="panel-wrapper p-b-10 collapse in">
-                    <div id="owl-demo2" class="owl-carousel owl-theme">
+                    <div class="owl-carousel owl-theme recent-items">
 						`+buildPlexRecentItem(array.content)+`
                     </div>
+					<div id="recent-hidden" class="hide"></div>
                 </div>
             </div>
         </div>
