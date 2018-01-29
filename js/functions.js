@@ -1893,12 +1893,12 @@ function buildPlexRecentItem(array){
 	return items;
 }
 function buildPlexStream(array){
-	var streams = array.content.length;
-	return `
+	var streams = (typeof array !== 'undefined') ? array.content.length : false;
+	return (streams) ? `
 	<div id="plexStreams" data-check="`+escape(JSON.stringify(array.content))+`">
 		<div class="row el-element-overlay m-b-20">
 		    <div class="col-md-12">
-		        <h4 lang="en">Active Plex Streams `+streams+`</h4>
+		        <h4 class="pull-left" lang="en">Active Plex Stream(s): </h4><h4 class="pull-left">&nbsp;<span class="label label-primary m-l-5">`+streams+`</span></h4>
 		        <hr>
 		    </div>
 		    <!-- .cards -->
@@ -1907,11 +1907,11 @@ function buildPlexStream(array){
 		</div>
 	</div>
 	<div class="clearfix"></div>
-	`;
+	` : '';
 }
 function buildPlexRecent(array){
-	var recent = array.content.length;
-	return `
+	var recent = (typeof array !== 'undefined') ? true : false;
+	return (recent) ? `
 	<div id="plexRecent" data-check="`+escape(JSON.stringify(array.content))+`" class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
@@ -1920,12 +1920,11 @@ function buildPlexRecent(array){
                     <div class="owl-carousel owl-theme recent-items">
 						`+buildPlexRecentItem(array.content)+`
                     </div>
-					<div id="recent-hidden" class="hide"></div>
                 </div>
             </div>
         </div>
     </div>
-	`;
+	` : '';
 }
 function plexStream(){
 	ajaxloader(".content-wrap","in");

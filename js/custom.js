@@ -97,23 +97,49 @@ function pageLoad(){
             dots:false,
     	    responsive:{
     	        0:{
-    	            items:1,
-                    center:true,
-                    stagePadding: 50
+    	            items:2
     	        },
-    	        480:{
-    	            items:2,
-                    center:true,
-                    stagePadding: 50
+    	        500:{
+    	            items:3
     	        },
-    	        700:{
+    	        650:{
     	            items:4
     	        },
-    	        960:{
+    	        800:{
+    	            items:5
+    	        },
+    	        950:{
     	            items:6
     	        },
     	        1100:{
     	            items:7
+    	        },
+    	        1250:{
+    	            items:8
+    	        },
+    	        1400:{
+    	            items:9
+    	        },
+    	        1550:{
+    	            items:10
+    	        },
+    	        1700:{
+    	            items:11
+    	        },
+    	        1850:{
+    	            items:12
+    	        },
+    	        2000:{
+    	            items:13
+    	        },
+    	        2150:{
+    	            items:14
+    	        },
+    	        2300:{
+    	            items:15
+    	        },
+    	        2450:{
+    	            items:16
     	        }
     	    }
     	})
