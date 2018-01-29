@@ -125,8 +125,24 @@ function getHomepageList(){
             'value' => '30000'
         ),
         array(
-            'name' => '60',
+            'name' => '60 [1 Minute]',
             'value' => '60000'
+        ),
+		array(
+            'name' => '300 [5 Minutes]',
+            'value' => '300000'
+        ),
+		array(
+            'name' => '900 [15 Minutes]',
+            'value' => '900000'
+        ),
+		array(
+            'name' => '1800 [30 Minutes]',
+            'value' => '1800000'
+        ),
+		array(
+            'name' => '3600 [1 Hour]',
+            'value' => '3600000'
         ),
     );
     return array(
