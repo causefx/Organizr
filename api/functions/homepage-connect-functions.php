@@ -96,7 +96,7 @@ function resolvePlexItem($item) {
             $plexItem['nowPlayingTitle'] = (string)$item['title'];
             $plexItem['nowPlayingBottom'] = (string)$item['year'];
 		}
-        $plexItem['elapsed'] = ($item['viewOffset']) ? (string)$item['viewOffset'] : 1;
+        $plexItem['elapsed'] = ($item['viewOffset']) ? (string)$item['viewOffset'] : null;
         $plexItem['duration'] = ($item['duration']) ? (string)$item['duration'] : (string)$item->Media['duration'];
         $plexItem['watched'] = (!empty($plexItem['elapsed']) ? floor(($plexItem['elapsed'] / $plexItem['duration']) * 100) : 0);
         $plexItem['transcoded'] = floor($item->TranscodeSession['progress']- $plexItem['watched']);
