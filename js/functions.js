@@ -1893,7 +1893,7 @@ function buildPlexRecentItem(array){
 	return items;
 }
 function buildPlexStream(array){
-	var streams = (typeof array !== 'undefined') ? array.content.length : false;
+	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
 	return (streams) ? `
 	<div id="plexStreams" data-check="`+escape(JSON.stringify(array.content))+`">
 		<div class="row el-element-overlay m-b-20">
@@ -1910,7 +1910,7 @@ function buildPlexStream(array){
 	` : '';
 }
 function buildPlexRecent(array){
-	var recent = (typeof array !== 'undefined') ? true : false;
+	var recent = (typeof array.content !== 'undefined') ? true : false;
 	return (recent) ? `
 	<div id="plexRecent" data-check="`+escape(JSON.stringify(array.content))+`" class="row">
         <div class="col-lg-12">
