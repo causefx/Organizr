@@ -1809,26 +1809,18 @@ function buildPlexStreamItem(array){
 		var icon = '';
 		var width = 100;
 		var bg = '';
-
-			count++;
-			if(contains(''+count, start)){ cards += '<div class="row">'; };
-
-
-
-
-
+		count++;
+		if(contains(''+count, start)){ cards += '<div class="row">'; };
 		switch (v.type) {
 			case 'music':
 				icon = 'icon-music-tone-alt';
 				width = 56;
 				bg = `
-				<img class="" style="width: 56%;display:block;position: absolute;left:0px;overflow: hidden;filter: blur(0px) grayscale(1);" src="`+v.nowPlayingImageURL+`">
-				<img class="" style="width: 56%;display:block;position: absolute;right:0px;overflow: hidden;filter: blur(0px) grayscale(1);" src="`+v.nowPlayingImageURL+`">
+				<img class="imageSource" style="width: 56%;display:block;position: absolute;left:0px;overflow: hidden;filter: blur(0px) grayscale(1);" src="`+v.nowPlayingImageURL+`">
+				<img class="imageSource" style="width: 56%;display:block;position: absolute;right:0px;overflow: hidden;filter: blur(0px) grayscale(1);" src="`+v.nowPlayingImageURL+`">
 				`;
 				break;
 			case 'movie':
-				//title = v.title;
-				//year = v.year;
 				icon = 'icon-film';
 				break;
 			case 'tv':
@@ -1841,11 +1833,14 @@ function buildPlexStreamItem(array){
 		<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 nowPlayingItem">
 			<div class="white-box">
 				<div class="el-card-item p-b-10">
-					<div class="el-card-avatar el-overlay-1 m-b-0">`+bg+`<img style="width:`+width+`%;margin-left: auto;margin-right: auto;" src="`+v.nowPlayingImageURL+`">
+					<div class="el-card-avatar el-overlay-1 m-b-0">`+bg+`<img class="imageSource" style="width:`+width+`%;margin-left: auto;margin-right: auto;" src="`+v.nowPlayingImageURL+`">
 						<div class="el-overlay">
 							<ul class="el-info p-t-20 m-t-20">
-								<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-graph"></i></a></li><li><a class="btn default btn-outline image-popup-vertical-fit" href="../plugins/images/users/1.jpg"><i class="icon-info"></i></a></li>
-								<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-share-alt"></i></a></li><li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-refresh"></i></a></li><li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-graph"></i></a></li>
+								<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-graph"></i></a></li>
+								<li><a class="btn default btn-outline image-popup-vertical-fit" href="`+v.nowPlayingImageURL+`"><i class="icon-info"></i></a></li>
+								<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-share-alt"></i></a></li>
+								<li><a class="btn default btn-outline refreshImage" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="icon-refresh"></i></a></li>
+								<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-graph"></i></a></li>
 							</ul>
 						</div>
 					</div>
@@ -1915,7 +1910,7 @@ function buildPlexRecent(array){
 	<div id="plexRecent" data-check="`+escape(JSON.stringify(array.content))+`" class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading bg-info">
+                <div class="panel-heading bg-info p-t-10 p-b-10">
 					<span class="pull-left m-t-5" lang="en">Recently Added to Plex</span>
 					<div class="btn-group m-r-10 pull-right">
 	                    <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">

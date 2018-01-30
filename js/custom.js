@@ -1508,6 +1508,20 @@ $(document).on("click", ".recent-filter li>a", function () {
     }
 
 });
+// refresh cache image
+$(document).on("click", ".refreshImage", function(e) {
+	message('',' Refreshing Image...','bottom-right','#FFF','success','1000');
+	e.preventDefault;
+	var orginalElement = $(this).parent().parent().parent().parent().find('.imageSource');
+    console.log(orginalElement)
+	var original = $(this).attr('data-image');
+	orginalElement.attr('src', original);
+	console.log('replaced image with : '+original);
+	setTimeout(function(){
+        message('Image Refreshed ',' Clear Cache Please','bottom-right','#FFF','success','3000');
+	}, 1000);
+});
+
 /* ===== Open-Close Right Sidebar ===== */
 
 $(document).on("click", ".right-side-toggle", function () {
