@@ -96,10 +96,10 @@ function resolvePlexItem($item) {
             $plexItem['nowPlayingTitle'] = (string)$item['title'];
             $plexItem['nowPlayingBottom'] = (string)$item['year'];
 		}
-        $plexItem['elapsed'] = ($item['viewOffset']) ? (string)$item['viewOffset'] : null;
-        $plexItem['duration'] = ($item['duration']) ? (string)$item['duration'] : (string)$item->Media['duration'];
-        $plexItem['watched'] = (!empty($plexItem['elapsed']) ? floor(($plexItem['elapsed'] / $plexItem['duration']) * 100) : 0);
-        $plexItem['transcoded'] = floor($item->TranscodeSession['progress']- $plexItem['watched']);
+        $plexItem['elapsed'] = isset($item['viewOffset']) ? (int)$item['viewOffset'] : null;
+        $plexItem['duration'] = isset($item['duration']) ? (int)$item['duration'] : (int)$item->Media['duration'];
+        $plexItem['watched'] = ($plexItem['elapsed'] ? floor(($plexItem['elapsed'] / $plexItem['duration']) * 100) : 0);
+        $plexItem['transcoded'] = isset($item->TranscodeSession['progress']) ? floor((int)$item->TranscodeSession['progress']- $plexItem['watched']) : '';
         $plexItem['stream'] = isset($item->Media->Part->Stream['decision']) ? (string)$item->Media->Part->Stream['decision']: '';
         $plexItem['id'] = str_replace('"', '', (string)$item->Player['machineIdentifier']);
         $plexItem['state'] = (((string)$item->Player['state'] == "paused") ? "pause" : "play");
