@@ -290,7 +290,7 @@ function qualifyURL($url) {
 	// Port
 	$port = (isset($digest['port'])?':'.$digest['port']:'');
 	// Path
-	$path = (isset($digest['path'])?$digest['path']:'');
+	$path = (isset($digest['path']) && $digest['path'] !== '/'?$digest['path']:'');
 	// Output
 	return $scheme.'://'.$host.$port.$path;
 }
