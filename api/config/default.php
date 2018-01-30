@@ -46,6 +46,7 @@ return array(
 	'homepageOrdernoticeguest' => '14',
 	'homepageOrdertransmisson' => '15',
     'homepageShowStreamNames' => false,
+    'homepageShowStreamNamesAuth' => '1',
     'homepageStreamRefresh' => '60000',
     'homepageRecentRefresh' => '60000',
     'homepagePlexStreams' => false,

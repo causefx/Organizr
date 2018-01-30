@@ -251,7 +251,7 @@ function getSettingsMain(){
                 'class' => 'embyAuth switchAuth',
     			'label' => 'Emby URL',
     			'value' => $GLOBALS['embyURL'],
-    			'placeholder' => ''
+    			'placeholder' => 'http(s)://hostname:port'
     		),
             array(
     			'type' => 'input',
@@ -324,7 +324,7 @@ function getSSO(){
     			'name' => 'ombiURL',
     			'label' => 'Ombi URL',
     			'value' => $GLOBALS['ombiURL'],
-    			'placeholder' => 'http(s)://hostname'
+    			'placeholder' => 'http(s)://hostname:port'
     		),
     		array(
     			'type' => 'switch',
@@ -339,7 +339,7 @@ function getSSO(){
     			'name' => 'tautulliURL',
     			'label' => 'Tautulli URL',
     			'value' => $GLOBALS['tautulliURL'],
-    			'placeholder' => 'http(s)://hostname'
+    			'placeholder' => 'http(s)://hostname:port'
     		),
     		array(
     			'type' => 'switch',

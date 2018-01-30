@@ -158,6 +158,13 @@ function getHomepageList(){
             			'name' => 'homepagePlexEnabled',
             			'label' => 'Enable',
             			'value' => $GLOBALS['homepagePlexEnabled']
+            		),
+					array(
+            			'type' => 'select',
+            			'name' => 'homepagePlexAuth',
+            			'label' => 'Minimum Authentication',
+            			'value' => $GLOBALS['homepagePlexAuth'],
+                        'options' => $groups
             		)
                 ),
                 'Connection' => array(
@@ -165,7 +172,8 @@ function getHomepageList(){
                         'type' => 'input',
                         'name' => 'plexURL',
                         'label' => 'URL',
-                        'value' => $GLOBALS['plexURL']
+                        'value' => $GLOBALS['plexURL'],
+						'placeholder' => 'http(s)://hostname:port'
                     ),
                     array(
                         'type' => 'input',
@@ -179,15 +187,6 @@ function getHomepageList(){
                         'label' => 'Plex Machine',
                         'value' => $GLOBALS['plexID']
                     )
-                ),
-                'Authentication' => array(
-                    array(
-            			'type' => 'select',
-            			'name' => 'homepagePlexAuth',
-            			'label' => 'Minimum Authentication',
-            			'value' => $GLOBALS['homepagePlexAuth'],
-                        'options' => $groups
-            		)
                 ),
                 'Modules' => array(
                     array(
@@ -224,6 +223,13 @@ function getHomepageList(){
             			'label' => 'Show Usernames',
             			'value' => $GLOBALS['homepageShowStreamNames']
             		),
+					array(
+    					'type' => 'select',
+    					'name' => 'homepageShowStreamNamesAuth',
+                        'label' => 'Username Authorization',
+    					'value' => $GLOBALS['homepageShowStreamNamesAuth'],
+    					'options' => $groups
+    				),
                     array(
     					'type' => 'select',
     					'name' => 'homepageStreamRefresh',
