@@ -154,3 +154,6 @@ object-fit: contain;
   background: rgba(31, 31, 31, 0.73);
   width: inherit;
 }
+.nowPlayingHover{
+  margin-bottom: 14px;
+}

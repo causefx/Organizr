@@ -1488,12 +1488,26 @@ $(document).on({
     mouseenter: function () {
         $(this).find('.progress').toggleClass('progress-lg');
         $(this).find('.progress').find('span').toggleClass('hidden');
+        $(this).find('.white-box').toggleClass('nowPlayingHover');
     },
     mouseleave: function () {
         $(this).find('.progress').toggleClass('progress-lg');
         $(this).find('.progress').find('span').toggleClass('hidden');
+        $(this).find('.white-box').toggleClass('nowPlayingHover');
     }
 }, '.nowPlayingItem');
+// recent filter
+$(document).on("click", ".recent-filter li>a", function () {
+    var filter = $(this).attr('data-filter');
+    console.log(filter);
+    if(filter == 'all'){
+        $('.plex-recent').find('.recent-item').parent().removeClass('hidden');
+    }else{
+        $('.plex-recent').find('.recent-item').parent().removeClass('hidden');
+        $('.plex-recent').find('.recent-item:not(.'+ filter + ')').parent().addClass('hidden');
+    }
+
+});
 /* ===== Open-Close Right Sidebar ===== */
 
 $(document).on("click", ".right-side-toggle", function () {

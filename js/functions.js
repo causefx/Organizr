@@ -1876,13 +1876,13 @@ function buildPlexRecentItem(array){
 		var className = '';
 		switch (v.type) {
 			case 'music':
-				className = 'recent-cover';
+				className = 'recent-cover recent-item recent-music';
 				break;
 			case 'movie':
-				className = 'recent-poster';
+				className = 'recent-poster recent-item recent-movie';
 				break;
 			case 'tv':
-				className = 'recent-poster';
+				className = 'recent-poster recent-item recent-tv';
 				break;
 			default:
 
@@ -1898,7 +1898,7 @@ function buildPlexStream(array){
 	<div id="plexStreams" data-check="`+escape(JSON.stringify(array.content))+`">
 		<div class="row el-element-overlay m-b-20">
 		    <div class="col-md-12">
-		        <h4 class="pull-left" lang="en">Active Plex Stream(s): </h4><h4 class="pull-left">&nbsp;<span class="label label-primary m-l-5">`+streams+`</span></h4>
+		        <h4 class="pull-left" lang="en">Active Plex Stream(s): </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-5">`+streams+`</span></h4>
 		        <hr>
 		    </div>
 		    <!-- .cards -->
@@ -1915,9 +1915,25 @@ function buildPlexRecent(array){
 	<div id="plexRecent" data-check="`+escape(JSON.stringify(array.content))+`" class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading" lang="en">Recently Added to Plex</div>
+                <div class="panel-heading bg-info">
+					<span class="pull-left m-t-5" lang="en">Recently Added to Plex</span>
+					<div class="btn-group m-r-10 pull-right">
+	                    <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
+							<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
+						</button>
+	                    <ul role="menu" class="dropdown-menu recent-filter">
+	                        <li><a data-filter="all" href="javascript:void(0);">All</a></li>
+							<li class="divider"></li>
+	                        <li><a data-filter="recent-movie" href="javascript:void(0);">Movies</a></li>
+	                        <li><a data-filter="recent-tv" href="javascript:void(0);">Shows</a></li>
+	                        <!--<li><a data-filter="recent-music" href="javascript:void(0);">Music</a></li>-->
+	                    </ul>
+	                </div>
+					<div class="clearfix"></div>
+				</div>
+
                 <div class="panel-wrapper p-b-10 collapse in">
-                    <div class="owl-carousel owl-theme recent-items">
+                    <div class="owl-carousel owl-theme recent-items plex-recent">
 						`+buildPlexRecentItem(array.content)+`
                     </div>
                 </div>
