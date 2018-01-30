@@ -149,20 +149,8 @@ function createDB($path,$filename) {
     	// Create Options
     	$options = $createDB->query('CREATE TABLE `options` (
     		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-    		`users_id`	INTEGER UNIQUE,
-    		`title`	TEXT UNIQUE,
-    		`topbar`	TEXT,
-    		`bottombar`	TEXT,
-    		`sidebar`	TEXT,
-    		`hoverbg`	TEXT,
-    		`topbartext`	TEXT,
-    		`activetabBG`	TEXT,
-    		`activetabicon`	TEXT,
-    		`activetabtext`	TEXT,
-    		`inactiveicon`	TEXT,
-    		`inactivetext`	TEXT,
-    		`loading`	TEXT,
-    		`hovertext`	TEXT
+    		`name`	TEXT UNIQUE,
+    		`value`	TEXT
     	);');
     	// Create Invites
     	$invites = $createDB->query('CREATE TABLE `invites` (

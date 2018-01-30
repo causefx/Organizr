@@ -97,8 +97,9 @@ function resolvePlexItem($item) {
             $plexItem['nowPlayingBottom'] = (string)$item['year'];
 		}
         $plexItem['elapsed'] = isset($item['viewOffset']) ? (int)$item['viewOffset'] : null;
+        $plexItem['elapsed'] = isset($plexItem['elapsed']) && $plexItem['elapsed'] == 0 ? null : $plexItem['elapsed'];
         $plexItem['duration'] = isset($item['duration']) ? (int)$item['duration'] : (int)$item->Media['duration'];
-        $plexItem['watched'] = ($plexItem['elapsed'] ? floor(($plexItem['elapsed'] / $plexItem['duration']) * 100) : 0);
+        $plexItem['watched'] = ($plexItem['elapsed'] && $plexItem['duration'] ? floor(($plexItem['elapsed'] / $plexItem['duration']) * 100) : 0);
         $plexItem['transcoded'] = isset($item->TranscodeSession['progress']) ? floor((int)$item->TranscodeSession['progress']- $plexItem['watched']) : '';
         $plexItem['stream'] = isset($item->Media->Part->Stream['decision']) ? (string)$item->Media->Part->Stream['decision']: '';
         $plexItem['id'] = str_replace('"', '', (string)$item->Player['machineIdentifier']);
