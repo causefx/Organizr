@@ -1829,6 +1829,7 @@ function buildPlexStreamItem(array){
 			default:
 
 		}
+		var userThumb = (v.userThumb) ? '<img src="'+v.userThumb+'" class="nowPlayingUserThumb" alt="User">' : '';
 		cards += `
 		<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 nowPlayingItem">
 			<div class="white-box">
@@ -1836,7 +1837,7 @@ function buildPlexStreamItem(array){
 					<div class="el-card-avatar el-overlay-1 m-b-0">`+bg+`<img class="imageSource" style="width:`+width+`%;margin-left: auto;margin-right: auto;" src="`+v.nowPlayingImageURL+`">
 						<div class="el-overlay">
 							<ul class="el-info p-t-20 m-t-20">
-								<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-graph"></i></a></li>
+								<li><a class="btn default btn-outline inline-popups" href="#`+v.session+`" data-effect="mfp-zoom-out"><i class="icon-graph"></i></a></li>
 								<li><a class="btn default btn-outline image-popup-vertical-fit" href="`+v.nowPlayingImageURL+`"><i class="icon-info"></i></a></li>
 								<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-share-alt"></i></a></li>
 								<li><a class="btn default btn-outline refreshImage" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="icon-refresh"></i></a></li>
@@ -1857,6 +1858,31 @@ function buildPlexStreamItem(array){
 						<br>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div id="`+v.session+`" class="white-popup mfp-with-anim mfp-hide">
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3">
+
+					<div class="white-box m-b-0 bg-info">
+						<h3 class="text-white box-title m-b-0">`+v.sessionType+`<span class="pull-right"><i class="mdi mdi-network-upload"></i> `+v.bandwidth+` kbps</span></h3>
+					</div>
+					<div class="white-box">
+						<div class="row">
+							<div class="p-l-20 p-r-20">
+								<div class="pull-left">
+									<span class="text-uppercase"><i class="mdi mdi-`+v.bandwidthType+`"></i> `+v.bandwidthType+`</span>
+									<span class="text-uppercase"><i class="mdi mdi-account-network"></i> `+v.userAddress+`</span>
+									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-play-circle-outline"></i> Stream: `+v.userStream.stream+`</span></div>
+									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-video"></i> Video: `+v.userStream.videoDecision+`</span></div>
+									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-speaker"></i> Audio: `+v.userStream.audioDecision+`</span></div>
+								</div>
+								<div data-label="`+v.watched+`%" class="css-bar css-bar-`+Math.ceil(v.watched/5)*5+` css-bar-lg m-b-0  css-bar-info pull-right">`+userThumb+`</div>
+							</div>
+						</div>
+					</div>
+
+                </div>
 			</div>
 		</div>
 		`;

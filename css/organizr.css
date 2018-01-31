@@ -157,3 +157,6 @@ object-fit: contain;
 .nowPlayingHover{
   margin-bottom: 14px;
 }
+.nowPlayingUserThumb:hover{
+  opacity: 0;
+}
