@@ -114,6 +114,7 @@ function resolvePlexItem($item) {
             'platform' => (string)$item->Player['platform'],
             'device' => (string)$item->Player['device'],
             'stream' => (string)$item->Media->Part['decision'].($item->TranscodeSession['throttled'] == '1' ? ' (Throttled)': ''),
+            'videoResolution' => (string)$item->Media['videoResolution'],
             'throttled' => ($item->TranscodeSession['throttled'] == 1) ? true : false,
             'sourceVideoCodec' => (string)$item->TranscodeSession['sourceVideoCodec'],
             'videoCodec' => (string)$item->TranscodeSession['videoCodec'],

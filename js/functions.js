@@ -1830,6 +1830,20 @@ function buildPlexStreamItem(array){
 
 		}
 		var userThumb = (v.userThumb) ? '<img src="'+v.userThumb+'" class="nowPlayingUserThumb" alt="User">' : '';
+		if(v.sessionType == 'Direct Playing'){
+			var userStream = 'Direct Play';
+			var userVideo = 'Direct Play';
+			var userAudio = 'Direct Play';
+		}else{
+			var userStream = v.userStream.stream;
+			var userVideo = v.userStream.videoDecision+' ('+v.userStream.sourceVideoCodec+' <i class="mdi mdi-ray-start-arrow"></i> '+v.userStream.videoCodec+' '+v.userStream.videoResolution+')';
+			var userAudio = v.userStream.audioDecision+' ('+v.userStream.sourceAudioCodec+' <i class="mdi mdi-ray-start-arrow"></i> '+v.userStream.audioCodec+')';
+
+		}
+		var streamInfo = '';
+		streamInfo += `<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-play-circle-outline"></i> Stream: `+userStream+`</span></div>`;
+		streamInfo += (v.userStream.videoResolution) ? `<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-video"></i> Video: `+userVideo+`</span></div>` : '';
+		streamInfo += `<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-speaker"></i> Audio: `+userAudio+`</span></div>`;
 		cards += `
 		<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 nowPlayingItem">
 			<div class="white-box">
@@ -1873,9 +1887,9 @@ function buildPlexStreamItem(array){
 								<div class="pull-left">
 									<span class="text-uppercase"><i class="mdi mdi-`+v.bandwidthType+`"></i> `+v.bandwidthType+`</span>
 									<span class="text-uppercase"><i class="mdi mdi-account-network"></i> `+v.userAddress+`</span>
-									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-play-circle-outline"></i> Stream: `+v.userStream.stream+`</span></div>
-									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-video"></i> Video: `+v.userStream.videoDecision+`</span></div>
-									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-speaker"></i> Audio: `+v.userStream.audioDecision+`</span></div>
+									`+streamInfo+`
+									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-speaker"></i> Platform: `+v.userStream.platform+`</span></div>
+									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-speaker"></i> Device: `+v.userStream.device+`</span></div>
 								</div>
 								<div data-label="`+v.watched+`%" class="css-bar css-bar-`+Math.ceil(v.watched/5)*5+` css-bar-lg m-b-0  css-bar-info pull-right">`+userThumb+`</div>
 							</div>

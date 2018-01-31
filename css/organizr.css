@@ -159,4 +159,6 @@ object-fit: contain;
 }
 .nowPlayingUserThumb:hover{
   opacity: 0;
+  -webkit-transition: all .4s ease-in-out;
+  transition: all .4s ease-in-out;
 }
