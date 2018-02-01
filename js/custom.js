@@ -91,7 +91,7 @@ function pageLoad(){
     });
     $(function () {
         $('.recent-items').owlCarousel({
-    	    margin:0,
+    	    margin:40,
     	    nav:false,
     		autoplay:false,
             dots:false,
@@ -1530,7 +1530,24 @@ $(document).on("click", ".refreshImage", function(e) {
         message('Image Refreshed ',' Clear Cache Please','bottom-right','#FFF','success','3000');
 	}, 1000);
 });
-
+// open tab code
+$(document).on("click", ".openTab", function(e) {
+    if($(this).attr("data-open-tab") === "true") {
+        var tabName = $(this).attr("data-tab-name");
+		var container = $("#container-"+tabName);
+		var activeFrame = container.children('iframe');
+		if(activeFrame.length === 1){
+			$('#menu-'+tabName+' a').trigger("click");
+            activeFrame.attr("src", $(this).attr("data-url"));
+		}else{
+            container.attr("data-url", $(this).attr("data-url"));
+            $('#menu-'+tabName+' a').trigger("click");
+		}
+	}else{
+        var source = $(this).attr("data-url");
+		window.open(source, '_blank');
+	}
+});
 /* ===== Open-Close Right Sidebar ===== */
 
 $(document).on("click", ".right-side-toggle", function () {

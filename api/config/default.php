@@ -20,6 +20,7 @@ return array(
     'plexURL' => '',
     'plexTabURL' => '',
     'plexToken' => '',
+    'plexTabName' => '',
     'embyURL' => '',
     'embyToken' => '',
     'plexID' => '',

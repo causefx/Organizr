@@ -220,13 +220,13 @@ function getHomepageList(){
                     array(
             			'type' => 'switch',
             			'name' => 'homepageShowStreamNames',
-            			'label' => 'Show Usernames',
+            			'label' => 'Show User Information',
             			'value' => $GLOBALS['homepageShowStreamNames']
             		),
 					array(
     					'type' => 'select',
     					'name' => 'homepageShowStreamNamesAuth',
-                        'label' => 'Username Authorization',
+                        'label' => 'User Information Authorization',
     					'value' => $GLOBALS['homepageShowStreamNamesAuth'],
     					'options' => $groups
     				),
@@ -243,7 +243,21 @@ function getHomepageList(){
                         'label' => 'Recent Items Refresh Seconds',
     					'value' => $GLOBALS['homepageRecentRefresh'],
     					'options' => $time
-    				)
+    				),
+					array(
+                        'type' => 'input',
+                        'name' => 'plexTabName',
+                        'label' => 'Plex Tab Name',
+                        'value' => $GLOBALS['plexTabName'],
+						'placeholder' => 'Only use if you have Plex in a reverse proxy'
+                    ),
+					array(
+                        'type' => 'input',
+                        'name' => 'plexTabURL',
+                        'label' => 'Plex Tab URL',
+                        'value' => $GLOBALS['plexTabURL'],
+						'placeholder' => 'http(s)://hostname:port'
+                    )
                 )
             )
         ),

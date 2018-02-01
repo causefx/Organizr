@@ -95,53 +95,53 @@ function resolvePlexItem($item) {
             $plexItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
             $plexItem['nowPlayingTitle'] = (string)$item['title'];
             $plexItem['nowPlayingBottom'] = (string)$item['year'];
-		}
-        $plexItem['elapsed'] = isset($item['viewOffset']) && $item['viewOffset'] !== '0' ? (int)$item['viewOffset'] : null;
-        $plexItem['duration'] = isset($item['duration']) ? (int)$item['duration'] : (int)$item->Media['duration'];
-        $plexItem['watched'] = ($plexItem['elapsed'] && $plexItem['duration'] ? floor(($plexItem['elapsed'] / $plexItem['duration']) * 100) : 0);
-        $plexItem['transcoded'] = isset($item->TranscodeSession['progress']) ? floor((int)$item->TranscodeSession['progress']- $plexItem['watched']) : '';
-        $plexItem['stream'] = isset($item->Media->Part->Stream['decision']) ? (string)$item->Media->Part->Stream['decision']: '';
-        $plexItem['id'] = str_replace('"', '', (string)$item->Player['machineIdentifier']);
-        $plexItem['session'] = (string)$item->Session['id'];
-        $plexItem['bandwidth'] = (string)$item->Session['bandwidth'];
-        $plexItem['bandwidthType'] = (string)$item->Session['location'];
-        $plexItem['sessionType'] = isset($item->TranscodeSession['progress']) ? 'Transcoding' : 'Direct Playing';
-        $plexItem['state'] = (((string)$item->Player['state'] == "paused") ? "pause" : "play");
-        $plexItem['user'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->User['title'] : "";
-        $plexItem['userThumb'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->User['thumb'] : "";
-        $plexItem['userAddress'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->Player['address'] : "x.x.x.x";
-        $plexItem['userStream'] = array(
-            'platform' => (string)$item->Player['platform'],
-            'device' => (string)$item->Player['device'],
-            'stream' => (string)$item->Media->Part['decision'].($item->TranscodeSession['throttled'] == '1' ? ' (Throttled)': ''),
-            'videoResolution' => (string)$item->Media['videoResolution'],
-            'throttled' => ($item->TranscodeSession['throttled'] == 1) ? true : false,
-            'sourceVideoCodec' => (string)$item->TranscodeSession['sourceVideoCodec'],
-            'videoCodec' => (string)$item->TranscodeSession['videoCodec'],
-            'audioCodec' => (string)$item->TranscodeSession['audioCodec'],
-            'sourceAudioCodec' => (string)$item->TranscodeSession['sourceAudioCodec'],
-            'videoDecision' => streamType((string)$item->TranscodeSession['videoDecision']),
-            'audioDecision' => streamType((string)$item->TranscodeSession['audioDecision']),
-            'container' => (string)$item->TranscodeSession['container'],
-            'audioChannels' => (string)$item->TranscodeSession['audioChannels']
-        );
-        $plexItem['address'] = $GLOBALS['plexTabURL'] ? $GLOBALS['plexTabURL']."/web/index.html#!/server/".$GLOBALS['plexID']."/details?key=/library/metadata/".$item['ratingKey'] : "https://app.plex.tv/web/app#!/server/".$GLOBALS['plexID']."/details?key=/library/metadata/".$item['ratingKey'];
-        $plexItem['nowPlayingOriginalImage'] = 'api/?v1/image&source=plex&img='.$plexItem['nowPlayingThumb'].'&height='.$nowPlayingHeight.'&width='.$nowPlayingWidth.'&key='.$plexItem['nowPlayingKey'].'$'.randString();
-        $plexItem['originalImage'] = 'api/?v1/image&source=plex&img='.$plexItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$plexItem['key'].'$'.randString();
-        if (file_exists($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg')){ $plexItem['nowPlayingImageURL'] = $cacheDirectoryWeb.$plexItem['nowPlayingKey'].'.jpg'; }
-        if (file_exists($cacheDirectory.$plexItem['key'].'.jpg')){ $plexItem['imageURL']  = $cacheDirectoryWeb.$plexItem['key'].'.jpg'; }
-        if (file_exists($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg') && (time() - 604800) > filemtime($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg') || !file_exists($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg')) {
-            $plexItem['nowPlayingImageURL'] = 'api/?v1/image&source=plex&img='.$plexItem['nowPlayingThumb'].'&height='.$nowPlayingHeight.'&width='.$nowPlayingWidth.'&key='.$plexItem['nowPlayingKey'].'';
-        }
-        if (file_exists($cacheDirectory.$plexItem['key'].'.jpg') && (time() - 604800) > filemtime($cacheDirectory.$plexItem['key'].'.jpg') || !file_exists($cacheDirectory.$plexItem['key'].'.jpg')) {
-            $plexItem['imageURL'] = 'api/?v1/image&source=plex&img='.$plexItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$plexItem['key'].'';
-        }
-        if(!$plexItem['nowPlayingThumb'] ){ $plexItem['nowPlayingOriginalImage']  = $plexItem['nowPlayingImageURL']  = "images/no-np.png"; $plexItem['nowPlayingKey'] = "no-np"; }
-        if(!$plexItem['thumb'] ){  $plexItem['originalImage'] = $plexItem['imageURL'] = "images/no-list.png"; $plexItem['key'] = "no-list"; }
-
+	}
+    $plexItem['elapsed'] = isset($item['viewOffset']) && $item['viewOffset'] !== '0' ? (int)$item['viewOffset'] : null;
+    $plexItem['duration'] = isset($item['duration']) ? (int)$item['duration'] : (int)$item->Media['duration'];
+    $plexItem['watched'] = ($plexItem['elapsed'] && $plexItem['duration'] ? floor(($plexItem['elapsed'] / $plexItem['duration']) * 100) : 0);
+    $plexItem['transcoded'] = isset($item->TranscodeSession['progress']) ? floor((int)$item->TranscodeSession['progress']- $plexItem['watched']) : '';
+    $plexItem['stream'] = isset($item->Media->Part->Stream['decision']) ? (string)$item->Media->Part->Stream['decision']: '';
+    $plexItem['id'] = str_replace('"', '', (string)$item->Player['machineIdentifier']);
+    $plexItem['session'] = (string)$item->Session['id'];
+    $plexItem['bandwidth'] = (string)$item->Session['bandwidth'];
+    $plexItem['bandwidthType'] = (string)$item->Session['location'];
+    $plexItem['sessionType'] = isset($item->TranscodeSession['progress']) ? 'Transcoding' : 'Direct Playing';
+    $plexItem['state'] = (((string)$item->Player['state'] == "paused") ? "pause" : "play");
+    $plexItem['user'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->User['title'] : "";
+    $plexItem['userThumb'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->User['thumb'] : "";
+    $plexItem['userAddress'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->Player['address'] : "x.x.x.x";
+    $plexItem['userStream'] = array(
+        'platform' => (string)$item->Player['platform'],
+        'device' => (string)$item->Player['device'],
+        'stream' => (string)$item->Media->Part['decision'].($item->TranscodeSession['throttled'] == '1' ? ' (Throttled)': ''),
+        'videoResolution' => (string)$item->Media['videoResolution'],
+        'throttled' => ($item->TranscodeSession['throttled'] == 1) ? true : false,
+        'sourceVideoCodec' => (string)$item->TranscodeSession['sourceVideoCodec'],
+        'videoCodec' => (string)$item->TranscodeSession['videoCodec'],
+        'audioCodec' => (string)$item->TranscodeSession['audioCodec'],
+        'sourceAudioCodec' => (string)$item->TranscodeSession['sourceAudioCodec'],
+        'videoDecision' => streamType((string)$item->TranscodeSession['videoDecision']),
+        'audioDecision' => streamType((string)$item->TranscodeSession['audioDecision']),
+        'container' => (string)$item->TranscodeSession['container'],
+        'audioChannels' => (string)$item->TranscodeSession['audioChannels']
+    );
+    $plexItem['address'] = $GLOBALS['plexTabURL'] ? $GLOBALS['plexTabURL']."/web/index.html#!/server/".$GLOBALS['plexID']."/details?key=/library/metadata/".$item['ratingKey'] : "https://app.plex.tv/web/app#!/server/".$GLOBALS['plexID']."/details?key=/library/metadata/".$item['ratingKey'];
+    $plexItem['nowPlayingOriginalImage'] = 'api/?v1/image&source=plex&img='.$plexItem['nowPlayingThumb'].'&height='.$nowPlayingHeight.'&width='.$nowPlayingWidth.'&key='.$plexItem['nowPlayingKey'].'$'.randString();
+    $plexItem['originalImage'] = 'api/?v1/image&source=plex&img='.$plexItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$plexItem['key'].'$'.randString();
+    $plexItem['openTab'] = $GLOBALS['plexTabURL'] && $GLOBALS['plexTabName'] ? true : false;
+    $plexItem['tabName'] = $GLOBALS['plexTabName'] ? $GLOBALS['plexTabName'] : '';
+    if (file_exists($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg')){ $plexItem['nowPlayingImageURL'] = $cacheDirectoryWeb.$plexItem['nowPlayingKey'].'.jpg'; }
+    if (file_exists($cacheDirectory.$plexItem['key'].'.jpg')){ $plexItem['imageURL']  = $cacheDirectoryWeb.$plexItem['key'].'.jpg'; }
+    if (file_exists($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg') && (time() - 604800) > filemtime($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg') || !file_exists($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg')) {
+        $plexItem['nowPlayingImageURL'] = 'api/?v1/image&source=plex&img='.$plexItem['nowPlayingThumb'].'&height='.$nowPlayingHeight.'&width='.$nowPlayingWidth.'&key='.$plexItem['nowPlayingKey'].'';
+    }
+    if (file_exists($cacheDirectory.$plexItem['key'].'.jpg') && (time() - 604800) > filemtime($cacheDirectory.$plexItem['key'].'.jpg') || !file_exists($cacheDirectory.$plexItem['key'].'.jpg')) {
+        $plexItem['imageURL'] = 'api/?v1/image&source=plex&img='.$plexItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$plexItem['key'].'';
+    }
+    if(!$plexItem['nowPlayingThumb'] ){ $plexItem['nowPlayingOriginalImage']  = $plexItem['nowPlayingImageURL']  = "images/no-np.png"; $plexItem['nowPlayingKey'] = "no-np"; }
+    if(!$plexItem['thumb'] ){  $plexItem['originalImage'] = $plexItem['imageURL'] = "images/no-list.png"; $plexItem['key'] = "no-list"; }
 	if(isset($useImage)){ $plexItem['useImage'] = $useImage; }
     return $plexItem;
-
 }
 function getPlexStreams(){
 	if(!empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'] && qualifyRequest($GLOBALS['homepagePlexStreamsAuth']))){

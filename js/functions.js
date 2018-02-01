@@ -1853,9 +1853,9 @@ function buildPlexStreamItem(array){
 							<ul class="el-info p-t-20 m-t-20">
 								<li><a class="btn default btn-outline inline-popups" href="#`+v.session+`" data-effect="mfp-zoom-out"><i class="icon-graph"></i></a></li>
 								<li><a class="btn default btn-outline image-popup-vertical-fit" href="`+v.nowPlayingImageURL+`"><i class="icon-info"></i></a></li>
-								<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-share-alt"></i></a></li>
+								<li><a class="btn default btn-outline openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class="icon-share-alt"></i></a></li>
 								<li><a class="btn default btn-outline refreshImage" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="icon-refresh"></i></a></li>
-								<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-graph"></i></a></li>
+								<!--<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-graph"></i></a></li>-->
 							</ul>
 						</div>
 					</div>
