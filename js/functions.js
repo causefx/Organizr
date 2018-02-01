@@ -1931,11 +1931,12 @@ function buildPlexStream(array){
 	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
 	return (streams) ? `
 	<div id="plexStreams" data-check="`+escape(JSON.stringify(array.content))+`">
-		<div class="row el-element-overlay m-b-20">
+		<div class="el-element-overlay m-b-20">
 		    <div class="col-md-12">
 		        <h4 class="pull-left" lang="en">Active Plex Stream(s): </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-5">`+streams+`</span></h4>
 		        <hr>
 		    </div>
+			<div class="clearfix"></div>
 		    <!-- .cards -->
 			`+buildPlexStreamItem(array.content)+`
 		    <!-- /.cards-->
