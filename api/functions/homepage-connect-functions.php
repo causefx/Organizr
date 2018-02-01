@@ -25,14 +25,16 @@ function streamType($value){
     }
 }
 function resolvePlexItem($item) {
-    // Static Height
+    // Static Height & Width
     $height = 300;
     $width = 200;
     $nowPlayingHeight = 338;
     $nowPlayingWidth = 600;
 	$widthOverride = 100;
+    // Cache Directories
     $cacheDirectory = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
     $cacheDirectoryWeb = 'plugins/images/cache/';
+    // Types
     switch ($item['type']) {
     	case 'season':
             $plexItem['type'] = 'tv';
@@ -96,6 +98,7 @@ function resolvePlexItem($item) {
             $plexItem['nowPlayingTitle'] = (string)$item['title'];
             $plexItem['nowPlayingBottom'] = (string)$item['year'];
 	}
+    $plexItem['metadataKey'] = (string)$item['ratingKey'];
     $plexItem['elapsed'] = isset($item['viewOffset']) && $item['viewOffset'] !== '0' ? (int)$item['viewOffset'] : null;
     $plexItem['duration'] = isset($item['duration']) ? (int)$item['duration'] : (int)$item->Media['duration'];
     $plexItem['watched'] = ($plexItem['elapsed'] && $plexItem['duration'] ? floor(($plexItem['elapsed'] / $plexItem['duration']) * 100) : 0);

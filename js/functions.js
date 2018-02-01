@@ -1851,23 +1851,23 @@ function buildPlexStreamItem(array){
 					<div class="el-card-avatar el-overlay-1 m-b-0">`+bg+`<img class="imageSource" style="width:`+width+`%;margin-left: auto;margin-right: auto;" src="`+v.nowPlayingImageURL+`">
 						<div class="el-overlay">
 							<ul class="el-info p-t-20 m-t-20">
-								<li><a class="btn default btn-outline inline-popups" href="#`+v.session+`" data-effect="mfp-zoom-out"><i class="icon-graph"></i></a></li>
-								<li><a class="btn default btn-outline image-popup-vertical-fit" href="`+v.nowPlayingImageURL+`"><i class="icon-info"></i></a></li>
-								<li><a class="btn default btn-outline openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class="icon-share-alt"></i></a></li>
-								<li><a class="btn default btn-outline refreshImage" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="icon-refresh"></i></a></li>
+								<li><a class="btn default btn-outline inline-popups" href="#`+v.session+`" data-effect="mfp-zoom-out"><i class="mdi mdi-server-network mdi-24px"></i></a></li>
+								<li><a class="btn default btn-outline image-popup-vertical-fit" href="`+v.nowPlayingImageURL+`"><i class="mdi mdi-information mdi-24px"></i></a></li>
+								<li><a class="btn default btn-outline openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class=" mdi mdi-plex mdi-24px"></i></a></li>
+								<li><a class="btn default btn-outline refreshImage" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a></li>
 								<!--<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-graph"></i></a></li>-->
 							</ul>
 						</div>
 					</div>
 					<div class="el-card-content">
 						<div class="progress">
-							<div class="progress-bar progress-bar-primary" style="width: `+v.watched+`%;" role="progressbar"><span class="hidden">`+v.watched+`%</span></div>
+							<div class="progress-bar progress-bar-info" style="width: `+v.watched+`%;" role="progressbar"><span class="hidden">`+v.watched+`%</span></div>
 							<div class="progress-bar progress-bar-inverse" style="width: `+v.transcoded+`%;" role="progressbar"></div>
 						</div>
 						<h3 class="box-title pull-left p-l-10 elip" style="width:90%">`+v.nowPlayingTitle+`</h3>
 						<h3 class="box-title pull-right vertical-middle" style="width:10%"><i class="icon-control-`+v.state+` fa-fw text-primary" style=""></i></h3>
 						<div class="clearfix"></div>
-						<small class="pull-left p-l-10"><i class="`+icon+` fa-fw text-primary"></i>`+v.nowPlayingBottom+`</small>
+						<small class="pull-left p-l-10"><i class="`+icon+` fa-fw text-info"></i>`+v.nowPlayingBottom+`</small>
 						<small class="pull-right p-r-10">`+v.user+` <i class="icon-user"></i></small>
 						<br>
 					</div>
@@ -1888,8 +1888,8 @@ function buildPlexStreamItem(array){
 									<span class="text-uppercase"><i class="mdi mdi-`+v.bandwidthType+`"></i> `+v.bandwidthType+`</span>
 									<span class="text-uppercase"><i class="mdi mdi-account-network"></i> `+v.userAddress+`</span>
 									`+streamInfo+`
-									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-speaker"></i> Platform: `+v.userStream.platform+`</span></div>
-									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-speaker"></i> Device: `+v.userStream.device+`</span></div>
+									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-ticket-account"></i> Platform: `+v.userStream.platform+`</span></div>
+									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-laptop-mac"></i> Device: `+v.userStream.device+`</span></div>
 								</div>
 								<div data-label="`+v.watched+`%" class="css-bar css-bar-`+Math.ceil(v.watched/5)*5+` css-bar-lg m-b-0  css-bar-info pull-right">`+userThumb+`</div>
 							</div>
