@@ -255,6 +255,7 @@ function switchTab(tab, type){
 			}else{
 				$("#preloader").fadeIn();
 				console.log('Tab Function: Loading new tab for: '+tab);
+				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
 				loadInternal(tabURL,cleanClass(tab));
 				$("#preloader").fadeOut();
@@ -273,6 +274,7 @@ function switchTab(tab, type){
 			}else{
 				$("#preloader").fadeIn();
 				console.log('Tab Function: Loading new tab for: '+tab);
+				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
 				$(buildFrame(tab,tabURL)).appendTo(newTab);
 				$("#preloader").fadeOut();
@@ -385,9 +387,9 @@ function reloadCurrentTab(){
 	$("#preloader").fadeOut();
 }
 function loadNextTab(){
-	var next = $('.iFrame-listing').find('.loaded').attr('data-name');
+	var next = $('#page-wrapper').find('.loaded').attr('data-name');
 	if (typeof next !== 'undefined') {
-		var type = $('.iFrame-listing').find('.loaded').attr('data-type');
+		var type = $('#page-wrapper').find('.loaded').attr('data-type');
 		switchTab(next,type);
 	}else{
 		console.log("Tab Function: No Available Tab to open");
@@ -410,6 +412,8 @@ function closeCurrentTab(){
 			var tab = $('.internal-listing').find('.show').attr('data-name');
 			console.log('Tab Function: Closing tab: '+tab);
 			$('#internal-'+cleanClass(tab)).html('');
+			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
+			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
 			$('#internal-'+cleanClass(tab)).removeClass("loaded show");
 			$('#menu-'+cleanClass(tab)).removeClass("active");
 			loadNextTab();
@@ -419,7 +423,8 @@ function closeCurrentTab(){
 		case 'iframe':
 			var tab = $('.iFrame-listing').find('.show').children('iframe').attr('data-name');
 			console.log('Tab Function: Closing tab: '+tab);
-			$('#menu-'+cleanClass(tab)).removeClass("active");
+			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
+			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
 			$('#container-'+cleanClass(tab)).removeClass("loaded show");
 			$('#frame-'+cleanClass(tab)).remove();
 			loadNextTab();

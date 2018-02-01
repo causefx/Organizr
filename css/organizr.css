@@ -162,3 +162,7 @@ object-fit: contain;
   -webkit-transition: all .4s ease-in-out;
   transition: all .4s ease-in-out;
 }
+.tabLoaded {
+  -webkit-filter: drop-shadow(0px 0px 5px #2cabe4);
+  filter: drop-shadow(0px 0px 5px #2cabe4);
+}
