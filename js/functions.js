@@ -2010,7 +2010,7 @@ function buildMetadata(array){
 		var hasActor = (typeof v.metadata.actors !== 'string') ? true : false;
 		if(hasActor){
 			$.each(v.metadata.actors, function(i,v) {
-				actors = '<div class="item lazyload recent-poster" data-src="'+v.thumb+'" alt="'+v.name+'" ><span class="elip recent-title">'+v.name+'</span></div>';
+				actors += '<div class="item lazyload recent-poster" data-src="'+v.thumb+'" alt="'+v.name+'" ><span class="elip recent-title">'+v.name+'</span></div>';
 			});
 		}
 		if(v.metadata.rating){
