@@ -175,3 +175,7 @@ object-fit: contain;
   background-position: center top;
   background-repeat: no-repeat;
 }
+h2.m-b-0.font-medium.pull-right {
+  -webkit-filter: drop-shadow(1px 1px 0px #1f1f1f);
+  filter: drop-shadow(1px 1px 0px #1f1f1f);
+}

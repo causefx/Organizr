@@ -2055,11 +2055,9 @@ function buildMetadata(array){
 				</div>
 				<div class="row">
 					<div class="col-lg-12">
-						<div class="panel panel-default">
-							<div class="panel-wrapper p-b-0 collapse in">
-								<div class="owl-carousel owl-theme metadata-actors">`+actors+`</div>
-							</div>
-						</div>
+
+								<div class="owl-carousel owl-theme metadata-actors p-b-10">`+actors+`</div>
+
 					</div>
 				</div>
             </div>
