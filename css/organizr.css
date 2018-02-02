@@ -166,3 +166,12 @@ object-fit: contain;
   -webkit-filter: drop-shadow(0px 0px 5px #2cabe4);
   filter: drop-shadow(0px 0px 5px #2cabe4);
 }
+.user-bg {
+  margin: -25px;
+  height: 338px;
+  overflow: hidden;
+  position: relative;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}

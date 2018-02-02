@@ -105,8 +105,8 @@ body {
 .customtab li.active a,
 .customtab li.active a:hover,
 .customtab li.active a:focus {
-  border-bottom: 2px solid #1f1f1f;
-  color: #1f1f1f;
+  /*border-bottom: 2px solid #1f1f1f;
+  color: #1f1f1f;*/
 }
 .tabs-vertical li.active a,
 .tabs-vertical li.active a:hover,

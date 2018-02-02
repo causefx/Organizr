@@ -1679,6 +1679,7 @@ function radioLoop(element){
 }
 function loadAppearance(appearance){
 	//console.log(appearance);
+	document.title = appearance.title;
 	if(appearance.useLogo === false){
 		$('#main-logo').html(appearance.title);
 		$('#side-logo').html(appearance.title);
@@ -1857,10 +1858,10 @@ function buildPlexStreamItem(array){
 						<div class="el-overlay">
 							<ul class="el-info p-t-20 m-t-20">
 								<li><a class="btn default btn-outline inline-popups" href="#`+v.session+`" data-effect="mfp-zoom-out"><i class="mdi mdi-server-network mdi-24px"></i></a></li>
-								<li><a class="btn default btn-outline image-popup-vertical-fit" href="`+v.nowPlayingImageURL+`"><i class="mdi mdi-information mdi-24px"></i></a></li>
+								<li><a class="btn default btn-outline metadata-get" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`"><i class="mdi mdi-information mdi-24px"></i></a></li>
 								<li><a class="btn default btn-outline openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class=" mdi mdi-plex mdi-24px"></i></a></li>
 								<li><a class="btn default btn-outline refreshImage" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a></li>
-								<!--<li><a class="btn default btn-outline" href="javascript:void(0);"><i class="icon-graph"></i></a></li>-->
+								<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
 							</ul>
 						</div>
 					</div>
@@ -1893,7 +1894,7 @@ function buildPlexStreamItem(array){
 									<span class="text-uppercase"><i class="mdi mdi-`+v.bandwidthType+`"></i> `+v.bandwidthType+`</span>
 									<span class="text-uppercase"><i class="mdi mdi-account-network"></i> `+v.userAddress+`</span>
 									`+streamInfo+`
-									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-ticket-account"></i> Platform: `+v.userStream.platform+`</span></div>
+									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-plex"></i> Product: `+v.userStream.product+`</span></div>
 									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-laptop-mac"></i> Device: `+v.userStream.device+`</span></div>
 								</div>
 								<div data-label="`+v.watched+`%" class="css-bar css-bar-`+Math.ceil(v.watched/5)*5+` css-bar-lg m-b-0  css-bar-info pull-right">`+userThumb+`</div>
@@ -1904,6 +1905,11 @@ function buildPlexStreamItem(array){
                 </div>
 			</div>
 		</div>
+		<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
+	        <div class="row">
+	            <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
+	        </div>
+	    </div>
 		`;
 		if(contains(''+count, end) || count == total ){ cards += '</div><!--end-->'; };
 
@@ -1927,7 +1933,18 @@ function buildPlexRecentItem(array){
 			default:
 
 		}
-		items += '<div class="item lazyload '+className+'" data-src="'+v.imageURL+'"><span class="elip recent-title">'+v.title+'</span></div>';
+		items += `
+		<div class="item lazyload `+className+` metadata-get" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
+			<span class="elip recent-title">`+v.title+`</span>
+			<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
+			<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
+		        <div class="row">
+		            <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
+		        </div>
+		    </div>
+		</div>
+		`;
+
 
 	});
 	return items;
@@ -1973,7 +1990,7 @@ function buildPlexRecent(array){
 					<div class="clearfix"></div>
 				</div>
 
-                <div class="panel-wrapper p-b-10 collapse in">
+                <div class="panel-wrapper p-b-0 collapse in">
                     <div class="owl-carousel owl-theme recent-items plex-recent">
 						`+buildPlexRecentItem(array.content)+`
                     </div>
@@ -1982,6 +1999,75 @@ function buildPlexRecent(array){
         </div>
     </div>
 	` : '';
+}
+function buildMetadata(array){
+	var metadata = '';
+	var genres = '';
+	var actors = '';
+	var rating = '<div class="col-xs-4 p-10"></div>';
+	$.each(array.content, function(i,v) {
+		console.log(typeof v.metadata.actors)
+		var hasActor = (typeof v.metadata.actors !== 'string') ? true : false;
+		if(hasActor){
+			$.each(v.metadata.actors, function(i,v) {
+				actors = '<div class="item lazyload recent-poster" data-src="'+v.thumb+'" alt="'+v.name+'" ><span class="elip recent-title">'+v.name+'</span></div>';
+			});
+		}
+		if(v.metadata.rating){
+			var ratingRound = Math.ceil(v.metadata.rating)*10;
+			rating = `<div class="col-xs-4 p-10"><div data-label="`+v.metadata.rating *10+`%" class="css-bar css-bar-`+Math.ceil(ratingRound/5)*5+` css-bar-sm m-b-0  css-bar-info"></div></div>`;
+		}
+
+		var seconds = v.metadata.duration / 1000 ; // or "2000"
+		seconds = parseInt(seconds) //because moment js dont know to handle number in string format
+		var format =  Math.floor(moment.duration(seconds,'seconds').asHours()) + ':' + moment.duration(seconds,'seconds').minutes() + ':' + moment.duration(seconds,'seconds').seconds();
+		console.log(format)
+
+		metadata = `
+		<div class="white-box m-b-0">
+			<div class="user-bg lazyload" data-src="`+v.nowPlayingImageURL+`">
+				`+rating+`
+				<div class="col-xs-8">
+	                <h2 class="m-b-0 font-medium pull-right">`+v.title+`<br>    <small class="text-muted m-t-0">`+v.metadata.tagline+`</small></h2>
+
+	            </div>
+			</div>
+		</div>
+		<div class="panel panel-info p-b-0 p-t-0">
+            <div class="panel-body p-b-0 p-t-0">
+				<div class="row text-center m-t-0">
+					<div class="col-xs-4 b-r">
+						<h2></h2>
+						<h4></h4>
+					</div>
+					<div class="col-xs-4 b-r">
+						<h2></h2>
+						<h4></h4>
+					</div>
+					<div class="col-xs-4">
+						<h2><a class="openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class=" mdi mdi-plex mdi-24px"></i></a></h2>
+						<h4>Open Now</h4>
+					</div>
+				</div>
+				<div class="p-20 text-center">
+					<p class="">`+v.metadata.summary+`</p>
+					<hr>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="panel panel-default">
+							<div class="panel-wrapper p-b-0 collapse in">
+								<div class="owl-carousel owl-theme metadata-actors">`+actors+`</div>
+							</div>
+						</div>
+					</div>
+				</div>
+            </div>
+        </div>
+
+		`;
+	});
+	return metadata;
 }
 function plexStream(){
 	ajaxloader(".content-wrap","in");

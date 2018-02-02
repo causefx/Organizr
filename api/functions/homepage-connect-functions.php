@@ -3,10 +3,13 @@
 function homepageConnect($array){
 	switch ($array['data']['action']) {
         case 'getPlexStreams':
-			return getPlexStreams();
+			return plexConnect('streams');
             break;
 		case 'getPlexRecent':
-        return getPlexRecent();
+            return plexConnect('recent');
+			break;
+        case 'getPlexMetadata':
+            return plexConnect('metadata',$array['data']['key']);
 			break;
         default:
             # code...
@@ -28,8 +31,8 @@ function resolvePlexItem($item) {
     // Static Height & Width
     $height = 300;
     $width = 200;
-    $nowPlayingHeight = 338;
-    $nowPlayingWidth = 600;
+    $nowPlayingHeight = 675;
+    $nowPlayingWidth = 1200;
 	$widthOverride = 100;
     // Cache Directories
     $cacheDirectory = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
@@ -45,6 +48,7 @@ function resolvePlexItem($item) {
             $plexItem['key'] = (string)$item['ratingKey'] . "-list";
             $plexItem['nowPlayingThumb'] = (string)$item['art'];
             $plexItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
+            $plexItem['metadataKey'] = (string)$item['parentRatingKey'];
             break;
         case 'episode':
             $plexItem['type'] = 'tv';
@@ -57,8 +61,8 @@ function resolvePlexItem($item) {
             $plexItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
             $plexItem['nowPlayingTitle'] = (string)$item['grandparentTitle'].' - '.(string)$item['title'];
             $plexItem['nowPlayingBottom'] = 'S'.(string)$item['parentIndex'].' · E'.(string)$item['index'];
+            $plexItem['metadataKey'] = (string)$item['grandparentRatingKey'];
             break;
-
         case 'clip':
             $useImage = (isset($item['live']) ? "images/livetv.png" : null);
             $plexItem['type'] = 'clip';
@@ -84,7 +88,7 @@ function resolvePlexItem($item) {
             $plexItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
             $plexItem['nowPlayingTitle'] = (string)$item['grandparentTitle'].' - '.(string)$item['title'];
             $plexItem['nowPlayingBottom'] = (string)$item['parentTitle'];
-
+            $plexItem['metadataKey'] = isset($item['parentRatingKey']) ? (string)$item['parentRatingKey'] : (string)$item['ratingKey'];
             break;
         default:
             $plexItem['type'] = 'movie';
@@ -97,8 +101,9 @@ function resolvePlexItem($item) {
             $plexItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
             $plexItem['nowPlayingTitle'] = (string)$item['title'];
             $plexItem['nowPlayingBottom'] = (string)$item['year'];
+            $plexItem['metadataKey'] = (string)$item['ratingKey'];
 	}
-    $plexItem['metadataKey'] = (string)$item['ratingKey'];
+    $plexItem['uid'] = (string)$item['ratingKey'];
     $plexItem['elapsed'] = isset($item['viewOffset']) && $item['viewOffset'] !== '0' ? (int)$item['viewOffset'] : null;
     $plexItem['duration'] = isset($item['duration']) ? (int)$item['duration'] : (int)$item->Media['duration'];
     $plexItem['watched'] = ($plexItem['elapsed'] && $plexItem['duration'] ? floor(($plexItem['elapsed'] / $plexItem['duration']) * 100) : 0);
@@ -113,8 +118,15 @@ function resolvePlexItem($item) {
     $plexItem['user'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->User['title'] : "";
     $plexItem['userThumb'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->User['thumb'] : "";
     $plexItem['userAddress'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->Player['address'] : "x.x.x.x";
+    $plexItem['address'] = $GLOBALS['plexTabURL'] ? $GLOBALS['plexTabURL']."/web/index.html#!/server/".$GLOBALS['plexID']."/details?key=/library/metadata/".$item['ratingKey'] : "https://app.plex.tv/web/app#!/server/".$GLOBALS['plexID']."/details?key=/library/metadata/".$item['ratingKey'];
+    $plexItem['nowPlayingOriginalImage'] = 'api/?v1/image&source=plex&img='.$plexItem['nowPlayingThumb'].'&height='.$nowPlayingHeight.'&width='.$nowPlayingWidth.'&key='.$plexItem['nowPlayingKey'].'$'.randString();
+    $plexItem['originalImage'] = 'api/?v1/image&source=plex&img='.$plexItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$plexItem['key'].'$'.randString();
+    $plexItem['openTab'] = $GLOBALS['plexTabURL'] && $GLOBALS['plexTabName'] ? true : false;
+    $plexItem['tabName'] = $GLOBALS['plexTabName'] ? $GLOBALS['plexTabName'] : '';
+    // Stream info
     $plexItem['userStream'] = array(
         'platform' => (string)$item->Player['platform'],
+        'product' => (string)$item->Player['product'],
         'device' => (string)$item->Player['device'],
         'stream' => (string)$item->Media->Part['decision'].($item->TranscodeSession['throttled'] == '1' ? ' (Throttled)': ''),
         'videoResolution' => (string)$item->Media['videoResolution'],
@@ -128,11 +140,39 @@ function resolvePlexItem($item) {
         'container' => (string)$item->TranscodeSession['container'],
         'audioChannels' => (string)$item->TranscodeSession['audioChannels']
     );
-    $plexItem['address'] = $GLOBALS['plexTabURL'] ? $GLOBALS['plexTabURL']."/web/index.html#!/server/".$GLOBALS['plexID']."/details?key=/library/metadata/".$item['ratingKey'] : "https://app.plex.tv/web/app#!/server/".$GLOBALS['plexID']."/details?key=/library/metadata/".$item['ratingKey'];
-    $plexItem['nowPlayingOriginalImage'] = 'api/?v1/image&source=plex&img='.$plexItem['nowPlayingThumb'].'&height='.$nowPlayingHeight.'&width='.$nowPlayingWidth.'&key='.$plexItem['nowPlayingKey'].'$'.randString();
-    $plexItem['originalImage'] = 'api/?v1/image&source=plex&img='.$plexItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$plexItem['key'].'$'.randString();
-    $plexItem['openTab'] = $GLOBALS['plexTabURL'] && $GLOBALS['plexTabName'] ? true : false;
-    $plexItem['tabName'] = $GLOBALS['plexTabName'] ? $GLOBALS['plexTabName'] : '';
+    // Genre catch all
+    if($item->Genre){
+        $genres = array();
+        foreach ($item->Genre as $key => $value) {
+            $genres[] = (string)$value['tag'];
+        }
+    }
+    // Actor catch all
+    if($item->Role ){
+        $actors = array();
+        foreach ($item->Role  as $key => $value) {
+            if($value['thumb']){
+                $actors[] = array(
+                    'name' =>  (string)$value['tag'],
+                    'role' =>  (string)$value['role'],
+                    'thumb' =>  (string)$value['thumb']
+                );
+            }
+        }
+    }
+    // Metadata information
+    $plexItem['metadata'] = array(
+        'guid' => (string)$item['guid'],
+        'summary' => (string)$item['summary'],
+        'rating' => (string)$item['rating'],
+        'duration' => (string)$item['duration'],
+        'originallyAvailableAt' => (string)$item['originallyAvailableAt'],
+        'year' => (string)$item['year'],
+        'studio' => (string)$item['studio'],
+        'tagline' => (string)$item['tagline'],
+        'genres' => ($item->Genre) ?  $genres : '',
+        'actors' => ($item->Role) ?  $actors : ''
+    );
     if (file_exists($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg')){ $plexItem['nowPlayingImageURL'] = $cacheDirectoryWeb.$plexItem['nowPlayingKey'].'.jpg'; }
     if (file_exists($cacheDirectory.$plexItem['key'].'.jpg')){ $plexItem['imageURL']  = $cacheDirectoryWeb.$plexItem['key'].'.jpg'; }
     if (file_exists($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg') && (time() - 604800) > filemtime($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg') || !file_exists($cacheDirectory.$plexItem['nowPlayingKey'].'.jpg')) {
@@ -146,37 +186,24 @@ function resolvePlexItem($item) {
 	if(isset($useImage)){ $plexItem['useImage'] = $useImage; }
     return $plexItem;
 }
-function getPlexStreams(){
+function plexConnect($action,$key=null){
 	if(!empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'] && qualifyRequest($GLOBALS['homepagePlexStreamsAuth']))){
+        $url = qualifyURL($GLOBALS['plexURL']);
+        switch ($action) {
+            case 'streams':
+                $url = $url."/status/sessions?X-Plex-Token=".$GLOBALS['plexToken'];
+                break;
+            case 'recent':
+                $url = $url."/library/recentlyAdded?X-Plex-Token=".$GLOBALS['plexToken'];
+                break;
+            case 'metadata':
+                $url = $url."/library/metadata/".$key."?X-Plex-Token=".$GLOBALS['plexToken'];
+                break;
+            default:
+                # code...
+                break;
+        }
 		try{
-			$url = qualifyURL($GLOBALS['plexURL']);
-			$url = $url."/status/sessions?X-Plex-Token=".$GLOBALS['plexToken'];
-			$options = (localURL($url)) ? array('verify' => false ) : array();
-			$response = Requests::get($url, array(), $options);
-			libxml_use_internal_errors(true);
-			if($response->success){
-				$items = array();
-				$plex = simplexml_load_string($response->body);
-				foreach($plex AS $child) {
-					$items[] = resolvePlexItem($child);
-				}
-				$api['content'] = $items;
-				$api['plexID'] = $GLOBALS['plexID'];
-				$api['showNames'] = true;
-				$api['group'] = '1';
-				return $api;
-			}
-		}catch( Requests_Exception $e ) {
-			writeLog('error', 'Plex Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
-		};
-	}
-	return false;
-}
-function getPlexRecent(){
-	if(!empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'] && qualifyRequest($GLOBALS['homepagePlexRecentAuth']))){
-		try{
-			$url = qualifyURL($GLOBALS['plexURL']);
-			$url = $url."/library/recentlyAdded?X-Plex-Token=".$GLOBALS['plexToken'];
 			$options = (localURL($url)) ? array('verify' => false ) : array();
 			$response = Requests::get($url, array(), $options);
 			libxml_use_internal_errors(true);

@@ -90,6 +90,59 @@ function pageLoad(){
         }
     });
     $(function () {
+        $(".metadata-actors").owlCarousel({
+          autoplay: true,
+          slideSpeed : 300,
+          paginationSpeed : 400,
+          margin:40,
+          nav:false,
+          autoplay:false,
+          dots:false,
+          responsive:{
+              0:{
+                  items:2
+              },
+              500:{
+                  items:3
+              },
+              650:{
+                  items:4
+              },
+              800:{
+                  items:5
+              },
+              950:{
+                  items:6
+              },
+              992:{
+                  items:4
+              },
+              1250:{
+                  items:5
+              },
+              1400:{
+                  items:6
+              },
+              1550:{
+                  items:7
+              },
+              1700:{
+                  items:8
+              },
+              1850:{
+                  items:9
+              }
+          },
+          //singleItem:true
+
+          // "singleItem:true" is a shortcut for:
+           items : 1,
+          // itemsDesktop : false,
+          // itemsDesktopSmall : false,
+          // itemsTablet: false,
+          // itemsMobile : false
+
+      });
         $('.recent-items').owlCarousel({
     	    margin:40,
     	    nav:false,
@@ -408,6 +461,8 @@ function pageLoad(){
     // Inline popups
     $('.inline-popups').magnificPopup({
       removalDelay: 500, //delay removal by X to allow out-animation
+      closeOnBgClick: true,
+      closeOnContentClick: true,
       callbacks: {
         beforeOpen: function() {
            this.st.mainClass = this.st.el.attr('data-effect');
@@ -1547,6 +1602,23 @@ $(document).on("click", ".openTab", function(e) {
         var source = $(this).attr("data-url");
 		window.open(source, '_blank');
 	}
+});
+// metadata start
+$(document).on("click", ".metadata-get", function(e) {
+    $('.metadata-info').html('');
+    var key = $(this).attr('data-key');
+    var uid = $(this).attr('data-uid');
+    ajaxloader(".content-wrap","in");
+	organizrAPI('POST','api/?v1/homepage/connect',{action:'getPlexMetadata', key:key}).success(function(data) {
+		var response = JSON.parse(data);
+        console.log(response);
+		$('.'+uid+'-metadata-info').html(buildMetadata(response.data));
+        $('.'+uid).trigger('click')
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
+
 });
 /* ===== Open-Close Right Sidebar ===== */
 
