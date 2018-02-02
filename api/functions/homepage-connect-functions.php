@@ -64,7 +64,7 @@ function resolvePlexItem($item) {
             $plexItem['metadataKey'] = (string)$item['grandparentRatingKey'];
             break;
         case 'clip':
-            $useImage = (isset($item['live']) ? "images/livetv.png" : null);
+            $useImage = (isset($item['live']) ? "plugins/images/cache/livetv.png" : null);
             $plexItem['type'] = 'clip';
             $plexItem['title'] = (string)$item['title'];
             $plexItem['summary'] = (string)$item['summary'];
@@ -181,8 +181,8 @@ function resolvePlexItem($item) {
     if (file_exists($cacheDirectory.$plexItem['key'].'.jpg') && (time() - 604800) > filemtime($cacheDirectory.$plexItem['key'].'.jpg') || !file_exists($cacheDirectory.$plexItem['key'].'.jpg')) {
         $plexItem['imageURL'] = 'api/?v1/image&source=plex&img='.$plexItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$plexItem['key'].'';
     }
-    if(!$plexItem['nowPlayingThumb'] ){ $plexItem['nowPlayingOriginalImage']  = $plexItem['nowPlayingImageURL']  = "images/no-np.png"; $plexItem['nowPlayingKey'] = "no-np"; }
-    if(!$plexItem['thumb'] ){  $plexItem['originalImage'] = $plexItem['imageURL'] = "images/no-list.png"; $plexItem['key'] = "no-list"; }
+    if(!$plexItem['nowPlayingThumb'] ){ $plexItem['nowPlayingOriginalImage']  = $plexItem['nowPlayingImageURL']  = "plugins/images/cache/no-np.png"; $plexItem['nowPlayingKey'] = "no-np"; }
+    if(!$plexItem['thumb'] ){  $plexItem['originalImage'] = $plexItem['imageURL'] = "plugins/images/cache/no-list.png"; $plexItem['key'] = "no-list"; }
 	if(isset($useImage)){ $plexItem['useImage'] = $useImage; }
     return $plexItem;
 }
