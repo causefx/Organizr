@@ -100,10 +100,10 @@ function resolveEmbyItem($itemDetails) {
             $embyItem['ratingKey'] = $item['Id'];
             $embyItem['thumb'] = $item['Id'];
             $embyItem['key'] = $item['Id'] . "-list";
-            $embyItem['nowPlayingThumb'] = (isset($item['ParentBackdropItemId']) ? $item['ParentBackdropItemId'] : false);
+            $embyItem['nowPlayingThumb'] = (isset($item['AlbumId']) ? $item['AlbumId'] : @$item['ParentBackdropItemId']);
             $embyItem['nowPlayingKey'] = $item['Id'] . "-np";
             $embyItem['metadataKey'] = $item['Id'];
-            $embyItem['nowPlayingImageType'] = (isset($item['ParentBackdropItemId']) ? "Backdrop" : false);
+            $embyItem['nowPlayingImageType'] = (isset($item['ParentBackdropItemId']) ? "Primary" : "Backdrop");
             $embyItem['nowPlayingTitle'] = @$item['AlbumArtist'].' - '.@$item['Name'];
             $embyItem['nowPlayingBottom'] = @$item['Album'];
             break;
