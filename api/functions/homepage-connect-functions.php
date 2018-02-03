@@ -102,7 +102,7 @@ function resolveEmbyItem($itemDetails) {
             $embyItem['key'] = $item['Id'] . "-list";
             $embyItem['nowPlayingThumb'] = (isset($item['AlbumId']) ? $item['AlbumId'] : @$item['ParentBackdropItemId']);
             $embyItem['nowPlayingKey'] = $item['Id'] . "-np";
-            $embyItem['metadataKey'] = $item['Id'];
+            $embyItem['metadataKey'] = isset($item['AlbumId']) ? $item['AlbumId'] : $item['Id'];
             $embyItem['nowPlayingImageType'] = (isset($item['ParentBackdropItemId']) ? "Primary" : "Backdrop");
             $embyItem['nowPlayingTitle'] = @$item['AlbumArtist'].' - '.@$item['Name'];
             $embyItem['nowPlayingBottom'] = @$item['Album'];
@@ -122,16 +122,7 @@ function resolveEmbyItem($itemDetails) {
             $embyItem['nowPlayingBottom'] = @$item['ProductionYear'];
             break;
         default:
-            //Stream
-            switch ($item['NowPlayingItem']['Type']) {
-                case 'Episode':
-                    # code...
-                    break;
-
-                default:
-                    # code...
-                    break;
-            }
+            return false;
 	}
     $embyItem['uid'] = $item['Id'];
     $embyItem['imageType'] = (isset($item['ImageTags']['Primary']) ? "Primary" : false);
@@ -382,7 +373,7 @@ function resolvePlexItem($item) {
     return $plexItem;
 }
 function plexConnect($action,$key=null){
-	if(!empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'] && qualifyRequest($GLOBALS['homepagePlexAuth']))){
+	if($GLOBALS['homepagePlexEnabled'] && !empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'] && qualifyRequest($GLOBALS['homepagePlexAuth']))){
         $url = qualifyURL($GLOBALS['plexURL']);
         switch ($action) {
             case 'streams':
@@ -421,7 +412,7 @@ function plexConnect($action,$key=null){
 	return false;
 }
 function embyConnect($action,$key=null,$skip=false){
-	if(!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken']) && qualifyRequest($GLOBALS['homepageEmbyAuth'])){
+	if($GLOBALS['homepageEmbyEnabled'] && !empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken']) && qualifyRequest($GLOBALS['homepageEmbyAuth'])){
         $url = qualifyURL($GLOBALS['embyURL']);
         switch ($action) {
             case 'streams':
