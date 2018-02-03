@@ -470,7 +470,7 @@ function embyConnect($action,$key=null,$skip=false){
                         $items[] = resolveEmbyItem($child);
                     }
 				}
-				$api['content'] = $items;
+				$api['content'] = array_filter($items);
 				return $api;
 			}
 		}catch( Requests_Exception $e ) {
