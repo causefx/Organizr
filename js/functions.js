@@ -1804,7 +1804,7 @@ function setSSO(){
 		}
 	});
 }
-function buildPlexStreamItem(array){
+function buildStreamItem(array,source){
 	var cards = '';
 	var count = 0;
 	var total = array.length;
@@ -1857,8 +1857,8 @@ function buildPlexStreamItem(array){
 						<div class="el-overlay">
 							<ul class="el-info p-t-20 m-t-20">
 								<li><a class="btn default btn-outline inline-popups" href="#`+v.session+`" data-effect="mfp-zoom-out"><i class="mdi mdi-server-network mdi-24px"></i></a></li>
-								<li><a class="btn default btn-outline metadata-get" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`"><i class="mdi mdi-information mdi-24px"></i></a></li>
-								<li><a class="btn default btn-outline openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class=" mdi mdi-plex mdi-24px"></i></a></li>
+								<li><a class="btn default btn-outline metadata-get" data-source="`+source+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`"><i class="mdi mdi-information mdi-24px"></i></a></li>
+								<li><a class="btn default btn-outline openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class=" mdi mdi-`+source+` mdi-24px"></i></a></li>
 								<li><a class="btn default btn-outline refreshImage" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a></li>
 								<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
 							</ul>
@@ -1915,7 +1915,7 @@ function buildPlexStreamItem(array){
 	});
 	return cards;
 }
-function buildPlexRecentItem(array){
+function buildRecentItem(array, type){
 	var items = '';
 	$.each(array, function(i,v) {
 		var className = '';
@@ -1933,7 +1933,7 @@ function buildPlexRecentItem(array){
 
 		}
 		items += `
-		<div class="item lazyload `+className+` metadata-get mouse" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
+		<div class="item lazyload `+className+` metadata-get mouse" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
 			<span class="elip recent-title">`+v.title+`</span>
 			<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
 			<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
@@ -1948,32 +1948,32 @@ function buildPlexRecentItem(array){
 	});
 	return items;
 }
-function buildPlexStream(array){
+function buildStream(array, type){
 	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
 	return (streams) ? `
-	<div id="plexStreams" data-check="`+escape(JSON.stringify(array.content))+`">
+	<div id="`+type+`Streams">
 		<div class="el-element-overlay m-b-20">
 		    <div class="col-md-12">
-		        <h4 class="pull-left" lang="en">Active Plex Stream(s): </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-5">`+streams+`</span></h4>
+		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Stream(s): </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-5">`+streams+`</span></h4>
 		        <hr>
 		    </div>
 			<div class="clearfix"></div>
 		    <!-- .cards -->
-			`+buildPlexStreamItem(array.content)+`
+			`+buildStreamItem(array.content, type)+`
 		    <!-- /.cards-->
 		</div>
 	</div>
 	<div class="clearfix"></div>
 	` : '';
 }
-function buildPlexRecent(array){
+function buildRecent(array, type){
 	var recent = (typeof array.content !== 'undefined') ? true : false;
 	return (recent) ? `
-	<div id="plexRecent" data-check="`+escape(JSON.stringify(array.content))+`" class="row">
+	<div id="`+type+`Recent" class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
                 <div class="panel-heading bg-info p-t-10 p-b-10">
-					<span class="pull-left m-t-5" lang="en">Recently Added to Plex</span>
+					<span class="pull-left m-t-5" lang="en">Recently Added to `+toUpper(type)+`</span>
 					<div class="btn-group pull-right">
 	                    <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
 							<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
@@ -1990,8 +1990,8 @@ function buildPlexRecent(array){
 				</div>
 
                 <div class="panel-wrapper p-b-0 collapse in">
-                    <div class="owl-carousel owl-theme recent-items plex-recent">
-						`+buildPlexRecentItem(array.content)+`
+                    <div class="owl-carousel owl-theme recent-items `+type+`-recent">
+						`+buildRecentItem(array.content, type)+`
                     </div>
                 </div>
             </div>
@@ -1999,13 +1999,12 @@ function buildPlexRecent(array){
     </div>
 	` : '';
 }
-function buildMetadata(array){
+function buildMetadata(array, source){
 	var metadata = '';
 	var genres = '';
 	var actors = '';
 	var rating = '<div class="col-xs-2 p-10"></div>';
 	$.each(array.content, function(i,v) {
-		console.log(typeof v.metadata.actors)
 		var hasActor = (typeof v.metadata.actors !== 'string') ? true : false;
 		var hasGenre = (typeof v.metadata.genres !== 'string') ? true : false;
 		if(hasActor){
@@ -2022,12 +2021,9 @@ function buildMetadata(array){
 			var ratingRound = Math.ceil(v.metadata.rating)*10;
 			rating = `<div class="col-xs-2 p-10"><div data-label="`+v.metadata.rating *10+`%" class="css-bar css-bar-`+Math.ceil(ratingRound/5)*5+` css-bar-sm m-b-0  css-bar-info"><img src="plugins/images/rotten.png" class="nowPlayingUserThumb" alt="User"></div></div>`;
 		}
-
 		var seconds = v.metadata.duration / 1000 ; // or "2000"
 		seconds = parseInt(seconds) //because moment js dont know to handle number in string format
 		var format =  Math.floor(moment.duration(seconds,'seconds').asHours()) + ':' + moment.duration(seconds,'seconds').minutes() + ':' + moment.duration(seconds,'seconds').seconds();
-		console.log(format)
-
 		metadata = `
 		<div class="white-box m-b-0">
 			<div class="user-bg lazyload" data-src="`+v.nowPlayingImageURL+`">
@@ -2036,7 +2032,7 @@ function buildMetadata(array){
 	                <h2 class="m-b-0 font-medium pull-right text-right">
 						`+v.title+`<br>
 						<small class="m-t-0 text-white">`+v.metadata.tagline+`</small><br>
-						<a class="openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class="mdi mdi-plex mdi-36px text-plex"></i></a>
+						<a class="openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class="mdi mdi-`+source+` mdi-36px text-`+source+`"></i></a>
 					</h2>
 	            </div>
 				<div class="genre-list p-10">`+genres+`</div>
@@ -2059,21 +2055,41 @@ function buildMetadata(array){
 	});
 	return metadata;
 }
-function plexStream(){
+function homepageStream(type){
+	switch (type) {
+		case 'plex':
+			var action = 'getPlexStreams';
+			break;
+		case 'emby':
+			var action = 'getEmbyStreams';
+			break;
+		default:
+
+	}
 	ajaxloader(".content-wrap","in");
-	organizrAPI('POST','api/?v1/homepage/connect',{action:'getPlexStreams'}).success(function(data) {
+	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
-		$('#homepageOrderplexnowplaying').html(buildPlexStream(response.data));
+		$('#homepageOrder'+type+'nowplaying').html(buildStream(response.data, type));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
 }
-function plexRecent(){
+function homepageRecent(type){
+	switch (type) {
+		case 'plex':
+			var action = 'getPlexRecent';
+			break;
+		case 'emby':
+			var action = 'getEmbyRecent';
+			break;
+		default:
+
+	}
 	ajaxloader(".content-wrap","in");
-	organizrAPI('POST','api/?v1/homepage/connect',{action:'getPlexRecent'}).success(function(data) {
+	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
-		$('#homepageOrderplexrecent').html(buildPlexRecent(response.data));
+		$('#homepageOrder'+type+'recent').html(buildRecent(response.data, type));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
@@ -2087,6 +2103,16 @@ function generateCode() {
         code += possible.charAt(Math.floor(Math.random() * possible.length));
     return code;
 }
+// uppercase word
+function toUpper(str) {
+	return str
+	    .toLowerCase()
+	    .split(' ')
+	    .map(function(word) {
+	        return word[0].toUpperCase() + word.substr(1);
+	    })
+	    .join(' ');
+ }
 //Settings change auth
 function changeAuth(){
     var type = $('#authSelect').val();

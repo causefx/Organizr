@@ -11,6 +11,15 @@ function homepageConnect($array){
         case 'getPlexMetadata':
             return plexConnect('metadata',$array['data']['key']);
 			break;
+        case 'getEmbyStreams':
+            return embyConnect('streams');
+            break;
+        case 'getEmbyRecent':
+            return embyConnect('recent');
+            break;
+        case 'getEmbyMetadata':
+            return embyConnect('metadata',$array['data']['key'],true);
+            break;
         default:
             # code...
             break;
@@ -29,8 +38,9 @@ function streamType($value){
 }
 function resolveEmbyItem($itemDetails) {
     // Grab Each item info from Emby (extra call)
+    $id = isset($itemDetails['NowPlayingItem']['Id']) ? $itemDetails['NowPlayingItem']['Id'] : $itemDetails['Id'];
     $url = qualifyURL($GLOBALS['embyURL']);
-    $url = $url.'/Items?Ids='.$itemDetails['Id'].'&api_key='.$GLOBALS['embyToken'];
+    $url = $url.'/Items?Ids='.$id.'&api_key='.$GLOBALS['embyToken'].'&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
     try{
         $options = (localURL($url)) ? array('verify' => false ) : array();
         $response = Requests::get($url, array(), $options);
@@ -45,146 +55,171 @@ function resolveEmbyItem($itemDetails) {
     $width = 200;
     $nowPlayingHeight = 675;
     $nowPlayingWidth = 1200;
+    $actorHeight = 450;
+    $actorWidth = 300;
 	$widthOverride = 100;
     // Cache Directories
     $cacheDirectory = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
     $cacheDirectoryWeb = 'plugins/images/cache/';
     // Types
-    switch ($itemDetails['Type']) {
+    $embyItem['array-item'] = $item;
+    $embyItem['array-itemdetails'] = $itemDetails;
+
+    switch (@$item['Type']) {
     	case 'Series':
-        case 'Episode':
             $embyItem['type'] = 'tv';
             $embyItem['title'] = $item['Name'];
             $embyItem['summary'] = '';
             $embyItem['ratingKey'] = $item['Id'];
-            $embyItem['thumb'] = $item['ImageTags']['Primary'];
+            $embyItem['thumb'] = $item['Id'];
             $embyItem['key'] = $item['Id'] . "-list";
-            $embyItem['nowPlayingThumb'] = $item['ImageTags']['Thumb'];
+            $embyItem['nowPlayingThumb'] = $item['Id'];
             $embyItem['nowPlayingKey'] = $item['Id'] . "-np";
             $embyItem['metadataKey'] = $item['Id'];
+            $embyItem['nowPlayingImageType'] = isset($item['ImageTags']['Thumb']) ? 'Thumb' : (isset($item['BackdropImageTags'][0]) ? 'Backdrop' : '');
             break;
-        case 'TvChannel':
-            //$useImage = (isset($item['live']) ? "plugins/images/cache/livetv.png" : null);
-            $embyItem['type'] = 'clip';
-            /*$embyItem['title'] = (string)$item['title'];
-            $embyItem['summary'] = (string)$item['summary'];
-            $embyItem['ratingKey'] = (string)$item['parentRatingKey'];
-            $embyItem['thumb'] = (string)$item['thumb'];
-            $embyItem['key'] = (string)$item['ratingKey'] . "-list";
-            $embyItem['nowPlayingThumb'] = (string)$item['art'];
-            $embyItem['nowPlayingKey'] = isset($item['ratingKey']) ? (string)$item['ratingKey'] . "-np" : (isset($item['live']) ? "livetv.png" : ":)");
-            $embyItem['nowPlayingTitle'] = $embyItem['title'];
-            $embyItem['nowPlayingBottom'] = isset($item['extraType']) ? "Trailer" : (isset($item['live']) ? "Live TV" : ":)");*/
+        case 'Episode':
+            $embyItem['type'] = 'tv';
+            $embyItem['title'] = $item['SeriesName'];
+            $embyItem['summary'] = '';
+            $embyItem['ratingKey'] = $item['Id'];
+            $embyItem['thumb'] = (isset($item['SeriesId'])?$item['SeriesId']:$item['Id']);
+            $embyItem['key'] = (isset($item['SeriesId'])?$item['SeriesId']:$item['Id']) . "-list";
+            $embyItem['nowPlayingThumb'] = isset($item['ParentThumbItemId']) ? $item['ParentThumbItemId'] : (isset($item['ParentBackdropItemId']) ? $item['ParentBackdropItemId'] : false);
+            $embyItem['nowPlayingKey'] = isset($item['ParentThumbItemId']) ? $item['ParentThumbItemId'].'-np' : (isset($item['ParentBackdropItemId']) ? $item['ParentBackdropItemId'].'-np' : false);
+            $embyItem['metadataKey'] = $item['Id'];
+            $embyItem['nowPlayingImageType'] = isset($item['ImageTags']['Thumb']) ? 'Thumb' : (isset($item['ParentBackdropImageTags'][0]) ? 'Backdrop' : '');
+            $embyItem['nowPlayingTitle'] = @$item['SeriesName'].' - '.@$item['Name'];
+            $embyItem['nowPlayingBottom'] = 'S'.@$item['ParentIndexNumber'].' · E'.@$item['IndexNumber'];
             break;
         case 'MusicAlbum':
         case 'Audio':
             $embyItem['type'] = 'music';
-            /*$embyItem['title'] = (string)$item['parentTitle'];
-            $embyItem['summary'] = (string)$item['title'];
-			$embyItem['ratingKey'] = (string)$item['parentRatingKey'];
-            $embyItem['thumb'] = (string)$item['thumb'];
-            $embyItem['key'] = (string)$item['ratingKey'] . "-list";
-			$embyItem['nowPlayingThumb'] = ($item['parentThumb']) ? (string)$item['parentThumb'] :  (string)$item['art'];
-            $embyItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
-            $embyItem['nowPlayingTitle'] = (string)$item['grandparentTitle'].' - '.(string)$item['title'];
-            $embyItem['nowPlayingBottom'] = (string)$item['parentTitle'];
-            $embyItem['metadataKey'] = isset($item['grandparentRatingKey']) ? (string)$item['grandparentRatingKey'] : (string)$item['parentRatingKey'];*/
+            $embyItem['title'] = $item['Name'];
+            $embyItem['summary'] = '';
+            $embyItem['ratingKey'] = $item['Id'];
+            $embyItem['thumb'] = $item['Id'];
+            $embyItem['key'] = $item['Id'] . "-list";
+            $embyItem['nowPlayingThumb'] = (isset($item['ParentBackdropItemId']) ? $item['ParentBackdropItemId'] : false);
+            $embyItem['nowPlayingKey'] = $item['Id'] . "-np";
+            $embyItem['metadataKey'] = $item['Id'];
+            $embyItem['nowPlayingImageType'] = (isset($item['ParentBackdropItemId']) ? "Backdrop" : false);
+            $embyItem['nowPlayingTitle'] = @$item['AlbumArtist'].' - '.@$item['Name'];
+            $embyItem['nowPlayingBottom'] = @$item['Album'];
             break;
-        default:
+        case 'Movie':
             $embyItem['type'] = 'movie';
             $embyItem['title'] = $item['Name'];
             $embyItem['summary'] = '';
             $embyItem['ratingKey'] = $item['Id'];
-            $embyItem['thumb'] = $item['ImageTags']['Primary'];
+            $embyItem['thumb'] = $item['Id'];
             $embyItem['key'] = $item['Id'] . "-list";
-            $embyItem['nowPlayingThumb'] = $item['ImageTags']['Thumb'];
+            $embyItem['nowPlayingThumb'] = $item['Id'];
             $embyItem['nowPlayingKey'] = $item['Id'] . "-np";
             $embyItem['metadataKey'] = $item['Id'];
-            //$embyItem['nowPlayingTitle'] = (string)$item['title'];
-            //$embyItem['nowPlayingBottom'] = (string)$item['year'];
+            $embyItem['nowPlayingImageType'] = isset($item['ImageTags']['Thumb']) ? "Thumb" : (isset($item['BackdropImageTags']) ? "Backdrop" : false);
+            $embyItem['nowPlayingTitle'] = @$item['Name'];
+            $embyItem['nowPlayingBottom'] = @$item['ProductionYear'];
+            break;
+        default:
+            //Stream
+            switch ($item['NowPlayingItem']['Type']) {
+                case 'Episode':
+                    # code...
+                    break;
+
+                default:
+                    # code...
+                    break;
+            }
 	}
-    /*$embyItem['uid'] = (string)$item['ratingKey'];
-    $embyItem['elapsed'] = isset($item['viewOffset']) && $item['viewOffset'] !== '0' ? (int)$item['viewOffset'] : null;
-    $embyItem['duration'] = isset($item['duration']) ? (int)$item['duration'] : (int)$item->Media['duration'];
+    $embyItem['uid'] = $item['Id'];
+    $embyItem['imageType'] = (isset($item['ImageTags']['Primary']) ? "Primary" : false);
+    $embyItem['elapsed'] = isset($itemDetails['PlayState']['PositionTicks']) && $itemDetails['PlayState']['PositionTicks'] !== '0' ? (int)$itemDetails['PlayState']['PositionTicks'] : null;
+    $embyItem['duration'] = isset($itemDetails['NowPlayingItem']['RunTimeTicks']) ? (int)$itemDetails['NowPlayingItem']['RunTimeTicks'] : (int)$item['RunTimeTicks'];
     $embyItem['watched'] = ($embyItem['elapsed'] && $embyItem['duration'] ? floor(($embyItem['elapsed'] / $embyItem['duration']) * 100) : 0);
-    $embyItem['transcoded'] = isset($item->TranscodeSession['progress']) ? floor((int)$item->TranscodeSession['progress']- $embyItem['watched']) : '';
-    $embyItem['stream'] = isset($item->Media->Part->Stream['decision']) ? (string)$item->Media->Part->Stream['decision']: '';
-    $embyItem['id'] = str_replace('"', '', (string)$item->Player['machineIdentifier']);
-    $embyItem['session'] = (string)$item->Session['id'];
-    $embyItem['bandwidth'] = (string)$item->Session['bandwidth'];
-    $embyItem['bandwidthType'] = (string)$item->Session['location'];
-    $embyItem['sessionType'] = isset($item->TranscodeSession['progress']) ? 'Transcoding' : 'Direct Playing';
-    $embyItem['state'] = (((string)$item->Player['state'] == "paused") ? "pause" : "play");
-    $embyItem['user'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->User['title'] : "";
-    $embyItem['userThumb'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->User['thumb'] : "";
-    $embyItem['userAddress'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? (string)$item->Player['address'] : "x.x.x.x";
-    $embyItem['address'] = $GLOBALS['plexTabURL'] ? $GLOBALS['plexTabURL']."/web/index.html#!/server/".$GLOBALS['plexID']."/details?key=/library/metadata/".$item['ratingKey'] : "https://app.plex.tv/web/app#!/server/".$GLOBALS['plexID']."/details?key=/library/metadata/".$item['ratingKey'];
-    $embyItem['nowPlayingOriginalImage'] = 'api/?v1/image&source=plex&img='.$embyItem['nowPlayingThumb'].'&height='.$nowPlayingHeight.'&width='.$nowPlayingWidth.'&key='.$embyItem['nowPlayingKey'].'$'.randString();
-    $embyItem['originalImage'] = 'api/?v1/image&source=plex&img='.$embyItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$embyItem['key'].'$'.randString();
-    $embyItem['openTab'] = $GLOBALS['plexTabURL'] && $GLOBALS['plexTabName'] ? true : false;
-    $embyItem['tabName'] = $GLOBALS['plexTabName'] ? $GLOBALS['plexTabName'] : '';
+    $embyItem['transcoded'] = isset($itemDetails['TranscodingInfo']['CompletionPercentage']) ? floor((int)$itemDetails['TranscodingInfo']['CompletionPercentage']) : 100;
+    $embyItem['stream'] = @$itemDetails['PlayState']['PlayMethod'];
+    $embyItem['id'] = $item['ServerId'];
+    $embyItem['session'] = @$itemDetails['DeviceId'];
+    $embyItem['bandwidth'] = isset($itemDetails['TranscodingInfo']['Bitrate']) ? $itemDetails['TranscodingInfo']['Bitrate'] / 1000 : '';
+    $embyItem['bandwidthType'] = 'wan';
+    $embyItem['sessionType'] = (@$itemDetails['PlayState']['PlayMethod'] == 'Transcode') ? 'Transcoding' : 'Direct Playing';
+    $embyItem['state'] = ((@(string)$itemDetails['PlayState']['IsPaused'] == '1') ? "pause" : "play");
+    $embyItem['user'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? @(string)$itemDetails['UserName'] : "";
+    $embyItem['userThumb'] = '';
+    $embyItem['userAddress'] = "x.x.x.x";
+    $embyItem['address'] = $GLOBALS['embyTabURL'] ? '' : '';
+    $embyItem['nowPlayingOriginalImage'] = 'api/?v1/image&source=emby&type='.$embyItem['nowPlayingImageType'].'&img='.$embyItem['nowPlayingThumb'].'&height='.$nowPlayingHeight.'&width='.$nowPlayingWidth.'&key='.$embyItem['nowPlayingKey'].'$'.randString();
+    $embyItem['originalImage'] = 'api/?v1/image&source=emby&type='.$embyItem['imageType'].'&img='.$embyItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$embyItem['key'].'$'.randString();
+    $embyItem['openTab'] = $GLOBALS['embyTabURL'] && $GLOBALS['embyTabName'] ? true : false;
+    $embyItem['tabName'] = $GLOBALS['embyTabName'] ? $GLOBALS['embyTabName'] : '';
     // Stream info
     $embyItem['userStream'] = array(
-        'platform' => (string)$item->Player['platform'],
-        'product' => (string)$item->Player['product'],
-        'device' => (string)$item->Player['device'],
-        'stream' => (string)$item->Media->Part['decision'].($item->TranscodeSession['throttled'] == '1' ? ' (Throttled)': ''),
-        'videoResolution' => (string)$item->Media['videoResolution'],
-        'throttled' => ($item->TranscodeSession['throttled'] == 1) ? true : false,
-        'sourceVideoCodec' => (string)$item->TranscodeSession['sourceVideoCodec'],
-        'videoCodec' => (string)$item->TranscodeSession['videoCodec'],
-        'audioCodec' => (string)$item->TranscodeSession['audioCodec'],
-        'sourceAudioCodec' => (string)$item->TranscodeSession['sourceAudioCodec'],
-        'videoDecision' => streamType((string)$item->TranscodeSession['videoDecision']),
-        'audioDecision' => streamType((string)$item->TranscodeSession['audioDecision']),
-        'container' => (string)$item->TranscodeSession['container'],
-        'audioChannels' => (string)$item->TranscodeSession['audioChannels']
+        'platform' => @(string)$itemDetails['Client'],
+        'product' => @(string)$itemDetails['Client'],
+        'device' => @(string)$itemDetails['DeviceName'],
+        'stream' => @$itemDetails['PlayState']['PlayMethod'],
+        'videoResolution' => isset($itemDetails['NowPlayingItem']['MediaStreams'][0]['Width']) ? $itemDetails['NowPlayingItem']['MediaStreams'][0]['Width'] : '',
+        'throttled' => false,
+        'sourceVideoCodec' => isset($itemDetails['NowPlayingItem']['MediaStreams'][0]) ? $itemDetails['NowPlayingItem']['MediaStreams'][0]['Codec'] : '',
+        'videoCodec' => @$itemDetails['TranscodingInfo']['VideoCodec'],
+        'audioCodec' => @$itemDetails['TranscodingInfo']['AudioCodec'],
+        'sourceAudioCodec' => isset($itemDetails['NowPlayingItem']['MediaStreams'][1]) ? $itemDetails['NowPlayingItem']['MediaStreams'][1]['Codec'] : (isset($itemDetails['NowPlayingItem']['MediaStreams'][0]) ? $itemDetails['NowPlayingItem']['MediaStreams'][0]['Codec'] : ''),
+        'videoDecision' => streamType(@$itemDetails['PlayState']['PlayMethod']),
+        'audioDecision' => streamType(@$itemDetails['PlayState']['PlayMethod']),
+        'container' => isset($itemDetails['NowPlayingItem']['Container']) ? $itemDetails['NowPlayingItem']['Container'] : '',
+        'audioChannels' => @$itemDetails['TranscodingInfo']['AudioChannels']
     );
     // Genre catch all
-    if($item->Genre){
+    if($item['Genres']){
         $genres = array();
-        foreach ($item->Genre as $key => $value) {
-            $genres[] = (string)$value['tag'];
+        foreach ($item['Genres'] as $genre) {
+            $genres[] = $genre;
         }
     }
     // Actor catch all
-    if($item->Role ){
+    if($item['People'] ){
         $actors = array();
-        foreach ($item->Role  as $key => $value) {
-            if($value['thumb']){
+        foreach ($item['People'] as $key => $value) {
+            if(@$value['PrimaryImageTag'] && @$value['Role']){
+                if (file_exists($cacheDirectory.(string)$value['Id'].'-cast.jpg')){ $actorImage = $cacheDirectoryWeb.(string)$value['Id'].'-cast.jpg'; }
+                if (file_exists($cacheDirectory.(string)$value['Id'].'-cast.jpg') && (time() - 604800) > filemtime($cacheDirectory.(string)$value['Id'].'-cast.jpg') || !file_exists($cacheDirectory.(string)$value['Id'].'-cast.jpg')) {
+                    $actorImage = 'api/?v1/image&source=emby&type=Primary&img='.(string)$value['Id'].'&height='.$actorHeight.'&width='.$actorWidth.'&key='.(string)$value['Id'].'-cast';
+                }
                 $actors[] = array(
-                    'name' =>  (string)$value['tag'],
-                    'role' =>  (string)$value['role'],
-                    'thumb' =>  (string)$value['thumb']
+                    'name' =>  (string)$value['Name'],
+                    'role' =>  (string)$value['Role'],
+                    'thumb' =>  $actorImage
                 );
             }
         }
     }
     // Metadata information
     $embyItem['metadata'] = array(
-        'guid' => (string)$item['guid'],
-        'summary' => (string)$item['summary'],
-        'rating' => (string)$item['rating'],
-        'duration' => (string)$item['duration'],
-        'originallyAvailableAt' => (string)$item['originallyAvailableAt'],
-        'year' => (string)$item['year'],
-        'studio' => (string)$item['studio'],
-        'tagline' => (string)$item['tagline'],
-        'genres' => ($item->Genre) ?  $genres : '',
-        'actors' => ($item->Role) ?  $actors : ''
+        'guid' => $item['Id'],
+        'summary' => @(string)$item['Overview'],
+        'rating' => @(string)$item['CommunityRating'],
+        'duration' => @(string)$item['RunTimeTicks'],
+        'originallyAvailableAt' => @(string)$item['PremiereDate'],
+        'year' => (string)$item['ProductionYear'],
+        //'studio' => (string)$item['studio'],
+        'tagline' => @(string)$item['Taglines'][0],
+        'genres' => ($item['Genres']) ?  $genres : '',
+        'actors' => ($item['People']) ?  $actors : ''
     );
+
     if (file_exists($cacheDirectory.$embyItem['nowPlayingKey'].'.jpg')){ $embyItem['nowPlayingImageURL'] = $cacheDirectoryWeb.$embyItem['nowPlayingKey'].'.jpg'; }
     if (file_exists($cacheDirectory.$embyItem['key'].'.jpg')){ $embyItem['imageURL']  = $cacheDirectoryWeb.$embyItem['key'].'.jpg'; }
     if (file_exists($cacheDirectory.$embyItem['nowPlayingKey'].'.jpg') && (time() - 604800) > filemtime($cacheDirectory.$embyItem['nowPlayingKey'].'.jpg') || !file_exists($cacheDirectory.$embyItem['nowPlayingKey'].'.jpg')) {
-        $embyItem['nowPlayingImageURL'] = 'api/?v1/image&source=plex&img='.$embyItem['nowPlayingThumb'].'&height='.$nowPlayingHeight.'&width='.$nowPlayingWidth.'&key='.$embyItem['nowPlayingKey'].'';
+        $embyItem['nowPlayingImageURL'] = 'api/?v1/image&source=emby&type='.$embyItem['nowPlayingImageType'].'&img='.$embyItem['nowPlayingThumb'].'&height='.$nowPlayingHeight.'&width='.$nowPlayingWidth.'&key='.$embyItem['nowPlayingKey'].'';
     }
     if (file_exists($cacheDirectory.$embyItem['key'].'.jpg') && (time() - 604800) > filemtime($cacheDirectory.$embyItem['key'].'.jpg') || !file_exists($cacheDirectory.$embyItem['key'].'.jpg')) {
-        $embyItem['imageURL'] = 'api/?v1/image&source=plex&img='.$embyItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$embyItem['key'].'';
+        $embyItem['imageURL'] = 'api/?v1/image&source=emby&type='.$embyItem['imageType'].'&img='.$embyItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$embyItem['key'].'';
     }
     if(!$embyItem['nowPlayingThumb'] ){ $embyItem['nowPlayingOriginalImage']  = $embyItem['nowPlayingImageURL']  = "plugins/images/cache/no-np.png"; $embyItem['nowPlayingKey'] = "no-np"; }
     if(!$embyItem['thumb'] ){  $embyItem['originalImage'] = $embyItem['imageURL'] = "plugins/images/cache/no-list.png"; $embyItem['key'] = "no-list"; }
-	if(isset($useImage)){ $embyItem['useImage'] = $useImage; }*/
-
+	if(isset($useImage)){ $embyItem['useImage'] = $useImage; }
     return $embyItem;
 }
 function resolvePlexItem($item) {
@@ -385,12 +420,12 @@ function plexConnect($action,$key=null){
 	}
 	return false;
 }
-function embyConnect($action,$key=null){
+function embyConnect($action,$key=null,$skip=false){
 	if(!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken']) && qualifyRequest($GLOBALS['homepageEmbyAuth'])){
         $url = qualifyURL($GLOBALS['embyURL']);
         switch ($action) {
             case 'streams':
-                $url = $url."/status/sessions?X-Plex-Token=".$GLOBALS['plexToken'];
+                $url = $url.'/Sessions?api_key='.$GLOBALS['embyToken'];
                 break;
             case 'recent':
                 $username = false;
@@ -422,11 +457,16 @@ function embyConnect($action,$key=null){
                 $url = $url.'/Users/'.$userId.'/Items/Latest?EnableImages=false&Limit=100&api_key='.$GLOBALS['embyToken'].($showPlayed?'':'&IsPlayed=false');
                 break;
             case 'metadata':
-                $url = $url."/library/metadata/".$key."?X-Plex-Token=".$GLOBALS['plexToken'];
+                $skip = true;
                 break;
             default:
                 # code...
                 break;
+        }
+        if($skip && $key){
+            $items[] = resolveEmbyItem(array('Id'=>$key));
+            $api['content'] = $items;
+            return $api;
         }
 		try{
 			$options = (localURL($url)) ? array('verify' => false ) : array();
@@ -435,7 +475,9 @@ function embyConnect($action,$key=null){
 				$items = array();
 				$emby = json_decode($response->body, true);
 				foreach($emby AS $child) {
-					$items[] = resolveEmbyItem($child);
+                    if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
+                        $items[] = resolveEmbyItem($child);
+                    }
 				}
 				$api['content'] = $items;
 				return $api;

@@ -61,9 +61,9 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Plex Stream
-				plexStream();
+				homepageStream("plex");
 				setInterval(function() {
-				    plexStream();
+				    homepageStream("plex");
 				}, '.$GLOBALS['homepageStreamRefresh'].');
 				// End Plex Stream
 				</script>
@@ -75,9 +75,9 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Plex Recent
-				plexRecent();
+				homepageRecent("plex");
 				setInterval(function() {
-					plexRecent();
+					homepageRecent("plex");
 				}, '.$GLOBALS['homepageRecentRefresh'].');
 				// End Plex Recent
 				</script>
@@ -88,10 +88,32 @@ function buildHomepageItem($homepageItem){
 
 			break;
 		case 'homepageOrderembynowplaying':
-
+			if($GLOBALS['homepageEmbyStreams']){
+				$item .= '
+				<script>
+				// Emby Stream
+				homepageStream("emby");
+				setInterval(function() {
+					homepageStream("emby");
+				}, '.$GLOBALS['homepageStreamRefresh'].');
+				// End Emby Stream
+				</script>
+				';
+			}
 			break;
 		case 'homepageOrderembyrecent':
-
+			if($GLOBALS['homepageEmbyRecent']){
+				$item .= '
+				<script>
+				// Emby Recent
+				homepageRecent("emby");
+				setInterval(function() {
+					homepageRecent("emby");
+				}, '.$GLOBALS['homepageRecentRefresh'].');
+				// End Emby Recent
+				</script>
+				';
+			}
 			break;
 		case 'homepageOrderombi':
 

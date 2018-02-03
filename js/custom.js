@@ -1607,12 +1607,23 @@ $(document).on("click", ".openTab", function(e) {
 $(document).on("click", ".metadata-get", function(e) {
     $('.metadata-info').html('');
     var key = $(this).attr('data-key');
-    var uid = $(this).attr('data-uid');
+	var uid = $(this).attr('data-uid');
+    var source = $(this).attr('data-source');
+	switch (source) {
+		case 'plex':
+			var action = 'getPlexMetadata';
+			break;
+		case 'emby':
+            var action = 'getEmbyMetadata';
+			break;
+		default:
+
+	}
     ajaxloader(".content-wrap","in");
-	organizrAPI('POST','api/?v1/homepage/connect',{action:'getPlexMetadata', key:key}).success(function(data) {
+	organizrAPI('POST','api/?v1/homepage/connect',{action:action, key:key}).success(function(data) {
 		var response = JSON.parse(data);
         console.log(response);
-		$('.'+uid+'-metadata-info').html(buildMetadata(response.data));
+		$('.'+uid+'-metadata-info').html(buildMetadata(response.data, source));
         $('.'+uid).trigger('click')
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");

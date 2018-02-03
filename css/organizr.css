@@ -172,7 +172,7 @@ object-fit: contain;
   overflow: hidden;
   position: relative;
   background-size: cover;
-  background-position: center top;
+  background-position: center;
   background-repeat: no-repeat;
 }
 h2.m-b-0.font-medium.pull-right {
