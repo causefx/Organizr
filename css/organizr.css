@@ -179,3 +179,33 @@ h2.m-b-0.font-medium.pull-right {
   -webkit-filter: drop-shadow(1px 1px 0px #1f1f1f);
   filter: drop-shadow(1px 1px 0px #1f1f1f);
 }
+.text-plex {
+  color: #E5A00D;
+}
+.text-emby {
+  color: #4CAF50;
+}
+.genre-list {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.mouse {
+  cursor: pointer;
+}
+.el-element-overlay .el-card-item .el-overlay-1 img.imageSourceLeft {
+  width: 56%;
+  display:block;
+  position: absolute;
+  left:0px;
+  overflow: hidden;
+  filter: blur(0px) grayscale(1);
+}
+.el-element-overlay .el-card-item .el-overlay-1 img.imageSourceRight {
+  width: 56%;
+  display:block;
+  position: absolute;
+  right:0px;
+  overflow: hidden;
+  filter: blur(0px) grayscale(1)
+}

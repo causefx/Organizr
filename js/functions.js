@@ -658,7 +658,6 @@ function buildHomepageItem(array){
 				</div>
 			</div>
 			<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup-block mfp-with-anim homepageForm">
-			    <h1 lang="en">Edit Settings</h1>
 			    <fieldset style="border:0;">`+buildFormGroup(v.settings)+`</fieldset>
 			    <div class="clearfix"></div>
 			</form>
@@ -695,7 +694,7 @@ function buildFormGroup(array){
 		var total = v.length;
 		group += `
 			<!-- FORM GROUP -->
-			<h3 class="box-title" lang="en">`+i+`</h3>
+			<h4 class="box-title" lang="en">`+i+`</h4>
 			<hr class="m-t-0 m-b-40">
 			<div class="row">
 		`;
@@ -1822,8 +1821,8 @@ function buildPlexStreamItem(array){
 				icon = 'icon-music-tone-alt';
 				width = 56;
 				bg = `
-				<img class="imageSource" style="width: 56%;display:block;position: absolute;left:0px;overflow: hidden;filter: blur(0px) grayscale(1);" src="`+v.nowPlayingImageURL+`">
-				<img class="imageSource" style="width: 56%;display:block;position: absolute;right:0px;overflow: hidden;filter: blur(0px) grayscale(1);" src="`+v.nowPlayingImageURL+`">
+				<img class="imageSource imageSourceLeft" src="`+v.nowPlayingImageURL+`">
+				<img class="imageSource imageSourceRight" src="`+v.nowPlayingImageURL+`">
 				`;
 				break;
 			case 'movie':
@@ -1871,7 +1870,7 @@ function buildPlexStreamItem(array){
 							<div class="progress-bar progress-bar-inverse" style="width: `+v.transcoded+`%;" role="progressbar"></div>
 						</div>
 						<h3 class="box-title pull-left p-l-10 elip" style="width:90%">`+v.nowPlayingTitle+`</h3>
-						<h3 class="box-title pull-right vertical-middle" style="width:10%"><i class="icon-control-`+v.state+` fa-fw text-primary" style=""></i></h3>
+						<h3 class="box-title pull-right vertical-middle" style="width:10%"><i class="icon-control-`+v.state+` fa-fw text-info" style=""></i></h3>
 						<div class="clearfix"></div>
 						<small class="pull-left p-l-10"><i class="`+icon+` fa-fw text-info"></i>`+v.nowPlayingBottom+`</small>
 						<small class="pull-right p-r-10">`+v.user+` <i class="icon-user"></i></small>
@@ -1934,7 +1933,7 @@ function buildPlexRecentItem(array){
 
 		}
 		items += `
-		<div class="item lazyload `+className+` metadata-get" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
+		<div class="item lazyload `+className+` metadata-get mouse" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
 			<span class="elip recent-title">`+v.title+`</span>
 			<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
 			<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
@@ -1975,7 +1974,7 @@ function buildPlexRecent(array){
             <div class="panel panel-default">
                 <div class="panel-heading bg-info p-t-10 p-b-10">
 					<span class="pull-left m-t-5" lang="en">Recently Added to Plex</span>
-					<div class="btn-group m-r-10 pull-right">
+					<div class="btn-group pull-right">
 	                    <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
 							<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
 						</button>
@@ -2004,18 +2003,24 @@ function buildMetadata(array){
 	var metadata = '';
 	var genres = '';
 	var actors = '';
-	var rating = '<div class="col-xs-4 p-10"></div>';
+	var rating = '<div class="col-xs-2 p-10"></div>';
 	$.each(array.content, function(i,v) {
 		console.log(typeof v.metadata.actors)
 		var hasActor = (typeof v.metadata.actors !== 'string') ? true : false;
+		var hasGenre = (typeof v.metadata.genres !== 'string') ? true : false;
 		if(hasActor){
 			$.each(v.metadata.actors, function(i,v) {
-				actors += '<div class="item lazyload recent-poster" data-src="'+v.thumb+'" alt="'+v.name+'" ><span class="elip recent-title">'+v.name+'</span></div>';
+				actors += '<div class="item lazyload recent-poster" data-src="'+v.thumb+'" alt="'+v.name+'" ><span class="elip recent-title p-5">'+v.name+'<br><small class="font-light">'+v.role+'</small></span></div>';
+			});
+		}
+		if(hasGenre){
+			$.each(v.metadata.genres, function(i,v) {
+				genres += '<span class="badge bg-org m-r-10">'+v+'</span>';
 			});
 		}
 		if(v.metadata.rating){
 			var ratingRound = Math.ceil(v.metadata.rating)*10;
-			rating = `<div class="col-xs-4 p-10"><div data-label="`+v.metadata.rating *10+`%" class="css-bar css-bar-`+Math.ceil(ratingRound/5)*5+` css-bar-sm m-b-0  css-bar-info"></div></div>`;
+			rating = `<div class="col-xs-2 p-10"><div data-label="`+v.metadata.rating *10+`%" class="css-bar css-bar-`+Math.ceil(ratingRound/5)*5+` css-bar-sm m-b-0  css-bar-info"><img src="plugins/images/rotten.png" class="nowPlayingUserThumb" alt="User"></div></div>`;
 		}
 
 		var seconds = v.metadata.duration / 1000 ; // or "2000"
@@ -2027,37 +2032,24 @@ function buildMetadata(array){
 		<div class="white-box m-b-0">
 			<div class="user-bg lazyload" data-src="`+v.nowPlayingImageURL+`">
 				`+rating+`
-				<div class="col-xs-8">
-	                <h2 class="m-b-0 font-medium pull-right">`+v.title+`<br>    <small class="text-muted m-t-0">`+v.metadata.tagline+`</small></h2>
-
+				<div class="col-xs-10">
+	                <h2 class="m-b-0 font-medium pull-right text-right">
+						`+v.title+`<br>
+						<small class="m-t-0 text-white">`+v.metadata.tagline+`</small><br>
+						<a class="openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class="mdi mdi-plex mdi-36px text-plex"></i></a>
+					</h2>
 	            </div>
+				<div class="genre-list p-10">`+genres+`</div>
 			</div>
 		</div>
 		<div class="panel panel-info p-b-0 p-t-0">
-            <div class="panel-body p-b-0 p-t-0">
-				<div class="row text-center m-t-0">
-					<div class="col-xs-4 b-r">
-						<h2></h2>
-						<h4></h4>
-					</div>
-					<div class="col-xs-4 b-r">
-						<h2></h2>
-						<h4></h4>
-					</div>
-					<div class="col-xs-4">
-						<h2><a class="openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class=" mdi mdi-plex mdi-24px"></i></a></h2>
-						<h4>Open Now</h4>
-					</div>
-				</div>
+            <div class="panel-body p-b-0 p-t-0 m-b-0">
 				<div class="p-20 text-center">
 					<p class="">`+v.metadata.summary+`</p>
-					<hr>
 				</div>
 				<div class="row">
 					<div class="col-lg-12">
-
-								<div class="owl-carousel owl-theme metadata-actors p-b-10">`+actors+`</div>
-
+						<div class="owl-carousel owl-theme metadata-actors p-b-10">`+actors+`</div>
 					</div>
 				</div>
             </div>

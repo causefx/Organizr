@@ -21,6 +21,8 @@ return array(
     'plexTabURL' => '',
     'plexToken' => '',
     'plexTabName' => '',
+    'embyTabURL' => '',
+    'embyTabName' => '',
     'embyURL' => '',
     'embyToken' => '',
     'plexID' => '',
@@ -31,6 +33,8 @@ return array(
     'ssoTautulli' => false,
     'homepagePlexEnabled' => false,
     'homepagePlexAuth' => '1',
+    'homepageEmbyEnabled' => false,
+    'homepageEmbyAuth' => '1',
     'homepageOrdercustomhtml' => '1',
 	'homepageOrdernotice' => '2',
 	'homepageOrderplexsearch' => '3',
@@ -53,5 +57,9 @@ return array(
     'homepagePlexStreams' => false,
     'homepagePlexStreamsAuth' => '1',
     'homepagePlexRecent' => false,
-    'homepagePlexRecentAuth' => '1'
+    'homepagePlexRecentAuth' => '1',
+    'homepageEmbyStreams' => false,
+    'homepageEmbyStreamsAuth' => '1',
+    'homepageEmbyRecent' => false,
+    'homepageEmbyRecentAuth' => '1'
 );

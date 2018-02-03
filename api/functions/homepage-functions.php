@@ -188,62 +188,64 @@ function getHomepageList(){
                         'value' => $GLOBALS['plexID']
                     )
                 ),
-                'Modules' => array(
-                    array(
+				'Active Streams' => array(
+					array(
             			'type' => 'switch',
             			'name' => 'homepagePlexStreams',
-            			'label' => 'Show Streams',
+            			'label' => 'Enable',
             			'value' => $GLOBALS['homepagePlexStreams']
             		),
-                    array(
+					array(
     					'type' => 'select',
     					'name' => 'homepagePlexStreamsAuth',
-                        'label' => 'Stream Authorization',
+                        'label' => 'Minimum Authorization',
     					'value' => $GLOBALS['homepagePlexStreamsAuth'],
     					'options' => $groups
     				),
 					array(
             			'type' => 'switch',
-            			'name' => 'homepagePlexRecent',
-            			'label' => 'Show Recent Items',
-            			'value' => $GLOBALS['homepagePlexRecent']
-            		),
-                    array(
-    					'type' => 'select',
-    					'name' => 'homepagePlexRecentAuth',
-                        'label' => 'Recent Authorization',
-    					'value' => $GLOBALS['homepagePlexRecentAuth'],
-    					'options' => $groups
-    				)
-                ),
-                'Options' => array(
-                    array(
-            			'type' => 'switch',
             			'name' => 'homepageShowStreamNames',
-            			'label' => 'Show User Information',
+            			'label' => 'User Information',
             			'value' => $GLOBALS['homepageShowStreamNames']
             		),
 					array(
     					'type' => 'select',
     					'name' => 'homepageShowStreamNamesAuth',
-                        'label' => 'User Information Authorization',
+                        'label' => 'Minimum Authorization',
     					'value' => $GLOBALS['homepageShowStreamNamesAuth'],
     					'options' => $groups
     				),
-                    array(
+					array(
     					'type' => 'select',
     					'name' => 'homepageStreamRefresh',
-                        'label' => 'Stream Refresh Seconds',
+                        'label' => 'Refresh Seconds',
     					'value' => $GLOBALS['homepageStreamRefresh'],
     					'options' => $time
     				),
+				),
+                'Recent Items' => array(
 					array(
+            			'type' => 'switch',
+            			'name' => 'homepagePlexRecent',
+            			'label' => 'Enable',
+            			'value' => $GLOBALS['homepagePlexRecent']
+            		),
+                    array(
     					'type' => 'select',
-    					'name' => 'homepageRecentRefresh',
-                        'label' => 'Recent Items Refresh Seconds',
-    					'value' => $GLOBALS['homepageRecentRefresh'],
-    					'options' => $time
+    					'name' => 'homepagePlexRecentAuth',
+                        'label' => 'Minimum Authorization',
+    					'value' => $GLOBALS['homepagePlexRecentAuth'],
+    					'options' => $groups
     				),
+					array(
+						'type' => 'select',
+						'name' => 'homepageRecentRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageRecentRefresh'],
+						'options' => $time
+					),
+                ),
+                'Misc Options' => array(
 					array(
                         'type' => 'input',
                         'name' => 'plexTabName',
@@ -254,14 +256,14 @@ function getHomepageList(){
 					array(
                         'type' => 'input',
                         'name' => 'plexTabURL',
-                        'label' => 'Plex Tab URL',
+                        'label' => 'Plex Tab WAN URL',
                         'value' => $GLOBALS['plexTabURL'],
 						'placeholder' => 'http(s)://hostname:port'
                     )
                 )
             )
         ),
-        array(
+		array(
             'name' => 'Emby',
             'enabled' => true,
             'image' => 'plugins/images/tabs/emby.png',
@@ -270,43 +272,105 @@ function getHomepageList(){
                 'Enable' => array(
                     array(
             			'type' => 'switch',
-            			'name' => 'homepagePlexEnabled',
+            			'name' => 'homepageEmbyEnabled',
             			'label' => 'Enable',
-            			'value' => $GLOBALS['homepagePlexEnabled']
+            			'value' => $GLOBALS['homepageEmbyEnabled']
+            		),
+					array(
+            			'type' => 'select',
+            			'name' => 'homepageEmbyAuth',
+            			'label' => 'Minimum Authentication',
+            			'value' => $GLOBALS['homepageEmbyAuth'],
+                        'options' => $groups
             		)
                 ),
                 'Connection' => array(
                     array(
                         'type' => 'input',
-                        'name' => 'plexURL',
+                        'name' => 'embyURL',
                         'label' => 'URL',
-                        'value' => $GLOBALS['plexURL']
+                        'value' => $GLOBALS['embyURL'],
+						'placeholder' => 'http(s)://hostname:port'
                     ),
                     array(
                         'type' => 'input',
-                        'name' => 'plexToken',
+                        'name' => 'embyToken',
                         'label' => 'Token',
-                        'value' => $GLOBALS['plexToken']
+                        'value' => $GLOBALS['embyToken']
                     )
                 ),
-                'Authentication' => array(
-                    array(
-            			'type' => 'select',
-            			'name' => 'homepagePlexAuth',
-            			'label' => 'Minimum Authentication',
-            			'value' => $GLOBALS['homepagePlexAuth'],
-                        'options' => $groups
-            		)
-                ),
-                'Options' => array(
+				'Active Streams' => array(
+					array(
+            			'type' => 'switch',
+            			'name' => 'homepageEmbyStreams',
+            			'label' => 'Enable',
+            			'value' => $GLOBALS['homepageEmbyStreams']
+            		),
+					array(
+    					'type' => 'select',
+    					'name' => 'homepageEmbyStreamsAuth',
+                        'label' => 'Minimum Authorization',
+    					'value' => $GLOBALS['homepageEmbyStreamsAuth'],
+    					'options' => $groups
+    				),
+					array(
+            			'type' => 'switch',
+            			'name' => 'homepageShowStreamNames',
+            			'label' => 'User Information',
+            			'value' => $GLOBALS['homepageShowStreamNames']
+            		),
+					array(
+    					'type' => 'select',
+    					'name' => 'homepageShowStreamNamesAuth',
+                        'label' => 'Minimum Authorization',
+    					'value' => $GLOBALS['homepageShowStreamNamesAuth'],
+    					'options' => $groups
+    				),
+					array(
+    					'type' => 'select',
+    					'name' => 'homepageStreamRefresh',
+                        'label' => 'Refresh Seconds',
+    					'value' => $GLOBALS['homepageStreamRefresh'],
+    					'options' => $time
+    				),
+				),
+                'Recent Items' => array(
+					array(
+            			'type' => 'switch',
+            			'name' => 'homepageEmbyRecent',
+            			'label' => 'Enable',
+            			'value' => $GLOBALS['homepageEmbyRecent']
+            		),
                     array(
     					'type' => 'select',
-    					'name' => 'style',
-    					'label' => 'Style',
-    					'class' => 'styleChanger',
-    					'value' => $GLOBALS['style'],
+    					'name' => 'homepageEmbyRecentAuth',
+                        'label' => 'Minimum Authorization',
+    					'value' => $GLOBALS['homepageEmbyRecentAuth'],
     					'options' => $groups
-    				)
+    				),
+					array(
+						'type' => 'select',
+						'name' => 'homepageRecentRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageRecentRefresh'],
+						'options' => $time
+					),
+                ),
+                'Misc Options' => array(
+					array(
+                        'type' => 'input',
+                        'name' => 'embyTabName',
+                        'label' => 'Emby Tab Name',
+                        'value' => $GLOBALS['embyTabName'],
+						'placeholder' => 'Only use if you have Plex in a reverse proxy'
+                    ),
+					array(
+                        'type' => 'input',
+                        'name' => 'embyTabURL',
+                        'label' => 'Emby Tab WAN URL',
+                        'value' => $GLOBALS['embyTabURL'],
+						'placeholder' => 'http(s)://hostname:port'
+                    )
                 )
             )
         ),

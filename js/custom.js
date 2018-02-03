@@ -96,7 +96,7 @@ function pageLoad(){
           paginationSpeed : 400,
           margin:40,
           nav:false,
-          autoplay:false,
+          autoplay:true,
           dots:false,
           responsive:{
               0:{
