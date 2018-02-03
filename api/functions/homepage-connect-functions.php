@@ -121,6 +121,20 @@ function resolveEmbyItem($itemDetails) {
             $embyItem['nowPlayingTitle'] = @$item['Name'];
             $embyItem['nowPlayingBottom'] = @$item['ProductionYear'];
             break;
+        case 'Video':
+            $embyItem['type'] = 'movie';
+            $embyItem['title'] = $item['Name'];
+            $embyItem['summary'] = '';
+            $embyItem['ratingKey'] = $item['Id'];
+            $embyItem['thumb'] = $item['Id'];
+            $embyItem['key'] = $item['Id'] . "-list";
+            $embyItem['nowPlayingThumb'] = $item['Id'];
+            $embyItem['nowPlayingKey'] = $item['Id'] . "-np";
+            $embyItem['metadataKey'] = $item['Id'];
+            $embyItem['nowPlayingImageType'] = isset($item['ImageTags']['Primary']) ? "Primary" : (isset($item['BackdropImageTags']) ? "Backdrop" : false);
+            $embyItem['nowPlayingTitle'] = @$item['Name'];
+            $embyItem['nowPlayingBottom'] = @$item['ProductionYear'];
+            break;
         default:
             return false;
 	}
@@ -474,7 +488,7 @@ function embyConnect($action,$key=null,$skip=false){
 				return $api;
 			}
 		}catch( Requests_Exception $e ) {
-			writeLog('error', 'Plex Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+			writeLog('error', 'Emby Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
 		};
 	}
 	return false;
