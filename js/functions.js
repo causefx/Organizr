@@ -2019,7 +2019,7 @@ function buildDownloaderItem(array, source, type='none'){
                             <td class="hidden-xs">`+v.size+`</td>
                             <td class="text-right">
 								<div class="progress progress-lg m-b-0">
-                                    <div class="progress-bar progress-bar-success" style="width: `+v.percentage+`%;" role="progressbar">`+v.percentage+`%</div>
+                                    <div class="progress-bar progress-bar-info" style="width: `+v.percentage+`%;" role="progressbar">`+v.percentage+`%</div>
                                 </div>
 							</td>
                         </tr>
@@ -2042,7 +2042,7 @@ function buildDownloaderItem(array, source, type='none'){
                             <td class="hidden-xs">`+v.size+`</td>
                             <td class="text-right">
 								<div class="progress progress-lg m-b-0">
-                                    <div class="progress-bar progress-bar-success" style="width: 100%;" role="progressbar">100%</div>
+                                    <div class="progress-bar progress-bar-info" style="width: 100%;" role="progressbar">100%</div>
                                 </div>
 							</td>
                         </tr>

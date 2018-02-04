@@ -40,5 +40,12 @@
         "new": "Plugin Framework nearly complete|Added Mail Plugin",
         "fixed": "",
         "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+    },
+	"2.0.0-alpha.200": {
+        "date":"2018-02-04 21:00",
+        "title": "Homepage Work Started",
+        "new": "Plex Streams on homepage|Plex Recent Added on homepage|Emby Streams on homepage|Emby Recent Added on homepage|SabNZBd on homepage",
+        "fixed": "Multiple things for performace",
+        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
     }
 }
