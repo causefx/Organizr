@@ -20,6 +20,9 @@ function homepageConnect($array){
         case 'getEmbyMetadata':
             return embyConnect('metadata',$array['data']['key'],true);
             break;
+        case 'getSabnzbd':
+            return sabnzbdConnect();
+            break;
         default:
             # code...
             break;
@@ -474,8 +477,36 @@ function embyConnect($action,$key=null,$skip=false){
 				return $api;
 			}
 		}catch( Requests_Exception $e ) {
-			writeLog('error', 'Plex Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+			writeLog('error', 'Emby Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
 		};
 	}
 	return false;
+}
+function sabnzbdConnect() {
+    if($GLOBALS['homepageSabnzbdEnabled'] && !empty($GLOBALS['sabnzbdURL']) && !empty($GLOBALS['sabnzbdToken']) && qualifyRequest($GLOBALS['homepageSabnzbdAuth'])){
+        $url = qualifyURL($GLOBALS['sabnzbdURL']);
+        $url = $url.'/api?mode=queue&output=json&apikey='.$GLOBALS['sabnzbdToken'];
+        try{
+			$options = (localURL($url)) ? array('verify' => false ) : array();
+			$response = Requests::get($url, array(), $options);
+			if($response->success){
+				$api['content']['queueItems'] = json_decode($response->body, true);
+			}
+		}catch( Requests_Exception $e ) {
+			writeLog('error', 'SabNZBd Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		};
+        $url = qualifyURL($GLOBALS['sabnzbdURL']);
+        $url = $url.'/api?mode=history&output=json&apikey='.$GLOBALS['sabnzbdToken'];
+        try{
+			$options = (localURL($url)) ? array('verify' => false ) : array();
+			$response = Requests::get($url, array(), $options);
+			if($response->success){
+				$api['content']['historyItems']= json_decode($response->body, true);
+			}
+		}catch( Requests_Exception $e ) {
+			writeLog('error', 'SabNZBd Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		};
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
 }

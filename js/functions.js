@@ -1893,7 +1893,7 @@ function buildStreamItem(array,source){
 									<span class="text-uppercase"><i class="mdi mdi-`+v.bandwidthType+`"></i> `+v.bandwidthType+`</span>
 									<span class="text-uppercase"><i class="mdi mdi-account-network"></i> `+v.userAddress+`</span>
 									`+streamInfo+`
-									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-plex"></i> Product: `+v.userStream.product+`</span></div>
+									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-`+source+`"></i> Product: `+v.userStream.product+`</span></div>
 									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-laptop-mac"></i> Device: `+v.userStream.device+`</span></div>
 								</div>
 								<div data-label="`+v.watched+`%" class="css-bar css-bar-`+Math.ceil(v.watched/5)*5+` css-bar-lg m-b-0  css-bar-info pull-right">`+userThumb+`</div>
@@ -1988,7 +1988,6 @@ function buildRecent(array, type){
 	                </div>
 					<div class="clearfix"></div>
 				</div>
-
                 <div class="panel-wrapper p-b-0 collapse in">
                     <div class="owl-carousel owl-theme recent-items `+type+`-recent">
 						`+buildRecentItem(array.content, type)+`
@@ -1997,6 +1996,122 @@ function buildRecent(array, type){
             </div>
         </div>
     </div>
+	` : '';
+}
+function buildDownloaderItem(array, source, type='none'){
+	var items = '';
+	switch (source) {
+		case 'sabnzbd':
+			switch (type) {
+				case 'queue':
+					console.log(source);
+					console.log(array.queue);
+					console.log(array.queue.slots.length);
+					if(array.queue.slots.length == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+					}
+					$.each(array.queue.slots, function(i,v) {
+						items += `
+						<tr>
+							<td class="max-texts">`+v.filename+`</td>
+                            <td class="hidden-xs">`+v.status+`</td>
+                            <td class="hidden-xs"><span class="label label-info">`+v.cat+`</span></td>
+                            <td class="hidden-xs">`+v.size+`</td>
+                            <td class="text-right">
+								<div class="progress progress-lg m-b-0">
+                                    <div class="progress-bar progress-bar-success" style="width: `+v.percentage+`%;" role="progressbar">`+v.percentage+`%</div>
+                                </div>
+							</td>
+                        </tr>
+						`;
+					});
+					break;
+				case 'history':
+					console.log(source);
+					console.log(array.history);
+					console.log(array.history.slots.length);
+					if(array.history.slots.length == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in hitsory</td></tr>';
+					}
+					$.each(array.history.slots, function(i,v) {
+						items += `
+						<tr>
+							<td class="max-texts">`+v.name+`</td>
+                            <td class="hidden-xs">`+v.status+`</td>
+                            <td class="hidden-xs"><span class="label label-info">`+v.category+`</span></td>
+                            <td class="hidden-xs">`+v.size+`</td>
+                            <td class="text-right">
+								<div class="progress progress-lg m-b-0">
+                                    <div class="progress-bar progress-bar-success" style="width: 100%;" role="progressbar">100%</div>
+                                </div>
+							</td>
+                        </tr>
+						`;
+					});
+					break;
+				default:
+					return false;
+			}
+			break;
+		default:
+			return false;
+	}
+	return items;
+}
+function buildDownloader(array, source){
+	console.log(array);
+	var menu = `<ul class="nav customtab nav-tabs pull-right" role="tablist">`;
+	var listing = '';
+	var queueItems = (typeof array.content.queueItems !== 'undefined') ? array.content.queueItems : false;
+	var historyItems = (typeof array.content.historyItems !== 'undefined') ? array.content.historyItems : false;
+	var downloader = (queueItems || historyItems) ? true : false;
+	console.log(queueItems);
+	console.log(historyItems);
+	console.log(downloader);
+	if(queueItems){
+		menu += `
+			<li role="presentation" class="active"><a href="#`+source+`-queue" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-download"></i></span><span class="hidden-xs"> QUEUE</span></a></li>
+			`;
+		listing += `
+		<div role="tabpanel" class="tab-pane fade active in" id="`+source+`-queue">
+			<div class="inbox-center table-responsive">
+				<table class="table table-hover">
+					<tbody class="`+source+`-queue">`+buildDownloaderItem(array.content.queueItems, source, 'queue')+`</tbody>
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
+	if(historyItems){
+		menu += `
+		<li role="presentation" class=""><a href="#`+source+`-history" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-time"></i></span> <span class="hidden-xs">HISTORY</span></a></li>
+		`;
+		listing += `
+		<div role="tabpanel" class="tab-pane fade" id="`+source+`-history">
+			<div class="inbox-center table-responsive">
+				<table class="table table-hover">
+					<tbody class="`+source+`-history">`+buildDownloaderItem(array.content.historyItems, source, 'history')+`</tbody>
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
+	menu += '</ul>';
+	return downloader ? `
+	<div class="row">
+		<div class="col-lg-12">
+	        <div class="white-box bg-info m-b-0 p-b-0 p-t-10 mailbox-widget">
+	            <h2 class="text-white m-0 pull-left text-uppercase">`+source+`</h2>
+	            `+menu+`
+				<div class="clearfix"></div>
+	        </div>
+	        <div class="white-box p-0">
+	            <div class="tab-content m-t-0">`+listing+`</div>
+	        </div>
+		</div>
+	</div>
 	` : '';
 }
 function buildMetadata(array, source){
@@ -2054,6 +2169,26 @@ function buildMetadata(array, source){
 		`;
 	});
 	return metadata;
+}
+function homepageDownloader(type){
+	switch (type) {
+		case 'sabnzbd':
+			var action = 'getSabnzbd';
+			break;
+		case 'nzbget':
+			var action = 'getNzbget';
+			break;
+		default:
+
+	}
+	ajaxloader(".content-wrap","in");
+	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
+		var response = JSON.parse(data);
+		$('#homepageOrder'+type).html(buildDownloader(response.data, type));
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
 }
 function homepageStream(type){
 	switch (type) {
