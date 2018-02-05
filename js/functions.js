@@ -2068,6 +2068,7 @@ function buildDownloader(array, source){
 	var historyItems = (typeof array.content.historyItems !== 'undefined') ? array.content.historyItems : false;
 	var downloader = (queueItems || historyItems) ? true : false;
 	var state = '';
+	var active = '';
 	console.log(array);
 	console.log(queueItems);
 	console.log(historyItems);
@@ -2076,9 +2077,10 @@ function buildDownloader(array, source){
 		switch (source) {
 			case 'sabnzbd':
 				if(queueItems.queue.paused){
-					state = `<span class="downloader mouse" data-source="sabnzbd" data-action="resume" data-target="main"><i class="fa fa-pause"></i></span>`;
+					state = `<span class="downloader mouse" data-source="sabnzbd" data-action="resume" data-target="main"><i class="fa fa-play"></i></span>`;
+					active = 'grayscale';
 				}else{
-					state = `<span class="downloader mouse" data-source="sabnzbd" data-action="pause" data-target="main"><i class="fa fa-play"></i></span>`;
+					state = `<span class="downloader mouse" data-source="sabnzbd" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span>`;
 				}
 				break;
 			default:
@@ -2118,7 +2120,7 @@ function buildDownloader(array, source){
 	<div class="row">
 		<div class="col-lg-12">
 	        <div class="white-box bg-info m-b-0 p-b-0 p-t-10 mailbox-widget">
-	            <h2 class="text-white m-0 pull-left text-uppercase">`+state+` `+source+`</h2>
+				<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle `+active+`" data-src="plugins/images/tabs/`+source+`.png">  &nbsp; `+state+`</h2>
 	            `+menu+`
 				<div class="clearfix"></div>
 	        </div>

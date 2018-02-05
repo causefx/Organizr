@@ -209,3 +209,29 @@ h2.m-b-0.font-medium.pull-right {
   overflow: hidden;
   filter: blur(0px) grayscale(1)
 }
+
+
+.mailbox-widget .customtab li.active a, .mailbox-widget .customtab li.active, .mailbox-widget .customtab li.active a:focus {
+    background: 0 0;
+    color: #fff;
+    border-color: #53e69d;
+}
+.bootstrap-tagsinput, .calendar-widget, .chat-main-box, .content-wrap, .css-bar:after, .customtab li.active a, .customtab li.active a:focus, .customtab li.active a:hover, .daterangepicker .input-mini, .dropify-wrapper, .dropify-wrapper .dropify-preview, .dropzone, .footer, .form-control, .jsgrid-alt-row>td, .jsgrid-header-row>th, .jsgrid-row>td, .list-group-item, .list-group-item.disabled, .list-group-item.disabled:focus, .list-group-item.disabled:hover, .manage-table, .modal-content, .myadmin-dd .dd-list .dd-item .dd-handle, .myadmin-dd-empty .dd-list .dd3-content, .myadmin-dd-empty .dd-list .dd3-handle, .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover, .pager li>a, .pager li>span, .pagination>li>a, .pagination>li>span, .panel, .panel .panel-footer, .panel-default .panel-body, .panel-default .panel-footer, .panel-default .panel-heading, .panel-footer textarea, .panel-white .panel-body, .panel-white .panel-footer, .panel-white .panel-heading, .radio label::before, .select2-container-multi .select2-choices, .table tbody tr.advance-table-row td, .thumbnail, .well, .white-box, input, pre, select, table.dataTable.display tbody tr.odd, table.dataTable.stripe tbody tr.odd {
+    background: transparent;
+}
+.nav-tabs.pull-right>li>a:hover {
+    background: transparent;
+    border-radius: 0px;
+}
+.homepageImageTitle {
+  height: 40px;
+  margin-top: -7px;
+}
+.grayscale {
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+}
+td span.label.label-info {
+  min-width: 80px !important;
+  display: inline-block !important;
+}

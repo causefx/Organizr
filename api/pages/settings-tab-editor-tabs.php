@@ -17,7 +17,7 @@ $( \'#tabEditorTable\' ).sortable({
 <div class="panel bg-org panel-info">
     <div class="panel-heading">
         <span lang="en">Tab Editor</span>
-        <button type="button" class="btn btn-success btn-circle pull-right popup-with-form m-r-5" href="#new-tab-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
+        <button type="button" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-tab-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
     </div>
     <div class="table-responsive">
         <form id="submit-tabs-form" onsubmit="return false;">
@@ -77,7 +77,7 @@ $( \'#tabEditorTable\' ).sortable({
             <input type="text" class="form-control" id="edit-tab-form-inputImage" name="tabImage"  required="">
         </div>
     </fieldset>
-    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none editTab" type="button"><span class="btn-label"><i class="fa fa-plus"></i></span><span lang="en">Edit Group</span></button>
+    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none editTab" type="button"><span class="btn-label"><i class="fa fa-check"></i></span><span lang="en">Edit Tab</span></button>
     <div class="clearfix"></div>
 </form>
 ';
