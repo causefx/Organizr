@@ -1880,34 +1880,28 @@ function buildStreamItem(array,source){
 			</div>
 		</div>
 		<div id="`+v.session+`" class="white-popup mfp-with-anim mfp-hide">
-			<div class="row">
-				<div class="col-md-6 col-md-offset-3">
-
-					<div class="white-box m-b-0 bg-info">
-						<h3 class="text-white box-title m-b-0">`+v.sessionType+`<span class="pull-right"><i class="mdi mdi-network-upload"></i> `+v.bandwidth+` kbps</span></h3>
-					</div>
-					<div class="white-box">
-						<div class="row">
-							<div class="p-l-20 p-r-20">
-								<div class="pull-left">
-									<span class="text-uppercase"><i class="mdi mdi-`+v.bandwidthType+`"></i> `+v.bandwidthType+`</span>
-									<span class="text-uppercase"><i class="mdi mdi-account-network"></i> `+v.userAddress+`</span>
-									`+streamInfo+`
-									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-`+source+`"></i> Product: `+v.userStream.product+`</span></div>
-									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-laptop-mac"></i> Device: `+v.userStream.device+`</span></div>
-								</div>
-								<div data-label="`+v.watched+`%" class="css-bar css-bar-`+Math.ceil(v.watched/5)*5+` css-bar-lg m-b-0  css-bar-info pull-right">`+userThumb+`</div>
+			<div class="col-md-6 col-md-offset-3">
+				<div class="white-box m-b-0 bg-info">
+					<h3 class="text-white box-title m-b-0">`+v.sessionType+`<span class="pull-right"><i class="mdi mdi-network-upload"></i> `+v.bandwidth+` kbps</span></h3>
+				</div>
+				<div class="white-box">
+					<div class="row">
+						<div class="p-l-20 p-r-20">
+							<div class="pull-left">
+								<span class="text-uppercase"><i class="mdi mdi-`+v.bandwidthType+`"></i> `+v.bandwidthType+`</span>
+								<span class="text-uppercase"><i class="mdi mdi-account-network"></i> `+v.userAddress+`</span>
+								`+streamInfo+`
+								<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-`+source+`"></i> Product: `+v.userStream.product+`</span></div>
+								<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-laptop-mac"></i> Device: `+v.userStream.device+`</span></div>
 							</div>
+							<div data-label="`+v.watched+`%" class="css-bar css-bar-`+Math.ceil(v.watched/5)*5+` css-bar-lg m-b-0  css-bar-info pull-right">`+userThumb+`</div>
 						</div>
 					</div>
-
-                </div>
-			</div>
+				</div>
+            </div>
 		</div>
 		<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
-	        <div class="row">
-	            <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
-	        </div>
+	        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
 	    </div>
 		`;
 		if(contains(''+count, end) || count == total ){ cards += '</div><!--end-->'; };
@@ -1937,9 +1931,7 @@ function buildRecentItem(array, type){
 			<span class="elip recent-title">`+v.title+`</span>
 			<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
 			<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
-		        <div class="row">
-		            <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
-		        </div>
+		        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
 		    </div>
 		</div>
 		`;

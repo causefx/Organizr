@@ -47,5 +47,12 @@
         "new": "Plex Streams on homepage|Plex Recent Added on homepage|Emby Streams on homepage|Emby Recent Added on homepage|SabNZBd on homepage",
         "fixed": "Multiple things for performace",
         "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+    },
+	"2.0.0-alpha.250": {
+        "date":"2018-02-05 21:00",
+        "title": "NZBGet Homepage",
+        "new": "NZBGet on homepage - please check for bugs",
+        "fixed": "",
+        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
     }
 }

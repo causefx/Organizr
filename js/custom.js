@@ -462,7 +462,7 @@ function pageLoad(){
     $('.inline-popups').magnificPopup({
       removalDelay: 500, //delay removal by X to allow out-animation
       closeOnBgClick: true,
-      closeOnContentClick: true,
+      //closeOnContentClick: true,
       callbacks: {
         beforeOpen: function() {
            this.st.mainClass = this.st.el.attr('data-effect');
