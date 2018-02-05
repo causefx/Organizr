@@ -2004,15 +2004,12 @@ function buildDownloaderItem(array, source, type='none'){
 		case 'sabnzbd':
 			switch (type) {
 				case 'queue':
-					console.log(source);
-					console.log(array.queue);
-					console.log(array.queue.slots.length);
 					if(array.queue.slots.length == 0){
 						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
 					}
 					$.each(array.queue.slots, function(i,v) {
 						var action = (v.status == "Downloading") ? 'pause' : 'resume';
-						var actionIcon = (v.status == "Downloading") ? 'play' : 'pause';
+						var actionIcon = (v.status == "Downloading") ? 'pause' : 'play';
 						items += `
 						<tr>
 							<td class="max-texts">`+v.filename+`</td>
@@ -2030,9 +2027,6 @@ function buildDownloaderItem(array, source, type='none'){
 					});
 					break;
 				case 'history':
-					console.log(source);
-					console.log(array.history);
-					console.log(array.history.slots.length);
 					if(array.history.slots.length == 0){
 						return '<tr><td class="max-texts" lang="en">Nothing in hitsory</td></tr>';
 					}
@@ -2056,6 +2050,58 @@ function buildDownloaderItem(array, source, type='none'){
 					return false;
 			}
 			break;
+		case 'nzbget':
+			switch (type) {
+				case 'queue':
+					if(array.result.length == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+					}
+					$.each(array.result, function(i,v) {
+						var action = (v.Status == "Downloading") ? 'pause' : 'resume';
+						var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
+						var percent = Math.floor((v.FileSizeMB - v.RemainingSizeMB) / v.FileSizeMB);
+						v.Category = (v.Category !== '') ? v.Category : 'Not Set';
+						items += `
+						<tr>
+							<td class="max-texts">`+v.NZBName+`</td>
+							<td class="hidden-xs">`+v.Status+`</td>
+							<!--<td class="downloader mouse" data-target="`+v.NZBID+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>-->
+							<td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
+							<td class="hidden-xs">`+humanFileSize(v.FileSizeLo,true)+`</td>
+							<td class="text-right">
+								<div class="progress progress-lg m-b-0">
+									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+								</div>
+							</td>
+						</tr>
+						`;
+					});
+					break;
+				case 'history':
+					if(array.result.length == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in history</td></tr>';
+					}
+					$.each(array.result, function(i,v) {
+						v.Category = (v.Category !== '') ? v.Category : 'Not Set';
+						items += `
+						<tr>
+							<td class="max-texts">`+v.NZBName+`</td>
+							<td class="hidden-xs">`+v.Status+`</td>
+							<td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
+							<td class="hidden-xs">`+humanFileSize(v.FileSizeLo,true)+`</td>
+							<td class="text-right">
+								<div class="progress progress-lg m-b-0">
+									<div class="progress-bar progress-bar-info" style="width: 100%;" role="progressbar">100%</div>
+								</div>
+							</td>
+						</tr>
+						`;
+					});
+					break;
+				default:
+
+			}
+			break;
 		default:
 			return false;
 	}
@@ -2070,8 +2116,6 @@ function buildDownloader(array, source){
 	var state = '';
 	var active = '';
 	console.log(array);
-	console.log(queueItems);
-	console.log(historyItems);
 	console.log(downloader);
 	if(queueItems){
 		switch (source) {
@@ -2264,7 +2308,23 @@ function toUpper(str) {
 	        return word[0].toUpperCase() + word.substr(1);
 	    })
 	    .join(' ');
- }
+}
+// human filesize
+function humanFileSize(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if(Math.abs(bytes) < thresh) {
+        return bytes + ' B';
+    }
+    var units = si
+        ? ['kB','MB','GB','TB','PB','EB','ZB','YB']
+        : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while(Math.abs(bytes) >= thresh && u < units.length - 1);
+    return bytes.toFixed(1)+' '+units[u];
+}
 //Settings change auth
 function changeAuth(){
     var type = $('#authSelect').val();

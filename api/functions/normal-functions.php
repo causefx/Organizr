@@ -111,6 +111,7 @@ function encrypt($password, $key = null) {
     return openssl_encrypt($password, 'AES-256-CBC', $key, 0, fillString($key,16));
 }
 function decrypt($password, $key = null) {
+	if(empty($password)){ return ''; }
     $key = (isset($GLOBALS['organizrHash'])) ? $GLOBALS['organizrHash'] : $key;
     return openssl_decrypt($password, 'AES-256-CBC', $key, 0, fillString($key,16));
 }

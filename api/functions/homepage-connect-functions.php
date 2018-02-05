@@ -23,6 +23,9 @@ function homepageConnect($array){
         case 'getSabnzbd':
             return sabnzbdConnect();
             break;
+        case 'getNzbget':
+            return nzbgetConnect();
+            break;
         default:
             # code...
             break;
@@ -482,7 +485,7 @@ function embyConnect($action,$key=null,$skip=false){
 	}
 	return false;
 }
-function sabnzbdConnect($action=null) {
+function sabnzbdConnect() {
     if($GLOBALS['homepageSabnzbdEnabled'] && !empty($GLOBALS['sabnzbdURL']) && !empty($GLOBALS['sabnzbdToken']) && qualifyRequest($GLOBALS['homepageSabnzbdAuth'])){
         $url = qualifyURL($GLOBALS['sabnzbdURL']);
         $url = $url.'/api?mode=queue&output=json&apikey='.$GLOBALS['sabnzbdToken'];
@@ -505,6 +508,34 @@ function sabnzbdConnect($action=null) {
 			}
 		}catch( Requests_Exception $e ) {
 			writeLog('error', 'SabNZBd Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		};
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
+}
+function nzbgetConnect() {
+    if($GLOBALS['homepageNzbgetEnabled'] && !empty($GLOBALS['nzbgetURL']) && qualifyRequest($GLOBALS['homepageNzbgetAuth'])){
+        $url = qualifyURL($GLOBALS['nzbgetURL']);
+        $url = $url.'/'.$GLOBALS['nzbgetUsername'].':'.decrypt($GLOBALS['nzbgetPassword']).'/jsonrpc/listgroups';
+        try{
+			$options = (localURL($url)) ? array('verify' => false ) : array();
+			$response = Requests::get($url, array(), $options);
+			if($response->success){
+				$api['content']['queueItems'] = json_decode($response->body, true);
+			}
+		}catch( Requests_Exception $e ) {
+			writeLog('error', 'NZBGet Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		};
+        $url = qualifyURL($GLOBALS['nzbgetURL']);
+        $url = $url.'/'.$GLOBALS['nzbgetUsername'].':'.decrypt($GLOBALS['nzbgetPassword']).'/jsonrpc/history';
+        try{
+			$options = (localURL($url)) ? array('verify' => false ) : array();
+			$response = Requests::get($url, array(), $options);
+			if($response->success){
+				$api['content']['historyItems']= json_decode($response->body, true);
+			}
+		}catch( Requests_Exception $e ) {
+			writeLog('error', 'NZBGet Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
 		};
         $api['content'] = isset($api['content']) ? $api['content'] : false;
         return $api;

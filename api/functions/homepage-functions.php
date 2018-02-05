@@ -51,7 +51,18 @@ function buildHomepageItem($homepageItem){
 
 			break;
 		case 'homepageOrdernzbget':
-
+			if($GLOBALS['homepageNzbgetEnabled']){
+				$item .= '
+				<script>
+				// NZBGet
+				homepageDownloader("nzbget");
+				setInterval(function() {
+					homepageDownloader("nzbget");
+				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				// End NZBGet
+				</script>
+				';
+			}
 			break;
 		case 'homepageOrdersabnzbd':
 			if($GLOBALS['homepageSabnzbdEnabled']){
@@ -441,6 +452,59 @@ function getHomepageList(){
                         'name' => 'sabnzbdToken',
                         'label' => 'Token',
                         'value' => $GLOBALS['sabnzbdToken']
+                    )
+                ),
+				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageDownloadRefresh'],
+						'options' => $time
+					)
+				)
+            )
+        ),
+		array(
+            'name' => 'NZBGet',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/nzbget.png',
+            'category' => 'Downloader',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+            			'type' => 'switch',
+            			'name' => 'homepageNzbgetEnabled',
+            			'label' => 'Enable',
+            			'value' => $GLOBALS['homepageNzbgetEnabled']
+            		),
+					array(
+            			'type' => 'select',
+            			'name' => 'homepageNzbgetAuth',
+            			'label' => 'Minimum Authentication',
+            			'value' => $GLOBALS['homepageNzbgetAuth'],
+                        'options' => $groups
+            		)
+                ),
+				'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'nzbgetURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['nzbgetURL'],
+						'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'nzbgetUsername',
+                        'label' => 'Username',
+                        'value' => $GLOBALS['nzbgetUsername']
+                    ),
+					array(
+                        'type' => 'password',
+                        'name' => 'nzbgetPassword',
+                        'label' => 'Password',
+                        'value' => $GLOBALS['nzbgetPassword']
                     )
                 ),
 				'Misc Options' => array(
