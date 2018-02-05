@@ -754,6 +754,59 @@ function getImage() {
 		die("Invalid Request");
 	}
 }
+function downloader($array){
+	switch ($array['data']['source']) {
+        case 'sabnzbd':
+			switch ($array['data']['action']) {
+                case 'resume':
+                case 'pause':
+                    sabnzbdAction($array['data']['action'],$array['data']['target']);
+                    break;
+
+                default:
+                    # code...
+                    break;
+            }
+            break;
+		case 'nzbget':
+
+			break;
+        default:
+            # code...
+            break;
+    }
+}
+function sabnzbdAction($action=null, $target=null) {
+    if($GLOBALS['homepageSabnzbdEnabled'] && !empty($GLOBALS['sabnzbdURL']) && !empty($GLOBALS['sabnzbdToken']) && qualifyRequest($GLOBALS['homepageSabnzbdAuth'])){
+        $url = qualifyURL($GLOBALS['sabnzbdURL']);
+        switch ($action) {
+            case 'pause':
+                $id = ($target !== '' && $target !== 'main' && isset($target)) ? 'mode=queue&name=pause&value='.$target.'&' : 'mode=pause';
+                $url = $url.'/api?'.$id.'&output=json&apikey='.$GLOBALS['sabnzbdToken'];
+                break;
+            case 'resume':
+                $id = ($target !== '' && $target !== 'main' && isset($target)) ? 'mode=queue&name=resume&value='.$target.'&' : 'mode=resume';
+                $url = $url.'/api?'.$id.'&output=json&apikey='.$GLOBALS['sabnzbdToken'];
+                break;
+            default:
+                # code...
+                break;
+        }
+
+        try{
+			$options = (localURL($url)) ? array('verify' => false ) : array();
+			$response = Requests::get($url, array(), $options);
+			if($response->success){
+				$api['content'] = json_decode($response->body, true);
+			}
+		}catch( Requests_Exception $e ) {
+			writeLog('error', 'SabNZBd Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		};
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
+}
+
 /*
 function sendEmail($email = null, $username = "Organizr User", $subject, $body, $cc = null, $bcc = null){
 	try {

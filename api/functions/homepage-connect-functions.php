@@ -482,7 +482,7 @@ function embyConnect($action,$key=null,$skip=false){
 	}
 	return false;
 }
-function sabnzbdConnect() {
+function sabnzbdConnect($action=null) {
     if($GLOBALS['homepageSabnzbdEnabled'] && !empty($GLOBALS['sabnzbdURL']) && !empty($GLOBALS['sabnzbdToken']) && qualifyRequest($GLOBALS['homepageSabnzbdAuth'])){
         $url = qualifyURL($GLOBALS['sabnzbdURL']);
         $url = $url.'/api?mode=queue&output=json&apikey='.$GLOBALS['sabnzbdToken'];

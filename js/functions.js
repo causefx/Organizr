@@ -2011,10 +2011,13 @@ function buildDownloaderItem(array, source, type='none'){
 						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
 					}
 					$.each(array.queue.slots, function(i,v) {
+						var action = (v.status == "Downloading") ? 'pause' : 'resume';
+						var actionIcon = (v.status == "Downloading") ? 'play' : 'pause';
 						items += `
 						<tr>
 							<td class="max-texts">`+v.filename+`</td>
-                            <td class="hidden-xs">`+v.status+`</td>
+							<td class="hidden-xs">`+v.status+`</td>
+                            <td class="downloader mouse" data-target="`+v.nzo_id+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>
                             <td class="hidden-xs"><span class="label label-info">`+v.cat+`</span></td>
                             <td class="hidden-xs">`+v.size+`</td>
                             <td class="text-right">
@@ -2059,16 +2062,28 @@ function buildDownloaderItem(array, source, type='none'){
 	return items;
 }
 function buildDownloader(array, source){
-	console.log(array);
 	var menu = `<ul class="nav customtab nav-tabs pull-right" role="tablist">`;
 	var listing = '';
 	var queueItems = (typeof array.content.queueItems !== 'undefined') ? array.content.queueItems : false;
 	var historyItems = (typeof array.content.historyItems !== 'undefined') ? array.content.historyItems : false;
 	var downloader = (queueItems || historyItems) ? true : false;
+	var state = '';
+	console.log(array);
 	console.log(queueItems);
 	console.log(historyItems);
 	console.log(downloader);
 	if(queueItems){
+		switch (source) {
+			case 'sabnzbd':
+				if(queueItems.queue.paused){
+					state = `<span class="downloader mouse" data-source="sabnzbd" data-action="resume" data-target="main"><i class="fa fa-pause"></i></span>`;
+				}else{
+					state = `<span class="downloader mouse" data-source="sabnzbd" data-action="pause" data-target="main"><i class="fa fa-play"></i></span>`;
+				}
+				break;
+			default:
+
+		}
 		menu += `
 			<li role="presentation" class="active"><a href="#`+source+`-queue" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-download"></i></span><span class="hidden-xs"> QUEUE</span></a></li>
 			`;
@@ -2103,7 +2118,7 @@ function buildDownloader(array, source){
 	<div class="row">
 		<div class="col-lg-12">
 	        <div class="white-box bg-info m-b-0 p-b-0 p-t-10 mailbox-widget">
-	            <h2 class="text-white m-0 pull-left text-uppercase">`+source+`</h2>
+	            <h2 class="text-white m-0 pull-left text-uppercase">`+state+` `+source+`</h2>
 	            `+menu+`
 				<div class="clearfix"></div>
 	        </div>

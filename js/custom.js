@@ -1631,6 +1631,25 @@ $(document).on("click", ".metadata-get", function(e) {
 	ajaxloader();
 
 });
+// sad play/resume
+$(document).on("click", ".downloader", function(e) {
+    var action = $(this).attr('data-action');
+    var source = $(this).attr('data-source');
+    var target = $(this).attr('data-target');
+    console.log(action);
+    console.log(source);
+    console.log(target);
+    ajaxloader(".content-wrap","in");
+	organizrAPI('POST','api/?v1/downloader',{action:action, source:source, target:target}).success(function(data) {
+		var response = JSON.parse(data);
+        console.log(response);
+		homepageDownloader(source);
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
+
+});
 /* ===== Open-Close Right Sidebar ===== */
 
 $(document).on("click", ".right-side-toggle", function () {
