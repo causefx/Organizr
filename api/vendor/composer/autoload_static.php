@@ -7,25 +7,52 @@ namespace Composer\Autoload;
 class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
 {
     public static $files = array (
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '0097ca414fcb37c7130ac24b05f485f8' => __DIR__ . '/..' . '/dibi/dibi/src/loader.php',
     );
 
     public static $prefixLengthsPsr4 = array (
+        'S' => 
+        array (
+            'Symfony\\Component\\PropertyAccess\\' => 33,
+            'Symfony\\Component\\Inflector\\' => 28,
+        ),
         'P' => 
         array (
+            'Psr\\Http\\Message\\' => 17,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
         'L' => 
         array (
             'Lcobucci\\JWT\\' => 13,
         ),
+        'G' => 
+        array (
+            'GuzzleHttp\\Psr7\\' => 16,
+        ),
         'C' => 
         array (
             'Composer\\Semver\\' => 16,
         ),
+        'B' => 
+        array (
+            'Buzz\\' => 5,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'Symfony\\Component\\PropertyAccess\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/property-access',
+        ),
+        'Symfony\\Component\\Inflector\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/inflector',
+        ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
         'PHPMailer\\PHPMailer\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
@@ -34,13 +61,28 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         array (
             0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
         ),
+        'GuzzleHttp\\Psr7\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
+        ),
         'Composer\\Semver\\' => 
         array (
             0 => __DIR__ . '/..' . '/composer/semver/src',
         ),
+        'Buzz\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kriswallsmith/buzz/lib/Buzz',
+        ),
     );
 
     public static $prefixesPsr0 = array (
+        'T' => 
+        array (
+            'Transmission' => 
+            array (
+                0 => __DIR__ . '/..' . '/kleiram/transmission-php/lib',
+            ),
+        ),
         'R' => 
         array (
             'Requests' => 
