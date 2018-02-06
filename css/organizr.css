@@ -153,6 +153,7 @@ object-fit: contain;
   bottom: 0px;
   background: rgba(31, 31, 31, 0.73);
   width: inherit;
+  color: white;
 }
 .nowPlayingHover{
   margin-bottom: 14px;
@@ -178,6 +179,7 @@ object-fit: contain;
 h2.m-b-0.font-medium.pull-right {
   -webkit-filter: drop-shadow(1px 1px 0px #1f1f1f);
   filter: drop-shadow(1px 1px 0px #1f1f1f);
+  color: white;
 }
 .text-plex {
   color: #E5A00D;

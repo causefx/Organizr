@@ -1219,7 +1219,8 @@ function buildCategoryEditorItem(array){
 function buildTabEditorItem(array){
 	var tabList = '';
 	$.each(array.tabs, function(i,v) {
-		var deleteDisabled = v.url.indexOf('/?v') > 0 ? 'disabled' : 'deleteTab';
+		var deleteDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : 'deleteTab';
+		var buttonDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : '';
 		tabList += `
 		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-image="`+v.image+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
@@ -1247,7 +1248,7 @@ function buildTabEditorItem(array){
 			`+buildTabTypeSelect(v.id, v.type)+`
 			<td style="text-align:center"><div class="radio radio-purple"><input onclick="radioLoop(this);" type="radio" class="defaultSwitch" id="tab[`+v.id+`].default" name="tab[`+v.id+`].default" value="true" `+tof(v.default,'c')+`><label for="tab[`+v.id+`].default"></label></div></td>
 
-			<td style="text-align:center"><input type="checkbox" class="js-switch enabledSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].enabled" value="true" `+tof(v.enabled,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].enabled" value="false"></td>
+			<td style="text-align:center"><input `+buttonDisabled+` type="checkbox" class="js-switch enabledSwitch `+buttonDisabled+`" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].enabled" value="true" `+tof(v.enabled,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].enabled" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch splashSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].splash" value="true" `+tof(v.splash,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].splash" value="false"></td>
 			<td style="text-align:center"><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editTabButton popup-with-form" href="#edit-tab-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
 			<td style="text-align:center"><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5 `+deleteDisabled+`"><i class="ti-trash"></i></button></td>
@@ -1518,7 +1519,6 @@ function buildWizard(){
 	$("#preloader").fadeOut();
 }
 function buildDependencyCheck(orgdata){
-
 	organizrConnect('api/?v1/dependencies_page').success(function(data) {
 		var json = JSON.parse(data);
 		console.log("Organizr Function: Starting Dependencies Check");
