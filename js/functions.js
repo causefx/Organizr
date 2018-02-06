@@ -524,7 +524,7 @@ function buildFormItem(item){
 	//+tof(item.value,'c')+`
 	switch (item.type) {
 		case 'input':
-			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
+			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
 			break;
 		case 'password':
 			return '<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
@@ -1219,7 +1219,8 @@ function buildCategoryEditorItem(array){
 function buildTabEditorItem(array){
 	var tabList = '';
 	$.each(array.tabs, function(i,v) {
-		var deleteDisabled = v.url.indexOf('/?v') > 0 ? 'disabled' : 'deleteTab';
+		var deleteDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : 'deleteTab';
+		var buttonDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : '';
 		tabList += `
 		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-image="`+v.image+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
@@ -1247,7 +1248,7 @@ function buildTabEditorItem(array){
 			`+buildTabTypeSelect(v.id, v.type)+`
 			<td style="text-align:center"><div class="radio radio-purple"><input onclick="radioLoop(this);" type="radio" class="defaultSwitch" id="tab[`+v.id+`].default" name="tab[`+v.id+`].default" value="true" `+tof(v.default,'c')+`><label for="tab[`+v.id+`].default"></label></div></td>
 
-			<td style="text-align:center"><input type="checkbox" class="js-switch enabledSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].enabled" value="true" `+tof(v.enabled,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].enabled" value="false"></td>
+			<td style="text-align:center"><input `+buttonDisabled+` type="checkbox" class="js-switch enabledSwitch `+buttonDisabled+`" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].enabled" value="true" `+tof(v.enabled,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].enabled" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch splashSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].splash" value="true" `+tof(v.splash,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].splash" value="false"></td>
 			<td style="text-align:center"><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editTabButton popup-with-form" href="#edit-tab-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
 			<td style="text-align:center"><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5 `+deleteDisabled+`"><i class="ti-trash"></i></button></td>
@@ -1518,7 +1519,6 @@ function buildWizard(){
 	$("#preloader").fadeOut();
 }
 function buildDependencyCheck(orgdata){
-
 	organizrConnect('api/?v1/dependencies_page').success(function(data) {
 		var json = JSON.parse(data);
 		console.log("Organizr Function: Starting Dependencies Check");
@@ -1831,6 +1831,9 @@ function buildStreamItem(array,source){
 			case 'tv':
 				icon = 'icon-screen-desktop';
 				break;
+			case 'video':
+				icon = 'icon-screen-film';
+				break;
 			default:
 
 		}
@@ -1880,34 +1883,28 @@ function buildStreamItem(array,source){
 			</div>
 		</div>
 		<div id="`+v.session+`" class="white-popup mfp-with-anim mfp-hide">
-			<div class="row">
-				<div class="col-md-6 col-md-offset-3">
-
-					<div class="white-box m-b-0 bg-info">
-						<h3 class="text-white box-title m-b-0">`+v.sessionType+`<span class="pull-right"><i class="mdi mdi-network-upload"></i> `+v.bandwidth+` kbps</span></h3>
-					</div>
-					<div class="white-box">
-						<div class="row">
-							<div class="p-l-20 p-r-20">
-								<div class="pull-left">
-									<span class="text-uppercase"><i class="mdi mdi-`+v.bandwidthType+`"></i> `+v.bandwidthType+`</span>
-									<span class="text-uppercase"><i class="mdi mdi-account-network"></i> `+v.userAddress+`</span>
-									`+streamInfo+`
-									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-plex"></i> Product: `+v.userStream.product+`</span></div>
-									<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-laptop-mac"></i> Device: `+v.userStream.device+`</span></div>
-								</div>
-								<div data-label="`+v.watched+`%" class="css-bar css-bar-`+Math.ceil(v.watched/5)*5+` css-bar-lg m-b-0  css-bar-info pull-right">`+userThumb+`</div>
+			<div class="col-md-6 col-md-offset-3">
+				<div class="white-box m-b-0 bg-info">
+					<h3 class="text-white box-title m-b-0">`+v.sessionType+`<span class="pull-right"><i class="mdi mdi-network-upload"></i> `+v.bandwidth+` kbps</span></h3>
+				</div>
+				<div class="white-box">
+					<div class="row">
+						<div class="p-l-20 p-r-20">
+							<div class="pull-left">
+								<span class="text-uppercase"><i class="mdi mdi-`+v.bandwidthType+`"></i> `+v.bandwidthType+`</span>
+								<span class="text-uppercase"><i class="mdi mdi-account-network"></i> `+v.userAddress+`</span>
+								`+streamInfo+`
+								<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-`+source+`"></i> Product: `+v.userStream.product+`</span></div>
+								<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-laptop-mac"></i> Device: `+v.userStream.device+`</span></div>
 							</div>
+							<div data-label="`+v.watched+`%" class="css-bar css-bar-`+Math.ceil(v.watched/5)*5+` css-bar-lg m-b-0  css-bar-info pull-right">`+userThumb+`</div>
 						</div>
 					</div>
-
-                </div>
-			</div>
+				</div>
+            </div>
 		</div>
 		<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
-	        <div class="row">
-	            <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
-	        </div>
+	        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
 	    </div>
 		`;
 		if(contains(''+count, end) || count == total ){ cards += '</div><!--end-->'; };
@@ -1929,6 +1926,9 @@ function buildRecentItem(array, type){
 			case 'tv':
 				className = 'recent-poster recent-item recent-tv';
 				break;
+			case 'video':
+				className = 'recent-poster recent-item recent-video';
+				break;
 			default:
 
 		}
@@ -1937,9 +1937,7 @@ function buildRecentItem(array, type){
 			<span class="elip recent-title">`+v.title+`</span>
 			<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
 			<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
-		        <div class="row">
-		            <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
-		        </div>
+		        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
 		    </div>
 		</div>
 		`;
@@ -1983,12 +1981,12 @@ function buildRecent(array, type){
 							<li class="divider"></li>
 	                        <li><a data-filter="recent-movie" href="javascript:void(0);">Movies</a></li>
 	                        <li><a data-filter="recent-tv" href="javascript:void(0);">Shows</a></li>
+	                        <li><a data-filter="recent-video" href="javascript:void(0);">Shows</a></li>
 	                        <!--<li><a data-filter="recent-music" href="javascript:void(0);">Music</a></li>-->
 	                    </ul>
 	                </div>
 					<div class="clearfix"></div>
 				</div>
-
                 <div class="panel-wrapper p-b-0 collapse in">
                     <div class="owl-carousel owl-theme recent-items `+type+`-recent">
 						`+buildRecentItem(array.content, type)+`
@@ -1997,6 +1995,250 @@ function buildRecent(array, type){
             </div>
         </div>
     </div>
+	` : '';
+}
+function buildDownloaderItem(array, source, type='none'){
+	var items = '';
+	switch (source) {
+		case 'sabnzbd':
+			switch (type) {
+				case 'queue':
+					if(array.queue.slots.length == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+					}
+					$.each(array.queue.slots, function(i,v) {
+						var action = (v.status == "Downloading") ? 'pause' : 'resume';
+						var actionIcon = (v.status == "Downloading") ? 'pause' : 'play';
+						items += `
+						<tr>
+							<td class="max-texts">`+v.filename+`</td>
+							<td class="hidden-xs">`+v.status+`</td>
+                            <td class="downloader mouse" data-target="`+v.nzo_id+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>
+                            <td class="hidden-xs"><span class="label label-info">`+v.cat+`</span></td>
+                            <td class="hidden-xs">`+v.size+`</td>
+                            <td class="text-right">
+								<div class="progress progress-lg m-b-0">
+                                    <div class="progress-bar progress-bar-info" style="width: `+v.percentage+`%;" role="progressbar">`+v.percentage+`%</div>
+                                </div>
+							</td>
+                        </tr>
+						`;
+					});
+					break;
+				case 'history':
+					if(array.history.slots.length == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in hitsory</td></tr>';
+					}
+					$.each(array.history.slots, function(i,v) {
+						items += `
+						<tr>
+							<td class="max-texts">`+v.name+`</td>
+                            <td class="hidden-xs">`+v.status+`</td>
+                            <td class="hidden-xs"><span class="label label-info">`+v.category+`</span></td>
+                            <td class="hidden-xs">`+v.size+`</td>
+                            <td class="text-right">
+								<div class="progress progress-lg m-b-0">
+                                    <div class="progress-bar progress-bar-info" style="width: 100%;" role="progressbar">100%</div>
+                                </div>
+							</td>
+                        </tr>
+						`;
+					});
+					break;
+				default:
+					return false;
+			}
+			break;
+		case 'nzbget':
+			switch (type) {
+				case 'queue':
+					if(array.result.length == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+					}
+					$.each(array.result, function(i,v) {
+						var action = (v.Status == "Downloading") ? 'pause' : 'resume';
+						var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
+						var percent = Math.floor((v.FileSizeMB - v.RemainingSizeMB) / v.FileSizeMB);
+						v.Category = (v.Category !== '') ? v.Category : 'Not Set';
+						items += `
+						<tr>
+							<td class="max-texts">`+v.NZBName+`</td>
+							<td class="hidden-xs">`+v.Status+`</td>
+							<!--<td class="downloader mouse" data-target="`+v.NZBID+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>-->
+							<td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
+							<td class="hidden-xs">`+humanFileSize(v.FileSizeLo,true)+`</td>
+							<td class="text-right">
+								<div class="progress progress-lg m-b-0">
+									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+								</div>
+							</td>
+						</tr>
+						`;
+					});
+					break;
+				case 'history':
+					if(array.result.length == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in history</td></tr>';
+					}
+					$.each(array.result, function(i,v) {
+						v.Category = (v.Category !== '') ? v.Category : 'Not Set';
+						items += `
+						<tr>
+							<td class="max-texts">`+v.NZBName+`</td>
+							<td class="hidden-xs">`+v.Status+`</td>
+							<td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
+							<td class="hidden-xs">`+humanFileSize(v.FileSizeLo,true)+`</td>
+							<td class="text-right">
+								<div class="progress progress-lg m-b-0">
+									<div class="progress-bar progress-bar-info" style="width: 100%;" role="progressbar">100%</div>
+								</div>
+							</td>
+						</tr>
+						`;
+					});
+					break;
+				default:
+
+			}
+			break;
+		case 'transmission':
+			switch (type) {
+				case 'queue':
+				console.log(array);
+					if(array.arguments.torrents == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+					}
+					$.each(array.arguments.torrents, function(i,v) {
+						switch (v.status) {
+							case 7:
+							case '7':
+								var status = 'No Peers';
+								break;
+							case 6:
+							case '6':
+								var status = 'Seeding';
+								break;
+							case 5:
+							case '5':
+								var status = 'Seeding Queued';
+								break;
+							case 4:
+							case '4':
+								var status = 'Downloading';
+								break;
+							case 3:
+							case '3':
+								var status = 'Queued';
+								break;
+							case 2:
+							case '2':
+								var status = 'Checking Files';
+								break;
+							case 1:
+							case '1':
+								var status = 'File Check Queued';
+								break;
+							case 0:
+							case '0':
+								var status = 'Complete';
+								break;
+							default:
+								var status = 'Complete';
+						}
+						var percent = Math.floor(v.percentDone * 100);
+						v.Category = (v.Category !== '') ? v.Category : 'Not Set';
+						items += `
+						<tr>
+							<td class="max-texts">`+v.name+`</td>
+							<td class="hidden-xs">`+status+`</td>
+							<td class="hidden-xs">`+v.downloadDir+`</td>
+							<td class="hidden-xs">`+humanFileSize(v.totalSize,true)+`</td>
+							<td class="text-right">
+								<div class="progress progress-lg m-b-0">
+									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+								</div>
+							</td>
+						</tr>
+						`;
+					});
+					break;
+				default:
+
+			}
+			break;
+		default:
+			return false;
+	}
+	return items;
+}
+function buildDownloader(array, source){
+	var menu = `<ul class="nav customtab nav-tabs pull-right" role="tablist">`;
+	var listing = '';
+	var queueItems = (typeof array.content.queueItems !== 'undefined') ? array.content.queueItems : false;
+	var historyItems = (typeof array.content.historyItems !== 'undefined') ? array.content.historyItems : false;
+	var downloader = (queueItems || historyItems) ? true : false;
+	var state = '';
+	var active = '';
+	console.log(array);
+	console.log(queueItems);
+	console.log(historyItems);
+	console.log(downloader);
+	if(queueItems){
+		switch (source) {
+			case 'sabnzbd':
+				if(queueItems.queue.paused){
+					state = `<span class="downloader mouse" data-source="sabnzbd" data-action="resume" data-target="main"><i class="fa fa-play"></i></span>`;
+					active = 'grayscale';
+				}else{
+					state = `<span class="downloader mouse" data-source="sabnzbd" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span>`;
+				}
+				break;
+			default:
+
+		}
+		menu += `
+			<li role="presentation" class="active"><a href="#`+source+`-queue" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-download"></i></span><span class="hidden-xs"> QUEUE</span></a></li>
+			`;
+		listing += `
+		<div role="tabpanel" class="tab-pane fade active in" id="`+source+`-queue">
+			<div class="inbox-center table-responsive">
+				<table class="table table-hover">
+					<tbody class="`+source+`-queue">`+buildDownloaderItem(array.content.queueItems, source, 'queue')+`</tbody>
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
+	if(historyItems){
+		menu += `
+		<li role="presentation" class=""><a href="#`+source+`-history" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-time"></i></span> <span class="hidden-xs">HISTORY</span></a></li>
+		`;
+		listing += `
+		<div role="tabpanel" class="tab-pane fade" id="`+source+`-history">
+			<div class="inbox-center table-responsive">
+				<table class="table table-hover">
+					<tbody class="`+source+`-history">`+buildDownloaderItem(array.content.historyItems, source, 'history')+`</tbody>
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
+	menu += '</ul>';
+	return downloader ? `
+	<div class="row">
+		<div class="col-lg-12">
+	        <div class="white-box bg-info m-b-0 p-b-0 p-t-10 mailbox-widget">
+				<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle `+active+`" data-src="plugins/images/tabs/`+source+`.png">  &nbsp; `+state+`</h2>
+	            `+menu+`
+				<div class="clearfix"></div>
+	        </div>
+	        <div class="white-box p-0">
+	            <div class="tab-content m-t-0">`+listing+`</div>
+	        </div>
+		</div>
+	</div>
 	` : '';
 }
 function buildMetadata(array, source){
@@ -2055,6 +2297,28 @@ function buildMetadata(array, source){
 	});
 	return metadata;
 }
+function homepageDownloader(type){
+	switch (type) {
+		case 'sabnzbd':
+			var action = 'getSabnzbd';
+			break;
+		case 'nzbget':
+			var action = 'getNzbget';
+			break;
+		case 'transmission':
+			var action = 'getTransmission';
+			break;
+		default:
+
+	}
+	console.log('#homepageOrder'+type);
+	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
+		var response = JSON.parse(data);
+		$('#homepageOrder'+type).html(buildDownloader(response.data, type));
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+}
 function homepageStream(type){
 	switch (type) {
 		case 'plex':
@@ -2112,7 +2376,23 @@ function toUpper(str) {
 	        return word[0].toUpperCase() + word.substr(1);
 	    })
 	    .join(' ');
- }
+}
+// human filesize
+function humanFileSize(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if(Math.abs(bytes) < thresh) {
+        return bytes + ' B';
+    }
+    var units = si
+        ? ['kB','MB','GB','TB','PB','EB','ZB','YB']
+        : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while(Math.abs(bytes) >= thresh && u < units.length - 1);
+    return bytes.toFixed(1)+' '+units[u];
+}
 //Settings change auth
 function changeAuth(){
     var type = $('#authSelect').val();
