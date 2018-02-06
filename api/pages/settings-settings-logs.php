@@ -10,10 +10,12 @@ $(document).on("click", ".swapLog", function(e) {
 	$(this).addClass(\'active\');
 });
 </script>
-<div class="btn-group m-b-20">
+<div class="btn-group m-b-20 pull-left">
     <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog active" data-name="loginLog" lang="en">Login Log</button>
     <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog" data-name="orgLog" lang="en">Organizr Log</button>
 </div>
+<button class="btn btn-danger btn-sm waves-effect waves-light pull-right purgeLog" type="button"><span class="btn-label"><i class="fa fa-trash"></i></span>Purge Log</button>
+<div class="clearfix"></div>
 <div class="white-box bg-org logTable loginLogDiv">
     <h3 class="box-title m-b-0" lang="en">Login Logs</h3>
     <div class="table-responsive">

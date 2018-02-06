@@ -554,41 +554,42 @@ function transmissionConnect() {
 			$options = (localURL($GLOBALS['transmissionURL'])) ? array('verify' => false ) : array();
 			$response = Requests::get($url, array(), $options);
 			if($response->headers['x-transmission-session-id']){
-				$session_id = $response->headers['x-transmission-session-id'];
-			}
-            $headers = array(
-        		'X-Transmission-Session-Id' => $session_id,
-        		'Content-Type' => 'application/json'
-        	);
-        	$data = array(
-        		'method' => 'torrent-get',
-        		'arguments' => array(
-        			'fields' => array(
-        				"id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir","errorString"
-        			),
-        		),
-        		'tags' => ''
-        	);
-            $response = Requests::post($url, $headers, json_encode($data), $options);
-            if($response->success){
-                $torrentList = json_decode($response->body, true)['arguments']['torrents'];
-                if($GLOBALS['transmissionHideSeeding'] || $GLOBALS['transmissionHideCompleted']){
-                    $filter = array();
-                    $torrents['arguments']['torrents'] = array();
-                    if($GLOBALS['transmissionHideSeeding']){ array_push($filter, 6, 5); }
-                    if($GLOBALS['transmissionHideCompleted']){ array_push($filter, 0); }
-                    foreach ($torrentList as $key => $value) {
-                        if(!in_array($value['status'], $filter)){
-                            $torrents['arguments']['torrents'][] = $value;
+                $headers = array(
+            		'X-Transmission-Session-Id' => $response->headers['x-transmission-session-id'],
+            		'Content-Type' => 'application/json'
+            	);
+            	$data = array(
+            		'method' => 'torrent-get',
+            		'arguments' => array(
+            			'fields' => array(
+            				"id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir","errorString"
+            			),
+            		),
+            		'tags' => ''
+            	);
+                $response = Requests::post($url, $headers, json_encode($data), $options);
+                if($response->success){
+                    $torrentList = json_decode($response->body, true)['arguments']['torrents'];
+                    if($GLOBALS['transmissionHideSeeding'] || $GLOBALS['transmissionHideCompleted']){
+                        $filter = array();
+                        $torrents['arguments']['torrents'] = array();
+                        if($GLOBALS['transmissionHideSeeding']){ array_push($filter, 6, 5); }
+                        if($GLOBALS['transmissionHideCompleted']){ array_push($filter, 0); }
+                        foreach ($torrentList as $key => $value) {
+                            if(!in_array($value['status'], $filter)){
+                                $torrents['arguments']['torrents'][] = $value;
+                            }
                         }
+                    }else{
+                        $torrents = json_decode($response->body, true);
                     }
-                }else{
-                    $torrents = json_decode($response->body, true);
-                }
 
-				$api['content']['queueItems'] = $torrents;
-                $api['content']['historyItems'] = false;
-			}
+    				$api['content']['queueItems'] = $torrents;
+                    $api['content']['historyItems'] = false;
+    			}
+			}else{
+                writeLog('error', 'Transmission Connect Function - Error: Could not get session ID', 'SYSTEM');
+            }
 		}catch( Requests_Exception $e ) {
 			writeLog('error', 'Transmission Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
 		};
