@@ -1831,6 +1831,9 @@ function buildStreamItem(array,source){
 			case 'tv':
 				icon = 'icon-screen-desktop';
 				break;
+			case 'video':
+				icon = 'icon-screen-film';
+				break;
 			default:
 
 		}
@@ -1923,6 +1926,9 @@ function buildRecentItem(array, type){
 			case 'tv':
 				className = 'recent-poster recent-item recent-tv';
 				break;
+			case 'video':
+				className = 'recent-poster recent-item recent-video';
+				break;
 			default:
 
 		}
@@ -1975,6 +1981,7 @@ function buildRecent(array, type){
 							<li class="divider"></li>
 	                        <li><a data-filter="recent-movie" href="javascript:void(0);">Movies</a></li>
 	                        <li><a data-filter="recent-tv" href="javascript:void(0);">Shows</a></li>
+	                        <li><a data-filter="recent-video" href="javascript:void(0);">Shows</a></li>
 	                        <!--<li><a data-filter="recent-music" href="javascript:void(0);">Music</a></li>-->
 	                    </ul>
 	                </div>
