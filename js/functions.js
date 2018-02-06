@@ -524,7 +524,7 @@ function buildFormItem(item){
 	//+tof(item.value,'c')+`
 	switch (item.type) {
 		case 'input':
-			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
+			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
 			break;
 		case 'password':
 			return '<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
