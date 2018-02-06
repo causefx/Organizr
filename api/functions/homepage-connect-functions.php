@@ -20,6 +20,15 @@ function homepageConnect($array){
         case 'getEmbyMetadata':
             return embyConnect('metadata',$array['data']['key'],true);
             break;
+        case 'getSabnzbd':
+            return sabnzbdConnect();
+            break;
+        case 'getNzbget':
+            return nzbgetConnect();
+            break;
+        case 'getTransmission':
+            return transmissionConnect();
+            break;
         default:
             # code...
             break;
@@ -109,6 +118,20 @@ function resolveEmbyItem($itemDetails) {
             break;
         case 'Movie':
             $embyItem['type'] = 'movie';
+            $embyItem['title'] = $item['Name'];
+            $embyItem['summary'] = '';
+            $embyItem['ratingKey'] = $item['Id'];
+            $embyItem['thumb'] = $item['Id'];
+            $embyItem['key'] = $item['Id'] . "-list";
+            $embyItem['nowPlayingThumb'] = $item['Id'];
+            $embyItem['nowPlayingKey'] = $item['Id'] . "-np";
+            $embyItem['metadataKey'] = $item['Id'];
+            $embyItem['nowPlayingImageType'] = isset($item['ImageTags']['Thumb']) ? "Thumb" : (isset($item['BackdropImageTags']) ? "Backdrop" : false);
+            $embyItem['nowPlayingTitle'] = @$item['Name'];
+            $embyItem['nowPlayingBottom'] = @$item['ProductionYear'];
+            break;
+        case 'Video':
+            $embyItem['type'] = 'video';
             $embyItem['title'] = $item['Name'];
             $embyItem['summary'] = '';
             $embyItem['ratingKey'] = $item['Id'];
@@ -474,8 +497,116 @@ function embyConnect($action,$key=null,$skip=false){
 				return $api;
 			}
 		}catch( Requests_Exception $e ) {
-			writeLog('error', 'Plex Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+			writeLog('error', 'Emby Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
 		};
 	}
 	return false;
+}
+function sabnzbdConnect() {
+    if($GLOBALS['homepageSabnzbdEnabled'] && !empty($GLOBALS['sabnzbdURL']) && !empty($GLOBALS['sabnzbdToken']) && qualifyRequest($GLOBALS['homepageSabnzbdAuth'])){
+        $url = qualifyURL($GLOBALS['sabnzbdURL']);
+        $url = $url.'/api?mode=queue&output=json&apikey='.$GLOBALS['sabnzbdToken'];
+        try{
+			$options = (localURL($url)) ? array('verify' => false ) : array();
+			$response = Requests::get($url, array(), $options);
+			if($response->success){
+				$api['content']['queueItems'] = json_decode($response->body, true);
+			}
+		}catch( Requests_Exception $e ) {
+			writeLog('error', 'SabNZBd Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		};
+        $url = qualifyURL($GLOBALS['sabnzbdURL']);
+        $url = $url.'/api?mode=history&output=json&apikey='.$GLOBALS['sabnzbdToken'];
+        try{
+			$options = (localURL($url)) ? array('verify' => false ) : array();
+			$response = Requests::get($url, array(), $options);
+			if($response->success){
+				$api['content']['historyItems']= json_decode($response->body, true);
+			}
+		}catch( Requests_Exception $e ) {
+			writeLog('error', 'SabNZBd Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		};
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
+}
+function nzbgetConnect() {
+    if($GLOBALS['homepageNzbgetEnabled'] && !empty($GLOBALS['nzbgetURL']) && qualifyRequest($GLOBALS['homepageNzbgetAuth'])){
+        $url = qualifyURL($GLOBALS['nzbgetURL']);
+        $url = $url.'/'.$GLOBALS['nzbgetUsername'].':'.decrypt($GLOBALS['nzbgetPassword']).'/jsonrpc/listgroups';
+        try{
+			$options = (localURL($url)) ? array('verify' => false ) : array();
+			$response = Requests::get($url, array(), $options);
+			if($response->success){
+				$api['content']['queueItems'] = json_decode($response->body, true);
+			}
+		}catch( Requests_Exception $e ) {
+			writeLog('error', 'NZBGet Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		};
+        $url = qualifyURL($GLOBALS['nzbgetURL']);
+        $url = $url.'/'.$GLOBALS['nzbgetUsername'].':'.decrypt($GLOBALS['nzbgetPassword']).'/jsonrpc/history';
+        try{
+			$options = (localURL($url)) ? array('verify' => false ) : array();
+			$response = Requests::get($url, array(), $options);
+			if($response->success){
+				$api['content']['historyItems']= json_decode($response->body, true);
+			}
+		}catch( Requests_Exception $e ) {
+			writeLog('error', 'NZBGet Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		};
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
+}
+function transmissionConnect() {
+    if($GLOBALS['homepageTransmissionEnabled'] && !empty($GLOBALS['transmissionURL']) && qualifyRequest($GLOBALS['homepageTransmissionAuth'])){
+        $digest = qualifyURL($GLOBALS['transmissionURL'], true);
+        $digest['port'] = !empty($digest['port']) ? ':'.$digest['port'] : '';
+        $passwordInclude = ($GLOBALS['transmissionUsername'] != '' && $GLOBALS['transmissionPassword'] != '') ? $GLOBALS['transmissionUsername'].':'.decrypt($GLOBALS['transmissionPassword'])."@" : '';
+	    $url = $digest['scheme'].'://'.$passwordInclude.$digest['host'].$digest['port'].$digest['path'].'/rpc';
+        try{
+			$options = (localURL($GLOBALS['transmissionURL'])) ? array('verify' => false ) : array();
+			$response = Requests::get($url, array(), $options);
+			if($response->headers['x-transmission-session-id']){
+				$session_id = $response->headers['x-transmission-session-id'];
+			}
+            $headers = array(
+        		'X-Transmission-Session-Id' => $session_id,
+        		'Content-Type' => 'application/json'
+        	);
+        	$data = array(
+        		'method' => 'torrent-get',
+        		'arguments' => array(
+        			'fields' => array(
+        				"id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir","errorString"
+        			),
+        		),
+        		'tags' => ''
+        	);
+            $response = Requests::post($url, $headers, json_encode($data), $options);
+            if($response->success){
+                $torrentList = json_decode($response->body, true)['arguments']['torrents'];
+                if($GLOBALS['transmissionHideSeeding'] || $GLOBALS['transmissionHideCompleted']){
+                    $filter = array();
+                    $torrents['arguments']['torrents'] = array();
+                    if($GLOBALS['transmissionHideSeeding']){ array_push($filter, 6, 5); }
+                    if($GLOBALS['transmissionHideCompleted']){ array_push($filter, 0); }
+                    foreach ($torrentList as $key => $value) {
+                        if(!in_array($value['status'], $filter)){
+                            $torrents['arguments']['torrents'][] = $value;
+                        }
+                    }
+                }else{
+                    $torrents = json_decode($response->body, true);
+                }
+
+				$api['content']['queueItems'] = $torrents;
+                $api['content']['historyItems'] = false;
+			}
+		}catch( Requests_Exception $e ) {
+			writeLog('error', 'Transmission Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		};
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
 }
