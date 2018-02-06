@@ -2,7 +2,7 @@
 
 // ===================================
 // Organizr Version
-$GLOBALS['installedVersion'] = '2.0.0-alpha.130';
+$GLOBALS['installedVersion'] = '2.0.0-alpha.250';
 // ===================================
 // Set GLOBALS from config file
 $GLOBALS['userConfigPath'] = dirname(__DIR__,1).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'config.php';

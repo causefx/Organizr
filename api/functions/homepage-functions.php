@@ -16,7 +16,7 @@ function homepageOrder(){
 		"homepageOrderombi" => $GLOBALS['homepageOrderombi'],
 		"homepageOrdercalendar" => $GLOBALS['homepageOrdercalendar'],
 		"homepageOrdernoticeguest" => $GLOBALS['homepageOrdernoticeguest'],
-		"homepageOrdertransmisson" => $GLOBALS['homepageOrdertransmisson'],
+		"homepageOrdertransmission" => $GLOBALS['homepageOrdertransmission'],
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -47,14 +47,47 @@ function buildHomepageItem($homepageItem){
 		case 'homepageOrderspeedtest':
 
 			break;
-		case 'homepageOrdertransmisson':
-
+		case 'homepageOrdertransmission':
+			if($GLOBALS['homepageTransmissionEnabled']){
+				$item .= '
+				<script>
+				// Transmission
+				homepageDownloader("transmission");
+				setInterval(function() {
+					homepageDownloader("transmission");
+				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				// End Transmission
+				</script>
+				';
+			}
 			break;
 		case 'homepageOrdernzbget':
-
+			if($GLOBALS['homepageNzbgetEnabled']){
+				$item .= '
+				<script>
+				// NZBGet
+				homepageDownloader("nzbget");
+				setInterval(function() {
+					homepageDownloader("nzbget");
+				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				// End NZBGet
+				</script>
+				';
+			}
 			break;
 		case 'homepageOrdersabnzbd':
-
+			if($GLOBALS['homepageSabnzbdEnabled']){
+				$item .= '
+				<script>
+				// SabNZBd
+				homepageDownloader("sabnzbd");
+				setInterval(function() {
+					homepageDownloader("sabnzbd");
+				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				// End SabNZBd
+				</script>
+				';
+			}
 			break;
 		case 'homepageOrderplexnowplaying':
 			if($GLOBALS['homepagePlexStreams']){
@@ -397,52 +430,167 @@ function getHomepageList(){
             )
         ),
         array(
-            'name' => 'Sonarr',
+            'name' => 'SabNZBD',
             'enabled' => false,
-            'image' => 'plugins/images/tabs/sonarr.png',
-            'category' => 'PVR',
+            'image' => 'plugins/images/tabs/sabnzbd.png',
+            'category' => 'Downloader',
             'settings' => array(
                 'Enable' => array(
                     array(
             			'type' => 'switch',
-            			'name' => 'homepagePlexEnabled',
+            			'name' => 'homepageSabnzbdEnabled',
             			'label' => 'Enable',
-            			'value' => $GLOBALS['homepagePlexEnabled']
-            		)
-                ),
-                'Connection' => array(
-                    array(
-                        'type' => 'input',
-                        'name' => 'plexURL',
-                        'label' => 'URL',
-                        'value' => $GLOBALS['plexURL']
-                    ),
-                    array(
-                        'type' => 'input',
-                        'name' => 'plexToken',
-                        'label' => 'Token',
-                        'value' => $GLOBALS['plexToken']
-                    )
-                ),
-                'Authentication' => array(
-                    array(
+            			'value' => $GLOBALS['homepageSabnzbdEnabled']
+            		),
+					array(
             			'type' => 'select',
-            			'name' => 'homepagePlexAuth',
+            			'name' => 'homepageSabnzbdAuth',
             			'label' => 'Minimum Authentication',
-            			'value' => $GLOBALS['homepagePlexAuth'],
+            			'value' => $GLOBALS['homepageSabnzbdAuth'],
                         'options' => $groups
             		)
                 ),
-                'Options' => array(
+				'Connection' => array(
                     array(
-    					'type' => 'select',
-    					'name' => 'style',
-    					'label' => 'Style',
-    					'class' => 'styleChanger',
-    					'value' => $GLOBALS['style'],
-    					'options' => $groups
-    				)
-                )
+                        'type' => 'input',
+                        'name' => 'sabnzbdURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['sabnzbdURL'],
+						'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'sabnzbdToken',
+                        'label' => 'Token',
+                        'value' => $GLOBALS['sabnzbdToken']
+                    )
+                ),
+				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageDownloadRefresh'],
+						'options' => $time
+					)
+				)
+            )
+        ),
+		array(
+            'name' => 'NZBGet',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/nzbget.png',
+            'category' => 'Downloader',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+            			'type' => 'switch',
+            			'name' => 'homepageNzbgetEnabled',
+            			'label' => 'Enable',
+            			'value' => $GLOBALS['homepageNzbgetEnabled']
+            		),
+					array(
+            			'type' => 'select',
+            			'name' => 'homepageNzbgetAuth',
+            			'label' => 'Minimum Authentication',
+            			'value' => $GLOBALS['homepageNzbgetAuth'],
+                        'options' => $groups
+            		)
+                ),
+				'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'nzbgetURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['nzbgetURL'],
+						'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'nzbgetUsername',
+                        'label' => 'Username',
+                        'value' => $GLOBALS['nzbgetUsername']
+                    ),
+					array(
+                        'type' => 'password',
+                        'name' => 'nzbgetPassword',
+                        'label' => 'Password',
+                        'value' => $GLOBALS['nzbgetPassword']
+                    )
+                ),
+				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageDownloadRefresh'],
+						'options' => $time
+					)
+				)
+            )
+        ),
+		array(
+            'name' => 'Transmission',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/transmission.png',
+            'category' => 'Downloader',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+            			'type' => 'switch',
+            			'name' => 'homepageTransmissionEnabled',
+            			'label' => 'Enable',
+            			'value' => $GLOBALS['homepageTransmissionEnabled']
+            		),
+					array(
+            			'type' => 'select',
+            			'name' => 'homepageTransmissionAuth',
+            			'label' => 'Minimum Authentication',
+            			'value' => $GLOBALS['homepageTransmissionAuth'],
+                        'options' => $groups
+            		)
+                ),
+				'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'transmissionURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['transmissionURL'],
+						'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'transmissionUsername',
+                        'label' => 'Username',
+                        'value' => $GLOBALS['transmissionUsername']
+                    ),
+					array(
+                        'type' => 'password',
+                        'name' => 'transmissionPassword',
+                        'label' => 'Password',
+                        'value' => $GLOBALS['transmissionPassword']
+                    )
+                ),
+				'Misc Options' => array(
+					array(
+            			'type' => 'switch',
+            			'name' => 'transmissionHideSeeding',
+            			'label' => 'Hide Seeding',
+            			'value' => $GLOBALS['transmissionHideSeeding']
+            		),array(
+            			'type' => 'switch',
+            			'name' => 'transmissionHideCompleted',
+            			'label' => 'Hide Completed',
+            			'value' => $GLOBALS['transmissionHideCompleted']
+            		),
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageDownloadRefresh'],
+						'options' => $time
+					)
+				)
             )
         )
     );

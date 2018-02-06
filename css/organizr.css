@@ -153,6 +153,7 @@ object-fit: contain;
   bottom: 0px;
   background: rgba(31, 31, 31, 0.73);
   width: inherit;
+  color: white;
 }
 .nowPlayingHover{
   margin-bottom: 14px;
@@ -178,6 +179,7 @@ object-fit: contain;
 h2.m-b-0.font-medium.pull-right {
   -webkit-filter: drop-shadow(1px 1px 0px #1f1f1f);
   filter: drop-shadow(1px 1px 0px #1f1f1f);
+  color: white;
 }
 .text-plex {
   color: #E5A00D;
@@ -208,4 +210,29 @@ h2.m-b-0.font-medium.pull-right {
   right:0px;
   overflow: hidden;
   filter: blur(0px) grayscale(1)
+}
+.mailbox-widget .customtab li.active a, .mailbox-widget .customtab li.active, .mailbox-widget .customtab li.active a:focus {
+    background: 0 0;
+    color: #fff;
+    border-color: #53e69d;
+}
+.nav-tabs.pull-right>li>a:hover {
+    background: transparent;
+    border-radius: 0px;
+}
+.homepageImageTitle {
+  height: 40px;
+  margin-top: -7px;
+}
+.grayscale {
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+}
+td span.label.label-info {
+  min-width: 80px !important;
+  display: inline-block !important;
+}
+.inbox-center.table-responsive {
+max-height: 300px;
+overflow-y: auto;
 }

@@ -111,6 +111,7 @@ function encrypt($password, $key = null) {
     return openssl_encrypt($password, 'AES-256-CBC', $key, 0, fillString($key,16));
 }
 function decrypt($password, $key = null) {
+	if(empty($password)){ return ''; }
     $key = (isset($GLOBALS['organizrHash'])) ? $GLOBALS['organizrHash'] : $key;
     return openssl_decrypt($password, 'AES-256-CBC', $key, 0, fillString($key,16));
 }
@@ -263,7 +264,7 @@ function array_filter_key(array $array, $callback){
 	return array_intersect_key($array, array_flip($matchedKeys));
 }
 // Qualify URL
-function qualifyURL($url) {
+function qualifyURL($url, $return=false) {
 	//local address?
 	if(substr($url, 0,1) == "/"){
 		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
@@ -292,7 +293,13 @@ function qualifyURL($url) {
 	// Path
 	$path = (isset($digest['path']) && $digest['path'] !== '/'?$digest['path']:'');
 	// Output
-	return $scheme.'://'.$host.$port.$path;
+	$array = array(
+		'scheme' => $scheme,
+		'host' => $host,
+		'port' => $port,
+		'path' => $path
+	);
+	return ($return) ? $array : $scheme.'://'.$host.$port.$path;
 }
 function getServerPath() {
 	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https"){

@@ -309,12 +309,14 @@ function pageLoad(){
         size: "6px",
         color: 'rgba(0,0,0,0.5)'
     });
-    $('.chat-list').slimScroll({
-        height: '100%',
-        position: 'right',
-        size: "0px",
-        color: '#dcdcdc'
-    });
+    if(bowser.mobile !== true){
+        $('.inbox-center').slimScroll({
+            height: '100%',
+            position: 'right',
+            size: "5px",
+            color: '#dcdcdc'
+        });
+    }
     /* ===== Resize all elements ===== */
 
 
@@ -462,7 +464,7 @@ function pageLoad(){
     $('.inline-popups').magnificPopup({
       removalDelay: 500, //delay removal by X to allow out-animation
       closeOnBgClick: true,
-      closeOnContentClick: true,
+      //closeOnContentClick: true,
       callbacks: {
         beforeOpen: function() {
            this.st.mainClass = this.st.el.attr('data-effect');
@@ -1625,6 +1627,25 @@ $(document).on("click", ".metadata-get", function(e) {
         console.log(response);
 		$('.'+uid+'-metadata-info').html(buildMetadata(response.data, source));
         $('.'+uid).trigger('click')
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
+
+});
+// sad play/resume
+$(document).on("click", ".downloader", function(e) {
+    var action = $(this).attr('data-action');
+    var source = $(this).attr('data-source');
+    var target = $(this).attr('data-target');
+    console.log(action);
+    console.log(source);
+    console.log(target);
+    ajaxloader(".content-wrap","in");
+	organizrAPI('POST','api/?v1/downloader',{action:action, source:source, target:target}).success(function(data) {
+		var response = JSON.parse(data);
+        console.log(response);
+		homepageDownloader(source);
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
