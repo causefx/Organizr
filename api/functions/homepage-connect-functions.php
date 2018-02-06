@@ -541,3 +541,36 @@ function nzbgetConnect() {
         return $api;
     }
 }
+function transmissionConnect() {
+    if($GLOBALS['homepageTransmissionEnabled'] && !empty($GLOBALS['transmissionURL']) && qualifyRequest($GLOBALS['homepageTransmissionAuth'])){
+        $url = $GLOBALS['transmissionURL'];
+        // Parse URL
+        //local address?
+    	if(substr($url, 0,1) == "/"){
+    		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+    			$protocol = "https://";
+    		} else {
+    			$protocol = "http://";
+    		}
+    		$url = $protocol.getServer().$url;
+    	}
+    	// Get Digest
+    	$digest = parse_url($url);
+    	// http/https
+    	if (!isset($digest['scheme'])) {
+    		if (isset($digest['port']) && in_array($digest['port'], array(80,8080,8096,32400,7878,8989,8182,8081,6789))) {
+    			$scheme = 'http';
+    		} else {
+    			$scheme = 'https';
+    		}
+    	} else {
+    		$scheme = $digest['scheme'];
+    	}
+    	// Host
+    	$host = (isset($digest['host'])?$digest['host']:'');
+    	// Port
+    	$port = (isset($digest['port'])?':'.$digest['port']:'');
+    	// Path
+    	$path = (isset($digest['path']) && $digest['path'] !== '/'?$digest['path']:'');
+    }
+}
