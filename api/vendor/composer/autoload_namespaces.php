@@ -6,6 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Transmission' => array($vendorDir . '/kleiram/transmission-php/lib'),
     'Requests' => array($vendorDir . '/rmccue/requests/library'),
 );
