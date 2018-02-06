@@ -232,3 +232,7 @@ td span.label.label-info {
   min-width: 80px !important;
   display: inline-block !important;
 }
+.inbox-center.table-responsive {
+max-height: 300px;
+overflow-y: auto;
+}

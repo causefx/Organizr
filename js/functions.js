@@ -2094,6 +2094,71 @@ function buildDownloaderItem(array, source, type='none'){
 
 			}
 			break;
+		case 'transmission':
+			switch (type) {
+				case 'queue':
+				console.log(array);
+					if(array.arguments.torrents == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+					}
+					$.each(array.arguments.torrents, function(i,v) {
+						switch (v.status) {
+							case 7:
+							case '7':
+								var status = 'No Peers';
+								break;
+							case 6:
+							case '6':
+								var status = 'Seeding';
+								break;
+							case 5:
+							case '5':
+								var status = 'Seeding Queued';
+								break;
+							case 4:
+							case '4':
+								var status = 'Downloading';
+								break;
+							case 3:
+							case '3':
+								var status = 'Queued';
+								break;
+							case 2:
+							case '2':
+								var status = 'Checking Files';
+								break;
+							case 1:
+							case '1':
+								var status = 'File Check Queued';
+								break;
+							case 0:
+							case '0':
+								var status = 'Complete';
+								break;
+							default:
+								var status = 'Complete';
+						}
+						var percent = Math.floor(v.percentDone * 100);
+						v.Category = (v.Category !== '') ? v.Category : 'Not Set';
+						items += `
+						<tr>
+							<td class="max-texts">`+v.name+`</td>
+							<td class="hidden-xs">`+status+`</td>
+							<td class="hidden-xs">`+v.downloadDir+`</td>
+							<td class="hidden-xs">`+humanFileSize(v.totalSize,true)+`</td>
+							<td class="text-right">
+								<div class="progress progress-lg m-b-0">
+									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+								</div>
+							</td>
+						</tr>
+						`;
+					});
+					break;
+				default:
+
+			}
+			break;
 		default:
 			return false;
 	}
@@ -2108,6 +2173,8 @@ function buildDownloader(array, source){
 	var state = '';
 	var active = '';
 	console.log(array);
+	console.log(queueItems);
+	console.log(historyItems);
 	console.log(downloader);
 	if(queueItems){
 		switch (source) {
@@ -2231,17 +2298,19 @@ function homepageDownloader(type){
 		case 'nzbget':
 			var action = 'getNzbget';
 			break;
+		case 'transmission':
+			var action = 'getTransmission';
+			break;
 		default:
 
 	}
-	ajaxloader(".content-wrap","in");
+	console.log('#homepageOrder'+type);
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
 		$('#homepageOrder'+type).html(buildDownloader(response.data, type));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 }
 function homepageStream(type){
 	switch (type) {

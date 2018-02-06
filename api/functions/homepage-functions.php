@@ -16,7 +16,7 @@ function homepageOrder(){
 		"homepageOrderombi" => $GLOBALS['homepageOrderombi'],
 		"homepageOrdercalendar" => $GLOBALS['homepageOrdercalendar'],
 		"homepageOrdernoticeguest" => $GLOBALS['homepageOrdernoticeguest'],
-		"homepageOrdertransmisson" => $GLOBALS['homepageOrdertransmisson'],
+		"homepageOrdertransmission" => $GLOBALS['homepageOrdertransmission'],
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -47,8 +47,19 @@ function buildHomepageItem($homepageItem){
 		case 'homepageOrderspeedtest':
 
 			break;
-		case 'homepageOrdertransmisson':
-
+		case 'homepageOrdertransmission':
+			if($GLOBALS['homepageTransmissionEnabled']){
+				$item .= '
+				<script>
+				// Transmission
+				homepageDownloader("transmission");
+				setInterval(function() {
+					homepageDownloader("transmission");
+				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				// End Transmission
+				</script>
+				';
+			}
 			break;
 		case 'homepageOrdernzbget':
 			if($GLOBALS['homepageNzbgetEnabled']){
@@ -508,6 +519,70 @@ function getHomepageList(){
                     )
                 ),
 				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageDownloadRefresh'],
+						'options' => $time
+					)
+				)
+            )
+        ),
+		array(
+            'name' => 'Transmission',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/transmission.png',
+            'category' => 'Downloader',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+            			'type' => 'switch',
+            			'name' => 'homepageTransmissionEnabled',
+            			'label' => 'Enable',
+            			'value' => $GLOBALS['homepageTransmissionEnabled']
+            		),
+					array(
+            			'type' => 'select',
+            			'name' => 'homepageTransmissionAuth',
+            			'label' => 'Minimum Authentication',
+            			'value' => $GLOBALS['homepageTransmissionAuth'],
+                        'options' => $groups
+            		)
+                ),
+				'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'transmissionURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['transmissionURL'],
+						'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'transmissionUsername',
+                        'label' => 'Username',
+                        'value' => $GLOBALS['transmissionUsername']
+                    ),
+					array(
+                        'type' => 'password',
+                        'name' => 'transmissionPassword',
+                        'label' => 'Password',
+                        'value' => $GLOBALS['transmissionPassword']
+                    )
+                ),
+				'Misc Options' => array(
+					array(
+            			'type' => 'switch',
+            			'name' => 'transmissionHideSeeding',
+            			'label' => 'Hide Seeding',
+            			'value' => $GLOBALS['transmissionHideSeeding']
+            		),array(
+            			'type' => 'switch',
+            			'name' => 'transmissionHideCompleted',
+            			'label' => 'Hide Completed',
+            			'value' => $GLOBALS['transmissionHideCompleted']
+            		),
 					array(
 						'type' => 'select',
 						'name' => 'homepageDownloadRefresh',

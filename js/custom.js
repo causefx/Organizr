@@ -309,12 +309,14 @@ function pageLoad(){
         size: "6px",
         color: 'rgba(0,0,0,0.5)'
     });
-    $('.chat-list').slimScroll({
-        height: '100%',
-        position: 'right',
-        size: "0px",
-        color: '#dcdcdc'
-    });
+    if(bowser.mobile !== true){
+        $('.inbox-center').slimScroll({
+            height: '100%',
+            position: 'right',
+            size: "5px",
+            color: '#dcdcdc'
+        });
+    }
     /* ===== Resize all elements ===== */
 
 

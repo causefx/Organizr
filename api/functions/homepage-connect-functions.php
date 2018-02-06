@@ -26,6 +26,9 @@ function homepageConnect($array){
         case 'getNzbget':
             return nzbgetConnect();
             break;
+        case 'getTransmission':
+            return transmissionConnect();
+            break;
         default:
             # code...
             break;
@@ -543,34 +546,53 @@ function nzbgetConnect() {
 }
 function transmissionConnect() {
     if($GLOBALS['homepageTransmissionEnabled'] && !empty($GLOBALS['transmissionURL']) && qualifyRequest($GLOBALS['homepageTransmissionAuth'])){
-        $url = $GLOBALS['transmissionURL'];
-        // Parse URL
-        //local address?
-    	if(substr($url, 0,1) == "/"){
-    		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
-    			$protocol = "https://";
-    		} else {
-    			$protocol = "http://";
-    		}
-    		$url = $protocol.getServer().$url;
-    	}
-    	// Get Digest
-    	$digest = parse_url($url);
-    	// http/https
-    	if (!isset($digest['scheme'])) {
-    		if (isset($digest['port']) && in_array($digest['port'], array(80,8080,8096,32400,7878,8989,8182,8081,6789))) {
-    			$scheme = 'http';
-    		} else {
-    			$scheme = 'https';
-    		}
-    	} else {
-    		$scheme = $digest['scheme'];
-    	}
-    	// Host
-    	$host = (isset($digest['host'])?$digest['host']:'');
-    	// Port
-    	$port = (isset($digest['port'])?':'.$digest['port']:'');
-    	// Path
-    	$path = (isset($digest['path']) && $digest['path'] !== '/'?$digest['path']:'');
+        $digest = qualifyURL($GLOBALS['transmissionURL'], true);
+        $digest['port'] = !empty($digest['port']) ? ':'.$digest['port'] : '';
+        $passwordInclude = ($GLOBALS['transmissionUsername'] != '' && $GLOBALS['transmissionPassword'] != '') ? $GLOBALS['transmissionUsername'].':'.decrypt($GLOBALS['transmissionPassword'])."@" : '';
+	    $url = $digest['scheme'].'://'.$passwordInclude.$digest['host'].$digest['port'].$digest['path'].'/rpc';
+        try{
+			$options = (localURL($GLOBALS['transmissionURL'])) ? array('verify' => false ) : array();
+			$response = Requests::get($url, array(), $options);
+			if($response->headers['x-transmission-session-id']){
+				$session_id = $response->headers['x-transmission-session-id'];
+			}
+            $headers = array(
+        		'X-Transmission-Session-Id' => $session_id,
+        		'Content-Type' => 'application/json'
+        	);
+        	$data = array(
+        		'method' => 'torrent-get',
+        		'arguments' => array(
+        			'fields' => array(
+        				"id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir","errorString"
+        			),
+        		),
+        		'tags' => ''
+        	);
+            $response = Requests::post($url, $headers, json_encode($data), $options);
+            if($response->success){
+                $torrentList = json_decode($response->body, true)['arguments']['torrents'];
+                if($GLOBALS['transmissionHideSeeding'] || $GLOBALS['transmissionHideCompleted']){
+                    $filter = array();
+                    $torrents['arguments']['torrents'] = array();
+                    if($GLOBALS['transmissionHideSeeding']){ array_push($filter, 6, 5); }
+                    if($GLOBALS['transmissionHideCompleted']){ array_push($filter, 0); }
+                    foreach ($torrentList as $key => $value) {
+                        if(!in_array($value['status'], $filter)){
+                            $torrents['arguments']['torrents'][] = $value;
+                        }
+                    }
+                }else{
+                    $torrents = json_decode($response->body, true);
+                }
+
+				$api['content']['queueItems'] = $torrents;
+                $api['content']['historyItems'] = false;
+			}
+		}catch( Requests_Exception $e ) {
+			writeLog('error', 'Transmission Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		};
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
     }
 }
