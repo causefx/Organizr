@@ -49,7 +49,7 @@ function buildHomepageItem($homepageItem){
 
 			break;
         case 'homepageOrderqBittorrent':
-            if($GLOBALS['homepageOrderqBittorrent']){
+            if($GLOBALS['homepageqBittorrentEnabled']){
                 $item .= '
                 <script>
                 // homepageOrderqBittorrent
