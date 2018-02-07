@@ -29,6 +29,9 @@ function homepageConnect($array){
         case 'getTransmission':
             return transmissionConnect();
             break;
+        case 'getqBittorrent':
+            return qBittorrentConnect();
+            break;
         default:
             # code...
             break;
@@ -561,7 +564,6 @@ function nzbgetConnect() {
 function transmissionConnect() {
     if($GLOBALS['homepageTransmissionEnabled'] && !empty($GLOBALS['transmissionURL']) && qualifyRequest($GLOBALS['homepageTransmissionAuth'])){
         $digest = qualifyURL($GLOBALS['transmissionURL'], true);
-        $digest['port'] = !empty($digest['port']) ? ':'.$digest['port'] : '';
         $passwordInclude = ($GLOBALS['transmissionUsername'] != '' && $GLOBALS['transmissionPassword'] != '') ? $GLOBALS['transmissionUsername'].':'.decrypt($GLOBALS['transmissionPassword'])."@" : '';
 	    $url = $digest['scheme'].'://'.$passwordInclude.$digest['host'].$digest['port'].$digest['path'].'/rpc';
         try{
@@ -610,4 +612,59 @@ function transmissionConnect() {
         $api['content'] = isset($api['content']) ? $api['content'] : false;
         return $api;
     }
+}
+function qBittorrentConnect() {
+    if($GLOBALS['homepageqBittorrentEnabled'] && !empty($GLOBALS['qBittorrentURL']) && qualifyRequest($GLOBALS['homepageqBittorrentAuth'])){
+        $digest = qualifyURL($GLOBALS['qBittorrentURL'], true);
+        $passwordInclude = ($GLOBALS['qBittorrentUsername'] != '' && $GLOBALS['qBittorrentPassword'] != '') ? 'username='.$GLOBALS['qBittorrentUsername'].'&password='.decrypt($GLOBALS['qBittorrentPassword'])."@" : '';
+        $data = array('username'=>$GLOBALS['qBittorrentUsername'], 'password'=> decrypt($GLOBALS['qBittorrentPassword']));
+        $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/login';
+        try{
+            $options = (localURL($GLOBALS['qBittorrentURL'])) ? array('verify' => false ) : array();
+            $response = Requests::post($url, array(), $data, $options);
+            $reflection = new ReflectionClass($response->cookies);
+            $cookie = $reflection->getProperty("cookies");
+            $cookie->setAccessible(true);
+            $cookie = $cookie->getValue($response->cookies);
+            if($cookie){
+                $headers = array(
+                    'Cookie' => 'SID=' . $cookie['SID']->value
+                );
+                $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/query/torrents?filter=downloading&sort=eta';
+                $response = Requests::get($url, $headers, $options);
+                if($response){
+                    $torrentList = json_decode($response->body, true);
+                    if($GLOBALS['qBittorrentHideSeeding'] || $GLOBALS['qBittorrentHideCompleted']){
+                        $filter = array();
+                        $torrents['arguments']['torrents'] = array();
+                        if($GLOBALS['qBittorrentHideSeeding']){ array_push($filter, 'uploading', 'stalledUP', 'queuedUP'); }
+                        if($GLOBALS['qBittorrentHideCompleted']){ array_push($filter, 'pausedUP'); }
+                        foreach ($torrentList as $key => $value) {
+                            if(!in_array($value['state'], $filter)){
+                                $torrents['arguments']['torrents'][] = $value;
+                            }
+                        }
+                    }else{
+                        $torrents['arguments']['torrents'] = json_decode($response->body, true);
+                    }
+
+                    $api['content']['queueItems'] = $torrents;
+                    $api['content']['historyItems'] = false;
+                    
+                }
+            }else{
+                writeLog('error', 'qBittorrent Connect Function - Error: Could not get session ID', 'SYSTEM');
+            }
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'qBittorrent Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
+}
+function accessProtected($obj, $prop) {
+  $reflection = new ReflectionClass($obj);
+  $property = $reflection->getProperty($prop);
+  $property->setAccessible(true);
+  return $property->getValue($obj);
 }

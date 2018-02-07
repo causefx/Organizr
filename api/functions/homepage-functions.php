@@ -16,7 +16,8 @@ function homepageOrder(){
 		"homepageOrderombi" => $GLOBALS['homepageOrderombi'],
 		"homepageOrdercalendar" => $GLOBALS['homepageOrdercalendar'],
 		"homepageOrdernoticeguest" => $GLOBALS['homepageOrdernoticeguest'],
-		"homepageOrdertransmission" => $GLOBALS['homepageOrdertransmission'],
+        "homepageOrdertransmission" => $GLOBALS['homepageOrdertransmission'],
+        "homepageOrderqBittorrent" => $GLOBALS['homepageOrderqBittorrent'],
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -47,6 +48,20 @@ function buildHomepageItem($homepageItem){
 		case 'homepageOrderspeedtest':
 
 			break;
+        case 'homepageOrderqBittorrent':
+            if($GLOBALS['homepageOrderqBittorrent']){
+                $item .= '
+                <script>
+                // homepageOrderqBittorrent
+                homepageDownloader("qBittorrent");
+                setInterval(function() {
+                    homepageDownloader("qBittorrent");
+                }, '.$GLOBALS['homepageDownloadRefresh'].');
+                // End homepageOrderqBittorrent
+                </script>
+                ';
+            }
+            break;
 		case 'homepageOrdertransmission':
 			if($GLOBALS['homepageTransmissionEnabled']){
 				$item .= '
@@ -529,7 +544,7 @@ function getHomepageList(){
 				)
             )
         ),
-		array(
+        array(
             'name' => 'Transmission',
             'enabled' => false,
             'image' => 'plugins/images/tabs/transmission.png',
@@ -537,26 +552,26 @@ function getHomepageList(){
             'settings' => array(
                 'Enable' => array(
                     array(
-            			'type' => 'switch',
-            			'name' => 'homepageTransmissionEnabled',
-            			'label' => 'Enable',
-            			'value' => $GLOBALS['homepageTransmissionEnabled']
-            		),
-					array(
-            			'type' => 'select',
-            			'name' => 'homepageTransmissionAuth',
-            			'label' => 'Minimum Authentication',
-            			'value' => $GLOBALS['homepageTransmissionAuth'],
+                        'type' => 'switch',
+                        'name' => 'homepageTransmissionEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageTransmissionEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageTransmissionAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageTransmissionAuth'],
                         'options' => $groups
-            		)
+                    )
                 ),
-				'Connection' => array(
+                'Connection' => array(
                     array(
                         'type' => 'input',
                         'name' => 'transmissionURL',
                         'label' => 'URL',
                         'value' => $GLOBALS['transmissionURL'],
-						'placeholder' => 'http(s)://hostname:port'
+                        'placeholder' => 'http(s)://hostname:port'
                     ),
                     array(
                         'type' => 'input',
@@ -564,33 +579,97 @@ function getHomepageList(){
                         'label' => 'Username',
                         'value' => $GLOBALS['transmissionUsername']
                     ),
-					array(
+                    array(
                         'type' => 'password',
                         'name' => 'transmissionPassword',
                         'label' => 'Password',
                         'value' => $GLOBALS['transmissionPassword']
                     )
                 ),
-				'Misc Options' => array(
-					array(
-            			'type' => 'switch',
-            			'name' => 'transmissionHideSeeding',
-            			'label' => 'Hide Seeding',
-            			'value' => $GLOBALS['transmissionHideSeeding']
-            		),array(
-            			'type' => 'switch',
-            			'name' => 'transmissionHideCompleted',
-            			'label' => 'Hide Completed',
-            			'value' => $GLOBALS['transmissionHideCompleted']
-            		),
-					array(
-						'type' => 'select',
-						'name' => 'homepageDownloadRefresh',
-						'label' => 'Refresh Seconds',
-						'value' => $GLOBALS['homepageDownloadRefresh'],
-						'options' => $time
-					)
-				)
+                'Misc Options' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'transmissionHideSeeding',
+                        'label' => 'Hide Seeding',
+                        'value' => $GLOBALS['transmissionHideSeeding']
+                    ),array(
+                        'type' => 'switch',
+                        'name' => 'transmissionHideCompleted',
+                        'label' => 'Hide Completed',
+                        'value' => $GLOBALS['transmissionHideCompleted']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageDownloadRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['homepageDownloadRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+        array(
+            'name' => 'qBittorrent',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/qBittorrent.png',
+            'category' => 'Downloader',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageqBittorrentEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageqBittorrentEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageqBittorrentAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageqBittorrentAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'qBittorrentURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['qBittorrentURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'qBittorrentUsername',
+                        'label' => 'Username',
+                        'value' => $GLOBALS['qBittorrentUsername']
+                    ),
+                    array(
+                        'type' => 'password',
+                        'name' => 'qBittorrentPassword',
+                        'label' => 'Password',
+                        'value' => $GLOBALS['qBittorrentPassword']
+                    )
+                ),
+                'Misc Options' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'qBittorrentHideSeeding',
+                        'label' => 'Hide Seeding',
+                        'value' => $GLOBALS['qBittorrentHideSeeding']
+                    ),array(
+                        'type' => 'switch',
+                        'name' => 'qBittorrentnHideCompleted',
+                        'label' => 'Hide Completed',
+                        'value' => $GLOBALS['qBittorrentHideCompleted']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageDownloadRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['homepageDownloadRefresh'],
+                        'options' => $time
+                    )
+                )
             )
         )
     );

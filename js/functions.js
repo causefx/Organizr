@@ -680,7 +680,6 @@ function buildHomepage(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/settings/homepage/list').success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response);
 		$('#settings-homepage-list').html(buildHomepageItem(response.data));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -818,6 +817,7 @@ function buildTabEditor(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/tab/list').success(function(data) {
 		var response = JSON.parse(data);
+		console.log(response.data);
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -2166,6 +2166,68 @@ function buildDownloaderItem(array, source, type='none'){
 
 			}
 			break;
+
+		case 'qBittorrent':
+			switch (type) {
+				case 'queue':
+				console.log(array);
+					if(array.arguments.torrents == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+					}
+					$.each(array.arguments.torrents, function(i,v) {
+						switch (v.state) {
+							case 'stalledDL':
+								var status = 'No Peers';
+								break;
+							case 'metaDL':
+								var status = 'Getting Metadata';
+								break;
+							case 'uploading':
+								var status = 'Seeding';
+								break;
+							case 'queuedUP':
+								var status = 'Seeding Queued';
+								break;
+							case 'downloading':
+								var status = 'Downloading';
+								break;
+							case 'queuedDL':
+								var status = 'Queued';
+								break;
+							case 'checkingDL':
+							case 'checkingUP':
+								var status = 'Checking Files';
+								break;
+							case 'pausedDL':
+								var status = 'Paused';
+								break;
+							case 'pausedUP':
+								var status = 'Complete';
+								break;
+							default:
+								var status = 'Complete';
+						}
+						var percent = Math.floor(v.progress * 100);
+						var size = v.total_size != -1 ? humanFileSize(v.total_size,true) : "?";
+						items += `
+						<tr>
+							<td class="max-texts">`+v.name+`</td>
+							<td class="hidden-xs">`+status+`</td>
+							<td class="hidden-xs">`+v.save_path+`</td>
+							<td class="hidden-xs">`+size+`</td>
+							<td class="text-right">
+								<div class="progress progress-lg m-b-0">
+									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+								</div>
+							</td>
+						</tr>
+						`;
+					});
+					break;
+				default:
+
+			}
+			break;
 		default:
 			return false;
 	}
@@ -2307,6 +2369,9 @@ function homepageDownloader(type){
 			break;
 		case 'transmission':
 			var action = 'getTransmission';
+			break;
+		case 'qBittorrent':
+			var action = 'getqBittorrent';
 			break;
 		default:
 
