@@ -2,7 +2,6 @@
 if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
 $pageSettings = '
 <script>
-
     (function() {
         updateCheck();
         [].slice.call(document.querySelectorAll(\'.sttabs\')).forEach(function(el) {

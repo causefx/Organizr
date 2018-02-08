@@ -40,6 +40,20 @@ $pageHomepage = '
             eventLimit: false, // allow "more" link when too many events
             selectable: false,
             height: "auto",
+            eventRender: function eventRender( event, element, view ) {
+            	if (typeof filter !== "undefined") {
+            		if(filter === "all"){
+            			return event.imagetype === event.imagetype;
+            		}else if(filter !== "all"){
+            			return filter === event.imagetype;
+            		}
+            		if(filter === null){
+            			return event.imagetype === event.imagetype;
+            		}
+            	}else {
+            		return event.imagetype === event.imagetype;
+            	}
+            },
         });
     },
    //init CalendarApp

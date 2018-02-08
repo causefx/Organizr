@@ -829,6 +829,156 @@ function getHomepageList(){
                     )
                 )
             )
+        ),
+		array(
+            'name' => 'Radarr',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/radarr.png',
+            'category' => 'PVR',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageRadarrEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageRadarrEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageRadarrAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageRadarrAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'radarrURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['radarrURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'radarrToken',
+                        'label' => 'Token',
+                        'value' => $GLOBALS['radarrToken']
+                    )
+                ),
+                'Misc Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'calendarStart',
+						'label' => '# of Days Before',
+						'value' => $GLOBALS['calendarStart'],
+						'placeholder' => ''
+					),
+					array(
+						'type' => 'input',
+						'name' => 'calendarEnd',
+						'label' => '# of Days After',
+						'value' => $GLOBALS['calendarEnd'],
+						'placeholder' => ''
+					),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarFirstDay',
+                        'label' => 'Start Day',
+                        'value' => $GLOBALS['calendarFirstDay'],
+                        'options' => $day
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarDefault',
+                        'label' => 'Default View',
+                        'value' => $GLOBALS['calendarDefault'],
+                        'options' => $calendarDefault
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarTimeFormat',
+                        'label' => 'Time Format',
+                        'value' => $GLOBALS['calendarTimeFormat'],
+                        'options' => $timeFormat
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'calendarRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['calendarRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+		array(
+            'name' => 'SickRage',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/sickrage.png',
+            'category' => 'PVR',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageSickrageEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageSickrageEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageSickrageAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageSickrageAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'sickrageURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['sickrageURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'sickrageToken',
+                        'label' => 'Token',
+                        'value' => $GLOBALS['sickrageToken']
+                    )
+                ),
+                'Misc Options' => array(
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarFirstDay',
+                        'label' => 'Start Day',
+                        'value' => $GLOBALS['calendarFirstDay'],
+                        'options' => $day
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarDefault',
+                        'label' => 'Default View',
+                        'value' => $GLOBALS['calendarDefault'],
+                        'options' => $calendarDefault
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarTimeFormat',
+                        'label' => 'Time Format',
+                        'value' => $GLOBALS['calendarTimeFormat'],
+                        'options' => $timeFormat
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'calendarRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['calendarRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
         )
     );
 }
