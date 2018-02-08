@@ -236,3 +236,13 @@ td span.label.label-info {
 max-height: 300px;
 overflow-y: auto;
 }
+.fc-event {
+border-radius: 0;
+border: none;
+cursor: pointer;
+font-size: 13px;
+margin: 1px -1px 0;
+padding: 5px;
+text-align: left;
+background: #2cabe3;
+}

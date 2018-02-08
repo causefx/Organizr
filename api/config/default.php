@@ -31,6 +31,8 @@ return array(
     'ssoPlex' => false,
     'ssoOmbi' => false,
     'ssoTautulli' => false,
+	'sonarrURL' => '',
+	'sonarrToken' => '',
 	'sabnzbdURL' => '',
     'sabnzbdToken' => '',
     'nzbgetURL' => '',
@@ -48,6 +50,8 @@ return array(
     'qBittorrentHideCompleted' => false,
     'homepageSabnzbdEnabled' => false,
     'homepageSabnzbdAuth' => '1',
+	'homepageSonarrEnabled' => false,
+    'homepageSonarrAuth' => '1',
     'homepageTransmissionEnabled' => false,
     'homepageTransmissionAuth' => '1',
     'homepageqBittorrentEnabled' => false,
@@ -86,5 +90,11 @@ return array(
     'homepageEmbyStreams' => false,
     'homepageEmbyStreamsAuth' => '1',
     'homepageEmbyRecent' => false,
-    'homepageEmbyRecentAuth' => '1'
+    'homepageEmbyRecentAuth' => '1',
+    'calendarDefault' => 'month',
+    'calendarFirstDay' => '1',
+    'calendarStart' => '14',
+    'calendarEnd' => '14',
+    'calendarRefresh' => '60000',
+    'calendarTimeFormat' => 'h(:mm)t'
 );

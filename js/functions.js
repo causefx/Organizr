@@ -2424,6 +2424,20 @@ function homepageRecent(type){
 	});
 	ajaxloader();
 }
+function homepageCalendar(){
+	ajaxloader(".content-wrap","in");
+	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
+		var response = JSON.parse(data);
+		console.log(response);
+        $('#calendar').fullCalendar('removeEvents');
+        $('#calendar').fullCalendar('addEventSource', response.data);
+        console.log('Calendar Entries Added');
+		//$('#homepageOrder'+type+'recent').html(buildRecent(response.data, type));
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
+}
 //Generate API
 function generateCode() {
     var code = "";

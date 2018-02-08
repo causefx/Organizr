@@ -32,6 +32,9 @@ function homepageConnect($array){
         case 'getqBittorrent':
             return qBittorrentConnect();
             break;
+        case 'getCalendar':
+            return getCalendar();
+            break;
         default:
             # code...
             break;
@@ -659,9 +662,62 @@ function qBittorrentConnect() {
         return $api;
     }
 }
-function accessProtected($obj, $prop) {
-  $reflection = new ReflectionClass($obj);
-  $property = $reflection->getProperty($prop);
-  $property->setAccessible(true);
-  return $property->getValue($obj);
+function getCalendar(){
+	$startDate = date('Y-m-d',strtotime("-".$GLOBALS['calendarStart']." days"));
+	$endDate = date('Y-m-d',strtotime("+".$GLOBALS['calendarEnd']." days"));
+	$calendarItems = array();
+    // SONARR CONNECT
+    if($GLOBALS['homepageSonarrEnabled'] && qualifyRequest($GLOBALS['homepageSonarrAuth']) && !empty($GLOBALS['sonarrURL']) && !empty($GLOBALS['sonarrToken'])){
+        $sonarrs = array();
+        $sonarrURLList = explode(',', $GLOBALS['sonarrURL']);
+        $sonarrTokenList = explode(',', $GLOBALS['sonarrToken']);
+        if(count($sonarrURLList) == count($sonarrTokenList)){
+            foreach ($sonarrURLList as $key => $value) {
+                $sonarrs[$key] = array(
+                    'url' => $value,
+                    'token' => $sonarrTokenList[$key]
+                );
+            }
+            foreach ($sonarrs as $key => $value) {
+                try {
+                    $sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+                    $sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate),$key);
+
+                } catch (Exception $e) {
+                    writeLog('error', 'Sonarr Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+                }
+                if(!empty($sonarrCalendar)) { $calendarItems = array_merge($calendarItems, $sonarrCalendar); }
+            }
+        }
+    }
+
+
+	return ($calendarItems) ? $calendarItems : false;
+}
+function getSonarrCalendar($array,$number){
+    $array = json_decode($array, true);
+    $gotCalendar = array();
+    $i = 0;
+    foreach($array AS $child) {
+        $i++;
+        $seriesName = $child['series']['title'];
+        $episodeID = $child['series']['tvdbId'];
+        if(!isset($episodeID)){ $episodeID = ""; }
+        $episodeName = htmlentities($child['title'], ENT_QUOTES);
+        if($child['episodeNumber'] == "1"){ $episodePremier = "true"; }else{ $episodePremier = "false"; }
+        $episodeAirDate = $child['airDateUtc'];
+        $episodeAirDate = strtotime($episodeAirDate);
+        $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
+        if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
+        $downloaded = $child['hasFile'];
+        if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "bg-primary"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success"; }else{ $downloaded = "bg-danger"; }
+		array_push($gotCalendar, array(
+			"id" => "Sonarr-".$number."-".$i,
+			"title" => $seriesName,
+			"start" => $child['airDateUtc'],
+			"className" => $downloaded." tvID--".$episodeID,
+			"imagetype" => "tv",
+		));
+    }
+    if ($i != 0){ return $gotCalendar; }
 }

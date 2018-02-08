@@ -22,6 +22,7 @@
 	<link href="plugins/bower_components/jquery-asColorPicker-master/css/asColorPicker.css" rel="stylesheet">
 	<link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/css-chart/css-chart.css" rel="stylesheet">
+	<link href="plugins/bower_components/calendar/dist/fullcalendar.css" rel="stylesheet" />
 	<link id="style" href="css/dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<link href="css/organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<?php echo pluginFiles('css'); ?>
@@ -131,6 +132,7 @@
     <script src="plugins/bower_components/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
 	<script src="plugins/bower_components/dropzone-master/dist/dropzone.js"></script>
 	<script src="plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>
+	<script src='plugins/bower_components/calendar/dist/fullcalendar.js'></script>
 	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 	<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 	<?php echo pluginFiles('js'); ?>

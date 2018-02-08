@@ -31,7 +31,7 @@ function buildHomepage(){
 	return $homepageBuilt;
 }
 function buildHomepageItem($homepageItem){
-	$item = '<div id="'.$homepageItem.'"></div>';
+	$item = '<div id="'.$homepageItem.'">';
 	switch ($homepageItem) {
 		case 'homepageOrderplexsearch':
 
@@ -167,13 +167,23 @@ function buildHomepageItem($homepageItem){
 
 			break;
 		case 'homepageOrdercalendar':
-
+			$item .= '
+			<div id="calendar" class="fc fc-ltr"></div>
+			<script>
+			// Calendar
+			homepageCalendar();
+			setInterval(function() {
+				homepageCalendar();
+			}, '.$GLOBALS['calendarRefresh'].');
+			// End Calendar
+			</script>
+			';
 			break;
 		default:
 			# code...
 			break;
 	}
-	return $item;
+	return $item.'</div>';
 }
 function getHomepageList(){
     $groups = groupSelect();
@@ -215,6 +225,72 @@ function getHomepageList(){
             'value' => '3600000'
         ),
     );
+	$day = array(
+		array(
+			'name' => 'Sunday',
+			'value' => '0'
+		),
+		array(
+			'name' => 'Monday',
+			'value' => '1'
+		),
+		array(
+			'name' => 'Tueday',
+			'value' => '2'
+		),
+		array(
+			'name' => 'Wednesday',
+			'value' => '3'
+		),
+		array(
+			'name' => 'Thursday',
+			'value' => '4'
+		),
+		array(
+			'name' => 'Friday',
+			'value' => '5'
+		),
+		array(
+			'name' => 'Saturday',
+			'value' => '6'
+		)
+	);
+	$calendarDefault = array(
+		array(
+			'name' => 'Month',
+			'value' => 'month'
+		),
+		array(
+			'name' => 'Day',
+			'value' => 'basicDay'
+		),
+		array(
+			'name' => 'Week',
+			'value' => 'basicWeek'
+		)
+	);
+	$timeFormat = array(
+		array(
+			'name' => '6p',
+			'value' => 'h(:mm)t'
+		),
+		array(
+			'name' => '6:00p',
+			'value' => 'h:mmt'
+		),
+		array(
+			'name' => '6:00',
+			'value' => 'h:mm'
+		),
+		array(
+			'name' => '18',
+			'value' => 'H(:mm)'
+		),
+		array(
+			'name' => '18:00',
+			'value' => 'H:mm'
+		)
+	);
     return array(
         array(
             'name' => 'Plex',
@@ -667,6 +743,88 @@ function getHomepageList(){
                         'name' => 'homepageDownloadRefresh',
                         'label' => 'Refresh Seconds',
                         'value' => $GLOBALS['homepageDownloadRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+        array(
+            'name' => 'Sonarr',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/sonarr.png',
+            'category' => 'PVR',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageSonarrEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageSonarrEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageSonarrAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageSonarrAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'sonarrURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['sonarrURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'sonarrToken',
+                        'label' => 'Token',
+                        'value' => $GLOBALS['sonarrToken']
+                    )
+                ),
+                'Misc Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'calendarStart',
+						'label' => '# of Days Before',
+						'value' => $GLOBALS['calendarStart'],
+						'placeholder' => ''
+					),
+					array(
+						'type' => 'input',
+						'name' => 'calendarEnd',
+						'label' => '# of Days After',
+						'value' => $GLOBALS['calendarEnd'],
+						'placeholder' => ''
+					),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarFirstDay',
+                        'label' => 'Start Day',
+                        'value' => $GLOBALS['calendarFirstDay'],
+                        'options' => $day
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarDefault',
+                        'label' => 'Default View',
+                        'value' => $GLOBALS['calendarDefault'],
+                        'options' => $calendarDefault
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarTimeFormat',
+                        'label' => 'Time Format',
+                        'value' => $GLOBALS['calendarTimeFormat'],
+                        'options' => $timeFormat
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'calendarRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['calendarRefresh'],
                         'options' => $time
                     )
                 )
