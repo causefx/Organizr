@@ -599,7 +599,6 @@ function transmissionConnect() {
                     }else{
                         $torrents = json_decode($response->body, true);
                     }
-
     				$api['content']['queueItems'] = $torrents;
                     $api['content']['historyItems'] = false;
     			}
@@ -630,7 +629,7 @@ function qBittorrentConnect() {
                 $headers = array(
                     'Cookie' => 'SID=' . $cookie['SID']->value
                 );
-                $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/query/torrents?filter=downloading&sort=eta';
+                $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/query/torrents?sort=eta';
                 $response = Requests::get($url, $headers, $options);
                 if($response){
                     $torrentList = json_decode($response->body, true);
@@ -647,10 +646,8 @@ function qBittorrentConnect() {
                     }else{
                         $torrents['arguments']['torrents'] = json_decode($response->body, true);
                     }
-
                     $api['content']['queueItems'] = $torrents;
                     $api['content']['historyItems'] = false;
-                    
                 }
             }else{
                 writeLog('error', 'qBittorrent Connect Function - Error: Could not get session ID', 'SYSTEM');
