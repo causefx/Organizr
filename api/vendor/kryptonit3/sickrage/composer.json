@@ -1,0 +1,19 @@
+{
+    "name": "kryptonit3/sickrage",
+    "description": "PHP Wrapper for SickRage / SickBeard API",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jesse Szypulski",
+            "email": "jesse.szypulski@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^6.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kryptonit3\\SickRage\\": "src/"
+        }
+    }
+}

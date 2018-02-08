@@ -7,17 +7,33 @@ namespace Composer\Autoload;
 class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
 {
     public static $files = array (
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '0097ca414fcb37c7130ac24b05f485f8' => __DIR__ . '/..' . '/dibi/dibi/src/loader.php',
     );
 
     public static $prefixLengthsPsr4 = array (
         'P' => 
         array (
+            'Psr\\Http\\Message\\' => 17,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
         'L' => 
         array (
             'Lcobucci\\JWT\\' => 13,
+        ),
+        'K' => 
+        array (
+            'Kryptonit3\\Sonarr\\' => 18,
+            'Kryptonit3\\SickRage\\' => 20,
+            'Kryptonit3\\CouchPotato\\' => 23,
+        ),
+        'G' => 
+        array (
+            'GuzzleHttp\\Psr7\\' => 16,
+            'GuzzleHttp\\Promise\\' => 19,
+            'GuzzleHttp\\' => 11,
         ),
         'C' => 
         array (
@@ -26,6 +42,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
     );
 
     public static $prefixDirsPsr4 = array (
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
         'PHPMailer\\PHPMailer\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
@@ -33,6 +53,30 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Lcobucci\\JWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
+        ),
+        'Kryptonit3\\Sonarr\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kryptonit3/sonarr/src',
+        ),
+        'Kryptonit3\\SickRage\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kryptonit3/sickrage/src',
+        ),
+        'Kryptonit3\\CouchPotato\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kryptonit3/couchpotato/src',
+        ),
+        'GuzzleHttp\\Psr7\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
+        ),
+        'GuzzleHttp\\Promise\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
+        ),
+        'GuzzleHttp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
         'Composer\\Semver\\' => 
         array (
