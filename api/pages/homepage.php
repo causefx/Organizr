@@ -38,6 +38,7 @@ $pageHomepage = '
             editable: false,
             droppable: false, // this allows things to be dropped onto the calendar !!!
             eventLimit: false, // allow "more" link when too many events
+            //eventLimit: tof("'.$GLOBALS['calendarLimit'].'","b"), // allow "more" link when too many events
             selectable: false,
             height: "auto",
             eventRender: function eventRender( event, element, view ) {

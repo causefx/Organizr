@@ -1971,7 +1971,7 @@ function buildRecent(array, type){
         <div class="col-lg-12">
             <div class="panel panel-default">
                 <div class="panel-heading bg-info p-t-10 p-b-10">
-					<span class="pull-left m-t-5" lang="en">Recently Added to `+toUpper(type)+`</span>
+					<span class="pull-left m-t-5" lang="en"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; Recently Added</span>
 					<div class="btn-group pull-right">
 	                    <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
 							<i class="fa fa-filter m-r-5"></i><span class="caret"></span>

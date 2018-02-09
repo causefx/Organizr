@@ -35,6 +35,8 @@ return array(
 	'sonarrToken' => '',
     'radarrURL' => '',
 	'radarrToken' => '',
+	'couchpotatoURL' => '',
+	'couchpotatoToken' => '',
     'sickrageURL' => '',
 	'sickrageToken' => '',
 	'sabnzbdURL' => '',
@@ -56,6 +58,8 @@ return array(
     'homepageSabnzbdAuth' => '1',
 	'homepageSonarrEnabled' => false,
     'homepageSonarrAuth' => '1',
+    'homepageCouchpotatoEnabled' => false,
+    'homepageCouchpotatoAuth' => '1',
     'homepageSickrageEnabled' => false,
     'homepageSickrageAuth' => '1',
     'homepageRadarrEnabled' => false,
@@ -104,5 +108,6 @@ return array(
     'calendarStart' => '14',
     'calendarEnd' => '14',
     'calendarRefresh' => '60000',
-    'calendarTimeFormat' => 'h(:mm)t'
+    'calendarTimeFormat' => 'h(:mm)t',
+    'calendarLimit' => false
 );

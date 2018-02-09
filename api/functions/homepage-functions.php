@@ -820,6 +820,12 @@ function getHomepageList(){
                         'value' => $GLOBALS['calendarTimeFormat'],
                         'options' => $timeFormat
                     ),
+					array(
+                        'type' => 'switch',
+                        'name' => 'calendarLimit',
+                        'label' => 'Limit Entries',
+                        'value' => $GLOBALS['calendarLimit']
+                    ),
                     array(
                         'type' => 'select',
                         'name' => 'calendarRefresh',
@@ -902,6 +908,86 @@ function getHomepageList(){
                         'value' => $GLOBALS['calendarTimeFormat'],
                         'options' => $timeFormat
                     ),
+					array(
+                        'type' => 'switch',
+                        'name' => 'calendarLimit',
+                        'label' => 'Limit Entries',
+                        'value' => $GLOBALS['calendarLimit']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'calendarRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['calendarRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+		array(
+            'name' => 'CouchPotato',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/couchpotato.png',
+            'category' => 'PVR',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageCouchpotatoEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageCouchpotatoEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageCouchpotatoAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageCouchpotatoAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'couchpotatoURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['couchpotatoURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'couchpotatoToken',
+                        'label' => 'Token',
+                        'value' => $GLOBALS['couchpotatoToken']
+                    )
+                ),
+                'Misc Options' => array(
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarFirstDay',
+                        'label' => 'Start Day',
+                        'value' => $GLOBALS['calendarFirstDay'],
+                        'options' => $day
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarDefault',
+                        'label' => 'Default View',
+                        'value' => $GLOBALS['calendarDefault'],
+                        'options' => $calendarDefault
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarTimeFormat',
+                        'label' => 'Time Format',
+                        'value' => $GLOBALS['calendarTimeFormat'],
+                        'options' => $timeFormat
+                    ),
+					array(
+                        'type' => 'switch',
+                        'name' => 'calendarLimit',
+                        'label' => 'Limit Entries',
+                        'value' => $GLOBALS['calendarLimit']
+                    ),
                     array(
                         'type' => 'select',
                         'name' => 'calendarRefresh',
@@ -969,6 +1055,12 @@ function getHomepageList(){
                         'label' => 'Time Format',
                         'value' => $GLOBALS['calendarTimeFormat'],
                         'options' => $timeFormat
+                    ),
+					array(
+                        'type' => 'switch',
+                        'name' => 'calendarLimit',
+                        'label' => 'Limit Entries',
+                        'value' => $GLOBALS['calendarLimit']
                     ),
                     array(
                         'type' => 'select',

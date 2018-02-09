@@ -737,6 +737,29 @@ function getCalendar(){
             }
         }
     }
+	// COUCHPOTATO CONNECT
+    if($GLOBALS['homepageCouchpotatoEnabled'] && qualifyRequest($GLOBALS['homepageCouchpotatoAuth']) && !empty($GLOBALS['couchpotatoURL']) && !empty($GLOBALS['couchpotatoToken'])){
+        $couchs = array();
+        $couchpotatoURLList = explode(',', $GLOBALS['couchpotatoURL']);
+        $couchpotatoTokenList = explode(',', $GLOBALS['couchpotatoToken']);
+        if(count($couchpotatoURLList) == count($couchpotatoTokenList)){
+            foreach ($couchpotatoURLList as $key => $value) {
+                $couchs[$key] = array(
+                    'url' => $value,
+                    'token' => $couchpotatoTokenList[$key]
+                );
+            }
+            foreach ($couchs as $key => $value) {
+                try {
+                    $couchpotato = new Kryptonit3\CouchPotato\CouchPotato($value['url'], $value['token']);
+        			$couchCalendar = getCouchCalendar($couchpotato->getMediaList(),$key);
+        			if(!empty($couchCalendar)) { $calendarItems = array_merge($calendarItems, $couchCalendar); }
+        		} catch (Exception $e) {
+        			writeLog('error', 'Sickrage Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        		}
+            }
+        }
+    }
 
 
 	return ($calendarItems) ? $calendarItems : false;
@@ -794,6 +817,35 @@ function getRadarrCalendar($array,$number){
         }
     }
     if ($i != 0){ return $gotCalendar; }
+}
+function getCouchCalendar($array,$number){
+    $api = json_decode($array, true);
+    $gotCalendar = array();
+    $i = 0;
+	foreach($api['movies'] AS $child) {
+		if($child['status'] == "active" || $child['status'] == "done" ){
+			$i++;
+			$movieName = $child['info']['original_title'];
+			$movieID = $child['info']['tmdb_id'];
+			if(!isset($movieID)){ $movieID = ""; }
+			$physicalRelease = (isset($child['info']['released']) ? $child['info']['released'] : null);
+			$backupRelease = (isset($child['info']['release_date']['theater']) ? $child['info']['release_date']['theater'] : null);
+			$physicalRelease = (isset($physicalRelease) ? $physicalRelease : $backupRelease);
+			$physicalRelease = strtotime($physicalRelease);
+			$physicalRelease = date("Y-m-d", $physicalRelease);
+			if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
+			$downloaded = ($child['status'] == "active") ? "0" : "1";
+			if($downloaded == "0" && $notReleased == "true"){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success"; }else{ $downloaded = "bg-danger"; }
+			array_push($gotCalendar, array(
+				"id" => "CouchPotato-".$number."-".$i,
+				"title" => $movieName,
+				"start" => $physicalRelease,
+				"className" => $downloaded." movieID--".$movieID,
+				"imagetype" => "film",
+			));
+		}
+	}
+	if ($i != 0){ return $gotCalendar; }
 }
 function getSickrageCalendarWanted($array,$number){
     $array = json_decode($array, true);
