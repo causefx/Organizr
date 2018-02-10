@@ -30,15 +30,19 @@ $pageHomepage = '
             timeFormat: "'.$GLOBALS['calendarTimeFormat'].'",
             handleWindowResize: true,
             header: {
-                left: "prev,next",
-                center: "title",
-                right: "month,basicDay,basicWeek"
+               left: "prev,next",
+               center: "title",
+               right: "month,basicWeek,basicDay"
+            },
+            views: {
+               basicDay: { buttonText: window.lang.translate("Day"), eventLimit: '.$GLOBALS['calendarLimit'].' },
+               basicWeek: { buttonText: window.lang.translate("Week"), eventLimit: '.$GLOBALS['calendarLimit'].' },
+               month: { buttonText: window.lang.translate("Month"), eventLimit: '.$GLOBALS['calendarLimit'].' },
+               today: { buttonText: window.lang.translate("Today") },
             },
             timezone: "local",
             editable: false,
             droppable: false, // this allows things to be dropped onto the calendar !!!
-            eventLimit: false, // allow "more" link when too many events
-            //eventLimit: tof("'.$GLOBALS['calendarLimit'].'","b"), // allow "more" link when too many events
             selectable: false,
             height: "auto",
             eventRender: function eventRender( event, element, view ) {
