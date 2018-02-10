@@ -221,8 +221,51 @@ function getHomepageList(){
 			'value' => '1800000'
 		),
 		array(
+<<<<<<< HEAD
 			'name' => '3600 [1 Hour]',
 			'value' => '3600000'
+=======
+            'name' => '3600 [1 Hour]',
+            'value' => '3600000'
+        ),
+    );
+	$limit = array(
+		array(
+			'name' => '1 Item',
+			'value' => '1'
+		),
+		array(
+			'name' => '2 Items',
+			'value' => '2'
+		),
+		array(
+			'name' => '3 Items',
+			'value' => '3'
+		),
+		array(
+			'name' => '4 Items',
+			'value' => '4'
+		),
+		array(
+			'name' => '5 Items',
+			'value' => '5'
+		),
+		array(
+			'name' => '6 Items',
+			'value' => '6'
+		),
+		array(
+			'name' => '7 Items',
+			'value' => '7'
+		),
+		array(
+			'name' => '8 Items',
+			'value' => '8'
+		),
+		array(
+			'name' => 'Unlimited',
+			'value' => '1000'
+>>>>>>> 4634d40ed75760ee4aa4eb03a00a2705e2e41aca
 		),
 	);
 	$day = array(
@@ -291,6 +334,7 @@ function getHomepageList(){
 			'value' => 'H:mm'
 		)
 	);
+<<<<<<< HEAD
 	return array(
 		array(
 			'name' => 'Plex',
@@ -319,6 +363,98 @@ function getHomepageList(){
 						'name' => 'plexURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['plexURL'],
+=======
+	$qBittorrentSortOptions = array(
+		array(
+			'name' => 'Hash',
+			'value' => 'hash'
+		),
+		array(
+			'name' => 'Name',
+			'value' => 'name'
+		),
+		array(
+			'name' => 'Size',
+			'value' => 'size'
+		),
+		array(
+			'name' => 'Progress',
+			'value' => 'progress'
+		),
+		array(
+			'name' => 'Download Speed',
+			'value' => 'dlspeed'
+		),
+		array(
+			'name' => 'Upload Speed',
+			'value' => 'upspeed'
+		),
+		array(
+			'name' => 'Priority',
+			'value' => 'priority'
+		),
+		array(
+			'name' => 'Number of Seeds',
+			'value' => 'num_seeds'
+		),
+		array(
+			'name' => 'Number of Seeds in Swarm',
+			'value' => 'num_complete'
+		),
+		array(
+			'name' => 'Number of Leechers',
+			'value' => 'num_leechs'
+		),
+		array(
+			'name' => 'Number of Leechers in Swarm',
+			'value' => 'num_incomplete'
+		),
+		array(
+			'name' => 'Ratio',
+			'value' => 'ratio'
+		),
+		array(
+			'name' => 'ETA',
+			'value' => 'eta'
+		),
+		array(
+			'name' => 'State',
+			'value' => 'state'
+		),
+		array(
+			'name' => 'Category',
+			'value' => 'category'
+		)
+	);
+    return array(
+        array(
+            'name' => 'Plex',
+            'enabled' => true,
+            'image' => 'plugins/images/tabs/plex.png',
+            'category' => 'Media Server',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+            			'type' => 'switch',
+            			'name' => 'homepagePlexEnabled',
+            			'label' => 'Enable',
+            			'value' => $GLOBALS['homepagePlexEnabled']
+            		),
+					array(
+            			'type' => 'select',
+            			'name' => 'homepagePlexAuth',
+            			'label' => 'Minimum Authentication',
+            			'value' => $GLOBALS['homepagePlexAuth'],
+                        'options' => $groups
+            		)
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'plexURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['plexURL'],
+>>>>>>> 4634d40ed75760ee4aa4eb03a00a2705e2e41aca
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -758,6 +894,7 @@ function getHomepageList(){
 						'value' => $GLOBALS['qBittorrentReverseSorting']
 					)
 				)
+<<<<<<< HEAD
 			)
 		),
 		array(
@@ -797,6 +934,187 @@ function getHomepageList(){
 					)
 				),
 				'Misc Options' => array(
+=======
+            )
+        ),
+        array(
+            'name' => 'Transmission',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/transmission.png',
+            'category' => 'Downloader',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageTransmissionEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageTransmissionEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageTransmissionAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageTransmissionAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'transmissionURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['transmissionURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'transmissionUsername',
+                        'label' => 'Username',
+                        'value' => $GLOBALS['transmissionUsername']
+                    ),
+                    array(
+                        'type' => 'password',
+                        'name' => 'transmissionPassword',
+                        'label' => 'Password',
+                        'value' => $GLOBALS['transmissionPassword']
+                    )
+                ),
+                'Misc Options' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'transmissionHideSeeding',
+                        'label' => 'Hide Seeding',
+                        'value' => $GLOBALS['transmissionHideSeeding']
+                    ),array(
+                        'type' => 'switch',
+                        'name' => 'transmissionHideCompleted',
+                        'label' => 'Hide Completed',
+                        'value' => $GLOBALS['transmissionHideCompleted']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageDownloadRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['homepageDownloadRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+        array(
+            'name' => 'qBittorrent',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/qBittorrent.png',
+            'category' => 'Downloader',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageqBittorrentEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageqBittorrentEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageqBittorrentAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageqBittorrentAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'qBittorrentURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['qBittorrentURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'qBittorrentUsername',
+                        'label' => 'Username',
+                        'value' => $GLOBALS['qBittorrentUsername']
+                    ),
+                    array(
+                        'type' => 'password',
+                        'name' => 'qBittorrentPassword',
+                        'label' => 'Password',
+                        'value' => $GLOBALS['qBittorrentPassword']
+                    )
+                ),
+                'Misc Options' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'qBittorrentHideSeeding',
+                        'label' => 'Hide Seeding',
+                        'value' => $GLOBALS['qBittorrentHideSeeding']
+                    ),array(
+                        'type' => 'switch',
+                        'name' => 'qBittorrentnHideCompleted',
+                        'label' => 'Hide Completed',
+                        'value' => $GLOBALS['qBittorrentHideCompleted']
+                    ),
+					array(
+						'type' => 'select',
+						'name' => 'qBittorrentSortOrder',
+						'label' => 'Order',
+						'value' => $GLOBALS['qBittorrentSortOrder'],
+						'options' => $qBittorrentSortOptions
+					),array(
+						'type' => 'switch',
+						'name' => 'qBittorrentReverseSorting',
+						'label' => 'Reverse Sorting',
+						'value' => $GLOBALS['qBittorrentReverseSorting']
+					),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageDownloadRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['homepageDownloadRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+        array(
+            'name' => 'Sonarr',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/sonarr.png',
+            'category' => 'PVR',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageSonarrEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageSonarrEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageSonarrAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageSonarrAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'sonarrURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['sonarrURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'sonarrToken',
+                        'label' => 'Token',
+                        'value' => $GLOBALS['sonarrToken']
+                    )
+                ),
+                'Misc Options' => array(
+>>>>>>> 4634d40ed75760ee4aa4eb03a00a2705e2e41aca
 					array(
 						'type' => 'input',
 						'name' => 'calendarStart',
@@ -812,6 +1130,7 @@ function getHomepageList(){
 						'placeholder' => ''
 					),
 					array(
+<<<<<<< HEAD
 						'type' => 'select',
 						'name' => 'calendarFirstDay',
 						'label' => 'Start Day',
@@ -848,6 +1167,45 @@ function getHomepageList(){
 				)
 			)
 		),
+=======
+                        'type' => 'select',
+                        'name' => 'calendarFirstDay',
+                        'label' => 'Start Day',
+                        'value' => $GLOBALS['calendarFirstDay'],
+                        'options' => $day
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarDefault',
+                        'label' => 'Default View',
+                        'value' => $GLOBALS['calendarDefault'],
+                        'options' => $calendarDefault
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarTimeFormat',
+                        'label' => 'Time Format',
+                        'value' => $GLOBALS['calendarTimeFormat'],
+                        'options' => $timeFormat
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarLimit',
+                        'label' => 'Items Per Day',
+                        'value' => $GLOBALS['calendarLimit'],
+                        'options' => $limit
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'calendarRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['calendarRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+>>>>>>> 4634d40ed75760ee4aa4eb03a00a2705e2e41aca
 		array(
 			'name' => 'Radarr',
 			'enabled' => false,
@@ -900,6 +1258,7 @@ function getHomepageList(){
 						'placeholder' => ''
 					),
 					array(
+<<<<<<< HEAD
 						'type' => 'select',
 						'name' => 'calendarFirstDay',
 						'label' => 'Start Day',
@@ -1085,6 +1444,196 @@ function getHomepageList(){
 			)
 		)
 	);
+=======
+                        'type' => 'select',
+                        'name' => 'calendarFirstDay',
+                        'label' => 'Start Day',
+                        'value' => $GLOBALS['calendarFirstDay'],
+                        'options' => $day
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarDefault',
+                        'label' => 'Default View',
+                        'value' => $GLOBALS['calendarDefault'],
+                        'options' => $calendarDefault
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarTimeFormat',
+                        'label' => 'Time Format',
+                        'value' => $GLOBALS['calendarTimeFormat'],
+                        'options' => $timeFormat
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarLimit',
+                        'label' => 'Items Per Day',
+                        'value' => $GLOBALS['calendarLimit'],
+                        'options' => $limit
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'calendarRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['calendarRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+		array(
+            'name' => 'CouchPotato',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/couchpotato.png',
+            'category' => 'PVR',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageCouchpotatoEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageCouchpotatoEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageCouchpotatoAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageCouchpotatoAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'couchpotatoURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['couchpotatoURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'couchpotatoToken',
+                        'label' => 'Token',
+                        'value' => $GLOBALS['couchpotatoToken']
+                    )
+                ),
+                'Misc Options' => array(
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarFirstDay',
+                        'label' => 'Start Day',
+                        'value' => $GLOBALS['calendarFirstDay'],
+                        'options' => $day
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarDefault',
+                        'label' => 'Default View',
+                        'value' => $GLOBALS['calendarDefault'],
+                        'options' => $calendarDefault
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarTimeFormat',
+                        'label' => 'Time Format',
+                        'value' => $GLOBALS['calendarTimeFormat'],
+                        'options' => $timeFormat
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarLimit',
+                        'label' => 'Items Per Day',
+                        'value' => $GLOBALS['calendarLimit'],
+                        'options' => $limit
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'calendarRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['calendarRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+		array(
+            'name' => 'SickRage',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/sickrage.png',
+            'category' => 'PVR',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageSickrageEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageSickrageEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageSickrageAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageSickrageAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'sickrageURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['sickrageURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'input',
+                        'name' => 'sickrageToken',
+                        'label' => 'Token',
+                        'value' => $GLOBALS['sickrageToken']
+                    )
+                ),
+                'Misc Options' => array(
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarFirstDay',
+                        'label' => 'Start Day',
+                        'value' => $GLOBALS['calendarFirstDay'],
+                        'options' => $day
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarDefault',
+                        'label' => 'Default View',
+                        'value' => $GLOBALS['calendarDefault'],
+                        'options' => $calendarDefault
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarTimeFormat',
+                        'label' => 'Time Format',
+                        'value' => $GLOBALS['calendarTimeFormat'],
+                        'options' => $timeFormat
+                    ),
+					array(
+                        'type' => 'select',
+                        'name' => 'calendarLimit',
+                        'label' => 'Items Per Day',
+                        'value' => $GLOBALS['calendarLimit'],
+                        'options' => $limit
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'calendarRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['calendarRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        )
+    );
+>>>>>>> 4634d40ed75760ee4aa4eb03a00a2705e2e41aca
 }
 
 function qBittorrentSortOptions() {
