@@ -225,6 +225,44 @@ function getHomepageList(){
             'value' => '3600000'
         ),
     );
+	$limit = array(
+		array(
+			'name' => '1 Item',
+			'value' => '1'
+		),
+		array(
+			'name' => '2 Items',
+			'value' => '2'
+		),
+		array(
+			'name' => '3 Items',
+			'value' => '3'
+		),
+		array(
+			'name' => '4 Items',
+			'value' => '4'
+		),
+		array(
+			'name' => '5 Items',
+			'value' => '5'
+		),
+		array(
+			'name' => '6 Items',
+			'value' => '6'
+		),
+		array(
+			'name' => '7 Items',
+			'value' => '7'
+		),
+		array(
+			'name' => '8 Items',
+			'value' => '8'
+		),
+		array(
+			'name' => 'Unlimited',
+			'value' => '1000'
+		),
+	);
 	$day = array(
 		array(
 			'name' => 'Sunday',
@@ -821,10 +859,11 @@ function getHomepageList(){
                         'options' => $timeFormat
                     ),
 					array(
-                        'type' => 'switch',
+                        'type' => 'select',
                         'name' => 'calendarLimit',
-                        'label' => 'Limit Entries',
-                        'value' => $GLOBALS['calendarLimit']
+                        'label' => 'Items Per Day',
+                        'value' => $GLOBALS['calendarLimit'],
+                        'options' => $limit
                     ),
                     array(
                         'type' => 'select',
@@ -909,10 +948,11 @@ function getHomepageList(){
                         'options' => $timeFormat
                     ),
 					array(
-                        'type' => 'switch',
+                        'type' => 'select',
                         'name' => 'calendarLimit',
-                        'label' => 'Limit Entries',
-                        'value' => $GLOBALS['calendarLimit']
+                        'label' => 'Items Per Day',
+                        'value' => $GLOBALS['calendarLimit'],
+                        'options' => $limit
                     ),
                     array(
                         'type' => 'select',
@@ -983,10 +1023,11 @@ function getHomepageList(){
                         'options' => $timeFormat
                     ),
 					array(
-                        'type' => 'switch',
+                        'type' => 'select',
                         'name' => 'calendarLimit',
-                        'label' => 'Limit Entries',
-                        'value' => $GLOBALS['calendarLimit']
+                        'label' => 'Items Per Day',
+                        'value' => $GLOBALS['calendarLimit'],
+                        'options' => $limit
                     ),
                     array(
                         'type' => 'select',
@@ -1057,10 +1098,11 @@ function getHomepageList(){
                         'options' => $timeFormat
                     ),
 					array(
-                        'type' => 'switch',
+                        'type' => 'select',
                         'name' => 'calendarLimit',
-                        'label' => 'Limit Entries',
-                        'value' => $GLOBALS['calendarLimit']
+                        'label' => 'Items Per Day',
+                        'value' => $GLOBALS['calendarLimit'],
+                        'options' => $limit
                     ),
                     array(
                         'type' => 'select',
