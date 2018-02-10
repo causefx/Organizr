@@ -843,7 +843,7 @@ function getHomepageList(){
 						'name' => 'qBittorrentSortOrder',
 						'label' => 'Order',
 						'value' => $GLOBALS['qBittorrentSortOrder'],
-						'options' => qBittorrentSortOptions()
+						'options' => $qBittorrentSortOptions
 					),array(
 						'type' => 'switch',
 						'name' => 'qBittorrentReverseSorting',
