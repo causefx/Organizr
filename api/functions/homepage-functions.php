@@ -329,6 +329,68 @@ function getHomepageList(){
 			'value' => 'H:mm'
 		)
 	);
+	$qBittorrentSortOptions = array(
+		array(
+			'name' => 'Hash',
+			'value' => 'hash'
+		),
+		array(
+			'name' => 'Name',
+			'value' => 'name'
+		),
+		array(
+			'name' => 'Size',
+			'value' => 'size'
+		),
+		array(
+			'name' => 'Progress',
+			'value' => 'progress'
+		),
+		array(
+			'name' => 'Download Speed',
+			'value' => 'dlspeed'
+		),
+		array(
+			'name' => 'Upload Speed',
+			'value' => 'upspeed'
+		),
+		array(
+			'name' => 'Priority',
+			'value' => 'priority'
+		),
+		array(
+			'name' => 'Number of Seeds',
+			'value' => 'num_seeds'
+		),
+		array(
+			'name' => 'Number of Seeds in Swarm',
+			'value' => 'num_complete'
+		),
+		array(
+			'name' => 'Number of Leechers',
+			'value' => 'num_leechs'
+		),
+		array(
+			'name' => 'Number of Leechers in Swarm',
+			'value' => 'num_incomplete'
+		),
+		array(
+			'name' => 'Ratio',
+			'value' => 'ratio'
+		),
+		array(
+			'name' => 'ETA',
+			'value' => 'eta'
+		),
+		array(
+			'name' => 'State',
+			'value' => 'state'
+		),
+		array(
+			'name' => 'Category',
+			'value' => 'category'
+		)
+	);
     return array(
         array(
             'name' => 'Plex',
@@ -776,6 +838,18 @@ function getHomepageList(){
                         'label' => 'Hide Completed',
                         'value' => $GLOBALS['qBittorrentHideCompleted']
                     ),
+					array(
+						'type' => 'select',
+						'name' => 'qBittorrentSortOrder',
+						'label' => 'Order',
+						'value' => $GLOBALS['qBittorrentSortOrder'],
+						'options' => qBittorrentSortOptions()
+					),array(
+						'type' => 'switch',
+						'name' => 'qBittorrentReverseSorting',
+						'label' => 'Reverse Sorting',
+						'value' => $GLOBALS['qBittorrentReverseSorting']
+					),
                     array(
                         'type' => 'select',
                         'name' => 'homepageDownloadRefresh',

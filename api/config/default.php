@@ -54,6 +54,8 @@ return array(
     'qBittorrentPassword' => '',
     'qBittorrentHideSeeding' => false,
     'qBittorrentHideCompleted' => false,
+    'qBittorrentSortOrder' => 'eta',
+    'qBittorrentReverseSorting' => false,    
     'homepageSabnzbdEnabled' => false,
     'homepageSabnzbdAuth' => '1',
 	'homepageSonarrEnabled' => false,

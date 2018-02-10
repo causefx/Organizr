@@ -632,7 +632,8 @@ function qBittorrentConnect() {
                 $headers = array(
                     'Cookie' => 'SID=' . $cookie['SID']->value
                 );
-                $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/query/torrents?sort=eta';
+				$reverse = $GLOBALS['qBittorrentReverseSorting'] ? 'true' : 'false';
+                $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/query/torrents?sort=' . $GLOBALS['qBittorrentSortOrder'] . '&reverse=' . $reverse;
                 $response = Requests::get($url, $headers, $options);
                 if($response){
                     $torrentList = json_decode($response->body, true);
