@@ -1,16 +1,16 @@
 <?php
 
 function homepageConnect($array){
-	switch ($array['data']['action']) {
+    switch ($array['data']['action']) {
         case 'getPlexStreams':
-			return plexConnect('streams');
+            return plexConnect('streams');
             break;
-		case 'getPlexRecent':
+        case 'getPlexRecent':
             return plexConnect('recent');
-			break;
+            break;
         case 'getPlexMetadata':
             return plexConnect('metadata',$array['data']['key']);
-			break;
+            break;
         case 'getEmbyStreams':
             return embyConnect('streams');
             break;
@@ -72,7 +72,7 @@ function resolveEmbyItem($itemDetails) {
     $nowPlayingWidth = 1200;
     $actorHeight = 450;
     $actorWidth = 300;
-	$widthOverride = 100;
+    $widthOverride = 100;
     // Cache Directories
     $cacheDirectory = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
     $cacheDirectoryWeb = 'plugins/images/cache/';
@@ -81,7 +81,7 @@ function resolveEmbyItem($itemDetails) {
     $embyItem['array-itemdetails'] = $itemDetails;
 
     switch (@$item['Type']) {
-    	case 'Series':
+        case 'Series':
             $embyItem['type'] = 'tv';
             $embyItem['title'] = $item['Name'];
             $embyItem['summary'] = '';
@@ -152,7 +152,7 @@ function resolveEmbyItem($itemDetails) {
             break;
         default:
             return false;
-	}
+    }
     $embyItem['uid'] = $item['Id'];
     $embyItem['imageType'] = (isset($item['ImageTags']['Primary']) ? "Primary" : false);
     $embyItem['elapsed'] = isset($itemDetails['PlayState']['PositionTicks']) && $itemDetails['PlayState']['PositionTicks'] !== '0' ? (int)$itemDetails['PlayState']['PositionTicks'] : null;
@@ -239,7 +239,7 @@ function resolveEmbyItem($itemDetails) {
     }
     if(!$embyItem['nowPlayingThumb'] ){ $embyItem['nowPlayingOriginalImage']  = $embyItem['nowPlayingImageURL']  = "plugins/images/cache/no-np.png"; $embyItem['nowPlayingKey'] = "no-np"; }
     if(!$embyItem['thumb'] ){  $embyItem['originalImage'] = $embyItem['imageURL'] = "plugins/images/cache/no-list.png"; $embyItem['key'] = "no-list"; }
-	if(isset($useImage)){ $embyItem['useImage'] = $useImage; }
+    if(isset($useImage)){ $embyItem['useImage'] = $useImage; }
     return $embyItem;
 }
 function resolvePlexItem($item) {
@@ -248,13 +248,13 @@ function resolvePlexItem($item) {
     $width = 200;
     $nowPlayingHeight = 675;
     $nowPlayingWidth = 1200;
-	$widthOverride = 100;
+    $widthOverride = 100;
     // Cache Directories
     $cacheDirectory = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
     $cacheDirectoryWeb = 'plugins/images/cache/';
     // Types
     switch ($item['type']) {
-    	case 'season':
+        case 'season':
             $plexItem['type'] = 'tv';
             $plexItem['title'] = (string)$item['parentTitle'];
             $plexItem['summary'] = (string)$item['parentSummary'];
@@ -296,10 +296,10 @@ function resolvePlexItem($item) {
             $plexItem['type'] = 'music';
             $plexItem['title'] = (string)$item['parentTitle'];
             $plexItem['summary'] = (string)$item['title'];
-			$plexItem['ratingKey'] = (string)$item['parentRatingKey'];
+            $plexItem['ratingKey'] = (string)$item['parentRatingKey'];
             $plexItem['thumb'] = (string)$item['thumb'];
             $plexItem['key'] = (string)$item['ratingKey'] . "-list";
-			$plexItem['nowPlayingThumb'] = ($item['parentThumb']) ? (string)$item['parentThumb'] :  (string)$item['art'];
+            $plexItem['nowPlayingThumb'] = ($item['parentThumb']) ? (string)$item['parentThumb'] :  (string)$item['art'];
             $plexItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
             $plexItem['nowPlayingTitle'] = (string)$item['grandparentTitle'].' - '.(string)$item['title'];
             $plexItem['nowPlayingBottom'] = (string)$item['parentTitle'];
@@ -317,7 +317,7 @@ function resolvePlexItem($item) {
             $plexItem['nowPlayingTitle'] = (string)$item['title'];
             $plexItem['nowPlayingBottom'] = (string)$item['year'];
             $plexItem['metadataKey'] = (string)$item['ratingKey'];
-	}
+    }
     $plexItem['uid'] = (string)$item['ratingKey'];
     $plexItem['elapsed'] = isset($item['viewOffset']) && $item['viewOffset'] !== '0' ? (int)$item['viewOffset'] : null;
     $plexItem['duration'] = isset($item['duration']) ? (int)$item['duration'] : (int)$item->Media['duration'];
@@ -398,11 +398,11 @@ function resolvePlexItem($item) {
     }
     if(!$plexItem['nowPlayingThumb'] ){ $plexItem['nowPlayingOriginalImage']  = $plexItem['nowPlayingImageURL']  = "plugins/images/cache/no-np.png"; $plexItem['nowPlayingKey'] = "no-np"; }
     if(!$plexItem['thumb'] ){  $plexItem['originalImage'] = $plexItem['imageURL'] = "plugins/images/cache/no-list.png"; $plexItem['key'] = "no-list"; }
-	if(isset($useImage)){ $plexItem['useImage'] = $useImage; }
+    if(isset($useImage)){ $plexItem['useImage'] = $useImage; }
     return $plexItem;
 }
 function plexConnect($action,$key=null){
-	if($GLOBALS['homepagePlexEnabled'] && !empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'] && qualifyRequest($GLOBALS['homepagePlexAuth']))){
+    if($GLOBALS['homepagePlexEnabled'] && !empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'] && qualifyRequest($GLOBALS['homepagePlexAuth']))){
         $url = qualifyURL($GLOBALS['plexURL']);
         switch ($action) {
             case 'streams':
@@ -418,30 +418,30 @@ function plexConnect($action,$key=null){
                 # code...
                 break;
         }
-		try{
-			$options = (localURL($url)) ? array('verify' => false ) : array();
-			$response = Requests::get($url, array(), $options);
-			libxml_use_internal_errors(true);
-			if($response->success){
-				$items = array();
-				$plex = simplexml_load_string($response->body);
-				foreach($plex AS $child) {
-					$items[] = resolvePlexItem($child);
-				}
-				$api['content'] = $items;
-				$api['plexID'] = $GLOBALS['plexID'];
-				$api['showNames'] = true;
-				$api['group'] = '1';
-				return $api;
-			}
-		}catch( Requests_Exception $e ) {
-			writeLog('error', 'Plex Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
-		};
-	}
-	return false;
+        try{
+            $options = (localURL($url)) ? array('verify' => false ) : array();
+            $response = Requests::get($url, array(), $options);
+            libxml_use_internal_errors(true);
+            if($response->success){
+                $items = array();
+                $plex = simplexml_load_string($response->body);
+                foreach($plex AS $child) {
+                    $items[] = resolvePlexItem($child);
+                }
+                $api['content'] = $items;
+                $api['plexID'] = $GLOBALS['plexID'];
+                $api['showNames'] = true;
+                $api['group'] = '1';
+                return $api;
+            }
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'Plex Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
+    }
+    return false;
 }
 function embyConnect($action,$key=null,$skip=false){
-	if($GLOBALS['homepageEmbyEnabled'] && !empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken']) && qualifyRequest($GLOBALS['homepageEmbyAuth'])){
+    if($GLOBALS['homepageEmbyEnabled'] && !empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken']) && qualifyRequest($GLOBALS['homepageEmbyAuth'])){
         $url = qualifyURL($GLOBALS['embyURL']);
         switch ($action) {
             case 'streams':
@@ -456,10 +456,10 @@ function embyConnect($action,$key=null,$skip=false){
                 $userIds = $url."/Users?api_key=".$GLOBALS['embyToken'];
                 $showPlayed = true;
                 try{
-        			$options = (localURL($userIds)) ? array('verify' => false ) : array();
-        			$response = Requests::get($userIds, array(), $options);
-        			if($response->success){
-        				$emby = json_decode($response->body, true);
+                    $options = (localURL($userIds)) ? array('verify' => false ) : array();
+                    $response = Requests::get($userIds, array(), $options);
+                    if($response->success){
+                        $emby = json_decode($response->body, true);
                         foreach ($emby as $value) { // Scan for admin user
                             if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
                                 $userId = $value['Id'];
@@ -470,10 +470,10 @@ function embyConnect($action,$key=null,$skip=false){
                                 break;
                             }
                         }
-        			}
-        		}catch( Requests_Exception $e ) {
-        			writeLog('error', 'Emby Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
-        		};
+                    }
+                }catch( Requests_Exception $e ) {
+                    writeLog('error', 'Emby Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+                };
                 $url = $url.'/Users/'.$userId.'/Items/Latest?EnableImages=false&Limit=100&api_key='.$GLOBALS['embyToken'].($showPlayed?'':'&IsPlayed=false');
                 break;
             case 'metadata':
@@ -488,50 +488,50 @@ function embyConnect($action,$key=null,$skip=false){
             $api['content'] = $items;
             return $api;
         }
-		try{
-			$options = (localURL($url)) ? array('verify' => false ) : array();
-			$response = Requests::get($url, array(), $options);
-			if($response->success){
-				$items = array();
-				$emby = json_decode($response->body, true);
-				foreach($emby AS $child) {
+        try{
+            $options = (localURL($url)) ? array('verify' => false ) : array();
+            $response = Requests::get($url, array(), $options);
+            if($response->success){
+                $items = array();
+                $emby = json_decode($response->body, true);
+                foreach($emby AS $child) {
                     if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
                         $items[] = resolveEmbyItem($child);
                     }
-				}
-				$api['content'] = array_filter($items);
-				return $api;
-			}
-		}catch( Requests_Exception $e ) {
-			writeLog('error', 'Emby Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
-		};
-	}
-	return false;
+                }
+                $api['content'] = array_filter($items);
+                return $api;
+            }
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'Emby Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
+    }
+    return false;
 }
 function sabnzbdConnect() {
     if($GLOBALS['homepageSabnzbdEnabled'] && !empty($GLOBALS['sabnzbdURL']) && !empty($GLOBALS['sabnzbdToken']) && qualifyRequest($GLOBALS['homepageSabnzbdAuth'])){
         $url = qualifyURL($GLOBALS['sabnzbdURL']);
         $url = $url.'/api?mode=queue&output=json&apikey='.$GLOBALS['sabnzbdToken'];
         try{
-			$options = (localURL($url)) ? array('verify' => false ) : array();
-			$response = Requests::get($url, array(), $options);
-			if($response->success){
-				$api['content']['queueItems'] = json_decode($response->body, true);
-			}
-		}catch( Requests_Exception $e ) {
-			writeLog('error', 'SabNZBd Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
-		};
+            $options = (localURL($url)) ? array('verify' => false ) : array();
+            $response = Requests::get($url, array(), $options);
+            if($response->success){
+                $api['content']['queueItems'] = json_decode($response->body, true);
+            }
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'SabNZBd Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
         $url = qualifyURL($GLOBALS['sabnzbdURL']);
         $url = $url.'/api?mode=history&output=json&apikey='.$GLOBALS['sabnzbdToken'];
         try{
-			$options = (localURL($url)) ? array('verify' => false ) : array();
-			$response = Requests::get($url, array(), $options);
-			if($response->success){
-				$api['content']['historyItems']= json_decode($response->body, true);
-			}
-		}catch( Requests_Exception $e ) {
-			writeLog('error', 'SabNZBd Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
-		};
+            $options = (localURL($url)) ? array('verify' => false ) : array();
+            $response = Requests::get($url, array(), $options);
+            if($response->success){
+                $api['content']['historyItems']= json_decode($response->body, true);
+            }
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'SabNZBd Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
         $api['content'] = isset($api['content']) ? $api['content'] : false;
         return $api;
     }
@@ -541,25 +541,25 @@ function nzbgetConnect() {
         $url = qualifyURL($GLOBALS['nzbgetURL']);
         $url = $url.'/'.$GLOBALS['nzbgetUsername'].':'.decrypt($GLOBALS['nzbgetPassword']).'/jsonrpc/listgroups';
         try{
-			$options = (localURL($url)) ? array('verify' => false ) : array();
-			$response = Requests::get($url, array(), $options);
-			if($response->success){
-				$api['content']['queueItems'] = json_decode($response->body, true);
-			}
-		}catch( Requests_Exception $e ) {
-			writeLog('error', 'NZBGet Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
-		};
+            $options = (localURL($url)) ? array('verify' => false ) : array();
+            $response = Requests::get($url, array(), $options);
+            if($response->success){
+                $api['content']['queueItems'] = json_decode($response->body, true);
+            }
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'NZBGet Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
         $url = qualifyURL($GLOBALS['nzbgetURL']);
         $url = $url.'/'.$GLOBALS['nzbgetUsername'].':'.decrypt($GLOBALS['nzbgetPassword']).'/jsonrpc/history';
         try{
-			$options = (localURL($url)) ? array('verify' => false ) : array();
-			$response = Requests::get($url, array(), $options);
-			if($response->success){
-				$api['content']['historyItems']= json_decode($response->body, true);
-			}
-		}catch( Requests_Exception $e ) {
-			writeLog('error', 'NZBGet Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
-		};
+            $options = (localURL($url)) ? array('verify' => false ) : array();
+            $response = Requests::get($url, array(), $options);
+            if($response->success){
+                $api['content']['historyItems']= json_decode($response->body, true);
+            }
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'NZBGet Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
         $api['content'] = isset($api['content']) ? $api['content'] : false;
         return $api;
     }
@@ -568,24 +568,24 @@ function transmissionConnect() {
     if($GLOBALS['homepageTransmissionEnabled'] && !empty($GLOBALS['transmissionURL']) && qualifyRequest($GLOBALS['homepageTransmissionAuth'])){
         $digest = qualifyURL($GLOBALS['transmissionURL'], true);
         $passwordInclude = ($GLOBALS['transmissionUsername'] != '' && $GLOBALS['transmissionPassword'] != '') ? $GLOBALS['transmissionUsername'].':'.decrypt($GLOBALS['transmissionPassword'])."@" : '';
-	    $url = $digest['scheme'].'://'.$passwordInclude.$digest['host'].$digest['port'].$digest['path'].'/rpc';
+        $url = $digest['scheme'].'://'.$passwordInclude.$digest['host'].$digest['port'].$digest['path'].'/rpc';
         try{
-			$options = (localURL($GLOBALS['transmissionURL'])) ? array('verify' => false ) : array();
-			$response = Requests::get($url, array(), $options);
-			if($response->headers['x-transmission-session-id']){
+            $options = (localURL($GLOBALS['transmissionURL'])) ? array('verify' => false ) : array();
+            $response = Requests::get($url, array(), $options);
+            if($response->headers['x-transmission-session-id']){
                 $headers = array(
-            		'X-Transmission-Session-Id' => $response->headers['x-transmission-session-id'],
-            		'Content-Type' => 'application/json'
-            	);
-            	$data = array(
-            		'method' => 'torrent-get',
-            		'arguments' => array(
-            			'fields' => array(
-            				"id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir","errorString"
-            			),
-            		),
-            		'tags' => ''
-            	);
+                    'X-Transmission-Session-Id' => $response->headers['x-transmission-session-id'],
+                    'Content-Type' => 'application/json'
+                );
+                $data = array(
+                    'method' => 'torrent-get',
+                    'arguments' => array(
+                        'fields' => array(
+                            "id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir","errorString"
+                        ),
+                    ),
+                    'tags' => ''
+                );
                 $response = Requests::post($url, $headers, json_encode($data), $options);
                 if($response->success){
                     $torrentList = json_decode($response->body, true)['arguments']['torrents'];
@@ -602,15 +602,15 @@ function transmissionConnect() {
                     }else{
                         $torrents = json_decode($response->body, true);
                     }
-    				$api['content']['queueItems'] = $torrents;
+                    $api['content']['queueItems'] = $torrents;
                     $api['content']['historyItems'] = false;
-    			}
-			}else{
+                }
+            }else{
                 writeLog('error', 'Transmission Connect Function - Error: Could not get session ID', 'SYSTEM');
             }
-		}catch( Requests_Exception $e ) {
-			writeLog('error', 'Transmission Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
-		};
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'Transmission Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
         $api['content'] = isset($api['content']) ? $api['content'] : false;
         return $api;
     }
@@ -632,6 +632,10 @@ function qBittorrentConnect() {
                 $headers = array(
                     'Cookie' => 'SID=' . $cookie['SID']->value
                 );
+<<<<<<< HEAD
+=======
+                $sort = isset($GLOBALS['qBittorrentSortOrder']) ? $GLOBALS['qBittorrentSortOrder'] : 'eta';
+>>>>>>> 355582442ea88ab493d4eb8c8914d5d18d6c25c1
                 $reverse = $GLOBALS['qBittorrentReverseSorting'] ? 'true' : 'false';
                 $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/query/torrents?sort=' . $sort . '&reverse=' . $reverse;
                 $response = Requests::get($url, $headers, $options);
@@ -664,9 +668,9 @@ function qBittorrentConnect() {
     }
 }
 function getCalendar(){
-	$startDate = date('Y-m-d',strtotime("-".$GLOBALS['calendarStart']." days"));
-	$endDate = date('Y-m-d',strtotime("+".$GLOBALS['calendarEnd']." days"));
-	$calendarItems = array();
+    $startDate = date('Y-m-d',strtotime("-".$GLOBALS['calendarStart']." days"));
+    $endDate = date('Y-m-d',strtotime("+".$GLOBALS['calendarEnd']." days"));
+    $calendarItems = array();
     // SONARR CONNECT
     if($GLOBALS['homepageSonarrEnabled'] && qualifyRequest($GLOBALS['homepageSonarrAuth']) && !empty($GLOBALS['sonarrURL']) && !empty($GLOBALS['sonarrToken'])){
         $sonarrs = array();
@@ -728,17 +732,17 @@ function getCalendar(){
             foreach ($sicks as $key => $value) {
                 try {
                     $sickrage = new Kryptonit3\SickRage\SickRage($value['url'], $value['token']);
-        			$sickrageFuture = getSickrageCalendarWanted($sickrage->future(),$key);
+                    $sickrageFuture = getSickrageCalendarWanted($sickrage->future(),$key);
                     $sickrageHistory = getSickrageCalendarHistory($sickrage->history("100","downloaded"),$key);
-        			if(!empty($sickrageFuture)) { $calendarItems = array_merge($calendarItems, $sickrageFuture); }
+                    if(!empty($sickrageFuture)) { $calendarItems = array_merge($calendarItems, $sickrageFuture); }
                     if(!empty($sickrageHistory)) { $calendarItems = array_merge($calendarItems, $sickrageHistory); }
-        		} catch (Exception $e) {
-        			writeLog('error', 'Sickrage Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
-        		}
+                } catch (Exception $e) {
+                    writeLog('error', 'Sickrage Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+                }
             }
         }
     }
-	// COUCHPOTATO CONNECT
+    // COUCHPOTATO CONNECT
     if($GLOBALS['homepageCouchpotatoEnabled'] && qualifyRequest($GLOBALS['homepageCouchpotatoAuth']) && !empty($GLOBALS['couchpotatoURL']) && !empty($GLOBALS['couchpotatoToken'])){
         $couchs = array();
         $couchpotatoURLList = explode(',', $GLOBALS['couchpotatoURL']);
@@ -753,17 +757,17 @@ function getCalendar(){
             foreach ($couchs as $key => $value) {
                 try {
                     $couchpotato = new Kryptonit3\CouchPotato\CouchPotato($value['url'], $value['token']);
-        			$couchCalendar = getCouchCalendar($couchpotato->getMediaList(),$key);
-        			if(!empty($couchCalendar)) { $calendarItems = array_merge($calendarItems, $couchCalendar); }
-        		} catch (Exception $e) {
-        			writeLog('error', 'Sickrage Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
-        		}
+                    $couchCalendar = getCouchCalendar($couchpotato->getMediaList(),$key);
+                    if(!empty($couchCalendar)) { $calendarItems = array_merge($calendarItems, $couchCalendar); }
+                } catch (Exception $e) {
+                    writeLog('error', 'Sickrage Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+                }
             }
         }
     }
 
 
-	return ($calendarItems) ? $calendarItems : false;
+    return ($calendarItems) ? $calendarItems : false;
 }
 function getSonarrCalendar($array,$number){
     $array = json_decode($array, true);
@@ -781,6 +785,7 @@ function getSonarrCalendar($array,$number){
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
         if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
         $downloaded = $child['hasFile'];
+<<<<<<< HEAD
         if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "text-primary"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success"; }else{ $downloaded = "text-danger"; }
 		array_push($gotCalendar, array(
 			"id" => "Sonarr-".$number."-".$i,
@@ -789,6 +794,16 @@ function getSonarrCalendar($array,$number){
 			"className" => "bg-calendar tvID--".$episodeID,
 			"imagetype" => "tv ".$downloaded,
 		));
+=======
+        if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "bg-primary"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success"; }else{ $downloaded = "bg-danger"; }
+        array_push($gotCalendar, array(
+            "id" => "Sonarr-".$number."-".$i,
+            "title" => $seriesName,
+            "start" => $child['airDateUtc'],
+            "className" => $downloaded." tvID--".$episodeID,
+            "imagetype" => "tv",
+        ));
+>>>>>>> 355582442ea88ab493d4eb8c8914d5d18d6c25c1
     }
     if ($i != 0){ return $gotCalendar; }
 }
@@ -802,6 +817,7 @@ function getRadarrCalendar($array,$number){
             $movieName = $child['title'];
             $movieID = $child['tmdbId'];
             if(!isset($movieID)){ $movieID = ""; }
+<<<<<<< HEAD
 			$physicalRelease = $child['physicalRelease'];
 			$physicalRelease = strtotime($physicalRelease);
 			$physicalRelease = date("Y-m-d", $physicalRelease);
@@ -815,6 +831,21 @@ function getRadarrCalendar($array,$number){
 				"className" => "bg-calendar movieID--".$movieID,
 				"imagetype" => "film ".$downloaded,
 			));
+=======
+            $physicalRelease = $child['physicalRelease'];
+            $physicalRelease = strtotime($physicalRelease);
+            $physicalRelease = date("Y-m-d", $physicalRelease);
+            if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
+            $downloaded = $child['hasFile'];
+            if($downloaded == "0" && $notReleased == "true"){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success"; }else{ $downloaded = "bg-danger"; }
+            array_push($gotCalendar, array(
+                "id" => "Radarr-".$number."-".$i,
+                "title" => $movieName,
+                "start" => $child['physicalRelease'],
+                "className" => $downloaded." movieID--".$movieID,
+                "imagetype" => "film",
+            ));
+>>>>>>> 355582442ea88ab493d4eb8c8914d5d18d6c25c1
         }
     }
     if ($i != 0){ return $gotCalendar; }
@@ -823,6 +854,7 @@ function getCouchCalendar($array,$number){
     $api = json_decode($array, true);
     $gotCalendar = array();
     $i = 0;
+<<<<<<< HEAD
 	foreach($api['movies'] AS $child) {
 		if($child['status'] == "active" || $child['status'] == "done" ){
 			$i++;
@@ -847,6 +879,32 @@ function getCouchCalendar($array,$number){
 		}
 	}
 	if ($i != 0){ return $gotCalendar; }
+=======
+    foreach($api['movies'] AS $child) {
+        if($child['status'] == "active" || $child['status'] == "done" ){
+            $i++;
+            $movieName = $child['info']['original_title'];
+            $movieID = $child['info']['tmdb_id'];
+            if(!isset($movieID)){ $movieID = ""; }
+            $physicalRelease = (isset($child['info']['released']) ? $child['info']['released'] : null);
+            $backupRelease = (isset($child['info']['release_date']['theater']) ? $child['info']['release_date']['theater'] : null);
+            $physicalRelease = (isset($physicalRelease) ? $physicalRelease : $backupRelease);
+            $physicalRelease = strtotime($physicalRelease);
+            $physicalRelease = date("Y-m-d", $physicalRelease);
+            if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
+            $downloaded = ($child['status'] == "active") ? "0" : "1";
+            if($downloaded == "0" && $notReleased == "true"){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success"; }else{ $downloaded = "bg-danger"; }
+            array_push($gotCalendar, array(
+                "id" => "CouchPotato-".$number."-".$i,
+                "title" => $movieName,
+                "start" => $physicalRelease,
+                "className" => $downloaded." movieID--".$movieID,
+                "imagetype" => "film",
+            ));
+        }
+    }
+    if ($i != 0){ return $gotCalendar; }
+>>>>>>> 355582442ea88ab493d4eb8c8914d5d18d6c25c1
 }
 function getSickrageCalendarWanted($array,$number){
     $array = json_decode($array, true);
@@ -863,6 +921,7 @@ function getSickrageCalendarWanted($array,$number){
             $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
+<<<<<<< HEAD
             if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
 			array_push($gotCalendar, array(
 				"id" => "Sick-".$number."-Miss-".$i,
@@ -871,6 +930,16 @@ function getSickrageCalendarWanted($array,$number){
 				"className" => "bg-calendar tvID--".$episodeID,
 				"imagetype" => "tv ".$downloaded,
 			));
+=======
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success";}else{ $downloaded = "bg-danger"; }
+            array_push($gotCalendar, array(
+                "id" => "Sick-".$number."-Miss-".$i,
+                "title" => $seriesName,
+                "start" => $episodeAirDate,
+                "className" => $downloaded." tvID--".$episodeID,
+                "imagetype" => "tv",
+            ));
+>>>>>>> 355582442ea88ab493d4eb8c8914d5d18d6c25c1
     }
     foreach($array['data']['today'] AS $child) {
             $i++;
@@ -883,6 +952,7 @@ function getSickrageCalendarWanted($array,$number){
             $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
+<<<<<<< HEAD
             if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
 			array_push($gotCalendar, array(
 				"id" => "Sick-".$number."-Today-".$i,
@@ -891,6 +961,16 @@ function getSickrageCalendarWanted($array,$number){
 				"className" => "bg-calendar tvID--".$episodeID,
 				"imagetype" => "tv ".$downloaded,
 			));
+=======
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success";}else{ $downloaded = "bg-danger"; }
+            array_push($gotCalendar, array(
+                "id" => "Sick-".$number."-Today-".$i,
+                "title" => $seriesName,
+                "start" => $episodeAirDate,
+                "className" => $downloaded." tvID--".$episodeID,
+                "imagetype" => "tv",
+            ));
+>>>>>>> 355582442ea88ab493d4eb8c8914d5d18d6c25c1
     }
     foreach($array['data']['soon'] AS $child) {
             $i++;
@@ -903,6 +983,7 @@ function getSickrageCalendarWanted($array,$number){
             $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
+<<<<<<< HEAD
             if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
 			array_push($gotCalendar, array(
 				"id" => "Sick-".$number."-Soon-".$i,
@@ -911,6 +992,16 @@ function getSickrageCalendarWanted($array,$number){
 				"className" => "bg-calendar tvID--".$episodeID,
 				"imagetype" => "tv ".$downloaded,
 			));
+=======
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success";}else{ $downloaded = "bg-danger"; }
+            array_push($gotCalendar, array(
+                "id" => "Sick-".$number."-Soon-".$i,
+                "title" => $seriesName,
+                "start" => $episodeAirDate,
+                "className" => $downloaded." tvID--".$episodeID,
+                "imagetype" => "tv",
+            ));
+>>>>>>> 355582442ea88ab493d4eb8c8914d5d18d6c25c1
     }
     foreach($array['data']['later'] AS $child) {
             $i++;
@@ -923,6 +1014,7 @@ function getSickrageCalendarWanted($array,$number){
             $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
+<<<<<<< HEAD
             if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
 			array_push($gotCalendar, array(
 				"id" => "Sick-".$number."-Later-".$i,
@@ -931,6 +1023,16 @@ function getSickrageCalendarWanted($array,$number){
 				"className" => "bg-calendar tvID--".$episodeID,
 				"imagetype" => "tv ".$downloaded,
 			));
+=======
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success";}else{ $downloaded = "bg-danger"; }
+            array_push($gotCalendar, array(
+                "id" => "Sick-".$number."-Later-".$i,
+                "title" => $seriesName,
+                "start" => $episodeAirDate,
+                "className" => $downloaded." tvID--".$episodeID,
+                "imagetype" => "tv",
+            ));
+>>>>>>> 355582442ea88ab493d4eb8c8914d5d18d6c25c1
     }
     if ($i != 0){ return $gotCalendar; }
 }
@@ -943,6 +1045,7 @@ function getSickrageCalendarHistory($array,$number){
             $seriesName = $child['show_name'];
             $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['date'];
+<<<<<<< HEAD
             $downloaded = "text-success";
 			array_push($gotCalendar, array(
 				"id" => "Sick-".$number."-History-".$i,
@@ -951,6 +1054,16 @@ function getSickrageCalendarHistory($array,$number){
 				"className" => "bg-calendar tvID--".$episodeID,
 				"imagetype" => "tv ".$downloaded,
 			));
+=======
+            $downloaded = "bg-success";
+            array_push($gotCalendar, array(
+                "id" => "Sick-".$number."-History-".$i,
+                "title" => $seriesName,
+                "start" => $episodeAirDate,
+                "className" => $downloaded." tvID--".$episodeID,
+                "imagetype" => "tv",
+            ));
+>>>>>>> 355582442ea88ab493d4eb8c8914d5d18d6c25c1
     }
     if ($i != 0){ return $gotCalendar; }
 }
