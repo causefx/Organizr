@@ -616,6 +616,7 @@ function transmissionConnect() {
 	}
 }
 function qBittorrentConnect() {
+<<<<<<< HEAD
 	if($GLOBALS['homepageqBittorrentEnabled'] && !empty($GLOBALS['qBittorrentURL']) && qualifyRequest($GLOBALS['homepageqBittorrentAuth'])){
 		$digest = qualifyURL($GLOBALS['qBittorrentURL'], true);
 		$passwordInclude = ($GLOBALS['qBittorrentUsername'] != '' && $GLOBALS['qBittorrentPassword'] != '') ? 'username='.$GLOBALS['qBittorrentUsername'].'&password='.decrypt($GLOBALS['qBittorrentPassword'])."@" : '';
@@ -662,6 +663,54 @@ function qBittorrentConnect() {
 		$api['content'] = isset($api['content']) ? $api['content'] : false;
 		return $api;
 	}
+=======
+    if($GLOBALS['homepageqBittorrentEnabled'] && !empty($GLOBALS['qBittorrentURL']) && qualifyRequest($GLOBALS['homepageqBittorrentAuth'])){
+        $digest = qualifyURL($GLOBALS['qBittorrentURL'], true);
+        $passwordInclude = ($GLOBALS['qBittorrentUsername'] != '' && $GLOBALS['qBittorrentPassword'] != '') ? 'username='.$GLOBALS['qBittorrentUsername'].'&password='.decrypt($GLOBALS['qBittorrentPassword'])."@" : '';
+        $data = array('username'=>$GLOBALS['qBittorrentUsername'], 'password'=> decrypt($GLOBALS['qBittorrentPassword']));
+        $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/login';
+        try{
+            $options = (localURL($GLOBALS['qBittorrentURL'])) ? array('verify' => false ) : array();
+            $response = Requests::post($url, array(), $data, $options);
+            $reflection = new ReflectionClass($response->cookies);
+            $cookie = $reflection->getProperty("cookies");
+            $cookie->setAccessible(true);
+            $cookie = $cookie->getValue($response->cookies);
+            if($cookie){
+                $headers = array(
+                    'Cookie' => 'SID=' . $cookie['SID']->value
+                );
+				$reverse = $GLOBALS['qBittorrentReverseSorting'] ? 'true' : 'false';
+                $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/query/torrents?sort=' . $GLOBALS['qBittorrentSortOrder'] . '&reverse=' . $reverse;
+                $response = Requests::get($url, $headers, $options);
+                if($response){
+                    $torrentList = json_decode($response->body, true);
+                    if($GLOBALS['qBittorrentHideSeeding'] || $GLOBALS['qBittorrentHideCompleted']){
+                        $filter = array();
+                        $torrents['arguments']['torrents'] = array();
+                        if($GLOBALS['qBittorrentHideSeeding']){ array_push($filter, 'uploading', 'stalledUP', 'queuedUP'); }
+                        if($GLOBALS['qBittorrentHideCompleted']){ array_push($filter, 'pausedUP'); }
+                        foreach ($torrentList as $key => $value) {
+                            if(!in_array($value['state'], $filter)){
+                                $torrents['arguments']['torrents'][] = $value;
+                            }
+                        }
+                    }else{
+                        $torrents['arguments']['torrents'] = json_decode($response->body, true);
+                    }
+                    $api['content']['queueItems'] = $torrents;
+                    $api['content']['historyItems'] = false;
+                }
+            }else{
+                writeLog('error', 'qBittorrent Connect Function - Error: Could not get session ID', 'SYSTEM');
+            }
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'qBittorrent Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
+>>>>>>> 4634d40ed75760ee4aa4eb03a00a2705e2e41aca
 }
 function getCalendar(){
 	$startDate = date('Y-m-d',strtotime("-".$GLOBALS['calendarStart']." days"));
