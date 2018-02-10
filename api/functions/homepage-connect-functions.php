@@ -632,7 +632,8 @@ function qBittorrentConnect() {
                 $headers = array(
                     'Cookie' => 'SID=' . $cookie['SID']->value
                 );
-                $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/query/torrents?sort=eta';
+                $reverse = $GLOBALS['qBittorrentReverseSorting'] ? 'true' : 'false';
+                $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/query/torrents?sort=' . $sort . '&reverse=' . $reverse;
                 $response = Requests::get($url, $headers, $options);
                 if($response){
                     $torrentList = json_decode($response->body, true);
@@ -780,13 +781,13 @@ function getSonarrCalendar($array,$number){
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
         if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
         $downloaded = $child['hasFile'];
-        if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "bg-primary"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success"; }else{ $downloaded = "bg-danger"; }
+        if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "text-primary"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success"; }else{ $downloaded = "text-danger"; }
 		array_push($gotCalendar, array(
 			"id" => "Sonarr-".$number."-".$i,
 			"title" => $seriesName,
 			"start" => $child['airDateUtc'],
-			"className" => $downloaded." tvID--".$episodeID,
-			"imagetype" => "tv",
+			"className" => "bg-calendar tvID--".$episodeID,
+			"imagetype" => "tv ".$downloaded,
 		));
     }
     if ($i != 0){ return $gotCalendar; }
@@ -806,13 +807,13 @@ function getRadarrCalendar($array,$number){
 			$physicalRelease = date("Y-m-d", $physicalRelease);
 			if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
 			$downloaded = $child['hasFile'];
-			if($downloaded == "0" && $notReleased == "true"){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success"; }else{ $downloaded = "bg-danger"; }
+			if($downloaded == "0" && $notReleased == "true"){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success"; }else{ $downloaded = "text-danger"; }
 			array_push($gotCalendar, array(
 				"id" => "Radarr-".$number."-".$i,
 				"title" => $movieName,
 				"start" => $child['physicalRelease'],
-				"className" => $downloaded." movieID--".$movieID,
-				"imagetype" => "film",
+				"className" => "bg-calendar movieID--".$movieID,
+				"imagetype" => "film ".$downloaded,
 			));
         }
     }
@@ -835,13 +836,13 @@ function getCouchCalendar($array,$number){
 			$physicalRelease = date("Y-m-d", $physicalRelease);
 			if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
 			$downloaded = ($child['status'] == "active") ? "0" : "1";
-			if($downloaded == "0" && $notReleased == "true"){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success"; }else{ $downloaded = "bg-danger"; }
+			if($downloaded == "0" && $notReleased == "true"){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success"; }else{ $downloaded = "text-danger"; }
 			array_push($gotCalendar, array(
 				"id" => "CouchPotato-".$number."-".$i,
 				"title" => $movieName,
 				"start" => $physicalRelease,
-				"className" => $downloaded." movieID--".$movieID,
-				"imagetype" => "film",
+				"className" => "bg-calendar movieID--".$movieID,
+				"imagetype" => "film ".$downloaded,
 			));
 		}
 	}
@@ -862,13 +863,13 @@ function getSickrageCalendarWanted($array,$number){
             $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
-            if($downloaded == "0" && isset($unaired)){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success";}else{ $downloaded = "bg-danger"; }
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
 			array_push($gotCalendar, array(
 				"id" => "Sick-".$number."-Miss-".$i,
 				"title" => $seriesName,
 				"start" => $episodeAirDate,
-				"className" => $downloaded." tvID--".$episodeID,
-				"imagetype" => "tv",
+				"className" => "bg-calendar tvID--".$episodeID,
+				"imagetype" => "tv ".$downloaded,
 			));
     }
     foreach($array['data']['today'] AS $child) {
@@ -882,13 +883,13 @@ function getSickrageCalendarWanted($array,$number){
             $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
-            if($downloaded == "0" && isset($unaired)){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success";}else{ $downloaded = "bg-danger"; }
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
 			array_push($gotCalendar, array(
 				"id" => "Sick-".$number."-Today-".$i,
 				"title" => $seriesName,
 				"start" => $episodeAirDate,
-				"className" => $downloaded." tvID--".$episodeID,
-				"imagetype" => "tv",
+				"className" => "bg-calendar tvID--".$episodeID,
+				"imagetype" => "tv ".$downloaded,
 			));
     }
     foreach($array['data']['soon'] AS $child) {
@@ -902,13 +903,13 @@ function getSickrageCalendarWanted($array,$number){
             $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
-            if($downloaded == "0" && isset($unaired)){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success";}else{ $downloaded = "bg-danger"; }
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
 			array_push($gotCalendar, array(
 				"id" => "Sick-".$number."-Soon-".$i,
 				"title" => $seriesName,
 				"start" => $episodeAirDate,
-				"className" => $downloaded." tvID--".$episodeID,
-				"imagetype" => "tv",
+				"className" => "bg-calendar tvID--".$episodeID,
+				"imagetype" => "tv ".$downloaded,
 			));
     }
     foreach($array['data']['later'] AS $child) {
@@ -922,13 +923,13 @@ function getSickrageCalendarWanted($array,$number){
             $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
             if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
             $downloaded = "0";
-            if($downloaded == "0" && isset($unaired)){ $downloaded = "bg-info"; }elseif($downloaded == "1"){ $downloaded = "bg-success";}else{ $downloaded = "bg-danger"; }
+            if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
 			array_push($gotCalendar, array(
 				"id" => "Sick-".$number."-Later-".$i,
 				"title" => $seriesName,
 				"start" => $episodeAirDate,
-				"className" => $downloaded." tvID--".$episodeID,
-				"imagetype" => "tv",
+				"className" => "bg-calendar tvID--".$episodeID,
+				"imagetype" => "tv ".$downloaded,
 			));
     }
     if ($i != 0){ return $gotCalendar; }
@@ -942,13 +943,13 @@ function getSickrageCalendarHistory($array,$number){
             $seriesName = $child['show_name'];
             $episodeID = $child['tvdbid'];
             $episodeAirDate = $child['date'];
-            $downloaded = "bg-success";
+            $downloaded = "text-success";
 			array_push($gotCalendar, array(
 				"id" => "Sick-".$number."-History-".$i,
 				"title" => $seriesName,
 				"start" => $episodeAirDate,
-				"className" => $downloaded." tvID--".$episodeID,
-				"imagetype" => "tv",
+				"className" => "bg-calendar tvID--".$episodeID,
+				"imagetype" => "tv ".$downloaded,
 			));
     }
     if ($i != 0){ return $gotCalendar; }

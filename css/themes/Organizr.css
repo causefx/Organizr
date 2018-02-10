@@ -123,7 +123,6 @@ body {
 }
 /*Extra css*/
 .bg-theme,
-.fc-toolbar,
 .fc th.fc-sun,
 .fc th.fc-tue,
 .fc th.fc-thu,
@@ -268,11 +267,11 @@ a.mytooltip {
   background: #1f1f1f;
   padding: 20px 30px;
   text-align: left;
-  max-width: 90%;
+  max-width: 75%;
   margin: 40px auto;
   position: relative;
-  border: 1px solid #2cabe4;
-  border-radius: 10px;
+  /*border: 1px solid #2cabe4;
+  border-radius: 10px;*/
 }
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
   background-color: #333;

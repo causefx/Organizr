@@ -30,7 +30,7 @@ $pageHomepage = '
             timeFormat: "'.$GLOBALS['calendarTimeFormat'].'",
             handleWindowResize: true,
             header: {
-                left: "prev,next today",
+                left: "prev,next",
                 center: "title",
                 right: "month,basicDay,basicWeek"
             },
