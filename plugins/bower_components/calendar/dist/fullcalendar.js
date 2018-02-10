@@ -6656,7 +6656,7 @@ DayGrid.mixin({
 		if (seg.isStart) {
 			timeText = this.getEventTimeText(event);
 			if (timeText) {
-				timeHtml = '<span class="fc-time">' + htmlEscape(timeText) + '</span><br/>';
+				timeHtml = '<span class="fc-time '+(htmlEscape(event.imagetype || '') || '&nbsp;')+'">' + htmlEscape(timeText) + '</span><br/>';
 			}else{
        timeHtml = '<br/>';
    }
