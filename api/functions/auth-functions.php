@@ -42,7 +42,7 @@ function checkPlexUser($username){
 function plugin_auth_plex($username, $password) {
 	try{
 		$usernameLower = strtolower($username);
-		if(checkPlexUser($username)){
+		if((!empty($GLOBALS['plexAdmin']) && strtolower($GLOBALS['plexAdmin']) == $usernameLower) || checkPlexUser($username)){
 			//Login User
 			$url = 'https://plex.tv/users/sign_in.json';
 			$headers = array(

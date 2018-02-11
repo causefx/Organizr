@@ -254,3 +254,6 @@ background: #2cabe3;
   margin: 0;
   padding: 19px 20px 11px 20px;
 }
+.fc-unthemed .fc-today {
+  color: inherit !important;
+}

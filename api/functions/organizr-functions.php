@@ -306,6 +306,17 @@ function getSSO(){
     			'href' => '#sso-plex-machine-form',
     			'attr' => 'data-effect="mfp-3d-unfold"'
     		),
+			array(
+    			'type' => 'input',
+    			'name' => 'plexAdmin',
+    			'label' => 'Admin Username',
+    			'value' => $GLOBALS['plexAdmin'],
+    			'placeholder' => 'Admin username for Plex'
+    		),
+            array(
+                'type' => 'blank',
+                'label' => ''
+            ),
     		array(
     			'type' => 'html',
     			'label' => 'Plex Note',
