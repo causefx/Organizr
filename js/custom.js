@@ -6,10 +6,6 @@ $(document).ajaxComplete(function () {
     pageLoad();
 });
 $(document).ready(function () {
-    $("body").niceScroll({
-        grabcursorenabled: false,
-        zindex:1000000
-    });
     pageLoad();
     var clipboard = new Clipboard('.clipboard');
     clipboard.on('success', function(e) {
@@ -18,7 +14,6 @@ $(document).ready(function () {
     });
 });
 function pageLoad(){
-	$("body").getNiceScroll().resize();
 	"use strict";
     var body = $("body");
     $(function () {
