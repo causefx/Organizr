@@ -6,19 +6,20 @@ $(document).ajaxComplete(function () {
     pageLoad();
 });
 $(document).ready(function () {
+    $("body").niceScroll({
+        grabcursorenabled: false,
+        zindex:1000000
+    });
     pageLoad();
     var clipboard = new Clipboard('.clipboard');
     clipboard.on('success', function(e) {
         message('Clipboard',e.text,'bottom-right','#FFF','info','5000');
         e.clearSelection();
     });
-
-    /* ===========================================================
-        Loads the correct sidebar on window load.
-        collapses the sidebar on window resize.
-        Sets the min-height of #page-wrapper to window size.
-    =========================================================== */
-    "use strict";
+});
+function pageLoad(){
+	$("body").getNiceScroll().resize();
+	"use strict";
     var body = $("body");
     $(function () {
         //$("#preloader").fadeOut();
@@ -71,9 +72,6 @@ $(document).ready(function () {
     $(this).keypress(function (e) {
         idleTime = 0;
     });
-});
-function pageLoad(){
-    "use strict";
     //Start Organizr
     $(function () {
         $('#side-menu').metisMenu();
