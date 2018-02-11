@@ -104,6 +104,7 @@
 	<script src="bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="plugins/bower_components/sidebar-nav/dist/sidebar-nav.js"></script>
 	<script src="js/jquery.slimscroll.js"></script>
+	<script src="js/jquery.nicescroll.min.js"></script>
 	<script src="js/waves.js"></script>
 	<script src="plugins/bower_components/toast-master/js/jquery.toast.js"></script>
 	<script src="plugins/bower_components/styleswitcher/jQuery.style.switcher.js"></script>
