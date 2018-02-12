@@ -12,8 +12,6 @@ $(document).ready(function () {
         message('Clipboard',e.text,'bottom-right','#FFF','info','5000');
         e.clearSelection();
     });
-});
-function pageLoad(){
 	"use strict";
     var body = $("body");
     $(function () {
@@ -67,6 +65,9 @@ function pageLoad(){
     $(this).keypress(function (e) {
         idleTime = 0;
     });
+});
+function pageLoad(){
+	"use strict";
     //Start Organizr
     $(function () {
         $('#side-menu').metisMenu();
