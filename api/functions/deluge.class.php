@@ -15,7 +15,7 @@ class deluge {
 			CURLOPT_HTTPHEADER => array("Accept: application/json", "Content-Type: application/json"),
 			CURLOPT_ENCODING => "",
 			CURLOPT_COOKIEJAR  => "",
-			CURLOPT_CONNECTTIMEOUT => 5,
+			CURLOPT_CONNECTTIMEOUT => 10,
 			CURLOPT_TIMEOUT => 5,
 			CURLOPT_CAINFO => getCert(),
 	        CURLOPT_SSL_VERIFYHOST => localURL($host) ? 0 : 2,
