@@ -784,7 +784,6 @@ function buildSettingsMain(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/settings/main').success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response)
 		$('#settings-main-form').html(buildFormGroup(response.data));
 		changeAuth();
 		;
@@ -817,7 +816,6 @@ function buildTabEditor(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/tab/list').success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response.data);
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -838,7 +836,6 @@ function settingsAPI(post, callbacks=null){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST',post.api,post).success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response);
 		message(post.messageTitle,post.messageBody,"bottom-right","#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
@@ -1278,7 +1275,6 @@ function submitCategoryOrder(){
 		messageBody:window.lang.translate('Category Order Saved'),
 		error:'Organizr Function: API Connection Failed'
 	};
-	console.log(post);
 	settingsAPI(post);
 	buildCategoryEditor();
 }
@@ -2104,7 +2100,6 @@ function buildDownloaderItem(array, source, type='none'){
 		case 'transmission':
 			switch (type) {
 				case 'queue':
-				console.log(array);
 					if(array.arguments.torrents == 0){
 						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
 					}
@@ -2170,7 +2165,6 @@ function buildDownloaderItem(array, source, type='none'){
 		case 'qBittorrent':
 			switch (type) {
 				case 'queue':
-				console.log(array);
 					if(array.arguments.torrents == 0){
 						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
 					}
@@ -2231,8 +2225,6 @@ function buildDownloaderItem(array, source, type='none'){
 		case 'deluge':
 			switch (type) {
 				case 'queue':
-					console.log(array);
-					console.log(array.length);
 					if(array.length == 0){
 						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
 					}
@@ -2274,10 +2266,10 @@ function buildDownloader(array, source){
 	var downloader = (queueItems || historyItems) ? true : false;
 	var state = '';
 	var active = '';
-	console.log(array);
-	console.log(queueItems);
-	console.log(historyItems);
-	console.log(downloader);
+	//console.log(array);
+	//console.log(queueItems);
+	//console.log(historyItems);
+	//console.log(downloader);
 	if(queueItems){
 		switch (source) {
 			case 'sabnzbd':
@@ -2412,7 +2404,6 @@ function homepageDownloader(type){
 		default:
 
 	}
-	console.log('#homepageOrder'+type);
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
 		$('#homepageOrder'+type).html(buildDownloader(response.data, type));
@@ -2464,11 +2455,8 @@ function homepageCalendar(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response);
         $('#calendar').fullCalendar('removeEvents');
         $('#calendar').fullCalendar('addEventSource', response.data);
-        console.log('Calendar Entries Added');
-		//$('#homepageOrder'+type+'recent').html(buildRecent(response.data, type));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
@@ -2517,7 +2505,6 @@ function changeAuth(){
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.plexAuth').parent().parent().parent().show();
-            console.log(service);
             break;
         case 'emby_local':
         case 'emby_connect':
@@ -2525,19 +2512,16 @@ function changeAuth(){
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.embyAuth').parent().parent().parent().show();
-            console.log(service);
             break;
         case 'ftp':
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.ftpAuth').parent().parent().parent().show();
-            console.log(service);
             break;
         case 'ldap':
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.ldapAuth').parent().parent().parent().show();
-            console.log(service);
             break;
         default:
             $('.switchAuth').parent().parent().parent().hide();
