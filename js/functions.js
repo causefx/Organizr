@@ -2228,6 +2228,39 @@ function buildDownloaderItem(array, source, type='none'){
 
 			}
 			break;
+		case 'deluge':
+			switch (type) {
+				case 'queue':
+					console.log(array);
+					console.log(array.length);
+					if(array.length == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+					}
+					$.each(array, function(i,v) {
+						var percent = Math.floor(v.progress);
+						var size = v.total_size != -1 ? humanFileSize(v.total_size,true) : "?";
+						var upload = v.upload_payload_rate != -1 ? humanFileSize(v.upload_payload_rate,true) : "?";
+						var download = v.download_payload_rate != -1 ? humanFileSize(v.download_payload_rate,true) : "?";
+						items += `
+						<tr>
+							<td class="max-texts">`+v.name+`</td>
+							<td class="hidden-xs">`+v.state+`</td>
+							<td class="hidden-xs">`+size+`</td>
+							<td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
+							<td class="hidden-xs"><i class="fa fa-upload"></i>&nbsp;`+upload+`</td>
+							<td class="text-right">
+								<div class="progress progress-lg m-b-0">
+									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+								</div>
+							</td>
+						</tr>
+						`;
+					});
+					break;
+				default:
+
+			}
+			break;
 		default:
 			return false;
 	}
@@ -2372,6 +2405,9 @@ function homepageDownloader(type){
 			break;
 		case 'qBittorrent':
 			var action = 'getqBittorrent';
+			break;
+		case 'deluge':
+			var action = 'getDeluge';
 			break;
 		default:
 

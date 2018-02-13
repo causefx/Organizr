@@ -32,6 +32,9 @@ function homepageConnect($array){
         case 'getqBittorrent':
             return qBittorrentConnect();
             break;
+		case 'getDeluge':
+			return delugeConnect();
+			break;
         case 'getCalendar':
             return getCalendar();
             break;
@@ -662,6 +665,20 @@ function qBittorrentConnect() {
         $api['content'] = isset($api['content']) ? $api['content'] : false;
         return $api;
     }
+}
+function delugeConnect(){
+	if($GLOBALS['homepageDelugeEnabled'] && !empty($GLOBALS['delugeURL']) && qualifyRequest($GLOBALS['homepageDelugeAuth'])){
+		try{
+			$deluge = new deluge($GLOBALS['delugeURL'], decrypt($GLOBALS['delugePassword']));
+			$torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate');
+			$api['content']['queueItems'] = $torrents;
+			$api['content']['historyItems'] = false;
+		}catch( Excecption $e){
+			writeLog('error', 'Deluge Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		}
+	}
+	$api['content'] = isset($api['content']) ? $api['content'] : false;
+	return $api;
 }
 function getCalendar(){
 	$startDate = date('Y-m-d',strtotime("-".$GLOBALS['calendarStart']." days"));

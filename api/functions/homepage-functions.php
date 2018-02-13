@@ -17,7 +17,8 @@ function homepageOrder(){
 		"homepageOrdercalendar" => $GLOBALS['homepageOrdercalendar'],
 		"homepageOrdernoticeguest" => $GLOBALS['homepageOrdernoticeguest'],
         "homepageOrdertransmission" => $GLOBALS['homepageOrdertransmission'],
-        "homepageOrderqBittorrent" => $GLOBALS['homepageOrderqBittorrent'],
+		"homepageOrderqBittorrent" => $GLOBALS['homepageOrderqBittorrent'],
+        "homepageOrderdeluge" => $GLOBALS['homepageOrderdeluge'],
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -62,6 +63,20 @@ function buildHomepageItem($homepageItem){
                 ';
             }
             break;
+		case 'homepageOrderdeluge':
+			if($GLOBALS['homepageDelugeEnabled']){
+				$item .= '
+				<script>
+				// Deluge
+				homepageDownloader("deluge");
+				setInterval(function() {
+					homepageDownloader("deluge");
+				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				// End Deluge
+				</script>
+				';
+			}
+			break;
 		case 'homepageOrdertransmission':
 			if($GLOBALS['homepageTransmissionEnabled']){
 				$item .= '
@@ -850,6 +865,64 @@ function getHomepageList(){
 						'label' => 'Reverse Sorting',
 						'value' => $GLOBALS['qBittorrentReverseSorting']
 					),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageDownloadRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['homepageDownloadRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+		array(
+            'name' => 'Deluge',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/deluge.png',
+            'category' => 'Downloader',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageDelugeEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageDelugeEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageDelugeAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageDelugeAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'delugeURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['delugeURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'password',
+                        'name' => 'delugePassword',
+                        'label' => 'Password',
+                        'value' => $GLOBALS['delugePassword']
+                    )
+                ),
+                'Misc Options' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'delugeHideSeeding',
+                        'label' => 'Hide Seeding',
+                        'value' => $GLOBALS['delugeHideSeeding']
+                    ),array(
+                        'type' => 'switch',
+                        'name' => 'delugeHideCompleted',
+                        'label' => 'Hide Completed',
+                        'value' => $GLOBALS['delugeHideCompleted']
+                    ),
                     array(
                         'type' => 'select',
                         'name' => 'homepageDownloadRefresh',
