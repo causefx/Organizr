@@ -16,7 +16,7 @@ class deluge {
 			CURLOPT_ENCODING => "",
 			CURLOPT_COOKIEJAR  => "",
 			CURLOPT_CONNECTTIMEOUT => 10,
-			CURLOPT_TIMEOUT => 5,
+			CURLOPT_TIMEOUT => 10,
 			CURLOPT_CAINFO => getCert(),
 	        CURLOPT_SSL_VERIFYHOST => localURL($host) ? 0 : 2,
 	        CURLOPT_SSL_VERIFYPEER => localURL($host) ? 0 : 2,
