@@ -1946,7 +1946,7 @@ function buildStream(array, type){
 	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
 	return (streams) ? `
 	<div id="`+type+`Streams">
-		<div class="el-element-overlay m-b-20">
+		<div class="el-element-overlay">
 		    <div class="col-md-12">
 		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Stream(s): </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-5">`+streams+`</span></h4>
 		        <hr>
@@ -2321,7 +2321,7 @@ function buildDownloader(array, source){
 	            `+menu+`
 				<div class="clearfix"></div>
 	        </div>
-	        <div class="white-box p-0">
+	        <div class="white-box p-0 m-b-0">
 	            <div class="tab-content m-t-0">`+listing+`</div>
 	        </div>
 		</div>
