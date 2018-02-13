@@ -881,6 +881,26 @@ function getHomepageList(){
             'image' => 'plugins/images/tabs/deluge.png',
             'category' => 'Downloader',
             'settings' => array(
+				'custom' => '
+				<div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+								<span lang="en">Notice</span>
+                            </div>
+                            <div class="panel-wrapper collapse in" aria-expanded="true">
+                                <div class="panel-body">
+									<ul class="list-icons">
+                                        <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://github.com/idlesign/deluge-webapi/raw/master/dist/WebAPI-0.2.0-py2.7.egg" target="_blank">Download Plugin</a></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> Open Deluge Web UI, go to "Preferences -> Plugins -> Install plugin" and choose egg file.</li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> Activate WebAPI plugin </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+				</div>
+				',
                 'Enable' => array(
                     array(
                         'type' => 'switch',

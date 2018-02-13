@@ -691,30 +691,34 @@ function buildFormGroup(array){
 	$.each(array, function(i,v) {
 		var count = 0;
 		var total = v.length;
-		group += `
-			<!-- FORM GROUP -->
-			<h4 class="box-title" lang="en">`+i+`</h4>
-			<hr class="m-t-0 m-b-40">
-			<div class="row">
-		`;
-		$.each(v, function(i,v) {
-			count++;
-			if(count%2 !== 0 ){ group += '<div class="row start">'; };
+		if(i == 'custom'){
+			group += v;
+		}else{
 			group += `
-				<!-- INPUT BOX -->
-				<div class="col-md-6 p-b-10">
-					<div class="form-group">
-						<label class="control-label col-md-3" lang="en">`+v.label+`</label>
-						<div class="col-md-9">
-							`+buildFormItem(v)+`
+				<!-- FORM GROUP -->
+				<h4 class="box-title" lang="en">`+i+`</h4>
+				<hr class="m-t-0 m-b-40">
+				<div class="row">
+			`;
+			$.each(v, function(i,v) {
+				count++;
+				if(count%2 !== 0 ){ group += '<div class="row start">'; };
+				group += `
+					<!-- INPUT BOX -->
+					<div class="col-md-6 p-b-10">
+						<div class="form-group">
+							<label class="control-label col-md-3" lang="en">`+v.label+`</label>
+							<div class="col-md-9">
+								`+buildFormItem(v)+`
+							</div>
 						</div>
 					</div>
-				</div>
-				<!--/ INPUT BOX -->
-			`;
-			if(count%2 == 0 || count == total ){ group += '</div><!--end-->'; };
-		});
-		group += '</div>';
+					<!--/ INPUT BOX -->
+				`;
+				if(count%2 == 0 || count == total ){ group += '</div><!--end-->'; };
+			});
+			group += '</div>';
+		}
 	});
 	return group;
 }
