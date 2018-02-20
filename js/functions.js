@@ -310,7 +310,7 @@ function popTab(tab, type){
 		case '_blank':
 		case 'popout':
 			console.log('Tab Function: Creating New Window for tab: '+tab);
-			var url = $('#container-'+cleanClass(tab)).attr('data-url');
+			var url = $('#menu-'+cleanClass(tab)).attr('data-url');
 			window.open(url, '_blank');
 			break;
 		default:
@@ -970,7 +970,7 @@ function buildInternalContainer(name,url,type){
 	return `<div id="internal-`+cleanClass(name)+`" data-type="`+type+`" class="internal-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
 }
 function buildMenuList(name,url,type,icon){
-	return `<li id="menu-`+cleanClass(name)+`" type="`+type+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span></a></li>`;
+	return `<li id="menu-`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span></a></li>`;
 }
 function tabProcess(arrayItems) {
 	var iFrameList = '';
@@ -1469,6 +1469,7 @@ function organizrAPI(type,path,data=null){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 				},
+				timeout: 10000,
 			});
 			break;
 		case 'post':
@@ -1480,6 +1481,7 @@ function organizrAPI(type,path,data=null){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 				},
+				timeout: 10000,
 				data:{
 					data: data,
 				}
