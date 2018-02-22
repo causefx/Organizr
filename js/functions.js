@@ -14,6 +14,23 @@ lang.init({
 // Start Organizr
 launch();
 /* NORMAL FUNCTIONS */
+function getHiddenProp(){
+    var prefixes = ['webkit','moz','ms','o'];
+    // if 'hidden' is natively supported just return it
+    if ('hidden' in document) return 'hidden';
+    // otherwise loop over all the known prefixes until we find one
+    for (var i = 0; i < prefixes.length; i++){
+        if ((prefixes[i] + 'Hidden') in document)
+            return prefixes[i] + 'Hidden';
+    }
+    // otherwise it's not supported
+    return null;
+}
+function isHidden() {
+    var prop = getHiddenProp();
+    if (!prop) return false;
+    return document[prop];
+}
 function loadLanguageList(){
 	var languages = languageList();
 	$.each(languages, function(i,v) {
@@ -2391,6 +2408,7 @@ function buildMetadata(array, source){
 	return metadata;
 }
 function homepageDownloader(type){
+	if(isHidden()){ return; }
 	switch (type) {
 		case 'sabnzbd':
 			var action = 'getSabnzbd';
@@ -2412,12 +2430,14 @@ function homepageDownloader(type){
 	}
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
+		document.getElementById('homepageOrder'+type).innerHTML = '';
 		$('#homepageOrder'+type).html(buildDownloader(response.data, type));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
 function homepageStream(type){
+	if(isHidden()){ return; }
 	switch (type) {
 		case 'plex':
 			var action = 'getPlexStreams';
@@ -2431,6 +2451,7 @@ function homepageStream(type){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
+		document.getElementById('homepageOrder'+type+'nowplaying').innerHTML = '';
 		$('#homepageOrder'+type+'nowplaying').html(buildStream(response.data, type));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -2438,6 +2459,7 @@ function homepageStream(type){
 	ajaxloader();
 }
 function homepageRecent(type){
+	if(isHidden()){ return; }
 	switch (type) {
 		case 'plex':
 			var action = 'getPlexRecent';
@@ -2451,6 +2473,7 @@ function homepageRecent(type){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
+		document.getElementById('homepageOrder'+type+'recent').innerHTML = '';
 		$('#homepageOrder'+type+'recent').html(buildRecent(response.data, type));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -2458,11 +2481,13 @@ function homepageRecent(type){
 	ajaxloader();
 }
 function homepageCalendar(){
+	if(isHidden()){ return; }
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
 		var response = JSON.parse(data);
         $('#calendar').fullCalendar('removeEvents');
         $('#calendar').fullCalendar('addEventSource', response.data);
+		response = '';
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
