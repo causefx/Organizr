@@ -2077,7 +2077,7 @@ function buildDownloaderItem(array, source, type='none'){
 					$.each(array.result, function(i,v) {
 						var action = (v.Status == "Downloading") ? 'pause' : 'resume';
 						var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
-						var percent = Math.floor((v.FileSizeMB - v.RemainingSizeMB) / v.FileSizeMB);
+						var percent = Math.floor((v.FileSizeMB - v.RemainingSizeMB) / v.FileSizeMB) * 100;
 						v.Category = (v.Category !== '') ? v.Category : 'Not Set';
 						items += `
 						<tr>
