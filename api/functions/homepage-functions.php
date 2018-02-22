@@ -54,10 +54,7 @@ function buildHomepageItem($homepageItem){
                 $item .= '
                 <script>
                 // homepageOrderqBittorrent
-                homepageDownloader("qBittorrent");
-                setInterval(function() {
-                    homepageDownloader("qBittorrent");
-                }, '.$GLOBALS['homepageDownloadRefresh'].');
+                homepageDownloader("qBittorrent", "'.$GLOBALS['homepageDownloadRefresh'].'");
                 // End homepageOrderqBittorrent
                 </script>
                 ';
@@ -68,10 +65,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Deluge
-				homepageDownloader("deluge");
-				setInterval(function() {
-					homepageDownloader("deluge");
-				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				homepageDownloader("deluge", "'.$GLOBALS['homepageDownloadRefresh'].'");
 				// End Deluge
 				</script>
 				';
@@ -82,10 +76,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Transmission
-				homepageDownloader("transmission");
-				setInterval(function() {
-					homepageDownloader("transmission");
-				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				homepageDownloader("transmission", "'.$GLOBALS['homepageDownloadRefresh'].'");
 				// End Transmission
 				</script>
 				';
@@ -96,10 +87,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// NZBGet
-				homepageDownloader("nzbget");
-				setInterval(function() {
-					homepageDownloader("nzbget");
-				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				homepageDownloader("nzbget", "'.$GLOBALS['homepageDownloadRefresh'].'");
 				// End NZBGet
 				</script>
 				';
@@ -110,10 +98,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// SabNZBd
-				homepageDownloader("sabnzbd");
-				setInterval(function() {
-					homepageDownloader("sabnzbd");
-				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				homepageDownloader("sabnzbd", "'.$GLOBALS['homepageDownloadRefresh'].'");
 				// End SabNZBd
 				</script>
 				';
@@ -124,10 +109,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Plex Stream
-				homepageStream("plex");
-				setInterval(function() {
-				    homepageStream("plex");
-				}, '.$GLOBALS['homepageStreamRefresh'].');
+				homepageStream("plex", "'.$GLOBALS['homepageStreamRefresh'].'");
 				// End Plex Stream
 				</script>
 				';
@@ -138,10 +120,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Plex Recent
-				homepageRecent("plex");
-				setInterval(function() {
-					homepageRecent("plex");
-				}, '.$GLOBALS['homepageRecentRefresh'].');
+				homepageRecent("plex", "'.$GLOBALS['homepageRecentRefresh'].'");
 				// End Plex Recent
 				</script>
 				';
@@ -155,10 +134,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Emby Stream
-				homepageStream("emby");
-				setInterval(function() {
-					homepageStream("emby");
-				}, '.$GLOBALS['homepageStreamRefresh'].');
+				homepageStream("emby", "'.$GLOBALS['homepageStreamRefresh'].'");
 				// End Emby Stream
 				</script>
 				';
@@ -169,10 +145,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Emby Recent
-				homepageRecent("emby");
-				setInterval(function() {
-					homepageRecent("emby");
-				}, '.$GLOBALS['homepageRecentRefresh'].');
+				homepageRecent("emby", "'.$GLOBALS['homepageRecentRefresh'].'");
 				// End Emby Recent
 				</script>
 				';
@@ -186,10 +159,7 @@ function buildHomepageItem($homepageItem){
 			<div id="calendar" class="fc fc-ltr"></div>
 			<script>
 			// Calendar
-			homepageCalendar();
-			setInterval(function() {
-				homepageCalendar();
-			}, '.$GLOBALS['calendarRefresh'].');
+			homepageCalendar("'.$GLOBALS['calendarRefresh'].'");
 			// End Calendar
 			</script>
 			';

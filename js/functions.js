@@ -2406,7 +2406,7 @@ function buildMetadata(array, source){
 	});
 	return metadata;
 }
-function homepageDownloader(type){
+function homepageDownloader(type, timeout=30000){
 	if(isHidden()){ return; }
 	switch (type) {
 		case 'sabnzbd':
@@ -2434,8 +2434,11 @@ function homepageDownloader(type){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
+	setTimeout(function(){
+		homepageDownloader(type, timeout);
+	}, timeout)
 }
-function homepageStream(type){
+function homepageStream(type, timeout=30000){
 	if(isHidden()){ return; }
 	switch (type) {
 		case 'plex':
@@ -2456,8 +2459,11 @@ function homepageStream(type){
 		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
+	setTimeout(function(){
+		homepageStream(type, timeout);
+	}, timeout)
 }
-function homepageRecent(type){
+function homepageRecent(type, timeout=30000){
 	if(isHidden()){ return; }
 	switch (type) {
 		case 'plex':
@@ -2478,8 +2484,11 @@ function homepageRecent(type){
 		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
+	setTimeout(function(){
+		homepageRecent(type, timeout);
+	}, timeout)
 }
-function homepageCalendar(){
+function homepageCalendar(timeout=30000){
 	if(isHidden()){ return; }
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
@@ -2491,6 +2500,9 @@ function homepageCalendar(){
 		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
+	setTimeout(function(){
+		homepageCalendar(timeout);
+	}, timeout)
 }
 //Generate API
 function generateCode() {
