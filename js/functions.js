@@ -1498,7 +1498,6 @@ function organizrAPI(type,path,data=null){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 				},
-				timeout: 10000,
 				data:{
 					data: data,
 				}
