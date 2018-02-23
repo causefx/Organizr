@@ -2407,7 +2407,7 @@ function buildMetadata(array, source){
 	return metadata;
 }
 function homepageDownloader(type, timeout=30000){
-	if(isHidden()){ return; }
+	//if(isHidden()){ return; }
 	switch (type) {
 		case 'sabnzbd':
 			var action = 'getSabnzbd';
@@ -2439,7 +2439,7 @@ function homepageDownloader(type, timeout=30000){
 	}, timeout)
 }
 function homepageStream(type, timeout=30000){
-	if(isHidden()){ return; }
+	//if(isHidden()){ return; }
 	switch (type) {
 		case 'plex':
 			var action = 'getPlexStreams';
@@ -2464,7 +2464,7 @@ function homepageStream(type, timeout=30000){
 	}, timeout)
 }
 function homepageRecent(type, timeout=30000){
-	if(isHidden()){ return; }
+	//if(isHidden()){ return; }
 	switch (type) {
 		case 'plex':
 			var action = 'getPlexRecent';
@@ -2489,7 +2489,7 @@ function homepageRecent(type, timeout=30000){
 	}, timeout)
 }
 function homepageCalendar(timeout=30000){
-	if(isHidden()){ return; }
+	//if(isHidden()){ return; }
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
 		var response = JSON.parse(data);
