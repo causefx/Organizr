@@ -1930,36 +1930,40 @@ function buildStreamItem(array,source){
 	});
 	return cards;
 }
-function buildRecentItem(array, type){
+function buildRecentItem(array, type, extra=null){
 	var items = '';
 	$.each(array, function(i,v) {
-		var className = '';
-		switch (v.type) {
-			case 'music':
-				className = 'recent-cover recent-item recent-music';
-				break;
-			case 'movie':
-				className = 'recent-poster recent-item recent-movie';
-				break;
-			case 'tv':
-				className = 'recent-poster recent-item recent-tv';
-				break;
-			case 'video':
-				className = 'recent-poster recent-item recent-video';
-				break;
-			default:
+		if(extra == null){
+			var className = '';
+			switch (v.type) {
+				case 'music':
+					className = 'recent-cover recent-item recent-music';
+					break;
+				case 'movie':
+					className = 'recent-poster recent-item recent-movie';
+					break;
+				case 'tv':
+					className = 'recent-poster recent-item recent-tv';
+					break;
+				case 'video':
+					className = 'recent-poster recent-item recent-video';
+					break;
+				default:
 
-		}
-		items += `
-		<div class="item lazyload `+className+` metadata-get mouse" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
-			<span class="elip recent-title">`+v.title+`</span>
+			}
+			items += `
+			<div class="item lazyload `+className+` metadata-get mouse" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
+				<span class="elip recent-title">`+v.title+`</span>
+				<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
+			        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
+			    </div>
+			</div>
+			`;
+		}else{
+			items += `
 			<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
-			<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
-		        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
-		    </div>
-		</div>
-		`;
-
+			`;
+		}
 
 	});
 	return items;
@@ -2009,6 +2013,7 @@ function buildRecent(array, type){
                     <div class="owl-carousel owl-theme recent-items `+type+`-recent">
 						`+buildRecentItem(array.content, type)+`
                     </div>
+					`+buildRecentItem(array.content, type, true)+`
                 </div>
             </div>
         </div>
