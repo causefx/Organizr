@@ -6,19 +6,12 @@ $(document).ajaxComplete(function () {
     pageLoad();
 });
 $(document).ready(function () {
-    $("body").niceScroll({
-        grabcursorenabled: false,
-        zindex:1000000
-    });
     pageLoad();
     var clipboard = new Clipboard('.clipboard');
     clipboard.on('success', function(e) {
         message('Clipboard',e.text,'bottom-right','#FFF','info','5000');
         e.clearSelection();
     });
-});
-function pageLoad(){
-	$("body").getNiceScroll().resize();
 	"use strict";
     var body = $("body");
     $(function () {
@@ -72,6 +65,9 @@ function pageLoad(){
     $(this).keypress(function (e) {
         idleTime = 0;
     });
+});
+function pageLoad(){
+	"use strict";
     //Start Organizr
     $(function () {
         $('#side-menu').metisMenu();
@@ -1577,10 +1573,10 @@ $(document).on("click", ".refreshImage", function(e) {
 	message('',' Refreshing Image...','bottom-right','#FFF','success','1000');
 	e.preventDefault;
 	var orginalElement = $(this).parent().parent().parent().parent().find('.imageSource');
-    console.log(orginalElement)
+    //console.log(orginalElement)
 	var original = $(this).attr('data-image');
 	orginalElement.attr('src', original);
-	console.log('replaced image with : '+original);
+	//console.log('replaced image with : '+original);
 	setTimeout(function(){
         message('Image Refreshed ',' Clear Cache Please','bottom-right','#FFF','success','3000');
 	}, 1000);
@@ -1605,7 +1601,6 @@ $(document).on("click", ".openTab", function(e) {
 });
 // metadata start
 $(document).on("click", ".metadata-get", function(e) {
-    $('.metadata-info').html('');
     var key = $(this).attr('data-key');
 	var uid = $(this).attr('data-uid');
     var source = $(this).attr('data-source');
@@ -1622,7 +1617,7 @@ $(document).on("click", ".metadata-get", function(e) {
     ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action, key:key}).success(function(data) {
 		var response = JSON.parse(data);
-        console.log(response);
+        $('.'+uid+'-metadata-info').html('');
 		$('.'+uid+'-metadata-info').html(buildMetadata(response.data, source));
         $('.'+uid).trigger('click')
 	}).fail(function(xhr) {
@@ -1631,18 +1626,18 @@ $(document).on("click", ".metadata-get", function(e) {
 	ajaxloader();
 
 });
-// sad play/resume
+// sab play/resume
 $(document).on("click", ".downloader", function(e) {
     var action = $(this).attr('data-action');
     var source = $(this).attr('data-source');
     var target = $(this).attr('data-target');
-    console.log(action);
-    console.log(source);
-    console.log(target);
+    //console.log(action);
+    //console.log(source);
+    //console.log(target);
     ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/downloader',{action:action, source:source, target:target}).success(function(data) {
 		var response = JSON.parse(data);
-        console.log(response);
+        //console.log(response);
 		homepageDownloader(source);
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");

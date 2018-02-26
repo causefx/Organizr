@@ -3,6 +3,8 @@
 
 // Upgrade the installation
 function upgradeInstall($branch = 'v2-master', $stage) {
+	ini_set('max_execution_time',0);
+	set_time_limit(0);
     $url = 'https://github.com/causefx/Organizr/archive/'.$branch.'.zip';
     $file = "upgrade.zip";
     $source = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'upgrade'.DIRECTORY_SEPARATOR.'Organizr-'.str_replace('v2','2',$branch).DIRECTORY_SEPARATOR;
@@ -48,7 +50,7 @@ function upgradeInstall($branch = 'v2-master', $stage) {
 			}
 			break;
 		default:
-			# code...
+			return false;
 			break;
 	}
 	return false;

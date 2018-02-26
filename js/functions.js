@@ -14,6 +14,23 @@ lang.init({
 // Start Organizr
 launch();
 /* NORMAL FUNCTIONS */
+function getHiddenProp(){
+    var prefixes = ['webkit','moz','ms','o'];
+    // if 'hidden' is natively supported just return it
+    if ('hidden' in document) return 'hidden';
+    // otherwise loop over all the known prefixes until we find one
+    for (var i = 0; i < prefixes.length; i++){
+        if ((prefixes[i] + 'Hidden') in document)
+            return prefixes[i] + 'Hidden';
+    }
+    // otherwise it's not supported
+    return null;
+}
+function isHidden() {
+    var prop = getHiddenProp();
+    if (!prop) return false;
+    return document[prop];
+}
 function loadLanguageList(){
 	var languages = languageList();
 	$.each(languages, function(i,v) {
@@ -310,7 +327,7 @@ function popTab(tab, type){
 		case '_blank':
 		case 'popout':
 			console.log('Tab Function: Creating New Window for tab: '+tab);
-			var url = $('#container-'+cleanClass(tab)).attr('data-url');
+			var url = $('#menu-'+cleanClass(tab)).attr('data-url');
 			window.open(url, '_blank');
 			break;
 		default:
@@ -691,30 +708,34 @@ function buildFormGroup(array){
 	$.each(array, function(i,v) {
 		var count = 0;
 		var total = v.length;
-		group += `
-			<!-- FORM GROUP -->
-			<h4 class="box-title" lang="en">`+i+`</h4>
-			<hr class="m-t-0 m-b-40">
-			<div class="row">
-		`;
-		$.each(v, function(i,v) {
-			count++;
-			if(count%2 !== 0 ){ group += '<div class="row start">'; };
+		if(i == 'custom'){
+			group += v;
+		}else{
 			group += `
-				<!-- INPUT BOX -->
-				<div class="col-md-6 p-b-10">
-					<div class="form-group">
-						<label class="control-label col-md-3" lang="en">`+v.label+`</label>
-						<div class="col-md-9">
-							`+buildFormItem(v)+`
+				<!-- FORM GROUP -->
+				<h4 class="box-title" lang="en">`+i+`</h4>
+				<hr class="m-t-0 m-b-40">
+				<div class="row">
+			`;
+			$.each(v, function(i,v) {
+				count++;
+				if(count%2 !== 0 ){ group += '<div class="row start">'; };
+				group += `
+					<!-- INPUT BOX -->
+					<div class="col-md-6 p-b-10">
+						<div class="form-group">
+							<label class="control-label col-md-3" lang="en">`+v.label+`</label>
+							<div class="col-md-9">
+								`+buildFormItem(v)+`
+							</div>
 						</div>
 					</div>
-				</div>
-				<!--/ INPUT BOX -->
-			`;
-			if(count%2 == 0 || count == total ){ group += '</div><!--end-->'; };
-		});
-		group += '</div>';
+					<!--/ INPUT BOX -->
+				`;
+				if(count%2 == 0 || count == total ){ group += '</div><!--end-->'; };
+			});
+			group += '</div>';
+		}
 	});
 	return group;
 }
@@ -784,7 +805,6 @@ function buildSettingsMain(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/settings/main').success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response)
 		$('#settings-main-form').html(buildFormGroup(response.data));
 		changeAuth();
 		;
@@ -817,7 +837,6 @@ function buildTabEditor(){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/tab/list').success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response.data);
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -838,7 +857,6 @@ function settingsAPI(post, callbacks=null){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST',post.api,post).success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response);
 		message(post.messageTitle,post.messageBody,"bottom-right","#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
@@ -969,7 +987,7 @@ function buildInternalContainer(name,url,type){
 	return `<div id="internal-`+cleanClass(name)+`" data-type="`+type+`" class="internal-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
 }
 function buildMenuList(name,url,type,icon){
-	return `<li id="menu-`+cleanClass(name)+`" type="`+type+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span></a></li>`;
+	return `<li id="menu-`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span></a></li>`;
 }
 function tabProcess(arrayItems) {
 	var iFrameList = '';
@@ -1278,7 +1296,6 @@ function submitCategoryOrder(){
 		messageBody:window.lang.translate('Category Order Saved'),
 		error:'Organizr Function: API Connection Failed'
 	};
-	console.log(post);
 	settingsAPI(post);
 	buildCategoryEditor();
 }
@@ -1469,6 +1486,7 @@ function organizrAPI(type,path,data=null){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 				},
+				timeout: 10000,
 			});
 			break;
 		case 'post':
@@ -1912,36 +1930,40 @@ function buildStreamItem(array,source){
 	});
 	return cards;
 }
-function buildRecentItem(array, type){
+function buildRecentItem(array, type, extra=null){
 	var items = '';
 	$.each(array, function(i,v) {
-		var className = '';
-		switch (v.type) {
-			case 'music':
-				className = 'recent-cover recent-item recent-music';
-				break;
-			case 'movie':
-				className = 'recent-poster recent-item recent-movie';
-				break;
-			case 'tv':
-				className = 'recent-poster recent-item recent-tv';
-				break;
-			case 'video':
-				className = 'recent-poster recent-item recent-video';
-				break;
-			default:
+		if(extra == null){
+			var className = '';
+			switch (v.type) {
+				case 'music':
+					className = 'recent-cover recent-item recent-music';
+					break;
+				case 'movie':
+					className = 'recent-poster recent-item recent-movie';
+					break;
+				case 'tv':
+					className = 'recent-poster recent-item recent-tv';
+					break;
+				case 'video':
+					className = 'recent-poster recent-item recent-video';
+					break;
+				default:
 
-		}
-		items += `
-		<div class="item lazyload `+className+` metadata-get mouse" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
-			<span class="elip recent-title">`+v.title+`</span>
+			}
+			items += `
+			<div class="item lazyload `+className+` metadata-get mouse" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
+				<span class="elip recent-title">`+v.title+`</span>
+				<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
+			        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
+			    </div>
+			</div>
+			`;
+		}else{
+			items += `
 			<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
-			<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
-		        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
-		    </div>
-		</div>
-		`;
-
+			`;
+		}
 
 	});
 	return items;
@@ -1950,7 +1972,7 @@ function buildStream(array, type){
 	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
 	return (streams) ? `
 	<div id="`+type+`Streams">
-		<div class="el-element-overlay m-b-20">
+		<div class="el-element-overlay">
 		    <div class="col-md-12">
 		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Stream(s): </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-5">`+streams+`</span></h4>
 		        <hr>
@@ -1991,6 +2013,7 @@ function buildRecent(array, type){
                     <div class="owl-carousel owl-theme recent-items `+type+`-recent">
 						`+buildRecentItem(array.content, type)+`
                     </div>
+					`+buildRecentItem(array.content, type, true)+`
                 </div>
             </div>
         </div>
@@ -2058,7 +2081,7 @@ function buildDownloaderItem(array, source, type='none'){
 					$.each(array.result, function(i,v) {
 						var action = (v.Status == "Downloading") ? 'pause' : 'resume';
 						var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
-						var percent = Math.floor((v.FileSizeMB - v.RemainingSizeMB) / v.FileSizeMB);
+						var percent = Math.floor((v.FileSizeMB - v.RemainingSizeMB) * 100 / v.FileSizeMB);
 						v.Category = (v.Category !== '') ? v.Category : 'Not Set';
 						items += `
 						<tr>
@@ -2104,7 +2127,6 @@ function buildDownloaderItem(array, source, type='none'){
 		case 'transmission':
 			switch (type) {
 				case 'queue':
-				console.log(array);
 					if(array.arguments.torrents == 0){
 						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
 					}
@@ -2170,7 +2192,6 @@ function buildDownloaderItem(array, source, type='none'){
 		case 'qBittorrent':
 			switch (type) {
 				case 'queue':
-				console.log(array);
 					if(array.arguments.torrents == 0){
 						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
 					}
@@ -2228,6 +2249,37 @@ function buildDownloaderItem(array, source, type='none'){
 
 			}
 			break;
+		case 'deluge':
+			switch (type) {
+				case 'queue':
+					if(array.length == 0){
+						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+					}
+					$.each(array, function(i,v) {
+						var percent = Math.floor(v.progress);
+						var size = v.total_size != -1 ? humanFileSize(v.total_size,true) : "?";
+						var upload = v.upload_payload_rate != -1 ? humanFileSize(v.upload_payload_rate,true) : "?";
+						var download = v.download_payload_rate != -1 ? humanFileSize(v.download_payload_rate,true) : "?";
+						items += `
+						<tr>
+							<td class="max-texts">`+v.name+`</td>
+							<td class="hidden-xs">`+v.state+`</td>
+							<td class="hidden-xs">`+size+`</td>
+							<td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
+							<td class="hidden-xs"><i class="fa fa-upload"></i>&nbsp;`+upload+`</td>
+							<td class="text-right">
+								<div class="progress progress-lg m-b-0">
+									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+								</div>
+							</td>
+						</tr>
+						`;
+					});
+					break;
+				default:
+
+			}
+			break;
 		default:
 			return false;
 	}
@@ -2241,10 +2293,10 @@ function buildDownloader(array, source){
 	var downloader = (queueItems || historyItems) ? true : false;
 	var state = '';
 	var active = '';
-	console.log(array);
-	console.log(queueItems);
-	console.log(historyItems);
-	console.log(downloader);
+	//console.log(array);
+	//console.log(queueItems);
+	//console.log(historyItems);
+	//console.log(downloader);
 	if(queueItems){
 		switch (source) {
 			case 'sabnzbd':
@@ -2296,7 +2348,7 @@ function buildDownloader(array, source){
 	            `+menu+`
 				<div class="clearfix"></div>
 	        </div>
-	        <div class="white-box p-0">
+	        <div class="white-box p-0 m-b-0">
 	            <div class="tab-content m-t-0">`+listing+`</div>
 	        </div>
 		</div>
@@ -2359,7 +2411,8 @@ function buildMetadata(array, source){
 	});
 	return metadata;
 }
-function homepageDownloader(type){
+function homepageDownloader(type, timeout=30000){
+	//if(isHidden()){ return; }
 	switch (type) {
 		case 'sabnzbd':
 			var action = 'getSabnzbd';
@@ -2373,18 +2426,25 @@ function homepageDownloader(type){
 		case 'qBittorrent':
 			var action = 'getqBittorrent';
 			break;
+		case 'deluge':
+			var action = 'getDeluge';
+			break;
 		default:
 
 	}
-	console.log('#homepageOrder'+type);
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
+		document.getElementById('homepageOrder'+type).innerHTML = '';
 		$('#homepageOrder'+type).html(buildDownloader(response.data, type));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
+	setTimeout(function(){
+		homepageDownloader(type, timeout);
+	}, timeout)
 }
-function homepageStream(type){
+function homepageStream(type, timeout=30000){
+	//if(isHidden()){ return; }
 	switch (type) {
 		case 'plex':
 			var action = 'getPlexStreams';
@@ -2398,13 +2458,18 @@ function homepageStream(type){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
+		document.getElementById('homepageOrder'+type+'nowplaying').innerHTML = '';
 		$('#homepageOrder'+type+'nowplaying').html(buildStream(response.data, type));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
+	setTimeout(function(){
+		homepageStream(type, timeout);
+	}, timeout)
 }
-function homepageRecent(type){
+function homepageRecent(type, timeout=30000){
+	//if(isHidden()){ return; }
 	switch (type) {
 		case 'plex':
 			var action = 'getPlexRecent';
@@ -2418,25 +2483,31 @@ function homepageRecent(type){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
+		document.getElementById('homepageOrder'+type+'recent').innerHTML = '';
 		$('#homepageOrder'+type+'recent').html(buildRecent(response.data, type));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
+	setTimeout(function(){
+		homepageRecent(type, timeout);
+	}, timeout)
 }
-function homepageCalendar(){
+function homepageCalendar(timeout=30000){
+	//if(isHidden()){ return; }
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response);
         $('#calendar').fullCalendar('removeEvents');
         $('#calendar').fullCalendar('addEventSource', response.data);
-        console.log('Calendar Entries Added');
-		//$('#homepageOrder'+type+'recent').html(buildRecent(response.data, type));
+		response = '';
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
+	setTimeout(function(){
+		homepageCalendar(timeout);
+	}, timeout)
 }
 //Generate API
 function generateCode() {
@@ -2481,7 +2552,6 @@ function changeAuth(){
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.plexAuth').parent().parent().parent().show();
-            console.log(service);
             break;
         case 'emby_local':
         case 'emby_connect':
@@ -2489,19 +2559,16 @@ function changeAuth(){
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.embyAuth').parent().parent().parent().show();
-            console.log(service);
             break;
         case 'ftp':
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.ftpAuth').parent().parent().parent().show();
-            console.log(service);
             break;
         case 'ldap':
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.ldapAuth').parent().parent().parent().show();
-            console.log(service);
             break;
         default:
             $('.switchAuth').parent().parent().parent().hide();

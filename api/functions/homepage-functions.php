@@ -17,7 +17,8 @@ function homepageOrder(){
 		"homepageOrdercalendar" => $GLOBALS['homepageOrdercalendar'],
 		"homepageOrdernoticeguest" => $GLOBALS['homepageOrdernoticeguest'],
         "homepageOrdertransmission" => $GLOBALS['homepageOrdertransmission'],
-        "homepageOrderqBittorrent" => $GLOBALS['homepageOrderqBittorrent'],
+		"homepageOrderqBittorrent" => $GLOBALS['homepageOrderqBittorrent'],
+        "homepageOrderdeluge" => $GLOBALS['homepageOrderdeluge'],
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -53,24 +54,29 @@ function buildHomepageItem($homepageItem){
                 $item .= '
                 <script>
                 // homepageOrderqBittorrent
-                homepageDownloader("qBittorrent");
-                setInterval(function() {
-                    homepageDownloader("qBittorrent");
-                }, '.$GLOBALS['homepageDownloadRefresh'].');
+                homepageDownloader("qBittorrent", "'.$GLOBALS['homepageDownloadRefresh'].'");
                 // End homepageOrderqBittorrent
                 </script>
                 ';
             }
             break;
+		case 'homepageOrderdeluge':
+			if($GLOBALS['homepageDelugeEnabled']){
+				$item .= '
+				<script>
+				// Deluge
+				homepageDownloader("deluge", "'.$GLOBALS['homepageDownloadRefresh'].'");
+				// End Deluge
+				</script>
+				';
+			}
+			break;
 		case 'homepageOrdertransmission':
 			if($GLOBALS['homepageTransmissionEnabled']){
 				$item .= '
 				<script>
 				// Transmission
-				homepageDownloader("transmission");
-				setInterval(function() {
-					homepageDownloader("transmission");
-				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				homepageDownloader("transmission", "'.$GLOBALS['homepageDownloadRefresh'].'");
 				// End Transmission
 				</script>
 				';
@@ -81,10 +87,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// NZBGet
-				homepageDownloader("nzbget");
-				setInterval(function() {
-					homepageDownloader("nzbget");
-				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				homepageDownloader("nzbget", "'.$GLOBALS['homepageDownloadRefresh'].'");
 				// End NZBGet
 				</script>
 				';
@@ -95,10 +98,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// SabNZBd
-				homepageDownloader("sabnzbd");
-				setInterval(function() {
-					homepageDownloader("sabnzbd");
-				}, '.$GLOBALS['homepageDownloadRefresh'].');
+				homepageDownloader("sabnzbd", "'.$GLOBALS['homepageDownloadRefresh'].'");
 				// End SabNZBd
 				</script>
 				';
@@ -109,10 +109,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Plex Stream
-				homepageStream("plex");
-				setInterval(function() {
-				    homepageStream("plex");
-				}, '.$GLOBALS['homepageStreamRefresh'].');
+				homepageStream("plex", "'.$GLOBALS['homepageStreamRefresh'].'");
 				// End Plex Stream
 				</script>
 				';
@@ -123,10 +120,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Plex Recent
-				homepageRecent("plex");
-				setInterval(function() {
-					homepageRecent("plex");
-				}, '.$GLOBALS['homepageRecentRefresh'].');
+				homepageRecent("plex", "'.$GLOBALS['homepageRecentRefresh'].'");
 				// End Plex Recent
 				</script>
 				';
@@ -140,10 +134,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Emby Stream
-				homepageStream("emby");
-				setInterval(function() {
-					homepageStream("emby");
-				}, '.$GLOBALS['homepageStreamRefresh'].');
+				homepageStream("emby", "'.$GLOBALS['homepageStreamRefresh'].'");
 				// End Emby Stream
 				</script>
 				';
@@ -154,10 +145,7 @@ function buildHomepageItem($homepageItem){
 				$item .= '
 				<script>
 				// Emby Recent
-				homepageRecent("emby");
-				setInterval(function() {
-					homepageRecent("emby");
-				}, '.$GLOBALS['homepageRecentRefresh'].');
+				homepageRecent("emby", "'.$GLOBALS['homepageRecentRefresh'].'");
 				// End Emby Recent
 				</script>
 				';
@@ -171,10 +159,7 @@ function buildHomepageItem($homepageItem){
 			<div id="calendar" class="fc fc-ltr"></div>
 			<script>
 			// Calendar
-			homepageCalendar();
-			setInterval(function() {
-				homepageCalendar();
-			}, '.$GLOBALS['calendarRefresh'].');
+			homepageCalendar("'.$GLOBALS['calendarRefresh'].'");
 			// End Calendar
 			</script>
 			';
@@ -850,6 +835,84 @@ function getHomepageList(){
 						'label' => 'Reverse Sorting',
 						'value' => $GLOBALS['qBittorrentReverseSorting']
 					),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageDownloadRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['homepageDownloadRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+		array(
+            'name' => 'Deluge',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/deluge.png',
+            'category' => 'Downloader',
+            'settings' => array(
+				'custom' => '
+				<div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+								<span lang="en">Notice</span>
+                            </div>
+                            <div class="panel-wrapper collapse in" aria-expanded="true">
+                                <div class="panel-body">
+									<ul class="list-icons">
+                                        <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://github.com/idlesign/deluge-webapi/raw/master/dist/WebAPI-0.2.0-py2.7.egg" target="_blank">Download Plugin</a></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> Open Deluge Web UI, go to "Preferences -> Plugins -> Install plugin" and choose egg file.</li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> Activate WebAPI plugin </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+				</div>
+				',
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageDelugeEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageDelugeEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageDelugeAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageDelugeAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'delugeURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['delugeURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'password',
+                        'name' => 'delugePassword',
+                        'label' => 'Password',
+                        'value' => $GLOBALS['delugePassword']
+                    )
+                ),
+                'Misc Options' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'delugeHideSeeding',
+                        'label' => 'Hide Seeding',
+                        'value' => $GLOBALS['delugeHideSeeding']
+                    ),array(
+                        'type' => 'switch',
+                        'name' => 'delugeHideCompleted',
+                        'label' => 'Hide Completed',
+                        'value' => $GLOBALS['delugeHideCompleted']
+                    ),
                     array(
                         'type' => 'select',
                         'name' => 'homepageDownloadRefresh',

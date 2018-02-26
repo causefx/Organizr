@@ -319,7 +319,7 @@ a.mytooltip {
   padding: 8px;
   line-height: 1.42857143;
   vertical-align: middle;
-  border-top: transparent;
+  /*border-top: transparent;*/
 }
 .jq-icon-info { background-color: rgba(71, 68, 68, 0.93); color: #FFF; border-color: #bce8f1; }
 .jq-icon-warning { background-color: rgba(154, 83, 20, 0.93); color: #fcf8e3; border-color: #faebcc; }

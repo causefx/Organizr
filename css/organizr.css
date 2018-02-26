@@ -173,7 +173,7 @@ object-fit: contain;
   overflow: hidden;
   position: relative;
   background-size: cover;
-  background-position: center;
+  background-position: top;
   background-repeat: no-repeat;
 }
 h2.m-b-0.font-medium.pull-right {
@@ -253,4 +253,7 @@ background: #2cabe3;
 .fc-toolbar {
   margin: 0;
   padding: 19px 20px 11px 20px;
+}
+.fc-unthemed .fc-today {
+  color: inherit !important;
 }

@@ -306,6 +306,17 @@ function getSSO(){
     			'href' => '#sso-plex-machine-form',
     			'attr' => 'data-effect="mfp-3d-unfold"'
     		),
+			array(
+    			'type' => 'input',
+    			'name' => 'plexAdmin',
+    			'label' => 'Admin Username',
+    			'value' => $GLOBALS['plexAdmin'],
+    			'placeholder' => 'Admin username for Plex'
+    		),
+            array(
+                'type' => 'blank',
+                'label' => ''
+            ),
     		array(
     			'type' => 'html',
     			'label' => 'Plex Note',
@@ -541,24 +552,31 @@ function auth(){
     $ban = isset($_GET['ban']) ? strtoupper($_GET['ban']) : "";
     $whitelist = isset($_GET['whitelist']) ? $_GET['whitelist'] : false;
     $blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
-    $group = isset($_GET['group']) ? $_GET['group'] : 0;
+    $group = isset($_GET['group']) ? (int)$_GET['group'] : (int)0;
     $currentIP = userIP();
-    $currentUser = $GLOBALS['organizrUser']['username'];
+	if(isset($GLOBALS['organizrUser'])){
+		$currentUser = $GLOBALS['organizrUser']['username'];
+        $currentGroup = $GLOBALS['organizrUser']['groupID'];
+    }else{
+		$currentUser = 'Guest';
+		$currentGroup = getUserLevel();
+	}
+	$userInfo = "User: $currentUser | Group: $currentGroup | IP: $currentIP | Requesting Access to Group $group | Result: ";
     if ($whitelist) {
         if(in_array($currentIP, arrayIP($whitelist))) {
-           !$debug ? exit(http_response_code(200)) : die("$currentIP Whitelist Authorized");
+           !$debug ? exit(http_response_code(200)) : die("$userInfo Whitelist Authorized");
     	}
     }
     if ($blacklist) {
         if(in_array($currentIP, arrayIP($blacklist))) {
-           !$debug ? exit(http_response_code(401)) : die("$currentIP Blacklisted");
+           !$debug ? exit(http_response_code(401)) : die("$userInfo Blacklisted");
     	}
     }
     if($group !== null){
         if(qualifyRequest($group)){
-            !$debug ? exit(http_response_code(200)) : die("$currentUser on $currentIP Authorized");
+            !$debug ? exit(http_response_code(200)) : die("$userInfo Authorized");
         }else{
-            !$debug ? exit(http_response_code(401)) : die("$currentUser on $currentIP Not Authorized");
+            !$debug ? exit(http_response_code(401)) : die("$userInfo Not Authorized");
         }
     }else{
         !$debug ? exit(http_response_code(401)) : die("Not Authorized Due To No Parameters Set");
