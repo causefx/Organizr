@@ -126,7 +126,7 @@ $pageSettings = '
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Logs\');loadSettingsPage(\'api/?v1/settings/settings/logs\',\'#settings-settings-logs\',\'Log Viewer\');" role="presentation" class=""><a href="#settings-settings-logs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-receipt"></i></span><span class="hidden-xs" lang="en"> Logs</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::System Settings::Updates\')" role="presentation" class=""><a href="#settings-settings-updates" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-package"></i></span> <span class="hidden-xs" lang="en">Updates</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::System Settings::Updates\')" role="presentation" class=""><a id="update-button" href="#settings-settings-updates" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-package"></i></span> <span class="hidden-xs" lang="en">Updates</span></a>
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Donate\')" role="presentation" class=""><a href="#settings-settings-donate" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-money"></i></span> <span class="hidden-xs" lang="en">Donate</span></a>
                             </li>

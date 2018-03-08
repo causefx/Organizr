@@ -48,7 +48,8 @@ Temporary Items
 
 # Files from my local computer
 php_errors.log
-
+# Backup Files
+.pydio_id
 # =========================
 # Organizr files
 # =========================
