@@ -1209,7 +1209,7 @@ function buildCategoryEditorItem(array){
 		var tabCount = array.tabs.reduce(function (n, category) {
 		    return n + (category.category_id == v.category_id);
 		}, 0);
-		var disabledDefault = (v.category_id == 0) ? 'disabled' : '';
+		var disabledDefault = (v.default == 1) ? 'disabled' : '';
 		var disabledDelete = (tabCount > 0 || v.default == 1 || v.category_id == 0) ? 'disabled' : '';
 		var defaultIcon = (v.default == 1) ? 'icon-user-following' : 'icon-user-follow';
 		var defaultColor = (v.default == 1) ? 'btn-info disabled' : 'btn-warning';
