@@ -14,7 +14,7 @@ if (isset($_GET['v'])) {
 unset($_POST['a']);
 unset($_POST['k']);
 unset($_POST['v']);
-
+$result = array();
 //Check Key
 if (!isset($key)) {
     $result['error'] = "No API Key Set";

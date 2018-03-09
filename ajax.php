@@ -89,6 +89,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
 				echo nzbgetConnect($_GET['list'] ? $_GET['list'] : die('Error!'));
 				die();
 				break;
+			case 'transmission-update':
+				qualifyUser(TRANSMISSIONHOMEAUTH, true);
+				echo transmissionConnect($_GET['list'] ? $_GET['list'] : die('Error!'));
+				die();
+				break;
 			case 'show-image':
 				qualifyUser(NZBGETHOMEAUTH, true);
 				header('Content-type: image/jpeg');
@@ -113,17 +118,17 @@ switch ($_SERVER['REQUEST_METHOD']) {
 			 	break;
 			case 'validate-invite':
 				$response = inviteCodes("check", $_POST['invitecode']);
-				$response['notify'] = sendResult($response, "check", $_POST['checkurl'], "CODE_SUCCESS", "CODE_ERROR");
+				$response['notify'] = sendResult($response, "check", 'Invite System', "CODE_SUCCESS", "CODE_ERROR");
 				break;
 			case 'use-invite':
 				if(inviteCodes("check", $_POST['invitecode'])){
 					$response = inviteCodes("use", $_POST['invitecode'], $_POST['inviteuser']);
-					$response['notify'] = sendResult(plexUserShare($_POST['inviteuser']), "check", $_POST['checkurl'], "INVITE_SUCCESS", "INVITE_ERROR");
+					$response['notify'] = sendResult(plexUserShare($_POST['inviteuser']), "check", 'Invite System', "INVITE_SUCCESS", "INVITE_ERROR");
 				}
 				break;
 			case 'join-plex':
 				$response = plexJoin($_POST['joinuser'], $_POST['joinemail'], $_POST['joinpassword']);
-				$response['notify'] = sendResult($response, "check", $_POST['checkurl'], "JOIN_SUCCESS", "JOIN_ERROR");
+				$response['notify'] = sendResult($response, "check", 'Invite System', "JOIN_SUCCESS", "JOIN_ERROR");
 				break;
             default: // Stuff that you need admin for
                 qualifyUser('admin', true);

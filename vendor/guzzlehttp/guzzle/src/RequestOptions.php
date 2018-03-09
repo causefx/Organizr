@@ -238,7 +238,18 @@ final class RequestOptions
     const TIMEOUT = 'timeout';
 
     /**
+     * read_timeout: (float, default=default_socket_timeout ini setting) Float describing
+     * the body read timeout, for stream requests.
+     */
+    const READ_TIMEOUT = 'read_timeout';
+
+    /**
      * version: (float) Specifies the HTTP protocol version to attempt to use.
      */
     const VERSION = 'version';
+
+    /**
+     * force_ip_resolve: (bool) Force client to use only ipv4 or ipv6 protocol
+     */
+    const FORCE_IP_RESOLVE = 'force_ip_resolve';
 }

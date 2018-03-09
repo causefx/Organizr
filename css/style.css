@@ -1093,6 +1093,10 @@ body {
   background: #E9585B !important;
 }
 
+.light-gray-bg {
+  background: #808080 !important;
+}
+
 .red-orange-bg {
   background: #e53935 !important;
 }
@@ -1113,11 +1117,11 @@ body {
   background: #37474f !important;
 }
 
-.green-bg, .blue-bg, .yellow-bg, .red-bg, .indigo-bg, .gray-bg, .grayish-blue-bg, .orange-bg, .red-orange-bg, .light-blue-bg {
+.green-bg, .blue-bg, .yellow-bg, .red-bg, .indigo-bg, .gray-bg, .grayish-blue-bg, .orange-bg, .red-orange-bg, .light-blue-bg .light-gray-bg {
   color: #fff !important;
 }
 
-.green-bg .content-tools > a, .blue-bg .content-tools > a, .yellow-bg .content-tools > a, .red-bg .content-tools > a, .indigo-bg .content-tools > a, .gray-bg .content-tools > a, .grayish-blue-bg .content-tools > a, .orange-bg .content-tools > a, .red-orange-bg .content-tools > a, .light-blue-bg .content-tools > a {
+.light-gray-bg .content-tools > a, .green-bg .content-tools > a, .blue-bg .content-tools > a, .yellow-bg .content-tools > a, .red-bg .content-tools > a, .indigo-bg .content-tools > a, .gray-bg .content-tools > a, .grayish-blue-bg .content-tools > a, .orange-bg .content-tools > a, .red-orange-bg .content-tools > a, .light-blue-bg .content-tools > a, .light-gray-bg .content-tools > a {
   color: #fff !important;
 }
 

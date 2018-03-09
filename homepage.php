@@ -122,7 +122,7 @@ foreach(loadAppearance() as $key => $value) {
 			    left: 5px;
 			}
 			.refreshImage span.w-refresh:hover::before {
-				content: "Refresh";
+				/*content: "Refresh";
 			    font-size: 17px;
 			    float: right;
 			    top: 18px;
@@ -131,7 +131,7 @@ foreach(loadAppearance() as $key => $value) {
 			    color: white;
 			    background: black;
 			    border-radius: 5px;
-			    padding: 0px 20px;
+			    padding: 0px 20px;*/
 			}
             .fc-day-grid-event{
                 cursor: pointer;
@@ -197,7 +197,7 @@ foreach(loadAppearance() as $key => $value) {
                 width: 100%;
                 height: 100%;
                 display: none;
-                z-index: 0;
+                z-index: 1;
                 opacity: .98;
             }
             sort {
@@ -469,7 +469,7 @@ foreach(loadAppearance() as $key => $value) {
 				var needsSlick = true;
 				var name = $(this).attr("data-name");
 				if($(this).hasClass('slick-initialized')){
-					console.log('skipping slick addon for: '+name);
+					//console.log('skipping slick addon for: '+name);
 					needsSlick = false;
 				}
 				if(needsSlick === true){
@@ -804,13 +804,14 @@ foreach(loadAppearance() as $key => $value) {
                 grabcursorenabled: false
             });
 
-            <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH))){ ?>
+            <?php if((NZBGETURL != "" && qualifyUser(NZBGETHOMEAUTH)) || (SABNZBDURL != "" && qualifyUser(SABNZBDHOMEAUTH)) || (TRANSMISSIONURL != "" && qualifyUser(TRANSMISSIONHOMEAUTH))){ ?>
             var queueRefresh = <?php echo DOWNLOADREFRESH; ?>;
             var historyRefresh = <?php echo HISTORYREFRESH; ?>; // This really doesn't need to happen that often
 
             var queueLoad = function() {
             <?php if(SABNZBDURL != "") { echo '$("tbody.dl-queue.sabnzbd").load("ajax.php?a=sabnzbd-update&list=queue");'; } ?>
             <?php if(NZBGETURL != "") { echo '$("tbody.dl-queue.nzbget").load("ajax.php?a=nzbget-update&list=listgroups");'; } ?>
+			<?php if(TRANSMISSIONURL != "") { echo '$("tbody.dl-queue.transmission").load("ajax.php?a=transmission-update&list=listgroups");'; } ?>
             };
 
             var historyLoad = function() {
@@ -970,7 +971,7 @@ foreach(loadAppearance() as $key => $value) {
                 $.each( a.cast, function( key, value ) {
                     if( value['profile_path'] ){
                         if (count <= 6){
-                            result += '<div class="col-lg-4 col-xs-4"><div class="zero-m"><img class="pull-left" style="border-radius:10%;margin-left: auto;margin-right: auto;display: block;" height="100px" src="https://image.tmdb.org/t/p/w150'+value['profile_path']+'" alt="profile"><h5 class="text-center"><strong>'+value['name']+'</strong></h5><h6 class="text-center">'+value['character']+'</h6></div></div>';
+                            result += '<div class="col-lg-4 col-xs-4"><div class="zero-m"><img class="pull-left" style="border-radius:10%;margin-left: auto;margin-right: auto;display: block;" height="100px" src="https://image.tmdb.org/t/p/w154'+value['profile_path']+'" alt="profile"><h5 class="text-center"><strong>'+value['name']+'</strong></h5><h6 class="text-center">'+value['character']+'</h6></div></div>';
                             count++;
                         }
                     }

@@ -498,6 +498,15 @@ $themeVersion = (!empty(INSTALLEDTHEME) ? explode("-", INSTALLEDTHEME)[1] : null
 							'color2' => 'palette-Light-Blue-A700 bg',
 							'padding' => '2',
 						),array(
+							'id' => 'open-help',
+							'box' => 'help-box',
+							'name' => 'Help & Chat',
+							'icon_1' => 'help-circle',
+							'icon_2' => 'question-circle',
+							'color' => 'orange',
+							'color2' => 'palette-Light-Blue-900 bg',
+							'padding' => '2',
+						),array(
 							'id' => 'open-donate',
 							'box' => 'donate-box',
 							'name' => 'Donate',
@@ -844,6 +853,10 @@ echo buildSettings(
 				'image' => 'images/gear.png',
 				'fields' => array(
 					array(
+						'type' => 'custom',
+						'html' => '<h2>To Enable, please add new tab with url of homepage.php</h2>',
+					),
+					array(
 						'type' => $userSelectType,
 						'labelTranslate' => 'SHOW_HOMEPAGE',
 						'name' => 'homePageAuthNeeded',
@@ -1172,6 +1185,12 @@ echo buildSettings(
 						'pattern' => '[a-zA-Z0-9]{32}',
 						'value' => SONARRKEY,
 					),
+          array(
+						'type' => 'checkbox',
+						'labelTranslate' => 'SONARR_UNMONITORED',
+						'name' => 'sonarrUnmonitored',
+						'value' => SONARRUNMONITORED,
+					),
 				),
 			),
 			array(
@@ -1371,6 +1390,7 @@ echo buildSettings(
 						'labelTranslate' => 'PASSWORD',
 						'name' => 'nzbgetPassword',
 						'value' => (empty(NZBGETPASSWORD)?'':randString(20)),
+                        'autocomplete' => 'new-password',
 					),
                     array(
 						'type' => $userSelectType,
@@ -1384,6 +1404,49 @@ echo buildSettings(
 						'labelTranslate' => 'HISTORY_REFRESH',
 						'name' => 'historyRefresh',
 						'value' => HISTORYREFRESH,
+						'options' => $refreshSeconds,
+					),
+				),
+			),
+			array(
+				'title' => 'Transmission',
+				'id' => 'transmission',
+				'image' => 'images/transmission.png',
+				'fields' => array(
+					array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'SHOW_ON_HOMEPAGE',
+						'name' => 'transmissionHomeAuth',
+						'value' => TRANSMISSIONHOMEAUTH,
+						'options' => $userTypes,
+					),
+					array(
+						'type' => 'text',
+						'placeholder' => 'http://hostname:6789',
+						'labelTranslate' => 'TRANSMISSION_URL',
+						'assist' => 'http://hostname:6789',
+						'name' => 'transmissionURL',
+						'pattern' => $urlPattern,
+						'value' => TRANSMISSIONURL,
+					),
+					array(
+						'type' => 'text',
+						'labelTranslate' => 'USERNAME',
+						'name' => 'transmissionUsername',
+						'value' => TRANSMISSIONUSERNAME,
+					),
+					array(
+						'type' => 'password',
+						'labelTranslate' => 'PASSWORD',
+						'name' => 'transmissionPassword',
+						'value' => (empty(TRANSMISSIONPASSWORD)?'':randString(20)),
+                        'autocomplete' => 'new-password',
+					),
+                    array(
+						'type' => $userSelectType,
+						'labelTranslate' => 'DOWNLOAD_REFRESH',
+						'name' => 'downloadRefresh',
+						'value' => DOWNLOADREFRESH,
 						'options' => $refreshSeconds,
 					),
 				),
@@ -1681,7 +1744,69 @@ foreach (array_filter(get_defined_functions()['user'],function($v) { return strp
 	}
 }
 ksort($backendOptions);
-
+$emailTemplates = array(
+	array(
+		'type' => 'inputbox',
+		'name' => 'emailTempateLogo',
+		'value' => emailTempateLogo,
+	),
+	array(
+		'type' => 'template',
+		'title' => 'Password Reset',
+        'variables' => array('{user}','{domain}','{fullDomain}','{password}'),
+        'subject' => emailTemplateResetPasswordSubject,
+		'body' => emailTemplateResetPassword,
+        'template' => 'emailTemplateResetPassword',
+	),
+	array(
+		'type' => 'template',
+		'title' => 'New Registration',
+        'variables' => array('{user}','{domain}','{fullDomain}'),
+        'subject' => emailTemplateRegisterUserSubject,
+		'body' => emailTemplateRegisterUser,
+        'template' => 'emailTemplateRegisterUser',
+	),
+    array(
+		'type' => 'template',
+		'title' => 'Invite User',
+        'variables' => array('{user}','{domain}','{fullDomain}','{inviteCode}'),
+        'subject' => emailTemplateInviteUserSubject,
+		'body' => emailTemplateInviteUser,
+        'template' => 'emailTemplateInviteUser',
+	),
+	array(
+		'type' => 'templateCustom',
+		'title' => emailTemplateCustomOneName,
+        'variables' => array('{domain}','{fullDomain}'),
+        'subject' => emailTemplateCustomOneSubject,
+		'body' => emailTemplateCustomOne,
+        'template' => 'emailTemplateCustomOne',
+	),
+	array(
+		'type' => 'templateCustom',
+		'title' => emailTemplateCustomTwoName,
+        'variables' => array('{domain}','{fullDomain}'),
+        'subject' => emailTemplateCustomTwoSubject,
+		'body' => emailTemplateCustomTwo,
+        'template' => 'emailTemplateCustomTwo',
+	),
+	array(
+		'type' => 'templateCustom',
+		'title' => emailTemplateCustomThreeName,
+        'variables' => array('{domain}','{fullDomain}'),
+        'subject' => emailTemplateCustomThreeSubject,
+		'body' => emailTemplateCustomThree,
+        'template' => 'emailTemplateCustomThree',
+	),
+	array(
+		'type' => 'templateCustom',
+		'title' => emailTemplateCustomFourName,
+        'variables' => array('{domain}','{fullDomain}'),
+        'subject' => emailTemplateCustomFourSubject,
+		'body' => emailTemplateCustomFour,
+        'template' => 'emailTemplateCustomFour',
+	),
+);
 echo buildSettings(
 	array(
 		'title' => 'Advanced Settings',
@@ -1781,6 +1906,7 @@ echo buildSettings(
 						'name' => 'plexPassword',
 						'class' => 'be-auth be-auth-plex',
 						'value' => (empty(PLEXPASSWORD)?'':randString(20)),
+						'autocomplete' => 'new-password',
 					),
                     array(
 						'type' => 'text',
@@ -1833,6 +1959,7 @@ echo buildSettings(
 						'labelTranslate' => 'COOKIE_PASSWORD',
 						'name' => 'cookiePassword',
 						'value' => (empty(COOKIEPASSWORD)?'':randString(20)),
+                        'autocomplete' => 'new-password',
 					),
                     array(
 						'type' => 'text',
@@ -1898,6 +2025,7 @@ echo buildSettings(
 						'labelTranslate' => 'SMTP_HOST_PASSWORD',
 						'name' => 'smtpHostPassword',
 						'value' => (empty(SMTPHOSTPASSWORD)?'':randString(20)),
+                        'autocomplete' => 'new-password',
 					),
 					array(
 						'type' => 'text',
@@ -1940,6 +2068,25 @@ echo buildSettings(
 							'labelTranslate' => 'ENABLE_MAIL',
 							'name' => 'enableMail',
 							'value' => ENABLEMAIL,
+						),
+					),
+					array(
+						'type' => 'custom',
+						'html' => '<h2>Custom Mail Options</h2>',
+					),
+					array(
+	                    array(
+							'type' => 'custom',
+							'html' => buildAccordion($emailTemplates),
+						),
+	                    array(
+							'type' => 'textarea',
+							'name' => 'emailTemplateCSS',
+							'value' => emailTemplateCSS,
+	                        'labelTranslate' => 'EDIT_CUSTOM_CSS',
+	                        'placeholder' => 'Please Include <style></style> tags',
+							'rows' => 25,
+							'style' => 'background: #000; color: #FFF;',
 						),
 					),
 				),
@@ -1993,13 +2140,22 @@ echo buildSettings(
 							'Sliding' => 'other-thumbslider',
 						),
 					),
-					array(
-						array(
+                    array(
+                        array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'ENABLE_SPLASH_SCREEN',
 							'name' => 'splash',
 							'value' => SPLASH,
 						),
+                        array(
+    						'type' => $userSelectType,
+    						'labelTranslate' => 'MINIMUM_SPLASH_ACCESS',
+    						'name' => 'splashAuth',
+    						'value' => SPLASHAUTH,
+    						'options' => $userTypes,
+    					),
+                    ),
+					array(
 						array(
 							'type' => 'checkbox',
 							'labelTranslate' => 'ENABLE_LOADING_SCREEN',
@@ -2112,7 +2268,7 @@ echo buildSettings(
                                 <div class="small-box fade in" id="donate-org">
                                     <div class="row">
                                         <div class="col-lg-12">
-                                            <div class="big-box">
+
                                                 <div class="jumbotron">
                                                     <div class="container">
                                                         <h2><strong>Hey There <em class="gray"><?php echo ucwords($USER->username);?></em>,</strong></h2>
@@ -2124,11 +2280,11 @@ echo buildSettings(
                                                         <p class="pull-right"><i class="fa fa-heart fa-1x red loop-animation animated pulse" aria-hidden="true"></i> CauseFX</p>
                                                     </div>
                                                 </div>
-                                            </div>
+
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-4 col-lg-4">
+                                        <div class="col-sm-6 col-lg-6">
                                             <div class="content-box ultra-widget blue-bg" style="cursor: pointer;" onclick="window.open('https://paypal.me/causefx', '_blank')">
                                                 <div class="w-content big-box">
                                                     <div class="w-progress">
@@ -2144,8 +2300,6 @@ echo buildSettings(
                                                     </span>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-sm-4 col-lg-4">
                                             <div class="content-box ultra-widget green-bg" style="cursor: pointer;" onclick="window.open('https://cash.me/$causefx', '_blank')">
                                                 <div class="w-content big-box">
                                                     <div class="w-progress">
@@ -2161,12 +2315,11 @@ echo buildSettings(
                                                     </span>
                                                 </div>
                                             </div>
-                                        </div>
-										 <div class="col-sm-4 col-lg-4">
                                             <div class="content-box ultra-widget red-bg">
                                                 <div class="w-content big-box">
                                                     <div class="w-progress">
                                                         <span class="w-amount">BitCoin</span>
+                                                        <br>
                                                         <small class="text-uppercase">1JLWKsSgDDKdnLjPWbnxfQmCxi8uUohzVv</small>
                                                     </div>
                                                     <span class="w-refresh w-p-icon">
@@ -2177,7 +2330,26 @@ echo buildSettings(
                                                     </span>
                                                 </div>
                                             </div>
+										</div>
+                                        <div class="col-sm-6 col-lg-6">
+                                            <div class="jumbotron">
+                                                <div class="container">
+                                                    <h2><strong>Want to become an  <em class="gray">ORGANIZR</em> Patreon?</strong></h2>
+                                                    <small>By becoming a Patreon, you will get some perks on Discord as well as other things...</small>
+                                                    <br/><br/>
+                                                    <small>Some of the perks are:</small>
+                                                    <br/><br/>
+                                                    <ul>
+                                                        <li>One on One RDP Sessions</li>
+                                                        <li>Help with Custom CSS</li>
+                                                        <li>Feature Request Priority</li>
+                                                        <li>And more..</li>
+                                                    </ul>
+                                                    <p class="pull-right"><a class="btn btn-default" target='_blank' href="https://www.patreon.com/organizr"><i class="fa fa-hand-o-right fa-1x red loop-animation animated pulse" aria-hidden="true"></i> Become Patreon</a></p>
+                                                </div>
+                                            </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -2196,7 +2368,7 @@ echo buildSettings(
                                     <div class="row">
                                         <div class="col-lg-2">
                                             <div class="content-box profile-sidebar box-shadow">
-                                                <img src="images/organizr-logo-h-d.png" width="100%" style="margin-top: -10px;">
+                                                <img src="images/layercake.png" width="50%" style="margin-top: -10px; margin-bottom: 10px;">
                                                 <div class="profile-usermenu">
                                                     <ul class="nav" id="theme-list"></ul>
                                                 </div>
@@ -2226,26 +2398,39 @@ echo buildSettings(
                                 <div class="small-box fade in">
 
 
-                                        <div class="mail-header">
-                                            <p>
-                                                <button class="btn btn-success waves generateEmails">Choose Users</button>
-                                                <button id="selectAllEmail" style="display: none;" class="btn btn-success waves">Select All</button>
-                                            </p>
-                                            <div style="display: none;"class="form-group" id="emailSelect">
-                                            <select multiple="true" size="10" id="email-users" class="form-control"></select>
-                                            </div>
-                                            <div class="form-group">
-                                                <input type="text" class="form-control material" id="mailTo" placeholder="To">
-                                            </div>
-                                            <div class="form-group">
-                                                <input type="text" class="form-control material" id="subject" placeholder="Subject">
-                                            </div>
+                                    <div class="mail-header">
+                                        <div class="sort-todo">
+                                            <button class="btn btn-success btn-labeled waves btn-sm text-uppercase waves-effect waves-float generateEmails">
+												<span class="btn-label"><i class="fa fa-users"></i></span><span class="btn-text">Choose Users</span>
+											</button>
+                                            <button id="selectAllEmail" style="display: none;" class="btn btn-success btn-labeled waves btn-sm text-uppercase waves-effect waves-float">
+												<span class="btn-label"><i class="fa fa-users"></i></span><span class="btn-text">Select All</span>
+											</button>
+											<button id="sendEmail" class="btn btn-success btn-labeled waves btn-sm text-uppercase waves-effect waves-float pull-right">
+												<span class="btn-label"><i class="fa fa-paper-plane"></i></span><span class="btn-text">Send</span>
+											</button>
+											<div class="btn-group">
+												<button id="emailCustom" type="button" class="btn waves btn-labeled btn-dark btn-sm text-uppercase waves-effect waves-float dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="btn-label"><i class="fa fa-envelope"></i></span><span class="btn-text">Custom Email Templates</span></button>
+												<ul class="dropdown-menu">
+													<li class="dropdown-header">Choose a Template Below</li>
+													<li><a onclick="customEmail('one');" href="#"><?php echo emailTemplateCustomOneName; ?></a></li>
+													<li><a onclick="customEmail('two');" href="#"><?php echo emailTemplateCustomTwoName; ?></a></li>
+													<li><a onclick="customEmail('three');" href="#"><?php echo emailTemplateCustomThreeName; ?></a></li>
+													<li><a onclick="customEmail('four');" href="#"><?php echo emailTemplateCustomFourName; ?></a></li>
+												</ul>
+											</div>
                                         </div>
-
-                                        <div class="summernote"></div>
-                                        <button id="sendEmail" class="btn btn-success waves">Send</button>
-
-
+                                        <div style="display: none;"class="form-group" id="emailSelect">
+                                        <select multiple="true" size="10" id="email-users" class="form-control"></select>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control material" id="mailTo" placeholder="To">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control material" id="subject" placeholder="Subject">
+                                        </div>
+                                    </div>
+                                    <div class="summernote"></div>
                             	</div>
                         	</div>
                     	</div>
@@ -2288,6 +2473,23 @@ echo buildSettings(
                                         </table>
                                     </div>
                                     <?php } ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="email-content help-box white-bg">
+                    <div class="email-body">
+                        <div class="email-header gray-bg">
+                            <button type="button" class="btn btn-danger btn-sm waves close-button"><i class="fa fa-close"></i></button>
+                            <h1>Help & Chat</h1>
+                        </div>
+                        <div class="email-inner small-box">
+                            <div class="email-inner-section">
+                                <div class="small-box fade in">
+
+                                    <embed style="height:calc(100vh - 100px);width:calc(100%)" src='https://titanembeds.com/embed/374648602632388610' />
+
                                 </div>
                             </div>
                         </div>
@@ -3586,6 +3788,16 @@ echo buildSettings(
                     emailtype: $('#smtpHostType_id').val(),
                     emailauth: $('#smtpHostAuth_id').attr("data-value"),
                 });
+				console.log(
+					'TO: <?php echo $USER->email;?>\n'+
+					'HOST: '+$('#smtpHost_id').val()+'\n'+
+					'PORT: '+$('#smtpHostPort_id').val()+'\n'+
+					'USERNAME: '+$('#smtpHostUsername_id').val()+'\n'+
+					'SENDER NAME: '+$('#smtpHostSenderName_id').val()+'\n'+
+					'SENDER EMAIL: '+$('#smtpHostSenderEmail_id').val()+'\n'+
+					'TYPE: '+$('#smtpHostType_id').val()+'\n'+
+					'AUTH: '+$('#smtpHostAuth_id').attr("data-value")+'\n'
+				);
                 console.log("ajax done");
             });
             //Custom Themes
@@ -3823,7 +4035,7 @@ echo buildSettings(
                 }
             });
 
-            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites , #open-themes, #open-speedtest, #open-email").on("click",function (e) {
+            $("#open-info, #open-users, #open-logs, #open-advanced, #open-homepage, #open-colors, #open-tabs, #open-donate, #open-invites , #open-themes, #open-speedtest, #open-email, #open-help").on("click",function (e) {
                 $(".email-content").removeClass("email-active");
                 $('html').removeClass("overhid");
                 if($(window).width() < 768){
@@ -3853,6 +4065,26 @@ echo buildSettings(
                 },600);
                 e.preventDefault();
             });
+
+			function customEmail(id){
+				if(id == 'one'){
+					var Body = <?php echo json_encode(emailTemplateCustomOne); ?>;
+					var Subject = <?php echo json_encode(emailTemplateCustomOneSubject); ?>;
+				}else if(id == 'two'){
+					var Body = <?php echo json_encode(emailTemplateCustomTwo); ?>;
+					var Subject = <?php echo json_encode(emailTemplateCustomTwoSubject); ?>;
+				}else if(id == 'three'){
+					var Body = <?php echo json_encode(emailTemplateCustomThree); ?>;
+					var Subject = <?php echo json_encode(emailTemplateCustomThreeSubject); ?>;
+				}else if(id == 'four'){
+					var Body = <?php echo json_encode(emailTemplateCustomFour); ?>;
+					var Subject = <?php echo json_encode(emailTemplateCustomFourSubject); ?>;
+				}
+				console.log(Body);
+				console.log(Subject);
+				$('#subject').val(Subject);
+				$('.email-box .note-editable.panel-body').html(Body);
+			}
 
             function checkGithub() {
                 $.ajax({
