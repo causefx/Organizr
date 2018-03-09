@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.7');
+ define('INSTALLEDVERSION', '1.75');
 // ===================================
 $debugOrganizr = true;
 if($debugOrganizr == true && file_exists('debug.php')){ require_once('debug.php'); }
@@ -3236,7 +3236,8 @@ function getSonarrCalendar($array){
         if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
 
         $downloaded = $child['hasFile'];
-        if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "light-blue-bg"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
+        $monitored = $child['monitored'];
+        if($downloaded == "0" && isset($unaired) && $episodePremier == "true"){ $downloaded = "light-blue-bg"; }elseif(isset($unaired) && $monitored == "0"){ $downloaded = "light-gray-bg"; }elseif($downloaded == "0" && isset($unaired)){ $downloaded = "indigo-bg"; }elseif($downloaded == "1"){ $downloaded = "green-bg";}else{ $downloaded = "red-bg"; }
 
         //$gotCalendar .= "{ title: \"$seriesName\", start: \"$episodeAirDate\", className: \"$downloaded tvID--$episodeID\", imagetype: \"tv\" }, \n";
 		array_push($gotCalendar, array(
@@ -4267,8 +4268,9 @@ function getCalendar(){
 	$calendarItems = array();
 	if (SONARRURL != "" && qualifyUser(SONARRHOMEAUTH)){
 		try {
-			$sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate));
-			if(!empty($sonarrCalendar)) { $calendarItems = array_merge($calendarItems, $sonarrCalendar); }
+			$sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate, SONARRUNMONITORED));
+			if(!empty($sonarrCalendar)) { $calendarItems = array_merge($calendarItems, $sonarrCalendar); 
+      }
 		} catch (Exception $e) {
 			writeLog("error", "SONARR ERROR: ".strip($e->getMessage()));
 		}
