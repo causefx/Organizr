@@ -65,6 +65,9 @@ $(document).ready(function () {
     $(this).keypress(function (e) {
         idleTime = 0;
     });
+    myLazyLoad = new LazyLoad({
+        elements_selector: ".lazyload"
+    });
 });
 function pageLoad(){
 	"use strict";
@@ -74,8 +77,10 @@ function pageLoad(){
             $("#preloader").fadeOut();
         }
         //lazyload();
-        let lazy = lazyload();
-        lazy = '';
+        //let lazy = lazyload();
+        //lazy = '';
+        //$(".lazyload").lazyload();
+        myLazyLoad.update();
     });
 
 
