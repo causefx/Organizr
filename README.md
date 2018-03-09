@@ -56,4 +56,8 @@ Do you have quite a bit of services running on your computer or server?  Do you 
 Thanks to everyone that helped!  
 Special Shout-out to: [Cerothen](https://github.com/Cerothen) & [elmerfdz](https://github.com/elmerfdz) & [pyrostic](https://github.com/pyrostic) & [rix1337](https://github.com/rix1337)
 
+### Sponsors ###
+<p align="center"><a href="https://www.browserstack.com"><img src="https://avatars2.githubusercontent.com/u/1119453?s=200&v=4g"></a></p>
+<p align="center"><a href="https://www.browserstack.com">BrowserStack</a> for allowing us to use their platform for testing</p>
+
 Theme Distributed with Extended License from Creative Market
