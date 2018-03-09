@@ -971,7 +971,7 @@ foreach(loadAppearance() as $key => $value) {
                 $.each( a.cast, function( key, value ) {
                     if( value['profile_path'] ){
                         if (count <= 6){
-                            result += '<div class="col-lg-4 col-xs-4"><div class="zero-m"><img class="pull-left" style="border-radius:10%;margin-left: auto;margin-right: auto;display: block;" height="100px" src="https://image.tmdb.org/t/p/w150'+value['profile_path']+'" alt="profile"><h5 class="text-center"><strong>'+value['name']+'</strong></h5><h6 class="text-center">'+value['character']+'</h6></div></div>';
+                            result += '<div class="col-lg-4 col-xs-4"><div class="zero-m"><img class="pull-left" style="border-radius:10%;margin-left: auto;margin-right: auto;display: block;" height="100px" src="https://image.tmdb.org/t/p/w154'+value['profile_path']+'" alt="profile"><h5 class="text-center"><strong>'+value['name']+'</strong></h5><h6 class="text-center">'+value['character']+'</h6></div></div>';
                             count++;
                         }
                     }
