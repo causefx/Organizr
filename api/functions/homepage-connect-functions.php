@@ -303,7 +303,7 @@ function resolvePlexItem($item) {
             $plexItem['thumb'] = (string)$item['thumb'];
             $plexItem['key'] = (string)$item['ratingKey'] . "-list";
 			$plexItem['nowPlayingThumb'] = ($item['parentThumb']) ? (string)$item['parentThumb'] :  (string)$item['art'];
-            $plexItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
+            $plexItem['nowPlayingKey'] = (string)$item['parentRatingKey'] . "-np";
             $plexItem['nowPlayingTitle'] = (string)$item['grandparentTitle'].' - '.(string)$item['title'];
             $plexItem['nowPlayingBottom'] = (string)$item['parentTitle'];
             $plexItem['metadataKey'] = isset($item['grandparentRatingKey']) ? (string)$item['grandparentRatingKey'] : (string)$item['parentRatingKey'];

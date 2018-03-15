@@ -2372,7 +2372,7 @@ function buildMetadata(array, source){
 		var hasGenre = (typeof v.metadata.genres !== 'string') ? true : false;
 		if(hasActor){
 			$.each(v.metadata.actors, function(i,v) {
-				actors += '<div class="item lazyload recent-poster" data-src="'+v.thumb+'" alt="'+v.name+'" ><span class="elip recent-title p-5">'+v.name+'<br><small class="font-light">'+v.role+'</small></span></div>';
+				actors += '<div class="item lazyload recent-poster" data-src="'+(v.thumb.replace("http://", "https://"))+'" alt="'+v.name+'" ><span class="elip recent-title p-5">'+v.name+'<br><small class="font-light">'+v.role+'</small></span></div>';
 			});
 		}
 		if(hasGenre){
