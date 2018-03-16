@@ -2009,8 +2009,8 @@ function buildRecent(array, type){
 	                        <li><a data-filter="all" href="javascript:void(0);">All</a></li>
 							<li class="divider"></li>
 	                        <li><a data-filter="recent-movie" href="javascript:void(0);">Movies</a></li>
-	                        <li><a data-filter="recent-tv" href="javascript:void(0);">Shows</a></li>
-	                        <li><a data-filter="recent-video" href="javascript:void(0);">Shows</a></li>
+	                        <li><a data-filter="recent-tv" href="javascript:void(0);">TV</a></li>
+	                        <!--<li><a data-filter="recent-video" href="javascript:void(0);">Videos</a></li>-->
 	                        <!--<li><a data-filter="recent-music" href="javascript:void(0);">Music</a></li>-->
 	                    </ul>
 	                </div>
