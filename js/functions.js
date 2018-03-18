@@ -1797,6 +1797,14 @@ function errorPage(error=null){
 			local('set','error',urlParams.get('error'));
 		}
 	}
+	if ( window.location !== window.parent.location ) {
+		var iframeError = local('get', 'error');
+		parent.errorPage(iframeError);
+		console.log(iframeError);
+		console.log('iframe error page');
+		$('html').html('');
+	  	return false;
+	}
 	if(local('get', 'error')){
 		//show error page
 		$('.error-page').html(buildErrorPage(local('get', 'error')));
