@@ -1989,7 +1989,7 @@ function buildStream(array, type){
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay">
 		    <div class="col-md-12">
-		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Stream(s): </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-5">`+streams+`</span></h4>
+		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Streams: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-5">`+streams+`</span></h4>
 		        <hr>
 		    </div>
 			<div class="clearfix"></div>
