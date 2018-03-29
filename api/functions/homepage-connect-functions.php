@@ -171,7 +171,7 @@ function resolveEmbyItem($itemDetails) {
     $embyItem['state'] = ((@(string)$itemDetails['PlayState']['IsPaused'] == '1') ? "pause" : "play");
     $embyItem['user'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth']) ) ? @(string)$itemDetails['UserName'] : "";
     $embyItem['userThumb'] = '';
-    $embyItem['userAddress'] = "x.x.x.x";
+    $embyItem['userAddress'] = (isset($itemDetails['RemoteEndPoint']) ? $itemDetails['RemoteEndPoint'] : "x.x.x.x");
     $embyItem['address'] = $GLOBALS['embyTabURL'] ? '' : '';
     $embyItem['nowPlayingOriginalImage'] = 'api/?v1/image&source=emby&type='.$embyItem['nowPlayingImageType'].'&img='.$embyItem['nowPlayingThumb'].'&height='.$nowPlayingHeight.'&width='.$nowPlayingWidth.'&key='.$embyItem['nowPlayingKey'].'$'.randString();
     $embyItem['originalImage'] = 'api/?v1/image&source=emby&type='.$embyItem['imageType'].'&img='.$embyItem['thumb'].'&height='.$height.'&width='.$width.'&key='.$embyItem['key'].'$'.randString();
