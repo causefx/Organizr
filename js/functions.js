@@ -2014,7 +2014,7 @@ function buildRecent(array, type){
 							<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
 						</button>
 	                    <ul role="menu" class="dropdown-menu recent-filter">
-	                        <li><a data-filter="all" href="javascript:void(0);">All</a></li>
+	                        <li><a data-filter="all" server-filter="`+type+`" href="javascript:void(0);">All</a></li>
 							<li class="divider"></li>
 	                        <li><a data-filter="recent-movie" server-filter="`+type+`" href="javascript:void(0);">Movies</a></li>
 	                        <li><a data-filter="recent-tv" server-filter="`+type+`" href="javascript:void(0);">Shows</a></li>
