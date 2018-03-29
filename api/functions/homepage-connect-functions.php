@@ -722,7 +722,7 @@ function getCalendar(){
             foreach ($radarrs as $key => $value) {
                 try {
                     $radarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-                    $radarrCalendar = getRadarrCalendar($radarr->getCalendar($startDate, $endDate),$key);
+                    $radarrCalendar = getRadarrCalendar($radarr->getCalendar($startDate, $endDate),$key,$value['url']);
                 } catch (Exception $e) {
                     writeLog('error', 'Radarr Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
                 }
@@ -805,21 +805,22 @@ function getSonarrCalendar($array,$number){
                 $fanart = $image['url'];
             }
         }
+        $bottomTitle = 'S' . sprintf("%02d", $child['seasonNumber']) . 'E' . sprintf("%02d", $child['episodeNumber']) . ' - ' . $child['title'];
         $details = array(
                 "seasonCount" => $child['series']['seasonCount'],
                 "status" => $child['series']['status'],
-                "seasonNumber" => $child['seasonNumber'],
-                "episodeNumber" => $child['episodeNumber'],
-                "episodeTitle" => $child['title'],
+                "topTitle" => $seriesName,
+                "bottomTitle" => $bottomTitle,
                 "overview" => $child['overview'],
-                "fanart" => $fanart,
-                "seriesRating" => $child['series']['ratings']['value'],
+                "runtime" => $child['series']['runtime'],
+                "image" => $fanart,
+                "ratings" => $child['series']['ratings']['value'],
                 "videoQuality" => $child["hasFile"] ? $child['episodeFile']['quality']['quality']['name'] : "unknown",
                 "audioChannels" => $child["hasFile"] ? $child['episodeFile']['mediaInfo']['audioChannels'] : "unknown",
                 "audioCodec" => $child["hasFile"] ? $child['episodeFile']['mediaInfo']['audioCodec'] : "unknown",
                 "videoCodec" => $child["hasFile"] ? $child['episodeFile']['mediaInfo']['videoCodec'] : "unknown",
                 "size" => $child["hasFile"] ? $child['episodeFile']['size'] : "unknown",
-                "genres" => $child['series']['genres']
+                "genres" => $child['series']['genres'],
             );
         array_push($gotCalendar, array(
             "id" => "Sonarr-".$number."-".$i,
@@ -832,7 +833,7 @@ function getSonarrCalendar($array,$number){
     }
     if ($i != 0){ return $gotCalendar; }
 }
-function getRadarrCalendar($array,$number){
+function getRadarrCalendar($array,$number, $url){
     $array = json_decode($array, true);
     $gotCalendar = array();
     $i = 0;
@@ -848,12 +849,49 @@ function getRadarrCalendar($array,$number){
             if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
             $downloaded = $child['hasFile'];
             if($downloaded == "0" && $notReleased == "true"){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success"; }else{ $downloaded = "text-danger"; }
+            $banner = "/plugins/images/cache/no-np.png";
+            foreach ($child['images'] as $image) {
+                if($image['coverType'] == "banner") {
+                    $url = rtrim($url, '/'); //remove trailing slash
+                    $imageUrl = $image['url'];
+                    $urlParts = explode("/", $url);
+                    $imageParts = explode("/", $image['url']);
+
+                    if ($imageParts[1] == end($urlParts)) {
+                        unset($imageParts[1]);
+                        $imageUrl = implode("/", $imageParts);
+                    }
+
+                    $banner = $url . $imageUrl;
+                }
+            }
+            $alternativeTitles = "";
+            foreach ($child['alternativeTitles'] as $alternative) {
+                $alternativeTitles .= $alternative['title'] + ', ';
+            }
+            $alternativeTitles = empty($child['alternativeTitles']) ? "" : substr($alternativeTitles, 0, -2);
+            $details = array(
+                    "topTitle" => $movieName,
+                    "bottomTitle" => $alternativeTitles,
+                    "status" => $child['status'],
+                    "overview" => $child['overview'],
+                    "runtime" => $child['runtime'],
+                    "image" => $banner,
+                    "ratings" => $child['ratings']['value'],
+                    "videoQuality" => $child["hasFile"] ? $child['movieFile']['quality']['quality']['name'] : "unknown",
+                    "audioChannels" => $child["hasFile"] ? $child['movieFile']['mediaInfo']['audioChannels'] : "unknown",
+                    "audioCodec" => $child["hasFile"] ? $child['movieFile']['mediaInfo']['audioFormat'] : "unknown",
+                    "videoCodec" => $child["hasFile"] ? $child['movieFile']['mediaInfo']['videoCodec'] : "unknown",
+                    "size" => $child["hasFile"] ? $child['movieFile']['size'] : "unknown",
+                    "genres" => $child['genres'],
+                );
             array_push($gotCalendar, array(
                 "id" => "Radarr-".$number."-".$i,
                 "title" => $movieName,
                 "start" => $physicalRelease,
                 "className" => "bg-calendar movieID--".$movieID,
                 "imagetype" => "film ".$downloaded,
+                "details" => $details
             ));
         }
     }
