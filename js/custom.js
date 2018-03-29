@@ -12,7 +12,7 @@ $(document).ready(function () {
         message('Clipboard',e.text,'bottom-right','#FFF','info','5000');
         e.clearSelection();
     });
-	"use strict";
+    "use strict";
     var body = $("body");
     $(function () {
         //$("#preloader").fadeOut();
@@ -70,7 +70,7 @@ $(document).ready(function () {
     });
 });
 function pageLoad(){
-	"use strict";
+    "use strict";
     //Start Organizr
     $(function () {
         if($('#preloader:visible').length == 1){
@@ -1009,7 +1009,7 @@ $(document).on("click", ".changeDefaultCategory", function () {
 });
 // CHANGE CUSTOMIZE Options
 $(document).on('change asColorPicker::clear asColorPicker::close', '#customize-appearance-form :input', function(e) {
-	$(this).attr('data-changed', true);
+    $(this).attr('data-changed', true);
     switch ($(this).attr('type')) {
         case 'switch':
         case 'checkbox':
@@ -1018,7 +1018,7 @@ $(document).on('change asColorPicker::clear asColorPicker::close', '#customize-a
         default:
             var value = $(this).val();
     }
-	var post = {
+    var post = {
         action:'editCustomizeAppearance',
         api:'api/?v1/settings/customize/appearance',
         name:$(this).attr("name"),
@@ -1029,13 +1029,13 @@ $(document).on('change asColorPicker::clear asColorPicker::close', '#customize-a
     };
     console.log(post);
     $('#customize-appearance-reload').removeClass('hidden');
-	var callbacks = $.Callbacks();
+    var callbacks = $.Callbacks();
     //callbacks.add( buildCustomizeAppearance );
     settingsAPI(post,callbacks);
     if($(this).hasClass('themeChanger')){
         changeTheme(value);
     }
-	if($(this).hasClass('styleChanger')){
+    if($(this).hasClass('styleChanger')){
         changeStyle(value);
     }
 
@@ -1076,7 +1076,7 @@ $(document).on("click", ".reload", function () {
 });
 // ENABLE PLUGIN
 $(document).on('click', '.enablePlugin', function() {
-	var post = {
+    var post = {
         action:'enable',
         api:'api/?v1/settings/plugins/list',
         name:$(this).attr('data-plugin-name'),
@@ -1086,7 +1086,7 @@ $(document).on('click', '.enablePlugin', function() {
         error:'Organizr Function: API Connection Failed'
     };
     //$('#customize-appearance-reload').removeClass('hidden');
-	var callbacks = $.Callbacks();
+    var callbacks = $.Callbacks();
     //callbacks.add( buildCustomizeAppearance );
     settingsAPI(post,callbacks);
     ajaxloader(".content-wrap","in");
@@ -1118,7 +1118,7 @@ $(document).on('click', '.disablePlugin', function() {
                 error:'Organizr Function: API Connection Failed'
             };
             //$('#customize-appearance-reload').removeClass('hidden');
-        	var callbacks = $.Callbacks();
+            var callbacks = $.Callbacks();
             //callbacks.add( buildCustomizeAppearance );
             settingsAPI(post,callbacks);
             ajaxloader(".content-wrap","in");
@@ -1138,7 +1138,7 @@ $(document).on('change asColorPicker::close', '#sso-form :input', function(e) {
         default:
             var value = $(this).val();
     }
-	var post = {
+    var post = {
         api:'api/?v1/update/config',
         name:$(this).attr("name"),
         type:$(this).attr("data-type"),
@@ -1147,7 +1147,7 @@ $(document).on('change asColorPicker::close', '#sso-form :input', function(e) {
         messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
         error:'Organizr Function: API Connection Failed'
     };
-	var callbacks = $.Callbacks();
+    var callbacks = $.Callbacks();
     //callbacks.add( buildCustomizeAppearance );
     settingsAPI(post,callbacks);
     //disable button then renable
@@ -1171,7 +1171,7 @@ $(document).on('change asColorPicker::close', '#settings-main-form :input', func
         default:
             var value = $(this).val();
     }
-	var post = {
+    var post = {
         api:'api/?v1/update/config',
         name:$(this).attr("name"),
         type:$(this).attr("data-type"),
@@ -1180,7 +1180,7 @@ $(document).on('change asColorPicker::close', '#settings-main-form :input', func
         messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
         error:'Organizr Function: API Connection Failed'
     };
-	var callbacks = $.Callbacks();
+    var callbacks = $.Callbacks();
     //callbacks.add( buildCustomizeAppearance );
     settingsAPI(post,callbacks);
     //disable button then renable
@@ -1401,7 +1401,7 @@ $(document).on('change asColorPicker::close', '.homepageForm :input', function(e
         default:
             var value = $(this).val();
     }
-	var post = {
+    var post = {
         api:'api/?v1/update/config',
         name:$(this).attr("name"),
         type:$(this).attr("data-type"),
@@ -1410,7 +1410,7 @@ $(document).on('change asColorPicker::close', '.homepageForm :input', function(e
         messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
         error:'Organizr Function: API Connection Failed'
     };
-	var callbacks = $.Callbacks();
+    var callbacks = $.Callbacks();
     //callbacks.add( buildCustomizeAppearance );
     settingsAPI(post,callbacks);
     //disable button then renable
@@ -1439,66 +1439,67 @@ $(document).on({
 // recent filter
 $(document).on("click", ".recent-filter li>a", function () {
     var filter = $(this).attr('data-filter');
-    console.log(filter);
+    var type = $(this).attr('server-filter'); //plex or emby
+    //console.log(filter);
     if(filter == 'all'){
-        $('.plex-recent').find('.recent-item').parent().removeClass('hidden');
+        $('.'+type+'-recent').find('.recent-item').parent().removeClass('hidden');
     }else{
-        $('.plex-recent').find('.recent-item').parent().removeClass('hidden');
-        $('.plex-recent').find('.recent-item:not(.'+ filter + ')').parent().addClass('hidden');
+        $('.'+type+'-recent').find('.recent-item').parent().removeClass('hidden');
+        $('.'+type+'-recent').find('.recent-item:not(.'+ filter + ')').parent().addClass('hidden');
     }
 
 });
 // refresh cache image
 $(document).on("click", ".refreshImage", function(e) {
-	message('',' Refreshing Image...','bottom-right','#FFF','success','1000');
-	e.preventDefault;
-	var orginalElement = $(this).parent().parent().parent().parent().find('.imageSource');
+    message('',' Refreshing Image...','bottom-right','#FFF','success','1000');
+    e.preventDefault;
+    var orginalElement = $(this).parent().parent().parent().parent().find('.imageSource');
     //console.log(orginalElement)
-	var original = $(this).attr('data-image');
-	orginalElement.attr('src', original);
-	//console.log('replaced image with : '+original);
-	setTimeout(function(){
+    var original = $(this).attr('data-image');
+    orginalElement.attr('src', original);
+    //console.log('replaced image with : '+original);
+    setTimeout(function(){
         message('Image Refreshed ',' Clear Cache Please','bottom-right','#FFF','success','3000');
-	}, 1000);
+    }, 1000);
 });
 // open tab code
 $(document).on("click", ".openTab", function(e) {
     if($(this).attr("data-open-tab") === "true") {
         var tabName = $(this).attr("data-tab-name");
-		var container = $("#container-"+tabName);
-		var activeFrame = container.children('iframe');
-		if(activeFrame.length === 1){
-			$('#menu-'+tabName+' a').trigger("click");
+        var container = $("#container-"+tabName);
+        var activeFrame = container.children('iframe');
+        if(activeFrame.length === 1){
+            $('#menu-'+tabName+' a').trigger("click");
             activeFrame.attr("src", $(this).attr("data-url"));
-		}else{
+        }else{
             container.attr("data-url", $(this).attr("data-url"));
             $('#menu-'+tabName+' a').trigger("click");
-		}
-	}else{
+        }
+    }else{
         var source = $(this).attr("data-url");
-		window.open(source, '_blank');
-	}
+        window.open(source, '_blank');
+    }
 });
 // metadata start
 $(document).on("click", ".metadata-get", function(e) {
     var key = $(this).attr('data-key');
-	var uid = $(this).attr('data-uid');
+    var uid = $(this).attr('data-uid');
     var source = $(this).attr('data-source');
-	switch (source) {
-		case 'plex':
-			var action = 'getPlexMetadata';
-			break;
-		case 'emby':
+    switch (source) {
+        case 'plex':
+            var action = 'getPlexMetadata';
+            break;
+        case 'emby':
             var action = 'getEmbyMetadata';
-			break;
-		default:
+            break;
+        default:
 
-	}
+    }
     ajaxloader(".content-wrap","in");
-	organizrAPI('POST','api/?v1/homepage/connect',{action:action, key:key}).success(function(data) {
-		var response = JSON.parse(data);
+    organizrAPI('POST','api/?v1/homepage/connect',{action:action, key:key}).success(function(data) {
+        var response = JSON.parse(data);
         $('.'+uid+'-metadata-info').html('');
-		$('.'+uid+'-metadata-info').html(buildMetadata(response.data, source));
+        $('.'+uid+'-metadata-info').html(buildMetadata(response.data, source));
         $('.'+uid).trigger('click');
         $(".metadata-actors").owlCarousel({
             autoplay: true,
@@ -1544,10 +1545,10 @@ $(document).on("click", ".metadata-get", function(e) {
                 }
             }
         });
-	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
-	});
-	ajaxloader();
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    ajaxloader();
 
 });
 // sab play/resume
@@ -1559,14 +1560,14 @@ $(document).on("click", ".downloader", function(e) {
     //console.log(source);
     //console.log(target);
     ajaxloader(".content-wrap","in");
-	organizrAPI('POST','api/?v1/downloader',{action:action, source:source, target:target}).success(function(data) {
-		var response = JSON.parse(data);
+    organizrAPI('POST','api/?v1/downloader',{action:action, source:source, target:target}).success(function(data) {
+        var response = JSON.parse(data);
         //console.log(response);
-		homepageDownloader(source);
-	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
-	});
-	ajaxloader();
+        homepageDownloader(source);
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    ajaxloader();
 
 });
 // purge log
