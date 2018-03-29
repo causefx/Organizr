@@ -593,7 +593,7 @@ function getImages(){
     $dirname = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'tabs'.DIRECTORY_SEPARATOR;
     $path = 'plugins/images/tabs/';
     $images = scandir($dirname);
-    $ignore = Array(".", "..", "._.DS_Store", ".DS_Store");
+    $ignore = Array(".", "..", "._.DS_Store", ".DS_Store", ".pydio_id");
     $allIcons = array();
     foreach($images as $image){
         if(!in_array($image, $ignore)) {

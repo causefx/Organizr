@@ -120,7 +120,7 @@
 	<script src="js/jquery-lang.js"></script>
 	<script src="js/jquery-ui.min.js"></script>
 	<script src="js/jquery.serializeToJSON.js"></script>
-	<script src="js/lazyload.min.js"></script>
+	<script src="js/lazyload.min2.js"></script>
 	<script src="js/clipboard.js"></script>
 	<script src="js/emulatetab.joelpurra.js"></script>
 	<script src="plugins/bower_components/blockUI/jquery.blockUI.js"></script>

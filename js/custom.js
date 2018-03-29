@@ -65,135 +65,24 @@ $(document).ready(function () {
     $(this).keypress(function (e) {
         idleTime = 0;
     });
+    myLazyLoad = new LazyLoad({
+        elements_selector: ".lazyload"
+    });
 });
 function pageLoad(){
 	"use strict";
     //Start Organizr
     $(function () {
-        $('#side-menu').metisMenu();
         if($('#preloader:visible').length == 1){
             $("#preloader").fadeOut();
         }
-        lazyload();
-    });
-    $(".colorpicker").asColorPicker({
-        mode: 'complex',
-        color: {
-            format: false,
-            alphaConvert: false
-        }
-    });
-    $(function () {
-        $(".metadata-actors").owlCarousel({
-          autoplay: true,
-          slideSpeed : 300,
-          paginationSpeed : 400,
-          margin:40,
-          nav:false,
-          autoplay:true,
-          dots:false,
-          responsive:{
-              0:{
-                  items:2
-              },
-              500:{
-                  items:3
-              },
-              650:{
-                  items:4
-              },
-              800:{
-                  items:5
-              },
-              950:{
-                  items:6
-              },
-              992:{
-                  items:4
-              },
-              1250:{
-                  items:5
-              },
-              1400:{
-                  items:6
-              },
-              1550:{
-                  items:7
-              },
-              1700:{
-                  items:8
-              },
-              1850:{
-                  items:9
-              }
-          },
-          //singleItem:true
-
-          // "singleItem:true" is a shortcut for:
-           items : 1,
-          // itemsDesktop : false,
-          // itemsDesktopSmall : false,
-          // itemsTablet: false,
-          // itemsMobile : false
-
-      });
-        $('.recent-items').owlCarousel({
-    	    margin:40,
-    	    nav:false,
-    		autoplay:false,
-            dots:false,
-    	    responsive:{
-    	        0:{
-    	            items:2
-    	        },
-    	        500:{
-    	            items:3
-    	        },
-    	        650:{
-    	            items:4
-    	        },
-    	        800:{
-    	            items:5
-    	        },
-    	        950:{
-    	            items:6
-    	        },
-    	        1100:{
-    	            items:7
-    	        },
-    	        1250:{
-    	            items:8
-    	        },
-    	        1400:{
-    	            items:9
-    	        },
-    	        1550:{
-    	            items:10
-    	        },
-    	        1700:{
-    	            items:11
-    	        },
-    	        1850:{
-    	            items:12
-    	        },
-    	        2000:{
-    	            items:13
-    	        },
-    	        2150:{
-    	            items:14
-    	        },
-    	        2300:{
-    	            items:15
-    	        },
-    	        2450:{
-    	            items:16
-    	        }
-    	    }
-    	})
+        //lazyload();
+        //let lazy = lazyload();
+        //lazy = '';
+        //$(".lazyload").lazyload();
+        myLazyLoad.update();
     });
 
-
-    /* ===== Theme Settings ===== */
 
 
 
@@ -274,43 +163,13 @@ function pageLoad(){
         });
     });
 
-    /* ===== Task Initialization ===== */
-
-    $(".list-task li label").on("click", function () {
-        $(this).toggleClass("task-done");
-    });
-    $(".settings_box a").on("click", function () {
-        $("ul.theme_color").toggleClass("theme_block");
-    });
-
     /* ===== Collepsible Toggle ===== */
 
     $(".collapseble").on("click", function () {
         $(".collapseblebox").fadeToggle(350);
     });
 
-    /* ===== Sidebar ===== */
 
-    $('.slimscrollright').slimScroll({
-        height: '100%',
-        position: 'right',
-        size: "5px",
-        color: '#dcdcdc'
-    });
-    $('.slimscrollsidebar').slimScroll({
-        height: '100%',
-        position: 'left',
-        size: "6px",
-        color: 'rgba(0,0,0,0.5)'
-    });
-    if(bowser.mobile !== true){
-        $('.inbox-center').slimScroll({
-            height: '100%',
-            position: 'right',
-            size: "5px",
-            color: '#dcdcdc'
-        });
-    }
     /* ===== Resize all elements ===== */
 
 
@@ -331,9 +190,6 @@ function pageLoad(){
         this is for close icon when navigation open in mobile view
     ================================================================= */
 
-    $(".navbar-toggle").on("click", function () {
-        $(".navbar-toggle i").toggleClass("ti-menu").addClass("ti-close");
-    });
 
     /* magnific stuff */
     $('.image-popup-vertical-fit').magnificPopup({
@@ -476,7 +332,31 @@ function pageLoad(){
         type: 'ajax'
     });
 }
+/* ===== Sidebar ===== */
 
+$('.slimscrollright').slimScroll({
+    height: '100%',
+    position: 'right',
+    size: "5px",
+    color: '#dcdcdc'
+});
+$('.slimscrollsidebar').slimScroll({
+    height: '100%',
+    position: 'left',
+    size: "6px",
+    color: 'rgba(0,0,0,0.5)'
+});
+if(bowser.mobile !== true){
+    $('.inbox-center').slimScroll({
+        height: '100%',
+        position: 'right',
+        size: "5px",
+        color: '#dcdcdc'
+    });
+}
+$(".navbar-toggle").on("click", function () {
+    $(".navbar-toggle i").toggleClass("ti-menu").addClass("ti-close");
+});
 /* ===== Login and Recover Password ===== */
 $(document).on("click", "#to-recover", function(e) {
     $("#loginform").slideUp();
@@ -1619,7 +1499,51 @@ $(document).on("click", ".metadata-get", function(e) {
 		var response = JSON.parse(data);
         $('.'+uid+'-metadata-info').html('');
 		$('.'+uid+'-metadata-info').html(buildMetadata(response.data, source));
-        $('.'+uid).trigger('click')
+        $('.'+uid).trigger('click');
+        $(".metadata-actors").owlCarousel({
+            autoplay: true,
+            slideSpeed : 300,
+            paginationSpeed : 400,
+            margin:40,
+            nav:false,
+            autoplay:true,
+            dots:false,
+            responsive:{
+                0:{
+                    items:2
+                },
+                500:{
+                    items:3
+                },
+                650:{
+                    items:4
+                },
+                800:{
+                    items:5
+                },
+                950:{
+                    items:6
+                },
+                992:{
+                    items:4
+                },
+                1250:{
+                    items:5
+                },
+                1400:{
+                    items:6
+                },
+                1550:{
+                    items:7
+                },
+                1700:{
+                    items:8
+                },
+                1850:{
+                    items:9
+                }
+            }
+        });
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});

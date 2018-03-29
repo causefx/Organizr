@@ -784,7 +784,13 @@ function buildCustomizeAppearance(){
 	organizrAPI('GET','api/?v1/customize/appearance').success(function(data) {
 		var response = JSON.parse(data);
 		$('#customize-appearance-form').html(buildFormGroup(response.data));
-		;
+		$(".colorpicker").asColorPicker({
+	        mode: 'complex',
+	        color: {
+	            format: false,
+	            alphaConvert: false
+	        }
+	    });
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
@@ -1030,6 +1036,7 @@ function tabProcess(arrayItems) {
 				}else{
 					$(menuList).prependTo($('.category-'+v.category_id));
 				}
+				$('#side-menu').metisMenu({ toggle: false });
 			}
 		});
 		getDefault(defaultTabName,defaultTabType);
@@ -1202,7 +1209,7 @@ function buildCategoryEditorItem(array){
 		var tabCount = array.tabs.reduce(function (n, category) {
 		    return n + (category.category_id == v.category_id);
 		}, 0);
-		var disabledDefault = (v.category_id == 0) ? 'disabled' : '';
+		var disabledDefault = (v.default == 1) ? 'disabled' : '';
 		var disabledDelete = (tabCount > 0 || v.default == 1 || v.category_id == 0) ? 'disabled' : '';
 		var defaultIcon = (v.default == 1) ? 'icon-user-following' : 'icon-user-follow';
 		var defaultColor = (v.default == 1) ? 'btn-info disabled' : 'btn-warning';
@@ -1385,7 +1392,7 @@ function updateCheck(){
 		}
 		if(latest !== currentVersion){
 			console.log('Update Function: Update to '+latest+' is available');
-			message(window.lang.translate('Update Available'),latest+' '+window.lang.translate('is available, goto')+' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);$.toast().reset(\'all\');"><span lang="en">Update Tab</span></a>','bottom-right','#FFF','update','60000');
+			message(window.lang.translate('Update Available'),latest+' '+window.lang.translate('is available, goto')+' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);$.toast().reset(\'all\');$(\'#update-button\').click()"><span lang="en">Update Tab</span></a>','bottom-right','#FFF','update','60000');
 		}
 		$('#githubVersions').html(buildVersion(reverseObject(json)));
 	}).fail(function(xhr) {
@@ -1790,6 +1797,14 @@ function errorPage(error=null){
 			local('set','error',urlParams.get('error'));
 		}
 	}
+	if ( window.location !== window.parent.location ) {
+		var iframeError = local('get', 'error');
+		parent.errorPage(iframeError);
+		console.log(iframeError);
+		console.log('iframe error page');
+		$('html').html('');
+	  	return false;
+	}
 	if(local('get', 'error')){
 		//show error page
 		$('.error-page').html(buildErrorPage(local('get', 'error')));
@@ -1974,7 +1989,7 @@ function buildStream(array, type){
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay">
 		    <div class="col-md-12">
-		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Stream(s): </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-5">`+streams+`</span></h4>
+		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Streams: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-5">`+streams+`</span></h4>
 		        <hr>
 		    </div>
 			<div class="clearfix"></div>
@@ -2365,7 +2380,7 @@ function buildMetadata(array, source){
 		var hasGenre = (typeof v.metadata.genres !== 'string') ? true : false;
 		if(hasActor){
 			$.each(v.metadata.actors, function(i,v) {
-				actors += '<div class="item lazyload recent-poster" data-src="'+v.thumb+'" alt="'+v.name+'" ><span class="elip recent-title p-5">'+v.name+'<br><small class="font-light">'+v.role+'</small></span></div>';
+				actors += '<div class="item lazyload recent-poster" data-src="'+(v.thumb.replace("http://", "https://"))+'" alt="'+v.name+'" ><span class="elip recent-title p-5">'+v.name+'<br><small class="font-light">'+v.role+'</small></span></div>';
 			});
 		}
 		if(hasGenre){
@@ -2485,6 +2500,59 @@ function homepageRecent(type, timeout=30000){
 		var response = JSON.parse(data);
 		document.getElementById('homepageOrder'+type+'recent').innerHTML = '';
 		$('#homepageOrder'+type+'recent').html(buildRecent(response.data, type));
+		$('.recent-items').owlCarousel({
+    	    margin:40,
+    	    nav:false,
+    		autoplay:false,
+            dots:false,
+    	    responsive:{
+    	        0:{
+    	            items:2
+    	        },
+    	        500:{
+    	            items:3
+    	        },
+    	        650:{
+    	            items:4
+    	        },
+    	        800:{
+    	            items:5
+    	        },
+    	        950:{
+    	            items:6
+    	        },
+    	        1100:{
+    	            items:7
+    	        },
+    	        1250:{
+    	            items:8
+    	        },
+    	        1400:{
+    	            items:9
+    	        },
+    	        1550:{
+    	            items:10
+    	        },
+    	        1700:{
+    	            items:11
+    	        },
+    	        1850:{
+    	            items:12
+    	        },
+    	        2000:{
+    	            items:13
+    	        },
+    	        2150:{
+    	            items:14
+    	        },
+    	        2300:{
+    	            items:15
+    	        },
+    	        2450:{
+    	            items:16
+    	        }
+    	    }
+    	})
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});

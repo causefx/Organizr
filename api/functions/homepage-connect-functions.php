@@ -275,8 +275,8 @@ function resolvePlexItem($item) {
             $plexItem['ratingKey'] = (string)$item['parentRatingKey'];
             $plexItem['thumb'] = ($item['parentThumb'] ? (string)$item['parentThumb'] : (string)$item['grandparentThumb']);
             $plexItem['key'] = (string)$item['ratingKey'] . "-list";
-            $plexItem['nowPlayingThumb'] = (string)$item['art'];
-            $plexItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
+            $plexItem['nowPlayingThumb'] = (string)$item['grandparentArt'];
+            $plexItem['nowPlayingKey'] = (string)$item['grandparentRatingKey'] . "-np";
             $plexItem['nowPlayingTitle'] = (string)$item['grandparentTitle'].' - '.(string)$item['title'];
             $plexItem['nowPlayingBottom'] = 'S'.(string)$item['parentIndex'].' · E'.(string)$item['index'];
             $plexItem['metadataKey'] = (string)$item['grandparentRatingKey'];
@@ -303,7 +303,7 @@ function resolvePlexItem($item) {
             $plexItem['thumb'] = (string)$item['thumb'];
             $plexItem['key'] = (string)$item['ratingKey'] . "-list";
 			$plexItem['nowPlayingThumb'] = ($item['parentThumb']) ? (string)$item['parentThumb'] :  (string)$item['art'];
-            $plexItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
+            $plexItem['nowPlayingKey'] = (string)$item['parentRatingKey'] . "-np";
             $plexItem['nowPlayingTitle'] = (string)$item['grandparentTitle'].' - '.(string)$item['title'];
             $plexItem['nowPlayingBottom'] = (string)$item['parentTitle'];
             $plexItem['metadataKey'] = isset($item['grandparentRatingKey']) ? (string)$item['grandparentRatingKey'] : (string)$item['parentRatingKey'];
@@ -828,7 +828,7 @@ function getRadarrCalendar($array,$number){
 			array_push($gotCalendar, array(
 				"id" => "Radarr-".$number."-".$i,
 				"title" => $movieName,
-				"start" => $child['physicalRelease'],
+				"start" => $physicalRelease,
 				"className" => "bg-calendar movieID--".$movieID,
 				"imagetype" => "film ".$downloaded,
 			));

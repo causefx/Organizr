@@ -4,7 +4,7 @@ $pageLogin = '
 <script>
 </script>
 <section id="wrapper" class="login-register">
-  <div class="login-box login-sidebar">
+  <div class="login-box login-sidebar animated slideInRight">
     <div class="white-box">
       <form class="form-horizontal form-material" id="loginform" onsubmit="return false;">
         <a href="javascript:void(0)" class="text-center db" id="login-logo">'.logoOrText().'</a>
