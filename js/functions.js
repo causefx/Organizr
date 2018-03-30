@@ -2426,6 +2426,48 @@ function buildMetadata(array, source){
 	});
 	return metadata;
 }
+function buildCalendarMetadata(array){
+	var metadata = '';
+	var genres = '';
+	var actors = '';
+	var rating = '<div class="col-xs-2 p-10"></div>';
+		var hasGenre = (typeof array.genres !== 'string') ? true : false;
+		if(hasGenre){
+			$.each(array.genres, function(i,v) {
+				genres += '<span class="badge bg-org m-r-10">'+v+'</span>';
+			});
+		}
+		if(array.ratings){
+			var ratingRound = Math.ceil(array.ratings)*10;
+			rating = `<div class="col-xs-2 p-10"><div data-label="`+array.ratings *10+`%" class="css-bar css-bar-`+Math.ceil(ratingRound/5)*5+` css-bar-sm m-b-0  css-bar-info"><img src="plugins/images/rotten.png" class="nowPlayingUserThumb" alt="User"></div></div>`;
+		}
+		var seconds = array.runtime / 1000 ; // or "2000"
+		seconds = parseInt(seconds) //because moment js dont know to handle number in string format
+		var format =  Math.floor(moment.duration(seconds,'seconds').asHours()) + ':' + moment.duration(seconds,'seconds').minutes() + ':' + moment.duration(seconds,'seconds').seconds();
+		metadata = `
+		<div class="white-box m-b-0">
+			<div class="user-bg lazyload" data-src="`+array.image+`">
+				`+rating+`
+				<div class="col-xs-10">
+	                <h2 class="m-b-0 font-medium pull-right text-right">
+						`+array.topTitle+`<br>
+						<small class="m-t-0 text-white">`+array.bottomTitle+`</small><br>
+					</h2>
+	            </div>
+				<div class="genre-list p-10">`+genres+`</div>
+			</div>
+		</div>
+		<div class="panel panel-info p-b-0 p-t-0">
+            <div class="panel-body p-b-0 p-t-0 m-b-0">
+				<div class="p-20 text-center">
+					<p class="">`+array.overview+`</p>
+				</div>
+            </div>
+        </div>
+
+		`;
+	return metadata;
+}
 function homepageDownloader(type, timeout=30000){
 	//if(isHidden()){ return; }
 	switch (type) {

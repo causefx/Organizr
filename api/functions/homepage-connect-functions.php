@@ -811,7 +811,7 @@ function getSonarrCalendar($array,$number){
                 "status" => $child['series']['status'],
                 "topTitle" => $seriesName,
                 "bottomTitle" => $bottomTitle,
-                "overview" => $child['overview'],
+                "overview" => isset($child['overview']) ? $child['overview'] : '',
                 "runtime" => $child['series']['runtime'],
                 "image" => $fanart,
                 "ratings" => $child['series']['ratings']['value'],
@@ -867,7 +867,7 @@ function getRadarrCalendar($array,$number, $url){
             }
             $alternativeTitles = "";
             foreach ($child['alternativeTitles'] as $alternative) {
-                $alternativeTitles .= $alternative['title'] + ', ';
+                $alternativeTitles .= $alternative['title'] . ', ';
             }
             $alternativeTitles = empty($child['alternativeTitles']) ? "" : substr($alternativeTitles, 0, -2);
             $details = array(

@@ -6649,7 +6649,13 @@ DayGrid.mixin({
 		var timeHtml = '';
 		var timeText;
 		var titleHtml;
-
+		var urlMeta = event.id ? htmlEscape(event.id) : 'none';
+		var metadata = `
+		<div id="`+urlMeta+`" class="white-popup mfp-with-anim mfp-hide">
+	        <div class="col-md-8 col-md-offset-2 `+urlMeta+`-metadata-info"></div>
+	    </div>
+		`;
+		var detailsJSON = JSON.stringify(event.details);
 		classes.unshift('fc-day-grid-event', 'fc-h-event');
 
 		// Only display a timed events time if it is the starting segment
@@ -6661,7 +6667,6 @@ DayGrid.mixin({
        timeHtml = '<br/>';
    }
 		}
-
 		titleHtml =
 			'<span class="fc-title">' +
 				(htmlEscape(event.title || '') || '&nbsp;') + // we always want one line of height
@@ -6671,9 +6676,9 @@ DayGrid.mixin({
 				(htmlEscape(event.imagetype || '') || '&nbsp;') + // we always want one line of height
 			'"></i></span>';
 
-		return '<a class="' + classes.join(' ') + '"' +
-				(event.url ?
-					' target="_blank" href="' + htmlEscape(event.url) + '"' :
+		return '<a class="inline-popups ' + classes.join(' ') + '"' +
+				(event.id ?
+					' target="_blank" data-effect="mfp-zoom-out" data-target="'+ htmlEscape(event.id) +'" data-details="'+htmlEscape(detailsJSON) +'" href="#' + htmlEscape(event.id) + '"' :
 					''
 					) +
 				(skinCss ?
@@ -6694,7 +6699,7 @@ DayGrid.mixin({
 				(isResizableFromEnd ?
 					'<div class="fc-resizer fc-end-resizer" />' :
 					''
-					) +
+				) +metadata+
 			'</a>';
 	},
 

@@ -1575,6 +1575,14 @@ $(document).on("click", ".purgeLog", function () {
 var log = $('.swapLog.active').attr('data-name');
 alert('This action is not set yet - but this would have purged the '+log+' log');
 });
+
+// calendar popups
+$(document).on('click', "a[class*=ID-]", function(){
+    var details = $(this).attr('data-details');
+    var target = $(this).attr('data-target')+'-metadata-info';
+    var json = JSON.parse(details);
+    $('.'+target).html(buildCalendarMetadata(json));
+});
 /* ===== Open-Close Right Sidebar ===== */
 
 $(document).on("click", ".right-side-toggle", function () {
