@@ -867,11 +867,13 @@ function getRadarrCalendar($array,$number, $url){
             }
             if($banner !== "/plugins/images/cache/no-np.png"){
                 $cacheDirectory = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
-                $url = $banner;
+                $imageURL = $banner;
                 $cacheFile = $cacheDirectory.$movieID.'.jpg';
                 $banner = 'plugins/images/cache/'.$movieID.'.jpg';
                 if(!file_exists($cacheFile)){
-                    cacheImage($banner,$movieID);
+                    cacheImage($imageURL,$movieID);
+                    unset($imageURL);
+                    unset($cacheFile);
                 }
             }
             $alternativeTitles = "";
