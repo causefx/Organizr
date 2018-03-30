@@ -2003,6 +2003,15 @@ function buildStream(array, type){
 }
 function buildRecent(array, type){
 	var recent = (typeof array.content !== 'undefined') ? true : false;
+	var movie = (recent) ? (array.content.filter(p => p.type == "movie").length > 0 ? true : false) : false;
+	var tv = (recent) ? (array.content.filter(p => p.type == "tv").length > 0 ? true : false) : false;
+	var video = (recent) ? (array.content.filter(p => p.type == "video").length > 0 ? true : false) : false;
+	var music = (recent) ? (array.content.filter(p => p.type == "music").length > 0 ? true : false) : false;
+	var dropdown = '';
+	dropdown += (recent && movie) ? `<li><a data-filter="recent-movie" server-filter="`+type+`" href="javascript:void(0);">Movies</a></li>` : '';
+	dropdown += (recent && tv) ? `<li><a data-filter="recent-tv" server-filter="`+type+`" href="javascript:void(0);">Shows</a></li>` : '';
+	dropdown += (recent && video) ? `<li><a data-filter="recent-video" server-filter="`+type+`" href="javascript:void(0);">Videos</a></li>` : '';
+	//dropdown += (recent && music) ? `<li><a data-filter="recent-music" server-filter="`+type+`" href="javascript:void(0);">Music</a></li>` : '';
 	return (recent) ? `
 	<div id="`+type+`Recent" class="row">
         <div class="col-lg-12">
@@ -2016,10 +2025,7 @@ function buildRecent(array, type){
 	                    <ul role="menu" class="dropdown-menu recent-filter">
 	                        <li><a data-filter="all" server-filter="`+type+`" href="javascript:void(0);">All</a></li>
 							<li class="divider"></li>
-	                        <li><a data-filter="recent-movie" server-filter="`+type+`" href="javascript:void(0);">Movies</a></li>
-	                        <li><a data-filter="recent-tv" server-filter="`+type+`" href="javascript:void(0);">Shows</a></li>
-	                        <li><a data-filter="recent-video" server-filter="`+type+`" href="javascript:void(0);">Videos</a></li>
-	                        <!--<li><a data-filter="recent-music" server-filter="`+type+`" href="javascript:void(0);">Music</a></li>-->
+							`+dropdown+`
 	                    </ul>
 	                </div>
 					<div class="clearfix"></div>
