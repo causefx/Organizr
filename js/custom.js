@@ -76,10 +76,6 @@ function pageLoad(){
         if($('#preloader:visible').length == 1){
             $("#preloader").fadeOut();
         }
-        //lazyload();
-        //let lazy = lazyload();
-        //lazy = '';
-        //$(".lazyload").lazyload();
         myLazyLoad.update();
     });
 
@@ -1582,6 +1578,7 @@ $(document).on('click', "a[class*=ID-]", function(){
     var target = $(this).attr('data-target')+'-metadata-info';
     var json = JSON.parse(details);
     $('.'+target).html(buildCalendarMetadata(json));
+    myLazyLoad.update();
 });
 /* ===== Open-Close Right Sidebar ===== */
 

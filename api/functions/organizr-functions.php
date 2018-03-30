@@ -772,6 +772,14 @@ function getImage() {
 		die("Invalid Request");
 	}
 }
+function cacheImage($url,$name){
+	$cacheDirectory = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
+    if (!file_exists($cacheDirectory)) {
+        mkdir($cacheDirectory, 0777, true);
+    }
+	$cachefile = $cacheDirectory.$name.'.jpg';
+	copy($url, $cachefile);
+}
 function downloader($array){
 	switch ($array['data']['source']) {
         case 'sabnzbd':
