@@ -6678,7 +6678,7 @@ DayGrid.mixin({
 
 		return '<a class="inline-popups ' + classes.join(' ') + '"' +
 				(event.id ?
-					' target="_blank" data-effect="mfp-zoom-out" data-target="'+ htmlEscape(event.id) +'" data-details="'+htmlEscape(detailsJSON) +'" href="#' + htmlEscape(event.id) + '"' :
+					' data-effect="mfp-zoom-out" data-target="'+ htmlEscape(event.id) +'" data-details="'+htmlEscape(detailsJSON) +'" data-mfp-src="#' + htmlEscape(event.id) + '"' :
 					''
 					) +
 				(skinCss ?
