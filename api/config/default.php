@@ -119,5 +119,6 @@ return array(
     'calendarEnd' => '14',
     'calendarRefresh' => '60000',
     'calendarTimeFormat' => 'h(:mm)t',
-    'calendarLimit' => '1000'
+    'calendarLimit' => '1000',
+	'customCss' => ''
 );

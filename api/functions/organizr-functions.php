@@ -372,6 +372,7 @@ function loadAppearance(){
     $appearance['sidebarColor'] = $GLOBALS['sidebarColor'];
     $appearance['headerTextColor'] = $GLOBALS['headerTextColor'];
     $appearance['sidebarTextColor'] = $GLOBALS['sidebarTextColor'];
+    $appearance['customCss'] = $GLOBALS['customCss'];
     return $appearance;
 }
 function getCustomizeAppearance(){
@@ -466,7 +467,15 @@ function getCustomizeAppearance(){
                             'value' => 'horizontal'
                         )
                     )
-				)
+				),
+                array(
+                    'type' => 'textbox',
+                    'name' => 'customCss',
+                    'label' => 'Custom CSS [Can replace colors from above]',
+                    'value' => $GLOBALS['customCss'],
+                    'placeholder' => 'No <style> tags needed',
+                    'override' => 12
+                ),
             )
         );
     }

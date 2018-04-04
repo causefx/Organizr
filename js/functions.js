@@ -531,6 +531,7 @@ function buildFormItem(item){
 	var id = (item.id) ? ' id="'+item.id+'"' : '';
 	var type = (item.type) ? ' data-type="'+item.type+'"' : '';
 	var value = (item.value) ? ' value="'+item.value+'"' : '';
+	var textarea = (item.value) ? item.value : '';
 	var name = (item.name) ? ' name="'+item.name+'"' : '';
 	var extraClass = (item.class) ? ' '+item.class : '';
 	var icon = (item.icon) ? ' '+item.icon : '';
@@ -541,7 +542,11 @@ function buildFormItem(item){
 	//+tof(item.value,'c')+`
 	switch (item.type) {
 		case 'input':
+		case 'text':
 			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+			break;
+		case 'textbox':
+			return '<textarea data-changed="false" class="form-control'+extraClass+'"'+placeholder+id+name+disabled+type+attr+' autocomplete="new-password">'+textarea+'</textarea>';
 			break;
 		case 'password':
 			return '<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
@@ -718,11 +723,15 @@ function buildFormGroup(array){
 				<div class="row">
 			`;
 			$.each(v, function(i,v) {
+				var override = '6';
+				if(typeof v.override !== 'undefined'){
+					override = v.override;
+				}
 				count++;
 				if(count%2 !== 0 ){ group += '<div class="row start">'; };
 				group += `
 					<!-- INPUT BOX -->
-					<div class="col-md-6 p-b-10">
+					<div class="col-md-`+override+` p-b-10">
 						<div class="form-group">
 							<label class="control-label col-md-3" lang="en">`+v.label+`</label>
 							<div class="col-md-9">
@@ -1735,12 +1744,12 @@ function loadAppearance(appearance){
 	}
 	if(appearance.sidebarTextColor !== ''){
 		cssSettings += `
-		    #side-menu li a {
+		    #side-menu li a,
+			.sidebar .sidebar-head h3,
+			#side-menu > li > a.active, #side-menu > li > ul > li > a.active
+			{
 			    color: `+appearance.sidebarTextColor+`;
 		    }
-			#side-menu > li > a.active, #side-menu > li > ul > li > a.active {
-			   color: `+appearance.sidebarTextColor+`;
-		   }
 		`;
 	}
 	if(appearance.loginWallpaper !== ''){
@@ -1767,6 +1776,9 @@ function loadAppearance(appearance){
 	}
 	if(cssSettings !== ''){
 		$('#user-appearance').html(cssSettings);
+	}
+	if(appearance.customCss !== ''){
+		$('#custom-css').html(appearance.customCss);
 	}
 
 }
