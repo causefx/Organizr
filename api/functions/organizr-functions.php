@@ -368,7 +368,10 @@ function loadAppearance(){
     $appearance['title'] = $GLOBALS['title'];
 	$appearance['useLogo'] = $GLOBALS['useLogo'];
     $appearance['headerColor'] = $GLOBALS['headerColor'];
-    $appearance['loginWallpaper'] = $GLOBALS['loginWallpaper'];
+    $appearance['headerTextColor'] = $GLOBALS['headerTextColor'];
+    $appearance['sidebarColor'] = $GLOBALS['sidebarColor'];
+    $appearance['headerTextColor'] = $GLOBALS['headerTextColor'];
+    $appearance['sidebarTextColor'] = $GLOBALS['sidebarTextColor'];
     return $appearance;
 }
 function getCustomizeAppearance(){

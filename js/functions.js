@@ -1703,6 +1703,7 @@ function radioLoop(element){
 }
 function loadAppearance(appearance){
 	//console.log(appearance);
+	var cssSettings = '';
 	document.title = appearance.title;
 	if(appearance.useLogo === false){
 		$('#main-logo').html(appearance.title);
@@ -1712,10 +1713,38 @@ function loadAppearance(appearance){
 		$('#side-logo').html('<img alt="home" height="35px" src="'+appearance.logo+'">');
 	}
 	if(appearance.headerColor !== ''){
-		$('.navbar-header').css("background", appearance.headerColor);
+		cssSettings += `
+		    .navbar-header{
+			    background: `+appearance.headerColor+`;
+		    }
+		`;
+	}
+	if(appearance.headerTextColor !== ''){
+		cssSettings += `
+		    .navbar-top-links > li > a {
+			    color: `+appearance.headerTextColor+`;
+		    }
+		`;
+	}
+	if(appearance.sidebarColor !== ''){
+		cssSettings += `
+		    .sidebar, .sidebar .sidebar-head{
+			    background: `+appearance.sidebarColor+`;
+		    }
+		`;
+	}
+	if(appearance.sidebarTextColor !== ''){
+		cssSettings += `
+		    #side-menu li a {
+			    color: `+appearance.sidebarTextColor+`;
+		    }
+			#side-menu > li > a.active, #side-menu > li > ul > li > a.active {
+			   color: `+appearance.sidebarTextColor+`;
+		   }
+		`;
 	}
 	if(appearance.loginWallpaper !== ''){
-		$('#user-appearance').html(`
+		cssSettings += `
 		    .login-register {
 			    background: url(`+appearance.loginWallpaper+`) center center/cover no-repeat!important;
 			    height: 100%;
@@ -1734,8 +1763,12 @@ function loadAppearance(appearance){
 			    -o-user-select: none;
 			    user-select: none;
 			}
-		`);
+		`;
 	}
+	if(cssSettings !== ''){
+		$('#user-appearance').html(cssSettings);
+	}
+
 }
 function clearForm(form){
 	$(form+" input[type=text]", form+" input[type=password]").each(function() {
