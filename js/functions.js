@@ -804,6 +804,7 @@ function buildCustomizeAppearance(){
 		var CssMode = ace.require("ace/mode/css").Mode;
 		cssEditor.session.setMode(new CssMode());
 		cssEditor.setTheme("ace/theme/idle_fingers");
+		cssEditor.setShowPrintMargin(false)
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
