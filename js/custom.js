@@ -1003,7 +1003,10 @@ $(document).on("click", ".changeDefaultCategory", function () {
     callbacks.add( buildCategoryEditor );
     settingsAPI(post,callbacks);
 });
-// CHANGE CUSTOMIZE Options
+// CHANGE CUSTOMIZE Options and CSS Save
+$(document).on("click", ".saveCss", function () {
+    $('.cssTextarea').val(cssEditor.getValue()).trigger('change');
+});
 $(document).on('change asColorPicker::close', '#customize-appearance-form :input', function(e) {
     $(this).attr('data-changed', true);
     switch ($(this).attr('type')) {
@@ -1020,10 +1023,9 @@ $(document).on('change asColorPicker::close', '#customize-appearance-form :input
         name:$(this).attr("name"),
         value:value,
         messageTitle:'',
-        messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
+        messageBody:'Updated Value for '+$(this).attr("name"),
         error:'Organizr Function: API Connection Failed'
     };
-    console.log(post);
     $('#customize-appearance-reload').removeClass('hidden');
     var callbacks = $.Callbacks();
     //callbacks.add( buildCustomizeAppearance );

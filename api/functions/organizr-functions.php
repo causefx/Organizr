@@ -471,12 +471,18 @@ function getCustomizeAppearance(){
                 array(
                     'type' => 'textbox',
                     'name' => 'customCss',
-                    'label' => 'Custom CSS [Can replace colors from above]',
+                    'class' => 'hidden cssTextarea',
+                    'label' => '',
                     'value' => $GLOBALS['customCss'],
                     'placeholder' => 'No <style> tags needed',
                     'attr' => 'rows="10"',
-                    'override' => 12
                 ),
+                array(
+        			'type' => 'html',
+                    'override' => 12,
+        			'label' => 'Custom CSS [Can replace colors from above]',
+        			'html' => '<button type="button" class="saveCss btn btn-info btn-circle pull-right m-r-5 m-l-5"><i class="fa fa-save"></i> </button><div id="customCSSEditor" style="height:300px">'.$GLOBALS['customCss'].'</span>'
+        		),
             )
         );
     }

@@ -800,6 +800,10 @@ function buildCustomizeAppearance(){
 	            alphaConvert: false
 	        }
 	    });
+		cssEditor = ace.edit("customCSSEditor");
+		var CssMode = ace.require("ace/mode/css").Mode;
+		cssEditor.session.setMode(new CssMode());
+		cssEditor.setTheme("ace/theme/idle_fingers");
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
