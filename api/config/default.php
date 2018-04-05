@@ -61,6 +61,10 @@ return array(
     'qBittorrentHideCompleted' => false,
     'qBittorrentSortOrder' => 'eta',
     'qBittorrentReverseSorting' => false,
+    'homepagCustomHTMLoneEnabled' => false,
+    'homepagCustomHTMLoneAuth' => '1',
+    'homepagCustomHTMLtwoEnabled' => false,
+    'homepagCustomHTMLtwoAuth' => '1',
     'homepageDelugeEnabled' => false,
     'homepageDelugeAuth' => '1',
     'homepageSabnzbdEnabled' => false,
@@ -100,6 +104,7 @@ return array(
     'homepageOrdertransmission' => '15',
     'homepageOrderqBittorrent' => '16',
     'homepageOrderdeluge' => '17',
+	'homepageOrdercustomhtmlTwo' => '18',
     'homepageShowStreamNames' => false,
     'homepageShowStreamNamesAuth' => '1',
     'homepageStreamRefresh' => '60000',
@@ -120,5 +125,7 @@ return array(
     'calendarRefresh' => '60000',
     'calendarTimeFormat' => 'h(:mm)t',
     'calendarLimit' => '1000',
-	'customCss' => ''
+	'customCss' => '',
+    'customHTMLone' => '',
+    'customHTMLtwo' => ''
 );

@@ -3,6 +3,7 @@
 function homepageOrder(){
 	$homepageOrder = array(
 		"homepageOrdercustomhtml" => $GLOBALS['homepageOrdercustomhtml'],
+		"homepageOrdercustomhtmlTwo" => $GLOBALS['homepageOrdercustomhtmlTwo'],
 		"homepageOrdernotice" => $GLOBALS['homepageOrdernotice'],
 		"homepageOrderplexsearch" => $GLOBALS['homepageOrderplexsearch'],
 		"homepageOrderspeedtest" => $GLOBALS['homepageOrderspeedtest'],
@@ -38,7 +39,14 @@ function buildHomepageItem($homepageItem){
 
 			break;
 		case 'homepageOrdercustomhtml':
-
+			if($GLOBALS['homepagCustomHTMLoneEnabled'] && qualifyRequest($GLOBALS['homepagCustomHTMLoneAuth']) ){
+				$item .= ($GLOBALS['customHTMLone'] !== '') ? $GLOBALS['customHTMLone'] : '';
+			}
+			break;
+		case 'homepageOrdercustomhtmlTwo':
+		if($GLOBALS['homepagCustomHTMLtwoEnabled'] && qualifyRequest($GLOBALS['homepagCustomHTMLtwoAuth']) ){
+			$item .= ($GLOBALS['customHTMLtwo'] !== '') ? $GLOBALS['customHTMLtwo'] : '';
+		}
 			break;
 		case 'homepageOrdernotice':
 
@@ -1248,6 +1256,82 @@ function getHomepageList(){
                         'value' => $GLOBALS['calendarRefresh'],
                         'options' => $time
                     )
+                )
+            )
+        ),
+		array(
+            'name' => 'CustomHTML-1',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/custom1.png',
+            'category' => 'Custom',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepagCustomHTMLoneEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepagCustomHTMLoneEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepagCustomHTMLoneAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepagCustomHTMLoneAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Code' => array(
+					array(
+	                    'type' => 'textbox',
+	                    'name' => 'customHTMLone',
+	                    'class' => 'hidden customHTMLoneTextarea',
+	                    'label' => '',
+	                    'value' => $GLOBALS['customHTMLone'],
+	                ),
+	                array(
+	        			'type' => 'html',
+	                    'override' => 12,
+	        			'label' => 'Custom HTML/JavaScript',
+	        			'html' => '<button type="button" class="hidden savecustomHTMLoneTextarea btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customHTMLoneEditor" style="height:300px">'.htmlentities($GLOBALS['customHTMLone']).'</div>'
+	        		),
+                )
+            )
+        ),
+		array(
+            'name' => 'CustomHTML-2',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/custom2.png',
+            'category' => 'Custom',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepagCustomHTMLtwoEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepagCustomHTMLtwoEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepagCustomHTMLtwoAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepagCustomHTMLtwoAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Code' => array(
+					array(
+	                    'type' => 'textbox',
+	                    'name' => 'customHTMLtwo',
+	                    'class' => 'hidden customHTMLtwoTextarea',
+	                    'label' => '',
+	                    'value' => $GLOBALS['customHTMLtwo'],
+	                ),
+	                array(
+	        			'type' => 'html',
+	                    'override' => 12,
+	        			'label' => 'Custom HTML/JavaScript',
+	        			'html' => '<button type="button" class="hidden savecustomHTMLtwoTextarea btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customHTMLtwoEditor" style="height:300px">'.htmlentities($GLOBALS['customHTMLtwo']).'</div>'
+	        		),
                 )
             )
         )

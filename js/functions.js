@@ -703,6 +703,29 @@ function buildHomepage(){
 	organizrAPI('GET','api/?v1/settings/homepage/list').success(function(data) {
 		var response = JSON.parse(data);
 		$('#settings-homepage-list').html(buildHomepageItem(response.data));
+		customHTMLoneEditor = ace.edit("customHTMLoneEditor");
+		var HTMLMode = ace.require("ace/mode/html").Mode;
+		customHTMLoneEditor.session.setMode(new HTMLMode());
+		customHTMLoneEditor.setTheme("ace/theme/idle_fingers");
+		customHTMLoneEditor.setShowPrintMargin(false);
+		customHTMLoneEditor.session.on('change', function(delta) {
+			if($('.customHTMLoneTextarea').val() == customHTMLoneEditor.getValue()){
+				$('.savecustomHTMLoneTextarea').addClass('hidden');
+			}else{
+				$('.savecustomHTMLoneTextarea').removeClass('hidden');
+			}
+		});
+		customHTMLtwoEditor = ace.edit("customHTMLtwoEditor");
+		customHTMLtwoEditor.session.setMode(new HTMLMode());
+		customHTMLtwoEditor.setTheme("ace/theme/idle_fingers");
+		customHTMLtwoEditor.setShowPrintMargin(false);
+		customHTMLtwoEditor.session.on('change', function(delta) {
+			if($('.customHTMLtwoTextarea').val() == customHTMLtwoEditor.getValue()){
+				$('.savecustomHTMLtwoTextarea').addClass('hidden');
+			}else{
+				$('.savecustomHTMLtwoTextarea').removeClass('hidden');
+			}
+		});
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});

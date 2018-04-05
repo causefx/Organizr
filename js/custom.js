@@ -1007,6 +1007,12 @@ $(document).on("click", ".changeDefaultCategory", function () {
 $(document).on("click", ".saveCss", function () {
     $('.cssTextarea').val(cssEditor.getValue()).trigger('change');
 });
+$(document).on("click", ".savecustomHTMLoneTextarea", function () {
+    $('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue()).trigger('change');
+});
+$(document).on("click", ".savecustomHTMLtwoTextarea", function () {
+    $('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue()).trigger('change');
+});
 $(document).on('change asColorPicker::close', '#customize-appearance-form :input', function(e) {
     $(this).attr('data-changed', true);
     switch ($(this).attr('type')) {

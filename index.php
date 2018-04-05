@@ -126,6 +126,7 @@
 	<script src="js/emulatetab.joelpurra.js"></script>
 	<script src="plugins/bower_components/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="plugins/bower_components/ace/mode-css.js" type="text/javascript" charset="utf-8"></script>
+	<script src="plugins/bower_components/ace/mode-html.js" type="text/javascript" charset="utf-8"></script>
 	<script src="plugins/bower_components/ace/theme-idle_fingers.js" type="text/javascript" charset="utf-8"></script>
 	<script src="plugins/bower_components/blockUI/jquery.blockUI.js"></script>
 	<script src="plugins/bower_components/datatables/jquery.dataTables.min.js"></script>
