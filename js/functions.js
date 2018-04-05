@@ -804,7 +804,14 @@ function buildCustomizeAppearance(){
 		var CssMode = ace.require("ace/mode/css").Mode;
 		cssEditor.session.setMode(new CssMode());
 		cssEditor.setTheme("ace/theme/idle_fingers");
-		cssEditor.setShowPrintMargin(false)
+		cssEditor.setShowPrintMargin(false);
+		cssEditor.session.on('change', function(delta) {
+			if($('.cssTextarea').val() == cssEditor.getValue()){
+				$('.saveCss').addClass('hidden');
+			}else{
+				$('.saveCss').removeClass('hidden');
+			}
+		});
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
