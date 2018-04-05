@@ -474,6 +474,7 @@ function getCustomizeAppearance(){
                     'label' => 'Custom CSS [Can replace colors from above]',
                     'value' => $GLOBALS['customCss'],
                     'placeholder' => 'No <style> tags needed',
+                    'attr' => 'rows="10"',
                     'override' => 12
                 ),
             )

@@ -1004,7 +1004,7 @@ $(document).on("click", ".changeDefaultCategory", function () {
     settingsAPI(post,callbacks);
 });
 // CHANGE CUSTOMIZE Options
-$(document).on('change asColorPicker::clear asColorPicker::close', '#customize-appearance-form :input', function(e) {
+$(document).on('change asColorPicker::close', '#customize-appearance-form :input', function(e) {
     $(this).attr('data-changed', true);
     switch ($(this).attr('type')) {
         case 'switch':
@@ -1124,7 +1124,7 @@ $(document).on('click', '.disablePlugin', function() {
 
 });
 // SSO Option change
-$(document).on('change asColorPicker::close', '#sso-form :input', function(e) {
+$(document).on('change', '#sso-form :input', function(e) {
     var input = $(this);
     switch ($(this).attr('type')) {
         case 'switch':
@@ -1157,7 +1157,7 @@ $(document).on('change asColorPicker::close', '#sso-form :input', function(e) {
     );
 });
 // MAIN SETTINGS PAGE
-$(document).on('change asColorPicker::close', '#settings-main-form :input', function(e) {
+$(document).on('change', '#settings-main-form :input', function(e) {
     var input = $(this);
     switch ($(this).attr('type')) {
         case 'switch':
@@ -1387,7 +1387,7 @@ $(document).on("click", ".testPath", function () {
     }
 });
 // Save Homepage Form
-$(document).on('change asColorPicker::close', '.homepageForm :input', function(e) {
+$(document).on('change', '.homepageForm :input', function(e) {
     var input = $(this);
     switch ($(this).attr('type')) {
         case 'switch':
