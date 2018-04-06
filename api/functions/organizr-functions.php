@@ -164,7 +164,7 @@ function getSettingsMain(){
         ),
         'API' => array(
             array(
-    			'type' => 'input',
+    			'type' => 'password-alt',
     			'name' => 'organizrAPI',
     			'label' => 'Organizr API',
     			'value' => $GLOBALS['organizrAPI']
@@ -196,7 +196,7 @@ function getSettingsMain(){
     			'options' => getAuthBackends()
     		),
             array(
-    			'type' => 'input',
+    			'type' => 'password-alt',
     			'name' => 'plexToken',
                 'class' => 'plexAuth switchAuth',
     			'label' => 'Plex Token',
@@ -213,7 +213,7 @@ function getSettingsMain(){
     			'attr' => 'data-effect="mfp-3d-unfold"'
     		),
     		array(
-    			'type' => 'input',
+    			'type' => 'password-alt',
     			'name' => 'plexID',
                 'class' => 'plexAuth switchAuth',
     			'label' => 'Plex Machine',
@@ -254,7 +254,7 @@ function getSettingsMain(){
     			'placeholder' => 'http(s)://hostname:port'
     		),
             array(
-    			'type' => 'input',
+    			'type' => 'password-alt',
     			'name' => 'embyToken',
                 'class' => 'embyAuth switchAuth',
     			'label' => 'Emby Token',
@@ -275,7 +275,7 @@ function getSSO(){
 	return array(
         'Plex' => array(
     		array(
-    			'type' => 'input',
+    			'type' => 'password-alt',
     			'name' => 'plexToken',
     			'label' => 'Plex Token',
     			'value' => $GLOBALS['plexToken'],
@@ -291,7 +291,7 @@ function getSSO(){
     			'attr' => 'data-effect="mfp-3d-unfold"'
     		),
     		array(
-    			'type' => 'input',
+    			'type' => 'password-alt',
     			'name' => 'plexID',
     			'label' => 'Plex Machine',
     			'value' => $GLOBALS['plexID'],
