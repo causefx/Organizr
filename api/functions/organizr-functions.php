@@ -372,6 +372,7 @@ function loadAppearance(){
     $appearance['sidebarColor'] = $GLOBALS['sidebarColor'];
     $appearance['headerTextColor'] = $GLOBALS['headerTextColor'];
     $appearance['sidebarTextColor'] = $GLOBALS['sidebarTextColor'];
+    $appearance['loginWallpaper'] = $GLOBALS['loginWallpaper'];
     $appearance['customCss'] = $GLOBALS['customCss'];
     return $appearance;
 }
