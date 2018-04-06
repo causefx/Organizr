@@ -1579,6 +1579,16 @@ $(document).on("click", ".purgeLog", function () {
 var log = $('.swapLog.active').attr('data-name');
 alert('This action is not set yet - but this would have purged the '+log+' log');
 });
+//Show Passowrd
+$(document).on("click", ".showPassword", function () {
+    var toggle = $(this).parent().parent().find('.password-alt');
+    if (toggle.attr('type') === "password") {
+        toggle.attr('type', 'text');
+    } else {
+        toggle.attr('type', 'password');
+    }
+    $(this).find('.passwordToggle').toggleClass('fa-eye').toggleClass('fa-eye-slash');
+});
 
 // calendar popups
 $(document).on('click', "a[class*=ID-]", function(){

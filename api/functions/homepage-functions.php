@@ -44,9 +44,9 @@ function buildHomepageItem($homepageItem){
 			}
 			break;
 		case 'homepageOrdercustomhtmlTwo':
-		if($GLOBALS['homepagCustomHTMLtwoEnabled'] && qualifyRequest($GLOBALS['homepagCustomHTMLtwoAuth']) ){
-			$item .= ($GLOBALS['customHTMLtwo'] !== '') ? $GLOBALS['customHTMLtwo'] : '';
-		}
+			if($GLOBALS['homepagCustomHTMLtwoEnabled'] && qualifyRequest($GLOBALS['homepagCustomHTMLtwoAuth']) ){
+				$item .= ($GLOBALS['customHTMLtwo'] !== '') ? $GLOBALS['customHTMLtwo'] : '';
+			}
 			break;
 		case 'homepageOrdernotice':
 
@@ -415,13 +415,13 @@ function getHomepageList(){
 						'placeholder' => 'http(s)://hostname:port'
                     ),
                     array(
-                        'type' => 'input',
+                        'type' => 'password-alt',
                         'name' => 'plexToken',
                         'label' => 'Token',
                         'value' => $GLOBALS['plexToken']
                     ),
                     array(
-                        'type' => 'input',
+                        'type' => 'password-alt',
                         'name' => 'plexID',
                         'label' => 'Plex Machine',
                         'value' => $GLOBALS['plexID']
@@ -532,7 +532,7 @@ function getHomepageList(){
 						'placeholder' => 'http(s)://hostname:port'
                     ),
                     array(
-                        'type' => 'input',
+                        'type' => 'password-alt',
                         'name' => 'embyToken',
                         'label' => 'Token',
                         'value' => $GLOBALS['embyToken']
@@ -643,7 +643,7 @@ function getHomepageList(){
 						'placeholder' => 'http(s)://hostname:port'
                     ),
                     array(
-                        'type' => 'input',
+                        'type' => 'password-alt',
                         'name' => 'sabnzbdToken',
                         'label' => 'Token',
                         'value' => $GLOBALS['sabnzbdToken']
@@ -961,7 +961,7 @@ function getHomepageList(){
                         'placeholder' => 'http(s)://hostname:port'
                     ),
                     array(
-                        'type' => 'input',
+                        'type' => 'password-alt',
                         'name' => 'sonarrToken',
                         'label' => 'Token',
                         'value' => $GLOBALS['sonarrToken']
@@ -1050,7 +1050,7 @@ function getHomepageList(){
                         'placeholder' => 'http(s)://hostname:port'
                     ),
                     array(
-                        'type' => 'input',
+                        'type' => 'password-alt',
                         'name' => 'radarrToken',
                         'label' => 'Token',
                         'value' => $GLOBALS['radarrToken']
@@ -1139,7 +1139,7 @@ function getHomepageList(){
                         'placeholder' => 'http(s)://hostname:port'
                     ),
                     array(
-                        'type' => 'input',
+                        'type' => 'password-alt',
                         'name' => 'couchpotatoToken',
                         'label' => 'Token',
                         'value' => $GLOBALS['couchpotatoToken']
@@ -1214,7 +1214,7 @@ function getHomepageList(){
                         'placeholder' => 'http(s)://hostname:port'
                     ),
                     array(
-                        'type' => 'input',
+                        'type' => 'password-alt',
                         'name' => 'sickrageToken',
                         'label' => 'Token',
                         'value' => $GLOBALS['sickrageToken']

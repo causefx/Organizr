@@ -551,6 +551,9 @@ function buildFormItem(item){
 		case 'password':
 			return '<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
 			break;
+		case 'password-alt':
+			return '<div class="input-group m-b-30"><input data-changed="false" lang=en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
+			break;
 		case 'hidden':
 			return '<input data-changed="false" lang=en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
 			break;
