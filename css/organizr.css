@@ -23,7 +23,7 @@
 }
 /* Larger Images */
 #side-menu>li>a {
-  padding: 18px 35px 18px 15px;
+  padding: 10px 35px 10px 15px;
   display: block;
 }
 .sidebar .nav-second-level li a {
@@ -256,4 +256,9 @@ background: #2cabe3;
 }
 .fc-unthemed .fc-today {
   color: inherit !important;
+}
+@media (max-width: 767px){
+  i.ti-close.visible-xs {
+  	display: inline !important;
+  }
 }

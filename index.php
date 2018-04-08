@@ -75,7 +75,7 @@
 		<div class="navbar-default sidebar" role="navigation">
 			<div class="sidebar-nav slimscrollsidebar">
 				<div class="sidebar-head">
-					<h3><span class="fa-fw open-close"><i class="ti-menu hidden-xs"></i><i class="ti-close visible-xs"></i></span>
+					<h3><span class="open-close m-r-5"><i class="ti-menu hidden-xs"></i><i class="ti-close visible-xs"></i></span>
 					<span class="hide-menu hidden-xs" lang="en">Navigation</span>
 					<span class="hide-menu hidden-sm hidden-md hidden-lg" id="side-logo"></span>
 					</h3>
