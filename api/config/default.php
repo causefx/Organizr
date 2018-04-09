@@ -114,6 +114,8 @@ return array(
     'homepagePlexStreamsAuth' => '1',
     'homepagePlexRecent' => false,
     'homepagePlexRecentAuth' => '1',
+	'homepagePlexPlaylist' => false,
+    'homepagePlexPlaylistAuth' => '1',
     'homepageEmbyStreams' => false,
     'homepageEmbyStreamsAuth' => '1',
     'homepageEmbyRecent' => false,

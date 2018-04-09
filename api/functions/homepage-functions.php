@@ -135,7 +135,15 @@ function buildHomepageItem($homepageItem){
 			}
 			break;
 		case 'homepageOrderplexplaylist':
-
+			if($GLOBALS['homepagePlexPlaylist']){
+				$item .= '
+				<script>
+				// Plex Playlist
+				homepagePlaylist("plex");
+				// End Plex Playlist
+				</script>
+				';
+			}
 			break;
 		case 'homepageOrderembynowplaying':
 			if($GLOBALS['homepageEmbyStreams']){
@@ -483,6 +491,21 @@ function getHomepageList(){
 						'value' => $GLOBALS['homepageRecentRefresh'],
 						'options' => $time
 					),
+                ),
+				'Playlists' => array(
+					array(
+            			'type' => 'switch',
+            			'name' => 'homepagePlexPlaylist',
+            			'label' => 'Enable',
+            			'value' => $GLOBALS['homepagePlexPlaylist']
+            		),
+                    array(
+    					'type' => 'select',
+    					'name' => 'homepagePlexPlaylistAuth',
+                        'label' => 'Minimum Authorization',
+    					'value' => $GLOBALS['homepagePlexPlaylistAuth'],
+    					'options' => $groups
+    				),
                 ),
                 'Misc Options' => array(
 					array(

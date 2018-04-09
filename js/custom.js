@@ -1453,6 +1453,17 @@ $(document).on("click", ".recent-filter li>a", function () {
     }
 
 });
+//playlist filter
+$(document).on("click", ".playlist-filter li>a", function () {
+    var filter = $(this).attr('data-filter');
+    var title = decodeURI($(this).attr('data-title'));
+    var type = $(this).attr('server-filter'); //plex or emby
+    $('.'+type+'-playlistTitle').html(title);
+    $('.'+type+'-playlist').addClass('hidden');
+    $('.'+filter+'-playlist').removeClass('hidden');
+
+
+});
 // refresh cache image
 $(document).on("click", ".refreshImage", function(e) {
     message('',' Refreshing Image...','bottom-right','#FFF','success','1000');

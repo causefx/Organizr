@@ -2066,6 +2066,31 @@ function buildRecentItem(array, type, extra=null){
 	});
 	return items;
 }
+function buildPlaylistItem(array, type, extra=null){
+	var items = '';
+	$.each(array, function(i,v) {
+		if(i !== 'title'){
+			if(extra == null){
+				items += `
+				<div class="item lazyload recent-poster metadata-get mouse" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
+					<span class="elip recent-title">`+v.title+`</span>
+					<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
+				        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
+				    </div>
+				</div>
+				`;
+			}else{
+				items += `
+				<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
+				`;
+			}
+		}
+
+
+
+	});
+	return items;
+}
 function buildStream(array, type){
 	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
 	return (streams) ? `
@@ -2118,6 +2143,63 @@ function buildRecent(array, type){
 						`+buildRecentItem(array.content, type)+`
                     </div>
 					`+buildRecentItem(array.content, type, true)+`
+                </div>
+            </div>
+        </div>
+    </div>
+	` : '';
+}
+function buildPlaylist(array, type){
+	var playlist = (typeof array.content !== 'undefined') ? true : false;
+	var dropdown = '';
+	var first = '';
+	var hidden = '';
+	var count = 0;
+	var items = '';
+	if(playlist){
+		$.each(array.content, function(i,v) {
+
+
+
+			count ++;
+			first = (count == 1) ? v.title : first;
+			hidden = (count == 1) ? '' : ' hidden';
+			dropdown += `<li><a data-filter="`+i+`" server-filter="`+type+`" data-title="`+encodeURI(v.title)+`" href="javascript:void(0);">`+v.title+`</a></li>`;
+
+			items += `
+			<div class="owl-carousel owl-theme playlist-items `+type+`-playlist `+hidden+` `+i+`-playlist">
+				`+buildPlaylistItem(v, type)+`
+			</div>
+			`+buildPlaylistItem(v, type, true)+`
+			`;
+
+
+
+
+		});
+		var builtDropdown = `
+		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
+			<i class="fa fa-filter m-r-5"></i><span lang="en">Choose Playlist</span>
+		</button>
+		<ul role="menu" class="dropdown-menu playlist-filter">
+			`+dropdown+`
+		</ul>
+		`;
+	}
+
+	return (playlist) ? `
+	<div id="`+type+`Playlist" class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading bg-info p-t-10 p-b-10">
+					<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span class="`+type+`-playlistTitle">`+first+`</span></span>
+					<div class="btn-group pull-right">
+							`+builtDropdown+`
+	                </div>
+					<div class="clearfix"></div>
+				</div>
+                <div class="panel-wrapper p-b-0 collapse in">
+                    `+items+`
                 </div>
             </div>
         </div>
@@ -2691,6 +2773,77 @@ function homepageRecent(type, timeout=30000){
 	setTimeout(function(){
 		homepageRecent(type, timeout);
 	}, timeout)
+}
+function homepagePlaylist(type, timeout=30000){
+	//if(isHidden()){ return; }
+	switch (type) {
+		case 'plex':
+			var action = 'getPlexPlaylists';
+			break;
+		default:
+
+	}
+	ajaxloader(".content-wrap","in");
+	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
+		var response = JSON.parse(data);
+		document.getElementById('homepageOrder'+type+'playlist').innerHTML = '';
+		$('#homepageOrder'+type+'playlist').html(buildPlaylist(response.data, type));
+		$('.playlist-items').owlCarousel({
+    	    margin:40,
+    	    nav:false,
+    		autoplay:false,
+            dots:false,
+    	    responsive:{
+    	        0:{
+    	            items:2
+    	        },
+    	        500:{
+    	            items:3
+    	        },
+    	        650:{
+    	            items:4
+    	        },
+    	        800:{
+    	            items:5
+    	        },
+    	        950:{
+    	            items:6
+    	        },
+    	        1100:{
+    	            items:7
+    	        },
+    	        1250:{
+    	            items:8
+    	        },
+    	        1400:{
+    	            items:9
+    	        },
+    	        1550:{
+    	            items:10
+    	        },
+    	        1700:{
+    	            items:11
+    	        },
+    	        1850:{
+    	            items:12
+    	        },
+    	        2000:{
+    	            items:13
+    	        },
+    	        2150:{
+    	            items:14
+    	        },
+    	        2300:{
+    	            items:15
+    	        },
+    	        2450:{
+    	            items:16
+    	        }
+    	    }
+    	})
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
 }
 function homepageCalendar(timeout=30000){
 	//if(isHidden()){ return; }

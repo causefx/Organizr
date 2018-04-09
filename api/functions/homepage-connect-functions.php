@@ -11,6 +11,9 @@ function homepageConnect($array){
         case 'getPlexMetadata':
             return plexConnect('metadata',$array['data']['key']);
             break;
+        case 'getPlexPlaylists':
+            return getPlexPlaylists();
+            break;
         case 'getEmbyStreams':
             return embyConnect('streams');
             break;
@@ -417,6 +420,9 @@ function plexConnect($action,$key=null){
             case 'metadata':
                 $url = $url."/library/metadata/".$key."?X-Plex-Token=".$GLOBALS['plexToken'];
                 break;
+			case 'playlists':
+                $url = $url."/playlists?X-Plex-Token=".$GLOBALS['plexToken'];
+                break;
             default:
                 # code...
                 break;
@@ -430,6 +436,46 @@ function plexConnect($action,$key=null){
                 $plex = simplexml_load_string($response->body);
                 foreach($plex AS $child) {
                     $items[] = resolvePlexItem($child);
+                }
+                $api['content'] = $items;
+                $api['plexID'] = $GLOBALS['plexID'];
+                $api['showNames'] = true;
+                $api['group'] = '1';
+                return $api;
+            }
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'Plex Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
+    }
+    return false;
+}
+function getPlexPlaylists(){
+    if($GLOBALS['homepagePlexEnabled'] && !empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'] && qualifyRequest($GLOBALS['homepagePlexAuth']) && qualifyRequest($GLOBALS['homepagePlexPlaylistAuth']) && $GLOBALS['homepagePlexPlaylist'])){
+        $url = qualifyURL($GLOBALS['plexURL']);
+        $url = $url."/playlists?X-Plex-Token=".$GLOBALS['plexToken'];
+        try{
+            $options = (localURL($url)) ? array('verify' => false ) : array();
+            $response = Requests::get($url, array(), $options);
+            libxml_use_internal_errors(true);
+            if($response->success){
+                $items = array();
+                $plex = simplexml_load_string($response->body);
+                foreach($plex AS $child) {
+    				if ($child['playlistType'] == "video" && strpos(strtolower($child['title']) , 'private') === false){
+                        $playlistTitleClean = preg_replace("/(\W)+/", "", (string)$child['title']);
+                        $playlistURL = qualifyURL($GLOBALS['plexURL']);
+                        $playlistURL = $playlistURL.$child['key']."?X-Plex-Token=".$GLOBALS['plexToken'];
+                        $options = (localURL($url)) ? array('verify' => false ) : array();
+                        $playlistResponse = Requests::get($playlistURL, array(), $options);
+						if($playlistResponse->success){
+			                $playlistResponse = simplexml_load_string($playlistResponse->body);
+                            $items[$playlistTitleClean]['title'] = (string)$child['title'];
+							foreach($playlistResponse->Video AS $playlistItem){
+								$items[$playlistTitleClean][] = resolvePlexItem($playlistItem);
+							}
+						}
+
+                    }
                 }
                 $api['content'] = $items;
                 $api['plexID'] = $GLOBALS['plexID'];
