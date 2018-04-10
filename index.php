@@ -27,8 +27,8 @@
 	<link href="css/organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<?php echo pluginFiles('css'); ?>
 	<link id="theme" href="css/themes/Organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
-	<style type="text/css" id="user-appearance"></style>
-	<style type="text/css" id="custom-css"></style>
+	<style id="user-appearance"></style>
+	<style id="custom-css"></style>
 	<!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
@@ -124,13 +124,13 @@
 	<script src="js/lazyload.min2.js"></script>
 	<script src="js/clipboard.js"></script>
 	<script src="js/emulatetab.joelpurra.js"></script>
-	<script src="plugins/bower_components/ace/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="plugins/bower_components/ace/mode-css.js" type="text/javascript" charset="utf-8"></script>
-	<script src="plugins/bower_components/ace/mode-html.js" type="text/javascript" charset="utf-8"></script>
-	<script src="plugins/bower_components/ace/theme-idle_fingers.js" type="text/javascript" charset="utf-8"></script>
+	<script src="plugins/bower_components/ace/ace.js"></script>
+	<script src="plugins/bower_components/ace/mode-css.js"></script>
+	<script src="plugins/bower_components/ace/mode-html.js"></script>
+	<script src="plugins/bower_components/ace/theme-idle_fingers.js"></script>
 	<script src="plugins/bower_components/blockUI/jquery.blockUI.js"></script>
 	<script src="plugins/bower_components/datatables/jquery.dataTables.min.js"></script>
-	<script src="plugins\bower_components\datatables-plugins\sorting\datetime-moment.js"></script>
+	<script src="plugins/bower_components/datatables-plugins/sorting/datetime-moment.js"></script>
 	<script src="plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min.js"></script>
 	<script src="plugins/bower_components/sweetalert/sweetalert.min.js"></script>
 	<script src="plugins/bower_components/switchery/dist/switchery.min.js"></script>
