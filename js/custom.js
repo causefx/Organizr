@@ -1497,6 +1497,7 @@ $(document).on("click", ".openTab", function(e) {
 });
 // metadata start
 $(document).on("click", ".metadata-get", function(e) {
+    $("#preloader").fadeIn();
     var key = $(this).attr('data-key');
     var uid = $(this).attr('data-uid');
     var source = $(this).attr('data-source');
@@ -1564,6 +1565,7 @@ $(document).on("click", ".metadata-get", function(e) {
         console.error("Organizr Function: API Connection Failed");
     });
     ajaxloader();
+    $("#preloader").fadeOut();
 
 });
 // sab play/resume
@@ -1603,10 +1605,12 @@ $(document).on("click", ".showPassword", function () {
 
 // calendar popups
 $(document).on('click', "a[class*=ID-]", function(){
+    //$("#preloader").fadeIn();
     var details = $(this).attr('data-details');
     var target = $(this).attr('data-target')+'-metadata-info';
     var json = JSON.parse(details);
     $('.'+target).html(buildCalendarMetadata(json));
+    //$("#preloader").fadeOut();
     myLazyLoad.update();
 });
 /* ===== Open-Close Right Sidebar ===== */

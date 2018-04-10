@@ -6654,6 +6654,19 @@ DayGrid.mixin({
 		<div id="`+urlMeta+`" class="white-popup mfp-with-anim mfp-hide">
 	        <div class="col-md-8 col-md-offset-2 `+urlMeta+`-metadata-info"></div>
 	    </div>
+		<script>
+		$('.inline-popups').magnificPopup({
+	      removalDelay: 500, //delay removal by X to allow out-animation
+	      closeOnBgClick: true,
+	      //closeOnContentClick: true,
+	      callbacks: {
+	        beforeOpen: function() {
+	           this.st.mainClass = this.st.el.attr('data-effect');
+	        }
+	      },
+	      midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
+	    });
+		</script>
 		`;
 		var detailsJSON = JSON.stringify(event.details);
 		classes.unshift('fc-day-grid-event', 'fc-h-event');
@@ -6664,8 +6677,8 @@ DayGrid.mixin({
 			if (timeText) {
 				timeHtml = '<span class="fc-time '+(htmlEscape(event.imagetype || '') || '&nbsp;')+'">' + htmlEscape(timeText) + '</span><br/>';
 			}else{
-       timeHtml = '<br/>';
-   }
+       			timeHtml = '<br/>';
+   			}
 		}
 		titleHtml =
 			'<span class="fc-title">' +
