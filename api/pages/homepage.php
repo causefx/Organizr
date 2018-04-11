@@ -25,14 +25,14 @@ $pageHomepage = '
         var today = new Date($.now());
         var $this = this;
         $this.$calendarObj = $this.$calendar.fullCalendar({
-            defaultView: "'.$GLOBALS['calendarDefault'].'",
+            defaultView: (activeInfo.mobile) ? "basicDay" : "'.$GLOBALS['calendarDefault'].'",
             firstDay: "'.$GLOBALS['calendarFirstDay'].'",
             timeFormat: "'.$GLOBALS['calendarTimeFormat'].'",
             handleWindowResize: true,
             header: {
                left: "prev,next",
                center: "title",
-               right: "month,basicWeek,basicDay"
+               right: (activeInfo.mobile) ? "" : "month,basicWeek,basicDay",
             },
             views: {
                basicDay: { buttonText: window.lang.translate("Day"), eventLimit: '.$GLOBALS['calendarLimit'].' },
