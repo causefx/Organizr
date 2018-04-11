@@ -2946,6 +2946,7 @@ function launch(){
 			serverOS:json.data.status.os,
 			phpVersion:json.data.status.php,
 			token:json.data.user.token,
+			user:json.data.user,
 			branch:json.branch,
 			sso:json.sso,
 			theme:json.theme,

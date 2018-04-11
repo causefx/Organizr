@@ -1283,6 +1283,59 @@ function getHomepageList(){
             )
         ),
 		array(
+            'name' => 'Ombi',
+            'enabled' => false,
+            'image' => 'plugins/images/tabs/ombi.png',
+            'category' => 'Requests',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageOmbiEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageOmbiEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageOmbiAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageOmbiAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'ombiURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['ombiURL'],
+                        'placeholder' => 'http(s)://hostname:port'
+                    ),
+                    array(
+                        'type' => 'password-alt',
+                        'name' => 'ombiToken',
+                        'label' => 'Token',
+                        'value' => $GLOBALS['ombiToken']
+                    )
+                ),
+                'Misc Options' => array(
+					array(
+                        'type' => 'switch',
+                        'name' => 'ombiLimitUser',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['ombiLimitUser']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'ombiRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['ombiRefresh'],
+                        'options' => $time
+                    )
+                )
+            )
+        ),
+		array(
             'name' => 'CustomHTML-1',
             'enabled' => false,
             'image' => 'plugins/images/tabs/custom1.png',
