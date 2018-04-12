@@ -40,13 +40,11 @@ function buildHomepageItem($homepageItem){
 			break;
 		case 'homepageOrdercustomhtml':
 			if($GLOBALS['homepagCustomHTMLoneEnabled'] && qualifyRequest($GLOBALS['homepagCustomHTMLoneAuth']) ){
-				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Custom HTML...</h2></div>';
 				$item .= ($GLOBALS['customHTMLone'] !== '') ? $GLOBALS['customHTMLone'] : '';
 			}
 			break;
 		case 'homepageOrdercustomhtmlTwo':
 			if($GLOBALS['homepagCustomHTMLtwoEnabled'] && qualifyRequest($GLOBALS['homepagCustomHTMLtwoAuth']) ){
-				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Custom HTML...</h2></div>';
 				$item .= ($GLOBALS['customHTMLtwo'] !== '') ? $GLOBALS['customHTMLtwo'] : '';
 			}
 			break;

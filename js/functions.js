@@ -2187,6 +2187,7 @@ function buildRecent(array, type){
 					<div class="clearfix"></div>
 				</div>
                 <div class="panel-wrapper p-b-0 collapse in">
+					<div class="`+type+`-recent-hidden hidden"></div>
                     <div class="owl-carousel owl-theme recent-items `+type+`-recent">
 						`+buildRecentItem(array.content, type)+`
                     </div>
