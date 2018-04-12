@@ -40,11 +40,13 @@ function buildHomepageItem($homepageItem){
 			break;
 		case 'homepageOrdercustomhtml':
 			if($GLOBALS['homepagCustomHTMLoneEnabled'] && qualifyRequest($GLOBALS['homepagCustomHTMLoneAuth']) ){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Custom HTML...</h2></div>';
 				$item .= ($GLOBALS['customHTMLone'] !== '') ? $GLOBALS['customHTMLone'] : '';
 			}
 			break;
 		case 'homepageOrdercustomhtmlTwo':
 			if($GLOBALS['homepagCustomHTMLtwoEnabled'] && qualifyRequest($GLOBALS['homepagCustomHTMLtwoAuth']) ){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Custom HTML...</h2></div>';
 				$item .= ($GLOBALS['customHTMLtwo'] !== '') ? $GLOBALS['customHTMLtwo'] : '';
 			}
 			break;
@@ -59,6 +61,7 @@ function buildHomepageItem($homepageItem){
 			break;
         case 'homepageOrderqBittorrent':
             if($GLOBALS['homepageqBittorrentEnabled']){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
                 $item .= '
                 <script>
                 // homepageOrderqBittorrent
@@ -70,6 +73,7 @@ function buildHomepageItem($homepageItem){
             break;
 		case 'homepageOrderdeluge':
 			if($GLOBALS['homepageDelugeEnabled']){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
 				$item .= '
 				<script>
 				// Deluge
@@ -81,6 +85,7 @@ function buildHomepageItem($homepageItem){
 			break;
 		case 'homepageOrdertransmission':
 			if($GLOBALS['homepageTransmissionEnabled']){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
 				$item .= '
 				<script>
 				// Transmission
@@ -92,6 +97,7 @@ function buildHomepageItem($homepageItem){
 			break;
 		case 'homepageOrdernzbget':
 			if($GLOBALS['homepageNzbgetEnabled']){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
 				$item .= '
 				<script>
 				// NZBGet
@@ -103,6 +109,7 @@ function buildHomepageItem($homepageItem){
 			break;
 		case 'homepageOrdersabnzbd':
 			if($GLOBALS['homepageSabnzbdEnabled']){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
 				$item .= '
 				<script>
 				// SabNZBd
@@ -114,6 +121,7 @@ function buildHomepageItem($homepageItem){
 			break;
 		case 'homepageOrderplexnowplaying':
 			if($GLOBALS['homepagePlexStreams']){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Now Playing...</h2></div>';
 				$item .= '
 				<script>
 				// Plex Stream
@@ -125,6 +133,7 @@ function buildHomepageItem($homepageItem){
 			break;
 		case 'homepageOrderplexrecent':
 			if($GLOBALS['homepagePlexRecent']){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Recent...</h2></div>';
 				$item .= '
 				<script>
 				// Plex Recent
@@ -136,6 +145,7 @@ function buildHomepageItem($homepageItem){
 			break;
 		case 'homepageOrderplexplaylist':
 			if($GLOBALS['homepagePlexPlaylist']){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Playlists...</h2></div>';
 				$item .= '
 				<script>
 				// Plex Playlist
@@ -147,6 +157,7 @@ function buildHomepageItem($homepageItem){
 			break;
 		case 'homepageOrderembynowplaying':
 			if($GLOBALS['homepageEmbyStreams']){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Now Playing...</h2></div>';
 				$item .= '
 				<script>
 				// Emby Stream
@@ -158,6 +169,7 @@ function buildHomepageItem($homepageItem){
 			break;
 		case 'homepageOrderembyrecent':
 			if($GLOBALS['homepageEmbyRecent']){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Recent...</h2></div>';
 				$item .= '
 				<script>
 				// Emby Recent
@@ -168,11 +180,20 @@ function buildHomepageItem($homepageItem){
 			}
 			break;
 		case 'homepageOrderombi':
-
+			if($GLOBALS['homepageOmbiEnabled']){
+				$item .= '<div class="white-box  animated zoomIn"><h2 class="text-center" lang="en">Loading Requests...</h2></div>';
+				$item .= '
+				<script>
+				// Ombi Requests
+				homepageRequests("'.$GLOBALS['ombiRefresh'].'");
+				// End Ombi Requests
+				</script>
+				';
+			}
 			break;
 		case 'homepageOrdercalendar':
 			$item .= '
-			<div id="calendar" class="fc fc-ltr"></div>
+			<div id="calendar" class="fc fc-ltr animated zoomIn"></div>
 			<script>
 			// Calendar
 			homepageCalendar("'.$GLOBALS['calendarRefresh'].'");

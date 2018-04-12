@@ -2085,11 +2085,59 @@ function buildPlaylistItem(array, type, extra=null){
 				`;
 			}
 		}
-
-
-
 	});
 	return items;
+}
+function buildRequestItem(array, extra=null){
+	var items = '';
+	$.each(array, function(i,v) {
+			if(extra == null){
+				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/cache/no-np.png';
+				//Set Status
+				var status = (v.approved) ? '<span class="badge bg-org m-r-10" lang="en">Approved</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unapproved</span>';
+				status += (v.available) ? '<span class="badge bg-org m-r-10" lang="en">Available</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unavailable</span>';
+				//Set Class
+				var className = (v.approved) ? 'request-approved' : 'request-unapproved';
+				className += (v.available) ? ' request-available' : ' request-unavailable';
+				items += `
+				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
+					<span class="elip recent-title">`+v.title+`</span>
+					<div id="request-`+v.id+`" class="white-popup mfp-with-anim mfp-hide">
+						<div class="col-md-8 col-md-offset-2">
+							<div class="white-box m-b-0">
+								<div class="user-bg lazyload" data-src="`+bg+`">
+									<div class="col-xs-2 p-10"></div>
+									<div class="col-xs-10">
+										<h2 class="m-b-0 font-medium pull-right text-right">
+											`+v.title+`<br>
+										</h2>
+									</div>
+									<div class="genre-list p-10">`+status+`</div>
+								</div>
+							</div>
+							<div class="panel panel-info p-b-0 p-t-0">
+								<div class="panel-body p-b-0 p-t-0 m-b-0">
+									<div class="p-20 text-center">
+										<p class="">`+v.overview+`</p>
+									</div>
+									<div class="row">
+										<div class="col-lg-12">
+											<div class="owl-carousel owl-theme metadata-actors p-b-10">asd</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				`;
+			}else{
+				items += `
+				<a class="inline-popups hidden" id="link-request-`+v.id+`" href="#request-`+v.id+`" data-effect="mfp-zoom-out" ></a>
+				`;
+			}
+	});
+	return ((items !== '') || extra == null) ? items : '<h2 class="text-center">No items</h2>';
 }
 function buildStream(array, type){
 	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
@@ -2097,7 +2145,7 @@ function buildStream(array, type){
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay">
 		    <div class="col-md-12">
-		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Streams: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-5">`+streams+`</span></h4>
+		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Streams: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20">`+streams+`</span></h4>
 		        <hr>
 		    </div>
 			<div class="clearfix"></div>
@@ -2158,9 +2206,6 @@ function buildPlaylist(array, type){
 	var items = '';
 	if(playlist){
 		$.each(array.content, function(i,v) {
-
-
-
 			count ++;
 			first = (count == 1) ? v.title : first;
 			hidden = (count == 1) ? '' : ' hidden';
@@ -2172,21 +2217,16 @@ function buildPlaylist(array, type){
 			</div>
 			`+buildPlaylistItem(v, type, true)+`
 			`;
-
-
-
-
 		});
 		var builtDropdown = `
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
-			<i class="fa fa-filter m-r-5"></i><span lang="en">Choose Playlist</span>
+			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
 		</button>
 		<ul role="menu" class="dropdown-menu playlist-filter">
 			`+dropdown+`
 		</ul>
 		`;
 	}
-
 	return (playlist) ? `
 	<div id="`+type+`Playlist" class="row">
         <div class="col-lg-12">
@@ -2200,6 +2240,69 @@ function buildPlaylist(array, type){
 				</div>
                 <div class="panel-wrapper p-b-0 collapse in">
                     `+items+`
+                </div>
+            </div>
+        </div>
+    </div>
+	` : '';
+}
+function buildRequest(array){
+	var requests = (typeof array.content !== 'undefined') ? true : false;
+	var dropdown = '';
+	if(requests){
+		var builtDropdown = `
+		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
+			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
+		</button>
+		<div role="menu" class="dropdown-menu request-filter">
+			<div class="checkbox checkbox-success m-l-20">
+				<input id="request-filter-available" data-filter="request-available" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-available"> Available </label>
+			</div>
+			<div class="checkbox checkbox-danger m-l-20">
+				<input id="request-filter-unavailable" data-filter="request-unavailable"  class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-unavailable"> Unavailable </label>
+			</div>
+			<div class="checkbox checkbox-info m-l-20">
+				<input id="request-filter-approved" data-filter="request-approved" class="filter-request-input" type="checkbox"  checked="">
+				<label for="request-filter-approved"> Approved </label>
+			</div>
+			<div class="checkbox checkbox-warning m-l-20">
+				<input id="request-filter-unapproved" data-filter="request-unapproved" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-unapproved"> Unapproved </label>
+			</div>
+			<div class="checkbox checkbox-purple m-l-20">
+				<input id="request-filter-denied" data-filter="request-denied" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-denied"> Denied </label>
+			</div>
+			<div class="checkbox checkbox-purple m-l-20">
+				<input id="request-filter-movie" data-filter="request-movie" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-movie"> Movie </label>
+			</div>
+			<div class="checkbox checkbox-purple m-l-20">
+				<input id="request-filter-tv" data-filter="request-tv" class="filter-request-input" type="checkbox" checked="">
+				<label for="request-filter-tv"> TV </label>
+			</div>
+		</div>
+
+		`;
+	}
+	return (requests) ? `
+	<div id="ombi-requests" class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading bg-info p-t-10 p-b-10">
+					<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; Requested Content</span>
+					<div class="btn-group pull-right">
+							`+builtDropdown+`
+	                </div>
+					<div class="clearfix"></div>
+				</div>
+                <div class="panel-wrapper p-b-0 collapse in">
+				<div class="owl-carousel owl-theme request-items">
+					`+buildRequestItem(array.content)+`
+				</div>
+				`+buildRequestItem(array.content, true)+`
                 </div>
             </div>
         </div>
@@ -2534,7 +2637,7 @@ function buildDownloader(array, source){
 	            `+menu+`
 				<div class="clearfix"></div>
 	        </div>
-	        <div class="white-box p-0 m-b-0">
+	        <div class="white-box p-0">
 	            <div class="tab-content m-t-0">`+listing+`</div>
 	        </div>
 		</div>
@@ -2844,6 +2947,73 @@ function homepagePlaylist(type, timeout=30000){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
+}
+function homepageRequests(timeout=30000){
+	ajaxloader(".content-wrap","in");
+	organizrAPI('POST','api/?v1/homepage/connect',{action:'getRequests'}).success(function(data) {
+		var response = JSON.parse(data);
+		document.getElementById('homepageOrderombi').innerHTML = '';
+		$('#homepageOrderombi').html(buildRequest(response.data));
+		$('.request-items').owlCarousel({
+    	    margin:40,
+    	    nav:false,
+    		autoplay:false,
+            dots:false,
+    	    responsive:{
+    	        0:{
+    	            items:2
+    	        },
+    	        500:{
+    	            items:3
+    	        },
+    	        650:{
+    	            items:4
+    	        },
+    	        800:{
+    	            items:5
+    	        },
+    	        950:{
+    	            items:6
+    	        },
+    	        1100:{
+    	            items:7
+    	        },
+    	        1250:{
+    	            items:8
+    	        },
+    	        1400:{
+    	            items:9
+    	        },
+    	        1550:{
+    	            items:10
+    	        },
+    	        1700:{
+    	            items:11
+    	        },
+    	        1850:{
+    	            items:12
+    	        },
+    	        2000:{
+    	            items:13
+    	        },
+    	        2150:{
+    	            items:14
+    	        },
+    	        2300:{
+    	            items:15
+    	        },
+    	        2450:{
+    	            items:16
+    	        }
+    	    }
+    	})
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
+	setTimeout(function(){
+		homepageRequests(timeout);
+	}, timeout)
 }
 function homepageCalendar(timeout=30000){
 	//if(isHidden()){ return; }

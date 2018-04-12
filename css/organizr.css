@@ -262,3 +262,9 @@ background: #2cabe3;
   	display: inline !important;
   }
 }
+.loop-animation {
+	animation-iteration-count: infinite;
+	-webkit-animation-iteration-count: infinite;
+	-moz-animation-iteration-count: infinite;
+  -o-animation-iteration-count: infinite;
+}

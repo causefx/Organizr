@@ -41,6 +41,9 @@ function homepageConnect($array){
         case 'getCalendar':
             return getCalendar();
             break;
+        case 'getRequests':
+            return getOmbiRequests();
+            break;
         default:
             # code...
             break;
@@ -1088,4 +1091,141 @@ function getSickrageCalendarHistory($array,$number){
             ));
     }
     if ($i != 0){ return $gotCalendar; }
+}
+function ombiAction($id, $action, $type) {
+    if($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest($GLOBALS['homepageOmbiAuth'])){
+        $url = qualifyURL($GLOBALS['ombiURL']);
+        $headers = array(
+    		"Accept" => "application/json",
+    		"Content-Type" => "application/json",
+    		"Apikey" => $GLOBALS['ombiToken']
+    	);
+    	$data = array(
+    		'id' => $id,
+    	);
+    	switch ($type) {
+    		case 'season':
+    		case 'tv':
+    			$type = 'tv';
+    			break;
+    		default:
+    			$type = 'movie';
+    			break;
+    	}
+        try{
+            $options = (localURL($url)) ? array('verify' => false ) : array();
+            switch ($action) {
+        		case 'approve':
+        			$response = Requests::post($url."/api/v1/Request/".$type."/approve", $headers, $data, $options);
+        			break;
+        		case 'available':
+    				$response = Requests::post($url."/api/v1/Request/".$type."/available", $headers, $data, $options);
+    				break;
+        		case 'unavailable':
+        			$url = Requests::post($url."/api/v1/Request/".$type."/unavailable", $headers, $data, $options);
+        			break;
+        		case 'deny':
+        			$response = Requests::post($url."/api/v1/Request/".$type."/deny", $headers, $data, $options);
+        			break;
+        		case 'delete':
+        			$response = Requests::delete($url."/api/v1/Request/".$type."/".$id, $headers, $options);
+        			break;
+        		default:
+        			# code...
+        			break;
+        	}
+            if($response->success){
+                $api['content'] = true;
+                return true;
+            }else{
+                $api['content'] = false;
+            }
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'OMBI Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
+    }
+    return false;
+}
+function getOmbiRequests($type = "both"){
+    if($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest($GLOBALS['homepageOmbiAuth'])){
+        $url = qualifyURL($GLOBALS['ombiURL']);
+    	$headers = array(
+    		"Accept" => "application/json",
+    		"Apikey" => $GLOBALS['ombiToken'],
+    	);
+    	$requests = array();
+        try{
+            $options = (localURL($url)) ? array('verify' => false ) : array();
+            switch ($type) {
+        		case 'movie':
+        			$movie = Requests::get($url."/api/v1/Request/movie", $headers, $options);
+        			break;
+        		case 'tv':
+        			$tv = Requests::get($url."/api/v1/Request/tv", $headers, $options);
+        			break;
+
+        		default:
+        			$movie = Requests::get($url."/api/v1/Request/movie", $headers, $options);
+        			$tv = Requests::get($url."/api/v1/Request/tv", $headers, $options);
+        			break;
+        	}
+            if($movie->success || $tv->success){
+                if(isset($movie)){
+                    $movie = json_decode($movie->body, true);
+            		//$movie = array_reverse($movie);
+            		foreach ($movie as $key => $value) {
+            			$requests[] = array(
+                            'test' => $value,
+            				'id' => $value['theMovieDbId'],
+            				'title' => $value['title'],
+                            'overview' => $value['overview'],
+                            'poster' => (isset($value['posterPath']) && $value['posterPath'] !== '') ? 'https://image.tmdb.org/t/p/w300/'.$value['posterPath'] : '',
+            				'background' => (isset($value['background']) && $value['background'] !== '') ? 'https://image.tmdb.org/t/p/w1280/'.$value['background'] : '',
+            				'approved' => $value['approved'],
+            				'available' => $value['available'],
+            				'denied' => $value['denied'],
+            				'deniedReason' => $value['deniedReason'],
+            				'user' => $value['requestedUser']['userName'],
+            				'request_id' => $value['id'],
+            				'request_date' => $value['requestedDate'],
+            				'release_date' => $value['releaseDate'],
+            				'type' => 'movie',
+            				'icon' => 'mdi mdi-filmstrip',
+            				'color' => 'palette-Deep-Purple-900 bg white',
+            			);
+            		}
+            	}
+            	if(isset($tv) && (is_array($tv) || is_object($tv))){
+                    $tv = json_decode($tv->body, true);
+            		foreach ($tv as $key => $value) {
+            			if(is_array($value['childRequests'][0])){
+            				$requests[] = array(
+                                'test' => $value,
+            					'id' => $value['tvDbId'],
+                                'title' => $value['title'],
+            					'overview' => $value['overview'],
+                                'poster' => $value['posterPath'],
+            					'background' => (isset($value['background']) && $value['background'] !== '') ? 'https://image.tmdb.org/t/p/w1280/'.$value['background'] : '',
+            					'approved' => $value['childRequests'][0]['approved'],
+            					'available' => $value['childRequests'][0]['available'],
+            					'denied' => $value['childRequests'][0]['denied'],
+            					'deniedReason' => $value['childRequests'][0]['deniedReason'],
+            					'user' => $value['childRequests'][0]['requestedUser']['userName'],
+            					'request_id' => $value['id'],
+            					'request_date' => $value['childRequests'][0]['requestedDate'],
+            					'release_date' => $value['releaseDate'],
+            					'type' => 'tv',
+            					'icon' => 'mdi mdi-television',
+            					'color' => 'grayish-blue-bg',
+            				);
+            			}
+            		}
+            	}
+            }
+        }catch( Requests_Exception $e ) {
+            writeLog('error', 'OMBI Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+        };
+    }
+    $api['content'] = isset($requests) ? $requests : false;
+    return $api;
 }

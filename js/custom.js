@@ -1451,7 +1451,10 @@ $(document).on("click", ".recent-filter li>a", function () {
         $('.'+type+'-recent').find('.recent-item').parent().removeClass('hidden');
         $('.'+type+'-recent').find('.recent-item:not(.'+ filter + ')').parent().addClass('hidden');
     }
-
+    var owl = $('.'+type+'-recent');
+    owl.owlCarousel();
+    owl.trigger('refresh.owl.carousel');
+    owl.trigger('to.owl.carousel',0);
 });
 //playlist filter
 $(document).on("click", ".playlist-filter li>a", function () {
@@ -1494,6 +1497,11 @@ $(document).on("click", ".openTab", function(e) {
         var source = $(this).attr("data-url");
         window.open(source, '_blank');
     }
+});
+//request click
+$(document).on("click", ".request-item", function(e) {
+    var target = $(this).attr('data-target');
+    $('#link-'+target).trigger('click');
 });
 // metadata start
 $(document).on("click", ".metadata-get", function(e) {
@@ -1589,8 +1597,8 @@ $(document).on("click", ".downloader", function(e) {
 });
 // purge log
 $(document).on("click", ".purgeLog", function () {
-var log = $('.swapLog.active').attr('data-name');
-alert('This action is not set yet - but this would have purged the '+log+' log');
+    var log = $('.swapLog.active').attr('data-name');
+    alert('This action is not set yet - but this would have purged the '+log+' log');
 });
 //Show Passowrd
 $(document).on("click", ".showPassword", function () {
@@ -1602,7 +1610,6 @@ $(document).on("click", ".showPassword", function () {
     }
     $(this).find('.passwordToggle').toggleClass('fa-eye').toggleClass('fa-eye-slash');
 });
-
 // calendar popups
 $(document).on('click', "a[class*=ID-]", function(){
     //$("#preloader").fadeIn();
@@ -1612,6 +1619,29 @@ $(document).on('click', "a[class*=ID-]", function(){
     $('.'+target).html(buildCalendarMetadata(json));
     //$("#preloader").fadeOut();
     myLazyLoad.update();
+});
+// request filter
+$(document).on("change", ".filter-request-input", function () {
+    $('.request-item').parent().removeClass('hidden');
+    var badArray = [];
+    $('.filter-request-input').each(function () {
+        var value = $(this).prop('checked');
+        var filter = $(this).attr('data-filter');
+        if(value == false){
+            badArray.push('.'+filter);
+        }
+    });
+    $('.request-item').each(function () {
+        var element = $(this);
+        var string = badArray.join(', ');
+        if(element.is(string)){
+            element.parent().addClass('hidden');
+        }
+    });
+    var owl = $('.request-items');
+    owl.owlCarousel();
+    owl.trigger('refresh.owl.carousel');
+    owl.trigger('to.owl.carousel',0);
 });
 /* ===== Open-Close Right Sidebar ===== */
 
