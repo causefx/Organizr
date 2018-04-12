@@ -2993,7 +2993,7 @@ function homepagePlaylist(type, timeout=30000){
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
-function homepageRequests(timeout=30000){
+function homepageRequests(timeout=600000){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getRequests'}).success(function(data) {
 		var response = JSON.parse(data);
@@ -3056,9 +3056,8 @@ function homepageRequests(timeout=30000){
 		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
-	setTimeout(function(){
-		homepageRequests(timeout);
-	}, timeout)
+	if(typeof homepageRequestsTimeout !== 'undefined'){ clearTimeout(homepageRequestsTimeout); }
+	homepageRequestsTimeout = setTimeout(function(){ homepageRequests(timeout); }, timeout)
 }
 function homepageCalendar(timeout=30000){
 	//if(isHidden()){ return; }
