@@ -1497,6 +1497,7 @@ $(document).on("click", ".openTab", function(e) {
         var source = $(this).attr("data-url");
         window.open(source, '_blank');
     }
+    $.magnificPopup.close();
 });
 //request click
 $(document).on("click", ".request-item", function(e) {

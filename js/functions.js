@@ -2088,6 +2088,34 @@ function buildPlaylistItem(array, type, extra=null){
 	});
 	return items;
 }
+function buildRequestAdminMenuItem(value,category,id,type){
+	var action = '';
+	var text = '';
+	var extra = '';
+	switch (category) {
+		case 'approved':
+			if(value){
+				//nada
+			}else{
+				action = 'approve';
+				text = 'Approve';
+				extra = `<li><a onclick="ombiActions('`+id+`', 'deny', '`+type+`');" lang="en">Deny</a></li>`;
+			}
+			break;
+		case 'available':
+			if(value){
+				action = 'unavailable';
+				text = 'Mark as Unavailable';
+			}else{
+				action = 'available';
+				text = 'Mark as Available';
+			}
+			break;
+		default:
+
+	}
+	return (action) ? `<li><a onclick="ombiActions('`+id+`', '`+action+`', '`+type+`');" lang="en">`+text+`</a></li>`+extra : '';
+}
 function buildRequestItem(array, extra=null){
 	var items = '';
 	$.each(array, function(i,v) {
@@ -2096,9 +2124,24 @@ function buildRequestItem(array, extra=null){
 				//Set Status
 				var status = (v.approved) ? '<span class="badge bg-org m-r-10" lang="en">Approved</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unapproved</span>';
 				status += (v.available) ? '<span class="badge bg-org m-r-10" lang="en">Available</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unavailable</span>';
+				status += (v.denied) ? '<span class="badge bg-danger m-r-10" lang="en">Denied</span>' : '';
 				//Set Class
 				var className = (v.approved) ? 'request-approved' : 'request-unapproved';
 				className += (v.available) ? ' request-available' : ' request-unavailable';
+				className += (v.denied) ? ' request-denied' : ' request-notdenied';
+				//Is Admin?
+				var adminFunctions = `<div class="btn-group m-r-10">
+                    <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info btn-outline dropdown-toggle waves-effect waves-light" type="button"> <i class="fa fa-ellipsis-v m-r-5"></i> <span class="caret"></span></button>
+                    <ul role="menu" class="dropdown-menu">
+						<li><h5 class="text-center" lang="en">Request Options</h5></li>
+						<li class="divider"></li>
+						`+buildRequestAdminMenuItem(v.approved, 'approved',v.request_id,v.type)+`
+						`+buildRequestAdminMenuItem(v.available, 'available',v.request_id,v.type)+`
+						<li><a onclick="ombiActions('`+v.request_id+`', 'delete', '`+v.type+`');" lang="en">Delete</a></li>
+                    </ul>
+                </div>`;
+				adminFunctions = (activeInfo.user.groupID <= 1) ? adminFunctions : '';
+				var user = (activeInfo.user.groupID <= 1) ? '<span lang="en">Requested By: </span>'+v.user : '';
 				items += `
 				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
 					<span class="elip recent-title">`+v.title+`</span>
@@ -2106,10 +2149,11 @@ function buildRequestItem(array, extra=null){
 						<div class="col-md-8 col-md-offset-2">
 							<div class="white-box m-b-0">
 								<div class="user-bg lazyload" data-src="`+bg+`">
-									<div class="col-xs-2 p-10"></div>
+									<div class="col-xs-2 p-10">`+adminFunctions+`</div>
 									<div class="col-xs-10">
 										<h2 class="m-b-0 font-medium pull-right text-right">
 											`+v.title+`<br>
+											<small class="m-t-0 text-white">`+user+`</small><br>
 										</h2>
 									</div>
 									<div class="genre-list p-10">`+status+`</div>
@@ -2145,7 +2189,7 @@ function buildStream(array, type){
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay">
 		    <div class="col-md-12">
-		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Streams: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20">`+streams+`</span></h4>
+		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Streams: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle">`+streams+`</span></h4>
 		        <hr>
 		    </div>
 			<div class="clearfix"></div>
@@ -2256,33 +2300,33 @@ function buildRequest(array){
 			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
 		</button>
 		<div role="menu" class="dropdown-menu request-filter">
-			<div class="checkbox checkbox-success m-l-20">
+			<div class="checkbox checkbox-success m-l-20 checkbox-circle">
 				<input id="request-filter-available" data-filter="request-available" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-available"> Available </label>
+				<label for="request-filter-available"> <span lang="en">Available</span> </label>
 			</div>
-			<div class="checkbox checkbox-danger m-l-20">
+			<div class="checkbox checkbox-danger m-l-20 checkbox-circle">
 				<input id="request-filter-unavailable" data-filter="request-unavailable"  class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-unavailable"> Unavailable </label>
+				<label for="request-filter-unavailable"> <span lang="en">Unavailable</span> </label>
 			</div>
-			<div class="checkbox checkbox-info m-l-20">
+			<div class="checkbox checkbox-info m-l-20 checkbox-circle">
 				<input id="request-filter-approved" data-filter="request-approved" class="filter-request-input" type="checkbox"  checked="">
-				<label for="request-filter-approved"> Approved </label>
+				<label for="request-filter-approved"> <span lang="en">Approved</span> </label>
 			</div>
-			<div class="checkbox checkbox-warning m-l-20">
+			<div class="checkbox checkbox-warning m-l-20 checkbox-circle">
 				<input id="request-filter-unapproved" data-filter="request-unapproved" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-unapproved"> Unapproved </label>
+				<label for="request-filter-unapproved"> <span lang="en">Unapproved</span> </label>
 			</div>
-			<div class="checkbox checkbox-purple m-l-20">
+			<div class="checkbox checkbox-purple m-l-20 checkbox-circle">
 				<input id="request-filter-denied" data-filter="request-denied" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-denied"> Denied </label>
+				<label for="request-filter-denied"> <span lang="en">Denied</span> </label>
 			</div>
-			<div class="checkbox checkbox-purple m-l-20">
+			<div class="checkbox checkbox-inverse m-l-20 checkbox-circle">
 				<input id="request-filter-movie" data-filter="request-movie" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-movie"> Movie </label>
+				<label for="request-filter-movie"> <span lang="en">Movie</span> </label>
 			</div>
-			<div class="checkbox checkbox-purple m-l-20">
+			<div class="checkbox checkbox-inverse m-l-20 checkbox-circle">
 				<input id="request-filter-tv" data-filter="request-tv" class="filter-request-input" type="checkbox" checked="">
-				<label for="request-filter-tv"> TV </label>
+				<label for="request-filter-tv"> <span lang="en">TV</span> </label>
 			</div>
 		</div>
 
@@ -3065,6 +3109,21 @@ function humanFileSize(bytes, si) {
         ++u;
     } while(Math.abs(bytes) >= thresh && u < units.length - 1);
     return bytes.toFixed(1)+' '+units[u];
+}
+//Ombi actions
+function ombiActions(id,action,type){
+	//console.log(id,action,type);
+	ajaxloader(".content-wrap","in");
+	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
+		var response = JSON.parse(data);
+		//console.log(response);
+		homepageRequests();
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+	ajaxloader();
+	$.magnificPopup.close();
+	message("",window.lang.translate('Updaded Request Item'),"bottom-right","#FFF","success","3500");
 }
 //Settings change auth
 function changeAuth(){

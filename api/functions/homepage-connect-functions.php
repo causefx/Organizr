@@ -1092,8 +1092,11 @@ function getSickrageCalendarHistory($array,$number){
     }
     if ($i != 0){ return $gotCalendar; }
 }
+function ombiAPI($array){
+    ombiAction($array['data']['id'],$array['data']['action'],$array['data']['type']);
+}
 function ombiAction($id, $action, $type) {
-    if($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest($GLOBALS['homepageOmbiAuth'])){
+    if($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest('1')){
         $url = qualifyURL($GLOBALS['ombiURL']);
         $headers = array(
     		"Accept" => "application/json",
@@ -1116,16 +1119,16 @@ function ombiAction($id, $action, $type) {
             $options = (localURL($url)) ? array('verify' => false ) : array();
             switch ($action) {
         		case 'approve':
-        			$response = Requests::post($url."/api/v1/Request/".$type."/approve", $headers, $data, $options);
+        			$response = Requests::post($url."/api/v1/Request/".$type."/approve", $headers, json_encode($data), $options);
         			break;
         		case 'available':
-    				$response = Requests::post($url."/api/v1/Request/".$type."/available", $headers, $data, $options);
+    				$response = Requests::post($url."/api/v1/Request/".$type."/available", $headers, json_encode($data), $options);
     				break;
         		case 'unavailable':
-        			$url = Requests::post($url."/api/v1/Request/".$type."/unavailable", $headers, $data, $options);
+        			$response = Requests::post($url."/api/v1/Request/".$type."/unavailable", $headers, json_encode($data), $options);
         			break;
         		case 'deny':
-        			$response = Requests::post($url."/api/v1/Request/".$type."/deny", $headers, $data, $options);
+        			$response = Requests::put($url."/api/v1/Request/".$type."/deny", $headers, json_encode($data), $options);
         			break;
         		case 'delete':
         			$response = Requests::delete($url."/api/v1/Request/".$type."/".$id, $headers, $options);
@@ -1135,16 +1138,14 @@ function ombiAction($id, $action, $type) {
         			break;
         	}
             if($response->success){
-                $api['content'] = true;
-                return true;
-            }else{
-                $api['content'] = false;
+                $success = true;
             }
         }catch( Requests_Exception $e ) {
             writeLog('error', 'OMBI Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
         };
     }
-    return false;
+	$api['content'] = isset($success) ? $success : false;
+    return $api;
 }
 function getOmbiRequests($type = "both"){
     if($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest($GLOBALS['homepageOmbiAuth'])){
