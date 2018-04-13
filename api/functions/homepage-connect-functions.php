@@ -1096,7 +1096,7 @@ function ombiAPI($array){
     ombiAction($array['data']['id'],$array['data']['action'],$array['data']['type']);
 }
 function ombiAction($id, $action, $type) {
-    if($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest('1')){
+    if($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest($GLOBALS['homepageOmbiAuth'])){
         $url = qualifyURL($GLOBALS['ombiURL']);
         $headers = array(
     		"Accept" => "application/json",
@@ -1110,35 +1110,69 @@ function ombiAction($id, $action, $type) {
     		case 'season':
     		case 'tv':
     			$type = 'tv';
+                $add = array(
+                    'tvdDbId' => $id,
+                    'requestAll' => true,
+                    'latestSeason' => true,
+                    'firstSeason' => true
+                );
     			break;
     		default:
     			$type = 'movie';
+                $add = array("theMovieDbId" => (int)$id);
     			break;
     	}
+        $success['head'] = $headers;
+        $success['act'] = $action;
+        $success['data'] = $data;
+        $success['add'] = $add;
+        $success['type'] = $type;
         try{
             $options = (localURL($url)) ? array('verify' => false ) : array();
             switch ($action) {
-        		case 'approve':
-        			$response = Requests::post($url."/api/v1/Request/".$type."/approve", $headers, json_encode($data), $options);
-        			break;
-        		case 'available':
-    				$response = Requests::post($url."/api/v1/Request/".$type."/available", $headers, json_encode($data), $options);
-    				break;
-        		case 'unavailable':
-        			$response = Requests::post($url."/api/v1/Request/".$type."/unavailable", $headers, json_encode($data), $options);
-        			break;
-        		case 'deny':
-        			$response = Requests::put($url."/api/v1/Request/".$type."/deny", $headers, json_encode($data), $options);
-        			break;
-        		case 'delete':
-        			$response = Requests::delete($url."/api/v1/Request/".$type."/".$id, $headers, $options);
-        			break;
+                case 'add':
+                    if(isset($_COOKIE['Auth'])){
+                        $headers = array(
+                            "Accept" => "application/json",
+                            "Content-Type" => "application/json",
+                            "Authorization" => "Bearer ".$_COOKIE['Auth']
+                        );
+                        $success['head'] = $headers;
+                    }else{
+                        return false;
+                    }
+                    $response = Requests::post($url."/api/v1/Request/".$type, $headers, json_encode($add), $options);
+                    break;
         		default:
-        			# code...
-        			break;
+        			if(qualifyRequest(1)){
+                        switch ($action) {
+                    		case 'approve':
+                    			$response = Requests::post($url."/api/v1/Request/".$type."/approve", $headers, json_encode($data), $options);
+                    			break;
+                    		case 'available':
+                				$response = Requests::post($url."/api/v1/Request/".$type."/available", $headers, json_encode($data), $options);
+                				break;
+                    		case 'unavailable':
+                    			$response = Requests::post($url."/api/v1/Request/".$type."/unavailable", $headers, json_encode($data), $options);
+                    			break;
+                    		case 'deny':
+                    			$response = Requests::put($url."/api/v1/Request/".$type."/deny", $headers, json_encode($data), $options);
+                    			break;
+                    		case 'delete':
+                    			$response = Requests::delete($url."/api/v1/Request/".$type."/".$id, $headers, $options);
+                    			break;
+                            default:
+                                return false;
+                            }
+
+                    }
+        		break;
         	}
+            $success['api'] = $response;
+            $success['bd'] = $response->body;
+            $success['hd'] = $response->headers;
             if($response->success){
-                $success = true;
+                $success['ok'] = true;
             }
         }catch( Requests_Exception $e ) {
             writeLog('error', 'OMBI Connect Function - Error: '.$e->getMessage(), 'SYSTEM');

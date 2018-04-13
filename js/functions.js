@@ -2253,7 +2253,7 @@ function buildPlaylist(array, type){
 		$.each(array.content, function(i,v) {
 			count ++;
 			first = (count == 1) ? v.title : first;
-			hidden = (count == 1) ? '' : ' hidden';
+			hidden = (count == 1) ? '' : ' owl-hidden hidden';
 			dropdown += `<li><a data-filter="`+i+`" server-filter="`+type+`" data-title="`+encodeURI(v.title)+`" href="javascript:void(0);">`+v.title+`</a></li>`;
 
 			items += `
@@ -2265,7 +2265,7 @@ function buildPlaylist(array, type){
 		});
 		var builtDropdown = `
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
-			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
+			<i class="mdi mdi-playlist-play m-r-5"></i><span class="caret"></span>
 		</button>
 		<ul role="menu" class="dropdown-menu playlist-filter">
 			`+dropdown+`
@@ -2299,6 +2299,7 @@ function buildRequest(array){
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
 			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
 		</button>
+		<button href="#new-request" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-plus m-l-5"></i></button>
 		<div role="menu" class="dropdown-menu request-filter">
 			<div class="checkbox checkbox-success m-l-20 checkbox-circle">
 				<input id="request-filter-available" data-filter="request-available" class="filter-request-input" type="checkbox" checked="">
@@ -2352,7 +2353,81 @@ function buildRequest(array){
             </div>
         </div>
     </div>
+	<div id="new-request" class="white-popup mfp-with-anim mfp-hide">
+		<div class="col-md-8 col-md-offset-2">
+			<div class="white-box m-b-0">
+				<div class="form-group">
+					<label class="col-md-12"><span lang="en" class="help">Request Show or Movie</span></label>
+					<div id="request-input-div" class="col-md-12">
+						<input id="request-input" type="text" class="form-control">
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div id="request-results" class="row el-element-overlay"></div>
+			</div>
+		</div>
+	</div>
 	` : '';
+}
+function buildRequestResult(array){
+	//var result = (typeof array !== 'undefined') ? true : false;
+	var results = '';
+	if(array.length == 0){
+		return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+	}
+	$.each(array, function(i,v) {
+		if(v.media_type == 'tv' || v.media_type == 'movie'){
+			var bg = (v.poster_path !== null) ? `https://image.tmdb.org/t/p/w300/`+v.poster_path : 'plugins/images/cache/no-list.png';
+			var top = (v.title) ? v.title : (v.original_title) ? v.original_title : (v.original_name) ? v.original_name : '';
+			var bottom = (v.release_date) ? v.release_date : (v.first_air_date) ? v.first_air_date : '';
+			results += `
+			<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+	            <div class="white-box">
+	                <div class="el-card-item">
+	                    <div class="el-card-avatar el-overlay-1"> <img class="lazyload resultImages" data-src="`+bg+`">
+	                        <div class="el-overlay">
+	                            <ul class="el-info">
+	                                <li><a class="btn default btn-outline" href="javascript:void(0);" onclick="processRequest('`+v.id+`','`+v.media_type+`');"><i class="icon-link"></i>&nbsp; <span lang="en">Request</span></a></li>
+	                            </ul>
+	                        </div>
+	                    </div>
+	                    <div class="el-card-content">
+	                        <h3 class="box-title elip">`+top+`</h3> <small>`+bottom+`</small>
+	                        <br>
+						</div>
+	                </div>
+	            </div>
+	        </div>
+			`;
+		}
+
+	});
+	return results;
+}
+function processRequest(id,type){
+	if(type == 'tv'){
+		requestNewID(id).success(function(data) {
+			var newID = data.tvdb_id;
+			ombiActions(newID,'add',type);
+			console.log(id,data.tvdb_id,type);
+		}).fail(function(xhr) {
+			console.error("Organizr Function: TMDB Connection Failed");
+		});
+		console.log('tv')
+	}else{
+		ombiActions(id,'add',type);
+	}
+
+}
+function doneTyping () {
+	var title = $('#request-input').val();
+	requestSearch(title).success(function(data) {
+		//var json = JSON.parse(data);
+		console.log(data.results);
+		$('#request-results').html(buildRequestResult(data.results));
+	}).fail(function(xhr) {
+		console.error("Organizr Function: TMDB Connection Failed");
+	});
 }
 function buildDownloaderItem(array, source, type='none'){
 	var items = '';
@@ -3122,7 +3197,18 @@ function ombiActions(id,action,type){
 	});
 	ajaxloader();
 	$.magnificPopup.close();
-	message("",window.lang.translate('Updaded Request Item'),"bottom-right","#FFF","success","3500");
+	message("",window.lang.translate('Updated Request Item'),"bottom-right","#FFF","success","3500");
+}
+//request search
+function requestSearch(title) {
+	return $.ajax({
+		url: "https://api.themoviedb.org/3/search/multi?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language="+activeInfo.language+"&query="+title+"&page=1&include_adult=true",
+	});
+}
+function requestNewID(id) {
+	return $.ajax({
+		url: "https://api.themoviedb.org/3/tv/"+id+"/external_ids?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language=en-US",
+	});
 }
 //Settings change auth
 function changeAuth(){

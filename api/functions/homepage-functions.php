@@ -1341,7 +1341,7 @@ function getHomepageList(){
 					array(
                         'type' => 'switch',
                         'name' => 'ombiLimitUser',
-                        'label' => 'Enable',
+                        'label' => 'Limit to User',
                         'value' => $GLOBALS['ombiLimitUser']
                     ),
                     array(

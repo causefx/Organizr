@@ -314,6 +314,7 @@ function pageLoad(){
       callbacks: {
         beforeOpen: function() {
            this.st.mainClass = this.st.el.attr('data-effect');
+           this.st.focus = '#request-input';
         }
       },
       midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
@@ -1624,17 +1625,17 @@ $(document).on('click', "a[class*=ID-]", function(){
 // request filter
 $(document).on("change", ".filter-request-input", function () {
     $('.request-item').parent().removeClass('hidden');
-    var badArray = [];
+    var filterArray = [];
     $('.filter-request-input').each(function () {
         var value = $(this).prop('checked');
         var filter = $(this).attr('data-filter');
         if(value == false){
-            badArray.push('.'+filter);
+            filterArray.push('.'+filter);
         }
     });
     $('.request-item').each(function () {
         var element = $(this);
-        var string = badArray.join(', ');
+        var string = filterArray.join(', ');
         if(element.is(string)){
             element.parent().addClass('hidden');
         }
@@ -1643,6 +1644,17 @@ $(document).on("change", ".filter-request-input", function () {
     owl.owlCarousel();
     owl.trigger('refresh.owl.carousel');
     owl.trigger('to.owl.carousel',0);
+});
+//search ombi
+var typingTimer;
+//on keyup, start the countdown
+$(document).on('keyup', '#request-input', function () {
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(doneTyping, 750);
+});
+//on keydown, clear the countdown
+$(document).on('keydown', '#request-input', function () {
+  clearTimeout(typingTimer);
 });
 /* ===== Open-Close Right Sidebar ===== */
 

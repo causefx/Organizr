@@ -268,3 +268,15 @@ background: #2cabe3;
 	-moz-animation-iteration-count: infinite;
   -o-animation-iteration-count: infinite;
 }
+@media (max-width: 767px){
+  img.lazyload.resultImages {
+      height: 300px !important;
+      object-fit: contain;
+  }
+}
+@media (min-width: 768px){
+  img.lazyload.resultImages {
+      height: 300px !important;
+      object-fit: cover;
+  }
+}
