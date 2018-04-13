@@ -2381,7 +2381,6 @@ function buildRequest(array){
 	` : '';
 }
 function buildRequestResult(array,media_type=null){
-	console.log(array);
 	//var result = (typeof array !== 'undefined') ? true : false;
 	var results = ``;
 	var buttons = ``;
@@ -2459,7 +2458,6 @@ function requestList (list, type) {
 	ajaxloader('.search-div', 'in');
 	requestSearchList(list).success(function(data) {
 		$('#request-results').html(buildRequestResult(data.results, type));
-		console.log(data.results)
 		ajaxloader();
 	}).fail(function(xhr) {
 		console.error("Organizr Function: TMDB Connection Failed");
@@ -3227,7 +3225,6 @@ function ombiActions(id,action,type){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response);
 		if(response.data !== null){
 			homepageRequests();
 			$.magnificPopup.close();

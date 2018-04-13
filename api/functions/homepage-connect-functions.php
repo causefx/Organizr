@@ -1093,7 +1093,7 @@ function getSickrageCalendarHistory($array,$number){
     if ($i != 0){ return $gotCalendar; }
 }
 function ombiAPI($array){
-    ombiAction($array['data']['id'],$array['data']['action'],$array['data']['type']);
+    return ombiAction($array['data']['id'],$array['data']['action'],$array['data']['type']);
 }
 function ombiAction($id, $action, $type) {
     if($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest($GLOBALS['homepageOmbiAuth'])){
