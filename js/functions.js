@@ -2166,7 +2166,7 @@ function buildRequestItem(array, extra=null){
 									</div>
 									<div class="row">
 										<div class="col-lg-12">
-											<div class="owl-carousel owl-theme metadata-actors p-b-10">asd</div>
+											<div class="owl-carousel owl-theme metadata-actors p-b-10"></div>
 										</div>
 									</div>
 								</div>
@@ -2356,10 +2356,9 @@ function buildRequest(array){
 	<div id="new-request" class="white-popup mfp-with-anim mfp-hide">
 		<div class="col-md-8 col-md-offset-2">
 			<div class="white-box m-b-0">
-				<div class="form-group">
-					<label class="col-md-12"><span lang="en" class="help">Request Show or Movie</span></label>
+				<div class="form-group m-b-0">
 					<div id="request-input-div" class="col-md-12">
-						<input id="request-input" type="text" class="form-control">
+						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control">
 					</div>
 					<div class="clearfix"></div>
 				</div>
@@ -2381,10 +2380,10 @@ function buildRequestResult(array){
 			var top = (v.title) ? v.title : (v.original_title) ? v.original_title : (v.original_name) ? v.original_name : '';
 			var bottom = (v.release_date) ? v.release_date : (v.first_air_date) ? v.first_air_date : '';
 			results += `
-			<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-	            <div class="white-box">
-	                <div class="el-card-item">
-	                    <div class="el-card-avatar el-overlay-1"> <img class="lazyload resultImages" data-src="`+bg+`">
+			<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20">
+	            <div class="white-box m-b-10">
+	                <div class="el-card-item p-b-0">
+	                    <div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages" data-src="`+bg+`">
 	                        <div class="el-overlay">
 	                            <ul class="el-info">
 	                                <li><a class="btn default btn-outline" href="javascript:void(0);" onclick="processRequest('`+v.id+`','`+v.media_type+`');"><i class="icon-link"></i>&nbsp; <span lang="en">Request</span></a></li>
