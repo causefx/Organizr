@@ -2355,7 +2355,7 @@ function buildRequest(array){
     </div>
 	<div id="new-request" class="white-popup mfp-with-anim mfp-hide">
 		<div class="col-md-8 col-md-offset-2">
-			<div class="white-box m-b-0">
+			<div class="white-box m-b-0 search-div">
 				<div class="form-group m-b-0">
 					<div id="request-input-div" class="col-md-12">
 						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control">
@@ -2370,17 +2370,24 @@ function buildRequest(array){
 }
 function buildRequestResult(array){
 	//var result = (typeof array !== 'undefined') ? true : false;
-	var results = '';
+	var results = ``;
+	var buttons = ``;
+	var tv = 0;
+	var movie = 0;
+	var total = 0;
 	if(array.length == 0){
-		return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+		return '<h2 class="text-center" lang="en">No Results</h2>';
 	}
 	$.each(array, function(i,v) {
 		if(v.media_type == 'tv' || v.media_type == 'movie'){
+			total = total + 1;
+			tv = (v.media_type == 'tv') ? tv + 1 : tv;
+			movie = (v.media_type == 'movie') ? movie + 1 : movie;
 			var bg = (v.poster_path !== null) ? `https://image.tmdb.org/t/p/w300/`+v.poster_path : 'plugins/images/cache/no-list.png';
 			var top = (v.title) ? v.title : (v.original_title) ? v.original_title : (v.original_name) ? v.original_name : '';
 			var bottom = (v.release_date) ? v.release_date : (v.first_air_date) ? v.first_air_date : '';
 			results += `
-			<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20">
+			<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20 request-result-item request-result-`+v.media_type+`">
 	            <div class="white-box m-b-10">
 	                <div class="el-card-item p-b-0">
 	                    <div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages" data-src="`+bg+`">
@@ -2390,7 +2397,7 @@ function buildRequestResult(array){
 	                            </ul>
 	                        </div>
 	                    </div>
-	                    <div class="el-card-content">
+	                    <div class="el-card-content bg-org">
 	                        <h3 class="box-title elip">`+top+`</h3> <small>`+bottom+`</small>
 	                        <br>
 						</div>
@@ -2401,7 +2408,14 @@ function buildRequestResult(array){
 		}
 
 	});
-	return results;
+	var buttons = `
+	<div class="button-box p-20 text-center p-b-0">
+		<button class="btn btn-inverse waves-effect waves-light filter-request-result" data-filter="request-result-all"><span>`+total+`</span> <i class="fa fa-th-large m-l-5 fa-fw"></i></button>
+		<button class="btn btn-primary waves-effect waves-light filter-request-result" data-filter="request-result-movie"><span>`+movie+`</span> <i class="fa fa-film m-l-5 fa-fw"></i></button>
+        <button class="btn btn-info waves-effect waves-light filter-request-result" data-filter="request-result-tv"><span>`+tv+`</span> <i class="fa fa-tv m-l-5 fa-fw"></i></button>
+    </div>
+	`;
+	return buttons+results;
 }
 function processRequest(id,type){
 	if(type == 'tv'){
@@ -2417,11 +2431,14 @@ function processRequest(id,type){
 
 }
 function doneTyping () {
+	ajaxloader('.search-div', 'in');
 	var title = $('#request-input').val();
 	requestSearch(title).success(function(data) {
 		$('#request-results').html(buildRequestResult(data.results));
+		ajaxloader();
 	}).fail(function(xhr) {
 		console.error("Organizr Function: TMDB Connection Failed");
+		ajaxloader();
 	});
 }
 function buildDownloaderItem(array, source, type='none'){
@@ -3185,14 +3202,19 @@ function ombiActions(id,action,type){
 	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
 		var response = JSON.parse(data);
-		//console.log(response);
-		homepageRequests();
+		console.log(response);
+		if(response.data !== null){
+			homepageRequests();
+			$.magnificPopup.close();
+			message("",window.lang.translate('Updated Request Item'),"bottom-right","#FFF","success","3500");
+		}else{
+			message("",window.lang.translate('Connction Error to Request Server'),"bottom-right","#FFF","error","3500");
+		}
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
 	ajaxloader();
-	$.magnificPopup.close();
-	message("",window.lang.translate('Updated Request Item'),"bottom-right","#FFF","success","3500");
+
 }
 //request search
 function requestSearch(title) {

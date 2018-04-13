@@ -1457,6 +1457,16 @@ $(document).on("click", ".recent-filter li>a", function () {
     owl.trigger('refresh.owl.carousel');
     owl.trigger('to.owl.carousel',0);
 });
+// request search filter
+$(document).on("click", ".filter-request-result", function () {
+    var filter = $(this).attr('data-filter');
+    if(filter == 'request-result-all'){
+        $('.request-result-item').removeClass('hidden');
+    }else{
+        $('.request-result-item').addClass('hidden');
+        $('.'+filter).removeClass('hidden');
+    }
+});
 //playlist filter
 $(document).on("click", ".playlist-filter li>a", function () {
     var filter = $(this).attr('data-filter');
