@@ -1111,7 +1111,7 @@ function ombiAction($id, $action, $type) {
     		case 'tv':
     			$type = 'tv';
                 $add = array(
-                    'tvdDbId' => $id,
+                    'tvDbId' => $id,
                     'requestAll' => true,
                     'latestSeason' => true,
                     'firstSeason' => true
@@ -1256,6 +1256,11 @@ function getOmbiRequests($type = "both"){
             			}
             		}
             	}
+                //sort here
+                usort($requests, function ($item1, $item2) {
+        			if ($item1['request_date'] == $item2['request_date']) return 0;
+        			return $item1['request_date'] > $item2['request_date'] ? -1 : 1;
+        		});
             }
         }catch( Requests_Exception $e ) {
             writeLog('error', 'OMBI Connect Function - Error: '.$e->getMessage(), 'SYSTEM');

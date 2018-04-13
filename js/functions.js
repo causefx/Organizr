@@ -2409,11 +2409,9 @@ function processRequest(id,type){
 		requestNewID(id).success(function(data) {
 			var newID = data.tvdb_id;
 			ombiActions(newID,'add',type);
-			console.log(id,data.tvdb_id,type);
 		}).fail(function(xhr) {
 			console.error("Organizr Function: TMDB Connection Failed");
 		});
-		console.log('tv')
 	}else{
 		ombiActions(id,'add',type);
 	}
@@ -2422,8 +2420,6 @@ function processRequest(id,type){
 function doneTyping () {
 	var title = $('#request-input').val();
 	requestSearch(title).success(function(data) {
-		//var json = JSON.parse(data);
-		console.log(data.results);
 		$('#request-results').html(buildRequestResult(data.results));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: TMDB Connection Failed");
