@@ -2357,9 +2357,21 @@ function buildRequest(array){
 		<div class="col-md-8 col-md-offset-2">
 			<div class="white-box m-b-0 search-div">
 				<div class="form-group m-b-0">
-					<div id="request-input-div" class="col-md-12">
-						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control">
-					</div>
+					<div id="request-input-div" class="input-group m-t-10">
+                        <input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn waves-effect waves-light btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span> <span class="caret"></span></button>
+                            <ul class="dropdown-menu dropdown-menu-right">
+								<li><a lang="en" onclick="requestList('theatre-movie', 'movie');" href="javascript:void(0)">In Theatres</a></li>
+								<li><a lang="en" onclick="requestList('top-movie', 'movie');" href="javascript:void(0)">Top Movies</a></li>
+								<li><a lang="en" onclick="requestList('pop-movie', 'movie');" href="javascript:void(0)">Popular Movies</a></li>
+								<li><a lang="en" onclick="requestList('up-movie', 'movie');" href="javascript:void(0)">Upcoming Movies</a></li>
+								<li><a lang="en" onclick="requestList('top-tv', 'tv');" href="javascript:void(0)">Top TV</a></li>
+								<li><a lang="en" onclick="requestList('pop-tv', 'tv');" href="javascript:void(0)">Popular TV</a></li>
+                                <li><a lang="en" onclick="requestList('today-tv', 'tv');" href="javascript:void(0)">Airs Today TV</a></li>
+                            </ul>
+                        </div>
+                    </div>
 					<div class="clearfix"></div>
 				</div>
 				<div id="request-results" class="row el-element-overlay"></div>
@@ -2368,7 +2380,8 @@ function buildRequest(array){
 	</div>
 	` : '';
 }
-function buildRequestResult(array){
+function buildRequestResult(array,media_type=null){
+	console.log(array);
 	//var result = (typeof array !== 'undefined') ? true : false;
 	var results = ``;
 	var buttons = ``;
@@ -2379,21 +2392,22 @@ function buildRequestResult(array){
 		return '<h2 class="text-center" lang="en">No Results</h2>';
 	}
 	$.each(array, function(i,v) {
-		if(v.media_type == 'tv' || v.media_type == 'movie'){
+		media_type = (v.media_type) ? v.media_type : media_type;
+		if(media_type == 'tv' || media_type == 'movie'){
 			total = total + 1;
-			tv = (v.media_type == 'tv') ? tv + 1 : tv;
-			movie = (v.media_type == 'movie') ? movie + 1 : movie;
+			tv = (media_type == 'tv') ? tv + 1 : tv;
+			movie = (media_type == 'movie') ? movie + 1 : movie;
 			var bg = (v.poster_path !== null) ? `https://image.tmdb.org/t/p/w300/`+v.poster_path : 'plugins/images/cache/no-list.png';
 			var top = (v.title) ? v.title : (v.original_title) ? v.original_title : (v.original_name) ? v.original_name : '';
 			var bottom = (v.release_date) ? v.release_date : (v.first_air_date) ? v.first_air_date : '';
 			results += `
-			<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20 request-result-item request-result-`+v.media_type+`">
+			<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20 request-result-item request-result-`+media_type+`">
 	            <div class="white-box m-b-10">
 	                <div class="el-card-item p-b-0">
 	                    <div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages" data-src="`+bg+`">
 	                        <div class="el-overlay">
 	                            <ul class="el-info">
-	                                <li><a class="btn default btn-outline" href="javascript:void(0);" onclick="processRequest('`+v.id+`','`+v.media_type+`');"><i class="icon-link"></i>&nbsp; <span lang="en">Request</span></a></li>
+	                                <li><a class="btn default btn-outline" href="javascript:void(0);" onclick="processRequest('`+v.id+`','`+media_type+`');"><i class="icon-link"></i>&nbsp; <span lang="en">Request</span></a></li>
 	                            </ul>
 	                        </div>
 	                    </div>
@@ -2435,6 +2449,17 @@ function doneTyping () {
 	var title = $('#request-input').val();
 	requestSearch(title).success(function(data) {
 		$('#request-results').html(buildRequestResult(data.results));
+		ajaxloader();
+	}).fail(function(xhr) {
+		console.error("Organizr Function: TMDB Connection Failed");
+		ajaxloader();
+	});
+}
+function requestList (list, type) {
+	ajaxloader('.search-div', 'in');
+	requestSearchList(list).success(function(data) {
+		$('#request-results').html(buildRequestResult(data.results, type));
+		console.log(data.results)
 		ajaxloader();
 	}).fail(function(xhr) {
 		console.error("Organizr Function: TMDB Connection Failed");
@@ -3208,7 +3233,7 @@ function ombiActions(id,action,type){
 			$.magnificPopup.close();
 			message("",window.lang.translate('Updated Request Item'),"bottom-right","#FFF","success","3500");
 		}else{
-			message("",window.lang.translate('Connction Error to Request Server'),"bottom-right","#FFF","error","3500");
+			message("",window.lang.translate('Connection Error to Request Server'),"bottom-right","#FFF","error","3500");
 		}
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -3220,6 +3245,37 @@ function ombiActions(id,action,type){
 function requestSearch(title) {
 	return $.ajax({
 		url: "https://api.themoviedb.org/3/search/multi?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language="+activeInfo.language+"&query="+title+"&page=1&include_adult=true",
+	});
+}
+function requestSearchList(list) {
+	var url = '';
+	switch (list) {
+		case 'top-movie':
+			url = 'https://api.themoviedb.org/3/movie/top_rated?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			break;
+		case 'pop-movie':
+			url = 'https://api.themoviedb.org/3/movie/popular?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			break;
+		case 'up-movie':
+			url = 'https://api.themoviedb.org/3/movie/upcoming?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			break;
+		case 'theatre-movie':
+			url = 'https://api.themoviedb.org/3/movie/now_playing?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			break;
+		case 'top-tv':
+			url = 'https://api.themoviedb.org/3/tv/top_rated?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			break;
+		case 'pop-tv':
+			url = 'https://api.themoviedb.org/3/tv/popular?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			break;
+		case 'today-tv':
+			url = 'https://api.themoviedb.org/3/tv/airing_today?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			break;
+		default:
+
+	}
+	return $.ajax({
+		url: url,
 	});
 }
 function requestNewID(id) {
