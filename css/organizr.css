@@ -143,10 +143,13 @@ object-fit: contain;
 .recent-cover{
 	background-position: center;background-size: cover;height: 150px;width: 150px;
   top: 74px;
-    position: absolute;
+    position: relative;
 }
 .recent-poster{
 	background-position: center;background-size: cover;height: 225px;width: 150px;
+  position: relative;
+  top: 0;
+  left: 0;
 }
 .recent-title{
   position: absolute;
@@ -283,4 +286,44 @@ background: #2cabe3;
     width: 200px !important;
     margin: auto;
   }
+}
+.outside-request-div {
+  position: absolute;
+  right: 0;
+  overflow: hidden;
+  width: 32px;
+  height: 32px;
+}
+.inside-request-div {
+  top: -16px;
+  right: -16px;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  position: absolute;
+  box-shadow: 0 0 4px rgba(0,0,0,.6);
+  line-height: 24px;
+  opacity: 1;
+  -webkit-transition: all .2s;
+  transition: all .2s;
+}
+.inside-over-request-div {
+  top: -28px;
+  right: -25px;
+  padding: 0;
+  width: 50px;
+  height: 50px;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  position: absolute;
+  box-shadow: 0 0 4px rgba(0,0,0,.6);
+  line-height: 24px;
+  opacity: 1;
+  -webkit-transition: all .2s;
+  transition: all .2s;
+}
+.unapproved-request-div {
+  background-color: #cc7b19;
 }

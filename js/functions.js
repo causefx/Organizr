@@ -1870,15 +1870,22 @@ function buildErrorPage(error){
 	</div>
 	`;
 }
+$.urlParam = function(name){
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results==null){
+       return null;
+    }
+    else{
+       return decodeURI(results[1]) || 0;
+    }
+}
 function errorPage(error=null){
 	if(error){
 		local('set','error',error);
 	}
-	var urlParams = new URLSearchParams(window.location.search);
-	if(urlParams.has('error')){
-		if(urlParams.get('error')){
-			local('set','error',urlParams.get('error'));
-		}
+	//var urlParams = new URLSearchParams(window.location.search);
+	if($.urlParam('error') !== null){
+		local('set','error',$.urlParam('error'));
 	}
 	if ( window.location !== window.parent.location ) {
 		var iframeError = local('get', 'error');
@@ -2120,6 +2127,8 @@ function buildRequestItem(array, extra=null){
 	var items = '';
 	$.each(array, function(i,v) {
 			if(extra == null){
+				var badge = '';
+				var badge2 = '';
 				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/cache/no-np.png';
 				//Set Status
 				var status = (v.approved) ? '<span class="badge bg-org m-r-10" lang="en">Approved</span>' : '<span class="badge bg-danger m-r-10" lang="en">Unapproved</span>';
@@ -2129,6 +2138,10 @@ function buildRequestItem(array, extra=null){
 				var className = (v.approved) ? 'request-approved' : 'request-unapproved';
 				className += (v.available) ? ' request-available' : ' request-unavailable';
 				className += (v.denied) ? ' request-denied' : ' request-notdenied';
+				//Set badge
+				badge = (v.approved) ? 'bg-info' : 'bg-warning';
+				badge2 = (v.available) ? 'bg-success' : 'bg-danger';
+				badge = (v.denied) ? 'bg-danger' : badge;
 				//Is Admin?
 				var adminFunctions = `<div class="btn-group m-r-10">
                     <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info btn-outline dropdown-toggle waves-effect waves-light" type="button"> <i class="fa fa-ellipsis-v m-r-5"></i> <span class="caret"></span></button>
@@ -2144,6 +2157,10 @@ function buildRequestItem(array, extra=null){
 				var user = (activeInfo.user.groupID <= 1) ? '<span lang="en">Requested By: </span>'+v.user : '';
 				items += `
 				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
+					<div class="outside-request-div">
+						<div class="inside-over-request-div `+badge2+`"></div>
+						<div class="inside-request-div `+badge+`"></div>
+					</div>
 					<span class="elip recent-title">`+v.title+`</span>
 					<div id="request-`+v.id+`" class="white-popup mfp-with-anim mfp-hide">
 						<div class="col-md-8 col-md-offset-2">
@@ -2921,7 +2938,9 @@ function homepageDownloader(type, timeout=30000){
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
 		document.getElementById('homepageOrder'+type).innerHTML = '';
-		$('#homepageOrder'+type).html(buildDownloader(response.data, type));
+		if(response.data !== null){
+			$('#homepageOrder'+type).html(buildDownloader(response.data, type));
+		}
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
@@ -3108,7 +3127,9 @@ function homepageRequests(timeout=600000){
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getRequests'}).success(function(data) {
 		var response = JSON.parse(data);
 		document.getElementById('homepageOrderombi').innerHTML = '';
-		$('#homepageOrderombi').html(buildRequest(response.data));
+		if(response.data.content !== false){
+			$('#homepageOrderombi').html(buildRequest(response.data));
+		}
 		$('.request-items').owlCarousel({
     	    margin:40,
     	    nav:false,

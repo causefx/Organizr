@@ -190,14 +190,16 @@ function buildHomepageItem($homepageItem){
 			}
 			break;
 		case 'homepageOrdercalendar':
-			$item .= '
-			<div id="calendar" class="fc fc-ltr animated zoomIn"></div>
-			<script>
-			// Calendar
-			homepageCalendar("'.$GLOBALS['calendarRefresh'].'");
-			// End Calendar
-			</script>
-			';
+			if($GLOBALS['homepageSonarrEnabled'] && qualifyRequest($GLOBALS['homepageSonarrAuth']) || ($GLOBALS['homepageRadarrEnabled'] && qualifyRequest($GLOBALS['homepageRadarrAuth'])) || ($GLOBALS['homepageSickrageEnabled'] && qualifyRequest($GLOBALS['homepageSickrageAuth'])) || ($GLOBALS['homepageCouchpotatoEnabled'] && qualifyRequest($GLOBALS['homepageCouchpotatoAuth']))){
+				$item .= '
+				<div id="calendar" class="fc fc-ltr animated zoomIn"></div>
+				<script>
+				// Calendar
+				homepageCalendar("'.$GLOBALS['calendarRefresh'].'");
+				// End Calendar
+				</script>
+				';
+			}
 			break;
 		default:
 			# code...
