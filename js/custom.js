@@ -315,6 +315,12 @@ function pageLoad(){
         beforeOpen: function() {
            this.st.mainClass = this.st.el.attr('data-effect');
            this.st.focus = '#request-input';
+       },
+       close: function() {
+          if(typeof player !== 'undefined'){
+              console.log('STOP STOP STOP')
+              player.destroy();
+          }
         }
       },
       midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.

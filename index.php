@@ -23,6 +23,7 @@
 	<link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/css-chart/css-chart.css" rel="stylesheet">
 	<link href="plugins/bower_components/calendar/dist/fullcalendar.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdn.plyr.io/3.1.0/plyr.css">
 	<link id="style" href="css/dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<link href="css/organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<?php echo pluginFiles('css'); ?>
@@ -50,7 +51,7 @@
 		<!-- ============================================================== -->
 		<!-- Topbar header - style you can find in pages.scss -->
 		<!-- ============================================================== -->
-		<nav class="navbar navbar-default navbar-static-top m-b-0">
+		<nav class="navbar navbar-default navbar-static-top m-b-0 animated slideInDown">
 			<div class="navbar-header">
 				<div class="top-left-part hidden-xs p-r-10">
 					<!-- Logo -->
@@ -139,6 +140,8 @@
 	<script src="plugins/bower_components/dropzone-master/dist/dropzone.js"></script>
 	<script src="plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>
 	<script src="plugins/bower_components/calendar/dist/fullcalendar.js"></script>
+	<script src="https://cdn.plyr.io/3.1.0/plyr.js"></script>
+	<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 	<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 	<?php echo pluginFiles('js'); ?>

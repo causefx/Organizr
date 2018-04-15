@@ -75,6 +75,9 @@ function($) {
 <div class="container-fluid p-t-10" id="homepage-items">
     '.buildHomepage().'
 </div>
+<div id="open-youtube" class="white-popup mfp-with-anim mfp-hide">
+	<div class="col-md-8 col-md-offset-2 youtube-div">	</div>
+</div>
 <!-- /.container-fluid -->
 ';
 }

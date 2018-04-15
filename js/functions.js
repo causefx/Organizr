@@ -2171,6 +2171,7 @@ function buildRequestItem(array, extra=null){
 										<h2 class="m-b-0 font-medium pull-right text-right">
 											`+v.title+`<br>
 											<small class="m-t-0 text-white">`+user+`</small><br>
+											`+buildYoutubeLink(v.title+' '+v.type)+`
 										</h2>
 									</div>
 									<div class="genre-list p-10">`+status+`</div>
@@ -2817,6 +2818,7 @@ function buildDownloader(array, source){
 	` : '';
 }
 function buildMetadata(array, source){
+	console.log(array);
 	var metadata = '';
 	var genres = '';
 	var actors = '';
@@ -2849,7 +2851,8 @@ function buildMetadata(array, source){
 	                <h2 class="m-b-0 font-medium pull-right text-right">
 						`+v.title+`<br>
 						<small class="m-t-0 text-white">`+v.metadata.tagline+`</small><br>
-						<a class="openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class="mdi mdi-`+source+` mdi-36px text-`+source+`"></i></a>
+						<a class="openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class="mdi mdi-`+source+` mdi-36px text-`+source+`"></i></a><br>
+						`+buildYoutubeLink(v.title+' '+v.metadata.year+' '+v.type)+`
 					</h2>
 	            </div>
 				<div class="genre-list p-10">`+genres+`</div>
@@ -2871,6 +2874,15 @@ function buildMetadata(array, source){
 		`;
 	});
 	return metadata;
+}
+function buildYoutubeLink(title){
+	if(title){
+		var str = createRandomString(10);
+		return `
+		<a href="javascript:void(0);"><i class="mdi mdi-youtube-play mdi-36px text-danger" onclick="youtubeCheck('`+escape(title)+`','`+str+`')"></i></a>
+		<a class="hidden inline-popups `+str+`" href="#open-youtube" data-effect="mfp-zoom-out"></a>
+		`;
+	}
 }
 function buildCalendarMetadata(array){
 	var metadata = '';
@@ -2898,6 +2910,7 @@ function buildCalendarMetadata(array){
 	                <h2 class="m-b-0 font-medium pull-right text-right">
 						`+array.topTitle+`<br>
 						<small class="m-t-0 text-white">`+array.bottomTitle+`</small><br>
+						`+buildYoutubeLink(array.topTitle)+`
 					</h2>
 	            </div>
 				<div class="genre-list p-10">`+genres+`</div>
@@ -3258,6 +3271,45 @@ function ombiActions(id,action,type){
 	});
 	ajaxloader();
 
+}
+//youtube search
+function youtubeSearch(searchQuery) {
+	return $.ajax({
+		url: "https://www.googleapis.com/youtube/v3/search?part=snippet&q="+searchQuery+"+offcial+trailer&part=snippet&maxResults=1&type=video&videoDuration=short&key=AIzaSyD-8SHutB60GCcSM8q_Fle38rJUV7ujd8k",
+	});
+}
+function youtubeCheck(title,link){
+	youtubeSearch(title).success(function(data) {
+		$('.inline-popups').magnificPopup({
+	      removalDelay: 500, //delay removal by X to allow out-animation
+	      closeOnBgClick: true,
+	      //closeOnContentClick: true,
+	      callbacks: {
+	        beforeOpen: function() {
+	           this.st.mainClass = this.st.el.attr('data-effect');
+	           this.st.focus = '#request-input';
+	       },
+	       close: function() {
+	          if(typeof player !== 'undefined'){
+	              console.log('STOP STOP STOP')
+	              player.destroy();
+	          }
+	        }
+	      },
+	      midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
+	    });
+		var id = data.items["0"].id.videoId;
+		var div = `
+		<div id="player-`+link+`" data-plyr-provider="youtube" data-plyr-embed-id="`+id+`"></div>
+		<div class="clearfix"></div>
+		`;
+		$('.youtube-div').html(div);
+		$('.'+link).trigger('click');
+		player = new Plyr('#player-'+link);
+		console.log(data.items["0"].id.videoId);
+	}).fail(function(xhr) {
+		console.error("Organizr Function: YouTube Connection Failed");
+	});
 }
 //request search
 function requestSearch(title) {
