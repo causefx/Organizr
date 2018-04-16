@@ -112,7 +112,7 @@ function ajaxloader(element=null, action='out'){
 			$('.ajaxloader').remove();
 			break;
 		default:
-
+			$('.ajaxloader').remove();
 	}
 }
 function getDefault(tabName,tabType){
@@ -692,17 +692,14 @@ function buildHomepageItem(array){
 	return listing;
 }
 function buildPlugins(){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/settings/plugins/list').success(function(data) {
 		var response = JSON.parse(data);
 		$('#main-plugin-area').html(buildPluginsItem(response.data));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 }
 function buildHomepage(){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/settings/homepage/list').success(function(data) {
 		var response = JSON.parse(data);
 		$('#settings-homepage-list').html(buildHomepageItem(response.data));
@@ -732,7 +729,6 @@ function buildHomepage(){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 }
 function buildFormGroup(array){
 	var group = '';
@@ -804,18 +800,14 @@ function buildImageManagerViewItem(array){
 	return imageListing;
 }
 function buildImageManagerView(){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/image/list').success(function(data) {
 		var response = JSON.parse(data);
 		$('#settings-image-manager-list').html(buildImageManagerViewItem(response.data));
-		;
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 }
 function buildCustomizeAppearance(){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/customize/appearance').success(function(data) {
 		var response = JSON.parse(data);
 		$('#customize-appearance-form').html(buildFormGroup(response.data));
@@ -841,10 +833,8 @@ function buildCustomizeAppearance(){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 }
 function buildSSO(){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/sso').success(function(data) {
 		var response = JSON.parse(data);
 		$('#sso-form').html(buildFormGroup(response.data));
@@ -852,62 +842,49 @@ function buildSSO(){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 }
 function buildSettingsMain(){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/settings/main').success(function(data) {
 		var response = JSON.parse(data);
 		$('#settings-main-form').html(buildFormGroup(response.data));
 		changeAuth();
-		;
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 }
 function buildUserManagement(){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/user/list').success(function(data) {
 		var response = JSON.parse(data);
 		$('#manageUserTable').html(buildUserManagementItem(response.data));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 }
 function buildGroupManagement(){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/user/list').success(function(data) {
 		var response = JSON.parse(data);
 		$('#manageGroupTable').html(buildGroupManagementItem(response.data));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 }
 function buildTabEditor(){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/tab/list').success(function(data) {
 		var response = JSON.parse(data);
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 }
 function buildCategoryEditor(){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('GET','api/?v1/tab/list').success(function(data) {
 		var response = JSON.parse(data);
 		$('#categoryEditorTable').html(buildCategoryEditorItem(response.data));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 }
 function settingsAPI(post, callbacks=null){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('POST',post.api,post).success(function(data) {
 		var response = JSON.parse(data);
 		message(post.messageTitle,post.messageBody,"bottom-right","#FFF","success","5000");
@@ -915,7 +892,6 @@ function settingsAPI(post, callbacks=null){
 	}).fail(function(xhr) {
 		console.error(post.error);
 	});
-	ajaxloader();
 }
 /* END ORGANIZR API FUNCTIONS */
 function buildLanguage(replace=false,newLang=null){
@@ -2124,6 +2100,7 @@ function buildRequestAdminMenuItem(value,category,id,type){
 	return (action) ? `<li><a onclick="ombiActions('`+id+`', '`+action+`', '`+type+`');" lang="en">`+text+`</a></li>`+extra : '';
 }
 function buildRequestItem(array, extra=null){
+	console.log(array);
 	var items = '';
 	$.each(array, function(i,v) {
 			if(extra == null){
@@ -2140,8 +2117,8 @@ function buildRequestItem(array, extra=null){
 				className += (v.denied) ? ' request-denied' : ' request-notdenied';
 				//Set badge
 				badge = (v.approved) ? 'bg-info' : 'bg-warning';
-				badge2 = (v.available) ? 'bg-success' : 'bg-danger';
 				badge = (v.denied) ? 'bg-danger' : badge;
+				badge2 = (v.available) ? 'bg-success' : 'bg-danger';
 				//Is Admin?
 				var adminFunctions = `<div class="btn-group m-r-10">
                     <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info btn-outline dropdown-toggle waves-effect waves-light" type="button"> <i class="fa fa-ellipsis-v m-r-5"></i> <span class="caret"></span></button>
@@ -2398,10 +2375,12 @@ function buildRequest(array){
 	</div>
 	` : '';
 }
-function buildRequestResult(array,media_type=null){
+function buildRequestResult(array,media_type=null,list=null,page=null){
+	console.log(array);
 	//var result = (typeof array !== 'undefined') ? true : false;
 	var results = ``;
 	var buttons = ``;
+	var next = ``;
 	var tv = 0;
 	var movie = 0;
 	var total = 0;
@@ -2439,6 +2418,14 @@ function buildRequestResult(array,media_type=null){
 		}
 
 	});
+	if(total == 20 && (list) && (page)){
+		page = ((page * 1) + 1);
+		next = `
+		<div class="col-lg-12">
+            <button class="btn btn-block btn-info" lang="en" onclick="requestList('`+list+`', '`+media_type+`', '`+page+`');">Load More</button>
+        </div>
+		`;
+	}
 	var buttons = `
 	<div class="button-box p-20 text-center p-b-0">
 		<button class="btn btn-inverse waves-effect waves-light filter-request-result" data-filter="request-result-all"><span>`+total+`</span> <i class="fa fa-th-large m-l-5 fa-fw"></i></button>
@@ -2446,7 +2433,7 @@ function buildRequestResult(array,media_type=null){
         <button class="btn btn-info waves-effect waves-light filter-request-result" data-filter="request-result-tv"><span>`+tv+`</span> <i class="fa fa-tv m-l-5 fa-fw"></i></button>
     </div>
 	`;
-	return buttons+results;
+	return buttons+results+next;
 }
 function processRequest(id,type){
 	if(type == 'tv'){
@@ -2459,7 +2446,26 @@ function processRequest(id,type){
 	}else{
 		ombiActions(id,'add',type);
 	}
-
+}
+//Ombi actions
+function ombiActions(id,action,type){
+	//console.log(id,action,type);
+	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
+		var response = JSON.parse(data);
+		if(response.data !== null){
+			homepageRequests();
+			if(action !== 'add'){
+				$.magnificPopup.close();
+				message("",window.lang.translate('Updated Request Item'),"bottom-right","#FFF","success","3500");
+			}else{
+				message("",window.lang.translate('Added Request Item'),"bottom-right","#FFF","success","3500");
+			}
+		}else{
+			message("",window.lang.translate('Connection Error to Request Server'),"bottom-right","#FFF","error","3500");
+		}
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
 }
 function doneTyping () {
 	ajaxloader('.search-div', 'in');
@@ -2472,10 +2478,13 @@ function doneTyping () {
 		ajaxloader();
 	});
 }
-function requestList (list, type) {
+function requestList (list, type, page=1) {
 	ajaxloader('.search-div', 'in');
-	requestSearchList(list).success(function(data) {
-		$('#request-results').html(buildRequestResult(data.results, type));
+	requestSearchList(list,page).success(function(data) {
+		$('#request-results').html(buildRequestResult(data.results, type, list, page));
+		$('.mfp-wrap').animate({
+			scrollTop: $("#request-results").offset().top
+		}, 500);
 		ajaxloader();
 	}).fail(function(xhr) {
 		console.error("Organizr Function: TMDB Connection Failed");
@@ -2973,7 +2982,6 @@ function homepageStream(type, timeout=30000){
 		default:
 
 	}
-	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
 		document.getElementById('homepageOrder'+type+'nowplaying').innerHTML = '';
@@ -2981,7 +2989,6 @@ function homepageStream(type, timeout=30000){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 	setTimeout(function(){
 		homepageStream(type, timeout);
 	}, timeout)
@@ -2998,7 +3005,6 @@ function homepageRecent(type, timeout=30000){
 		default:
 
 	}
-	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
 		document.getElementById('homepageOrder'+type+'recent').innerHTML = '';
@@ -3059,7 +3065,6 @@ function homepageRecent(type, timeout=30000){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 	setTimeout(function(){
 		homepageRecent(type, timeout);
 	}, timeout)
@@ -3073,7 +3078,6 @@ function homepagePlaylist(type, timeout=30000){
 		default:
 
 	}
-	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
 		document.getElementById('homepageOrder'+type+'playlist').innerHTML = '';
@@ -3136,7 +3140,6 @@ function homepagePlaylist(type, timeout=30000){
 	});
 }
 function homepageRequests(timeout=600000){
-	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getRequests'}).success(function(data) {
 		var response = JSON.parse(data);
 		document.getElementById('homepageOrderombi').innerHTML = '';
@@ -3199,13 +3202,11 @@ function homepageRequests(timeout=600000){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 	if(typeof homepageRequestsTimeout !== 'undefined'){ clearTimeout(homepageRequestsTimeout); }
 	homepageRequestsTimeout = setTimeout(function(){ homepageRequests(timeout); }, timeout)
 }
 function homepageCalendar(timeout=30000){
 	//if(isHidden()){ return; }
-	ajaxloader(".content-wrap","in");
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
 		var response = JSON.parse(data);
         $('#calendar').fullCalendar('removeEvents');
@@ -3214,7 +3215,6 @@ function homepageCalendar(timeout=30000){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	ajaxloader();
 	setTimeout(function(){
 		homepageCalendar(timeout);
 	}, timeout)
@@ -3252,25 +3252,6 @@ function humanFileSize(bytes, si) {
         ++u;
     } while(Math.abs(bytes) >= thresh && u < units.length - 1);
     return bytes.toFixed(1)+' '+units[u];
-}
-//Ombi actions
-function ombiActions(id,action,type){
-	//console.log(id,action,type);
-	ajaxloader(".content-wrap","in");
-	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
-		var response = JSON.parse(data);
-		if(response.data !== null){
-			homepageRequests();
-			$.magnificPopup.close();
-			message("",window.lang.translate('Updated Request Item'),"bottom-right","#FFF","success","3500");
-		}else{
-			message("",window.lang.translate('Connection Error to Request Server'),"bottom-right","#FFF","error","3500");
-		}
-	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
-	});
-	ajaxloader();
-
 }
 //youtube search
 function youtubeSearch(searchQuery) {
@@ -3312,34 +3293,34 @@ function youtubeCheck(title,link){
 	});
 }
 //request search
-function requestSearch(title) {
+function requestSearch(title,page=1) {
 	return $.ajax({
-		url: "https://api.themoviedb.org/3/search/multi?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language="+activeInfo.language+"&query="+title+"&page=1&include_adult=true",
+		url: "https://api.themoviedb.org/3/search/multi?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language="+activeInfo.language+"&query="+title+"&page="+page+"&include_adult=false",
 	});
 }
-function requestSearchList(list) {
+function requestSearchList(list,page=1) {
 	var url = '';
 	switch (list) {
 		case 'top-movie':
-			url = 'https://api.themoviedb.org/3/movie/top_rated?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			url = 'https://api.themoviedb.org/3/movie/top_rated?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
 			break;
 		case 'pop-movie':
-			url = 'https://api.themoviedb.org/3/movie/popular?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			url = 'https://api.themoviedb.org/3/movie/popular?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
 			break;
 		case 'up-movie':
-			url = 'https://api.themoviedb.org/3/movie/upcoming?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			url = 'https://api.themoviedb.org/3/movie/upcoming?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
 			break;
 		case 'theatre-movie':
-			url = 'https://api.themoviedb.org/3/movie/now_playing?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			url = 'https://api.themoviedb.org/3/movie/now_playing?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
 			break;
 		case 'top-tv':
-			url = 'https://api.themoviedb.org/3/tv/top_rated?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			url = 'https://api.themoviedb.org/3/tv/top_rated?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
 			break;
 		case 'pop-tv':
-			url = 'https://api.themoviedb.org/3/tv/popular?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			url = 'https://api.themoviedb.org/3/tv/popular?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
 			break;
 		case 'today-tv':
-			url = 'https://api.themoviedb.org/3/tv/airing_today?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page=1';
+			url = 'https://api.themoviedb.org/3/tv/airing_today?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
 			break;
 		default:
 
