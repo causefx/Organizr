@@ -2100,7 +2100,6 @@ function buildRequestAdminMenuItem(value,category,id,type){
 	return (action) ? `<li><a onclick="ombiActions('`+id+`', '`+action+`', '`+type+`');" lang="en">`+text+`</a></li>`+extra : '';
 }
 function buildRequestItem(array, extra=null){
-	console.log(array);
 	var items = '';
 	$.each(array, function(i,v) {
 			if(extra == null){
@@ -2352,8 +2351,9 @@ function buildRequest(array){
 		<div class="col-md-8 col-md-offset-2">
 			<div class="white-box m-b-0 search-div">
 				<div class="form-group m-b-0">
-					<div id="request-input-div" class="input-group m-t-10">
-                        <input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control">
+					<div id="request-input-div" class="input-group">
+						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control">
+                        <input id="request-page" type="hidden" class="form-control">
                         <div class="input-group-btn">
                             <button type="button" class="btn waves-effect waves-light btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span> <span class="caret"></span></button>
                             <ul class="dropdown-menu dropdown-menu-right">
@@ -2375,8 +2375,7 @@ function buildRequest(array){
 	</div>
 	` : '';
 }
-function buildRequestResult(array,media_type=null,list=null,page=null){
-	console.log(array);
+function buildRequestResult(array,media_type=null,list=null,page=null,search=false){
 	//var result = (typeof array !== 'undefined') ? true : false;
 	var results = ``;
 	var buttons = ``;
@@ -2418,11 +2417,20 @@ function buildRequestResult(array,media_type=null,list=null,page=null){
 		}
 
 	});
-	if(total == 20 && (list) && (page)){
+	if(total == 20 && (list) && (page) && (search == false)){
 		page = ((page * 1) + 1);
 		next = `
 		<div class="col-lg-12">
             <button class="btn btn-block btn-info" lang="en" onclick="requestList('`+list+`', '`+media_type+`', '`+page+`');">Load More</button>
+        </div>
+		`;
+	}
+	if(total == 20 && (list) && (page) && (search == true)){
+		page = ((page * 1) + 1);
+		$('#request-page').val(page);
+		next = `
+		<div class="col-lg-12">
+            <button class="btn btn-block btn-info" lang="en" onclick="doneTyping();">Load More</button>
         </div>
 		`;
 	}
@@ -2470,8 +2478,13 @@ function ombiActions(id,action,type){
 function doneTyping () {
 	ajaxloader('.search-div', 'in');
 	var title = $('#request-input').val();
-	requestSearch(title).success(function(data) {
-		$('#request-results').html(buildRequestResult(data.results));
+	var page = ($('#request-page').val()) ? $('#request-page').val() : 1;
+	$('#request-page').val(page);
+	requestSearch(title, page).success(function(data) {
+		$('#request-results').html(buildRequestResult(data.results,'',title,page,true));
+		$('.mfp-wrap').animate({
+			scrollTop: $("#request-results").offset().top
+		}, 500);
 		ajaxloader();
 	}).fail(function(xhr) {
 		console.error("Organizr Function: TMDB Connection Failed");
