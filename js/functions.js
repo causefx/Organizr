@@ -1951,6 +1951,7 @@ function buildStreamItem(array,source){
 		streamInfo += `<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-play-circle-outline"></i> Stream: `+userStream+`</span></div>`;
 		streamInfo += (v.userStream.videoResolution) ? `<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-video"></i> Video: `+userVideo+`</span></div>` : '';
 		streamInfo += `<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-speaker"></i> Audio: `+userAudio+`</span></div>`;
+		v.session = v.session.replace(/[\W_]+/g,"-");
 		cards += `
 		<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 nowPlayingItem">
 			<div class="white-box">
@@ -2034,6 +2035,7 @@ function buildRecentItem(array, type, extra=null){
 			}
 			items += `
 			<div class="item lazyload `+className+` metadata-get mouse" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
+				<div class="hover-homepage-item"></div>
 				<span class="elip recent-title">`+v.title+`</span>
 				<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
 			        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
@@ -2056,6 +2058,7 @@ function buildPlaylistItem(array, type, extra=null){
 			if(extra == null){
 				items += `
 				<div class="item lazyload recent-poster metadata-get mouse" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
+					<div class="hover-homepage-item"></div>
 					<span class="elip recent-title">`+v.title+`</span>
 					<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
 				        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
@@ -2137,6 +2140,7 @@ function buildRequestItem(array, extra=null){
 						<div class="inside-over-request-div `+badge2+`"></div>
 						<div class="inside-request-div `+badge+`"></div>
 					</div>
+					<div class="hover-homepage-item"></div>
 					<span class="elip recent-title">`+v.title+`</span>
 					<div id="request-`+v.id+`" class="white-popup mfp-with-anim mfp-hide">
 						<div class="col-md-8 col-md-offset-2">
@@ -2476,9 +2480,16 @@ function ombiActions(id,action,type){
 	});
 }
 function doneTyping () {
+	var page = ($('#request-page').val()) ? $('#request-page').val() : 1;
+	if(typeof searchTerm !== 'undefined'){
+		if(searchTerm !== $('#request-input').val()){
+			console.log('old page was '+page);
+			page = 1;
+		}
+	}
 	ajaxloader('.search-div', 'in');
 	var title = $('#request-input').val();
-	var page = ($('#request-page').val()) ? $('#request-page').val() : 1;
+	searchTerm = title;
 	$('#request-page').val(page);
 	requestSearch(title, page).success(function(data) {
 		$('#request-results').html(buildRequestResult(data.results,'',title,page,true));

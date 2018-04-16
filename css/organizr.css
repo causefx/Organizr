@@ -327,3 +327,10 @@ background: #2cabe3;
 .unapproved-request-div {
   background-color: #cc7b19;
 }
+.hover-homepage-item:hover {
+	background: radial-gradient(farthest-corner at 50% 50%,rgba(50,50,50,.5) 50%,#323232 100%);
+}
+.hover-homepage-item {
+  width: 100%;
+  height: 100%;
+}
