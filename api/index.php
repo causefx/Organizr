@@ -755,6 +755,8 @@ switch ($function) {
     case 'v1_launch_organizr':
         switch ($method) {
             case 'GET':
+				$pluginSearch = '-enabled';
+                $pluginInclude = '-include';
                 $status = array();
                 $result['status'] = 'success';
                 $result['statusText'] = 'success';
@@ -763,6 +765,12 @@ switch ($function) {
                 $status['user'] = $GLOBALS['organizrUser'];
                 $status['categories'] = loadTabs()['categories'];
                 $status['tabs'] = loadTabs()['tabs'];
+				$status['plugins'] = array_filter($GLOBALS, function($k)use($pluginSearch){
+                    return stripos($k, $pluginSearch) !== FALSE;
+                }, ARRAY_FILTER_USE_KEY);
+                $status['plugins']['includes'] = array_filter($GLOBALS, function($k)use($pluginInclude){
+                    return stripos($k, $pluginInclude) !== FALSE;
+                }, ARRAY_FILTER_USE_KEY);
                 $result['data'] = $status;
                 $result['branch'] = $GLOBALS['branch'];
 				$result['theme'] = $GLOBALS['theme'];
@@ -834,6 +842,19 @@ switch ($function) {
 				$result['status'] = 'success';
 				$result['statusText'] = 'success';
 				$result['data'] = ombiAPI($_POST);
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: '.$method;
+				break;
+		}
+		break;
+    case 'v1_plex_join':
+		switch ($method) {
+			case 'POST':
+				$result['status'] = 'success';
+				$result['statusText'] = 'success';
+				$result['data'] = plexJoinAPI($_POST);
 				break;
 			default:
 				$result['status'] = 'error';

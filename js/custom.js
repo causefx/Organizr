@@ -1613,7 +1613,12 @@ $(document).on("click", ".downloader", function(e) {
     ajaxloader();
 
 });
-// purge log
+// new api key
+$(document).on("click", ".newAPIKey", function () {
+    $('#settings-main-form [name=organizrAPI]').val(generateCode());
+    $('#settings-main-form [name=organizrAPI]').change();
+});
+// purge logvcfdD\o8i 8
 $(document).on("click", ".purgeLog", function () {
     var log = $('.swapLog.active').attr('data-name');
     alert('This action is not set yet - but this would have purged the '+log+' log');

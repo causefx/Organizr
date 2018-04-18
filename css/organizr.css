@@ -334,3 +334,7 @@ background: #2cabe3;
   width: 100%;
   height: 100%;
 }
+input#inviteCodeInput {
+  font-size: 400%;
+  height: 100%;
+}

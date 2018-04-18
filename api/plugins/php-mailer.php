@@ -14,7 +14,7 @@ $GLOBALS['plugins'][]['PHP Mailer'] = array( // Plugin Name
     'version'=>'1.0.0', // SemVer of plugin
     'image'=>'plugins/images/php-mailer.png', // 1:1 non transparent image for plugin
 	'settings'=>true, // does plugin need a settings page? true or false
-    'homepage'=>false // Is plugin for use on homepage? true or false 
+    'homepage'=>false // Is plugin for use on homepage? true or false
 );
 // INCLUDE/REQUIRE FILES
 
@@ -117,14 +117,46 @@ function phpmGetSettings(){
 				'placeholder' => 'i.e. same as username'
 			)
 		),
-		'Test' => array(
+		'Test & Domain' => array(
 			array(
 				'type' => 'button',
 				'label' => 'Send Test',
 				'class' => 'phpmSendTestEmail',
 				'icon' => 'fa fa-paper-plane',
 				'text' => 'Send'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'PHPMAILER-domain',
+				'label' => 'Domain Link Override',
+				'value' => $GLOBALS['PHPMAILER-domain']
+			),
+		),
+		'Templates' => array(
+			array(
+				'type' => 'accordion',
+				'label' => 'Choose Template',
+				'id' => 'customEmailTemplates',
+				'override' => 12,
+				'options' => array(
+					array(
+						'id' => 'test-1',
+						'header' => 'test 1',
+						'body' => 'body here'
+					),
+					array(
+						'id' => 'test-2',
+						'header' => 'test 2',
+						'body' => array(
+							'type' => 'input',
+							'name' => 'PHPMAILER-smtpHostSenderEmail',
+							'label' => 'Sender Email',
+							'value' => $GLOBALS['PHPMAILER-smtpHostSenderEmail'],
+							'placeholder' => 'i.e. same as username'
+						)
+					),
+				)
 			)
-		)
+		),
 	);
 }

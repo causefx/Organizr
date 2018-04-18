@@ -513,6 +513,9 @@ function hasValue(test){
 	}
 	return false;
 }
+function arrayContains(needle, arrhaystack){
+    return (arrhaystack.indexOf(needle) > -1);
+}
 /* END NORMAL FUNCTIONS */
 /* BUILD FUNCTIONS */
 /* END BUILD FUNCTIONS */
@@ -520,11 +523,42 @@ function hasValue(test){
 function selectOptions(options, active){
 	var selectOptions = '';
 	$.each(options, function(i,v) {
-		var selected = (active.toString() == v.value) ? 'selected' : '';
+		if(typeof active.split(',') == 'object'){
+			var selected = (arrayContains(v.value, active.split(','))) ? 'selected' : '';
+		}else{
+			var selected = (active.toString() == v.value) ? 'selected' : '';
+		}
 		var disabled = (v.disabled) ? ' disabled' : '';
 		selectOptions += '<option '+selected+disabled+' value="'+v.value+'">'+v.name+'</option>';
 	});
 	return selectOptions;
+}
+function accordionOptions(options, parentID){
+	console.log(options);
+	var accordionOptions = '';
+	$.each(options, function(i,v) {
+		var id = v.id;
+		var extraClass = (v.class) ? ' '+v.class : '';
+		var header = (v.header) ? ' '+v.header : '';
+		if(typeof v.body == 'object'){
+			console.log(v.body);
+			var body = buildFormItem(v.body);
+		}else{
+			var body = v.body;
+		}
+		//`+id+`
+		accordionOptions += `
+		<div class="panel">
+			<div class="panel-heading" id="`+id+`-heading" role="tab">
+				<a class="panel-title collapsed" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+parentID+`" aria-expanded="false" aria-controls="`+id+`-collapse">`+header+`</a>
+			</div>
+			<div class="panel-collapse collapse" id="`+id+`-collapse" aria-labelledby="`+id+`-heading" role="tabpanel" aria-expanded="false" style="height: 0px;">
+				<div class="panel-body">`+body+`</div>
+			</div>
+		</div>
+		`;
+	});
+	return accordionOptions;
 }
 function buildFormItem(item){
 	var placeholder = (item.placeholder) ? ' placeholder="'+item.placeholder+'"' : '';
@@ -560,6 +594,9 @@ function buildFormItem(item){
 		case 'select':
 			return '<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+'>'+selectOptions(item.options, item.value)+'</select>';
 			break;
+		case 'select2':
+			return '<select class="select2 m-b-10 select2-multiple'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select>';
+			break;
 		case 'switch':
 		case 'checkbox':
 			return '<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
@@ -569,6 +606,9 @@ function buildFormItem(item){
 			break;
 		case 'blank':
 			return '';
+			break;
+		case 'accordion':
+			return '<div class="panel-group'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+'  aria-multiselectable="true" role="tablist">'+accordionOptions(item.options, item.id)+'</div>';
 			break;
 		case 'html':
 			return item.html;
@@ -946,7 +986,7 @@ function userMenu(user){
 					<li><a href="javascript:void(0)"><i class="ti-user fa-fw"></i> <span lang="en">My Profile</span></a></li>
 					<li><a href="javascript:void(0)"><i class="ti-email fa-fw"></i> <span lang="en">Inbox</span></a></li>
 					<li class="divider" role="separator"></li>
-					<li><a href="javascript:void(0)"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
+					<li class="append-menu"><a href="javascript:void(0)"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 					<li class="divider" role="separator"></li>
 					<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 				</ul><!-- /.dropdown-user -->
@@ -964,7 +1004,7 @@ function userMenu(user){
 							</div>
 						</li>
 						<li class="divider" role="separator"></li>
-						<li><a href="javascript:void(0)" class="show-login"><i class="fa fa-sign-in fa-fw"></i> <span lang="en">Login/Register</span></a></li>
+						<li class="append-menu"><a href="javascript:void(0)" class="show-login"><i class="fa fa-sign-in fa-fw"></i> <span lang="en">Login/Register</span></a></li>
 					</ul><!-- /.dropdown-user -->
 				</li><!-- /.dropdown -->
 		`;
@@ -3410,6 +3450,7 @@ function launch(){
 			phpVersion:json.data.status.php,
 			token:json.data.user.token,
 			user:json.data.user,
+			plugins:json.data.plugins,
 			branch:json.branch,
 			sso:json.sso,
 			theme:json.theme,

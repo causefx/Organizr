@@ -8,5 +8,6 @@ return array(
     'PHPMAILER-smtpHostPassword' => '',
     'PHPMAILER-smtpHostSenderName' => 'Organizr',
     'PHPMAILER-smtpHostSenderEmail' => 'no-reply@Organizr.tld',
-    'PHPMAILER-smtpHostType' => 'tls'
+    'PHPMAILER-smtpHostType' => 'tls',
+	'PHPMAILER-domain' => ''
 );

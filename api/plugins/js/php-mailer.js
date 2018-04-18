@@ -21,6 +21,19 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
 // FUNCTIONS
 
 // EVENTS and LISTENERS
+$(document).on("click", ".show-login", function(e) {
+    console.log('click');
+    setTimeout(addForgotPassword, 1000);
+});
+function addForgotPassword(){
+    var item = '';
+    if(activeInfo.plugins["PHPMAILER-enabled"] == true){
+        if (activeInfo.user.loggedin === false) {
+            item = `<a href="javascript:void(0)" id="to-recover" class="text-dark pull-right"><i class="fa fa-lock m-r-5"></i> <span lang="en">Forgot pwd?</span></a>`;
+            $('.remember-me').after(item);
+        }
+    }
+}
 // CHANGE CUSTOMIZE Options
 $(document).on('change asColorPicker::close', '#PHPMAILER-settings-page :input', function(e) {
     var input = $(this);

@@ -50,9 +50,11 @@ body {
   color: #97999f;
   border-left: 0px solid #1b1a1a;
 }
-#side-menu > li > a:hover,
-#side-menu > li > a:focus {
-  background: rgba(0, 0, 0, 0.07);
+@media (pointer: fine) {
+	#side-menu > li > a:hover,
+	#side-menu > li > a:focus {
+	  background: rgba(0, 0, 0, 0.07);
+	}
 }
 #side-menu > li > a.active,
 #side-menu > li > ul > li > a.active {
@@ -320,6 +322,9 @@ a.mytooltip {
   line-height: 1.42857143;
   vertical-align: middle;
   /*border-top: transparent;*/
+}
+.bootstrap-tagsinput, .calendar-widget, .chat-main-box, .content-wrap, .css-bar:after, .customtab li.active a, .customtab li.active a:focus, .customtab li.active a:hover, .daterangepicker .input-mini, .dropify-wrapper, .dropify-wrapper .dropify-preview, .dropzone, .footer, .form-control, .jsgrid-alt-row>td, .jsgrid-header-row>th, .jsgrid-row>td, .list-group-item, .list-group-item.disabled, .list-group-item.disabled:focus, .list-group-item.disabled:hover, .manage-table, .modal-content, .myadmin-dd .dd-list .dd-item .dd-handle, .myadmin-dd-empty .dd-list .dd3-content, .myadmin-dd-empty .dd-list .dd3-handle, .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover, .pager li>a, .pager li>span, .pagination>li>a, .pagination>li>span, .panel, .panel .panel-footer, .panel-default .panel-body, .panel-default .panel-footer, .panel-default .panel-heading, .panel-footer textarea, .panel-white .panel-body, .panel-white .panel-footer, .panel-white .panel-heading, .radio label::before, .select2-container-multi .select2-choices, .table tbody tr.advance-table-row td, .thumbnail, .well, .white-box, input, pre, select, table.dataTable.display tbody tr.odd, table.dataTable.stripe tbody tr.odd {
+    background: #1f1f1f;
 }
 .jq-icon-info { background-color: rgba(71, 68, 68, 0.93); color: #FFF; border-color: #bce8f1; }
 .jq-icon-warning { background-color: rgba(154, 83, 20, 0.93); color: #fcf8e3; border-color: #faebcc; }

@@ -852,7 +852,105 @@ function sabnzbdAction($action=null, $target=null) {
         return $api;
     }
 }
+function convertPlexName($user, $type){
+	$array = libraryList('plex');
+	switch ($type){
+        case "username":
+		case "u":
+			$plexUser = array_search ($user, $array['users']);
+			break;
+		case "id":
+			if (array_key_exists(strtolower($user), $array['users'])) {
+				$plexUser = $array['users'][strtolower($user)];
+			}
+			break;
+		default:
+			$plexUser = false;
+	}
+	return (!empty($plexUser) ? $plexUser : null );
+}
+function libraryList($type=null){
+    switch ($type) {
+        case 'plex':
+            if(!empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'])){
+                $url = 'https://plex.tv/api/servers/'.$GLOBALS['plexID'].'/shared_servers';
+                try{
+                    $headers = array(
+                        "Accept" => "application/json",
+                        "X-Plex-Token" => $GLOBALS['plexToken']
+                    );
+                    $response = Requests::get($url, $headers, array());
+                    libxml_use_internal_errors(true);
+                    if($response->success){
+                        $libraryList = array();
+                        $plex = simplexml_load_string($response->body);
+                        foreach($plex->SharedServer->Section AS $child) {
+                            $libraryList['libraries'][(string)$child['title']] = (string)$child['id'];
+                        }
+                        foreach($plex->SharedServer AS $child) {
+                            if(!empty($child['username'])){
+                                $username = (string)strtolower($child['username']);
+                                $email = (string)strtolower($child['email']);
+                                $libraryList['users'][$username] = (string)$child['id'];
+                                $libraryList['emails'][$email] = (string)$child['id'];
+                                $libraryList['both'][$username] = $email;
+                            }
+                        }
+                        $libraryList = array_change_key_case($libraryList,CASE_LOWER);
+                        return $libraryList;
+                    }
+                }catch( Requests_Exception $e ) {
+                    writeLog('error', 'Plex Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+                };
+            }
+            break;
 
+        default:
+            # code...
+            break;
+    }
+    return false;
+}
+function plexJoinAPI($array){
+    return plexJoin($array['data']['username'],$array['data']['email'],$array['data']['password']);
+}
+function plexJoin($username, $email, $password){
+    try{
+        $url = 'https://plex.tv/users.json';
+    	$headers = array(
+    		'Accept'=> 'application/json',
+    		'Content-Type' => 'application/x-www-form-urlencoded',
+    		'X-Plex-Product' => 'Organizr',
+    		'X-Plex-Version' => '2.0',
+    		'X-Plex-Client-Identifier' => '01010101-10101010',
+    	);
+    	$data = array(
+    		'user[email]' => $email,
+    		'user[username]' => $username,
+    		'user[password]' => $password,
+    	);
+        $response = Requests::post($url, $headers, $data, array());
+
+        $json = json_decode($response->body, true);
+    	$errors = (!empty($json['errors']) ? true : false);
+    	$success = (!empty($json['user']) ? true : false);
+    	//Use This for later
+    	$usernameError = (!empty($json['errors']['username']) ? $json['errors']['username'][0] : false);
+    	$emailError = (!empty($json['errors']['email']) ? $json['errors']['email'][0] : false);
+    	$passwordError = (!empty($json['errors']['password']) ? $json['errors']['password'][0] : false);
+    	$errorMessage = "";
+    	if($errors){
+    		if($usernameError){ $errorMessage .= "[Username Error: ". $usernameError ."]"; }
+    		if($emailError){ $errorMessage .= "[Email Error: ". $emailError ."]"; }
+    		if($passwordError){ $errorMessage .= "[Password Error: ". $passwordError ."]"; }
+    	}
+        return (!empty($success) && empty($errors) ? true : $errorMessage );
+
+    }catch( Requests_Exception $e ) {
+        writeLog('error', 'Plex.TV Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+    };
+    return false;
+}
 /*
 function sendEmail($email = null, $username = "Organizr User", $subject, $body, $cc = null, $bcc = null){
 	try {

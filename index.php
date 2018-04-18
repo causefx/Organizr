@@ -24,6 +24,8 @@
 	<link href="plugins/bower_components/css-chart/css-chart.css" rel="stylesheet">
 	<link href="plugins/bower_components/calendar/dist/fullcalendar.css" rel="stylesheet" />
 	<link rel="stylesheet" href="https://cdn.plyr.io/3.1.0/plyr.css">
+	<link href="plugins/bower_components/custom-select/custom-select.css" rel="stylesheet" type="text/css" />
+<link href="plugins/bower_components/bootstrap-select/bootstrap-select.min.css" rel="stylesheet" />
 	<link id="style" href="css/dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<link href="css/organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<?php echo pluginFiles('css'); ?>
@@ -140,6 +142,8 @@
 	<script src="plugins/bower_components/dropzone-master/dist/dropzone.js"></script>
 	<script src="plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>
 	<script src="plugins/bower_components/calendar/dist/fullcalendar.js"></script>
+	<script src="plugins/bower_components/custom-select/custom-select.min.js" type="text/javascript"></script>
+    <script src="plugins/bower_components/bootstrap-select/bootstrap-select.min.js" type="text/javascript"></script>
 	<script src="https://cdn.plyr.io/3.1.0/plyr.js"></script>
 	<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
