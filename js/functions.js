@@ -193,7 +193,7 @@ function noTabs(arrayItems){
 			console.error("Organizr Function: API Connection Failed");
 		});
 	}else {
-		buildLogin();
+		$('.show-login').trigger('click');
 	}
 }
 function logout(){
@@ -534,15 +534,27 @@ function selectOptions(options, active){
 	return selectOptions;
 }
 function accordionOptions(options, parentID){
-	console.log(options);
+	//console.log(options);
 	var accordionOptions = '';
 	$.each(options, function(i,v) {
 		var id = v.id;
 		var extraClass = (v.class) ? ' '+v.class : '';
 		var header = (v.header) ? ' '+v.header : '';
 		if(typeof v.body == 'object'){
-			console.log(v.body);
-			var body = buildFormItem(v.body);
+
+			console.log(v.body.length);
+			if(typeof v.body.length == 'undefined'){
+				var body = buildFormItem(v.body);
+				console.log('single');
+
+			}else{
+				var body = '';
+				console.log('multiple');
+				$.each(v.body, function(int,val) {
+					body += buildFormItem(val);
+				});
+			}
+
 		}else{
 			var body = v.body;
 		}
@@ -550,7 +562,7 @@ function accordionOptions(options, parentID){
 		accordionOptions += `
 		<div class="panel">
 			<div class="panel-heading" id="`+id+`-heading" role="tab">
-				<a class="panel-title collapsed" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+parentID+`" aria-expanded="false" aria-controls="`+id+`-collapse">`+header+`</a>
+				<a class="panel-title collapsed" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+parentID+`" aria-expanded="false" aria-controls="`+id+`-collapse"><span lang="en">`+header+`</span></a>
 			</div>
 			<div class="panel-collapse collapse" id="`+id+`-collapse" aria-labelledby="`+id+`-heading" role="tabpanel" aria-expanded="false" style="height: 0px;">
 				<div class="panel-body">`+body+`</div>
@@ -573,36 +585,37 @@ function buildFormItem(item){
 	var attr = (item.attr) ? ' '+item.attr : '';
 	var disabled = (item.disabled) ? ' disabled' : '';
 	var href = (item.href) ? ' href="'+item.href+'"' : '';
+	var smallLabel = (item.smallLabel) ? '<label langl="en">'+item.smallLabel+'</label>' : '';
 	//+tof(item.value,'c')+`
 	switch (item.type) {
 		case 'input':
 		case 'text':
-			return '<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+			return smallLabel+'<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
 			break;
 		case 'textbox':
-			return '<textarea data-changed="false" class="form-control'+extraClass+'"'+placeholder+id+name+disabled+type+attr+' autocomplete="new-password">'+textarea+'</textarea>';
+			return smallLabel+'<textarea data-changed="false" class="form-control'+extraClass+'"'+placeholder+id+name+disabled+type+attr+' autocomplete="new-password">'+textarea+'</textarea>';
 			break;
 		case 'password':
-			return '<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+			return smallLabel+'<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
 			break;
 		case 'password-alt':
-			return '<div class="input-group m-b-30"><input data-changed="false" lang=en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
+			return smallLabel+'<div class="input-group m-b-30"><input data-changed="false" lang=en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
 			break;
 		case 'hidden':
 			return '<input data-changed="false" lang=en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
 			break;
 		case 'select':
-			return '<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+'>'+selectOptions(item.options, item.value)+'</select>';
+			return smallLabel+'<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+'>'+selectOptions(item.options, item.value)+'</select>';
 			break;
 		case 'select2':
-			return '<select class="select2 m-b-10 select2-multiple'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select>';
+			return smallLabel+'<select class="select2 m-b-10 select2-multiple'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select>';
 			break;
 		case 'switch':
 		case 'checkbox':
-			return '<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
+			return smallLabel+'<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
 			break;
 		case 'button':
-			return '<button class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none'+extraClass+'" '+href+attr+'type="button"><span class="btn-label"><i class="'+icon+'"></i></span><span lang="en">'+text+'</span></button>';
+			return smallLabel+'<button class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none'+extraClass+'" '+href+attr+'type="button"><span class="btn-label"><i class="'+icon+'"></i></span><span lang="en">'+text+'</span></button>';
 			break;
 		case 'blank':
 			return '';

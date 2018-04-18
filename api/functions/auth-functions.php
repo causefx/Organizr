@@ -3,6 +3,24 @@ function authRegister($username,$password,$defaults,$email){
 	$defaults = defaultUserGroup();
 	if(createUser($username,$password,$defaults,$email)){
 		writeLog('success', 'Registration Function - A User has registered', $username);
+		if($GLOBALS['PHPMAILER-enabled']){
+			$emailTemplate = array(
+				'type' => 'registration',
+				'body' => $GLOBALS['PHPMAILER-emailTemplateRegisterUser'],
+				'subject' => $GLOBALS['PHPMAILER-emailTemplateRegisterUserSubject'],
+				'user' => $username,
+				'password' => null,
+				'inviteCode' => null,
+			);
+			$emailTemplate = phpmEmailTemplate($emailTemplate);
+			$sendEmail = array(
+				'to' => $email,
+				'user' => $username,
+				'subject' => $emailTemplate['subject'],
+				'body' => phpmBuildEmail($emailTemplate),
+			);
+			phpmSendEmail($sendEmail);
+		}
 		if(createToken($username,$email,gravatar($email),$defaults['group'],$defaults['group_id'],$GLOBALS['organizrHash'],7)){
 			writeLoginLog($username, 'success');
 			writeLog('success', 'Login Function - A User has logged in', $username);

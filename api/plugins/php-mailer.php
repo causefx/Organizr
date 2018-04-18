@@ -19,6 +19,45 @@ $GLOBALS['plugins'][]['PHP Mailer'] = array( // Plugin Name
 // INCLUDE/REQUIRE FILES
 
 // PLUGIN FUNCTIONS
+function getTemplates(){
+	foreach (glob(dirname(__DIR__,2).DIRECTORY_SEPARATOR.'api' .DIRECTORY_SEPARATOR.'plugins' .DIRECTORY_SEPARATOR.'misc' . DIRECTORY_SEPARATOR . 'emailTemplates' . DIRECTORY_SEPARATOR . "*.php") as $filename){
+		$templates[] = array(
+			'name' => preg_replace('/\\.[^.\\s]{3,4}$/', '', basename($filename)),
+			'value' => preg_replace('/\\.[^.\\s]{3,4}$/', '', basename($filename))
+		);
+	}
+	return $templates;
+}
+function phpmEmailTemplate($emailTemplate){
+	$variables = [
+		'{user}' => $emailTemplate['user'],
+		'{domain}' => getServerPath(true),
+		'{password}' => $emailTemplate['password'],
+		'{inviteCode}' => $emailTemplate['inviteCode'],
+		'{fullDomain}' => getServerPath(true),
+	];
+	$emailTemplate['body'] = strtr($emailTemplate['body'], $variables);
+	$emailTemplate['subject'] = strtr($emailTemplate['subject'], $variables);
+	return $emailTemplate;
+}
+function phpmBuildEmail($email){
+	$subject = (isset($email['subject'])) ? $email['subject'] : 'Message from Server';
+	$body = (isset($email['body'])) ? $email['body'] : 'Message Error Occured';
+	$type = (isset($email['type'])) ? $email['type'] : 'No Type';
+	switch ($type) {
+		case 'invite':
+			$extra = 'invite';
+			break;
+		case 'reset':
+			$extra = 'reset';
+			break;
+		default:
+			$extra = null;
+			break;
+	}
+	include('misc/emailTemplates/'.$GLOBALS['PHPMAILER-template'].'.php');
+	return $email;
+}
 function phpmSendTestEmail(){
 	try {
 		$mail = new PHPMailer\PHPMailer\PHPMailer(true);
@@ -38,6 +77,50 @@ function phpmSendTestEmail(){
 		$mail->Body    = "This was just a test!";
 		$mail->send();
 		writeLog('success', 'Mail Function -  E-Mail Test Sent', $GLOBALS['organizrUser']['username']);
+		return true;
+	} catch (PHPMailer\PHPMailer\Exception $e) {
+		writeLog('error', 'Mail Function -  E-Mail Test Failed['.$mail->ErrorInfo.']', $GLOBALS['organizrUser']['username']);
+		return $e->errorMessage();
+	}
+	return false;
+}
+function phpmSendEmail($emailInfo){
+	$to = isset($emailInfo['to']) ? $emailInfo['to'] : null;
+	$cc = isset($emailInfo['cc']) ? $emailInfo['cc'] : null;
+	$bcc = isset($emailInfo['bcc']) ? $emailInfo['bcc'] : null;
+	$subject = isset($emailInfo['subject']) ? $emailInfo['subject'] : null;
+	$body = isset($emailInfo['body']) ? $emailInfo['body'] : null;
+	$username = isset($emailInfo['user']) ? $emailInfo['user'] : 'Organizr User';
+
+	try {
+		$mail = new PHPMailer\PHPMailer\PHPMailer(true);
+		$mail->isSMTP();
+		//$mail->SMTPDebug = 3;
+		$mail->Host = $GLOBALS['PHPMAILER-smtpHost'];
+		$mail->Port = $GLOBALS['PHPMAILER-smtpHostPort'];
+		$mail->SMTPSecure = $GLOBALS['PHPMAILER-smtpHostType'];
+		$mail->SMTPAuth = $GLOBALS['PHPMAILER-smtpHostAuth'];
+		$mail->Username = $GLOBALS['PHPMAILER-smtpHostUsername'];
+		$mail->Password = decrypt($GLOBALS['PHPMAILER-smtpHostPassword']);
+		$mail->setFrom($GLOBALS['PHPMAILER-smtpHostSenderEmail'], $GLOBALS['PHPMAILER-smtpHostSenderName']);
+		$mail->addReplyTo($GLOBALS['PHPMAILER-smtpHostSenderEmail'], $GLOBALS['PHPMAILER-smtpHostSenderName']);
+		$mail->isHTML(true);
+		if($to){ $mail->addAddress($to, $username); }
+		if($cc){ $mail->addCC($cc); }
+		if($bcc){
+			if(strpos($bcc , ',') === false){
+				$mail->addBCC($bcc);
+			}else{
+				$allEmails = explode(",",$bcc);
+				foreach($allEmails as $gotEmail){
+					$mail->addBCC($gotEmail);
+				}
+			}
+		}
+		$mail->Subject = $subject;
+		$mail->Body    = $body;
+		$mail->send();
+		//writeLog('success', 'Mail Function -  E-Mail Test Sent', $GLOBALS['organizrUser']['username']);
 		return true;
 	} catch (PHPMailer\PHPMailer\Exception $e) {
 		writeLog('error', 'Mail Function -  E-Mail Test Failed['.$mail->ErrorInfo.']', $GLOBALS['organizrUser']['username']);
@@ -117,7 +200,7 @@ function phpmGetSettings(){
 				'placeholder' => 'i.e. same as username'
 			)
 		),
-		'Test & Domain' => array(
+		'Test & Options' => array(
 			array(
 				'type' => 'button',
 				'label' => 'Send Test',
@@ -129,34 +212,91 @@ function phpmGetSettings(){
 				'type' => 'input',
 				'name' => 'PHPMAILER-domain',
 				'label' => 'Domain Link Override',
-				'value' => $GLOBALS['PHPMAILER-domain']
+				'value' => $GLOBALS['PHPMAILER-domain'],
+				'placeholder' => 'https://domain.com/',
+			),
+			array(
+				'type' => 'select',
+				'name' => 'theme',
+				'label' => 'Theme',
+				'class' => 'themeChanger',
+				'value' => $GLOBALS['PHPMAILER-template'],
+				'options' => getTemplates()
+			),
+			array(
+				'type' => 'input',
+				'name' => 'PHPMAILER-logo',
+				'label' => 'WAN Logo URL',
+				'value' => $GLOBALS['PHPMAILER-logo'],
+				'placeholder' => 'Full URL',
 			),
 		),
 		'Templates' => array(
 			array(
 				'type' => 'accordion',
-				'label' => 'Choose Template',
+				'label' => 'Edit Template',
 				'id' => 'customEmailTemplates',
 				'override' => 12,
 				'options' => array(
 					array(
-						'id' => 'test-1',
-						'header' => 'test 1',
-						'body' => 'body here'
+						'id' => 'PHPMAILER-emailTemplateRegisterUserForm',
+						'header' => 'New Registration',
+						'body' => array(
+							array(
+								'type' => 'input',
+								'name' => 'PHPMAILER-emailTemplateRegisterUserSubject',
+								'smallLabel' => 'Subject',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateRegisterUserSubject'],
+							),
+							array(
+								'type' => 'textbox',
+								'name' => 'PHPMAILER-emailTemplateRegisterUser',
+								'smallLabel' => 'Body',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateRegisterUser'],
+								'attr' => 'rows="10"',
+							)
+						)
 					),
 					array(
-						'id' => 'test-2',
-						'header' => 'test 2',
+						'id' => 'PHPMAILER-emailTemplateResetPasswordForm',
+						'header' => 'Reset Password',
 						'body' => array(
-							'type' => 'input',
-							'name' => 'PHPMAILER-smtpHostSenderEmail',
-							'label' => 'Sender Email',
-							'value' => $GLOBALS['PHPMAILER-smtpHostSenderEmail'],
-							'placeholder' => 'i.e. same as username'
+							array(
+								'type' => 'input',
+								'name' => 'PHPMAILER-emailTemplateResetPasswordSubject',
+								'smallLabel' => 'Subject',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateResetPasswordSubject'],
+							),
+							array(
+								'type' => 'textbox',
+								'name' => 'PHPMAILER-emailTemplateResetPassword',
+								'smallLabel' => 'Body',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateResetPassword'],
+								'attr' => 'rows="10"',
+							)
+						)
+					),
+					array(
+						'id' => 'PHPMAILER-emailTemplateInviteUserForm',
+						'header' => 'Invite User',
+						'body' => array(
+							array(
+								'type' => 'input',
+								'name' => 'PHPMAILER-emailTemplateInviteUserSubject',
+								'smallLabel' => 'Subject',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateInviteUserSubject'],
+							),
+							array(
+								'type' => 'textbox',
+								'name' => 'PHPMAILER-emailTemplateInviteUser',
+								'smallLabel' => 'Body',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateInviteUser'],
+								'attr' => 'rows="10"',
+							)
 						)
 					),
 				)
 			)
-		),
+		)
 	);
 }

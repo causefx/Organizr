@@ -101,7 +101,24 @@ function inviteCodes($array) {
 							'type' => $GLOBALS['INVITES-type-include'],
 						];
 						$connect->query('INSERT INTO [invites]', $newCode);
-							writeLog('success', 'Invite Management Function -  Added Invite ['.$code.']', $GLOBALS['organizrUser']['username']);
+						writeLog('success', 'Invite Management Function -  Added Invite ['.$code.']', $GLOBALS['organizrUser']['username']);
+						if($GLOBALS['PHPMAILER-enabled']){
+							$emailTemplate = array(
+								'type' => 'invite',
+								'body' => $GLOBALS['PHPMAILER-emailTemplateInviteUser'],
+								'subject' => $GLOBALS['PHPMAILER-emailTemplateInviteUserSubject'],
+								'user' => $username,
+								'password' => null,
+								'inviteCode' => $code,
+							);
+							$emailTemplate = phpmEmailTemplate($emailTemplate);
+							$sendEmail = array(
+								'to' => $email,
+								'subject' => $emailTemplate['subject'],
+								'body' => phpmBuildEmail($emailTemplate),
+							);
+							phpmSendEmail($sendEmail);
+						}
 						return true;
 					} catch (Dibi\Exception $e) {
 						return false;
