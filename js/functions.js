@@ -541,24 +541,17 @@ function accordionOptions(options, parentID){
 		var extraClass = (v.class) ? ' '+v.class : '';
 		var header = (v.header) ? ' '+v.header : '';
 		if(typeof v.body == 'object'){
-
-			console.log(v.body.length);
 			if(typeof v.body.length == 'undefined'){
 				var body = buildFormItem(v.body);
-				console.log('single');
-
 			}else{
 				var body = '';
-				console.log('multiple');
 				$.each(v.body, function(int,val) {
 					body += buildFormItem(val);
 				});
 			}
-
 		}else{
 			var body = v.body;
 		}
-		//`+id+`
 		accordionOptions += `
 		<div class="panel">
 			<div class="panel-heading" id="`+id+`-heading" role="tab">
@@ -995,11 +988,11 @@ function userMenu(user){
 							<div class="u-text"><h4>`+user.data.user.username+`</h4><p class="text-muted">`+user.data.user.email+`</p><p class="text-muted">`+user.data.user.group+`</p></div>
 						</div>
 					</li>
-					<li class="divider" role="separator"></li>
+					<!--<li class="divider" role="separator"></li>
 					<li><a href="javascript:void(0)"><i class="ti-user fa-fw"></i> <span lang="en">My Profile</span></a></li>
-					<li><a href="javascript:void(0)"><i class="ti-email fa-fw"></i> <span lang="en">Inbox</span></a></li>
+					<li><a href="javascript:void(0)"><i class="ti-email fa-fw"></i> <span lang="en">Inbox</span></a></li>-->
 					<li class="divider" role="separator"></li>
-					<li class="append-menu"><a href="javascript:void(0)"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
+					<li class="append-menu"><a href="javascript:void(0)" onclick="accountSettings();"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 					<li class="divider" role="separator"></li>
 					<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 				</ul><!-- /.dropdown-user -->
@@ -1919,8 +1912,6 @@ function errorPage(error=null){
 	if ( window.location !== window.parent.location ) {
 		var iframeError = local('get', 'error');
 		parent.errorPage(iframeError);
-		console.log(iframeError);
-		console.log('iframe error page');
 		$('html').html('');
 	  	return false;
 	}
@@ -2536,7 +2527,6 @@ function doneTyping () {
 	var page = ($('#request-page').val()) ? $('#request-page').val() : 1;
 	if(typeof searchTerm !== 'undefined'){
 		if(searchTerm !== $('#request-input').val()){
-			console.log('old page was '+page);
 			page = 1;
 		}
 	}
@@ -2904,7 +2894,6 @@ function buildDownloader(array, source){
 	` : '';
 }
 function buildMetadata(array, source){
-	console.log(array);
 	var metadata = '';
 	var genres = '';
 	var actors = '';
@@ -2971,7 +2960,6 @@ function buildYoutubeLink(title){
 	}
 }
 function buildCalendarMetadata(array){
-	console.log(array)
 	var metadata = '';
 	var genres = '';
 	var actors = '';
@@ -3350,7 +3338,6 @@ function youtubeCheck(title,link){
 	       },
 	       close: function() {
 	          if(typeof player !== 'undefined'){
-	              console.log('STOP STOP STOP')
 	              player.destroy();
 	          }
 	        }
@@ -3365,7 +3352,6 @@ function youtubeCheck(title,link){
 		$('.youtube-div').html(div);
 		$('.'+link).trigger('click');
 		player = new Plyr('#player-'+link);
-		console.log(data.items["0"].id.videoId);
 	}).fail(function(xhr) {
 		console.error("Organizr Function: YouTube Connection Failed");
 	});

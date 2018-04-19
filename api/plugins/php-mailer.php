@@ -52,6 +52,7 @@ function phpmEmailTemplate($emailTemplate){
 		'{password}' => $emailTemplate['password'],
 		'{inviteCode}' => $emailTemplate['inviteCode'],
 		'{fullDomain}' => getServerPath(true),
+		'{title}' => $GLOBALS['title'],
 	];
 	$emailTemplate['body'] = strtr($emailTemplate['body'], $variables);
 	$emailTemplate['subject'] = strtr($emailTemplate['subject'], $variables);

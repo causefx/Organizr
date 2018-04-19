@@ -41,6 +41,7 @@ function sendMail(){
         organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
             var response = JSON.parse(data);
             if(response.data == true){
+                $.magnificPopup.close();
                 messageSingle('',window.lang.translate('Email Sent Successful'),'bottom-right','#FFF','success','5000');
             }else{
                 messageSingle('',response.data,'bottom-right','#FFF','error','5000');
@@ -138,7 +139,6 @@ $(document).on('click', '.loadUserList', function() {
     ajaxloader(".content-wrap","in");
     organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
         var response = JSON.parse(data);
-        console.log(response);
         $('#user-list-div').html(buildUserList(response.data));
         $('#email-user-list').multiSelect();
     }).fail(function(xhr) {
