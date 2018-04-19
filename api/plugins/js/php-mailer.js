@@ -19,11 +19,171 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
 */
 
 // FUNCTIONS
+function sendMail(){
+    var to = $('#sendEmailToInput').val();
+    var subject = $('#sendEmailSubjectInput').val();
+    var body = tinyMCE.get('sendEmail').getContent();
+    if(to == ''){
+        messageSingle('','Please Enter Email','bottom-right','#FFF','error','5000');
+    }else if(subject == ''){
+        messageSingle('','Please Enter Subject','bottom-right','#FFF','error','5000');
+    }else if(body == ''){
+        messageSingle('','Please Enter Body','bottom-right','#FFF','error','5000');
+    }
+    if(to !== '' && subject !== '' && body !== ''){
+        var post = {
+            plugin:'PHPMailer/send/email', // used for switch case in your API call
+            bcc:to,
+            subject:subject,
+            body:body
+        };
+        ajaxloader(".content-wrap","in");
+        organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
+            var response = JSON.parse(data);
+            if(response.data == true){
+                messageSingle('',window.lang.translate('Email Sent Successful'),'bottom-right','#FFF','success','5000');
+            }else{
+                messageSingle('',response.data,'bottom-right','#FFF','error','5000');
+            }
+        }).fail(function(xhr) {
+            console.error("Organizr Function: API Connection Failed");
+        });
+        ajaxloader();
+    }
+}
+function buildUserList(array){
+    var users = '';
+    var htmlDOM = '';
+	$.each(array, function(i,v) {
+        users += '<option value="'+v+'">'+i+'</option>';
+    });
+    htmlDOM = `
+    <select multiple id="email-user-list" name="email-user-list[]">`+users+`</select>
+    <div class="button-box m-t-20">
+        <a id="select-all-users-list" class="btn btn-danger btn-outline" href="#">select all</a>
+        <a id="deselect-all-users-list" class="btn btn-info btn-outline" href="#">deselect all</a>
+        <a id="minimize-users-list" class="btn btn-primary btn-outline" href="#">minimize</a>
+    </div>`;
+    return htmlDOM;
+}
+function buildEmailModal(){
+    var htmlDOM = `
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-info m-0">
+                <div class="panel-heading">
+                    <span lang="en">Email Users</span>
+                    <div class="btn-group pull-right">
 
+						<button class="btn btn-info waves-effect waves-light loadUserList" type="button">
+							<i class="fa fa-user m-r-5"></i>
+						</button>
+                        <button class="btn btn-info waves-effect waves-light unhide-user-list hidden" type="button">
+							<i class="fa fa-eye m-r-5"></i>
+						</button>
+						<button class="btn btn-info waves-effect waves-light" onclick="sendMail();"><i class="fa fa-paper-plane m-l-5"></i></button>
+
+	                </div>
+                </div>
+                <div class="panel-wrapper collapse in main-email-panel" aria-expanded="true">
+                    <div class="panel-body">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label" lang="en">To:</label>
+                                        <input type="text" id="sendEmailToInput" class="form-control"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label" lang="en">Subject</label>
+                                        <input type="text" id="sendEmailSubjectInput" class="form-control"></div>
+                                </div>
+                                <div class="col-md-12" id="user-list-div">
+
+
+                                </div>
+                            </div>
+                            <!--/row-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <textarea id="sendEmail" name="area"></textarea>
+    `;
+    $('.email-div').html(htmlDOM);
+    if ($("#sendEmail").length > 0) {
+        tinymce.init({
+            selector: "textarea#sendEmail",
+            theme: "modern",
+            height: 300,
+            plugins: [
+                "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker", "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking", "save table contextmenu directionality emoticons template paste textcolor"
+            ],
+            toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | l      ink image | print preview media fullpage | forecolor backcolor emoticons",
+        });
+    }
+
+}
 // EVENTS and LISTENERS
+$(document).on("change", "#email-user-list", function () {
+    $('#sendEmailToInput').val($('#email-user-list').val());
+});
+$(document).on('click', '.loadUserList', function() {
+    var post = {
+        plugin:'PHPMailer/users/get', // used for switch case in your API call
+    };
+    ajaxloader(".content-wrap","in");
+    organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
+        var response = JSON.parse(data);
+        console.log(response);
+        $('#user-list-div').html(buildUserList(response.data));
+        $('#email-user-list').multiSelect();
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    ajaxloader();
+});
+$(window).on('load', function() {
+    if(activeInfo.plugins["PHPMAILER-enabled"] == true){
+        if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
+            var menuList = `<li><a class="inline-popups emailModal" href="#email-area" data-effect="mfp-zoom-out"><i class="fa fa-envelope fa-fw"></i> <span lang="en">E-Mail Center</span></a></li>`;
+            var htmlDOM = `
+        	<div id="email-area" class="white-popup mfp-with-anim mfp-hide">
+        		<div class="col-md-10 col-md-offset-1">
+        			<div class="email-div"></div>
+        		</div>
+        	</div>
+        	`;
+            $('.organizr-area').after(htmlDOM);
+            $('.append-menu').after(menuList);
+            pageLoad();
+        }
+    }
+
+
+});
+$(document).on("click", ".emailModal", function(e) {
+    buildEmailModal();
+});
 $(document).on("click", ".show-login", function(e) {
-    console.log('click');
     setTimeout(addForgotPassword, 1000);
+});
+$(document).on("click", "#select-all-users-list", function(e) {
+    $('#email-user-list').multiSelect('select_all');
+    return false;
+});
+$(document).on("click", "#deselect-all-users-list", function(e) {
+    $('#email-user-list').multiSelect('deselect_all');
+    return false;
+});
+$(document).on("click", "#minimize-users-list, .unhide-user-list", function(e) {
+    $('.main-email-panel').toggleClass('hidden');
+    $('.loadUserList').toggleClass('hidden');
+    $('.unhide-user-list').toggleClass('hidden');
+    return false;
 });
 function addForgotPassword(){
     var item = '';

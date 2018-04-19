@@ -23,6 +23,28 @@ if(isset($_POST['data']['plugin'])){
                 $result['data'] = null;
             }
             break;
+        case 'PHPMailer/send/email':
+            if(qualifyRequest(1)){
+                $result['status'] = 'success';
+                $result['statusText'] = 'success';
+                $result['data'] = phpmAdminSendEmail();
+            }else{
+                $result['status'] = 'error';
+                $result['statusText'] = 'API/Token invalid or not set';
+                $result['data'] = null;
+            }
+            break;
+		case 'PHPMailer/users/get':
+            if(qualifyRequest(1)){
+                $result['status'] = 'success';
+                $result['statusText'] = 'success';
+                $result['data'] = getEmails();
+            }else{
+                $result['status'] = 'error';
+                $result['statusText'] = 'API/Token invalid or not set';
+                $result['data'] = null;
+            }
+	            break;
         default:
             //DO NOTHING!!
             break;

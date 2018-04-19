@@ -2937,7 +2937,7 @@ function buildMetadata(array, source){
 	                <h2 class="m-b-0 font-medium pull-right text-right">
 						`+v.title+`<br>
 						<small class="m-t-0 text-white">`+v.metadata.tagline+`</small><br>
-						<a class="openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class="mdi mdi-`+source+` mdi-36px text-`+source+`"></i></a><br>
+						<button class="btn waves-effect waves-light openTab bg-`+source+`" type="button" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> <i class="fa mdi mdi-`+source+` fa-2x"></i> </button>
 						`+buildYoutubeLink(v.title+' '+v.metadata.year+' '+v.type)+`
 					</h2>
 	            </div>
@@ -2965,12 +2965,13 @@ function buildYoutubeLink(title){
 	if(title){
 		var str = createRandomString(10);
 		return `
-		<a href="javascript:void(0);"><i class="mdi mdi-youtube-play mdi-36px text-danger" onclick="youtubeCheck('`+escape(title)+`','`+str+`')"></i></a>
+		<button class="btn btn-youtube waves-effect waves-light" type="button" onclick="youtubeCheck('`+escape(title)+`','`+str+`')"> <i class="fa fa-youtube-play fa-2x"></i> </button>
 		<a class="hidden inline-popups `+str+`" href="#open-youtube" data-effect="mfp-zoom-out"></a>
 		`;
 	}
 }
 function buildCalendarMetadata(array){
+	console.log(array)
 	var metadata = '';
 	var genres = '';
 	var actors = '';

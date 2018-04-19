@@ -852,6 +852,15 @@ function sabnzbdAction($action=null, $target=null) {
         return $api;
     }
 }
+function getOrgUsers(){
+	$result = allUsers();
+		if (is_array($result) || is_object($result)){
+			foreach($result['users'] as $k => $v){
+				$return[$v['username']] = $v['email'];
+			}
+			return $return;
+		}
+}
 function convertPlexName($user, $type){
 	$array = libraryList('plex');
 	switch ($type){
@@ -951,71 +960,3 @@ function plexJoin($username, $email, $password){
     };
     return false;
 }
-/*
-function sendEmail($email = null, $username = "Organizr User", $subject, $body, $cc = null, $bcc = null){
-	try {
-		$mail = new PHPMailer(true);
-		$mail->isSMTP();
-		$mail->Host = $GLOBALS['smtpHost'];
-		$mail->SMTPAuth = $GLOBALS['smtpHostAuth'];
-		$mail->Username = $GLOBALS['smtpHostUsername'];
-		$mail->Password = $GLOBALS['smtpHostPassword'];
-		$mail->SMTPSecure = $GLOBALS['smtpHostType'];
-		$mail->Port = $GLOBALS['smtpHostPort'];
-		$mail->setFrom($GLOBALS['smtpHostSenderEmail'], $GLOBALS['smtpHostSenderName']);
-		$mail->addReplyTo($GLOBALS['smtpHostSenderEmail'], $GLOBALS['smtpHostSenderName']);
-		$mail->isHTML(true);
-		if($email){
-			$mail->addAddress($email, $username);
-		}
-		if($cc){
-			$mail->addCC($cc);
-		}
-		if($bcc){
-			if(strpos($bcc , ',') === false){
-				$mail->addBCC($bcc);
-			}else{
-				$allEmails = explode(",",$bcc);
-				foreach($allEmails as $gotEmail){
-					$mail->addBCC($gotEmail);
-				}
-			}
-		}
-		$mail->Subject = $subject;
-		$mail->Body    = $body;
-		$mail->send();
-		writeLog('success', 'Mail Function -  E-Mail Sent', $GLOBALS['organizrUser']['username']);
-		return true;
-	} catch (Exception $e) {
-		writeLog('error', 'Mail Function -  E-Mail Failed['.$mail->ErrorInfo.']', $GLOBALS['organizrUser']['username']);
-		return false;
-	}
-	return false;
-}
-//EMAIL SHIT
-function sendTestEmail($to, $from, $host, $auth, $username, $password, $type, $port, $sendername){
-	try {
-		$mail = new PHPMailer(true);
-		$mail->isSMTP();
-		$mail->Host = $host;
-		$mail->SMTPAuth = $auth;
-		$mail->Username = $username;
-		$mail->Password = $password;
-		$mail->SMTPSecure = $type;
-		$mail->Port = $port;
-		$mail->setFrom($from, $sendername);
-		$mail->addReplyTo($from, $sendername);
-		$mail->isHTML(true);
-		$mail->addAddress($to, "Organizr Admin");
-		$mail->Subject = "Organizr Test E-Mail";
-		$mail->Body    = "This was just a test!";
-		$mail->send();
-		writeLog('success', 'Mail Function -  E-Mail Test Sent', $GLOBALS['organizrUser']['username']);
-		return true;
-	} catch (Exception $e) {
-		writeLog('error', 'Mail Function -  E-Mail Test Failed['.$mail->ErrorInfo.']', $GLOBALS['organizrUser']['username']);
-		return false;
-	}
-	return false;
-}
-*/

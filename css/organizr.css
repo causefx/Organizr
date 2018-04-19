@@ -338,3 +338,9 @@ input#inviteCodeInput {
   font-size: 400%;
   height: 100%;
 }
+.bg-plex {
+	background: #E5A00D;
+}
+.bg-emby {
+  background: #4CAF50;
+}

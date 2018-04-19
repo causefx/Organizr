@@ -203,7 +203,7 @@ $(window).on('load', function() {
 	`;
     if(activeInfo.plugins["INVITES-enabled"] == true){
         if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
-            menuList = `<li><a class="inline-popups inviteModal" href="#invite-area" data-effect="mfp-zoom-out"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Manage Invites</span></a></li>`;
+            menuList = `<li><a class="inline-popups inviteModal" href="#invite-area" data-effect="mfp-zoom-out"><i class="fa fa-ticket fa-fw"></i> <span lang="en">Manage Invites</span></a></li>`;
             htmlDOM += `
         	<div id="new-invite-area" class="white-popup mfp-with-anim mfp-hide">
         		<div class="col-md-10 col-md-offset-1">
@@ -238,7 +238,7 @@ $(window).on('load', function() {
         		</div>
         	</div>`;
         }else if (activeInfo.user.loggedin === false){
-            menuList = `<li><a class="inline-popups inviteModal" href="#invite-area" data-effect="mfp-zoom-out"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Use Invite Code</span></a></li>`;
+            menuList = `<li><a class="inline-popups inviteModal" href="#invite-area" data-effect="mfp-zoom-out"><i class="fa fa-ticket fa-fw"></i> <span lang="en">Use Invite Code</span></a></li>`;
         }
         $('.append-menu').after(menuList);
         $('.organizr-area').after(htmlDOM);

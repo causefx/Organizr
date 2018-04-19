@@ -19,6 +19,23 @@ $GLOBALS['plugins'][]['PHP Mailer'] = array( // Plugin Name
 // INCLUDE/REQUIRE FILES
 
 // PLUGIN FUNCTIONS
+function getEmails(){
+	if($GLOBALS['authBackend']){
+		if($GLOBALS['authBackend'] == 'plex'){
+			$type = 'plex';
+		}
+	}else{
+		$type = 'none';
+	}
+	if($type == 'plex'){
+		$emails = array_merge(libraryList('plex')['both'],getOrgUsers());
+	}elseif($type == 'emby'){
+		$emails = getOrgUsers();
+	}else{
+		$emails = getOrgUsers();
+	}
+	return $emails;
+}
 function getTemplates(){
 	foreach (glob(dirname(__DIR__,2).DIRECTORY_SEPARATOR.'api' .DIRECTORY_SEPARATOR.'plugins' .DIRECTORY_SEPARATOR.'misc' . DIRECTORY_SEPARATOR . 'emailTemplates' . DIRECTORY_SEPARATOR . "*.php") as $filename){
 		$templates[] = array(
@@ -57,6 +74,26 @@ function phpmBuildEmail($email){
 	}
 	include('misc/emailTemplates/'.$GLOBALS['PHPMAILER-template'].'.php');
 	return $email;
+}
+function phpmAdminSendEmail(){
+	if($GLOBALS['PHPMAILER-enabled']){
+		$emailTemplate = array(
+			'type' => 'admin',
+			'body' => $_POST['data']['body'],
+			'subject' => $_POST['data']['subject'],
+			'user' => null,
+			'password' => null,
+			'inviteCode' => null,
+		);
+		$emailTemplate = phpmEmailTemplate($emailTemplate);
+		$sendEmail = array(
+			'bcc' => $_POST['data']['bcc'],
+			'subject' => $emailTemplate['subject'],
+			'body' => phpmBuildEmail($emailTemplate),
+		);
+		return phpmSendEmail($sendEmail);
+	}
+	return false;
 }
 function phpmSendTestEmail(){
 	try {

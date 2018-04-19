@@ -330,7 +330,13 @@ function getServerPath($over=false) {
         	$domain = $_SERVER['HTTP_HOST'];
 		}
 	}
-    return $protocol . $domain . str_replace("\\", "/", dirname($_SERVER['REQUEST_URI']));
+	$url = $protocol . $domain . str_replace("\\", "/", dirname($_SERVER['REQUEST_URI']));
+	if (strpos($url, '/api') !== false) {
+		$url = explode('/api', $url);
+		return $url[0].'/';
+	}else{
+		return $url;
+	}
 }
 function get_browser_name() {
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
@@ -342,6 +348,11 @@ function get_browser_name() {
     elseif (strpos($user_agent, 'MSIE') || strpos($user_agent, 'Trident/7')) return 'Internet Explorer';
     return 'Other';
 }
-function getServer(){
+function getServer($over=false){
+	if($over){
+		if($GLOBALS['PHPMAILER-domain'] !== ''){
+			return $GLOBALS['PHPMAILER-domain'];
+		}
+	}
     return isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"];
 }

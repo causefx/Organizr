@@ -97,3 +97,4 @@ css/themes/*.css
 *sonflix*
 plugins/images/cache/*.jpg
 testdata*
+strings.txt
