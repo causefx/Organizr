@@ -2601,6 +2601,7 @@ function processRequest(id,type){
 //Ombi actions
 function ombiActions(id,action,type){
 	//console.log(id,action,type);
+	var msg = (activeInfo.user.groupID <= 1) ? '<a href="https://github.com/tidusjar/Ombi/issues/2176" target="_blank">Not Org Fault - Ask Obmi</a>' : 'Connection Error to Request Server';
 	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
 		var response = JSON.parse(data);
 		if(response.data !== false){
@@ -2612,7 +2613,7 @@ function ombiActions(id,action,type){
 				message("",window.lang.translate('Added Request Item'),"bottom-right","#FFF","success","3500");
 			}
 		}else{
-			message("",window.lang.translate('Connection Error to Request Server'),"bottom-right","#FFF","error","3500");
+			message("",msg,"bottom-right","#FFF","error","3500");
 		}
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
