@@ -77,12 +77,15 @@ function buildEmailModal(){
                     <div class="btn-group pull-right">
 
 						<button class="btn btn-info waves-effect waves-light loadUserList" type="button">
-							<i class="fa fa-user m-r-5"></i>
+							<i class="fa fa-user"></i>
+						</button>
+                        <button class="btn btn-info waves-effect waves-light" type="button" onclick="$('.mce-i-template').trigger('click');">
+							<i class="fa fa-files-o"></i>
 						</button>
                         <button class="btn btn-info waves-effect waves-light unhide-user-list hidden" type="button">
-							<i class="fa fa-eye m-r-5"></i>
+							<i class="fa fa-eye"></i>
 						</button>
-						<button class="btn btn-info waves-effect waves-light" onclick="sendMail();"><i class="fa fa-paper-plane m-l-5"></i></button>
+						<button class="btn btn-info waves-effect waves-light" onclick="sendMail();"><i class="fa fa-paper-plane"></i></button>
 
 	                </div>
                 </div>
