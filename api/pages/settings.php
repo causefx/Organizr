@@ -196,24 +196,28 @@ $pageSettings = '
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-donate">
                                 <div class="row">
                                     <div class="col-md-3 col-sm-6 col-xs-12">
-                                        <div class="white-box bg-org">
-                                            <h1 class="m-t-0"><i class="fa fa-cc-visa text-info"></i></h1>
-                                            <h2>**** **** **** 2150</h2> <span class="pull-right">Expiry date: 10/16</span> <span class="font-500">Johnathan Doe</span> </div>
+                                        <div class="white-box bg-org mouse" onclick="window.open(\'https://paypal.me/causefx\', \'_blank\')">
+                                            <h1 class="m-t-0"><i class="fa fa-paypal text-info"></i></h1>
+                                            <h2>PayPal</h2>
+										</div>
                                     </div>
                                     <div class="col-md-3 col-sm-6 col-xs-12">
-                                        <div class="white-box">
-                                            <h1 class="m-t-0"><i class="fa fa-cc-mastercard text-danger"></i></h1>
-                                            <h2>**** **** **** 2150</h2> <span class="pull-right">Expiry date: 10/16</span> <span class="font-500">Johnathan Doe</span> </div>
+                                        <div class="white-box bg-org mouse" onclick="window.open(\'https://cash.me/$CauseFX\', \'_blank\')">
+                                            <h1 class="m-t-0"><i class="fa fa-dollar text-danger"></i></h1>
+                                            <h2>Square</h2>
+                                            </div>
                                     </div>
                                     <div class="col-md-3 col-sm-6 col-xs-12">
-                                        <div class="white-box">
-                                            <h1 class="m-t-0"><i class="fa fa-cc-discover text-success"></i></h1>
-                                            <h2>**** **** **** 2150</h2> <span class="pull-right">Expiry date: 10/16</span> <span class="font-500">Johnathan Doe</span> </div>
+                                        <div class="white-box bg-org mouse" onclick="window.open(\'https://paypal.me/causefx\', \'_blank\')">
+                                            <h1 class="m-t-0"><i class="fa fa-btc text-success"></i></h1>
+                                            <h2>BitCoin</h2>
+                                            </div>
                                     </div>
                                     <div class="col-md-3 col-sm-6 col-xs-12">
-                                        <div class="white-box">
-                                            <h1 class="m-t-0"><i class="fa fa-cc-amex text-warning"></i></h1>
-                                            <h2>**** **** **** 2150</h2> <span class="pull-right">Expiry date: 10/16</span> <span class="font-500">Johnathan Doe</span> </div>
+                                        <div class="white-box bg-org mouse" onclick="window.open(\'https://www.patreon.com/organizr\', \'_blank\')">
+                                            <h1 class="m-t-0"><i class="fa fa-money text-warning"></i></h1>
+                                            <h2>Patreon</h2>
+                                            </div>
                                     </div>
                                 </div>
                                 <div class="clearfix"></div>
