@@ -2153,9 +2153,11 @@ function buildRecentItem(array, type, extra=null){
 	$.each(array, function(i,v) {
 		if(extra == null){
 			var className = '';
+			var extraImg = '';
 			switch (v.type) {
 				case 'music':
 					className = 'recent-cover recent-item recent-music';
+					extraImg = '<img src="'+v.imageURL+'" class="imageSource imageSourceTop recent-cover"><img src="'+v.imageURL+'" class="imageSource imageSourceBottom recent-cover">';
 					break;
 				case 'movie':
 					className = 'recent-poster recent-item recent-movie';
@@ -2171,6 +2173,7 @@ function buildRecentItem(array, type, extra=null){
 			}
 			items += `
 			<div class="item lazyload `+className+` metadata-get mouse" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
+				`+extraImg+`
 				<div class="hover-homepage-item"></div>
 				<span class="elip recent-title">`+v.title+`</span>
 				<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">

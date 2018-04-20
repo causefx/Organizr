@@ -303,7 +303,7 @@ function resolvePlexItem($item) {
         case 'album':
         case 'track':
             $plexItem['type'] = 'music';
-            $plexItem['title'] = (string)$item['parentTitle'];
+            $plexItem['title'] = (string)$item['parentTitle'].' - '.(string)$item['title'];
             $plexItem['summary'] = (string)$item['title'];
             $plexItem['ratingKey'] = (string)$item['parentRatingKey'];
             $plexItem['thumb'] = (string)$item['thumb'];

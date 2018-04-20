@@ -142,7 +142,7 @@ object-fit: contain;
 }
 .recent-cover{
 	background-position: center;background-size: cover;height: 150px;width: 150px;
-  top: 74px;
+  top: 37px;
     position: relative;
 }
 .recent-poster{
@@ -157,7 +157,9 @@ object-fit: contain;
   background: rgba(31, 31, 31, 0.73);
   width: inherit;
   color: white;
+  display: none;
 }
+.item:hover .recent-title { display:block; }
 .nowPlayingHover{
   margin-bottom: 14px;
 }
@@ -213,6 +215,36 @@ h2.m-b-0.font-medium.pull-right {
   right:0px;
   overflow: hidden;
   filter: blur(0px) grayscale(1)
+}
+img.imageSourceTop {
+  top: -37px;
+  left: 0px;
+  margin: auto;
+  display: block;
+  z-index: -1;
+  overflow: hidden;
+  filter: blur(4px) grayscale(1)
+}
+img.imageSourceBottom {
+  top: -114px;
+  left: 0px;
+  margin: auto;
+  display: block;
+  z-index: -1;
+  overflow: hidden;
+  filter: blur(4px) grayscale(1)
+}
+.recent-cover .hover-homepage-item {
+  position: relative;
+  top: -338px;
+  height: 225px;
+}
+.recent-music span.elip.recent-title {
+  position: absolute;
+  bottom: -38px;
+  background: rgba(31, 31, 31, 0.73);
+  width: inherit;
+  color: white;
 }
 .mailbox-widget .customtab li.active a, .mailbox-widget .customtab li.active, .mailbox-widget .customtab li.active a:focus {
     background: 0 0;
