@@ -333,6 +333,106 @@ function phpmGetSettings(){
 							)
 						)
 					),
+					array(
+						'id' => 'PHPMAILER-emailTemplateCustom-include-OneForm',
+						'header' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-OneName'],
+						'body' => array(
+							array(
+								'type' => 'input',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-OneName',
+								'smallLabel' => 'Name',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-OneName'],
+							),
+							array(
+								'type' => 'input',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-OneSubject',
+								'smallLabel' => 'Subject',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-OneSubject'],
+							),
+							array(
+								'type' => 'textbox',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-One',
+								'smallLabel' => 'Body',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-One'],
+								'attr' => 'rows="10"',
+							)
+						)
+					),
+					array(
+						'id' => 'PHPMAILER-emailTemplateCustom-include-TwoForm',
+						'header' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-TwoName'],
+						'body' => array(
+							array(
+								'type' => 'input',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-TwoName',
+								'smallLabel' => 'Name',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-TwoName'],
+							),
+							array(
+								'type' => 'input',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-TwoSubject',
+								'smallLabel' => 'Subject',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-TwoSubject'],
+							),
+							array(
+								'type' => 'textbox',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-Two',
+								'smallLabel' => 'Body',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-Two'],
+								'attr' => 'rows="10"',
+							)
+						)
+					),
+					array(
+						'id' => 'PHPMAILER-emailTemplateCustom-include-ThreeForm',
+						'header' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-ThreeName'],
+						'body' => array(
+							array(
+								'type' => 'input',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-ThreeName',
+								'smallLabel' => 'Name',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-ThreeName'],
+							),
+							array(
+								'type' => 'input',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-ThreeSubject',
+								'smallLabel' => 'Subject',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-ThreeSubject'],
+							),
+							array(
+								'type' => 'textbox',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-Three',
+								'smallLabel' => 'Body',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-Three'],
+								'attr' => 'rows="10"',
+							)
+						)
+					),
+					array(
+						'id' => 'PHPMAILER-emailTemplateCustom-include-FourForm',
+						'header' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-FourName'],
+						'body' => array(
+							array(
+								'type' => 'input',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-FourName',
+								'smallLabel' => 'Name',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-FourName'],
+							),
+							array(
+								'type' => 'input',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-FourSubject',
+								'smallLabel' => 'Subject',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-FourSubject'],
+							),
+							array(
+								'type' => 'textbox',
+								'name' => 'PHPMAILER-emailTemplateCustom-include-Four',
+								'smallLabel' => 'Body',
+								'value' => $GLOBALS['PHPMAILER-emailTemplateCustom-include-Four'],
+								'attr' => 'rows="10"',
+							)
+						)
+					),
 				)
 			)
 		)

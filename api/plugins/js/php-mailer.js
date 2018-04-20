@@ -116,6 +116,43 @@ function buildEmailModal(){
     `;
     $('.email-div').html(htmlDOM);
     if ($("#sendEmail").length > 0) {
+        var templates = [];
+        if(activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-One"] !== ''){
+            templates.push(
+                {
+                    title: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-OneName"],
+                    description: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-OneSubject"],
+                    content: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-One"],
+                }
+            )
+        }
+        if(activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-Two"] !== ''){
+            templates.push(
+                {
+                    title: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-TwoName"],
+                    description: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-TwoSubject"],
+                    content: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-Two"],
+                }
+            )
+        }
+        if(activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-Three"] !== ''){
+            templates.push(
+                {
+                    title: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-ThreeName"],
+                    description: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-ThreeSubject"],
+                    content: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-Three"],
+                }
+            )
+        }
+        if(activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-Four"] !== ''){
+            templates.push(
+                {
+                    title: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-FourName"],
+                    description: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-FourSubject"],
+                    content: activeInfo.plugins.includes["PHPMAILER-emailTemplateCustom-include-Four"],
+                }
+            )
+        }
         tinymce.init({
             selector: "textarea#sendEmail",
             theme: "modern",
@@ -123,7 +160,17 @@ function buildEmailModal(){
             plugins: [
                 "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker", "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking", "save table contextmenu directionality emoticons template paste textcolor"
             ],
-            toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | l      ink image | print preview media fullpage | forecolor backcolor emoticons",
+            toolbar: "insertfile template undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor",
+            templates: templates,
+            init_instance_callback: function (editor) {
+                editor.on('SetContent', function (e) {
+                    $.each(e.target.settings.templates, function(i,v) {
+                        if(v.content == e.content){
+                            $('#sendEmailSubjectInput').val(v.description);
+                        }
+                    });
+                });
+              }
         });
     }
 
