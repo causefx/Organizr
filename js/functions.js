@@ -1453,7 +1453,9 @@ function submitTabOrder(){
 		error:'Organizr Function: API Connection Failed'
 	};
 	settingsAPI(post);
-	buildTabEditor();
+	setTimeout(function(){
+		buildTabEditor();
+	}, 1000)
 }
 function submitCategoryOrder(){
 	var post = {
@@ -1465,7 +1467,9 @@ function submitCategoryOrder(){
 		error:'Organizr Function: API Connection Failed'
 	};
 	settingsAPI(post);
-	buildCategoryEditor();
+	setTimeout(function(){
+		buildCategoryEditor();
+	}, 1000)
 }
 function buildTR(array,type,badge){
 	var listing = '';
