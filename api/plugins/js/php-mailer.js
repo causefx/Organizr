@@ -166,7 +166,9 @@ function buildEmailModal(){
             toolbar: "insertfile template undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor",
             templates: templates,
             init_instance_callback: function (editor) {
-                editor.on('SetContent', function (e) {
+                editor.on('BeforeSetContent', function (e) {
+                    tinyMCE.get('sendEmail').execCommand('selectAll');
+                    tinyMCE.get('sendEmail').execCommand('delete');
                     $.each(e.target.settings.templates, function(i,v) {
                         if(v.content == e.content){
                             $('#sendEmailSubjectInput').val(v.description);

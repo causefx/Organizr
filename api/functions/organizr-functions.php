@@ -82,7 +82,37 @@ function register($array){
     }
 }
 function editUser($array){
-    return $array;
+    if($array['data']['username'] == '' && $array['data']['username'] == ''){
+        return 'Username/email not set';
+    }
+    try {
+        $connect = new Dibi\Connection([
+            'driver' => 'sqlite3',
+            'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
+        ]);
+        if(!usernameTakenExcept($array['data']['username'],$array['data']['email'],$GLOBALS['organizrUser']['userID'])){
+            $connect->query('
+                UPDATE users SET', [
+                    'username' => $array['data']['username'],
+                    'email' => $array['data']['email'],
+                ], '
+                WHERE id=?', $GLOBALS['organizrUser']['userID']);
+            if(!empty($array['data']['password'])){
+                $connect->query('
+                    UPDATE users SET', [
+                        'password' => password_hash($array['data']['password'], PASSWORD_BCRYPT)
+                    ], '
+                    WHERE id=?', $GLOBALS['organizrUser']['userID']);
+            }
+            writeLog('success', 'User Management Function - User: '.$array['data']['username'].'\'s info was changed', $GLOBALS['organizrUser']['username']);
+            return true;
+        }else{
+            return 'Username/Email Already Taken';
+        }
+    } catch (Dibi\Exception $e) {
+        writeLog('error', 'User Management Function - Error - User: '.$array['data']['username'].' An error Occured', $GLOBALS['organizrUser']['username']);
+        return 'an error occured';
+    }
 }
 function logout(){
     coookie('delete','organizrToken');

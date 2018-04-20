@@ -975,6 +975,98 @@ function buildLanguage(replace=false,newLang=null){
 		return lang;
 	}
 }
+function updateUserInformation(){
+	var passwordMatch = true;
+	var username = $('#accountUsername').val();
+	var email = $('#accountEmail').val();
+	var password1 = $('#accountPassword1').val();
+	var password2 = $('#accountPassword2').val();
+	if(password1 != password2){
+		passwordMatch = false;
+		messageSingle('','Passwords do not match','bottom-right','#FFF','error','5000');
+	}
+	if(username !== '' && email !== '' && passwordMatch == true){
+		var post = {
+			username:username,
+			email:email,
+			password:password1
+		};
+		ajaxloader(".content-wrap","in");
+		organizrAPI('POST','api/?v1/manage/user',post).success(function(data) {
+			var response = JSON.parse(data);
+			console.log(response);
+			if(response.data == true){
+				$.magnificPopup.close();
+				messageSingle('',window.lang.translate('User Info Updated'),'bottom-right','#FFF','success','5000');
+			}else{
+				messageSingle('',response.data,'bottom-right','#FFF','error','5000');
+			}
+		}).fail(function(xhr) {
+			console.error("Organizr Function: API Connection Failed");
+		});
+		ajaxloader();
+	}
+}
+function accountManager(user){
+	if (user.data.user.loggedin === true) {
+		var accountDiv = `
+		<div id="account-area" class="white-popup mfp-with-anim mfp-hide">
+			<div class="col-md-10 col-md-offset-1">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-info m-0">
+							<div class="panel-heading">
+								<span lang="en">Account Information</span>
+								<div class="btn-group pull-right">
+
+									<button class="btn btn-info waves-effect waves-light" type="button" onclick="updateUserInformation();">
+										<i class="fa fa-save"></i>
+									</button>
+
+								</div>
+							</div>
+							<div class="panel-wrapper collapse in main-email-panel" aria-expanded="true">
+								<div class="panel-body">
+									<div class="form-body">
+										<div class="row">
+											<div class="col-md-6">
+												<div class="form-group">
+													<label class="control-label" lang="en">Username</label>
+													<input type="text" id="accountUsername" class="form-control" value="`+activeInfo.user.username+`"></div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group">
+													<label class="control-label" lang="en">Email</label>
+													<input type="text" id="accountEmail" class="form-control" value="`+activeInfo.user.email+`"></div>
+											</div>
+										</div>
+										<!--/row-->
+										<div class="row">
+											<div class="col-md-6">
+												<div class="form-group">
+													<label class="control-label" lang="en">Password</label>
+													<input type="password" id="accountPassword1" class="form-control"></div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group">
+													<label class="control-label" lang="en">Verify Password</label>
+													<input type="password" id="accountPassword2" class="form-control"></div>
+											</div>
+										</div>
+										<!--/row-->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		`;
+		$('.organizr-area').after(accountDiv);
+		pageLoad();
+	}
+}
 function userMenu(user){
 	var menuList = buildLanguage();
 	if (user.data.user.loggedin === true) {
@@ -992,7 +1084,7 @@ function userMenu(user){
 					<li><a href="javascript:void(0)"><i class="ti-user fa-fw"></i> <span lang="en">My Profile</span></a></li>
 					<li><a href="javascript:void(0)"><i class="ti-email fa-fw"></i> <span lang="en">Inbox</span></a></li>-->
 					<li class="divider" role="separator"></li>
-					<li class="append-menu"><a href="javascript:void(0)" onclick="accountSettings();"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
+					<li class="append-menu"><a class="inline-popups" href="#account-area" data-effect="mfp-zoom-out"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 					<li class="divider" role="separator"></li>
 					<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 				</ul><!-- /.dropdown-user -->
@@ -2508,7 +2600,7 @@ function ombiActions(id,action,type){
 	//console.log(id,action,type);
 	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
 		var response = JSON.parse(data);
-		if(response.data !== null){
+		if(response.data !== false){
 			homepageRequests();
 			if(action !== 'add'){
 				$.magnificPopup.close();
@@ -3478,6 +3570,7 @@ function launch(){
 				userMenu(json);
 				categoryProcess(json);
 				tabProcess(json);
+				accountManager(json);
 				break;
 			default:
 				console.error('Organizr Function: Action not set or defined');

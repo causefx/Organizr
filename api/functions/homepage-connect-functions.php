@@ -1178,8 +1178,7 @@ function ombiAction($id, $action, $type) {
             writeLog('error', 'OMBI Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
         };
     }
-	$api['content'] = isset($success) ? $success : false;
-    return $api;
+	return isset($success['ok']) ? $success : false;
 }
 function getOmbiRequests($type = "both"){
     if($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest($GLOBALS['homepageOmbiAuth'])){

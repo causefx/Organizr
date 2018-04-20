@@ -25,6 +25,7 @@ function jwtParse($token){
                 $result['username'] = $jwttoken->getClaim('username');
                 $result['group'] = $jwttoken->getClaim('group');
                 $result['groupID'] = $jwttoken->getClaim('groupID');
+                $result['userID'] = $jwttoken->getClaim('userID');
                 $result['email'] = $jwttoken->getClaim('email');
                 $result['image'] = $jwttoken->getClaim('image');
                 $result['tokenExpire'] = $jwttoken->getClaim('exp');
@@ -44,27 +45,38 @@ function jwtParse($token){
     }
 }
 function createToken($username,$email,$image,$group,$groupID,$key,$days = 1){
-    // Create JWT
-    // Set key
-    // SHA256 Encryption
-    $signer = new Lcobucci\JWT\Signer\Hmac\Sha256();
-    // Start Builder
-    $jwttoken = (new Lcobucci\JWT\Builder())->setIssuer('Organizr') // Configures the issuer (iss claim)
-                                ->setAudience('Organizr') // Configures the audience (aud claim)
-                                ->setId('4f1g23a12aa', true) // Configures the id (jti claim), replicating as a header item
-                                ->setIssuedAt(time()) // Configures the time that the token was issue (iat claim)
-                                ->setExpiration(time() + (86400 * $days)) // Configures the expiration time of the token (exp claim)
-                                ->set('username', $username) // Configures a new claim, called "username"
-                                ->set('group', $group) // Configures a new claim, called "group"
-                                ->set('groupID', $groupID) // Configures a new claim, called "groupID"
-                                ->set('email', $email) // Configures a new claim, called "email"
-                                ->set('image', $image) // Configures a new claim, called "image"
-                                ->sign($signer, $key) // creates a signature using "testing" as key
-                                ->getToken(); // Retrieves the generated token
-    $jwttoken->getHeaders(); // Retrieves the token headers
-    $jwttoken->getClaims(); // Retrieves the token claims
-    coookie('set','organizrToken',$jwttoken,$days);
-    return $jwttoken;
+	//Quick get user ID
+	try {
+    	$database = new Dibi\Connection([
+    		'driver' => 'sqlite3',
+    		'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
+    	]);
+        $result = $database->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE',$username,$email);
+	    // Create JWT
+	    // Set key
+	    // SHA256 Encryption
+	    $signer = new Lcobucci\JWT\Signer\Hmac\Sha256();
+	    // Start Builder
+	    $jwttoken = (new Lcobucci\JWT\Builder())->setIssuer('Organizr') // Configures the issuer (iss claim)
+	                                ->setAudience('Organizr') // Configures the audience (aud claim)
+	                                ->setId('4f1g23a12aa', true) // Configures the id (jti claim), replicating as a header item
+	                                ->setIssuedAt(time()) // Configures the time that the token was issue (iat claim)
+	                                ->setExpiration(time() + (86400 * $days)) // Configures the expiration time of the token (exp claim)
+	                                ->set('username', $result['username']) // Configures a new claim, called "username"
+	                                ->set('group', $result['group']) // Configures a new claim, called "group"
+	                                ->set('groupID', $result['group_id']) // Configures a new claim, called "groupID"
+	                                ->set('email', $result['email']) // Configures a new claim, called "email"
+									->set('image', $result['image']) // Configures a new claim, called "image"
+	                                ->set('userID', $result['id']) // Configures a new claim, called "image"
+	                                ->sign($signer, $key) // creates a signature using "testing" as key
+	                                ->getToken(); // Retrieves the generated token
+	    $jwttoken->getHeaders(); // Retrieves the token headers
+	    $jwttoken->getClaims(); // Retrieves the token claims
+	    coookie('set','organizrToken',$jwttoken,$days);
+	    return $jwttoken;
+	} catch (Dibi\Exception $e) {
+		return false;
+	}
 }
 function validateToken($token,$global=false){
     // Validate script
@@ -72,17 +84,27 @@ function validateToken($token,$global=false){
     $validated = $userInfo ? true : false;
     if($validated == true){
         if($global == true){
-            $GLOBALS['organizrUser'] = array(
-                "token"=>$token,
-                "tokenDate"=>$userInfo['tokenDate'],
-                "tokenExpire"=>$userInfo['tokenExpire'],
-                "username"=>$userInfo['username'],
-                "group"=>$userInfo['group'],
-                "groupID"=>$userInfo['groupID'],
-                "email"=>$userInfo['email'],
-                "image"=>$userInfo['image'],
-                "loggedin"=>true,
-            );
+            try {
+            	$database = new Dibi\Connection([
+            		'driver' => 'sqlite3',
+            		'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
+            	]);
+                $result = $database->fetch('SELECT * FROM users WHERE id = ?',$userInfo['userID']);
+                $GLOBALS['organizrUser'] = array(
+                    "token"=>$token,
+                    "tokenDate"=>$userInfo['tokenDate'],
+                    "tokenExpire"=>$userInfo['tokenExpire'],
+                    "username"=>$result['username'],
+                    "group"=>$result['group'],
+                    "groupID"=>$result['group_id'],
+                    "email"=>$result['email'],
+                    "image"=>$result['image'],
+                    "userID"=>$result['id'],
+                    "loggedin"=>true,
+                );
+            } catch (Dibi\Exception $e) {
+                $GLOBALS['organizrUser'] = false;
+            }
         }
     }else{
         // Delete cookie & reload page
@@ -104,6 +126,7 @@ function getOrganizrUserToken(){
             "groupID"=>getGuest()['group_id'],
             "email"=>null,
             "image"=>getGuest()['image'],
+            "userID"=>null,
             "loggedin"=>false
         );
     }

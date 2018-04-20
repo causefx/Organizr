@@ -361,6 +361,25 @@ switch ($function) {
                 break;
         }
         break;
+	case 'v1_manage_user':
+        switch ($method) {
+            case 'POST':
+                if(qualifyRequest(998)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = editUser($_POST);
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_settings_user_manage_groups':
         switch ($method) {
             case 'GET':
