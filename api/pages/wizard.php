@@ -130,7 +130,7 @@ $pageWizard = '
                     if(html.data == true){
                         location.reload();
                     }else if(html.data == \'token\'){
-						console.error(\'Organizr Function: Could not create Token\');
+						location.reload();
 					}else if(html.data == \'db\'){
 						console.error(\'Organizr Function: Could not create DB - check permissions\');
 					}else if(html.data == \'admin\'){
