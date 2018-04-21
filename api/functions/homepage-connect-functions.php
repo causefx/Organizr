@@ -11,6 +11,9 @@ function homepageConnect($array){
         case 'getPlexMetadata':
             return plexConnect('metadata',$array['data']['key']);
             break;
+        case 'getPlexSearch':
+            return plexConnect('search',$array['data']['query']);
+            break;
         case 'getPlexPlaylists':
             return getPlexPlaylists();
             break;
@@ -426,6 +429,9 @@ function plexConnect($action,$key=null){
 			case 'playlists':
                 $url = $url."/playlists?X-Plex-Token=".$GLOBALS['plexToken'];
                 break;
+			case 'search':
+                $url = $url."/search?query=".rawurlencode($key)."&X-Plex-Token=".$GLOBALS['plexToken'];
+                break;
             default:
                 # code...
                 break;
@@ -438,7 +444,9 @@ function plexConnect($action,$key=null){
                 $items = array();
                 $plex = simplexml_load_string($response->body);
                 foreach($plex AS $child) {
-                    $items[] = resolvePlexItem($child);
+                    if($child['type'] != "artist" && $child['type'] != "episode" && isset($child['librarySectionID'])){
+                        $items[] = resolvePlexItem($child);
+                    }
                 }
                 $api['content'] = $items;
                 $api['plexID'] = $GLOBALS['plexID'];

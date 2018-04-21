@@ -1,5 +1,17 @@
 <?php
-
+function organizrSpecialSettings(){
+    return array(
+        'homepage' => array(
+            'search' => array(
+                'enabled' => (qualifyRequest($GLOBALS['mediaSearchAuth']) && $GLOBALS['mediaSearch'] == true && $GLOBALS['plexToken']) ? true : false,
+                'type' => $GLOBALS['mediaSearchType'],
+            ),
+            'ombi' => array(
+                'enabled' => (qualifyRequest($GLOBALS['homepageOmbiAuth']) && $GLOBALS['homepageOmbiEnabled'] == true && $GLOBALS['ssoOmbi']) ? true : false,
+            )
+        )
+    );
+}
 function wizardConfig($array){
     foreach ($array['data'] as $items) {
         foreach ($items as $key => $value) {
@@ -116,6 +128,8 @@ function editUser($array){
 }
 function logout(){
     coookie('delete','organizrToken');
+    coookie('delete','mpt');
+    coookie('delete','Auth');
     $GLOBALS['organizrUser'] = false;
     return true;
 }

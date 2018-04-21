@@ -209,6 +209,20 @@ function buildHomepageItem($homepageItem){
 }
 function getHomepageList(){
     $groups = groupSelect();
+	$mediaServers = array(
+		array(
+			'name' => 'N/A',
+			'value' => ''
+		),
+		array(
+			'name' => 'Plex',
+			'value' => 'plex'
+		),
+		array(
+			'name' => 'Emby [Not Available]',
+			'value' => 'emby'
+		)
+	);
     $time = array(
         array(
             'name' => '5',
@@ -512,6 +526,28 @@ function getHomepageList(){
 						'value' => $GLOBALS['homepageRecentRefresh'],
 						'options' => $time
 					),
+                ),
+				'Media Search' => array(
+					array(
+            			'type' => 'switch',
+            			'name' => 'mediaSearch',
+            			'label' => 'Enable',
+            			'value' => $GLOBALS['mediaSearch']
+            		),
+                    array(
+    					'type' => 'select',
+    					'name' => 'mediaSearchAuth',
+                        'label' => 'Minimum Authorization',
+    					'value' => $GLOBALS['mediaSearchAuth'],
+    					'options' => $groups
+    				),
+					array(
+    					'type' => 'select',
+    					'name' => 'mediaSearchType',
+                        'label' => 'Media Server',
+    					'value' => $GLOBALS['mediaSearchType'],
+    					'options' => $mediaServers
+    				),
                 ),
 				'Playlists' => array(
 					array(

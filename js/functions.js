@@ -1452,10 +1452,9 @@ function submitTabOrder(){
 		messageBody:window.lang.translate('Tab Order Saved'),
 		error:'Organizr Function: API Connection Failed'
 	};
-	settingsAPI(post);
-	setTimeout(function(){
-		buildTabEditor();
-	}, 1000)
+	var callbacks = $.Callbacks();
+    callbacks.add( buildTabEditor );
+	settingsAPI(post,callbacks);
 }
 function submitCategoryOrder(){
 	var post = {
@@ -1466,10 +1465,9 @@ function submitCategoryOrder(){
 		messageBody:window.lang.translate('Category Order Saved'),
 		error:'Organizr Function: API Connection Failed'
 	};
-	settingsAPI(post);
-	setTimeout(function(){
-		buildCategoryEditor();
-	}, 1000)
+	var callbacks = $.Callbacks();
+    callbacks.add( buildCategoryEditor );
+	settingsAPI(post,callbacks);
 }
 function buildTR(array,type,badge){
 	var listing = '';
@@ -2440,7 +2438,7 @@ function buildRequest(array){
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
 			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
 		</button>
-		<button href="#new-request" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-plus m-l-5"></i></button>
+		<button href="#new-request" id="newRequestButton" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-plus m-l-5"></i></button>
 		<div role="menu" class="dropdown-menu request-filter">
 			<div class="checkbox checkbox-success m-l-20 checkbox-circle">
 				<input id="request-filter-available" data-filter="request-available" class="filter-request-input" type="checkbox" checked="">
@@ -3531,6 +3529,118 @@ function changeAuth(){
     }
     if(type == 'internal') { $('.switchAuth').parent().parent().parent().hide(); }
 }
+function organizrSpecialSettings(array){
+	//media search
+	if(array.settings.homepage.search.enabled == true && typeof array.settings.homepage.search.type !== 'undefined'){
+		var htmlDOM = `
+		<li class="in">
+            <form id="mediaSearch" role="search" class="app-search hidden-sm hidden-xs m-r-10" onsubmit='return false;'>
+                <input id="mediaSearchQuery" data-server="`+array.settings.homepage.search.type+`" type="text" lang="en" placeholder="Search..." class="form-control" autocomplete="off"> <a class="mediaSearchSubmit" href="javascript:void(0);" type="submit"><i class="fa fa-search"></i></a>
+				<button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light mediaSearchSubmit hidden" type="submit">ok</button>
+			</form>
+        </li>
+		`;
+		var searchBoxResults = `
+		<a class="inline-popups hidden openResults" href="#mediaSearch-area" data-effect="mfp-zoom-out"></a>
+		<div id="mediaSearch-area" class="white-popup mfp-with-anim mfp-hide">
+			<div class="col-md-8 col-md-offset-2">
+				<div class="white-box m-b-0 mediaSearch-div"></div>
+			</div>
+		</div>
+		`;
+		$(htmlDOM).prependTo('.navbar-right');
+		$(searchBoxResults).appendTo($('.organizr-area'));
+	}
+}
+function forceSearch(term){
+    $.magnificPopup.close();
+    var tabName = $("li[data-url^='api/?v1/homepage/page']").find('span').html();
+    if($("li[data-url^='api/?v1/homepage/page']").find('i').hasClass('tabLoaded')){
+        console.log('yup');
+        if($("li[data-url^='api/?v1/homepage/page']").find('a').hasClass('active')){
+            setTimeout(
+                function(){
+                    $('#newRequestButton').trigger('click');
+                    $('#request-input').val(term);
+                    doneTyping();
+                },
+            1000);
+        }else{
+            tabActions('click',tabName,0);
+            setTimeout(
+                function(){
+
+
+                    $('#newRequestButton').trigger('click');
+                    $('#request-input').val(term);
+                    doneTyping();
+                },
+            1000);
+        }
+    }else{
+        tabActions('click',tabName,0);
+        setTimeout(
+            function(){
+
+
+                $('#newRequestButton').trigger('click');
+                $('#request-input').val(term);
+                doneTyping();
+            },
+        3000);
+    }
+}
+function buildMediaResults(array,source,term){
+    if(array.content.length == 0){
+		var none = '<h2 class="text-center" lang="en">No Results for:</h2><h3 class="text-center" lang="en">'+term+'</h3>';
+        none += (activeInfo.settings.homepage.ombi.enabled == true) ? `<button onclick="forceSearch('`+term+`')" class="btn btn-block btn-info" lang="en">Would you like to Request it?</button>` : '';
+        return none;
+	}
+    var results = '';
+    var tv = 0;
+    var movie = 0;
+    var music = 0;
+    var total = 0;
+	$.each(array.content, function(i,v) {
+
+        total = total + 1;
+        tv = (v.type == 'tv') ? tv + 1 : tv;
+        movie = (v.type == 'movie') ? movie + 1 : movie;
+        music = (v.type == 'music') ? music + 1 : music;
+        var bg = v.imageURL;
+        var top = v.title;
+        var bottom = v.metadata.originallyAvailableAt;
+        results += `
+        <div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
+            <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
+        </div>
+        <a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
+
+        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20 request-result-item request-result-`+v.type+` metadata-get mouse" data-source="`+source+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`">
+            <div class="white-box m-b-10">
+                <div class="el-card-item p-b-0">
+                    <div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages" data-src="`+bg+`"></div>
+                    <div class="el-card-content bg-org">
+                        <h3 class="box-title elip">`+top+`</h3> <small>`+bottom+`</small>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+
+    });
+
+    var buttons = `
+    <div class="button-box p-20 text-center p-b-0">
+        <button class="btn btn-inverse waves-effect waves-light filter-request-result" data-filter="request-result-all"><span>`+total+`</span> <i class="fa fa-th-large m-l-5 fa-fw"></i></button>
+        <button class="btn btn-primary waves-effect waves-light filter-request-result" data-filter="request-result-movie"><span>`+movie+`</span> <i class="fa fa-film m-l-5 fa-fw"></i></button>
+        <button class="btn btn-info waves-effect waves-light filter-request-result" data-filter="request-result-tv"><span>`+tv+`</span> <i class="fa fa-tv m-l-5 fa-fw"></i></button>
+        <button class="btn btn-info waves-effect waves-light filter-request-result" data-filter="request-result-music"><span>`+music+`</span> <i class="fa fa-music m-l-5 fa-fw"></i></button>
+    </div>
+    `;
+    return buttons+results;
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
 		var json = JSON.parse(data);
@@ -3553,6 +3663,7 @@ function launch(){
 			plugins:json.data.plugins,
 			branch:json.branch,
 			sso:json.sso,
+			settings:json.settings,
 			theme:json.theme,
 			style:json.style,
 			version:json.version
@@ -3579,6 +3690,7 @@ function launch(){
 				categoryProcess(json);
 				tabProcess(json);
 				accountManager(json);
+				organizrSpecialSettings(json);
 				break;
 			default:
 				console.error('Organizr Function: Action not set or defined');

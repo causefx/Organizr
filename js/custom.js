@@ -389,6 +389,38 @@ $(document).on("click", ".show-login", function(e) {
 $(document).on("click", ".depenency-item", function(e) {
     alert($(this).attr('data-name'));
 });
+$(document).on("click", ".mediaSearchSubmit", function(e) {
+    var query = $('#mediaSearchQuery').val();
+    var server = $('#mediaSearchQuery').attr('data-server');
+    switch (server) {
+        case 'plex':
+            var action = 'getPlexSearch';
+            break;
+        case 'emby':
+            var action = 'getEmbySearch';
+            break;
+        default:
+    }
+    organizrAPI('POST','api/?v1/homepage/connect',{action:action, query:query}).success(function(data) {
+        var response = JSON.parse(data);
+        console.log(response.data);
+        $('.mediaSearch-div').html('');
+        var results = `
+        <div class="row el-element-overlay">
+
+
+                    `+buildMediaResults(response.data,server,query)+`
+
+
+        </div>
+        <div class="clearfix"></div>
+        `;
+        $('.mediaSearch-div').html(results);
+        $('.openResults').trigger('click');
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+});
 $(document).on("click", ".login-button", function(e) {
     e.preventDefault;
     $('div.login-box').block({

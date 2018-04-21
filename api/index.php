@@ -799,6 +799,7 @@ switch ($function) {
                     'myPlexAccessToken' => isset($_COOKIE['mpt']) ? $_COOKIE['mpt'] : false,
                     'id_token' => isset($_COOKIE['Auth']) ? $_COOKIE['Auth'] : false
                 );
+                $result['settings'] = organizrSpecialSettings();
                 break;
             default:
                 $result['status'] = 'error';

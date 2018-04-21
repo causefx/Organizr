@@ -134,5 +134,9 @@ return array(
     'calendarLimit' => '1000',
 	'customCss' => '',
     'customHTMLone' => '',
-    'customHTMLtwo' => ''
+    'customHTMLtwo' => '',
+	'mediaSearch' => false,
+	'mediaSearchType' => '',
+	'mediaSearchAuth' => '1'
+
 );
