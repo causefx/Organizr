@@ -1579,45 +1579,11 @@ $(document).on("click", ".metadata-get", function(e) {
             autoplay: true,
             slideSpeed : 300,
             paginationSpeed : 400,
-            margin:40,
             nav:false,
-            autoplay:true,
-            dots:false,
-            responsive:{
-                0:{
-                    items:2
-                },
-                500:{
-                    items:3
-                },
-                650:{
-                    items:4
-                },
-                800:{
-                    items:5
-                },
-                950:{
-                    items:6
-                },
-                992:{
-                    items:4
-                },
-                1250:{
-                    items:5
-                },
-                1400:{
-                    items:6
-                },
-                1550:{
-                    items:7
-                },
-                1700:{
-                    items:8
-                },
-                1850:{
-                    items:9
-                }
-            }
+			dots:false,
+			margin:10,
+			autoWidth:true,
+			items:4
         });
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");

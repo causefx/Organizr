@@ -2434,12 +2434,13 @@ function buildPlaylist(array, type){
 function buildRequest(array){
 	var requests = (typeof array.content !== 'undefined') ? true : false;
 	var dropdown = '';
+	var ombiButton = (activeInfo.settings.homepage.ombi.enabled == true) ? `<button href="#new-request" id="newRequestButton" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-plus m-l-5"></i></button>` : '';
 	if(requests){
 		var builtDropdown = `
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
 			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
 		</button>
-		<button href="#new-request" id="newRequestButton" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-plus m-l-5"></i></button>
+		`+ombiButton+`
 		<div role="menu" class="dropdown-menu request-filter">
 			<div class="checkbox checkbox-success m-l-20 checkbox-circle">
 				<input id="request-filter-available" data-filter="request-available" class="filter-request-input" type="checkbox" checked="">
@@ -2604,7 +2605,7 @@ function processRequest(id,type){
 //Ombi actions
 function ombiActions(id,action,type){
 	//console.log(id,action,type);
-	var msg = (activeInfo.user.groupID <= 1) ? '<a href="https://github.com/tidusjar/Ombi/issues/2176" target="_blank">Not Org Fault - Ask Obmi</a>' : 'Connection Error to Request Server';
+	var msg = (activeInfo.user.groupID <= 1) ? '<a href="https://github.com/tidusjar/Ombi/issues/2176" target="_blank">Not Org Fault - Ask Ombi</a>' : 'Connection Error to Request Server';
 	ajaxloader('.preloader-'+id,'in');
 	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
 		var response = JSON.parse(data);
@@ -3179,57 +3180,12 @@ function homepageRecent(type, timeout=30000){
 		document.getElementById('homepageOrder'+type+'recent').innerHTML = '';
 		$('#homepageOrder'+type+'recent').html(buildRecent(response.data, type));
 		$('.recent-items').owlCarousel({
-    	    margin:40,
     	    nav:false,
     		autoplay:false,
             dots:false,
-    	    responsive:{
-    	        0:{
-    	            items:2
-    	        },
-    	        500:{
-    	            items:3
-    	        },
-    	        650:{
-    	            items:4
-    	        },
-    	        800:{
-    	            items:5
-    	        },
-    	        950:{
-    	            items:6
-    	        },
-    	        1100:{
-    	            items:7
-    	        },
-    	        1250:{
-    	            items:8
-    	        },
-    	        1400:{
-    	            items:9
-    	        },
-    	        1550:{
-    	            items:10
-    	        },
-    	        1700:{
-    	            items:11
-    	        },
-    	        1850:{
-    	            items:12
-    	        },
-    	        2000:{
-    	            items:13
-    	        },
-    	        2150:{
-    	            items:14
-    	        },
-    	        2300:{
-    	            items:15
-    	        },
-    	        2450:{
-    	            items:16
-    	        }
-    	    }
+			margin:10,
+		    autoWidth:true,
+		    items:4
     	})
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -3252,57 +3208,12 @@ function homepagePlaylist(type, timeout=30000){
 		document.getElementById('homepageOrder'+type+'playlist').innerHTML = '';
 		$('#homepageOrder'+type+'playlist').html(buildPlaylist(response.data, type));
 		$('.playlist-items').owlCarousel({
-    	    margin:40,
-    	    nav:false,
-    		autoplay:false,
-            dots:false,
-    	    responsive:{
-    	        0:{
-    	            items:2
-    	        },
-    	        500:{
-    	            items:3
-    	        },
-    	        650:{
-    	            items:4
-    	        },
-    	        800:{
-    	            items:5
-    	        },
-    	        950:{
-    	            items:6
-    	        },
-    	        1100:{
-    	            items:7
-    	        },
-    	        1250:{
-    	            items:8
-    	        },
-    	        1400:{
-    	            items:9
-    	        },
-    	        1550:{
-    	            items:10
-    	        },
-    	        1700:{
-    	            items:11
-    	        },
-    	        1850:{
-    	            items:12
-    	        },
-    	        2000:{
-    	            items:13
-    	        },
-    	        2150:{
-    	            items:14
-    	        },
-    	        2300:{
-    	            items:15
-    	        },
-    	        2450:{
-    	            items:16
-    	        }
-    	    }
+			nav:false,
+			autoplay:false,
+			dots:false,
+			margin:10,
+			autoWidth:true,
+			items:4
     	})
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -3316,57 +3227,12 @@ function homepageRequests(timeout=600000){
 			$('#homepageOrderombi').html(buildRequest(response.data));
 		}
 		$('.request-items').owlCarousel({
-    	    margin:40,
-    	    nav:false,
-    		autoplay:false,
-            dots:false,
-    	    responsive:{
-    	        0:{
-    	            items:2
-    	        },
-    	        500:{
-    	            items:3
-    	        },
-    	        650:{
-    	            items:4
-    	        },
-    	        800:{
-    	            items:5
-    	        },
-    	        950:{
-    	            items:6
-    	        },
-    	        1100:{
-    	            items:7
-    	        },
-    	        1250:{
-    	            items:8
-    	        },
-    	        1400:{
-    	            items:9
-    	        },
-    	        1550:{
-    	            items:10
-    	        },
-    	        1700:{
-    	            items:11
-    	        },
-    	        1850:{
-    	            items:12
-    	        },
-    	        2000:{
-    	            items:13
-    	        },
-    	        2150:{
-    	            items:14
-    	        },
-    	        2300:{
-    	            items:15
-    	        },
-    	        2450:{
-    	            items:16
-    	        }
-    	    }
+			nav:false,
+			autoplay:false,
+			dots:false,
+			margin:10,
+			autoWidth:true,
+			items:4
     	})
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");

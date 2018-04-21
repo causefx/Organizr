@@ -206,7 +206,7 @@ h2.m-b-0.font-medium.pull-right {
   position: absolute;
   left:0px;
   overflow: hidden;
-  filter: blur(0px) grayscale(1);
+  filter: contrast(309%) brightness(5%) saturate(32) grayscale(96%);
 }
 .el-element-overlay .el-card-item .el-overlay-1 img.imageSourceRight {
   width: 56%;
@@ -214,7 +214,7 @@ h2.m-b-0.font-medium.pull-right {
   position: absolute;
   right:0px;
   overflow: hidden;
-  filter: blur(0px) grayscale(1)
+  filter: contrast(309%) brightness(5%) saturate(32) grayscale(96%);
 }
 img.imageSourceTop {
   top: -37px;
@@ -223,7 +223,7 @@ img.imageSourceTop {
   display: block;
   z-index: -1;
   overflow: hidden;
-  filter: blur(4px) grayscale(1)
+  filter: contrast(309%) brightness(5%) saturate(32) grayscale(96%);
 }
 img.imageSourceBottom {
   top: -114px;
@@ -232,7 +232,7 @@ img.imageSourceBottom {
   display: block;
   z-index: -1;
   overflow: hidden;
-  filter: blur(4px) grayscale(1)
+  filter: contrast(309%) brightness(5%) saturate(32) grayscale(96%);
 }
 .recent-cover .hover-homepage-item {
   position: relative;
