@@ -196,7 +196,7 @@ $pageSettings = '
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-donate">
                                 <div class="row">
                                     <div class="col-md-3 col-sm-6 col-xs-12">
-                                        <div class="white-box bg-org mouse" onclick="window.open(\'https://paypal.me/causefx\', \'_blank\')">
+                                        <div class="white-box bg-org mouse" onclick="window.open(\'https://paypal.me/pools/c/83JNaMBESR\', \'_blank\')">
                                             <h1 class="m-t-0"><i class="fa fa-paypal text-info"></i></h1>
                                             <h2>PayPal</h2>
 										</div>

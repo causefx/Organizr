@@ -416,6 +416,7 @@ function resolvePlexItem($item) {
 function plexConnect($action,$key=null){
     if($GLOBALS['homepagePlexEnabled'] && !empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'] && qualifyRequest($GLOBALS['homepagePlexAuth']))){
         $url = qualifyURL($GLOBALS['plexURL']);
+        $ignore = array();
         switch ($action) {
             case 'streams':
                 $url = $url."/status/sessions?X-Plex-Token=".$GLOBALS['plexToken'];
@@ -431,6 +432,7 @@ function plexConnect($action,$key=null){
                 break;
 			case 'search':
                 $url = $url."/search?query=".rawurlencode($key)."&X-Plex-Token=".$GLOBALS['plexToken'];
+                $ignore = array('artist', 'episode');
                 break;
             default:
                 # code...
@@ -444,7 +446,7 @@ function plexConnect($action,$key=null){
                 $items = array();
                 $plex = simplexml_load_string($response->body);
                 foreach($plex AS $child) {
-                    if($child['type'] != "artist" && $child['type'] != "episode" && isset($child['librarySectionID'])){
+                    if( !in_array($child['type'], $ignore) && isset($child['librarySectionID'])){
                         $items[] = resolvePlexItem($child);
                     }
                 }

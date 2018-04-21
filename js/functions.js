@@ -523,8 +523,9 @@ function arrayContains(needle, arrhaystack){
 function selectOptions(options, active){
 	var selectOptions = '';
 	$.each(options, function(i,v) {
-		if(typeof active.split(',') == 'object'){
-			var selected = (arrayContains(v.value, active.split(','))) ? 'selected' : '';
+		activeTest = active.split(',');
+		if(activeTest.length > 1){
+			var selected = (arrayContains(v.value, activeTest)) ? 'selected' : '';
 		}else{
 			var selected = (active.toString() == v.value) ? 'selected' : '';
 		}
@@ -2544,7 +2545,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 			<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20 request-result-item request-result-`+media_type+`">
 	            <div class="white-box m-b-10">
 	                <div class="el-card-item p-b-0">
-	                    <div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages" data-src="`+bg+`">
+	                    <div class="el-card-avatar el-overlay-1 m-b-5 preloader-`+v.id+`"> <img class="lazyload resultImages" data-src="`+bg+`">
 	                        <div class="el-overlay">
 	                            <ul class="el-info">
 	                                <li><a class="btn default btn-outline" href="javascript:void(0);" onclick="processRequest('`+v.id+`','`+media_type+`');"><i class="icon-link"></i>&nbsp; <span lang="en">Request</span></a></li>
@@ -2604,6 +2605,7 @@ function processRequest(id,type){
 function ombiActions(id,action,type){
 	//console.log(id,action,type);
 	var msg = (activeInfo.user.groupID <= 1) ? '<a href="https://github.com/tidusjar/Ombi/issues/2176" target="_blank">Not Org Fault - Ask Obmi</a>' : 'Connection Error to Request Server';
+	ajaxloader('.preloader-'+id,'in');
 	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
 		var response = JSON.parse(data);
 		if(response.data !== false){
@@ -2612,12 +2614,15 @@ function ombiActions(id,action,type){
 				$.magnificPopup.close();
 				message("",window.lang.translate('Updated Request Item'),"bottom-right","#FFF","success","3500");
 			}else{
+				ajaxloader();
 				message("",window.lang.translate('Added Request Item'),"bottom-right","#FFF","success","3500");
 			}
 		}else{
+			ajaxloader();
 			message("",msg,"bottom-right","#FFF","error","3500");
 		}
 	}).fail(function(xhr) {
+		ajaxloader();
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
