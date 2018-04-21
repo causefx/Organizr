@@ -14,7 +14,7 @@ function pluginFiles($type){
 	switch ($type) {
 		case 'js':
 			foreach (glob(dirname(__DIR__,1).DIRECTORY_SEPARATOR.'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . "*.js") as $filename){
-				$files .= '<script src="api/plugins/js/'.basename($filename).'?v='.$GLOBALS['installedVersion'].'"></script>';
+				$files .= '<script src="api/plugins/js/'.basename($filename).'?v='.$GLOBALS['installedVersion'].'" defer="true" async></script>';
 			}
 			break;
 		case 'css':

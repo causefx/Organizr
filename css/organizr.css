@@ -376,3 +376,6 @@ input#inviteCodeInput {
 .bg-emby {
   background: #4CAF50;
 }
+.request-result-item {
+	width: 230px;
+}

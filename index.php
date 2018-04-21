@@ -145,10 +145,10 @@
 	<script src="plugins/bower_components/dropzone-master/dist/dropzone.js"></script>
 	<script src="plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>
 	<script src="plugins/bower_components/calendar/dist/fullcalendar.js"></script>
-	<script src="plugins/bower_components/custom-select/custom-select.min.js" type="text/javascript"></script>
-    <script src="plugins/bower_components/bootstrap-select/bootstrap-select.min.js" type="text/javascript"></script>
+	<script src="plugins/bower_components/custom-select/custom-select.min.js"></script>
+    <script src="plugins/bower_components/bootstrap-select/bootstrap-select.min.js"></script>
 	<script src="plugins/bower_components/tinymce/tinymce.min.js"></script>
-	<script type="text/javascript" src="plugins/bower_components/multiselect/js/jquery.multi-select.js"></script>
+	<script src="plugins/bower_components/multiselect/js/jquery.multi-select.js"></script>
 	<script src="https://cdn.plyr.io/3.1.0/plyr.js"></script>
 	<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
