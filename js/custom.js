@@ -314,7 +314,7 @@ function pageLoad(){
       callbacks: {
         beforeOpen: function() {
            this.st.mainClass = this.st.el.attr('data-effect');
-           this.st.focus = '#request-input';
+           this.st.focus = '.inline-focus';
        },
        close: function() {
           if(typeof player !== 'undefined'){
@@ -389,7 +389,7 @@ $(document).on("click", ".show-login", function(e) {
 $(document).on("click", ".depenency-item", function(e) {
     alert($(this).attr('data-name'));
 });
-$(document).on("click", ".mediaSearchSubmit", function(e) {
+function doneTypingMediaSearch () {
     var query = $('#mediaSearchQuery').val();
     var server = $('#mediaSearchQuery').attr('data-server');
     switch (server) {
@@ -403,24 +403,13 @@ $(document).on("click", ".mediaSearchSubmit", function(e) {
     }
     organizrAPI('POST','api/?v1/homepage/connect',{action:action, query:query}).success(function(data) {
         var response = JSON.parse(data);
-        console.log(response.data);
         $('.mediaSearch-div').html('');
-        var results = `
-        <div class="row el-element-overlay">
-
-
-                    `+buildMediaResults(response.data,server,query)+`
-
-
-        </div>
-        <div class="clearfix"></div>
-        `;
-        $('.mediaSearch-div').html(results);
+        $('.mediaSearch-div').html(buildMediaResults(response.data,server,query));
         $('.openResults').trigger('click');
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
-    });
-});
+    })
+}
 $(document).on("click", ".login-button", function(e) {
     e.preventDefault;
     $('div.login-box').block({
@@ -1671,8 +1660,15 @@ $(document).on('keyup', '#request-input', function () {
   clearTimeout(typingTimer);
   typingTimer = setTimeout(doneTyping, 750);
 });
+$(document).on('keyup', '#mediaSearchQuery', function () {
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(doneTypingMediaSearch, 750);
+});
 //on keydown, clear the countdown
 $(document).on('keydown', '#request-input', function () {
+  clearTimeout(typingTimer);
+});
+$(document).on('keydown', '#mediaSearchQuery', function () {
   clearTimeout(typingTimer);
 });
 /* ===== Open-Close Right Sidebar ===== */

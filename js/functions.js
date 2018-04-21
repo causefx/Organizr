@@ -2499,7 +2499,7 @@ function buildRequest(array){
 			<div class="white-box m-b-0 search-div">
 				<div class="form-group m-b-0">
 					<div id="request-input-div" class="input-group">
-						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control">
+						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control inline-focus">
                         <input id="request-page" type="hidden" class="form-control">
                         <div class="input-group-btn">
                             <button type="button" class="btn waves-effect waves-light btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span> <span class="caret"></span></button>
@@ -3404,18 +3404,21 @@ function organizrSpecialSettings(array){
 	//media search
 	if(array.settings.homepage.search.enabled == true && typeof array.settings.homepage.search.type !== 'undefined'){
 		var htmlDOM = `
-		<li class="in">
-            <form id="mediaSearch" role="search" class="app-search hidden-sm hidden-xs m-r-10" onsubmit='return false;'>
-                <input id="mediaSearchQuery" data-server="`+array.settings.homepage.search.type+`" type="text" lang="en" placeholder="Search..." class="form-control" autocomplete="off"> <a class="mediaSearchSubmit" href="javascript:void(0);" type="submit"><i class="fa fa-search"></i></a>
-				<button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light mediaSearchSubmit hidden" type="submit">ok</button>
-			</form>
-        </li>
+		<li class=""><a class="waves-effect waves-light inline-popups" href="#mediaSearch-area" data-effect="mfp-zoom-out"> <i class="fa fa-search"></i></a></li>
 		`;
 		var searchBoxResults = `
 		<a class="inline-popups hidden openResults" href="#mediaSearch-area" data-effect="mfp-zoom-out"></a>
 		<div id="mediaSearch-area" class="white-popup mfp-with-anim mfp-hide">
 			<div class="col-md-8 col-md-offset-2">
-				<div class="white-box m-b-0 mediaSearch-div"></div>
+				<div class="white-box m-b-0">
+					<div class="form-group m-b-0">
+
+							<input id="mediaSearchQuery" data-server="`+array.settings.homepage.search.type+`" lang="en" placeholder="Search My Media" type="text" class="form-control inline-focus">
+
+						<div class="clearfix"></div>
+					</div>
+					<div class="row el-element-overlay mediaSearch-div"></div>
+				</div>
 			</div>
 		</div>
 		`;
@@ -3501,7 +3504,22 @@ function buildMediaResults(array,source,term){
         `;
 
     });
-
+	//ombi setup?
+	if(activeInfo.settings.homepage.ombi.enabled == true){
+		results += `
+		<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20 request-result-item request-result-movie mouse"  onclick="forceSearch('`+term+`')">
+			<div class="white-box m-b-10">
+				<div class="el-card-item p-b-0">
+					<div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages mouse" data-src="plugins/images/cache/no-request.png"></div>
+					<div class="el-card-content bg-org">
+						<h3 class="box-title elip">`+term+`</h3> <small lang="en">Request Me!</small>
+						<br>
+					</div>
+				</div>
+			</div>
+		</div>
+		`;
+	}
     var buttons = `
     <div class="button-box p-20 text-center p-b-0">
         <button class="btn btn-inverse waves-effect waves-light filter-request-result" data-filter="request-result-all"><span>`+total+`</span> <i class="fa fa-th-large m-l-5 fa-fw"></i></button>
