@@ -121,6 +121,7 @@ function inviteCodes($array) {
 						}
 						return true;
 					} catch (Dibi\Exception $e) {
+						writeLog('error', 'Invite Management Function  -  Error ['.$e.']', 'SYSTEM');
 						return false;
 					}
 					break;
@@ -133,6 +134,7 @@ function inviteCodes($array) {
 						$invites = $connect->fetchAll('SELECT * FROM invites');
 						return $invites;
 					} catch (Dibi\Exception $e) {
+						writeLog('error', 'Invite Management Function  -  Error ['.$e.']', 'SYSTEM');
 						return false;
 					}
 					break;
@@ -145,6 +147,7 @@ function inviteCodes($array) {
 						$connect->query('DELETE FROM invites WHERE id = ?', $id);
 						return true;
 					} catch (Dibi\Exception $e) {
+						writeLog('error', 'Invite Management Function  -  Error ['.$e.']', 'SYSTEM');
 						return false;
 					}
 					break;
