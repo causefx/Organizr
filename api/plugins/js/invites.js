@@ -19,6 +19,67 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
 */
 
 // FUNCTIONS
+inviteLaunch()
+async function inviteLaunch(){
+    if(typeof activeInfo == 'undefined'){
+        setTimeout(function () {
+            inviteLaunch();
+        }, 1000);
+    }else{
+        var menuList = '';
+    	var htmlDOM = `
+    	<div id="invite-area" class="white-popup mfp-with-anim mfp-hide">
+    		<div class="col-md-10 col-md-offset-1">
+    			<div class="invite-div"></div>
+    		</div>
+    	</div>
+    	`;
+        if(activeInfo.plugins["INVITES-enabled"] == true){
+            if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
+                menuList = `<li><a class="inline-popups inviteModal" href="#invite-area" data-effect="mfp-zoom-out"><i class="fa fa-ticket fa-fw"></i> <span lang="en">Manage Invites</span></a></li>`;
+                htmlDOM += `
+            	<div id="new-invite-area" class="white-popup mfp-with-anim mfp-hide">
+            		<div class="col-md-10 col-md-offset-1">
+                        <div class="col-md-12">
+                            <div class="panel panel-info m-b-0">
+                                <div class="panel-heading" lang="en">New Invite</div>
+                                <div class="panel-wrapper collapse in" aria-expanded="true">
+                                    <div class="panel-body">
+
+                                        <form id="new-invite-form">
+                                            <fieldset style="border:0;">
+                                            <div class="form-group">
+                                                <label class="control-label" for="new-invite-form-inputUsername" lang="en">Name or Username</label>
+                                                <input type="text" class="form-control" id="new-invite-form-inputUsername" name="username" required="" autofocus="">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="new-invite-form-inputEmail" lang="en">Email</label>
+                                                <input type="text" class="form-control" id="new-invite-form-inputEmail" name="email" required="" autofocus="">
+                                            </div>
+                                            </fieldset>
+                                            <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none" onclick="createNewInvite();" type="button"><span class="btn-label"><i class="fa fa-plus"></i></span><span lang="en">Create/Send Invite</span></button>
+                                            <div class="clearfix"></div>
+                                        </form>
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+            		</div>
+            	</div>`;
+            }else if (activeInfo.user.loggedin === false){
+                menuList = `<li><a class="inline-popups inviteModal" href="#invite-area" data-effect="mfp-zoom-out"><i class="fa fa-ticket fa-fw"></i> <span lang="en">Use Invite Code</span></a></li>`;
+            }
+            $('.append-menu').after(menuList);
+            $('.organizr-area').after(htmlDOM);
+            pageLoad();
+            getInvite();
+        }
+    }
+}
 function joinPlex(){
     var username = $('#invitePlexJoinUsername');
     var email = $('#invitePlexJoinEmail');
@@ -192,61 +253,6 @@ function deleteInvite(id){
 
 }
 // EVENTS and LISTENERS
-inviteLaunch();
-async function inviteLaunch(){
-    var menuList = '';
-	var htmlDOM = `
-	<div id="invite-area" class="white-popup mfp-with-anim mfp-hide">
-		<div class="col-md-10 col-md-offset-1">
-			<div class="invite-div"></div>
-		</div>
-	</div>
-	`;
-    if(activeInfo.plugins["INVITES-enabled"] == true){
-        if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
-            menuList = `<li><a class="inline-popups inviteModal" href="#invite-area" data-effect="mfp-zoom-out"><i class="fa fa-ticket fa-fw"></i> <span lang="en">Manage Invites</span></a></li>`;
-            htmlDOM += `
-        	<div id="new-invite-area" class="white-popup mfp-with-anim mfp-hide">
-        		<div class="col-md-10 col-md-offset-1">
-                    <div class="col-md-12">
-                        <div class="panel panel-info m-b-0">
-                            <div class="panel-heading" lang="en">New Invite</div>
-                            <div class="panel-wrapper collapse in" aria-expanded="true">
-                                <div class="panel-body">
-
-                                    <form id="new-invite-form">
-                                        <fieldset style="border:0;">
-                                        <div class="form-group">
-                                            <label class="control-label" for="new-invite-form-inputUsername" lang="en">Name or Username</label>
-                                            <input type="text" class="form-control" id="new-invite-form-inputUsername" name="username" required="" autofocus="">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label" for="new-invite-form-inputEmail" lang="en">Email</label>
-                                            <input type="text" class="form-control" id="new-invite-form-inputEmail" name="email" required="" autofocus="">
-                                        </div>
-                                        </fieldset>
-                                        <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none" onclick="createNewInvite();" type="button"><span class="btn-label"><i class="fa fa-plus"></i></span><span lang="en">Create/Send Invite</span></button>
-                                        <div class="clearfix"></div>
-                                    </form>
-
-
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="clearfix"></div>
-        		</div>
-        	</div>`;
-        }else if (activeInfo.user.loggedin === false){
-            menuList = `<li><a class="inline-popups inviteModal" href="#invite-area" data-effect="mfp-zoom-out"><i class="fa fa-ticket fa-fw"></i> <span lang="en">Use Invite Code</span></a></li>`;
-        }
-        $('.append-menu').after(menuList);
-        $('.organizr-area').after(htmlDOM);
-        pageLoad();
-        getInvite();
-    }
-}
 function buildInvites(array){
     if(array.length == 0){
 		return '<h2 class="text-center" lang="en">No Invites</h2>';

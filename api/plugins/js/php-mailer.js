@@ -19,6 +19,30 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
 */
 
 // FUNCTIONS
+phpmLaunch();
+async function phpmLaunch(){
+    if(typeof activeInfo == 'undefined'){
+        setTimeout(function () {
+            phpmLaunch();
+        }, 1000);
+    }else{
+        if(activeInfo.plugins["PHPMAILER-enabled"] == true){
+            if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
+                var menuList = `<li><a class="inline-popups emailModal" href="#email-area" data-effect="mfp-zoom-out"><i class="fa fa-envelope fa-fw"></i> <span lang="en">E-Mail Center</span></a></li>`;
+                var htmlDOM = `
+            	<div id="email-area" class="white-popup mfp-with-anim mfp-hide">
+            		<div class="col-md-10 col-md-offset-1">
+            			<div class="email-div"></div>
+            		</div>
+            	</div>
+            	`;
+                $('.organizr-area').after(htmlDOM);
+                $('.append-menu').after(menuList);
+                pageLoad();
+            }
+        }
+    }
+}
 function sendMail(){
     var to = $('#sendEmailToInput').val();
     var subject = $('#sendEmailSubjectInput').val();
@@ -198,24 +222,6 @@ $(document).on('click', '.loadUserList', function() {
     });
     ajaxloader();
 });
-phpmLaunch();
-async function phpmLaunch(){
-    if(activeInfo.plugins["PHPMAILER-enabled"] == true){
-        if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
-            var menuList = `<li><a class="inline-popups emailModal" href="#email-area" data-effect="mfp-zoom-out"><i class="fa fa-envelope fa-fw"></i> <span lang="en">E-Mail Center</span></a></li>`;
-            var htmlDOM = `
-        	<div id="email-area" class="white-popup mfp-with-anim mfp-hide">
-        		<div class="col-md-10 col-md-offset-1">
-        			<div class="email-div"></div>
-        		</div>
-        	</div>
-        	`;
-            $('.organizr-area').after(htmlDOM);
-            $('.append-menu').after(menuList);
-            pageLoad();
-        }
-    }
-}
 $(document).on("click", ".emailModal", function(e) {
     buildEmailModal();
 });

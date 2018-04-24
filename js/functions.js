@@ -3530,7 +3530,7 @@ function buildMediaResults(array,source,term){
     `;
     return buttons+results;
 }
-function launch(){
+async function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
 		var json = JSON.parse(data);
 		if(json.data.user == false){ location.reload(); }
