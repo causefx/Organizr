@@ -3464,6 +3464,14 @@ function forceSearch(term){
         3000);
     }
 }
+function splitPoster(str){
+	var words = str.split(' ');
+	var newWord = '';
+	$.each(words, function(i,v) {
+		newWord += v+'<br/>';
+	});
+	return newWord;
+}
 function buildMediaResults(array,source,term){
     if(array.content.length == 0){
 		var none = '<h2 class="text-center" lang="en">No Results for:</h2><h3 class="text-center" lang="en">'+term+'</h3>';
@@ -3510,7 +3518,11 @@ function buildMediaResults(array,source,term){
 		<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20 request-result-item request-result-movie mouse"  onclick="forceSearch('`+term+`')">
 			<div class="white-box m-b-10">
 				<div class="el-card-item p-b-0">
-					<div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages mouse" data-src="plugins/images/cache/no-request.png"></div>
+					<div class="el-card-avatar el-overlay-1 m-b-5"> <img class="lazyload resultImages mouse" data-src="plugins/images/cache/no-request.png">
+						<div class="customPoster">
+							<a href="javascript:void(0);">`+splitPoster(term)+`</a>
+						</div>
+					</div>
 					<div class="el-card-content bg-org">
 						<h3 class="box-title elip">`+term+`</h3> <small lang="en">Request Me!</small>
 						<br>
