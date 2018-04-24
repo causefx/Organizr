@@ -61,5 +61,12 @@
         "new": "Homepage Items - see below:|Downloader: Deluge - Transmission - Qbit|Calendar: Sonarr - Radarr - CouchPotato - Sickrage/Beard/Medusa|Ombi requests and approvals|Custom HTML (2 blocks)|Custom CSS|Plex Invites|Mail Templates",
         "fixed": "Lots of minor little things",
         "notes": "Beta coming soon"
+    },
+	"2.0.0-alpha.815": {
+        "date":"2018-04-24 21:36",
+        "title": "Bug Fixes",
+        "new": "",
+        "fixed": "Plex Now Playing bug not showing items|Invite menu not loaded on initial load",
+        "notes": "Beta coming soon"
     }
 }
