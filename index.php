@@ -151,8 +151,8 @@
 	<script src="plugins/bower_components/multiselect/js/jquery.multi-select.js"></script>
 	<script src="https://cdn.plyr.io/3.1.0/plyr.js"></script>
 	<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
-	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
-	<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
+	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>" async></script>
+	<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>" async></script>
 	<?php echo pluginFiles('js'); ?>
 </body>
 </html>

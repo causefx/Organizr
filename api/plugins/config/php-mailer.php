@@ -30,6 +30,7 @@ return array(
 	If you need anything, please let me know.<br />
 	',
 	'PHPMAILER-emailTemplateRegisterUserSubject' => 'Thank you For Registering',
+	'PHPMAILER-emailTemplateRegisterUserEnabled' => true,
 	'PHPMAILER-emailTemplateCustom-include-One' => '',
 	'PHPMAILER-emailTemplateCustom-include-OneName' => 'Template #1',
 	'PHPMAILER-emailTemplateCustom-include-OneSubject' => '',

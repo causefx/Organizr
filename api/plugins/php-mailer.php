@@ -268,6 +268,12 @@ function phpmGetSettings(){
 				'value' => $GLOBALS['PHPMAILER-logo'],
 				'placeholder' => 'Full URL',
 			),
+			array(
+				'type' => 'switch',
+				'name' => 'PHPMAILER-emailTemplateRegisterUserEnabled',
+				'label' => 'Send Welcome E-Mail',
+				'value' => $GLOBALS['PHPMAILER-emailTemplateRegisterUserEnabled'],
+			),
 		),
 		'Templates' => array(
 			array(

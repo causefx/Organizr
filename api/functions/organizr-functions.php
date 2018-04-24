@@ -202,7 +202,7 @@ function getSettingsMain(){
     			'type' => 'button',
     			'label' => 'Force Install Branch',
     			'class' => 'updateNow',
-    			'icon' => 'fa fa-paper-plane',
+    			'icon' => 'fa fa-download',
     			'text' => 'Retrieve'
     		)
         ),
@@ -217,7 +217,7 @@ function getSettingsMain(){
     			'type' => 'button',
     			'label' => 'Generate New API Key',
     			'class' => 'newAPIKey',
-    			'icon' => 'fa fa-paper-plane',
+    			'icon' => 'fa fa-refresh',
     			'text' => 'Generate'
     		)
         ),
@@ -251,7 +251,7 @@ function getSettingsMain(){
     			'type' => 'button',
     			'label' => 'Get Plex Token',
     			'class' => 'popup-with-form getPlexTokenAuth plexAuth switchAuth',
-    			'icon' => 'fa fa-paper-plane',
+    			'icon' => 'fa fa-ticket',
     			'text' => 'Retrieve',
     			'href' => '#auth-plex-token-form',
     			'attr' => 'data-effect="mfp-3d-unfold"'
@@ -268,7 +268,7 @@ function getSettingsMain(){
     			'type' => 'button',
     			'label' => 'Get Plex Machine',
     			'class' => 'popup-with-form getPlexMachineAuth plexAuth switchAuth',
-    			'icon' => 'fa fa-paper-plane',
+    			'icon' => 'fa fa-id-badge',
     			'text' => 'Retrieve',
     			'href' => '#auth-plex-machine-form',
     			'attr' => 'data-effect="mfp-3d-unfold"'
@@ -312,7 +312,15 @@ function getSettingsMain(){
     			'icon' => 'fa fa-paper-plane',
     			'text' => 'Send'
     		)*/
-        )
+        ),
+		'Misc' => array(
+			array(
+    			'type' => 'password-alt',
+    			'name' => 'registrationPassword',
+    			'label' => 'Registration Password',
+    			'value' => $GLOBALS['registrationPassword'],
+    		),
+		)
 	);
 }
 function getSSO(){
@@ -329,7 +337,7 @@ function getSSO(){
     			'type' => 'button',
     			'label' => 'Get Plex Token',
     			'class' => 'popup-with-form getPlexTokenSSO',
-    			'icon' => 'fa fa-paper-plane',
+    			'icon' => 'fa fa-ticket',
     			'text' => 'Retrieve',
     			'href' => '#sso-plex-token-form',
     			'attr' => 'data-effect="mfp-3d-unfold"'
@@ -345,7 +353,7 @@ function getSSO(){
     			'type' => 'button',
     			'label' => 'Get Plex Machine',
     			'class' => 'popup-with-form getPlexMachineSSO',
-    			'icon' => 'fa fa-paper-plane',
+    			'icon' => 'fa fa-id-badge',
     			'text' => 'Retrieve',
     			'href' => '#sso-plex-machine-form',
     			'attr' => 'data-effect="mfp-3d-unfold"'

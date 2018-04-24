@@ -137,6 +137,7 @@ return array(
     'customHTMLtwo' => '',
 	'mediaSearch' => false,
 	'mediaSearchType' => '',
-	'mediaSearchAuth' => '1'
+	'mediaSearchAuth' => '1',
+	'registrationPassword' => ''
 
 );
