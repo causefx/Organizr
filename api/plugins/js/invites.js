@@ -192,7 +192,8 @@ function deleteInvite(id){
 
 }
 // EVENTS and LISTENERS
-$(window).on('load', function() {
+inviteLaunch();
+async function inviteLaunch(){
     var menuList = '';
 	var htmlDOM = `
 	<div id="invite-area" class="white-popup mfp-with-anim mfp-hide">
@@ -245,7 +246,7 @@ $(window).on('load', function() {
         pageLoad();
         getInvite();
     }
-});
+}
 function buildInvites(array){
     if(array.length == 0){
 		return '<h2 class="text-center" lang="en">No Invites</h2>';

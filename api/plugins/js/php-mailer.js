@@ -198,7 +198,8 @@ $(document).on('click', '.loadUserList', function() {
     });
     ajaxloader();
 });
-$(window).on('load', function() {
+phpmLaunch();
+async function phpmLaunch(){
     if(activeInfo.plugins["PHPMAILER-enabled"] == true){
         if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
             var menuList = `<li><a class="inline-popups emailModal" href="#email-area" data-effect="mfp-zoom-out"><i class="fa fa-envelope fa-fw"></i> <span lang="en">E-Mail Center</span></a></li>`;
@@ -214,9 +215,7 @@ $(window).on('load', function() {
             pageLoad();
         }
     }
-
-
-});
+}
 $(document).on("click", ".emailModal", function(e) {
     buildEmailModal();
 });
