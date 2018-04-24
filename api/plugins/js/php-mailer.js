@@ -20,7 +20,7 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
 
 // FUNCTIONS
 phpmLaunch();
-async function phpmLaunch(){
+function phpmLaunch(){
     if(typeof activeInfo == 'undefined'){
         setTimeout(function () {
             phpmLaunch();

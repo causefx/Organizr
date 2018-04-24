@@ -20,7 +20,7 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
 
 // FUNCTIONS
 inviteLaunch()
-async function inviteLaunch(){
+function inviteLaunch(){
     if(typeof activeInfo == 'undefined'){
         setTimeout(function () {
             inviteLaunch();
