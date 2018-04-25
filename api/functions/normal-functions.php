@@ -23,6 +23,7 @@ function gravatar($email = '') {
 }
 // Cookie Custom Function
 function coookie($type, $name, $value = '', $days = -1, $http = true){
+	$badDomains = array('ddns.net','ddnsking.com','3utilities.com','bounceme.net','freedynamicdns.net','freedynamicdns.org','gotdns.ch','hopto.org','myddns.me','myftp.biz','myftp.org','myvnc.com','onthewifi.com','redirectme.net','serveblog.net','servecounterstrike.com','serveftp.com','servegame.com','servehalflife.com','servehttp.com','serveirc.com','serveminecraft.net','servemp3.com','servepics.com','servequake.com','sytes.net','viewdns.net','webhop.me','zapto.org');
 	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https"){
 		$Secure = true;
  	   	$HTTPOnly = true;
@@ -44,10 +45,18 @@ function coookie($type, $name, $value = '', $days = -1, $http = true){
 		if(is_numeric($Domain[0])){
 			$Domain = '';
 		}else{
-			$Domain = '.'.explode('.',$Domain)[1].'.'.explode('.',$Domain)[2].'.'.explode('.',$Domain)[3];
+			if(in_array(strtolower(explode('.',$Domain)[2].'.'.explode('.',$Domain)[3]), $badDomains)){
+				$Domain = '.'.explode('.',$Domain)[0].'.'.explode('.',$Domain)[1].'.'.explode('.',$Domain)[2].'.'.explode('.',$Domain)[3];
+			}else{
+				$Domain = '.'.explode('.',$Domain)[1].'.'.explode('.',$Domain)[2].'.'.explode('.',$Domain)[3];
+			}
 		}
 	}elseif($check == 2){
-		$Domain = '.'.explode('.',$Domain)[1].'.'.explode('.',$Domain)[2];
+		if(in_array(strtolower(explode('.',$Domain)[1].'.'.explode('.',$Domain)[2]), $badDomains)){
+			$Domain = '.'.explode('.',$Domain)[0].'.'.explode('.',$Domain)[1].'.'.explode('.',$Domain)[2];
+		}else{
+			$Domain = '.'.explode('.',$Domain)[1].'.'.explode('.',$Domain)[2];
+		}
 	}elseif($check == 1){
 		$Domain = '.' . $Domain;
 	}else{
