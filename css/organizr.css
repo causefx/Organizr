@@ -441,6 +441,7 @@ input#inviteCodeInput {
   height: 60px;
   background-repeat: no-repeat;
   background-origin: content-box;
+  border-radius: 10px;
 }
 .homepage-number {
   float: left;
@@ -455,4 +456,7 @@ input#inviteCodeInput {
 span.homepage-text {
   margin-top: 16px;
   display: inline-block;
+}
+.faded {
+  opacity: .5;
 }
