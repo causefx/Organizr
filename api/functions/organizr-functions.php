@@ -564,6 +564,9 @@ function editAppearance($array){
             break;
     }
 }
+function updateConfigMultiple($array){
+    return (updateConfig($array['data']['payload'])) ? true : false;
+}
 function updateConfigItem($array){
     switch ($array['data']['value']) {
         case 'true':

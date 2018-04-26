@@ -376,6 +376,21 @@ input#inviteCodeInput {
 .bg-emby {
   background: #4CAF50;
 }
+.bg-sab {
+  background: #ffb300;
+}
+.bg-deluge {
+  background: #425570;
+}
+.bg-nzbget {
+  background: #3e8c25;
+}
+.bg-transmission {
+  background: #950000;
+}
+.bg-qbit {
+  background: #2f67ba;
+}
 .request-result-item {
 	width: 230px;
 }
@@ -419,4 +434,25 @@ input#inviteCodeInput {
   -o-transform: perspective(8em) rotateX(11deg) scale(1.2);
   transform: perspective(8em) rotateX(11deg) scale(1.2);
   text-shadow: 0 -1px 15px black, 0 1px 0 #7f6303, 0 2px 0 #846703, 0 0px 0 #896b03, 0 1px 0 #8e6f03, 0 2px 0 #937203, 0 2px 30px rgba(252, 223, 92, 0.6);
+}
+.homepage-drag {
+  background-size: contain;
+  background-position: right;
+  height: 60px;
+  background-repeat: no-repeat;
+  background-origin: content-box;
+}
+.homepage-number {
+  float: left;
+  width: 36px !important;
+  text-align: center;
+  vertical-align: middle;
+  height: 36px;
+  border-radius: 20px;
+  margin-top: 7px;
+  padding: 11px;
+}
+span.homepage-text {
+  margin-top: 16px;
+  display: inline-block;
 }

@@ -88,6 +88,25 @@ switch ($function) {
                 break;
         }
         break;
+	case 'v1_settings_tab_editor_homepage_order':
+		switch ($method) {
+			case 'GET':
+				if(qualifyRequest(1)){
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = $pageSettingsTabEditorHomepageOrder;
+				}else{
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: '.$method;
+				break;
+		}
+		break;
     case 'v1_settings_homepage_list':
         switch ($method) {
             case 'GET':
@@ -242,6 +261,25 @@ switch ($function) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = updateConfigItem($_POST);
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
+    case 'v1_update_config_multiple':
+        switch ($method) {
+            case 'POST':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = updateConfigMultiple($_POST);
                 }else{
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';

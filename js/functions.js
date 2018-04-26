@@ -934,6 +934,7 @@ function buildCategoryEditor(){
 function settingsAPI(post, callbacks=null){
 	organizrAPI('POST',post.api,post).success(function(data) {
 		var response = JSON.parse(data);
+		console.log(data);
 		message(post.messageTitle,post.messageBody,"bottom-right","#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
@@ -1443,6 +1444,33 @@ function buildTabEditorItem(array){
 		`;
 	});
 	return tabList;
+}
+function submitHomepageOrder(){
+	var list = $( "#homepage-values" ).serializeToJSON();
+	var size = 0;
+	var submit = {};
+	$.each(list, function(i,v) {
+		if(v !== ''){
+			size++;
+			submit[i] = v;
+		}
+	})
+
+    var post = {
+        api:'api/?v1/update/config/multiple',
+        payload:submit,
+        messageTitle:'',
+        messageBody:'Updated Homepage Order',
+        error:'Organizr Function: API Connection Failed'
+    };
+    var callbacks = $.Callbacks();
+    //callbacks.add( buildCustomizeAppearance );
+	if(size > 0){
+		settingsAPI(post,callbacks);
+	}else{
+			console.log('addd error');
+	}
+
 }
 function submitTabOrder(){
 	var post = {
@@ -2227,7 +2255,7 @@ function buildRequestAdminMenuItem(value,category,id,type){
 			}else{
 				action = 'approve';
 				text = 'Approve';
-				extra = `<li><a onclick="ombiActions('`+id+`', 'deny', '`+type+`');" lang="en">Deny</a></li>`;
+				extra = `<li><a class="mouse" onclick="ombiActions('`+id+`', 'deny', '`+type+`');" lang="en">Deny</a></li>`;
 			}
 			break;
 		case 'available':
@@ -2242,7 +2270,7 @@ function buildRequestAdminMenuItem(value,category,id,type){
 		default:
 
 	}
-	return (action) ? `<li><a onclick="ombiActions('`+id+`', '`+action+`', '`+type+`');" lang="en">`+text+`</a></li>`+extra : '';
+	return (action) ? `<li><a class="mouse" onclick="ombiActions('`+id+`', '`+action+`', '`+type+`');" lang="en">`+text+`</a></li>`+extra : '';
 }
 function buildRequestItem(array, extra=null){
 	var items = '';
@@ -2271,7 +2299,7 @@ function buildRequestItem(array, extra=null){
 						<li class="divider"></li>
 						`+buildRequestAdminMenuItem(v.approved, 'approved',v.request_id,v.type)+`
 						`+buildRequestAdminMenuItem(v.available, 'available',v.request_id,v.type)+`
-						<li><a onclick="ombiActions('`+v.request_id+`', 'delete', '`+v.type+`');" lang="en">Delete</a></li>
+						<li><a class="mouse" onclick="ombiActions('`+v.request_id+`', 'delete', '`+v.type+`');" lang="en">Delete</a></li>
                     </ul>
                 </div>`;
 				adminFunctions = (activeInfo.user.groupID <= 1) ? adminFunctions : '';

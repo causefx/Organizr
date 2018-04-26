@@ -4,9 +4,6 @@ function homepageOrder(){
 	$homepageOrder = array(
 		"homepageOrdercustomhtml" => $GLOBALS['homepageOrdercustomhtml'],
 		"homepageOrdercustomhtmlTwo" => $GLOBALS['homepageOrdercustomhtmlTwo'],
-		"homepageOrdernotice" => $GLOBALS['homepageOrdernotice'],
-		"homepageOrderplexsearch" => $GLOBALS['homepageOrderplexsearch'],
-		"homepageOrderspeedtest" => $GLOBALS['homepageOrderspeedtest'],
 		"homepageOrdernzbget" => $GLOBALS['homepageOrdernzbget'],
 		"homepageOrdersabnzbd" => $GLOBALS['homepageOrdersabnzbd'],
 		"homepageOrderplexnowplaying" => $GLOBALS['homepageOrderplexnowplaying'],
@@ -16,7 +13,6 @@ function homepageOrder(){
 		"homepageOrderembyrecent" => $GLOBALS['homepageOrderembyrecent'],
 		"homepageOrderombi" => $GLOBALS['homepageOrderombi'],
 		"homepageOrdercalendar" => $GLOBALS['homepageOrdercalendar'],
-		"homepageOrdernoticeguest" => $GLOBALS['homepageOrdernoticeguest'],
         "homepageOrdertransmission" => $GLOBALS['homepageOrdertransmission'],
 		"homepageOrderqBittorrent" => $GLOBALS['homepageOrderqBittorrent'],
         "homepageOrderdeluge" => $GLOBALS['homepageOrderdeluge'],
@@ -35,9 +31,6 @@ function buildHomepage(){
 function buildHomepageItem($homepageItem){
 	$item = '<div id="'.$homepageItem.'">';
 	switch ($homepageItem) {
-		case 'homepageOrderplexsearch':
-
-			break;
 		case 'homepageOrdercustomhtml':
 			if($GLOBALS['homepagCustomHTMLoneEnabled'] && qualifyRequest($GLOBALS['homepagCustomHTMLoneAuth']) ){
 				$item .= ($GLOBALS['customHTMLone'] !== '') ? $GLOBALS['customHTMLone'] : '';
@@ -52,9 +45,6 @@ function buildHomepageItem($homepageItem){
 
 			break;
 		case 'homepageOrdernoticeguest':
-
-			break;
-		case 'homepageOrderspeedtest':
 
 			break;
         case 'homepageOrderqBittorrent':
@@ -1469,4 +1459,125 @@ function getHomepageList(){
             )
         )
     );
+}
+function buildHomepageSettings(){
+	$homepageOrder = homepageOrder();
+	$homepageList = '<h4>Drag Homepage Items to Order Them</h4><div id="homepage-items" class="external-events">';
+	$inputList = '<form id="homepage-values" class="row">';
+	foreach ($homepageOrder as $key => $val) {
+		switch ($key) {
+			case 'homepageOrdercustomhtml':
+				$class = 'bg-info';
+				$image = 'plugins/images/tabs/custom1.png';
+				if(!$GLOBALS['homepagCustomHTMLoneEnabled']){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdercustomhtmlTwo':
+				$class = 'bg-info';
+				$image = 'plugins/images/tabs/custom2.png';
+				if(!$GLOBALS['homepagCustomHTMLtwoEnabled']){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdertransmission':
+				$class = 'bg-transmission';
+				$image = 'plugins/images/tabs/transmission.png';
+				if(!$GLOBALS['homepageTransmissionEnabled']){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdernzbget':
+				$class = 'bg-nzbget';
+				$image = 'plugins/images/tabs/nzbget.png';
+				if(!$GLOBALS['homepageNzbgetEnabled']){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdersabnzbd':
+				$class = 'bg-sab';
+				$image = 'plugins/images/tabs/sabnzbd.png';
+				if(!$GLOBALS['homepageSabnzbdEnabled']){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderdeluge':
+				$class = 'bg-deluge';
+				$image = 'plugins/images/tabs/deluge.png';
+				if(!$GLOBALS['homepageDelugeEnabled']){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderqBittorrent':
+				$class = 'bg-qbit';
+				$image = 'plugins/images/tabs/qBittorrent.png';
+				if(!$GLOBALS['homepageqBittorrentEnabled']){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderplexnowplaying':
+			case 'homepageOrderplexrecent':
+			case 'homepageOrderplexplaylist':
+				$class = 'bg-plex';
+				$image = 'plugins/images/tabs/plex.png';
+				if(!$GLOBALS['homepagePlexEnabled']){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderembynowplaying':
+			case 'homepageOrderembyrecent':
+				$class = 'bg-emby';
+				$image = 'plugins/images/tabs/emby.png';
+				if(!$GLOBALS['homepageEmbyEnabled']){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderombi':
+				$class = 'bg-inverse';
+				$image = 'plugins/images/tabs/ombi.png';
+				if(!$GLOBALS['homepageOmbiEnabled']){
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrdercalendar':
+				$class = 'bg-primary';
+				$image = 'plugins/images/tabs/calendar.png';
+				if(!$GLOBALS['homepageSonarrEnabled'] && !$GLOBALS['homepageRadarrEnabled'] && !$GLOBALS['homepageSickrageEnabled'] && !$GLOBALS['homepageCouchpotatoEnabled']){
+					$class .= ' faded';
+				}
+				break;
+			default:
+				$class = 'blue-bg';
+				$image = '';
+				break;
+		}
+		$homepageList .= '
+		<div class="col-md-3 sort-homepage m-t-10">
+			<div class="homepage-drag fc-event '.$class.' lazyload"  data-src="'.$image.'">
+				<span class="ordinal-position text-uppercase badge bg-org homepage-number" data-link="'.$key.'" style="float:left;width: 30px;">'.$val.'</span>
+				<span class="homepage-text">&nbsp; '.strtoupper(substr($key, 13)).'</span>
+
+			</div>
+		</div>
+		<!--
+		<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 sort-homepage m-b-10">
+			<div class="white-box bg-org '.$class.'">
+				<div class="el-card-item p-0">
+					<div class="el-card-avatar el-overlay-1 m-0">
+						<img class="lazyload loaded" data-src="'.$image.'">
+					</div>
+					<div class="el-card-content">
+						<h3 class="box-title">'.strtoupper(substr($key, 13)).'</h3>
+						<small class="elip ordinal-position text-uppercase p-b-10" data-link="'.$key.'">'.$val.'</small>
+					</div>
+				</div>
+			</div>
+		</div>
+		-->
+		';
+		$inputList .= '<input type="hidden" name="'.$key.'">';
+	}
+	$homepageList .= '</div>';
+	$inputList .= '</form>';
+	return $homepageList.$inputList;
 }
