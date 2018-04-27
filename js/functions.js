@@ -942,7 +942,7 @@ function buildCategoryEditor(){
 function settingsAPI(post, callbacks=null){
 	organizrAPI('POST',post.api,post).success(function(data) {
 		var response = JSON.parse(data);
-		console.log(data);
+		console.log(response);
 		message(post.messageTitle,post.messageBody,"bottom-right","#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
@@ -1004,7 +1004,6 @@ function updateUserInformation(){
 		ajaxloader(".content-wrap","in");
 		organizrAPI('POST','api/?v1/manage/user',post).success(function(data) {
 			var response = JSON.parse(data);
-			console.log(response);
 			if(response.data == true){
 				$.magnificPopup.close();
 				messageSingle('',window.lang.translate('User Info Updated'),'bottom-right','#FFF','success','5000');

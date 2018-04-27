@@ -71,7 +71,7 @@ $pageLogin = '
           </div>
         </div>
       </form>
-      <form class="form-horizontal" id="recoverform" action="">
+      <form class="form-horizontal" id="recoverform" onsubmit="return false;">
         <div class="form-group ">
           <div class="col-xs-12">
             <h3 lang="en">Recover Password</h3>
@@ -80,12 +80,12 @@ $pageLogin = '
         </div>
         <div class="form-group ">
           <div class="col-xs-12">
-            <input class="form-control" type="text" required="" placeholder="Email" lang="en">
+            <input id="recover-input" class="form-control" name="email" type="text" required="" placeholder="Email" lang="en" required>
           </div>
         </div>
         <div class="form-group text-center m-t-20">
           <div class="col-xs-12">
-            <button class="btn btn-primary btn-lg btn-block text-uppercase waves-effect waves-light" type="submit" lang="en">Reset</button>
+            <button class="btn btn-primary btn-lg btn-block text-uppercase waves-effect waves-light reset-button" type="submit" lang="en">Reset</button>
           </div>
         </div>
         <div class="form-group text-center m-t-20">

@@ -99,9 +99,9 @@
 		<div class="error-page bg-org"></div>
 		<div class="login-area hidden"></div>
 		<div class="p-0" id="page-wrapper">
-			<div class="organizr-area"></div>
-			<div class="internal-listing p-0 hidden"></div>
-			<div class="iFrame-listing p-0 hidden"></div>
+		<div class="organizr-area"></div>
+		<div class="internal-listing p-0 hidden"></div>
+		<div class="iFrame-listing p-0 hidden"></div>
 		</div>
 		<!-- ============================================================== -->
 		<!-- End Page Content -->
@@ -150,6 +150,7 @@
     <script src="plugins/bower_components/bootstrap-select/bootstrap-select.min.js"></script>
 	<script src="plugins/bower_components/tinymce/tinymce.min.js"></script>
 	<script src="plugins/bower_components/multiselect/js/jquery.multi-select.js"></script>
+	<script src="js/jquery.mousewheel.min.js"></script>
 	<script src="https://cdn.plyr.io/3.1.0/plyr.js"></script>
 	<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>" ></script>

@@ -574,6 +574,19 @@ switch ($function) {
                 break;
         }
         break;
+    case 'v1_recover':
+        switch ($method) {
+            case 'POST':
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = recover($_POST);
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_upgrade':
     case 'v1_update':
     case 'v1_force':

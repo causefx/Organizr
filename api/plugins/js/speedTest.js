@@ -83,7 +83,7 @@ function speedTestLaunch(){
     }else{
         if(activeInfo.plugins["SPEEDTEST-enabled"] == true){
             if (activeInfo.user.groupID <= activeInfo.plugins.includes["SPEEDTEST-Auth-include"]) {
-                var menuList = `<li><a class="inline-popups speedTestModal" href="#speedtest-area" data-effect="mfp-zoom-out"><i class="fa fa-rocket fa-fw"></i> <span lang="en">Test Internet Speed</span></a></li>`;
+                var menuList = `<li><a class="inline-popups speedTestModal" href="#speedtest-area" data-effect="mfp-zoom-out"><i class="fa fa-rocket fa-fw"></i> <span lang="en">Test Server Speed</span></a></li>`;
 				var htmlDOM = `
 		    	<div id="speedtest-area" class="white-popup mfp-with-anim mfp-hide">
 		    		<div class="col-md-4 col-md-offset-4">

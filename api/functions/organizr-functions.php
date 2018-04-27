@@ -93,6 +93,50 @@ function register($array){
         return 'mismatch';
     }
 }
+function recover($array){
+    $email = $array['data']['email'];
+    $newPassword = randString(10);
+	try {
+		$connect = new Dibi\Connection([
+			'driver' => 'sqlite3',
+			'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
+		]);
+        $isUser = $connect->fetch('SELECT * FROM users WHERE email = ? COLLATE NOCASE',$email);
+        if($isUser){
+            $connect->query('
+                UPDATE users SET', [
+                    'password' => password_hash($newPassword, PASSWORD_BCRYPT)
+                ], '
+                WHERE email=? COLLATE NOCASE', $email);
+            if($GLOBALS['PHPMAILER-enabled']){
+    			$emailTemplate = array(
+    				'type' => 'reset',
+    				'body' => $GLOBALS['PHPMAILER-emailTemplateResetPassword'],
+    				'subject' => $GLOBALS['PHPMAILER-emailTemplateResetPasswordSubject'],
+    				'user' => $isUser['username'],
+    				'password' => $newPassword,
+    				'inviteCode' => null,
+    			);
+    			$emailTemplate = phpmEmailTemplate($emailTemplate);
+    			$sendEmail = array(
+    				'to' => $email,
+    				'user' => $isUser['username'],
+    				'subject' => $emailTemplate['subject'],
+    				'body' => phpmBuildEmail($emailTemplate),
+    			);
+    			phpmSendEmail($sendEmail);
+    		}
+            writeLog('success', 'User Management Function - User: '.$isUser['username'].'\'s password was reset', $isUser['username']);
+			return true;
+        }else{
+            writeLog('error', 'User Management Function - Error - User: '.$email.' An error Occured', $email);
+    		return 'an error occured';
+        }
+	} catch (Dibi\Exception $e) {
+		writeLog('error', 'User Management Function - Error - User: '.$email.' An error Occured', $email);
+		return 'an error occured';
+	}
+}
 function editUser($array){
     if($array['data']['username'] == '' && $array['data']['username'] == ''){
         return 'Username/email not set';

@@ -79,11 +79,6 @@ function pageLoad(){
         myLazyLoad.update();
     });
 
-
-
-
-
-
     /* ===== Collapsible Panels JS ===== */
 
     (function ($, window, document) {
@@ -456,7 +451,34 @@ $(document).on("click", ".register-button", function(e) {
         console.error("Organizr Function: Login Failed");
     });
 });
-
+$(document).on("click", ".reset-button", function(e) {
+    e.preventDefault;
+    var email = $('#recover-input').val();
+    if(email !== ''){
+		var post = {
+	        email:email
+		}
+        organizrAPI('POST','api/?v1/recover',post).success(function(data) {
+            var html = JSON.parse(data);
+            if(html.data == true){
+                message('Recover Password',' Email Sent','bottom-right','#FFF','success','10000');
+                $('#leave-recover').trigger('click');
+            }else if(html.data == 'an error occured'){
+                $.toast().reset('all');
+                message('Recover Error',' User Error','bottom-right','#FFF','warning','10000');
+                console.error('Organizr Function: Recover failed - Wrong Registration Password');
+            }else if(html.data == 'username taken'){
+                $.toast().reset('all');
+                message('Recover Error',' Registration Error - Username/Email Taken','bottom-right','#FFF','warning','10000');
+                console.error('Organizr Function: Recover Failed - Username/Email Taken');
+            }
+        }).fail(function(xhr) {
+            console.error("Organizr Function: Login Failed");
+        });
+    }else{
+        message('Recover Error','Enter Email','bottom-right','#FFF','warning','10000');
+    }
+});
 $(document).on("click", ".open-close", function () {
     $("body").toggleClass("show-sidebar");
 });
@@ -626,7 +648,6 @@ $(document).on("click", ".editUserAdmin", function () {
     if (post.password !== '' && post.password !== $('#edit-user-form [name=password2]').val()){
         message('Edit User Error',' Passwords do not match!','bottom-right','#FFF','warning','5000');
     }
-    console.log(post);
     if(post.id !== '' && post.username !== '' && post.email !== '' ){
         var callbacks = $.Callbacks();
         callbacks.add( buildUserManagement );
@@ -1690,4 +1711,28 @@ $(document).on("click", ".right-side-toggle", function () {
     } else {
         fxhdr.attr('checked', false);
     }
+});
+$(document).on('mousewheel', '.recent-items .owl-stage', function (e) {
+    if (e.deltaY>0) {
+        $('.recent-items').trigger('next.owl');
+    } else {
+        $('.recent-items').trigger('prev.owl');
+    }
+    e.preventDefault();
+});
+$(document).on('mousewheel', '.playlist-items .owl-stage', function (e) {
+    if (e.deltaY>0) {
+        $('.playlist-items').trigger('next.owl');
+    } else {
+        $('.playlist-items').trigger('prev.owl');
+    }
+    e.preventDefault();
+});
+$(document).on('mousewheel', '.request-items .owl-stage', function (e) {
+    if (e.deltaY>0) {
+        $('.request-items').trigger('next.owl');
+    } else {
+        $('.request-items').trigger('prev.owl');
+    }
+    e.preventDefault();
 });
