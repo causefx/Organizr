@@ -1628,8 +1628,13 @@ $(document).on("click", ".newAPIKey", function () {
 });
 // purge logvcfdD\o8i 8
 $(document).on("click", ".purgeLog", function () {
-    var log = $('.swapLog.active').attr('data-name');
-    alert('This action is not set yet - but this would have purged the '+log+' log');
+    var name = $('.swapLog.active').attr('data-name');
+    var path = $('.swapLog.active').attr('data-path');
+    if(name !== '' && path !== ''){
+        removeFile(path,name);
+        setTimeout(function(){ loadSettingsPage('api/?v1/settings/settings/logs','#settings-settings-logs','Log Viewer'); }, 1500);
+    }
+
 });
 //Show Passowrd
 $(document).on("click", ".showPassword", function () {

@@ -254,6 +254,25 @@ switch ($function) {
                 break;
         }
         break;
+	case 'v1_remove_file':
+        switch ($method) {
+            case 'POST':
+                if(qualifyRequest(1)){
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = removeFile($_POST);
+                }else{
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_update_config':
         switch ($method) {
             case 'POST':

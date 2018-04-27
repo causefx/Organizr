@@ -93,6 +93,22 @@ function register($array){
         return 'mismatch';
     }
 }
+function removeFile($array){
+    $filePath = $array['data']['path'];
+    $fileName = $array['data']['name'];
+    if (file_exists($filePath)){
+        if (unlink($filePath)) {
+            writeLog('success', 'Log Management Function - Log: '.$fileName.' has been purged/deleted', 'SYSTEM');
+            return true;
+        } else {
+            writeLog('error', 'Log Management Function - Log: '.$fileName.' - Error Occured', 'SYSTEM');
+            return false;
+        }
+    } else {
+        writeLog('error', 'Log Management Function - Log: '.$fileName.' does not exist', 'SYSTEM');
+        return false;
+    }
+}
 function recover($array){
     $email = $array['data']['email'];
     $newPassword = randString(10);

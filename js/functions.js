@@ -985,6 +985,26 @@ function buildLanguage(replace=false,newLang=null){
 		return lang;
 	}
 }
+function removeFile(path,name){
+	if(path !== '' && name !== ''){
+		var post = {
+			path:path,
+			name:name
+		};
+		ajaxloader(".content-wrap","in");
+		organizrAPI('POST','api/?v1/remove/file',post).success(function(data) {
+			var response = JSON.parse(data);
+			if(response.data == true){
+				messageSingle('',window.lang.translate('Removed File')+' - '+name,'bottom-right','#FFF','success','5000');
+			}else{
+				messageSingle('','File Removal Error','bottom-right','#FFF','error','5000');
+			}
+		}).fail(function(xhr) {
+			console.error("Organizr Function: API Connection Failed");
+		});
+		ajaxloader();
+	}
+}
 function updateUserInformation(){
 	var passwordMatch = true;
 	var username = $('#accountUsername').val();
