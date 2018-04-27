@@ -29,6 +29,7 @@
 	<link href="plugins/bower_components/multiselect/css/multi-select.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/owl.carousel/owl.carousel.min.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/owl.carousel/owl.theme.default.css" rel="stylesheet" type="text/css" />
+	<link href="plugins/bower_components/hover/hover-min.css" rel="stylesheet" type="text/css" />
 	<link id="style" href="css/dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<link href="css/organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<?php echo pluginFiles('css'); ?>

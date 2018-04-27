@@ -1552,7 +1552,7 @@ function buildHomepageSettings(){
 				break;
 		}
 		$homepageList .= '
-		<div class="col-md-3 sort-homepage m-t-10">
+		<div class="col-md-3 sort-homepage m-t-10 hvr-grow">
 			<div class="homepage-drag fc-event '.$class.' lazyload"  data-src="'.$image.'">
 				<span class="ordinal-position text-uppercase badge bg-org homepage-number" data-link="'.$key.'" style="float:left;width: 30px;">'.$val.'</span>
 				<span class="homepage-text">&nbsp; '.strtoupper(substr($key, 13)).'</span>
