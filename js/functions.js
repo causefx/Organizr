@@ -592,19 +592,19 @@ function buildFormItem(item){
 	switch (item.type) {
 		case 'input':
 		case 'text':
-			return smallLabel+'<input data-changed="false" lang=en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+			return smallLabel+'<input data-changed="false" lang="en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
 			break;
 		case 'textbox':
 			return smallLabel+'<textarea data-changed="false" class="form-control'+extraClass+'"'+placeholder+id+name+disabled+type+attr+' autocomplete="new-password">'+textarea+'</textarea>';
 			break;
 		case 'password':
-			return smallLabel+pwgMgr+'<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+			return smallLabel+pwgMgr+'<input data-changed="false" lang="en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
 			break;
 		case 'password-alt':
-			return smallLabel+'<div class="input-group m-b-30">'+pwgMgr+'<input data-changed="false" lang=en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
+			return smallLabel+'<div class="input-group m-b-30">'+pwgMgr+'<input data-changed="false" lang="en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
 			break;
 		case 'hidden':
-			return '<input data-changed="false" lang=en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
+			return '<input data-changed="false" lang="en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
 			break;
 		case 'select':
 			return smallLabel+'<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+'>'+selectOptions(item.options, item.value)+'</select>';
@@ -681,9 +681,9 @@ function buildPluginsItem(array){
 	inactivePlugins = (inactivePlugins.length !== 0) ? inactivePlugins : '<h2 class="text-center" lang="en">Everything Active</h2>';
 	var panes = `
 	<ul class="nav customtab2 nav-tabs" role="tablist">
-		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en"> Active</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en">Active</span></a>
 		</li>
-		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en"> Inactive</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
 		</li>
 	</ul>
 	<!-- Tab panes -->
@@ -1623,7 +1623,7 @@ function updateBar(){
 	<div class="white-box m-0">
         <div class="row">
             <div class="col-lg-12 p-r-40">
-                <h3 lang="en" id="update-title" class="box-title pull-left"></h3><h3 id="update-time" class="box-title pull-right hidden"><span id="update-seconds"></span>&nbsp;<span lang="en">Seconds</span></h3>
+                <h3 id="update-title" class="box-title pull-left"></h3><h3 id="update-time" class="box-title pull-right hidden"><span id="update-seconds"></span>&nbsp;<span lang="en">Seconds</span></h3>
 				<div class="clearfix"></div>
                 <div class="progress progress-lg">
                     <div id="update-bar" class="progress-bar progress-bar-primary progress-bar-striped active" style="width: 0%;" role="progressbar">0%</div>
@@ -2330,7 +2330,7 @@ function buildRequestItem(array, extra=null){
                     </ul>
                 </div>`;
 				adminFunctions = (activeInfo.user.groupID <= 1) ? adminFunctions : '';
-				var user = (activeInfo.user.groupID <= 1) ? '<span lang="en">Requested By: </span>'+v.user : '';
+				var user = (activeInfo.user.groupID <= 1) ? '<span lang="en">Requested By:</span> '+v.user : '';
 				items += `
 				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
 					<div class="outside-request-div">
@@ -2384,7 +2384,7 @@ function buildStream(array, type){
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay">
 		    <div class="col-md-12">
-		        <h4 class="pull-left" lang="en">Active `+toUpper(type)+` Streams: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle">`+streams+`</span></h4>
+		        <h4 class="pull-left"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span>: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle">`+streams+`</span></h4>
 		        <hr>
 		    </div>
 			<div class="clearfix"></div>
@@ -2412,7 +2412,7 @@ function buildRecent(array, type){
         <div class="col-lg-12">
             <div class="panel panel-default">
                 <div class="panel-heading bg-info p-t-10 p-b-10">
-					<span class="pull-left m-t-5" lang="en"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; Recently Added</span>
+					<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span lang="en">Recently Added</span></span>
 					<div class="btn-group pull-right">
 	                    <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
 							<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
@@ -2559,13 +2559,13 @@ function buildRequest(array){
                         <div class="input-group-btn">
                             <button type="button" class="btn waves-effect waves-light btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span> <span class="caret"></span></button>
                             <ul class="dropdown-menu dropdown-menu-right">
-								<li><a lang="en" onclick="requestList('theatre-movie', 'movie');" href="javascript:void(0)">In Theatres</a></li>
-								<li><a lang="en" onclick="requestList('top-movie', 'movie');" href="javascript:void(0)">Top Movies</a></li>
-								<li><a lang="en" onclick="requestList('pop-movie', 'movie');" href="javascript:void(0)">Popular Movies</a></li>
-								<li><a lang="en" onclick="requestList('up-movie', 'movie');" href="javascript:void(0)">Upcoming Movies</a></li>
-								<li><a lang="en" onclick="requestList('top-tv', 'tv');" href="javascript:void(0)">Top TV</a></li>
-								<li><a lang="en" onclick="requestList('pop-tv', 'tv');" href="javascript:void(0)">Popular TV</a></li>
-                                <li><a lang="en" onclick="requestList('today-tv', 'tv');" href="javascript:void(0)">Airs Today TV</a></li>
+								<li><a onclick="requestList('theatre-movie', 'movie');" href="javascript:void(0)" lang="en">In Theatres</a></li>
+								<li><a onclick="requestList('top-movie', 'movie');" href="javascript:void(0)" lang="en">Top Movies</a></li>
+								<li><a onclick="requestList('pop-movie', 'movie');" href="javascript:void(0)" lang="en">Popular Movies</a></li>
+								<li><a onclick="requestList('up-movie', 'movie');" href="javascript:void(0)" lang="en">Upcoming Movies</a></li>
+								<li><a onclick="requestList('top-tv', 'tv');" href="javascript:void(0)" lang="en">Top TV</a></li>
+								<li><a onclick="requestList('pop-tv', 'tv');" href="javascript:void(0)" lang="en">Popular TV</a></li>
+                                <li><a onclick="requestList('today-tv', 'tv');" href="javascript:void(0)" lang="en">Airs Today TV</a></li>
                             </ul>
                         </div>
                     </div>
@@ -2623,7 +2623,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 		page = ((page * 1) + 1);
 		next = `
 		<div class="col-lg-12">
-            <button class="btn btn-block btn-info" lang="en" onclick="requestList('`+list+`', '`+media_type+`', '`+page+`');">Load More</button>
+            <button class="btn btn-block btn-info" onclick="requestList('`+list+`', '`+media_type+`', '`+page+`');" lang="en">Load More</button>
         </div>
 		`;
 	}
@@ -2632,7 +2632,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 		$('#request-page').val(page);
 		next = `
 		<div class="col-lg-12">
-            <button class="btn btn-block btn-info" lang="en" onclick="doneTyping();">Load More</button>
+            <button class="btn btn-block btn-info" onclick="doneTyping();" lang="en">Load More</button>
         </div>
 		`;
 	}

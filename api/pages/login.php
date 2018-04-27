@@ -23,7 +23,7 @@ $pageLogin = '
           <div class="col-md-12">
             <div class="checkbox checkbox-primary pull-left p-t-0 remember-me">
               <input id="checkbox-login" name="remember" type="checkbox" checked>
-              <label for="checkbox-signup" lang="en"> Remember Me </label>
+              <label for="checkbox-signup" lang="en">Remember Me</label>
             </div>
         	</div>
         </div>
@@ -35,7 +35,7 @@ $pageLogin = '
 
         <div class="form-group m-b-0">
           <div class="col-sm-12 text-center">
-            <p><span lang="en">Don\'t have an account? </span><a href="#" class="text-primary m-l-5 to-register"><b lang="en">Sign Up</b></a></p>
+            <p><span lang="en">Don\'t have an account?</span><a href="#" class="text-primary m-l-5 to-register"><b lang="en">Sign Up</b></a></p>
           </div>
         </div>
       </form>
@@ -75,7 +75,7 @@ $pageLogin = '
         <div class="form-group ">
           <div class="col-xs-12">
             <h3 lang="en">Recover Password</h3>
-            <p class="text-muted" lang="en">Enter your Email and instructions will be sent to you! </p>
+            <p class="text-muted" lang="en">Enter your Email and instructions will be sent to you!</p>
           </div>
         </div>
         <div class="form-group ">

@@ -98,3 +98,4 @@ css/themes/*.css
 plugins/images/cache/*.jpg
 testdata*
 strings.txt
+strings.php
