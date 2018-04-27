@@ -580,6 +580,14 @@ function buildFormItem(item){
 	var disabled = (item.disabled) ? ' disabled' : '';
 	var href = (item.href) ? ' href="'+item.href+'"' : '';
 	var smallLabel = (item.smallLabel) ? '<label langl="en">'+item.smallLabel+'</label>' : '';
+	var pwd1 = createRandomString(3);
+	var pwd2 = createRandomString(3);
+	var pwd3 = createRandomString(3);
+	var pwgMgr = `
+	<input name="disable-pwd-mgr-`+pwd1+`" type="password" id="disable-pwd-mgr-`+pwd1+`" style="display: none;" value="disable-pwd-mgr-`+pwd1+`" />
+	<input name="disable-pwd-mgr-`+pwd2+`" type="password" id="disable-pwd-mgr-`+pwd2+`" style="display: none;" value="disable-pwd-mgr-`+pwd2+`" />
+	<input name="disable-pwd-mgr-`+pwd3+`" type="password" id="disable-pwd-mgr-`+pwd3+`" style="display: none;" value="disable-pwd-mgr-`+pwd3+`" />
+	`;
 	//+tof(item.value,'c')+`
 	switch (item.type) {
 		case 'input':
@@ -590,10 +598,10 @@ function buildFormItem(item){
 			return smallLabel+'<textarea data-changed="false" class="form-control'+extraClass+'"'+placeholder+id+name+disabled+type+attr+' autocomplete="new-password">'+textarea+'</textarea>';
 			break;
 		case 'password':
-			return smallLabel+'<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+			return smallLabel+pwgMgr+'<input data-changed="false" lang=en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
 			break;
 		case 'password-alt':
-			return smallLabel+'<div class="input-group m-b-30"><input data-changed="false" lang=en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
+			return smallLabel+'<div class="input-group m-b-30">'+pwgMgr+'<input data-changed="false" lang=en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
 			break;
 		case 'hidden':
 			return '<input data-changed="false" lang=en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
