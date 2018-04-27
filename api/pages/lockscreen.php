@@ -1,5 +1,5 @@
 <?php
-
+if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
 $pageLockScreen = '
 <script>
 </script>
@@ -30,3 +30,4 @@ $pageLockScreen = '
   </div>
 </section>
 ';
+}

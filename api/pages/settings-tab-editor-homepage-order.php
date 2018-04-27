@@ -1,5 +1,5 @@
 <?php
-
+if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
 $pageSettingsTabEditorHomepageOrder = '
 <script>
     $("#homepage-items").sortable({
@@ -48,3 +48,4 @@ $pageSettingsTabEditorHomepageOrder = '
 </div>
 
 ';
+}
