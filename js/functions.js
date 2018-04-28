@@ -1771,6 +1771,7 @@ function buildDependencyCheck(orgdata){
 		$(json.data).appendTo($('.organizr-area'));
 		$(buildBrowserInfo()).appendTo($('#browser-info'));
 		$('#web-folder').html(buildWebFolder(orgdata));
+		$('#php-version-check').html(buildPHPCheck(orgdata));
 		$(buildDependencyInfo(orgdata)).appendTo($('#depenency-info'));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Dependencies Connection Failed");
@@ -1792,7 +1793,12 @@ function buildWebFolder(arrayItems){
 	var className = (writable == 'Writable - All Good') ? 'bg-primary' : 'bg-danger text-warning';
 	$('#web-folder').addClass(className);
 	return writable;
-
+}
+function buildPHPCheck(arrayItems){
+	var phpTest = (arrayItems.data.status.minVersion == 'yes') ? 'PHP Version Approved' : 'Upgrade PHP Version to 7.0';
+	var className = (arrayItems.data.status.minVersion == 'yes') ? 'bg-primary' : 'bg-danger text-warning';
+	$('#php-version-check').addClass(className);
+	return phpTest;
 }
 function buildBrowserInfo(){
 	var listing = '';

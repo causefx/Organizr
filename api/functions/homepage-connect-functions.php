@@ -1012,7 +1012,7 @@ function getCouchCalendar($array,$number){
                     "overview" => $child['info']['plot'],
                     "runtime" => $child['info']['runtime'],
                     "image" => $banner,
-                    "ratings" => $child['info']['rating']['imdb'][0],
+                    "ratings" => isset($child['info']['rating']['imdb'][0]) ? $child['info']['rating']['imdb'][0] : '',
                     "videoQuality" => $hasFile ? $child['releases'][0]['quality'] : "unknown",
                     "audioChannels" => "",
                     "audioCodec" => "",

@@ -26,6 +26,22 @@ $pageDependencies = '
         </div>
 		<div class="col-lg-4">
             <div class="panel panel-info">
+                <div class="panel-heading"> <i class="ti-alert fa-fw"></i> <span lang="en">PHP Version Check</span>
+                    <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                </div>
+                <div class="panel-wrapper collapse in" aria-expanded="true">
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <td id="php-version-check" lang="en">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+		<div class="col-lg-4">
+            <div class="panel panel-info">
                 <div class="panel-heading"> <i class="ti-alert fa-fw"></i> <span lang="en">Web Folder</span>
                     <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
                 </div>

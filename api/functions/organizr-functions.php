@@ -236,11 +236,12 @@ function organizrStatus(){
     if(!file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
         $status['status'] = "wizard";//wizard - ok for test
     }
-    if(count($dependenciesInactive)>0 || !is_writable(dirname(__DIR__,2))){
+    if(count($dependenciesInactive)>0 || !is_writable(dirname(__DIR__,2)) || !(version_compare(PHP_VERSION, '7.0.0') >= 0)){
         $status['status'] = "dependencies";
     }
     $status['status'] = (!empty($status['status'])) ? $status['status'] : $status['status'] = "ok";
     $status['writable'] = is_writable(dirname(__DIR__,2)) ? 'yes' : 'no';
+    $status['minVersion'] = (version_compare(PHP_VERSION, '7.0.0') >= 0) ? 'yes' : 'no';
     $status['dependenciesActive'] = $dependenciesActive;
     $status['dependenciesInactive'] = $dependenciesInactive;
     $status['version'] = $GLOBALS['installedVersion'];

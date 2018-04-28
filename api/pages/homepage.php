@@ -70,7 +70,7 @@ function($) {
     $.CalendarApp.init()
 }(window.jQuery);
 </script>
-<div class="container-fluid p-t-10" id="homepage-items">
+<div class="container-fluid p-t-30" id="homepage-items">
     '.buildHomepage().'
 </div>
 <div id="open-youtube" class="white-popup mfp-with-anim mfp-hide">

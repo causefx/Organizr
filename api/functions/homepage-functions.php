@@ -182,7 +182,7 @@ function buildHomepageItem($homepageItem){
 		case 'homepageOrdercalendar':
 			if($GLOBALS['homepageSonarrEnabled'] && qualifyRequest($GLOBALS['homepageSonarrAuth']) || ($GLOBALS['homepageRadarrEnabled'] && qualifyRequest($GLOBALS['homepageRadarrAuth'])) || ($GLOBALS['homepageSickrageEnabled'] && qualifyRequest($GLOBALS['homepageSickrageAuth'])) || ($GLOBALS['homepageCouchpotatoEnabled'] && qualifyRequest($GLOBALS['homepageCouchpotatoAuth']))){
 				$item .= '
-				<div id="calendar" class="fc fc-ltr animated zoomIn"></div>
+				<div id="calendar" class="fc fc-ltr animated zoomIn m-b-30"></div>
 				<script>
 				// Calendar
 				homepageCalendar("'.$GLOBALS['calendarRefresh'].'");
