@@ -689,6 +689,10 @@ a.text-info:hover {
           transition-delay: .25s;
 }
 
+a:not(.gn-selected) .cross {
+    display: none;
+}
+
 .menu-toggle.gn-selected .hamburger span {
   width: 0%;
 }
