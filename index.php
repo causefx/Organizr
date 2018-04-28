@@ -1,6 +1,7 @@
 <?php include 'api/functions/static-globals.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="utf-8">
 	<meta content="IE=edge" http-equiv="X-UA-Compatible">
@@ -12,7 +13,7 @@
 	<link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css" rel="stylesheet">
 	<link href="css/animate.css" rel="stylesheet">
-    <link href="plugins/bower_components/toast-master/css/jquery.toast.css" rel="stylesheet">
+	<link href="plugins/bower_components/toast-master/css/jquery.toast.css" rel="stylesheet">
 	<link href="plugins/bower_components/jquery-wizard-master/css/wizard.css" rel="stylesheet">
 	<link href="plugins/bower_components/datatables/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/jquery-wizard-master/libs/formvalidation/formValidation.min.css" rel="stylesheet">
@@ -41,6 +42,7 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	<![endif]-->
 </head>
+
 <body class="fix-header">
 	<!-- ============================================================== -->
 	<!-- Preloader -->
@@ -61,10 +63,12 @@
 			<div class="navbar-header">
 				<div class="top-left-part hidden-xs p-r-10">
 					<!-- Logo -->
-					 <a class="logo" href="javascript:void(0)"><!-- Logo text image you can use text also -->
-						 <span class="hidden-xs" id="main-logo"></span>
-					 </a>
-				</div><!-- /Logo -->
+					<a class="logo" href="javascript:void(0)">
+						<!-- Logo text image you can use text also -->
+						<span class="hidden-xs" id="main-logo"></span>
+					</a>
+				</div>
+				<!-- /Logo -->
 				<!-- Search input and Toggle icon -->
 				<ul class="nav navbar-top-links navbar-left">
 					<li><a class="open-close waves-effect waves-light visible-xs" href="javascript:void(0)"><i class="ti-close ti-menu fa-fw"></i></a></li>
@@ -72,10 +76,12 @@
 					<li class=""><a class="dropdown-toggle waves-effect waves-light" onclick="closeCurrentTab();"> <i class="ti-close"></i></a></li>
 				</ul>
 				<ul class="nav navbar-top-links navbar-right pull-right"></ul>
-			</div><!-- /.navbar-header -->
+			</div>
+			<!-- /.navbar-header -->
 			<!-- /.navbar-top-links -->
 			<!-- /.navbar-static-side -->
-		</nav><!-- End Top Navigation -->
+		</nav>
+		<!-- End Top Navigation -->
 		<!-- ============================================================== -->
 		<!-- Left Sidebar - style you can find in sidebar.scss  -->
 		<!-- ============================================================== -->
@@ -99,14 +105,15 @@
 		<div class="error-page bg-org"></div>
 		<div class="login-area hidden"></div>
 		<div class="p-0" id="page-wrapper">
-		<div class="organizr-area"></div>
-		<div class="internal-listing p-0 hidden"></div>
-		<div class="iFrame-listing p-0 hidden"></div>
+			<div class="organizr-area"></div>
+			<div class="internal-listing p-0 hidden"></div>
+			<div class="iFrame-listing p-0 hidden"></div>
 		</div>
 		<!-- ============================================================== -->
 		<!-- End Page Content -->
 		<!-- ============================================================== -->
-	</div><!-- /#wrapper -->
+	</div>
+	<!-- /#wrapper -->
 	<!-- jQuery -->
 	<!--<script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>-->
 	<script src="js/jquery-2.2.4.min.js"></script>
@@ -142,19 +149,20 @@
 	<script src="plugins/bower_components/sweetalert/sweetalert.min.js"></script>
 	<script src="plugins/bower_components/switchery/dist/switchery.min.js"></script>
 	<script src="plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
-    <script src="plugins/bower_components/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
+	<script src="plugins/bower_components/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
 	<script src="plugins/bower_components/dropzone-master/dist/dropzone.js"></script>
 	<script src="plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>
 	<script src="plugins/bower_components/calendar/dist/fullcalendar.js"></script>
 	<script src="plugins/bower_components/custom-select/custom-select.min.js"></script>
-    <script src="plugins/bower_components/bootstrap-select/bootstrap-select.min.js"></script>
+	<script src="plugins/bower_components/bootstrap-select/bootstrap-select.min.js"></script>
 	<script src="plugins/bower_components/tinymce/tinymce.min.js"></script>
 	<script src="plugins/bower_components/multiselect/js/jquery.multi-select.js"></script>
 	<script src="js/jquery.mousewheel.min.js"></script>
 	<script src="https://cdn.plyr.io/3.1.0/plyr.js"></script>
 	<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
-	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>" ></script>
-	<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>" ></script>
+	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
+	<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 	<?php echo pluginFiles('js'); ?>
 </body>
+
 </html>
