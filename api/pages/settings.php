@@ -194,30 +194,55 @@ $pageSettings = '
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-donate">
-                                <div class="row">
-                                    <div class="col-md-3 col-sm-6 col-xs-12">
-                                        <div class="white-box bg-org mouse" onclick="window.open(\'https://paypal.me/pools/c/83JNaMBESR\', \'_blank\')">
-                                            <h1 class="m-t-0"><i class="fa fa-paypal text-info"></i></h1>
-                                            <h2>PayPal</h2>
-										</div>
-                                    </div>
-                                    <div class="col-md-3 col-sm-6 col-xs-12">
-                                        <div class="white-box bg-org mouse" onclick="window.open(\'https://cash.me/$CauseFX\', \'_blank\')">
-                                            <h1 class="m-t-0"><i class="fa fa-dollar text-danger"></i></h1>
-                                            <h2>Square</h2>
+                                <div class="col-lg-12">
+                                    <div class="white-box bg-org">
+                                        <ul class="nav nav-tabs tabs customtab">
+                                            <li class="tab active">
+                                                <a href="#donate-paypal" data-toggle="tab" aria-expanded="true"> <span class=""><i class="fa fa-paypal text-info"></i></span> <span class="hidden-xs" lang="en">PayPal</span> </a>
+                                            </li>
+                                            <li class="tab">
+                                                <a href="#donate-square" data-toggle="tab" aria-expanded="false"> <span class=""><i class="fa mdi mdi-square-inc-cash mdi-18px text-success"></i></span> <span class="hidden-xs" lang="en">Square Cash</span> </a>
+                                            </li>
+                                            <li class="tab">
+                                                <a href="#donate-crypto" data-toggle="tab" aria-expanded="false"> <span class=""><i class="fa mdi mdi-coin mdi-18px text-info"></i></span> <span class="hidden-xs" lang="en">Cryptos</span> </a>
+                                            </li>
+                                            <li class="tab">
+                                                <a href="#donate-patreon" data-toggle="tab" aria-expanded="false"> <span class=""><i class="fa mdi mdi-account-multiple mdi-18px text-danger"></i></span> <span class="hidden-xs" lang="en">Patreon</span> </a>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content">
+                                            <div class="tab-pane active" id="donate-paypal">
+                                                <blockquote>I have choosen to go with PayPal Pools so everyone can see how much people have donated.<br/>Please click the button to continue.</blockquote>
+                                                <button onclick="window.open(\'https://paypal.me/pools/c/83JNaMBESR\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
                                             </div>
-                                    </div>
-                                    <div class="col-md-3 col-sm-6 col-xs-12">
-                                        <div class="white-box bg-org mouse" onclick="window.open(\'https://paypal.me/causefx\', \'_blank\')">
-                                            <h1 class="m-t-0"><i class="fa fa-btc text-success"></i></h1>
-                                            <h2>BitCoin</h2>
+                                            <div class="tab-pane" id="donate-square">
+                                                <blockquote>If you use the Square Cash App, you can donate with that if you like.<br/>Please click the button to continue.</blockquote>
+                                                <button onclick="window.open(\'https://cash.me/$CauseFX\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
                                             </div>
-                                    </div>
-                                    <div class="col-md-3 col-sm-6 col-xs-12">
-                                        <div class="white-box bg-org mouse" onclick="window.open(\'https://www.patreon.com/organizr\', \'_blank\')">
-                                            <h1 class="m-t-0"><i class="fa fa-money text-warning"></i></h1>
-                                            <h2>Patreon</h2>
+                                            <div class="tab-pane" id="donate-crypto">
+                                                <blockquote>Want to donate a small amount of Crypto?.<br/>Please use the QR Code or Walled ID.</blockquote>
+                                                <div class="col-lg-4 col-xs-12">
+                                                    <div class="lazyload qr-code" data-src="plugins/images/Bitcoin_QR_code.png"></div>
+                                                    <div class="clearfix"></div>
+                                                    <code>1JLWKSSGDDKDNLJPWBNXFQMCXI8UUOHZVV</code>
+                                                </div>
+                                                <div class="col-lg-4 col-xs-12">
+                                                    <div class="lazyload qr-code" data-src="plugins/images/Litecoin_QR_code.png"></div>
+                                                    <div class="clearfix"></div>
+                                                    <code>LejRxt8huhFGpVrp7TM43VSstrzKGxf8Cj</code>
+                                                </div>
+                                                <div class="col-lg-4 col-xs-12">
+                                                    <div class="lazyload qr-code" data-src="plugins/images/Ethereum_QR_code.png"></div>
+                                                    <div class="clearfix"></div>
+                                                    <code>0x605b678761af62C02Fe0fA86A99053D666dF5d6f</code>
+                                                </div>
+                                                <div class="clearfix"></div>
                                             </div>
+                                            <div class="tab-pane" id="donate-patreon">
+                                                <blockquote>Need specialized support or just want to support Orgainzr?  If so head to Pateron...<br/>Please click the button to continue.</blockquote>
+                                                <button onclick="window.open(\'https://www.patreon.com/bePatron?u=8370887\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="clearfix"></div>

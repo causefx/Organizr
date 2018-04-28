@@ -650,12 +650,14 @@ function updateConfigItem($array){
 }
 function getPlugins(){
     if(file_exists(dirname(__DIR__,1).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'config.php')){
-		$pluginList = array();
+		$pluginList = [];
         foreach($GLOBALS['plugins'] as $plugin){
 			foreach ($plugin as $key => $value) {
-				$plugin[$key]['enabled'] = $GLOBALS[$value['configPrefix'].'-enabled'];
+                if(strpos($value['license'], $GLOBALS['license']) !== false){
+    	            $plugin[$key]['enabled'] = $GLOBALS[$value['configPrefix'].'-enabled'];
+                    $pluginList[$key] = $plugin[$key];
+                }
 			}
-			$pluginList = array_merge($pluginList, $plugin);
 		}
 		return $pluginList;
     }

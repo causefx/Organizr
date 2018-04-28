@@ -460,3 +460,11 @@ span.homepage-text {
 .faded {
   opacity: .5;
 }
+.qr-code {
+	display: block;
+	width: 100%;
+	height: 380px;
+	background-size: contain;
+	margin: auto;
+	background-repeat: no-repeat;
+}

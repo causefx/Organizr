@@ -723,25 +723,27 @@ function buildHomepageItem(array){
 	var listing = '';
 	if (Array.isArray(array)) {
 		$.each(array, function(i,v) {
-			listing += `
-			<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
-				<div class="white-box bg-org m-0">
-					<div class="el-card-item p-0">
-						<div class="el-card-avatar el-overlay-1">
-							<a class="popup-with-form" href="#homepage-`+v.name+`-form" data-effect="mfp-3d-unfold"><img class="lazyload tabImages" data-src="`+v.image+`"></a>
-						</div>
-						<div class="el-card-content">
-							<h3 class="box-title">`+v.name+`</h3>
-							<small class="elip text-uppercase">`+v.category+`</small><br>
+			if(v.enabled){
+				listing += `
+				<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4">
+					<div class="white-box bg-org m-0">
+						<div class="el-card-item p-0">
+							<div class="el-card-avatar el-overlay-1">
+								<a class="popup-with-form" href="#homepage-`+v.name+`-form" data-effect="mfp-3d-unfold"><img class="lazyload tabImages" data-src="`+v.image+`"></a>
+							</div>
+							<div class="el-card-content">
+								<h3 class="box-title">`+v.name+`</h3>
+								<small class="elip text-uppercase">`+v.category+`</small><br>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup-block mfp-with-anim homepageForm">
-			    <fieldset style="border:0;">`+buildFormGroup(v.settings)+`</fieldset>
-			    <div class="clearfix"></div>
-			</form>
-			`;
+				<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup-block mfp-with-anim homepageForm">
+				    <fieldset style="border:0;">`+buildFormGroup(v.settings)+`</fieldset>
+				    <div class="clearfix"></div>
+				</form>
+				`;
+			}
 		});
 	}
 	return listing;

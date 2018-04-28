@@ -6,6 +6,7 @@ $GLOBALS['plugins'][]['Invites'] = array( // Plugin Name
 	'author'=>'CauseFX', // Who wrote the plugin
     'category'=>'Management', // One to Two Word Description
     'link'=>'https://github.com/PHPMailer/PHPMailer', // Link to plugin info
+	'license'=>'personal', // License Type use , for multiple
     //'fileName'=>'php-mailer.php',
 	//'configFile'=>'php-mailer.php',
 	//'apiFile'=>'php-mailer.php',

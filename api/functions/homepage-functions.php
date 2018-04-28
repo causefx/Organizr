@@ -420,9 +420,10 @@ function getHomepageList(){
     return array(
         array(
             'name' => 'Plex',
-            'enabled' => true,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/plex.png',
             'category' => 'Media Server',
+			//'license' => $GLOBALS['license'],
             'settings' => array(
                 'Enable' => array(
                     array(
@@ -574,7 +575,7 @@ function getHomepageList(){
         ),
 		array(
             'name' => 'Emby',
-            'enabled' => true,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/emby.png',
             'category' => 'Media Server',
             'settings' => array(
@@ -685,7 +686,7 @@ function getHomepageList(){
         ),
         array(
             'name' => 'SabNZBD',
-            'enabled' => false,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/sabnzbd.png',
             'category' => 'Downloader',
             'settings' => array(
@@ -732,7 +733,7 @@ function getHomepageList(){
         ),
 		array(
             'name' => 'NZBGet',
-            'enabled' => false,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/nzbget.png',
             'category' => 'Downloader',
             'settings' => array(
@@ -785,7 +786,7 @@ function getHomepageList(){
         ),
         array(
             'name' => 'Transmission',
-            'enabled' => false,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/transmission.png',
             'category' => 'Downloader',
             'settings' => array(
@@ -849,7 +850,7 @@ function getHomepageList(){
         ),
         array(
             'name' => 'qBittorrent',
-            'enabled' => false,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/qBittorrent.png',
             'category' => 'Downloader',
             'settings' => array(
@@ -925,7 +926,7 @@ function getHomepageList(){
         ),
 		array(
             'name' => 'Deluge',
-            'enabled' => false,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/deluge.png',
             'category' => 'Downloader',
             'settings' => array(
@@ -1003,7 +1004,7 @@ function getHomepageList(){
         ),
         array(
             'name' => 'Sonarr',
-            'enabled' => false,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/sonarr.png',
             'category' => 'PVR',
             'settings' => array(
@@ -1092,7 +1093,7 @@ function getHomepageList(){
         ),
 		array(
             'name' => 'Radarr',
-            'enabled' => false,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/radarr.png',
             'category' => 'PVR',
             'settings' => array(
@@ -1181,7 +1182,7 @@ function getHomepageList(){
         ),
 		array(
             'name' => 'CouchPotato',
-            'enabled' => false,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/couchpotato.png',
             'category' => 'PVR',
             'settings' => array(
@@ -1256,7 +1257,7 @@ function getHomepageList(){
         ),
 		array(
             'name' => 'SickRage',
-            'enabled' => false,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/sickrage.png',
             'category' => 'PVR',
             'settings' => array(
@@ -1331,7 +1332,7 @@ function getHomepageList(){
         ),
 		array(
             'name' => 'Ombi',
-            'enabled' => false,
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/ombi.png',
             'category' => 'Requests',
             'settings' => array(
@@ -1384,7 +1385,7 @@ function getHomepageList(){
         ),
 		array(
             'name' => 'CustomHTML-1',
-            'enabled' => false,
+            'enabled' => (strpos('personal,business', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/custom1.png',
             'category' => 'Custom',
             'settings' => array(
@@ -1422,7 +1423,7 @@ function getHomepageList(){
         ),
 		array(
             'name' => 'CustomHTML-2',
-            'enabled' => false,
+            'enabled' => (strpos('personal,business', $GLOBALS['license']) !== false) ? true : false,
             'image' => 'plugins/images/tabs/custom2.png',
             'category' => 'Custom',
             'settings' => array(

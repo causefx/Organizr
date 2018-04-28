@@ -1723,7 +1723,7 @@ $(document).on('mousewheel', '.recent-items .owl-stage', function (e) {
     } else {
         $('.recent-items').trigger('prev.owl');
     }
-    e.preventDefault();
+    //e.preventDefault();
 });
 $(document).on('mousewheel', '.playlist-items .owl-stage', function (e) {
     if (e.deltaY>0) {
@@ -1731,7 +1731,7 @@ $(document).on('mousewheel', '.playlist-items .owl-stage', function (e) {
     } else {
         $('.playlist-items').trigger('prev.owl');
     }
-    e.preventDefault();
+    //e.preventDefault();
 });
 $(document).on('mousewheel', '.request-items .owl-stage', function (e) {
     if (e.deltaY>0) {
@@ -1739,5 +1739,5 @@ $(document).on('mousewheel', '.request-items .owl-stage', function (e) {
     } else {
         $('.request-items').trigger('prev.owl');
     }
-    e.preventDefault();
+    //e.preventDefault();
 });
