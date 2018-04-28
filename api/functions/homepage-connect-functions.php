@@ -986,7 +986,6 @@ function getCouchCalendar($array,$number){
             $downloaded = ($child['status'] == "active") ? "0" : "1";
             if($downloaded == "0" && $notReleased == "true"){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success"; }else{ $downloaded = "text-danger"; }
 
-            /*** NEW ***/
             if(!empty($child['info']['images']['backdrop_original'])) {
                 $banner = $child['info']['images']['backdrop_original'][0];
             } else if (!empty($child['info']['images']['backdrop'])) {
@@ -1008,12 +1007,16 @@ function getCouchCalendar($array,$number){
             $hasFile = ( !empty($child['releases']) && !empty($child['releases'][0]['files']['movie']) );
             $details = array(
                     "topTitle" => $movieName,
-                    "bottomTitle" => $alternativeTitles,
+                    "bottomTitle" => $child['info']['tagline'],
                     "status" => $child['status'],
                     "overview" => $child['info']['plot'],
                     "runtime" => $child['info']['runtime'],
                     "image" => $banner,
                     "ratings" => $child['info']['rating']['imdb'][0],
+                    "videoQuality" => $hasFile ? $child['releases'][0]['quality'] : "unknown",
+                    "audioChannels" => "",
+                    "audioCodec" => "",
+                    "videoCodec" => "",
                     "genres" => $child['info']['genres'],
                 );
 
@@ -1025,7 +1028,6 @@ function getCouchCalendar($array,$number){
                 "imagetype" => "film ".$downloaded,
                 "details" => $details
             ));
-            /*** END NEW ***/
         }
     }
     if ($i != 0){ return $gotCalendar; }
