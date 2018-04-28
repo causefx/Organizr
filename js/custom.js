@@ -1718,26 +1718,32 @@ $(document).on("click", ".right-side-toggle", function () {
     }
 });
 $(document).on('mousewheel', '.recent-items .owl-stage', function (e) {
-    if (e.deltaY>0) {
-        $('.recent-items').trigger('next.owl');
-    } else {
-        $('.recent-items').trigger('prev.owl');
+    if (event.shiftKey) {
+        if (e.deltaY>0) {
+            $('.recent-items').trigger('next.owl');
+        } else {
+            $('.recent-items').trigger('prev.owl');
+        }
+        e.preventDefault();
     }
-    //e.preventDefault();
 });
 $(document).on('mousewheel', '.playlist-items .owl-stage', function (e) {
-    if (e.deltaY>0) {
-        $('.playlist-items').trigger('next.owl');
-    } else {
-        $('.playlist-items').trigger('prev.owl');
+    if (event.shiftKey) {
+        if (e.deltaY>0) {
+            $('.playlist-items').trigger('next.owl');
+        } else {
+            $('.playlist-items').trigger('prev.owl');
+        }
+        e.preventDefault();
     }
-    //e.preventDefault();
 });
 $(document).on('mousewheel', '.request-items .owl-stage', function (e) {
-    if (e.deltaY>0) {
-        $('.request-items').trigger('next.owl');
-    } else {
-        $('.request-items').trigger('prev.owl');
+    if (event.shiftKey) {
+        if (e.deltaY>0) {
+            $('.request-items').trigger('next.owl');
+        } else {
+            $('.request-items').trigger('prev.owl');
+        }
+    e.preventDefault();
     }
-    //e.preventDefault();
 });
