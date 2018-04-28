@@ -2439,6 +2439,15 @@ function buildRecent(array, type){
     </div>
 	` : '';
 }
+function cleanPlaylistTitle(string){
+	var test = string.split('.');
+	if(test.length > 1){
+		if(!isNaN(test[0])){
+			return test[1];
+		}
+	}
+	return string;
+}
 function buildPlaylist(array, type){
 	var playlist = (typeof array.content !== 'undefined') ? true : false;
 	var dropdown = '';
@@ -2448,6 +2457,7 @@ function buildPlaylist(array, type){
 	var items = '';
 	if(playlist){
 		$.each(array.content, function(i,v) {
+			v.title = cleanPlaylistTitle(v.title);
 			count ++;
 			first = (count == 1) ? v.title : first;
 			hidden = (count == 1) ? '' : ' owl-hidden hidden';
