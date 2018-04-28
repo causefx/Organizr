@@ -985,13 +985,47 @@ function getCouchCalendar($array,$number){
             if (new DateTime() < new DateTime($physicalRelease)) { $notReleased = "true"; }else{ $notReleased = "false"; }
             $downloaded = ($child['status'] == "active") ? "0" : "1";
             if($downloaded == "0" && $notReleased == "true"){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success"; }else{ $downloaded = "text-danger"; }
+
+            /*** NEW ***/
+            if(!empty($child['info']['images']['backdrop_original'])) {
+                $banner = $child['info']['images']['backdrop_original'][0];
+            } else if (!empty($child['info']['images']['backdrop'])) {
+                $banner = $child['info']['images']['backdrop_original'][0];
+            } else {
+                $banner = "/plugins/images/cache/no-np.png";
+            }
+            if($banner !== "/plugins/images/cache/no-np.png"){
+                $cacheDirectory = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
+                $imageURL = $banner;
+                $cacheFile = $cacheDirectory.$movieID.'.jpg';
+                $banner = 'plugins/images/cache/'.$movieID.'.jpg';
+                if(!file_exists($cacheFile)){
+                    cacheImage($imageURL,$movieID);
+                    unset($imageURL);
+                    unset($cacheFile);
+                }
+            }
+            $hasFile = ( !empty($child['releases']) && !empty($child['releases'][0]['files']['movie']) );
+            $details = array(
+                    "topTitle" => $movieName,
+                    "bottomTitle" => $alternativeTitles,
+                    "status" => $child['status'],
+                    "overview" => $child['info']['plot'],
+                    "runtime" => $child['info']['runtime'],
+                    "image" => $banner,
+                    "ratings" => $child['info']['rating']['imdb'][0],
+                    "genres" => $child['info']['genres'],
+                );
+
             array_push($gotCalendar, array(
                 "id" => "CouchPotato-".$number."-".$i,
                 "title" => $movieName,
                 "start" => $physicalRelease,
                 "className" => "bg-calendar calendar-item movieID--".$movieID,
                 "imagetype" => "film ".$downloaded,
+                "details" => $details
             ));
+            /*** END NEW ***/
         }
     }
     if ($i != 0){ return $gotCalendar; }
