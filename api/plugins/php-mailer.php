@@ -256,9 +256,8 @@ function phpmGetSettings(){
 			),
 			array(
 				'type' => 'select',
-				'name' => 'theme',
+				'name' => 'PHPMAILER-template',
 				'label' => 'Theme',
-				'class' => 'themeChanger',
 				'value' => $GLOBALS['PHPMAILER-template'],
 				'options' => getTemplates()
 			),
