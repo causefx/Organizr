@@ -2164,7 +2164,7 @@ function buildStreamItem(array,source){
 								<li><a class="btn default btn-outline inline-popups" href="#`+v.session+`" data-effect="mfp-zoom-out"><i class="mdi mdi-server-network mdi-24px"></i></a></li>
 								<li><a class="btn default btn-outline metadata-get" data-source="`+source+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`"><i class="mdi mdi-information mdi-24px"></i></a></li>
 								<li><a class="btn default btn-outline openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class=" mdi mdi-`+source+` mdi-24px"></i></a></li>
-								<li><a class="btn default btn-outline refreshImage" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a></li>
+								<li><a class="btn default btn-outline refreshImage" data-type="nowPlaying" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a></li>
 								<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
 							</ul>
 						</div>
@@ -2223,7 +2223,7 @@ function buildRecentItem(array, type, extra=null){
 			switch (v.type) {
 				case 'music':
 					className = 'recent-cover recent-item recent-music';
-					extraImg = '<img src="'+v.imageURL+'" class="imageSource imageSourceTop recent-cover"><img src="'+v.imageURL+'" class="imageSource imageSourceBottom recent-cover">';
+					extraImg = '<img src="'+v.imageURL+'" class="imageSourceAlt imageSourceTop recent-cover"><img src="'+v.imageURL+'" class="imageSourceAlt imageSourceBottom recent-cover">';
 					break;
 				case 'movie':
 					className = 'recent-poster recent-item recent-movie';
@@ -2238,9 +2238,11 @@ function buildRecentItem(array, type, extra=null){
 
 			}
 			items += `
-			<div class="item lazyload `+className+` metadata-get mouse" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
+			<div class="item lazyload `+className+` metadata-get mouse imageSource" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
 				`+extraImg+`
-				<div class="hover-homepage-item"></div>
+				<div class="hover-homepage-item">
+					<a class="btn default refreshImage" data-type="recent-item" data-image="`+v.originalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a>
+				</div>
 				<span class="elip recent-title">`+v.title+`</span>
 				<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
 			        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
@@ -2262,8 +2264,10 @@ function buildPlaylistItem(array, type, extra=null){
 		if(i !== 'title'){
 			if(extra == null){
 				items += `
-				<div class="item lazyload recent-poster metadata-get mouse" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
-					<div class="hover-homepage-item"></div>
+				<div class="item lazyload recent-poster metadata-get mouse imageSource" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
+					<div class="hover-homepage-item">
+						<a class="btn default refreshImage" data-type="recent-item" data-image="`+v.originalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a>
+					</div>
 					<span class="elip recent-title">`+v.title+`</span>
 					<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
 				        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>

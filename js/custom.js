@@ -1530,10 +1530,23 @@ $(document).on("click", ".playlist-filter li>a", function () {
 $(document).on("click", ".refreshImage", function(e) {
     message('',' Refreshing Image...','bottom-right','#FFF','success','1000');
     e.preventDefault;
-    var orginalElement = $(this).parent().parent().parent().parent().find('.imageSource');
-    //console.log(orginalElement)
     var original = $(this).attr('data-image');
-    orginalElement.attr('src', original);
+    var type = $(this).attr('data-type');
+    switch (type) {
+        case 'nowPlaying':
+            var orginalElement = $(this).parent().parent().parent().parent().find('.imageSource');
+            orginalElement.attr('src', original);
+            break;
+        case 'recent-item':
+            var orginalElementAlt = $(this).parent().parent().parent().find('.imageSourceAlt');
+            var orginalElement = $(this).parent().parent().parent().find('.imageSource');
+            orginalElement.attr('style', 'background-image: url("'+original+'");');
+            orginalElementAlt.attr('src', original);
+            break;
+        default:
+
+    }
+    //console.log(orginalElement)
     //console.log('replaced image with : '+original);
     setTimeout(function(){
         message('Image Refreshed ',' Clear Cache Please','bottom-right','#FFF','success','3000');
@@ -1565,6 +1578,7 @@ $(document).on("click", ".request-item", function(e) {
 });
 // metadata start
 $(document).on("click", ".metadata-get", function(e) {
+    if($(e.target).hasClass('mdi-refresh')) return;
     $("#preloader").fadeIn();
     var key = $(this).attr('data-key');
     var uid = $(this).attr('data-uid');
