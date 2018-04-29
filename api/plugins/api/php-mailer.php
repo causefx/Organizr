@@ -1,50 +1,50 @@
 <?php
-if(isset($_POST['data']['plugin'])){
+if (isset($_POST['data']['plugin'])) {
     switch ($_POST['data']['plugin']) {
         case 'PHPMailer/settings/get':
-            if(qualifyRequest(1)){
+            if (qualifyRequest(1)) {
                 $result['status'] = 'success';
                 $result['statusText'] = 'success';
                 $result['data'] = phpmGetSettings();
-            }else{
+            } else {
                 $result['status'] = 'error';
                 $result['statusText'] = 'API/Token invalid or not set';
                 $result['data'] = null;
             }
             break;
         case 'PHPMailer/send/test':
-            if(qualifyRequest(1)){
+            if (qualifyRequest(1)) {
                 $result['status'] = 'success';
                 $result['statusText'] = 'success';
                 $result['data'] = phpmSendTestEmail();
-            }else{
+            } else {
                 $result['status'] = 'error';
                 $result['statusText'] = 'API/Token invalid or not set';
                 $result['data'] = null;
             }
             break;
         case 'PHPMailer/send/email':
-            if(qualifyRequest(1)){
+            if (qualifyRequest(1)) {
                 $result['status'] = 'success';
                 $result['statusText'] = 'success';
                 $result['data'] = phpmAdminSendEmail();
-            }else{
+            } else {
                 $result['status'] = 'error';
                 $result['statusText'] = 'API/Token invalid or not set';
                 $result['data'] = null;
             }
             break;
-		case 'PHPMailer/users/get':
-            if(qualifyRequest(1)){
+        case 'PHPMailer/users/get':
+            if (qualifyRequest(1)) {
                 $result['status'] = 'success';
                 $result['statusText'] = 'success';
                 $result['data'] = getEmails();
-            }else{
+            } else {
                 $result['status'] = 'error';
                 $result['statusText'] = 'API/Token invalid or not set';
                 $result['data'] = null;
             }
-	            break;
+                break;
         default:
             //DO NOTHING!!
             break;

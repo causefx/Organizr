@@ -7,9 +7,9 @@ $result = array();
 //Get request method
 $method = $_SERVER['REQUEST_METHOD'];
 reset($_GET);
-$function = (key($_GET) ? str_replace("/","_",key($_GET)) : false);
+$function = (key($_GET) ? str_replace("/", "_", key($_GET)) : false);
 //Exit if $function is blank
-if($function === false){
+if ($function === false) {
     $result['status'] = "error";
     $result['statusText'] = "No API Path Supplied";
     exit(json_encode($result));
@@ -19,12 +19,12 @@ switch ($function) {
     case 'v1_settings_page':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettings;
                     writeLog('success', 'Admin Function -  Accessed Settings Page', $GLOBALS['organizrUser']['username']);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -53,11 +53,11 @@ switch ($function) {
     case 'v1_settings_plugins':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettingsPlugins;
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -72,11 +72,11 @@ switch ($function) {
     case 'v1_settings_tab_editor_homepage':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettingsTabEditorHomepage;
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -88,44 +88,44 @@ switch ($function) {
                 break;
         }
         break;
-	case 'v1_settings_tab_editor_homepage_order':
-		switch ($method) {
-			case 'GET':
-				if(qualifyRequest(1)){
-					$result['status'] = 'success';
-					$result['statusText'] = 'success';
-					$result['data'] = $pageSettingsTabEditorHomepageOrder;
-				}else{
-					$result['status'] = 'error';
-					$result['statusText'] = 'API/Token invalid or not set';
-					$result['data'] = null;
-				}
-				break;
-			default:
-				$result['status'] = 'error';
-				$result['statusText'] = 'The function requested is not defined for method: '.$method;
-				break;
-		}
-		break;
+    case 'v1_settings_tab_editor_homepage_order':
+        switch ($method) {
+            case 'GET':
+                if (qualifyRequest(1)) {
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = $pageSettingsTabEditorHomepageOrder;
+                } else {
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_settings_homepage_list':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = getHomepageList();
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
                 }
                 break;
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = editPlugins($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -140,22 +140,22 @@ switch ($function) {
     case 'v1_settings_plugins_list':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = getPlugins();
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
                 }
                 break;
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = editPlugins($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -170,11 +170,11 @@ switch ($function) {
     case 'v1_settings_settings_logs':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettingsSettingsLogs;
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -189,11 +189,11 @@ switch ($function) {
     case 'v1_settings_settings_sso':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettingsSettingsSSO;
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -205,44 +205,44 @@ switch ($function) {
                 break;
         }
         break;
-	case 'v1_settings_settings_main':
-		switch ($method) {
-			case 'GET':
-				if(qualifyRequest(1)){
-					$result['status'] = 'success';
-					$result['statusText'] = 'success';
-					$result['data'] = $pageSettingsSettingsMain;
-				}else{
-					$result['status'] = 'error';
-					$result['statusText'] = 'API/Token invalid or not set';
-					$result['data'] = null;
-				}
-				break;
-			default:
-				$result['status'] = 'error';
-				$result['statusText'] = 'The function requested is not defined for method: '.$method;
-				break;
-		}
-			break;
+    case 'v1_settings_settings_main':
+        switch ($method) {
+            case 'GET':
+                if (qualifyRequest(1)) {
+                    $result['status'] = 'success';
+                    $result['statusText'] = 'success';
+                    $result['data'] = $pageSettingsSettingsMain;
+                } else {
+                    $result['status'] = 'error';
+                    $result['statusText'] = 'API/Token invalid or not set';
+                    $result['data'] = null;
+                }
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+            break;
     case 'v1_settings_customize_appearance':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettingsCustomizeAppearance;
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
                 }
                 break;
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = editAppearance($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -254,14 +254,14 @@ switch ($function) {
                 break;
         }
         break;
-	case 'v1_remove_file':
+    case 'v1_remove_file':
         switch ($method) {
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = removeFile($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -276,11 +276,11 @@ switch ($function) {
     case 'v1_update_config':
         switch ($method) {
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = updateConfigItem($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -295,11 +295,11 @@ switch ($function) {
     case 'v1_update_config_multiple':
         switch ($method) {
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = updateConfigMultiple($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -327,22 +327,22 @@ switch ($function) {
     case 'v1_settings_tab_editor_tabs':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettingsTabEditorTabs;
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
                 }
                 break;
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = editTabs($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -357,22 +357,22 @@ switch ($function) {
     case 'v1_settings_tab_editor_categories':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettingsTabEditorCategories;
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
                 }
                 break;
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = editCategories($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -387,26 +387,26 @@ switch ($function) {
     case 'v1_settings_user_manage_users':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettingsUserManageUsers;
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
                 }
                 break;
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = adminEditUser($_POST);
-                }elseif(qualifyRequest(998)){
+                } elseif (qualifyRequest(998)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = editUser($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -418,14 +418,14 @@ switch ($function) {
                 break;
         }
         break;
-	case 'v1_manage_user':
+    case 'v1_manage_user':
         switch ($method) {
             case 'POST':
-                if(qualifyRequest(998)){
+                if (qualifyRequest(998)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = editUser($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -440,22 +440,22 @@ switch ($function) {
     case 'v1_settings_user_manage_groups':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettingsUserManageGroups;
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
                 }
                 break;
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = adminEditGroup($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -470,22 +470,22 @@ switch ($function) {
     case 'v1_settings_image_manager_view':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageSettingsImageManager;
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
                 }
                 break;
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = editImages();
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -500,11 +500,11 @@ switch ($function) {
     case 'v1_wizard_page':
         switch ($method) {
             case 'GET':
-                if(!file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
+                if (!file_exists('config'.DIRECTORY_SEPARATOR.'config.php')) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = $pageWizard;
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'Wizard has already been run';
                     $result['data'] = null;
@@ -532,11 +532,11 @@ switch ($function) {
     case 'v1_wizard_config':
         switch ($method) {
             case 'POST':
-                if(!file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
+                if (!file_exists('config'.DIRECTORY_SEPARATOR.'config.php')) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = wizardConfig($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'Wizard has already been run';
                     $result['data'] = null;
@@ -551,11 +551,11 @@ switch ($function) {
     case 'v1_wizard_path':
         switch ($method) {
             case 'POST':
-                if(!file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
+                if (!file_exists('config'.DIRECTORY_SEPARATOR.'config.php')) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = wizardPath($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'Wizard has already been run';
                     $result['data'] = null;
@@ -611,11 +611,11 @@ switch ($function) {
     case 'v1_force':
         switch ($method) {
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
-                    $result['data'] = upgradeInstall($_POST['data']['branch'],$_POST['data']['stage']);
-                }else{
+                    $result['data'] = upgradeInstall($_POST['data']['branch'], $_POST['data']['stage']);
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -656,11 +656,11 @@ switch ($function) {
     case 'v1_login_log':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = getLog('loginLog');
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -672,14 +672,14 @@ switch ($function) {
                 break;
         }
         break;
-	case 'v1_organizr_log':
+    case 'v1_organizr_log':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = getLog('org');
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -694,11 +694,11 @@ switch ($function) {
     case 'v1_user_list':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = allUsers();
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -713,11 +713,11 @@ switch ($function) {
     case 'v1_tab_list':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = allTabs();
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -732,11 +732,11 @@ switch ($function) {
     case 'v1_image_list':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = getImages();
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -751,11 +751,11 @@ switch ($function) {
     case 'v1_customize_appearance':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = getCustomizeAppearance();
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -770,11 +770,11 @@ switch ($function) {
     case 'v1_sso':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = getSSO();
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -789,11 +789,11 @@ switch ($function) {
     case 'v1_settings_main':
         switch ($method) {
             case 'GET':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = getSettingsMain();
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -808,15 +808,15 @@ switch ($function) {
     case 'v1_user_edit':
         switch ($method) {
             case 'POST':
-                if(qualifyRequest(1)){
+                if (qualifyRequest(1)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = adminEditUser($_POST);
-                }elseif(qualifyRequest(998)){
+                } elseif (qualifyRequest(998)) {
                     $result['status'] = 'success';
                     $result['statusText'] = 'success';
                     $result['data'] = editUser($_POST);
-                }else{
+                } else {
                     $result['status'] = 'error';
                     $result['statusText'] = 'API/Token invalid or not set';
                     $result['data'] = null;
@@ -844,7 +844,7 @@ switch ($function) {
     case 'v1_launch_organizr':
         switch ($method) {
             case 'GET':
-				$pluginSearch = '-enabled';
+                $pluginSearch = '-enabled';
                 $pluginInclude = '-include';
                 $status = array();
                 $result['status'] = 'success';
@@ -854,18 +854,18 @@ switch ($function) {
                 $status['user'] = $GLOBALS['organizrUser'];
                 $status['categories'] = loadTabs()['categories'];
                 $status['tabs'] = loadTabs()['tabs'];
-				$status['plugins'] = array_filter($GLOBALS, function($k)use($pluginSearch){
-                    return stripos($k, $pluginSearch) !== FALSE;
+                $status['plugins'] = array_filter($GLOBALS, function ($k) use ($pluginSearch) {
+                    return stripos($k, $pluginSearch) !== false;
                 }, ARRAY_FILTER_USE_KEY);
-                $status['plugins']['includes'] = array_filter($GLOBALS, function($k)use($pluginInclude){
-                    return stripos($k, $pluginInclude) !== FALSE;
+                $status['plugins']['includes'] = array_filter($GLOBALS, function ($k) use ($pluginInclude) {
+                    return stripos($k, $pluginInclude) !== false;
                 }, ARRAY_FILTER_USE_KEY);
                 $result['data'] = $status;
                 $result['branch'] = $GLOBALS['branch'];
-				$result['theme'] = $GLOBALS['theme'];
+                $result['theme'] = $GLOBALS['theme'];
                 $result['style'] = $GLOBALS['style'];
                 $result['version'] = $GLOBALS['installedVersion'];
-				$result['sso'] = array(
+                $result['sso'] = array(
                     'myPlexAccessToken' => isset($_COOKIE['mpt']) ? $_COOKIE['mpt'] : false,
                     'id_token' => isset($_COOKIE['Auth']) ? $_COOKIE['Auth'] : false
                 );
@@ -877,7 +877,7 @@ switch ($function) {
                 break;
         }
         break;
-	case 'v1_auth':
+    case 'v1_auth':
         switch ($method) {
             case 'GET':
                 auth();
@@ -892,7 +892,7 @@ switch ($function) {
         switch ($method) {
             case 'POST':
                 // Include all plugin api Calls
-                foreach (glob(__DIR__.DIRECTORY_SEPARATOR.'plugins' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . "*.php") as $filename){
+                foreach (glob(__DIR__.DIRECTORY_SEPARATOR.'plugins' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
                     require_once $filename;
                 }
                 break;
@@ -913,45 +913,45 @@ switch ($function) {
                 break;
         }
         break;
-	case 'v1_downloader':
-		switch ($method) {
-			case 'POST':
+    case 'v1_downloader':
+        switch ($method) {
+            case 'POST':
                 $result['status'] = 'success';
                 $result['statusText'] = 'success';
                 $result['data'] = downloader($_POST);
-				break;
-			default:
-				$result['status'] = 'error';
-				$result['statusText'] = 'The function requested is not defined for method: '.$method;
-				break;
-		}
-		break;
-	case 'v1_ombi':
-		switch ($method) {
-			case 'POST':
-				$result['status'] = 'success';
-				$result['statusText'] = 'success';
-				$result['data'] = ombiAPI($_POST);
-				break;
-			default:
-				$result['status'] = 'error';
-				$result['statusText'] = 'The function requested is not defined for method: '.$method;
-				break;
-		}
-		break;
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
+    case 'v1_ombi':
+        switch ($method) {
+            case 'POST':
+                $result['status'] = 'success';
+                $result['statusText'] = 'success';
+                $result['data'] = ombiAPI($_POST);
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     case 'v1_plex_join':
-		switch ($method) {
-			case 'POST':
-				$result['status'] = 'success';
-				$result['statusText'] = 'success';
-				$result['data'] = plexJoinAPI($_POST);
-				break;
-			default:
-				$result['status'] = 'error';
-				$result['statusText'] = 'The function requested is not defined for method: '.$method;
-				break;
-		}
-		break;
+        switch ($method) {
+            case 'POST':
+                $result['status'] = 'success';
+                $result['statusText'] = 'success';
+                $result['data'] = plexJoinAPI($_POST);
+                break;
+            default:
+                $result['status'] = 'error';
+                $result['statusText'] = 'The function requested is not defined for method: '.$method;
+                break;
+        }
+        break;
     default:
         //No Function Available
         $result['status'] = 'error';
@@ -959,7 +959,7 @@ switch ($function) {
         break;
 }
 //Set Default Result
-if(!$result){
+if (!$result) {
     $result['status'] = "error";
     $result['error'] = "An error has occurred";
 }
