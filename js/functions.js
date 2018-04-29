@@ -2644,6 +2644,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 	if(total == 20 && (list) && (page) && (search == false)){
 		page = ((page * 1) + 1);
 		next = `
+		<div class="clearfix"></div>
 		<div class="col-lg-12">
             <button class="btn btn-block btn-info" onclick="requestList('`+list+`', '`+media_type+`', '`+page+`');" lang="en">Load More</button>
         </div>
@@ -2653,6 +2654,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 		page = ((page * 1) + 1);
 		$('#request-page').val(page);
 		next = `
+		<div class="clearfix"></div>
 		<div class="col-lg-12">
             <button class="btn btn-block btn-info" onclick="doneTyping();" lang="en">Load More</button>
         </div>
