@@ -904,6 +904,7 @@ function getSonarrCalendar($array, $number)
     foreach ($array as $child) {
         $i++;
         $seriesName = $child['series']['title'];
+        $seriesID = $child['series']['tvdbId'];
         $episodeID = $child['series']['tvdbId'];
         if (!isset($episodeID)) {
             $episodeID = "";
@@ -935,6 +936,17 @@ function getSonarrCalendar($array, $number)
         foreach ($child['series']['images'] as $image) {
             if ($image['coverType'] == "fanart") {
                 $fanart = $image['url'];
+            }
+        }
+        if ($fanart !== "/plugins/images/cache/no-np.png") {
+            $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
+            $imageURL = $fanart;
+            $cacheFile = $cacheDirectory.$seriesID.'.jpg';
+            $fanart = 'plugins/images/cache/'.$seriesID.'.jpg';
+            if (!file_exists($cacheFile)) {
+                cacheImage($imageURL, $seriesID);
+                unset($imageURL);
+                unset($cacheFile);
             }
         }
         $bottomTitle = 'S' . sprintf("%02d", $child['seasonNumber']) . 'E' . sprintf("%02d", $child['episodeNumber']) . ' - ' . $child['title'];
@@ -1137,149 +1149,253 @@ function getCouchCalendar($array, $number)
         return $gotCalendar;
     }
 }
-function getSickrageCalendarWanted($array, $number)
+function getSickrageCalendarWanted($array,$number)
 {
     $array = json_decode($array, true);
     $gotCalendar = array();
     $i = 0;
-    foreach ($array['data']['missed'] as $child) {
+    foreach($array['data']['missed'] AS $child) {
         $i++;
         $seriesName = $child['show_name'];
+        $seriesID = $child['tvdbid'];
         $episodeID = $child['tvdbid'];
         $episodeAirDate = $child['airdate'];
-        $episodeAirDateTime = explode(" ", $child['airs']);
+        $episodeAirDateTime = explode(" ",$child['airs']);
         $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
         $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
-        if (new DateTime() < new DateTime($episodeAirDate)) {
-            $unaired = true;
-        }
+        if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
         $downloaded = "0";
-        if ($downloaded == "0" && isset($unaired)) {
-            $downloaded = "text-info";
-        } elseif ($downloaded == "1") {
-            $downloaded = "text-success";
-        } else {
-            $downloaded = "text-danger";
+        if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
+        $bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
+
+        $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
+        $cacheFile = $cacheDirectory.$seriesID.'.jpg';
+        $fanart = "/plugins/images/cache/no-np.png";
+        if (file_exists($cacheFile)) {
+            $fanart = 'plugins/images/cache/'.$seriesID.'.jpg';
+            unset($cacheFile);
         }
+
+        $details = array(
+            "seasonCount" => "",
+            "status" => $child['show_status'],
+            "topTitle" => $seriesName,
+            "bottomTitle" => $bottomTitle,
+            "overview" => isset($child['ep_plot']) ? $child['ep_plot'] : '',
+            "runtime" => "",
+            "image" => $fanart,
+            "ratings" => "",
+            "videoQuality" => isset($child["quality"]) ? $child["quality"] : "",
+            "audioChannels" => "",
+            "audioCodec" => "",
+            "videoCodec" => "",
+            "size" => "",
+            "genres" => "",
+        );
         array_push($gotCalendar, array(
-                "id" => "Sick-".$number."-Miss-".$i,
-                "title" => $seriesName,
-                "start" => $episodeAirDate,
-                "className" => "bg-calendar calendar-item tvID--".$episodeID,
-                "imagetype" => "tv ".$downloaded,
-            ));
+            "id" => "Sick-".$number."-Miss-".$i,
+            "title" => $seriesName,
+            "start" => $episodeAirDate,
+            "className" => "bg-calendar calendar-item tvID--".$episodeID,
+            "imagetype" => "tv ".$downloaded,
+            "details" => $details,
+        ));
     }
-    foreach ($array['data']['today'] as $child) {
+    foreach($array['data']['today'] AS $child) {
         $i++;
         $seriesName = $child['show_name'];
+        $seriesID = $child['tvdbid'];
         $episodeID = $child['tvdbid'];
         $episodeAirDate = $child['airdate'];
-        $episodeAirDateTime = explode(" ", $child['airs']);
+        $episodeAirDateTime = explode(" ",$child['airs']);
         $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
         $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
-        if (new DateTime() < new DateTime($episodeAirDate)) {
-            $unaired = true;
-        }
+        if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
         $downloaded = "0";
-        if ($downloaded == "0" && isset($unaired)) {
-            $downloaded = "text-info";
-        } elseif ($downloaded == "1") {
-            $downloaded = "text-success";
-        } else {
-            $downloaded = "text-danger";
+        if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
+        $bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
+
+        $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
+        $cacheFile = $cacheDirectory.$seriesID.'.jpg';
+        $fanart = "/plugins/images/cache/no-np.png";
+        if (file_exists($cacheFile)) {
+            $fanart = 'plugins/images/cache/'.$seriesID.'.jpg';
+            unset($cacheFile);
         }
+
+        $details = array(
+            "seasonCount" => "",
+            "status" => $child['show_status'],
+            "topTitle" => $seriesName,
+            "bottomTitle" => $bottomTitle,
+            "overview" => isset($child['ep_plot']) ? $child['ep_plot'] : '',
+            "runtime" => "",
+            "image" => $fanart,
+            "ratings" => "",
+            "videoQuality" => isset($child["quality"]) ? $child["quality"] : "",
+            "audioChannels" => "",
+            "audioCodec" => "",
+            "videoCodec" => "",
+            "size" => "",
+            "genres" => "",
+        );
         array_push($gotCalendar, array(
-                "id" => "Sick-".$number."-Today-".$i,
-                "title" => $seriesName,
-                "start" => $episodeAirDate,
-                "className" => "bg-calendar calendar-item tvID--".$episodeID,
-                "imagetype" => "tv ".$downloaded,
-            ));
+            "id" => "Sick-".$number."-Today-".$i,
+            "title" => $seriesName,
+            "start" => $episodeAirDate,
+            "className" => "bg-calendar calendar-item tvID--".$episodeID,
+            "imagetype" => "tv ".$downloaded,
+            "details" => $details,
+        ));
     }
-    foreach ($array['data']['soon'] as $child) {
+    foreach($array['data']['soon'] AS $child) {
         $i++;
         $seriesName = $child['show_name'];
+        $seriesID = $child['tvdbid'];
         $episodeID = $child['tvdbid'];
         $episodeAirDate = $child['airdate'];
-        $episodeAirDateTime = explode(" ", $child['airs']);
+        $episodeAirDateTime = explode(" ",$child['airs']);
         $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
         $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
-        if (new DateTime() < new DateTime($episodeAirDate)) {
-            $unaired = true;
-        }
+        if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
         $downloaded = "0";
-        if ($downloaded == "0" && isset($unaired)) {
-            $downloaded = "text-info";
-        } elseif ($downloaded == "1") {
-            $downloaded = "text-success";
-        } else {
-            $downloaded = "text-danger";
+        if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
+        $bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
+
+        $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
+        $cacheFile = $cacheDirectory.$seriesID.'.jpg';
+        $fanart = "/plugins/images/cache/no-np.png";
+        if (file_exists($cacheFile)) {
+            $fanart = 'plugins/images/cache/'.$seriesID.'.jpg';
+            unset($cacheFile);
         }
+
+        $details = array(
+            "seasonCount" => "",
+            "status" => $child['show_status'],
+            "topTitle" => $seriesName,
+            "bottomTitle" => $bottomTitle,
+            "overview" => isset($child['ep_plot']) ? $child['ep_plot'] : '',
+            "runtime" => "",
+            "image" => $fanart,
+            "ratings" => "",
+            "videoQuality" => isset($child["quality"]) ? $child["quality"] : "",
+            "audioChannels" => "",
+            "audioCodec" => "",
+            "videoCodec" => "",
+            "size" => "",
+            "genres" => "",
+        );
         array_push($gotCalendar, array(
-                "id" => "Sick-".$number."-Soon-".$i,
-                "title" => $seriesName,
-                "start" => $episodeAirDate,
-                "className" => "bg-calendar calendar-item tvID--".$episodeID,
-                "imagetype" => "tv ".$downloaded,
-            ));
+            "id" => "Sick-".$number."-Soon-".$i,
+            "title" => $seriesName,
+            "start" => $episodeAirDate,
+            "className" => "bg-calendar calendar-item tvID--".$episodeID,
+            "imagetype" => "tv ".$downloaded,
+            "details" => $details,
+        ));
     }
-    foreach ($array['data']['later'] as $child) {
+    foreach($array['data']['later'] AS $child) {
         $i++;
         $seriesName = $child['show_name'];
+        $seriesID = $child['tvdbid'];
         $episodeID = $child['tvdbid'];
         $episodeAirDate = $child['airdate'];
-        $episodeAirDateTime = explode(" ", $child['airs']);
+        $episodeAirDateTime = explode(" ",$child['airs']);
         $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
         $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
-        if (new DateTime() < new DateTime($episodeAirDate)) {
-            $unaired = true;
-        }
+        if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
         $downloaded = "0";
-        if ($downloaded == "0" && isset($unaired)) {
-            $downloaded = "text-info";
-        } elseif ($downloaded == "1") {
-            $downloaded = "text-success";
-        } else {
-            $downloaded = "text-danger";
+        if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
+        $bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
+
+        $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
+        $cacheFile = $cacheDirectory.$seriesID.'.jpg';
+        $fanart = "/plugins/images/cache/no-np.png";
+        if (file_exists($cacheFile)) {
+            $fanart = 'plugins/images/cache/'.$seriesID.'.jpg';
+            unset($cacheFile);
         }
+
+        $details = array(
+            "seasonCount" => "",
+            "status" => $child['show_status'],
+            "topTitle" => $seriesName,
+            "bottomTitle" => $bottomTitle,
+            "overview" => isset($child['ep_plot']) ? $child['ep_plot'] : '',
+            "runtime" => "",
+            "image" => $fanart,
+            "ratings" => "",
+            "videoQuality" => isset($child["quality"]) ? $child["quality"] : "",
+            "audioChannels" => "",
+            "audioCodec" => "",
+            "videoCodec" => "",
+            "size" => "",
+            "genres" => "",
+        );
         array_push($gotCalendar, array(
-                "id" => "Sick-".$number."-Later-".$i,
-                "title" => $seriesName,
-                "start" => $episodeAirDate,
-                "className" => "bg-calendar calendar-item tvID--".$episodeID,
-                "imagetype" => "tv ".$downloaded,
-            ));
+            "id" => "Sick-".$number."-Later-".$i,
+            "title" => $seriesName,
+            "start" => $episodeAirDate,
+            "className" => "bg-calendar calendar-item tvID--".$episodeID,
+            "imagetype" => "tv ".$downloaded,
+            "details" => $details,
+        ));
     }
-    if ($i != 0) {
-        return $gotCalendar;
-    }
+    if ($i != 0){ return $gotCalendar; }
 }
-function getSickrageCalendarHistory($array, $number)
+function getSickrageCalendarHistory($array,$number)
 {
     $array = json_decode($array, true);
     $gotCalendar = array();
     $i = 0;
-    foreach ($array['data'] as $child) {
+    foreach($array['data'] AS $child) {
         $i++;
         $seriesName = $child['show_name'];
+        $seriesID = $child['tvdbid'];
         $episodeID = $child['tvdbid'];
         $episodeAirDate = $child['date'];
         $downloaded = "text-success";
+        $bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']);
+
+        $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
+        $cacheFile = $cacheDirectory.$seriesID.'.jpg';
+        $fanart = "/plugins/images/cache/no-np.png";
+        if (file_exists($cacheFile)) {
+            $fanart = 'plugins/images/cache/'.$seriesID.'.jpg';
+            unset($cacheFile);
+        }
+
+        $details = array(
+            "seasonCount" => "",
+            "status" => $child['status'],
+            "topTitle" => $seriesName,
+            "bottomTitle" => $bottomTitle,
+            "overview" => '',
+            "runtime" => $child['series']['runtime'],
+            "image" => $fanart,
+            "ratings" => $child['series']['ratings']['value'],
+            "videoQuality" => isset($child["quality"]) ? $child['quality'] : "unknown",
+            "audioChannels" => "",
+            "audioCodec" => "",
+            "videoCodec" => "",
+            "size" => "",
+            "genres" => "",
+        );
         array_push($gotCalendar, array(
-                "id" => "Sick-".$number."-History-".$i,
-                "title" => $seriesName,
-                "start" => $episodeAirDate,
-                "className" => "bg-calendar calendar-item tvID--".$episodeID,
-                "imagetype" => "tv ".$downloaded,
-            ));
+            "id" => "Sick-".$number."-History-".$i,
+            "title" => $seriesName,
+            "start" => $episodeAirDate,
+            "className" => "bg-calendar calendar-item tvID--".$episodeID,
+            "imagetype" => "tv ".$downloaded,
+            "details" => $details,
+        ));
     }
-    if ($i != 0) {
-        return $gotCalendar;
-    }
+    if ($i != 0){ return $gotCalendar; }
 }
 function ombiAPI($array)
 {
