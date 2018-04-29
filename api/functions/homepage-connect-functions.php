@@ -1338,7 +1338,7 @@ function getSickrageCalendarWanted($array,$number)
             "genres" => "",
         );
         array_push($gotCalendar, array(
-            "id" => "Sick-".$number."-Soon-".$i,
+            "id" => "Sick-".$number."-Later-".$i,
             "title" => $seriesName,
             "start" => $episodeAirDate,
             "className" => "bg-calendar calendar-item tvID--".$episodeID,
