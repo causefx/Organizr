@@ -219,15 +219,7 @@ function pageLoad(){
       },
       midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
     });
-    if(bowser.mobile !== true){
-        //limit height of calendar list view
-        $('.fc-scroller').slimScroll({
-            height: '270px',
-            position: 'right',
-            size: "5px",
-            color: '#dcdcdc'
-        });
-    }
+
 }
 /* ===== Sidebar ===== */
 

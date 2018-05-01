@@ -1,8 +1,12 @@
 <?php
 function organizrSpecialSettings()
 {
+    $refreshSearch = "Refresh";
     return array(
         'homepage' => array(
+            'refresh' => array_filter($GLOBALS, function ($k) use ($refreshSearch) {
+                return stripos($k, $refreshSearch) !== false;
+            }, ARRAY_FILTER_USE_KEY),
             'search' => array(
                 'enabled' => (qualifyRequest($GLOBALS['mediaSearchAuth']) && $GLOBALS['mediaSearch'] == true && $GLOBALS['plexToken']) ? true : false,
                 'type' => $GLOBALS['mediaSearchType'],

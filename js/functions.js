@@ -3050,7 +3050,7 @@ function buildDownloader(array, source){
 			`;
 		listing += `
 		<div role="tabpanel" class="tab-pane fade active in" id="`+source+`-queue">
-			<div class="inbox-center table-responsive">
+			<div class="inbox-center table-responsive" data-simplebar>
 				<table class="table table-hover">
 					<tbody class="`+source+`-queue">`+buildDownloaderItem(array.content.queueItems, source, 'queue')+`</tbody>
 				</table>
@@ -3065,7 +3065,7 @@ function buildDownloader(array, source){
 		`;
 		listing += `
 		<div role="tabpanel" class="tab-pane fade" id="`+source+`-history">
-			<div class="inbox-center table-responsive">
+			<div class="inbox-center table-responsive" data-simplebar>
 				<table class="table table-hover">
 					<tbody class="`+source+`-history">`+buildDownloaderItem(array.content.historyItems, source, 'history')+`</tbody>
 				</table>
@@ -3199,7 +3199,8 @@ function buildCalendarMetadata(array){
 		`;
 	return metadata;
 }
-function homepageDownloader(type, timeout=30000){
+function homepageDownloader(type, timeout){
+	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageDownloadRefresh;
 	//if(isHidden()){ return; }
 	switch (type) {
 		case 'sabnzbd':
@@ -3229,12 +3230,33 @@ function homepageDownloader(type, timeout=30000){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	setTimeout(function(){
-		homepageDownloader(type, timeout);
-	}, timeout)
+	switch (type) {
+		case 'sabnzbd':
+			if(typeof homepageDownloaderSabTimeout !== 'undefined'){ clearTimeout(homepageDownloaderSabTimeout); }
+			homepageDownloaderSabTimeout = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
+			break;
+		case 'nzbget':
+			if(typeof homepageDownloaderNzbgetTimeout !== 'undefined'){ clearTimeout(homepageDownloaderNzbgetTimeout); }
+			homepageDownloaderNzbgetTimeout = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
+			break;
+		case 'transmission':
+			if(typeof homepageDownloaderTransTimeout !== 'undefined'){ clearTimeout(homepageDownloaderTransTimeout); }
+			homepageDownloaderTransTimeout = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
+			break;
+		case 'qBittorrent':
+			if(typeof homepageDownloaderQbitTimeout !== 'undefined'){ clearTimeout(homepageDownloaderQbitTimeout); }
+			homepageDownloaderQbitTimeout = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
+			break;
+		case 'deluge':
+			if(typeof homepageDownloaderDelugeTimeout !== 'undefined'){ clearTimeout(homepageDownloaderDelugeTimeout); }
+			homepageDownloaderDelugeTimeout = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
+			break;
+		default:
+
+	}
 }
-function homepageStream(type, timeout=30000){
-	//if(isHidden()){ return; }
+function homepageStream(type, timeout){
+	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageStreamRefresh;
 	switch (type) {
 		case 'plex':
 			var action = 'getPlexStreams';
@@ -3252,11 +3274,21 @@ function homepageStream(type, timeout=30000){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	setTimeout(function(){
-		homepageStream(type, timeout);
-	}, timeout)
+	switch (type) {
+		case 'plex':
+			if(typeof homepageStreamPlexTimeout !== 'undefined'){ clearTimeout(homepageStreamPlexTimeout); }
+			homepageStreamPlexTimeout = setTimeout(function(){ homepageStream(type,timeout); }, timeout);
+			break;
+		case 'emby':
+			if(typeof homepageStreamEmbyTimeout !== 'undefined'){ clearTimeout(homepageStreamEmbyTimeout); }
+			homepageStreamEmbyTimeout = setTimeout(function(){ homepageStream(type,timeout); }, timeout);
+			break;
+		default:
+
+	}
 }
-function homepageRecent(type, timeout=30000){
+function homepageRecent(type, timeout){
+	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageRecentRefresh;
 	//if(isHidden()){ return; }
 	switch (type) {
 		case 'plex':
@@ -3283,9 +3315,18 @@ function homepageRecent(type, timeout=30000){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	setTimeout(function(){
-		homepageRecent(type, timeout);
-	}, timeout)
+	switch (type) {
+		case 'plex':
+			if(typeof homepageRecentPlexTimeout !== 'undefined'){ clearTimeout(homepageRecentPlexTimeout); }
+			homepageRecentPlexTimeout = setTimeout(function(){ homepageRecent(type,timeout); }, timeout);
+			break;
+		case 'emby':
+			if(typeof homepageRecentEmbyTimeout !== 'undefined'){ clearTimeout(homepageRecentEmbyTimeout); }
+			homepageRecentEmbyTimeout = setTimeout(function(){ homepageRecent(type,timeout); }, timeout);
+			break;
+		default:
+
+	}
 }
 function homepagePlaylist(type, timeout=30000){
 	//if(isHidden()){ return; }
@@ -3312,7 +3353,8 @@ function homepagePlaylist(type, timeout=30000){
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
-function homepageRequests(timeout=600000){
+function homepageRequests(timeout){
+	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.ombiRefresh;
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getRequests'}).success(function(data) {
 		var response = JSON.parse(data);
 		document.getElementById('homepageOrderombi').innerHTML = '';
@@ -3333,7 +3375,8 @@ function homepageRequests(timeout=600000){
 	if(typeof homepageRequestsTimeout !== 'undefined'){ clearTimeout(homepageRequestsTimeout); }
 	homepageRequestsTimeout = setTimeout(function(){ homepageRequests(timeout); }, timeout)
 }
-function homepageCalendar(timeout=30000){
+function homepageCalendar(timeout){
+	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.calendarRefresh;
 	//if(isHidden()){ return; }
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
 		var response = JSON.parse(data);
@@ -3343,9 +3386,8 @@ function homepageCalendar(timeout=30000){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	setTimeout(function(){
-		homepageCalendar(timeout);
-	}, timeout)
+	if(typeof homepageCalendarTimeout !== 'undefined'){ clearTimeout(homepageCalendarTimeout); }
+	homepageCalendarTimeout = setTimeout(function(){ homepageCalendar(timeout); }, timeout)
 }
 //Generate API
 function generateCode() {
@@ -3389,23 +3431,7 @@ function youtubeSearch(searchQuery) {
 }
 function youtubeCheck(title,link){
 	youtubeSearch(title).success(function(data) {
-		$('.inline-popups').magnificPopup({
-	      removalDelay: 500, //delay removal by X to allow out-animation
-	      closeOnBgClick: true,
-	      //closeOnContentClick: true,
-	      callbacks: {
-	        beforeOpen: function() {
-	           this.st.mainClass = this.st.el.attr('data-effect');
-	           this.st.focus = '#request-input';
-	       },
-	       close: function() {
-	          if(typeof player !== 'undefined'){
-	              player.destroy();
-	          }
-	        }
-	      },
-	      midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
-	    });
+		inlineLoad();
 		var id = data.items["0"].id.videoId;
 		var div = `
 		<div id="player-`+link+`" data-plyr-provider="youtube" data-plyr-embed-id="`+id+`"></div>
@@ -3461,6 +3487,26 @@ function requestSearchList(list,page=1) {
 function requestNewID(id) {
 	return $.ajax({
 		url: "https://api.themoviedb.org/3/tv/"+id+"/external_ids?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language=en-US",
+	});
+}
+function inlineLoad(){
+	$('.inline-popups').magnificPopup({
+	  removalDelay: 500, //delay removal by X to allow out-animation
+	  closeOnBgClick: true,
+	  //closeOnContentClick: true,
+	  callbacks: {
+		beforeOpen: function() {
+		   this.st.mainClass = this.st.el.attr('data-effect');
+		   this.st.focus = '#request-input';
+	   },
+	   close: function() {
+		  if(typeof player !== 'undefined'){
+			  console.log('STOP STOP STOP')
+			  player.destroy();
+		  }
+		}
+	  },
+	  midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
 	});
 }
 //Settings change auth

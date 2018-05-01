@@ -3,7 +3,6 @@
  * Docs & License: https://fullcalendar.io/
  * (c) 2017 Adam Shaw
  */
-
 (function(factory) {
 	if (typeof define === 'function' && define.amd) {
 		define([ 'jquery', 'moment' ], factory);
@@ -6654,26 +6653,6 @@ DayGrid.mixin({
 		<div id="`+urlMeta+`" class="white-popup mfp-with-anim mfp-hide">
 	        <div class="col-md-8 col-md-offset-2 `+urlMeta+`-metadata-info"></div>
 	    </div>
-		<script>
-		$('.inline-popups').magnificPopup({
-	      removalDelay: 500, //delay removal by X to allow out-animation
-	      closeOnBgClick: true,
-	      //closeOnContentClick: true,
-	      callbacks: {
-	        beforeOpen: function() {
-	           this.st.mainClass = this.st.el.attr('data-effect');
-	           this.st.focus = '#request-input';
-	       },
-	       close: function() {
-	          if(typeof player !== 'undefined'){
-	              console.log('STOP STOP STOP')
-	              player.destroy();
-	          }
-	        }
-	      },
-	      midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
-	    });
-		</script>
 		`;
 		var detailsJSON = JSON.stringify(event.details);
 		classes.unshift('fc-day-grid-event', 'fc-h-event');
@@ -9937,7 +9916,7 @@ var Scroller = FC.Scroller = Class.extend({
 
 
 	renderEl: function() {
-		return (this.scrollEl = $('<div class="fc-scroller"></div>'));
+		return (this.scrollEl = $('<div style="ovnerflow:auto !important" class="fc-scroller" data-simplebar></div>'));
 	},
 
 
@@ -10968,7 +10947,6 @@ function Calendar_constructor(element, overrides) {
 			currentView = t.view =
 				viewsByType[viewType] ||
 				(viewsByType[viewType] = t.instantiateView(viewType));
-
 			currentView.setElement(
 				$("<div class='fc-view fc-" + viewType + "-view' />").appendTo(content)
 			);
@@ -11012,6 +10990,7 @@ function Calendar_constructor(element, overrides) {
 		}
 
 		ignoreWindowResize--;
+		inlineLoad();
 	}
 
 
@@ -14546,26 +14525,6 @@ var ListViewGrid = Grid.extend({
 		<div id="`+urlMeta+`" class="white-popup mfp-with-anim mfp-hide">
 	        <div class="col-md-8 col-md-offset-2 `+urlMeta+`-metadata-info"></div>
 	    </div>
-		<script>
-		$('.inline-popups').magnificPopup({
-	      removalDelay: 500, //delay removal by X to allow out-animation
-	      closeOnBgClick: true,
-	      //closeOnContentClick: true,
-	      callbacks: {
-	        beforeOpen: function() {
-	           this.st.mainClass = this.st.el.attr('data-effect');
-	           this.st.focus = '#request-input';
-	       },
-	       close: function() {
-	          if(typeof player !== 'undefined'){
-	              console.log('STOP STOP STOP')
-	              player.destroy();
-	          }
-	        }
-	      },
-	      midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
-	    });
-		</script>
 		`;
 		var detailsJSON = JSON.stringify(event.details);
 		classes.unshift('fc-day-grid-event', 'fc-h-event');

@@ -380,6 +380,10 @@ th.fc-list-header > .fc-list-heading-alt {
 	    white-space: nowrap;
 	    overflow: visible;
 	}
+	.fc-view-container .fc-view .fc-scroller {
+	    max-height: 212px !important;
+	    overflow: auto !important;
+	}
 }
 
 .loop-animation {
@@ -583,4 +587,7 @@ span.homepage-text {
 	#side-menu > li > a:focus {
 	  background: transparent;
 	}
+}
+.fc-view-container .fc-view .fc-scroller {
+    max-height: 212px !important;
 }
