@@ -589,5 +589,8 @@ span.homepage-text {
 	}
 }
 .fc-view-container .fc-view .fc-scroller {
-    max-height: 212px !important;
+    max-height: 191px !important;
+}
+.fc-view-container .fc-month-view .fc-scroller {
+    max-height: 100% !important;
 }

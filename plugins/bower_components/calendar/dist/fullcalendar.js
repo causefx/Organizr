@@ -9916,7 +9916,7 @@ var Scroller = FC.Scroller = Class.extend({
 
 
 	renderEl: function() {
-		return (this.scrollEl = $('<div style="ovnerflow:auto !important" class="fc-scroller" data-simplebar></div>'));
+		return (this.scrollEl = $('<div style="ovnerflow:auto !important" class="fc-scroller" data-simplebar data-simplebar-force-enabled="true" data-simplebar-autohide="false" ></div>'));
 	},
 
 
