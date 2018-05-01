@@ -1149,24 +1149,32 @@ function getCouchCalendar($array, $number)
         return $gotCalendar;
     }
 }
-function getSickrageCalendarWanted($array,$number)
+function getSickrageCalendarWanted($array, $number)
 {
     $array = json_decode($array, true);
     $gotCalendar = array();
     $i = 0;
-    foreach($array['data']['missed'] AS $child) {
+    foreach ($array['data']['missed'] as $child) {
         $i++;
         $seriesName = $child['show_name'];
         $seriesID = $child['tvdbid'];
         $episodeID = $child['tvdbid'];
         $episodeAirDate = $child['airdate'];
-        $episodeAirDateTime = explode(" ",$child['airs']);
+        $episodeAirDateTime = explode(" ", $child['airs']);
         $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
         $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
-        if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
+        if (new DateTime() < new DateTime($episodeAirDate)) {
+            $unaired = true;
+        }
         $downloaded = "0";
-        if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
+        if ($downloaded == "0" && isset($unaired)) {
+            $downloaded = "text-info";
+        } elseif ($downloaded == "1") {
+            $downloaded = "text-success";
+        } else {
+            $downloaded = "text-danger";
+        }
         $bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
 
         $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
@@ -1202,19 +1210,27 @@ function getSickrageCalendarWanted($array,$number)
             "details" => $details,
         ));
     }
-    foreach($array['data']['today'] AS $child) {
+    foreach ($array['data']['today'] as $child) {
         $i++;
         $seriesName = $child['show_name'];
         $seriesID = $child['tvdbid'];
         $episodeID = $child['tvdbid'];
         $episodeAirDate = $child['airdate'];
-        $episodeAirDateTime = explode(" ",$child['airs']);
+        $episodeAirDateTime = explode(" ", $child['airs']);
         $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
         $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
-        if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
+        if (new DateTime() < new DateTime($episodeAirDate)) {
+            $unaired = true;
+        }
         $downloaded = "0";
-        if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
+        if ($downloaded == "0" && isset($unaired)) {
+            $downloaded = "text-info";
+        } elseif ($downloaded == "1") {
+            $downloaded = "text-success";
+        } else {
+            $downloaded = "text-danger";
+        }
         $bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
 
         $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
@@ -1250,19 +1266,27 @@ function getSickrageCalendarWanted($array,$number)
             "details" => $details,
         ));
     }
-    foreach($array['data']['soon'] AS $child) {
+    foreach ($array['data']['soon'] as $child) {
         $i++;
         $seriesName = $child['show_name'];
         $seriesID = $child['tvdbid'];
         $episodeID = $child['tvdbid'];
         $episodeAirDate = $child['airdate'];
-        $episodeAirDateTime = explode(" ",$child['airs']);
+        $episodeAirDateTime = explode(" ", $child['airs']);
         $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
         $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
-        if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
+        if (new DateTime() < new DateTime($episodeAirDate)) {
+            $unaired = true;
+        }
         $downloaded = "0";
-        if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
+        if ($downloaded == "0" && isset($unaired)) {
+            $downloaded = "text-info";
+        } elseif ($downloaded == "1") {
+            $downloaded = "text-success";
+        } else {
+            $downloaded = "text-danger";
+        }
         $bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
 
         $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
@@ -1298,19 +1322,27 @@ function getSickrageCalendarWanted($array,$number)
             "details" => $details,
         ));
     }
-    foreach($array['data']['later'] AS $child) {
+    foreach ($array['data']['later'] as $child) {
         $i++;
         $seriesName = $child['show_name'];
         $seriesID = $child['tvdbid'];
         $episodeID = $child['tvdbid'];
         $episodeAirDate = $child['airdate'];
-        $episodeAirDateTime = explode(" ",$child['airs']);
+        $episodeAirDateTime = explode(" ", $child['airs']);
         $episodeAirDateTime = date("H:i:s", strtotime($episodeAirDateTime[1].$episodeAirDateTime[2]));
         $episodeAirDate = strtotime($episodeAirDate.$episodeAirDateTime);
         $episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
-        if (new DateTime() < new DateTime($episodeAirDate)) { $unaired = true; }
+        if (new DateTime() < new DateTime($episodeAirDate)) {
+            $unaired = true;
+        }
         $downloaded = "0";
-        if($downloaded == "0" && isset($unaired)){ $downloaded = "text-info"; }elseif($downloaded == "1"){ $downloaded = "text-success";}else{ $downloaded = "text-danger"; }
+        if ($downloaded == "0" && isset($unaired)) {
+            $downloaded = "text-info";
+        } elseif ($downloaded == "1") {
+            $downloaded = "text-success";
+        } else {
+            $downloaded = "text-danger";
+        }
         $bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
 
         $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
@@ -1346,14 +1378,16 @@ function getSickrageCalendarWanted($array,$number)
             "details" => $details,
         ));
     }
-    if ($i != 0){ return $gotCalendar; }
+    if ($i != 0) {
+        return $gotCalendar;
+    }
 }
-function getSickrageCalendarHistory($array,$number)
+function getSickrageCalendarHistory($array, $number)
 {
     $array = json_decode($array, true);
     $gotCalendar = array();
     $i = 0;
-    foreach($array['data'] AS $child) {
+    foreach ($array['data'] as $child) {
         $i++;
         $seriesName = $child['show_name'];
         $seriesID = $child['tvdbid'];
@@ -1395,7 +1429,9 @@ function getSickrageCalendarHistory($array,$number)
             "details" => $details,
         ));
     }
-    if ($i != 0){ return $gotCalendar; }
+    if ($i != 0) {
+        return $gotCalendar;
+    }
 }
 function ombiAPI($array)
 {

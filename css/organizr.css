@@ -570,3 +570,9 @@ span.homepage-text {
     color: #2cabe3;
     text-decoration: none;
 }
+@media (pointer: coarse) {
+	#side-menu > li > a:hover,
+	#side-menu > li > a:focus {
+	  background: transparent;
+	}
+}

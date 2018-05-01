@@ -2161,10 +2161,10 @@ function buildStreamItem(array,source){
 					<div class="el-card-avatar el-overlay-1 m-b-0">`+bg+`<img class="imageSource" style="width:`+width+`%;margin-left: auto;margin-right: auto;" src="`+v.nowPlayingImageURL+`">
 						<div class="el-overlay">
 							<ul class="el-info p-t-20 m-t-20">
-								<li><a class="btn default btn-outline inline-popups" href="#`+v.session+`" data-effect="mfp-zoom-out"><i class="mdi mdi-server-network mdi-24px"></i></a></li>
-								<li><a class="btn default btn-outline metadata-get" data-source="`+source+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`"><i class="mdi mdi-information mdi-24px"></i></a></li>
-								<li><a class="btn default btn-outline openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class=" mdi mdi-`+source+` mdi-24px"></i></a></li>
-								<li><a class="btn default btn-outline refreshImage" data-type="nowPlaying" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a></li>
+								<li><a class="btn b-none inline-popups" href="#`+v.session+`" data-effect="mfp-zoom-out"><i class="mdi mdi-server-network mdi-24px"></i></a></li>
+								<li><a class="btn b-none metadata-get" data-source="`+source+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`"><i class="mdi mdi-information mdi-24px"></i></a></li>
+								<li><a class="btn b-none openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class=" mdi mdi-`+source+` mdi-24px"></i></a></li>
+								<li><a class="btn b-none refreshImage" data-type="nowPlaying" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a></li>
 								<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
 							</ul>
 						</div>
@@ -2343,6 +2343,7 @@ function buildRequestItem(array, extra=null){
                 </div>`;
 				adminFunctions = (activeInfo.user.groupID <= 1) ? adminFunctions : '';
 				var user = (activeInfo.user.groupID <= 1) ? '<span lang="en">Requested By:</span> '+v.user : '';
+				var user2 = (activeInfo.user.groupID <= 1) ? '<br>'+v.user : '';
 				items += `
 				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
 					<div class="outside-request-div">
@@ -2350,7 +2351,7 @@ function buildRequestItem(array, extra=null){
 						<div class="inside-request-div `+badge+`"></div>
 					</div>
 					<div class="hover-homepage-item"></div>
-					<span class="elip recent-title">`+v.title+`</span>
+					<span class="elip recent-title">`+v.title+user2+`</span>
 					<div id="request-`+v.id+`" class="white-popup mfp-with-anim mfp-hide">
 						<div class="col-md-8 col-md-offset-2">
 							<div class="white-box m-b-0">
@@ -2581,6 +2582,7 @@ function buildRequest(array){
                         <div class="input-group-btn">
                             <button type="button" class="btn waves-effect waves-light btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span> <span class="caret"></span></button>
                             <ul class="dropdown-menu dropdown-menu-right">
+								<li><a onclick="requestList('org-mod', 'movie');" href="javascript:void(0)" lang="en">Organizr Mod Picks</a></li>
 								<li><a onclick="requestList('theatre-movie', 'movie');" href="javascript:void(0)" lang="en">In Theatres</a></li>
 								<li><a onclick="requestList('top-movie', 'movie');" href="javascript:void(0)" lang="en">Top Movies</a></li>
 								<li><a onclick="requestList('pop-movie', 'movie');" href="javascript:void(0)" lang="en">Popular Movies</a></li>
@@ -2600,17 +2602,18 @@ function buildRequest(array){
 	` : '';
 }
 function buildRequestResult(array,media_type=null,list=null,page=null,search=false){
-	//var result = (typeof array !== 'undefined') ? true : false;
+	var comments = (typeof array.comments !== 'undefined') ? true : false;
+	var comment = '';
 	var results = ``;
 	var buttons = ``;
 	var next = ``;
 	var tv = 0;
 	var movie = 0;
 	var total = 0;
-	if(array.length == 0){
+	if(array.results.length == 0){
 		return '<h2 class="text-center" lang="en">No Results</h2>';
 	}
-	$.each(array, function(i,v) {
+	$.each(array.results, function(i,v) {
 		media_type = (v.media_type) ? v.media_type : media_type;
 		if(media_type == 'tv' || media_type == 'movie'){
 			total = total + 1;
@@ -2619,12 +2622,18 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 			var bg = (v.poster_path !== null) ? `https://image.tmdb.org/t/p/w300/`+v.poster_path : 'plugins/images/cache/no-list.png';
 			var top = (v.title) ? v.title : (v.original_title) ? v.original_title : (v.original_name) ? v.original_name : '';
 			var bottom = (v.release_date) ? v.release_date : (v.first_air_date) ? v.first_air_date : '';
+			if(comments){
+				if(array.comments[media_type+':'+v.id] !== null){
+					comment = array.comments[media_type+':'+v.id];
+				}
+			}
 			results += `
 			<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 m-t-20 request-result-item request-result-`+media_type+`">
 	            <div class="white-box m-b-10">
 	                <div class="el-card-item p-b-0">
 	                    <div class="el-card-avatar el-overlay-1 m-b-5 preloader-`+v.id+`"> <img class="lazyload resultImages" data-src="`+bg+`">
 	                        <div class="el-overlay">
+								<span class="text-info p-5 font-normal">`+comment+`</span>
 	                            <ul class="el-info">
 	                                <li><a class="btn default btn-outline" href="javascript:void(0);" onclick="processRequest('`+v.id+`','`+media_type+`');"><i class="icon-link"></i>&nbsp; <span lang="en">Request</span></a></li>
 	                            </ul>
@@ -2639,7 +2648,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 	        </div>
 			`;
 		}
-
+		comment = '';
 	});
 	if(total == 20 && (list) && (page) && (search == false)){
 		page = ((page * 1) + 1);
@@ -2718,9 +2727,9 @@ function doneTyping () {
 	searchTerm = title;
 	$('#request-page').val(page);
 	requestSearch(title, page).success(function(data) {
-		$('#request-results').html(buildRequestResult(data.results,'',title,page,true));
+		$('#request-results').html(buildRequestResult(data,'',title,page,true));
 		$('.mfp-wrap').animate({
-			scrollTop: $("#request-results").offset().top
+			scrollTop:  '0'
 		}, 500);
 		ajaxloader();
 	}).fail(function(xhr) {
@@ -2731,9 +2740,14 @@ function doneTyping () {
 function requestList (list, type, page=1) {
 	ajaxloader('.search-div', 'in');
 	requestSearchList(list,page).success(function(data) {
-		$('#request-results').html(buildRequestResult(data.results, type, list, page));
+		if(typeof data.results !== 'undefined'){
+			var results = data.results;
+		}else if(typeof data.items !== 'undefined'){
+			var results = data.items;
+		}
+		$('#request-results').html(buildRequestResult(data, type, list, page));
 		$('.mfp-wrap').animate({
-			scrollTop: $("#request-results").offset().top
+			scrollTop: '0'
 		}, 500);
 		ajaxloader();
 	}).fail(function(xhr) {
@@ -3433,6 +3447,9 @@ function requestSearchList(list,page=1) {
 			break;
 		case 'today-tv':
 			url = 'https://api.themoviedb.org/3/tv/airing_today?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
+			break;
+		case 'org-mod':
+			url = 'https://api.themoviedb.org/4/list/64438?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
 			break;
 		default:
 

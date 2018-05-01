@@ -1468,7 +1468,7 @@ function getHomepageList()
 function buildHomepageSettings()
 {
     $homepageOrder = homepageOrder();
-    $homepageList = '<h4>Drag Homepage Items to Order Them</h4><div id="homepage-items" class="external-events">';
+    $homepageList = '<h4>Drag Homepage Items to Order Them</h4><div id="homepage-items-sort" class="external-events">';
     $inputList = '<form id="homepage-values" class="row">';
     foreach ($homepageOrder as $key => $val) {
         switch ($key) {
@@ -1558,28 +1558,13 @@ function buildHomepageSettings()
                 break;
         }
         $homepageList .= '
-		<div class="col-md-3 sort-homepage m-t-10 hvr-grow">
+		<div class="col-md-3 col-xs-12 sort-homepage m-t-10 hvr-grow">
 			<div class="homepage-drag fc-event '.$class.' lazyload"  data-src="'.$image.'">
 				<span class="ordinal-position text-uppercase badge bg-org homepage-number" data-link="'.$key.'" style="float:left;width: 30px;">'.$val.'</span>
 				<span class="homepage-text">&nbsp; '.strtoupper(substr($key, 13)).'</span>
 
 			</div>
 		</div>
-		<!--
-		<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 sort-homepage m-b-10">
-			<div class="white-box bg-org '.$class.'">
-				<div class="el-card-item p-0">
-					<div class="el-card-avatar el-overlay-1 m-0">
-						<img class="lazyload loaded" data-src="'.$image.'">
-					</div>
-					<div class="el-card-content">
-						<h3 class="box-title">'.strtoupper(substr($key, 13)).'</h3>
-						<small class="elip ordinal-position text-uppercase p-b-10" data-link="'.$key.'">'.$val.'</small>
-					</div>
-				</div>
-			</div>
-		</div>
-		-->
 		';
         $inputList .= '<input type="hidden" name="'.$key.'">';
     }
