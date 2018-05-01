@@ -2785,7 +2785,7 @@ function buildDownloaderItem(array, source, type='none'){
 					break;
 				case 'history':
 					if(array.history.slots.length == 0){
-						return '<tr><td class="max-texts" lang="en">Nothing in hitsory</td></tr>';
+						return '<tr><td class="max-texts" lang="en">Nothing in history</td></tr>';
 					}
 					$.each(array.history.slots, function(i,v) {
 						items += `

@@ -676,7 +676,7 @@ function getHomepageList()
                         'name' => 'embyTabName',
                         'label' => 'Emby Tab Name',
                         'value' => $GLOBALS['embyTabName'],
-                        'placeholder' => 'Only use if you have Plex in a reverse proxy'
+                        'placeholder' => 'Only use if you have Emby in a reverse proxy'
                     ),
                     array(
                         'type' => 'input',

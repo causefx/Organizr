@@ -133,6 +133,7 @@ function getOrganizrUserToken()
             "group"=>getGuest()['group'],
             "groupID"=>getGuest()['group_id'],
             "email"=>null,
+            //"groupImage"=>getGuest()['image'],
             "image"=>getGuest()['image'],
             "userID"=>null,
             "loggedin"=>false
