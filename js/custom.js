@@ -329,6 +329,14 @@ function pageLoad(){
     $('.simple-ajax-popup').magnificPopup({
         type: 'ajax'
     });
+
+    //limit height of calendar list view
+    $('.fc-scroller').slimScroll({
+        height: '400px',
+        position: 'right',
+        size: "5px",
+        color: '#dcdcdc'
+    });
 }
 /* ===== Sidebar ===== */
 

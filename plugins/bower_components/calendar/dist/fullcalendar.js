@@ -14508,7 +14508,7 @@ var ListViewGrid = Grid.extend({
 		var altFormat = view.opt('listDayAltFormat');
 
 		return '<tr class="fc-list-heading" data-date="' + dayDate.format('YYYY-MM-DD') + ' ">' +
-			'<td class="' + view.widgetHeaderClass + '" colspan="3">' +
+			'<th class="fc-list-header ' + view.widgetHeaderClass + '" colspan="3">' +
 				(mainFormat ?
 					view.buildGotoAnchorHtml(
 						dayDate,
@@ -14523,51 +14523,96 @@ var ListViewGrid = Grid.extend({
 						htmlEscape(dayDate.format(altFormat)) // inner HTML
 					) :
 					'') +
-			'</td>' +
+			'</th>' +
 		'</tr>';
 	},
 
 	// generates the HTML for a single event row
-	fgSegHtml: function(seg) {
+	fgSegHtml: function(seg, disableResizing) {
 		var view = this.view;
-		var classes = [ 'fc-list-item' ].concat(this.getSegCustomClasses(seg));
-		var bgColor = this.getSegBackgroundColor(seg);
 		var event = seg.event;
-		var url = event.url;
-		var timeHtml;
+		var isDraggable = view.isEventDraggable(event);
+		var isResizableFromStart = !disableResizing && event.allDay &&
+			seg.isStart && view.isEventResizableFromStart(event);
+		var isResizableFromEnd = !disableResizing && event.allDay &&
+			seg.isEnd && view.isEventResizableFromEnd(event);
+		var classes = this.getSegClasses(seg, isDraggable, isResizableFromStart || isResizableFromEnd);
+		var skinCss = cssToStr(this.getSegSkinCss(seg));
+		var timeHtml = '';
+		var timeText;
+		var titleHtml;
+		var urlMeta = event.id ? htmlEscape(event.id) : 'none';
+		var metadata = `
+		<div id="`+urlMeta+`" class="white-popup mfp-with-anim mfp-hide">
+	        <div class="col-md-8 col-md-offset-2 `+urlMeta+`-metadata-info"></div>
+	    </div>
+		<script>
+		$('.inline-popups').magnificPopup({
+	      removalDelay: 500, //delay removal by X to allow out-animation
+	      closeOnBgClick: true,
+	      //closeOnContentClick: true,
+	      callbacks: {
+	        beforeOpen: function() {
+	           this.st.mainClass = this.st.el.attr('data-effect');
+	           this.st.focus = '#request-input';
+	       },
+	       close: function() {
+	          if(typeof player !== 'undefined'){
+	              console.log('STOP STOP STOP')
+	              player.destroy();
+	          }
+	        }
+	      },
+	      midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
+	    });
+		</script>
+		`;
+		var detailsJSON = JSON.stringify(event.details);
+		classes.unshift('fc-day-grid-event', 'fc-h-event');
 
-		if (event.allDay) {
-			timeHtml = view.getAllDayHtml();
+		// Only display a timed events time if it is the starting segment
+		if (seg.isStart) {
+			timeText = this.getEventTimeText(event);
+			if (timeText) {
+				timeHtml = '<span class="fc-time '+(htmlEscape(event.imagetype || '') || '&nbsp;')+'">' + htmlEscape(timeText) + '</span><br/>';
+			}else{
+       			timeHtml = '<br/>';
+   			}
 		}
-		else if (view.isMultiDayEvent(event)) { // if the event appears to span more than one day
-			if (seg.isStart || seg.isEnd) { // outer segment that probably lasts part of the day
-				timeHtml = htmlEscape(this.getEventTimeText(seg));
-			}
-			else { // inner segment that lasts the whole day
-				timeHtml = view.getAllDayHtml();
-			}
-		}
-		else {
-			// Display the normal time text for the *event's* times
-			timeHtml = htmlEscape(this.getEventTimeText(event));
-		}
+		titleHtml =
+			'<span class="fc-title">' +
+				(htmlEscape(event.title || '') || '&nbsp;') + // we always want one line of height
+			'</span>';
+        imageHtml =
+			'<span class="fc-image"><i class="fa fa-' +
+				(htmlEscape(event.imagetype || '') || '&nbsp;') + // we always want one line of height
+			'"></i></span>';
 
-		if (url) {
-			classes.push('fc-has-url');
-		}
-
-		return '<div class="' + classes.join(' ') + '">' +
-			(this.displayEventTime ?
-				'<p class="fc-list-item-time ' + view.widgetContentClass + '">' +
-					(timeHtml || '') +
-				'</p>' :
-				'') +
-			'<p class="fc-list-item-title ' + view.widgetContentClass + '">' +
-				'<list' + (url ? ' href="' + htmlEscape(url) + '"' : '') + '>' +
-					htmlEscape(seg.event.title || '') +
-				'</list>' +
-			'</p>' +
-		'</div>';
+		return '<a class="inline-popups ' + classes.join(' ') + '"' +
+				(event.id ?
+					' data-effect="mfp-zoom-out" data-target="'+ htmlEscape(event.id) +'" data-details="'+htmlEscape(detailsJSON) +'" data-mfp-src="#' + htmlEscape(event.id) + '"' :
+					''
+					) +
+				(skinCss ?
+					' style="' + skinCss + '"' :
+					''
+					) +
+			'>' +
+				'<div class="fc-content">' +
+					(this.isRTL ?
+						titleHtml + ' ' + timeHtml : // put a natural space in between
+						imageHtml + ' ' + timeHtml + ' ' + titleHtml   //
+						) +
+				'</div>' +
+				(isResizableFromStart ?
+					'<div class="fc-resizer fc-start-resizer" />' :
+					''
+					) +
+				(isResizableFromEnd ?
+					'<div class="fc-resizer fc-end-resizer" />' :
+					''
+				) +metadata+
+			'</a>';
 	}
 
 });

@@ -345,6 +345,14 @@ td span.label.label-info {
     background: #2cabe3;
 }
 
+th.fc-list-header {
+  text-align: left;
+}
+
+th.fc-list-header > .fc-list-heading-alt {
+  margin-left: 10px;
+}
+
 .bg-calendar {
     background: transparent;
     color: inherit;
