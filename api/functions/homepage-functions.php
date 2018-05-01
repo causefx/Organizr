@@ -335,6 +335,10 @@ function getHomepageList()
         array(
             'name' => 'Week',
             'value' => 'basicWeek'
+        ),
+        array(
+            'name' => 'List',
+            'value' => 'list'
         )
     );
     $timeFormat = array(

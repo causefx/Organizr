@@ -23,22 +23,24 @@ $pageHomepage = '
         var y = date.getFullYear();
         var form = "";
         var today = new Date($.now());
+
         var $this = this;
         $this.$calendarObj = $this.$calendar.fullCalendar({
-            defaultView: (activeInfo.mobile) ? "basicDay" : "'.$GLOBALS['calendarDefault'].'",
+            defaultView: (activeInfo.mobile) ? "list" : "'.$GLOBALS['calendarDefault'].'",
             firstDay: "'.$GLOBALS['calendarFirstDay'].'",
             timeFormat: "'.$GLOBALS['calendarTimeFormat'].'",
             handleWindowResize: true,
             header: {
                left: "prev,next",
                center: "title",
-               right: (activeInfo.mobile) ? "" : "month,basicWeek,basicDay",
+               right: (activeInfo.mobile) ? "" : "month,basicWeek,basicDay,list",
             },
             views: {
                basicDay: { buttonText: window.lang.translate("Day"), eventLimit: '.$GLOBALS['calendarLimit'].' },
                basicWeek: { buttonText: window.lang.translate("Week"), eventLimit: '.$GLOBALS['calendarLimit'].' },
                month: { buttonText: window.lang.translate("Month"), eventLimit: '.$GLOBALS['calendarLimit'].' },
                today: { buttonText: window.lang.translate("Today") },
+               list: { buttonText: window.lang.translate("List"), duration: {months: 1} },
             },
             timezone: "local",
             editable: false,
@@ -46,18 +48,18 @@ $pageHomepage = '
             selectable: false,
             height: "auto",
             eventRender: function eventRender( event, element, view ) {
-            	if (typeof filter !== "undefined") {
-            		if(filter === "all"){
-            			return event.imagetype === event.imagetype;
-            		}else if(filter !== "all"){
-            			return filter === event.imagetype;
-            		}
-            		if(filter === null){
-            			return event.imagetype === event.imagetype;
-            		}
-            	}else {
-            		return event.imagetype === event.imagetype;
-            	}
+                if (typeof filter !== "undefined") {
+                    if(filter === "all"){
+                        return event.imagetype === event.imagetype;
+                    }else if(filter !== "all"){
+                        return filter === event.imagetype;
+                    }
+                    if(filter === null){
+                        return event.imagetype === event.imagetype;
+                    }
+                }else {
+                    return event.imagetype === event.imagetype;
+                }
             },
         });
     },
@@ -74,7 +76,7 @@ function($) {
     '.buildHomepage().'
 </div>
 <div id="open-youtube" class="white-popup mfp-with-anim mfp-hide">
-	<div class="col-md-8 col-md-offset-2 youtube-div">	</div>
+    <div class="col-md-8 col-md-offset-2 youtube-div">  </div>
 </div>
 <!-- /.container-fluid -->
 ';
