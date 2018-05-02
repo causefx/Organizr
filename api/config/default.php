@@ -20,6 +20,7 @@ return array(
 	'buttonTextColor' => '',
 	'buttonHoverColor' => '',
     'buttonTextHoverColor' => '',
+	'alternateHomepageHeaders' => false,
     'lockScreen' => false,
     'theme'=>'Organizr',
     'style'=>'dark',

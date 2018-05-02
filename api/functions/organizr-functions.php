@@ -13,6 +13,9 @@ function organizrSpecialSettings()
             ),
             'ombi' => array(
                 'enabled' => (qualifyRequest($GLOBALS['homepageOmbiAuth']) && $GLOBALS['homepageOmbiEnabled'] == true && $GLOBALS['ssoOmbi']) ? true : false,
+            ),
+            'options' => array(
+                'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
             )
         )
     );
@@ -542,6 +545,14 @@ function getCustomizeAppearance()
                     'name' => 'loginWallpaper',
                     'label' => 'Login Wallpaper',
                     'value' => $GLOBALS['loginWallpaper']
+                )
+            ),
+            'Options' => array(
+                array(
+                    'type' => 'switch',
+                    'name' => 'alternateHomepageHeaders',
+                    'label' => 'Alternate Homepage Titles',
+                    'value' => $GLOBALS['alternateHomepageHeaders']
                 )
             ),
             'Colors & Themes' => array(
