@@ -11,6 +11,7 @@ lang.init({
 	},
 	allowCookieOverride: true
 });
+var timeouts = {};
 // Start Organizr
 launch();
 /* NORMAL FUNCTIONS */
@@ -230,11 +231,13 @@ function swapDisplay(type){
 			$('.iFrame-listing').addClass('hidden').removeClass('show');
 			$('.internal-listing').addClass('show').removeClass('hidden');
 			$('.login-area').addClass('hidden').removeClass('show');
+			//$('body').removeClass('fix-header');
 			break;
 		case 'iframe':
 			$('.iFrame-listing').addClass('show').removeClass('hidden');
 			$('.internal-listing').addClass('hidden').removeClass('show');
 			$('.login-area').addClass('hidden').removeClass('show');
+			//$('body').addClass('fix-header');
 			break;
 		case 'login':
 			$('.iFrame-listing').addClass('hidden').removeClass('show');
@@ -3230,30 +3233,9 @@ function homepageDownloader(type, timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	switch (type) {
-		case 'sabnzbd':
-			if(typeof homepageDownloaderSabTimeout !== 'undefined'){ clearTimeout(homepageDownloaderSabTimeout); }
-			homepageDownloaderSabTimeout = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
-			break;
-		case 'nzbget':
-			if(typeof homepageDownloaderNzbgetTimeout !== 'undefined'){ clearTimeout(homepageDownloaderNzbgetTimeout); }
-			homepageDownloaderNzbgetTimeout = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
-			break;
-		case 'transmission':
-			if(typeof homepageDownloaderTransTimeout !== 'undefined'){ clearTimeout(homepageDownloaderTransTimeout); }
-			homepageDownloaderTransTimeout = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
-			break;
-		case 'qBittorrent':
-			if(typeof homepageDownloaderQbitTimeout !== 'undefined'){ clearTimeout(homepageDownloaderQbitTimeout); }
-			homepageDownloaderQbitTimeout = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
-			break;
-		case 'deluge':
-			if(typeof homepageDownloaderDelugeTimeout !== 'undefined'){ clearTimeout(homepageDownloaderDelugeTimeout); }
-			homepageDownloaderDelugeTimeout = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
-			break;
-		default:
-
-	}
+	var timeoutTitle = type+'-Downloader';
+	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+	timeouts[timeoutTitle] = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
 }
 function homepageStream(type, timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageStreamRefresh;
@@ -3274,18 +3256,9 @@ function homepageStream(type, timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	switch (type) {
-		case 'plex':
-			if(typeof homepageStreamPlexTimeout !== 'undefined'){ clearTimeout(homepageStreamPlexTimeout); }
-			homepageStreamPlexTimeout = setTimeout(function(){ homepageStream(type,timeout); }, timeout);
-			break;
-		case 'emby':
-			if(typeof homepageStreamEmbyTimeout !== 'undefined'){ clearTimeout(homepageStreamEmbyTimeout); }
-			homepageStreamEmbyTimeout = setTimeout(function(){ homepageStream(type,timeout); }, timeout);
-			break;
-		default:
-
-	}
+	var timeoutTitle = type+'-Stream';
+	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+	timeouts[timeoutTitle] = setTimeout(function(){ homepageStream(type,timeout); }, timeout);
 }
 function homepageRecent(type, timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageRecentRefresh;
@@ -3315,18 +3288,9 @@ function homepageRecent(type, timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	switch (type) {
-		case 'plex':
-			if(typeof homepageRecentPlexTimeout !== 'undefined'){ clearTimeout(homepageRecentPlexTimeout); }
-			homepageRecentPlexTimeout = setTimeout(function(){ homepageRecent(type,timeout); }, timeout);
-			break;
-		case 'emby':
-			if(typeof homepageRecentEmbyTimeout !== 'undefined'){ clearTimeout(homepageRecentEmbyTimeout); }
-			homepageRecentEmbyTimeout = setTimeout(function(){ homepageRecent(type,timeout); }, timeout);
-			break;
-		default:
-
-	}
+	var timeoutTitle = type+'-Recent';
+	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+	timeouts[timeoutTitle] = setTimeout(function(){ homepageRecent(type,timeout); }, timeout);
 }
 function homepagePlaylist(type, timeout=30000){
 	//if(isHidden()){ return; }
@@ -3372,8 +3336,8 @@ function homepageRequests(timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	if(typeof homepageRequestsTimeout !== 'undefined'){ clearTimeout(homepageRequestsTimeout); }
-	homepageRequestsTimeout = setTimeout(function(){ homepageRequests(timeout); }, timeout)
+	if(typeof timeouts['ombi'] !== 'undefined'){ clearTimeout(timeouts['ombi']); }
+	timeouts['ombi'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
 }
 function homepageCalendar(timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.calendarRefresh;
@@ -3386,8 +3350,17 @@ function homepageCalendar(timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	if(typeof homepageCalendarTimeout !== 'undefined'){ clearTimeout(homepageCalendarTimeout); }
-	homepageCalendarTimeout = setTimeout(function(){ homepageCalendar(timeout); }, timeout)
+	if(typeof timeouts['calendar'] !== 'undefined'){ clearTimeout(timeouts['calendar']); }
+	timeouts['calendar'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
+}
+function clearAJAX(id='all'){
+	if(id == 'all'){
+		$.each(timeouts, function(i,v) {
+			clearTimeout(timeouts[i]);
+		});
+	}else{
+		clearTimeout(timeouts[id]);
+	}
 }
 //Generate API
 function generateCode() {
