@@ -1973,6 +1973,49 @@ function loadAppearance(appearance){
 		    }
 		`;
 	}
+	if(appearance.accentColor !== ''){
+		cssSettings += `
+			.bg-info,
+			.fc-toolbar,
+			.progress-bar-info,
+			.label-info {
+			    background-color: `+appearance.accentColor+` !important;
+			}
+			.panel-blue .panel-heading, .panel-info .panel-heading {
+			    border-color: `+appearance.accentColor+`;
+			}
+
+			.text-info,
+			.btn-link, a {
+			    color: `+appearance.accentColor+`;
+			}
+		`;
+	}
+	if(appearance.accentTextColor !== ''){
+		cssSettings += `
+			.progress-bar,
+			.panel-default .panel-heading,
+			.mailbox-widget .customtab li.active a, .mailbox-widget .customtab li.active, .mailbox-widget .customtab li.active a:focus,
+			.mailbox-widget .customtab li a {
+				color: `+appearance.accentTextColor+`;
+			}
+		`;
+	}
+	if(appearance.buttonColor !== ''){
+		cssSettings += `
+			.btn-info, .btn-info.disabled {
+				background: `+appearance.buttonColor+` !important;
+				border: 1px solid `+appearance.buttonColor+` !important;
+			}
+		`;
+	}
+	if(appearance.buttonTextColor !== ''){
+		cssSettings += `
+			.btn-info, .btn-info.disabled {
+				color: `+appearance.buttonTextColor+` !important;
+			}
+		`;
+	}
 	if(appearance.loginWallpaper !== ''){
 		cssSettings += `
 		    .login-register {

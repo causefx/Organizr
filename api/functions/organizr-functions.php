@@ -502,6 +502,12 @@ function loadAppearance()
     $appearance['sidebarColor'] = $GLOBALS['sidebarColor'];
     $appearance['headerTextColor'] = $GLOBALS['headerTextColor'];
     $appearance['sidebarTextColor'] = $GLOBALS['sidebarTextColor'];
+    $appearance['accentColor'] = $GLOBALS['accentColor'];
+    $appearance['accentTextColor'] = $GLOBALS['accentTextColor'];
+    $appearance['buttonColor'] = $GLOBALS['buttonColor'];
+    $appearance['buttonTextColor'] = $GLOBALS['buttonTextColor'];
+    $appearance['buttonTextHoverColor'] = $GLOBALS['buttonTextHoverColor'];
+    $appearance['buttonHoverColor'] = $GLOBALS['buttonHoverColor'];
     $appearance['loginWallpaper'] = $GLOBALS['loginWallpaper'];
     $appearance['customCss'] = $GLOBALS['customCss'];
     return $appearance;
@@ -571,6 +577,54 @@ function getCustomizeAppearance()
                     'class' => 'colorpicker',
                     'disabled' => true
                 ),
+                array(
+                    'type' => 'input',
+                    'name' => 'accentColor',
+                    'label' => 'Accent Color',
+                    'value' => $GLOBALS['accentColor'],
+                    'class' => 'colorpicker',
+                    'disabled' => true
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'accentTextColor',
+                    'label' => 'Accent Text Color',
+                    'value' => $GLOBALS['accentTextColor'],
+                    'class' => 'colorpicker',
+                    'disabled' => true
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'buttonColor',
+                    'label' => 'Button Color',
+                    'value' => $GLOBALS['buttonColor'],
+                    'class' => 'colorpicker',
+                    'disabled' => true
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'buttonTextColor',
+                    'label' => 'Button Text Color',
+                    'value' => $GLOBALS['buttonTextColor'],
+                    'class' => 'colorpicker',
+                    'disabled' => true
+                ),/*
+                array(
+                    'type' => 'input',
+                    'name' => 'buttonHoverColor',
+                    'label' => 'Button Hover Color',
+                    'value' => $GLOBALS['buttonHoverColor'],
+                    'class' => 'colorpicker',
+                    'disabled' => true
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'buttonTextHoverColor',
+                    'label' => 'Button Hover Text Color',
+                    'value' => $GLOBALS['buttonTextHoverColor'],
+                    'class' => 'colorpicker',
+                    'disabled' => true
+                ),*/
                 array(
                     'type' => 'select',
                     'name' => 'theme',
