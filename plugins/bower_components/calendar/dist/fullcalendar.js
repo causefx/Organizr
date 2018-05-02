@@ -7147,6 +7147,7 @@ DayGrid.mixin({
 
 		this.segPopover = new Popover(options);
 		this.segPopover.show();
+		inlineLoad();
 
 		// the popover doesn't live within the grid's container element, and thus won't get the event
 		// delegated-handlers for free. attach event-related handlers to the popover.
