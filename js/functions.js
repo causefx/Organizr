@@ -2109,14 +2109,12 @@ function buildStreamItem(array,source){
 	var cards = '';
 	var count = 0;
 	var total = array.length;
-	var start = ['1','5','9','13','17','21'];
-	var end = ['4','8','12','16','20','24'];
 	$.each(array, function(i,v) {
 		var icon = '';
 		var width = 100;
 		var bg = '';
 		count++;
-		if(contains(''+count, start)){ cards += '<div class="row">'; };
+		cards += '<div class="flexbox">';
 		switch (v.type) {
 			case 'music':
 				icon = 'icon-music-tone-alt';
@@ -2155,7 +2153,7 @@ function buildStreamItem(array,source){
 		streamInfo += `<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-speaker"></i> Audio: `+userAudio+`</span></div>`;
 		v.session = v.session.replace(/[\W_]+/g,"-");
 		cards += `
-		<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 nowPlayingItem">
+		<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12 nowPlayingItem">
 			<div class="white-box">
 				<div class="el-card-item p-b-10">
 					<div class="el-card-avatar el-overlay-1 m-b-0">`+bg+`<img class="imageSource" style="width:`+width+`%;margin-left: auto;margin-right: auto;" src="`+v.nowPlayingImageURL+`">
@@ -2209,7 +2207,7 @@ function buildStreamItem(array,source){
 	        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
 	    </div>
 		`;
-		if(contains(''+count, end) || count == total ){ cards += '</div><!--end-->'; };
+		cards += '</div><!--end-->';
 
 	});
 	return cards;
