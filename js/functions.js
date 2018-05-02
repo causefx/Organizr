@@ -2109,12 +2109,12 @@ function buildStreamItem(array,source){
 	var cards = '';
 	var count = 0;
 	var total = array.length;
+	cards += '<div class="flexbox">';
 	$.each(array, function(i,v) {
 		var icon = '';
 		var width = 100;
 		var bg = '';
 		count++;
-		cards += '<div class="flexbox">';
 		switch (v.type) {
 			case 'music':
 				icon = 'icon-music-tone-alt';
@@ -2207,9 +2207,9 @@ function buildStreamItem(array,source){
 	        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
 	    </div>
 		`;
-		cards += '</div><!--end-->';
 
 	});
+	cards += '</div><!--end-->';
 	return cards;
 }
 function buildRecentItem(array, type, extra=null){
