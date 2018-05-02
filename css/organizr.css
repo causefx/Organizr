@@ -357,6 +357,10 @@ th.fc-list-header > .fc-list-heading-alt {
     color: inherit !important;
 }
 
+.fc-popover {
+    background-color: #1b1b1b
+}
+
 @media (max-width: 767px) {
     i.ti-close.visible-xs {
         display: inline !important;
@@ -589,7 +593,7 @@ span.homepage-text {
 	}
 }
 .fc-view-container .fc-view .fc-scroller {
-    max-height: 191px !important;
+    max-height: 215px !important;
 }
 .fc-view-container .fc-month-view .fc-scroller {
     max-height: 100% !important;
