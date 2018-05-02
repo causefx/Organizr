@@ -598,3 +598,10 @@ span.homepage-text {
 .fc-view-container .fc-month-view .fc-scroller {
     max-height: 100% !important;
 }
+.simplebar-content {
+    min-height: auto !important;
+    overflow-x: hidden !important;
+}
+.simplebar-scroll-content {
+    margin-bottom: 0px !important;
+}
