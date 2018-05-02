@@ -2396,7 +2396,7 @@ function buildStream(array, type){
 	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
 	return (streams) ? `
 	<div id="`+type+`Streams">
-		<div class="el-element-overlay">
+		<div class="el-element-overlay row">
 		    <div class="col-md-12">
 		        <h4 class="pull-left"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span>: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle">`+streams+`</span></h4>
 		        <hr>
