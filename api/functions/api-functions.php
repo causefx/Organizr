@@ -226,6 +226,7 @@ function updateDB($path, $filename, $oldVerNum = false)
                 }
             }
         }
+        updateConfig(array('configVersion'=>$GLOBALS['installedVersion']));
         return true;
     } catch (Dibi\Exception $e) {
         return $e;
@@ -714,20 +715,7 @@ function editTabs($array)
             } catch (Dibi\Exception $e) {
                 return false;
             }
-            break;
-        case 'deleteTab':
-            try {
-                $connect = new Dibi\Connection([
-                    'driver' => 'sqlite3',
-                    'database' => $GLOBALS['dbLocation'].$GLOBALS['dbName'],
-                ]);
-                $connect->query('DELETE FROM tabs WHERE id = ?', $array['data']['id']);
-                writeLog('success', 'Tab Editor Function -  Deleted Tab ['.$array['data']['name'].']', $GLOBALS['organizrUser']['username']);
-                return true;
-            } catch (Dibi\Exception $e) {
-                return false;
-            }
-            break;
+            break
         default:
             # code...
             break;
