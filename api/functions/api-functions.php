@@ -715,7 +715,7 @@ function editTabs($array)
             } catch (Dibi\Exception $e) {
                 return false;
             }
-            break
+            break;
         default:
             # code...
             break;
