@@ -20,12 +20,12 @@
 	<link href="plugins/bower_components/Magnific-Popup-master/dist/magnific-popup.css" rel="stylesheet">
 	<link href="plugins/bower_components/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
 	<link href="plugins/bower_components/switchery/dist/switchery.min.css" rel="stylesheet" />
-	<link href="plugins/bower_components/jquery-asColorPicker-master/css/asColorPicker.css" rel="stylesheet">
 	<link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/css-chart/css-chart.css" rel="stylesheet">
 	<link href="plugins/bower_components/calendar/dist/fullcalendar.css" rel="stylesheet" />
 	<link rel="stylesheet" href="https://cdn.plyr.io/3.1.0/plyr.css">
 	<link href="plugins/bower_components/custom-select/custom-select.css" rel="stylesheet" type="text/css" />
+	<link href="plugins/bower_components/bootstrap-colorpicker-sliders/bootstrap.colorpickersliders.min.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/bootstrap-select/bootstrap-select.min.css" rel="stylesheet" />
 	<link href="plugins/bower_components/multiselect/css/multi-select.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/owl.carousel/owl.carousel.min.css" rel="stylesheet" type="text/css" />
@@ -137,8 +137,8 @@
 	<script src="js/jquery.serializeToJSON.js"></script>
 	<script src="js/lazyload.min2.js"></script>
 	<script src="js/clipboard.js"></script>
-	<script src="js/jsColorPicker.min.js"></script>
-	<script src="js/jsColor.js"></script>
+<!--	<script src="js/jsColorPicker.min.js"></script>
+	<script src="js/jsColor.js"></script>-->
 	<script src="js/emulatetab.joelpurra.js"></script>
 	<script src="plugins/bower_components/ace/ace.js"></script>
 	<script src="plugins/bower_components/ace/mode-css.js"></script>
@@ -150,8 +150,8 @@
 	<script src="plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min.js"></script>
 	<script src="plugins/bower_components/sweetalert/sweetalert.min.js"></script>
 	<script src="plugins/bower_components/switchery/dist/switchery.min.js"></script>
-	<script src="plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
-	<script src="plugins/bower_components/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/0.11.1/tinycolor.min.js"></script>
+	<script src="plugins/bower_components/bootstrap-colorpicker-sliders/bootstrap.colorpickersliders.min.js"></script>
 	<script src="plugins/bower_components/dropzone-master/dist/dropzone.js"></script>
 	<script src="plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>
 	<script src="plugins/bower_components/calendar/dist/fullcalendar.js"></script>

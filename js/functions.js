@@ -871,13 +871,6 @@ function buildCustomizeAppearance(){
 	organizrAPI('GET','api/?v1/customize/appearance').success(function(data) {
 		var response = JSON.parse(data);
 		$('#customize-appearance-form').html(buildFormGroup(response.data));
-		$(".colorpicker").asColorPicker({
-	        mode: 'complex',
-	        color: {
-	            format: false,
-	            alphaConvert: false
-	        }
-	    });
 		cssEditor = ace.edit("customCSSEditor");
 		var CssMode = ace.require("ace/mode/css").Mode;
 		cssEditor.session.setMode(new CssMode());
@@ -890,13 +883,19 @@ function buildCustomizeAppearance(){
 				$('.saveCss').removeClass('hidden');
 			}
 		});
-		var colors = jsColorPicker('input.pick-a-color', {
+		/*var colors = jsColorPicker('input.pick-a-color', {
 			customBG: '#222',
 			readOnly: false,
 			init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
 				elm.style.backgroundColor = elm.value;
 				elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
 			}
+		});*/
+		$("input.pick-a-color").ColorPickerSliders({
+			placement: 'bottom',
+			color: '#987654',
+			hsvpanel: true,
+			previewformat: 'hex',
 		});
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");

@@ -555,6 +555,22 @@ function getCustomizeAppearance()
                     'value' => $GLOBALS['alternateHomepageHeaders']
                 )
             ),
+            'custom' => '
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <span lang="en">Notice</span>
+                        </div>
+                        <div class="panel-wrapper collapse in" aria-expanded="true">
+                            <div class="panel-body">
+                                <span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ',
             'Colors & Themes' => array(
                 array(
                     'type' => 'input',
