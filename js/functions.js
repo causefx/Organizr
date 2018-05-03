@@ -890,6 +890,14 @@ function buildCustomizeAppearance(){
 				$('.saveCss').removeClass('hidden');
 			}
 		});
+		var colors = jsColorPicker('input.pick-a-color', {
+			customBG: '#222',
+			readOnly: false,
+			init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
+				elm.style.backgroundColor = elm.value;
+				elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
+			}
+		});
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
@@ -1973,6 +1981,49 @@ function loadAppearance(appearance){
 		    }
 		`;
 	}
+	if(appearance.accentColor !== ''){
+		cssSettings += `
+			.bg-info,
+			.fc-toolbar,
+			.progress-bar-info,
+			.label-info {
+			    background-color: `+appearance.accentColor+` !important;
+			}
+			.panel-blue .panel-heading, .panel-info .panel-heading {
+			    border-color: `+appearance.accentColor+`;
+			}
+
+			.text-info,
+			.btn-link, a {
+			    color: `+appearance.accentColor+`;
+			}
+		`;
+	}
+	if(appearance.accentTextColor !== ''){
+		cssSettings += `
+			.progress-bar,
+			.panel-default .panel-heading,
+			.mailbox-widget .customtab li.active a, .mailbox-widget .customtab li.active, .mailbox-widget .customtab li.active a:focus,
+			.mailbox-widget .customtab li a {
+				color: `+appearance.accentTextColor+`;
+			}
+		`;
+	}
+	if(appearance.buttonColor !== ''){
+		cssSettings += `
+			.btn-info, .btn-info.disabled {
+				background: `+appearance.buttonColor+` !important;
+				border: 1px solid `+appearance.buttonColor+` !important;
+			}
+		`;
+	}
+	if(appearance.buttonTextColor !== ''){
+		cssSettings += `
+			.btn-info, .btn-info.disabled {
+				color: `+appearance.buttonTextColor+` !important;
+			}
+		`;
+	}
 	if(appearance.loginWallpaper !== ''){
 		cssSettings += `
 		    .login-register {
@@ -2417,28 +2468,46 @@ function buildRecent(array, type){
 	var video = (recent) ? (array.content.filter(p => p.type == "video").length > 0 ? true : false) : false;
 	var music = (recent) ? (array.content.filter(p => p.type == "music").length > 0 ? true : false) : false;
 	var dropdown = '';
+	var header = '';
+	var headerAlt = '';
 	dropdown += (recent && movie) ? `<li><a data-filter="recent-movie" server-filter="`+type+`" href="javascript:void(0);">Movies</a></li>` : '';
 	dropdown += (recent && tv) ? `<li><a data-filter="recent-tv" server-filter="`+type+`" href="javascript:void(0);">Shows</a></li>` : '';
 	dropdown += (recent && video) ? `<li><a data-filter="recent-video" server-filter="`+type+`" href="javascript:void(0);">Videos</a></li>` : '';
 	//dropdown += (recent && music) ? `<li><a data-filter="recent-music" server-filter="`+type+`" href="javascript:void(0);">Music</a></li>` : '';
+	var dropdownMenu = `
+	<div class="btn-group pull-right">
+		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
+			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
+		</button>
+		<ul role="menu" class="dropdown-menu recent-filter">
+			<li><a data-filter="all" server-filter="`+type+`" href="javascript:void(0);">All</a></li>
+			<li class="divider"></li>
+			`+dropdown+`
+		</ul>
+	</div>`;
+	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
+		var headerAlt = `
+		<div class="col-md-12">
+			<h4 class="pull-left"><span lang="en">Recently Added</span></h4>
+			`+dropdownMenu+`
+			<hr>
+		</div>
+		`;
+	}else{
+		var header = `
+		<div class="panel-heading bg-info p-t-10 p-b-10">
+			<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span lang="en">Recently Added</span></span>
+			`+dropdownMenu+`
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
 	return (recent) ? `
 	<div id="`+type+`Recent" class="row">
+		`+headerAlt+`
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading bg-info p-t-10 p-b-10">
-					<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span lang="en">Recently Added</span></span>
-					<div class="btn-group pull-right">
-	                    <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
-							<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
-						</button>
-	                    <ul role="menu" class="dropdown-menu recent-filter">
-	                        <li><a data-filter="all" server-filter="`+type+`" href="javascript:void(0);">All</a></li>
-							<li class="divider"></li>
-							`+dropdown+`
-	                    </ul>
-	                </div>
-					<div class="clearfix"></div>
-				</div>
+				`+header+`
                 <div class="panel-wrapper p-b-0 collapse in">
 					<div class="`+type+`-recent-hidden hidden"></div>
                     <div class="owl-carousel owl-theme recent-items `+type+`-recent">
@@ -2467,6 +2536,8 @@ function buildPlaylist(array, type){
 	var hidden = '';
 	var count = 0;
 	var items = '';
+	var header = '';
+	var headerAlt = '';
 	if(playlist){
 		$.each(array.content, function(i,v) {
 			v.title = cleanPlaylistTitle(v.title);
@@ -2491,17 +2562,33 @@ function buildPlaylist(array, type){
 		</ul>
 		`;
 	}
+	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
+		var headerAlt = `
+		<div class="col-md-12">
+			<h4 class="pull-left"><span class="`+type+`-playlistTitle">`+first+`</span></h4>
+			<div class="btn-group pull-right">
+				`+builtDropdown+`
+			</div>
+			<hr>
+		</div>
+		`;
+	}else{
+		var header = `
+		<div class="panel-heading bg-info p-t-10 p-b-10">
+			<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span class="`+type+`-playlistTitle">`+first+`</span></span>
+			<div class="btn-group pull-right">
+					`+builtDropdown+`
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
 	return (playlist) ? `
 	<div id="`+type+`Playlist" class="row">
+		`+headerAlt+`
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading bg-info p-t-10 p-b-10">
-					<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span class="`+type+`-playlistTitle">`+first+`</span></span>
-					<div class="btn-group pull-right">
-							`+builtDropdown+`
-	                </div>
-					<div class="clearfix"></div>
-				</div>
+                `+header+`
                 <div class="panel-wrapper p-b-0 collapse in">
                     `+items+`
                 </div>
@@ -2513,6 +2600,8 @@ function buildPlaylist(array, type){
 function buildRequest(array){
 	var requests = (typeof array.content !== 'undefined') ? true : false;
 	var dropdown = '';
+	var headerAlt = '';
+	var header = '';
 	var ombiButton = (activeInfo.settings.homepage.ombi.enabled == true) ? `<button href="#new-request" id="newRequestButton" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-plus m-l-5"></i></button>` : '';
 	if(requests){
 		var builtDropdown = `
@@ -2553,17 +2642,33 @@ function buildRequest(array){
 
 		`;
 	}
+	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
+		var headerAlt = `
+		<div class="col-md-12">
+			<h4 class="pull-left"><span lang="en">Requested Content</span></h4>
+			<div class="btn-group pull-right">
+				`+builtDropdown+`
+			</div>
+			<hr>
+		</div>
+		`;
+	}else{
+		var header = `
+		<div class="panel-heading bg-info p-t-10 p-b-10">
+			<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; Requested Content</span>
+			<div class="btn-group pull-right">
+					`+builtDropdown+`
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
 	return (requests) ? `
 	<div id="ombi-requests" class="row">
+		`+headerAlt+`
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading bg-info p-t-10 p-b-10">
-					<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; Requested Content</span>
-					<div class="btn-group pull-right">
-							`+builtDropdown+`
-	                </div>
-					<div class="clearfix"></div>
-				</div>
+				`+header+`
                 <div class="panel-wrapper p-b-0 collapse in">
 				<div class="owl-carousel owl-theme request-items">
 					`+buildRequestItem(array.content)+`
@@ -3029,6 +3134,8 @@ function buildDownloader(array, source){
 	var downloader = (queueItems || historyItems) ? true : false;
 	var state = '';
 	var active = '';
+	var headerAlt = '';
+	var header = '';
 	//console.log(array);
 	//console.log(queueItems);
 	//console.log(historyItems);
@@ -3076,14 +3183,28 @@ function buildDownloader(array, source){
 		`;
 	}
 	menu += '</ul>';
+	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
+		var headerAlt = `
+		<div class="col-md-12">
+			<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle `+active+`" data-src="plugins/images/tabs/`+source+`.png">  &nbsp; `+state+`</h2>
+			`+menu+`
+			<hr>
+		</div>
+		`;
+	}else{
+		var header = `
+		<div class="white-box bg-info m-b-0 p-b-0 p-t-10 mailbox-widget">
+			<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle `+active+`" data-src="plugins/images/tabs/`+source+`.png">  &nbsp; `+state+`</h2>
+			`+menu+`
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
 	return downloader ? `
 	<div class="row">
+		`+headerAlt+`
 		<div class="col-lg-12">
-	        <div class="white-box bg-info m-b-0 p-b-0 p-t-10 mailbox-widget">
-				<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle `+active+`" data-src="plugins/images/tabs/`+source+`.png">  &nbsp; `+state+`</h2>
-	            `+menu+`
-				<div class="clearfix"></div>
-	        </div>
+	        `+header+`
 	        <div class="white-box p-0">
 	            <div class="tab-content m-t-0">`+listing+`</div>
 	        </div>

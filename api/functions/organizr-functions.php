@@ -13,6 +13,9 @@ function organizrSpecialSettings()
             ),
             'ombi' => array(
                 'enabled' => (qualifyRequest($GLOBALS['homepageOmbiAuth']) && $GLOBALS['homepageOmbiEnabled'] == true && $GLOBALS['ssoOmbi']) ? true : false,
+            ),
+            'options' => array(
+                'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
             )
         )
     );
@@ -502,6 +505,12 @@ function loadAppearance()
     $appearance['sidebarColor'] = $GLOBALS['sidebarColor'];
     $appearance['headerTextColor'] = $GLOBALS['headerTextColor'];
     $appearance['sidebarTextColor'] = $GLOBALS['sidebarTextColor'];
+    $appearance['accentColor'] = $GLOBALS['accentColor'];
+    $appearance['accentTextColor'] = $GLOBALS['accentTextColor'];
+    $appearance['buttonColor'] = $GLOBALS['buttonColor'];
+    $appearance['buttonTextColor'] = $GLOBALS['buttonTextColor'];
+    $appearance['buttonTextHoverColor'] = $GLOBALS['buttonTextHoverColor'];
+    $appearance['buttonHoverColor'] = $GLOBALS['buttonHoverColor'];
     $appearance['loginWallpaper'] = $GLOBALS['loginWallpaper'];
     $appearance['customCss'] = $GLOBALS['customCss'];
     return $appearance;
@@ -538,39 +547,95 @@ function getCustomizeAppearance()
                     'value' => $GLOBALS['loginWallpaper']
                 )
             ),
+            'Options' => array(
+                array(
+                    'type' => 'switch',
+                    'name' => 'alternateHomepageHeaders',
+                    'label' => 'Alternate Homepage Titles',
+                    'value' => $GLOBALS['alternateHomepageHeaders']
+                )
+            ),
             'Colors & Themes' => array(
                 array(
                     'type' => 'input',
                     'name' => 'headerColor',
                     'label' => 'Nav Bar Color',
                     'value' => $GLOBALS['headerColor'],
-                    'class' => 'colorpicker',
-                    'disabled' => true
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['headerColor'].'"'
                 ),
                 array(
                     'type' => 'input',
                     'name' => 'headerTextColor',
                     'label' => 'Nav Bar Text Color',
                     'value' => $GLOBALS['headerTextColor'],
-                    'class' => 'colorpicker',
-                    'disabled' => true
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['headerTextColor'].'"'
                 ),
                 array(
                     'type' => 'input',
                     'name' => 'sidebarColor',
                     'label' => 'Side Bar Color',
                     'value' => $GLOBALS['sidebarColor'],
-                    'class' => 'colorpicker',
-                    'disabled' => true
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['sidebarColor'].'"'
                 ),
                 array(
                     'type' => 'input',
                     'name' => 'sidebarTextColor',
                     'label' => 'Side Bar Text Color',
                     'value' => $GLOBALS['sidebarTextColor'],
-                    'class' => 'colorpicker',
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['sidebarTextColor'].'"'
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'accentColor',
+                    'label' => 'Accent Color',
+                    'value' => $GLOBALS['accentColor'],
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['accentColor'].'"'
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'accentTextColor',
+                    'label' => 'Accent Text Color',
+                    'value' => $GLOBALS['accentTextColor'],
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['accentTextColor'].'"'
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'buttonColor',
+                    'label' => 'Button Color',
+                    'value' => $GLOBALS['buttonColor'],
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['buttonColor'].'"'
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'buttonTextColor',
+                    'label' => 'Button Text Color',
+                    'value' => $GLOBALS['buttonTextColor'],
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['buttonTextColor'].'"'
+                ),/*
+                array(
+                    'type' => 'input',
+                    'name' => 'buttonHoverColor',
+                    'label' => 'Button Hover Color',
+                    'value' => $GLOBALS['buttonHoverColor'],
+                    'class' => 'pick-a-color',
                     'disabled' => true
                 ),
+                array(
+                    'type' => 'input',
+                    'name' => 'buttonTextHoverColor',
+                    'label' => 'Button Hover Text Color',
+                    'value' => $GLOBALS['buttonTextHoverColor'],
+                    'class' => 'pick-a-color',
+                    'disabled' => true
+                ),*/
                 array(
                     'type' => 'select',
                     'name' => 'theme',
