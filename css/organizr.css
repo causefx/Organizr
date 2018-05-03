@@ -595,8 +595,15 @@ span.homepage-text {
 .fc-view-container .fc-view .fc-scroller {
     max-height: 215px !important;
 }
-.fc-view-container .fc-month-view .fc-scroller {
-    max-height: 100% !important;
+.fc-view-container .fc-month-view .fc-scroller,
+.fc-view-container .fc-basicWeek-view .fc-scroller {
+	max-height: 100% !important;
+    height: 100% !important;
+}
+.fc-scroller .simplebar-content {
+    min-height: auto !important;
+    overflow-x: hidden !important;
+	padding-bottom: 0px !important;
 }
 .simplebar-content {
     min-height: auto !important;

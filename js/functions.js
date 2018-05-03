@@ -2450,7 +2450,7 @@ function buildStream(array, type){
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
 		        <h4 class="pull-left"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span>: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle">`+streams+`</span></h4>
-		        <hr>
+		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
 		    <!-- .cards -->
@@ -2490,7 +2490,7 @@ function buildRecent(array, type){
 		<div class="col-md-12">
 			<h4 class="pull-left"><span lang="en">Recently Added</span></h4>
 			`+dropdownMenu+`
-			<hr><div class="clearfix"></div>
+			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
 		`;
 	}else{
@@ -2569,7 +2569,7 @@ function buildPlaylist(array, type){
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
-			<hr><div class="clearfix"></div>
+			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
 		`;
 	}else{
@@ -2649,7 +2649,7 @@ function buildRequest(array){
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
-			<hr><div class="clearfix"></div>
+			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
 		`;
 	}else{
@@ -3188,7 +3188,7 @@ function buildDownloader(array, source){
 		<div class="col-md-12">
 			<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle `+active+`" data-src="plugins/images/tabs/`+source+`.png">  &nbsp; `+state+`</h2>
 			`+menu+`
-			<hr><div class="clearfix"></div>
+			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
 		`;
 	}else{
