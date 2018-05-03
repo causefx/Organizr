@@ -2490,7 +2490,7 @@ function buildRecent(array, type){
 		<div class="col-md-12">
 			<h4 class="pull-left"><span lang="en">Recently Added</span></h4>
 			`+dropdownMenu+`
-			<hr>
+			<hr><div class="clearfix"></div>
 		</div>
 		`;
 	}else{
@@ -2569,7 +2569,7 @@ function buildPlaylist(array, type){
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
-			<hr>
+			<hr><div class="clearfix"></div>
 		</div>
 		`;
 	}else{
@@ -2602,7 +2602,7 @@ function buildRequest(array){
 	var dropdown = '';
 	var headerAlt = '';
 	var header = '';
-	var ombiButton = (activeInfo.settings.homepage.ombi.enabled == true) ? `<button href="#new-request" id="newRequestButton" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-plus m-l-5"></i></button>` : '';
+	var ombiButton = (activeInfo.settings.homepage.ombi.enabled == true) ? `<button href="#new-request" id="newRequestButton" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-search m-l-5"></i></button>` : '';
 	if(requests){
 		var builtDropdown = `
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
@@ -2649,7 +2649,7 @@ function buildRequest(array){
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
-			<hr>
+			<hr><div class="clearfix"></div>
 		</div>
 		`;
 	}else{
@@ -3188,7 +3188,7 @@ function buildDownloader(array, source){
 		<div class="col-md-12">
 			<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle `+active+`" data-src="plugins/images/tabs/`+source+`.png">  &nbsp; `+state+`</h2>
 			`+menu+`
-			<hr>
+			<hr><div class="clearfix"></div>
 		</div>
 		`;
 	}else{
