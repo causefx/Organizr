@@ -1,5 +1,5 @@
 # PhpStorm Files
-.idea\*
+.idea/*
 
 # Windows image file caches
 Thumbs.db
