@@ -960,6 +960,8 @@ $(document).on('focusout', 'input.pick-a-color', function(e) {
     if((original !== newValue) && (newValue !== '#987654') && newValue !== ''){
         $(this).change();
         $(this).attr('data-original', newValue);
+    }else if(newValue == ''){
+        $(this).attr('style','');
     }
 });
 $(document).on('change colorPicker::close', '#customize-appearance-form :input', function(e) {
