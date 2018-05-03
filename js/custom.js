@@ -953,7 +953,16 @@ $(document).on("click", ".savecustomHTMLoneTextarea", function () {
 $(document).on("click", ".savecustomHTMLtwoTextarea", function () {
     $('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue()).trigger('change');
 });
-$(document).on('change asColorPicker::close', '#customize-appearance-form :input', function(e) {
+
+$(document).on('focusout', 'input.pick-a-color', function(e) {
+    var original = $(this).attr('data-original');
+    var newValue = $(this).val();
+    if((original !== newValue) && (newValue !== '#987654') && newValue !== ''){
+        $(this).change();
+        $(this).attr('data-original', newValue);
+    }
+});
+$(document).on('change colorPicker::close', '#customize-appearance-form :input', function(e) {
     $(this).attr('data-changed', true);
     switch ($(this).attr('type')) {
         case 'switch':
@@ -982,6 +991,15 @@ $(document).on('change asColorPicker::close', '#customize-appearance-form :input
     if($(this).hasClass('styleChanger')){
         changeStyle(value);
     }
+    //disable button then renable
+    $('#customize-appearance-form:input').prop('disabled', 'true');
+    setTimeout(
+        function(){
+            $('#customize-appearance-form :input').prop('disabled', null);
+            //input.emulateTab();
+        },
+        2000
+    );
 
 });
 //DELETE IMAGE

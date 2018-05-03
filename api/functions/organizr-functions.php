@@ -561,71 +561,71 @@ function getCustomizeAppearance()
                     'name' => 'headerColor',
                     'label' => 'Nav Bar Color',
                     'value' => $GLOBALS['headerColor'],
-                    'class' => 'colorpicker',
-                    'disabled' => true
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['headerColor'].'"'
                 ),
                 array(
                     'type' => 'input',
                     'name' => 'headerTextColor',
                     'label' => 'Nav Bar Text Color',
                     'value' => $GLOBALS['headerTextColor'],
-                    'class' => 'colorpicker',
-                    'disabled' => true
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['headerTextColor'].'"'
                 ),
                 array(
                     'type' => 'input',
                     'name' => 'sidebarColor',
                     'label' => 'Side Bar Color',
                     'value' => $GLOBALS['sidebarColor'],
-                    'class' => 'colorpicker',
-                    'disabled' => true
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['sidebarColor'].'"'
                 ),
                 array(
                     'type' => 'input',
                     'name' => 'sidebarTextColor',
                     'label' => 'Side Bar Text Color',
                     'value' => $GLOBALS['sidebarTextColor'],
-                    'class' => 'colorpicker',
-                    'disabled' => true
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['sidebarTextColor'].'"'
                 ),
                 array(
                     'type' => 'input',
                     'name' => 'accentColor',
                     'label' => 'Accent Color',
                     'value' => $GLOBALS['accentColor'],
-                    'class' => 'colorpicker',
-                    'disabled' => true
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['accentColor'].'"'
                 ),
                 array(
                     'type' => 'input',
                     'name' => 'accentTextColor',
                     'label' => 'Accent Text Color',
                     'value' => $GLOBALS['accentTextColor'],
-                    'class' => 'colorpicker',
-                    'disabled' => true
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['accentTextColor'].'"'
                 ),
                 array(
                     'type' => 'input',
                     'name' => 'buttonColor',
                     'label' => 'Button Color',
                     'value' => $GLOBALS['buttonColor'],
-                    'class' => 'colorpicker',
-                    'disabled' => true
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['buttonColor'].'"'
                 ),
                 array(
                     'type' => 'input',
                     'name' => 'buttonTextColor',
                     'label' => 'Button Text Color',
                     'value' => $GLOBALS['buttonTextColor'],
-                    'class' => 'colorpicker',
-                    'disabled' => true
+                    'class' => 'pick-a-color',
+                    'attr' => 'data-original="'.$GLOBALS['buttonTextColor'].'"'
                 ),/*
                 array(
                     'type' => 'input',
                     'name' => 'buttonHoverColor',
                     'label' => 'Button Hover Color',
                     'value' => $GLOBALS['buttonHoverColor'],
-                    'class' => 'colorpicker',
+                    'class' => 'pick-a-color',
                     'disabled' => true
                 ),
                 array(
@@ -633,7 +633,7 @@ function getCustomizeAppearance()
                     'name' => 'buttonTextHoverColor',
                     'label' => 'Button Hover Text Color',
                     'value' => $GLOBALS['buttonTextHoverColor'],
-                    'class' => 'colorpicker',
+                    'class' => 'pick-a-color',
                     'disabled' => true
                 ),*/
                 array(
