@@ -600,7 +600,7 @@ span.homepage-text {
 }
 .simplebar-content {
     min-height: auto !important;
-    overflow-x: hidden !important;
+    overflow-x: auto !important;
 }
 .simplebar-scroll-content {
     margin-bottom: 0px !important;
