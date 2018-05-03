@@ -13,6 +13,8 @@ configLazy();
 if (isset($GLOBALS['dbLocation'])) {
     $GLOBALS['organizrLog'] = $GLOBALS['dbLocation'].'organizrLog.json';
     $GLOBALS['organizrLoginLog'] = $GLOBALS['dbLocation'].'organizrLoginLog.json';
+    //Upgrade Check
+    upgradeCheck();
 }
 // Validate Token if set and set guest if not - sets GLOBALS
 getOrganizrUserToken();

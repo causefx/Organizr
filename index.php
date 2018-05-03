@@ -137,8 +137,6 @@
 	<script src="js/jquery.serializeToJSON.js"></script>
 	<script src="js/lazyload.min2.js"></script>
 	<script src="js/clipboard.js"></script>
-<!--	<script src="js/jsColorPicker.min.js"></script>
-	<script src="js/jsColor.js"></script>-->
 	<script src="js/emulatetab.joelpurra.js"></script>
 	<script src="plugins/bower_components/ace/ace.js"></script>
 	<script src="plugins/bower_components/ace/mode-css.js"></script>

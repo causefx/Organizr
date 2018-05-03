@@ -50,6 +50,7 @@ Temporary Items
 php_errors.log
 # Backup Files
 .pydio_id
+.idea/*
 # =========================
 # Organizr files
 # =========================
