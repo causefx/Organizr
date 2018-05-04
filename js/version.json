@@ -68,5 +68,12 @@
         "new": "",
         "fixed": "Plex Now Playing bug not showing items|Invite menu not loaded on initial load",
         "notes": "Beta coming soon"
+    },
+    "2.0.0-beta.100": {
+        "date":"2018-05-04 19:00",
+        "title": "First Beta Release",
+        "new": "SpeedTest|Email templates",
+        "fixed": "",
+        "notes": "RC coming soon"
     }
 }
