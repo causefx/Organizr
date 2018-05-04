@@ -1158,7 +1158,7 @@ function menuExtras(active){
 			<li class="devider"></li>
 			<li><a class="waves-effect" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span class="hide-menu" lang="en">Logout</span></a></li>
 			<li class="devider"></li>
-			<li><a href="https://github.com/causefx/organizr" class="waves-effect"><i class="fa fa-circle-o fa-fw text-success"></i> <span class="hide-menu">GitHub</span></a></li>
+			<li><a href="https://github.com/causefx/organizr" target="_blank" class="waves-effect"><i class="fa fa-github fa-fw text-success"></i> <span class="hide-menu">GitHub</span></a></li>
 		`;
 	}else{
 		return `
