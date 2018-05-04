@@ -52,6 +52,7 @@ function homepageConnect($array)
             # code...
             break;
     }
+    return false;
 }
 function streamType($value)
 {
@@ -87,7 +88,6 @@ function resolveEmbyItem($itemDetails)
     $nowPlayingWidth = 1200;
     $actorHeight = 450;
     $actorWidth = 300;
-    $widthOverride = 100;
     // Cache Directories
     $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
     $cacheDirectoryWeb = 'plugins/images/cache/';
@@ -278,7 +278,6 @@ function resolvePlexItem($item)
     $width = 200;
     $nowPlayingHeight = 675;
     $nowPlayingWidth = 1200;
-    $widthOverride = 100;
     // Cache Directories
     $cacheDirectory = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
     $cacheDirectoryWeb = 'plugins/images/cache/';
@@ -630,6 +629,7 @@ function sabnzbdConnect()
         $api['content'] = isset($api['content']) ? $api['content'] : false;
         return $api;
     }
+    return false;
 }
 function nzbgetConnect()
 {
@@ -659,6 +659,7 @@ function nzbgetConnect()
         $api['content'] = isset($api['content']) ? $api['content'] : false;
         return $api;
     }
+    return false;
 }
 function transmissionConnect()
 {
@@ -715,12 +716,12 @@ function transmissionConnect()
         $api['content'] = isset($api['content']) ? $api['content'] : false;
         return $api;
     }
+    return false;
 }
 function qBittorrentConnect()
 {
     if ($GLOBALS['homepageqBittorrentEnabled'] && !empty($GLOBALS['qBittorrentURL']) && qualifyRequest($GLOBALS['homepageqBittorrentAuth'])) {
         $digest = qualifyURL($GLOBALS['qBittorrentURL'], true);
-        $passwordInclude = ($GLOBALS['qBittorrentUsername'] != '' && $GLOBALS['qBittorrentPassword'] != '') ? 'username='.$GLOBALS['qBittorrentUsername'].'&password='.decrypt($GLOBALS['qBittorrentPassword'])."@" : '';
         $data = array('username'=>$GLOBALS['qBittorrentUsername'], 'password'=> decrypt($GLOBALS['qBittorrentPassword']));
         $url = $digest['scheme'].'://'.$digest['host'].$digest['port'].$digest['path'].'/login';
         try {
@@ -768,6 +769,7 @@ function qBittorrentConnect()
         $api['content'] = isset($api['content']) ? $api['content'] : false;
         return $api;
     }
+    return false;
 }
 function delugeConnect()
 {
@@ -909,7 +911,7 @@ function getSonarrCalendar($array, $number)
         if (!isset($episodeID)) {
             $episodeID = "";
         }
-        $episodeName = htmlentities($child['title'], ENT_QUOTES);
+        //$episodeName = htmlentities($child['title'], ENT_QUOTES);
         if ($child['episodeNumber'] == "1") {
             $episodePremier = "true";
         } else {
@@ -923,7 +925,7 @@ function getSonarrCalendar($array, $number)
         }
         $downloaded = $child['hasFile'];
         if ($downloaded == "0" && isset($unaired) && $episodePremier == "true") {
-            $downloaded = "text-primary";
+            $downloaded = "text-primary animated flash";
         } elseif ($downloaded == "0" && isset($unaired)) {
             $downloaded = "text-info";
         } elseif ($downloaded == "1") {
@@ -978,6 +980,7 @@ function getSonarrCalendar($array, $number)
     if ($i != 0) {
         return $gotCalendar;
     }
+    return false;
 }
 function getRadarrCalendar($array, $number, $url)
 {
@@ -1068,6 +1071,7 @@ function getRadarrCalendar($array, $number, $url)
     if ($i != 0) {
         return $gotCalendar;
     }
+	return false;
 }
 function getCouchCalendar($array, $number)
 {
@@ -1148,6 +1152,7 @@ function getCouchCalendar($array, $number)
     if ($i != 0) {
         return $gotCalendar;
     }
+	return false;
 }
 function getSickrageCalendarWanted($array, $number)
 {
@@ -1381,6 +1386,7 @@ function getSickrageCalendarWanted($array, $number)
     if ($i != 0) {
         return $gotCalendar;
     }
+	return false;
 }
 function getSickrageCalendarHistory($array, $number)
 {
@@ -1432,6 +1438,7 @@ function getSickrageCalendarHistory($array, $number)
     if ($i != 0) {
         return $gotCalendar;
     }
+	return false;
 }
 function ombiAPI($array)
 {

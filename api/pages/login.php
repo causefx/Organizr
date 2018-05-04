@@ -7,7 +7,7 @@ $pageLogin = '
   <div class="login-box login-sidebar animated slideInRight">
     <div class="white-box">
       <form class="form-horizontal form-material" id="loginform" onsubmit="return false;">
-        <a href="javascript:void(0)" class="text-center db" id="login-logo">'.logoOrText().'</a>
+        <a href="javascript:void(0)" class="text-center db visible-xs" id="login-logo">'.logoOrText().'</a>
 
         <div class="form-group m-t-40">
           <div class="col-xs-12">
@@ -80,7 +80,7 @@ $pageLogin = '
         </div>
         <div class="form-group ">
           <div class="col-xs-12">
-            <input id="recover-input" class="form-control" name="email" type="text" required="" placeholder="Email" lang="en" required>
+            <input id="recover-input" class="form-control" name="email" type="text" placeholder="Email" lang="en" required>
           </div>
         </div>
         <div class="form-group text-center m-t-20">

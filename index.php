@@ -12,7 +12,6 @@
 	<title>Organizr v2</title>
 	<link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css" rel="stylesheet">
-	<link href="css/animate.css" rel="stylesheet">
 	<link href="plugins/bower_components/toast-master/css/jquery.toast.css" rel="stylesheet">
 	<link href="plugins/bower_components/jquery-wizard-master/css/wizard.css" rel="stylesheet">
 	<link href="plugins/bower_components/datatables/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
@@ -23,7 +22,6 @@
 	<link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/css-chart/css-chart.css" rel="stylesheet">
 	<link href="plugins/bower_components/calendar/dist/fullcalendar.css" rel="stylesheet" />
-	<link rel="stylesheet" href="https://cdn.plyr.io/3.1.0/plyr.css">
 	<link href="plugins/bower_components/custom-select/custom-select.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/bootstrap-colorpicker-sliders/bootstrap.colorpickersliders.min.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/bootstrap-select/bootstrap-select.min.css" rel="stylesheet" />
@@ -31,6 +29,9 @@
 	<link href="plugins/bower_components/owl.carousel/owl.carousel.min.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/owl.carousel/owl.theme.default.css" rel="stylesheet" type="text/css" />
 	<link href="plugins/bower_components/hover/hover-min.css" rel="stylesheet" type="text/css" />
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/simplebar.css" rel="stylesheet">
+    <link href="css/plyr.css" rel="stylesheet">
 	<link id="style" href="css/dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<link href="css/organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<?php echo pluginFiles('css'); ?>
@@ -148,7 +149,7 @@
 	<script src="plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min.js"></script>
 	<script src="plugins/bower_components/sweetalert/sweetalert.min.js"></script>
 	<script src="plugins/bower_components/switchery/dist/switchery.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/0.11.1/tinycolor.min.js"></script>
+	<script src="js/tinycolor.min.js"></script>
 	<script src="plugins/bower_components/bootstrap-colorpicker-sliders/bootstrap.colorpickersliders.min.js"></script>
 	<script src="plugins/bower_components/dropzone-master/dist/dropzone.js"></script>
 	<script src="plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>
@@ -158,9 +159,8 @@
 	<script src="plugins/bower_components/tinymce/tinymce.min.js"></script>
 	<script src="plugins/bower_components/multiselect/js/jquery.multi-select.js"></script>
 	<script src="js/jquery.mousewheel.min.js"></script>
-	<script src="https://cdn.plyr.io/3.1.0/plyr.js"></script>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css">
-	<script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.js"></script>
+	<script src="js/plyr.js"></script>
+	<script src="js/simplebar.js"></script>
 	<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 	<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 	<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
