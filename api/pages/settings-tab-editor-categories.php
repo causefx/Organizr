@@ -78,7 +78,7 @@ $( \'#categoryEditorTable\' ).sortable({
             <input type="text" class="form-control" id="edit-category-form-inputImage" name="image"  required="">
         </div>
     </fieldset>
-    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none editCategory" type="button"><span class="btn-label"><i class="fa fa-plus"></i></span><span lang="en">Edit Group</span></button>
+    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none editCategory" type="button"><span class="btn-label"><i class="fa fa-plus"></i></span><span lang="en">Edit Category</span></button>
     <div class="clearfix"></div>
 </form>
 ';
