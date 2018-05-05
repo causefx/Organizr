@@ -1756,8 +1756,14 @@ function uploadAvatar($path, $ext_mask = null) {
 // Remove file
 function removeFiles($path) {
     if(is_file($path)) {
-        writeLog("success", "file was removed");
-        unlink($path);
+	    $fileType = getExtension($path);
+	    if(in_arrayi($fileType, array('jpg','jpeg','png','json','db','gif'))){
+		    writeLog("success", "file was removed");
+		unlink($path);
+	    } else{
+		 writeLog("error", "file was not removed");
+		 echo json_encode('Invalid File Type');   
+	    }
     } else {
   		writeLog("error", "file was not removed");
 		echo json_encode('No file specified for removal!');
