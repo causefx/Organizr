@@ -128,7 +128,7 @@ function decryptmessage($msg)
 
 if( count($newmessages) == 1 )
 {
-    echo htmlspecialchars($newmessages[0], ENT_QUOTES);
+    echo $newmessages[0];
 }
 else
 {
@@ -136,11 +136,11 @@ else
     {
         if( $i == count($newmessages) - 1 )
         {
-            echo htmlspecialchars($newmessages[$i], ENT_QUOTES);
+            echo $newmessages[$i];
         }
         else
         {
-            echo htmlspecialchars($newmessages[$i], ENT_QUOTES) . "###endofmessage###";
+            echo $newmessages[$i]. "###endofmessage###";
         }
     }
 }
