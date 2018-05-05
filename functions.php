@@ -4253,7 +4253,7 @@ function getExtension($string) {
 function showFile(){
 	$file = $_GET['file'];
 	$fileType = getExtension($file);
-	if($fileType != 'php'){
+	if($fileType == 'css' || $fileType == 'js'){
 		header("Content-type: ".mimeTypes()[$fileType]);
 		@readfile($file);
 	}
