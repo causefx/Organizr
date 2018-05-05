@@ -91,6 +91,9 @@ function login($array)
 function createDB($path, $filename)
 {
     try {
+	    if (!file_exists($path)) {
+		    mkdir($path, 0777, true);
+	    }
         $createDB = new Dibi\Connection([
             'driver' => 'sqlite3',
             'database' => $path.$filename,
