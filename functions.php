@@ -4754,9 +4754,8 @@ function getPing($url, $style, $refresh = null){
 			$class .= " animated flash loop-animation-timeout";
 		}
 	}
-	if (strpos($style, '<') === false && strpos($style, '>') === false && strpos($style, 'script') === false) {
-		echo '<span class="pingcheck badge ping-'.$class.'" style="position: absolute;z-index: 100;right: 5px; padding: 0px 0px;'.$style.';font-size: 10px;">&nbsp;</span>';
-	}
+	$style = htmlspecialchars($style, ENT_QUOTES);
+	echo '<span class="pingcheck badge ping-'.$class.'" style="position: absolute;z-index: 100;right: 5px; padding: 0px 0px;'.$style.';font-size: 10px;">&nbsp;</span>';
 }
 
 function speedTestData(){
