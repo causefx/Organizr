@@ -83,6 +83,7 @@ if( $result = $db->query("SELECT * FROM
                                     "<span style=\"font-size: 20px; color: #b77fdb;\"><em>$1</em></span>", $message);
             $message = preg_replace("/\*(.*?)\*/",
                                     "<span style=\"color: #d89334;\"><strong>$1</strong></span>", $message);
+            $message = htmlspecialchars($message, ENT_QUOTES);
 
             // user online avatar
 
