@@ -324,6 +324,25 @@ switch ($function) {
                 break;
         }
         break;
+	case 'v1_test_api_connection':
+		switch ($method) {
+			case 'POST':
+				if (qualifyRequest(1)) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = testAPIConnection($_POST);
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: '.$method;
+				break;
+		}
+		break;
     case 'v1_settings_tab_editor_tabs':
         switch ($method) {
             case 'GET':

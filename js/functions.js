@@ -198,7 +198,7 @@ function noTabs(arrayItems){
 	}
 }
 function logout(){
-	message('',' Goodbye!','bottom-right','#FFF','success','10000')
+	message('',' Goodbye!','bottom-right','#FFF','success','10000');
 	organizrAPI('GET','api/?v1/logout').success(function(data) {
 		var html = JSON.parse(data);
 		if(html.data == true){
@@ -3458,6 +3458,21 @@ function homepageRequests(timeout){
 	});
 	if(typeof timeouts['ombi'] !== 'undefined'){ clearTimeout(timeouts['ombi']); }
 	timeouts['ombi'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
+}
+function testAPIConnection(service){
+    messageSingle('',' Testing now...','bottom-right','#FFF','success','10000');
+    organizrAPI('POST','api/?v1/test/api/connection',{action:service}).success(function(data) {
+        var response = JSON.parse(data);
+        if(response.data == true){
+            messageSingle('',' API Connection Success','bottom-right','#FFF','success','10000');
+        }else{
+            messageSingle('API Connection Failed',response.data,'bottom-right','#FFF','error','10000');
+        }
+        console.log(response);
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+        message('',' Organizr Error','bottom-right','#FFF','error','10000');
+    });
 }
 function homepageCalendar(timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.calendarRefresh;

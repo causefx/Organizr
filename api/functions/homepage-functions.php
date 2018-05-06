@@ -578,7 +578,21 @@ function getHomepageList()
                         'value' => $GLOBALS['plexTabURL'],
                         'placeholder' => 'http(s)://hostname:port'
                     )
-                )
+                ),
+	            'Test Connection' => array(
+	            	array(
+	            		'type' => 'blank',
+			            'label' => ''
+		            ),
+		            array(
+			            'type' => 'button',
+			            'label' => '',
+			            'icon' => 'fa fa-flask',
+			            'class' => 'pull-right',
+			            'text' => 'Test Connection',
+			            'attr' => 'onclick="testAPIConnection(\'plex\')"'
+		            ),
+	            )
             )
         ),
         array(
@@ -736,7 +750,21 @@ function getHomepageList()
                         'value' => $GLOBALS['homepageDownloadRefresh'],
                         'options' => $time
                     )
-                )
+                ),
+	            'Test Connection' => array(
+		            array(
+			            'type' => 'blank',
+			            'label' => ''
+		            ),
+		            array(
+			            'type' => 'button',
+			            'label' => '',
+			            'icon' => 'fa fa-flask',
+			            'class' => 'pull-right',
+			            'text' => 'Test Connection',
+			            'attr' => 'onclick="testAPIConnection(\'sabnzbd\')"'
+		            ),
+	            )
             )
         ),
         array(
@@ -789,7 +817,21 @@ function getHomepageList()
                         'value' => $GLOBALS['homepageDownloadRefresh'],
                         'options' => $time
                     )
-                )
+                ),
+	            'Test Connection' => array(
+		            array(
+			            'type' => 'blank',
+			            'label' => ''
+		            ),
+		            array(
+			            'type' => 'button',
+			            'label' => '',
+			            'icon' => 'fa fa-flask',
+			            'class' => 'pull-right',
+			            'text' => 'Test Connection',
+			            'attr' => 'onclick="testAPIConnection(\'nzbget\')"'
+		            ),
+	            )
             )
         ),
         array(
@@ -1007,7 +1049,21 @@ function getHomepageList()
                         'value' => $GLOBALS['homepageDownloadRefresh'],
                         'options' => $time
                     )
-                )
+                ),
+	            'Test Connection' => array(
+		            array(
+			            'type' => 'blank',
+			            'label' => ''
+		            ),
+		            array(
+			            'type' => 'button',
+			            'label' => '',
+			            'icon' => 'fa fa-flask',
+			            'class' => 'pull-right',
+			            'text' => 'Test Connection',
+			            'attr' => 'onclick="testAPIConnection(\'deluge\')"'
+		            ),
+	            )
             )
         ),
         array(
@@ -1096,7 +1152,21 @@ function getHomepageList()
                         'value' => $GLOBALS['calendarRefresh'],
                         'options' => $time
                     )
-                )
+                ),
+	            'Test Connection' => array(
+		            array(
+			            'type' => 'blank',
+			            'label' => ''
+		            ),
+		            array(
+			            'type' => 'button',
+			            'label' => '',
+			            'icon' => 'fa fa-flask',
+			            'class' => 'pull-right',
+			            'text' => 'Test Connection',
+			            'attr' => 'onclick="testAPIConnection(\'sonarr\')"'
+		            ),
+	            )
             )
         ),
         array(
@@ -1185,7 +1255,21 @@ function getHomepageList()
                         'value' => $GLOBALS['calendarRefresh'],
                         'options' => $time
                     )
-                )
+                ),
+	            'Test Connection' => array(
+		            array(
+			            'type' => 'blank',
+			            'label' => ''
+		            ),
+		            array(
+			            'type' => 'button',
+			            'label' => '',
+			            'icon' => 'fa fa-flask',
+			            'class' => 'pull-right',
+			            'text' => 'Test Connection',
+			            'attr' => 'onclick="testAPIConnection(\'radarr\')"'
+		            ),
+	            )
             )
         ),
         array(
