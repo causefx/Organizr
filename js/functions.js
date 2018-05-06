@@ -982,7 +982,7 @@ function buildLanguage(replace=false,newLang=null){
 					<div class="drop-title" lang="en">Choose Language</div>
 				</li>
 				<li>
-					<div class="message-center">`+languageItems+`</div>
+					<div class="message-center" data-simplebar>`+languageItems+`</div>
 				</li>
 			</ul>
 			<!-- /.dropdown-messages -->
@@ -1205,6 +1205,10 @@ function tabProcess(arrayItems) {
 	if (Array.isArray(arrayItems['data']['tabs']) && arrayItems['data']['tabs'].length > 0) {
 		$.each(arrayItems['data']['tabs'], function(i,v) {
 			if(v.enabled === 1){
+                if(v.default === 1){
+                    defaultTabName = cleanClass(v.name);
+                    defaultTabType = v.type;
+                }
 				switch (v.type) {
 					case 0:
 					case '0':
@@ -1215,10 +1219,6 @@ function tabProcess(arrayItems) {
 					case 1:
 					case '1':
 					case 'iframe':
-						if(v.default === 1){
-							defaultTabName = cleanClass(v.name);
-							defaultTabType = v.type;
-						}
 						iFrameList = buildFrameContainer(v.name,v.url,v.type);
 						$(iFrameList).appendTo($('.iFrame-listing'));
 						break;
@@ -3100,6 +3100,8 @@ function buildDownloaderItem(array, source, type='none'){
 						var size = v.total_size != -1 ? humanFileSize(v.total_size,true) : "?";
 						var upload = v.upload_payload_rate != -1 ? humanFileSize(v.upload_payload_rate,true) : "?";
 						var download = v.download_payload_rate != -1 ? humanFileSize(v.download_payload_rate,true) : "?";
+						var action = (v.Status == "Downloading") ? 'pause' : 'resume';
+						var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
 						items += `
 						<tr>
 							<td class="max-texts">`+v.name+`</td>
