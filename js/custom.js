@@ -966,6 +966,7 @@ $(document).on('focusout', 'input.pick-a-color', function(e) {
 });
 $(document).on('change colorPicker::close', '#customize-appearance-form :input', function(e) {
     $(this).attr('data-changed', true);
+    //$(this).addClass('has-success');
     switch ($(this).attr('type')) {
         case 'switch':
         case 'checkbox':

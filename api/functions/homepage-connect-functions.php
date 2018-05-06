@@ -773,11 +773,28 @@ function qBittorrentConnect()
 }
 function delugeConnect()
 {
-    if ($GLOBALS['homepageDelugeEnabled'] && !empty($GLOBALS['delugeURL']) && qualifyRequest($GLOBALS['homepageDelugeAuth'])) {
+    if ($GLOBALS['homepageDelugeEnabled'] && !empty($GLOBALS['delugeURL']) && !empty($GLOBALS['delugePassword']) && qualifyRequest($GLOBALS['homepageDelugeAuth'])) {
         try {
             $deluge = new deluge($GLOBALS['delugeURL'], decrypt($GLOBALS['delugePassword']));
-            $torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate');
-            $api['content']['queueItems'] = $torrents;
+            $torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, hash, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate');
+	        if ($GLOBALS['delugeHideSeeding'] || $GLOBALS['delugeHideCompleted']) {
+		        $filter = array();
+		        if ($GLOBALS['delugeHideSeeding']) {
+			        array_push($filter, 'Seeding', 'Uploading', 'queuedUP');
+		        }
+		        if ($GLOBALS['delugeHideCompleted']) {
+			        array_push($filter, 'Seeding', 'Completed');
+		        }
+		        //prettyPrint($torrents);
+		        foreach ($torrents as $key => $value) {
+			        if (!in_array($value->state, $filter)) {
+				        $api['content']['queueItems'][] = $value;
+			        }
+		        }
+	        } else {
+		        $api['content']['queueItems'] = $torrents;
+	        }
+            //$api['content']['queueItems'] = $torrents;
             $api['content']['historyItems'] = false;
         } catch (Excecption $e) {
             writeLog('error', 'Deluge Connect Function - Error: '.$e->getMessage(), 'SYSTEM');

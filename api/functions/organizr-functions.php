@@ -1092,6 +1092,39 @@ function sabnzbdAction($action=null, $target=null)
         return $api;
     }
 }
+// Deluge API isn't working ATM - will get with dev.
+function delugeAction($action=null, $target=null)
+{
+	if ($GLOBALS['homepageDelugeEnabled'] && !empty($GLOBALS['delugeURL']) && !empty($GLOBALS['delugePassword']) && qualifyRequest($GLOBALS['homepageDelugeAuth'])) {
+		$url = qualifyURL($GLOBALS['delugeURL']);
+		try {
+			$deluge = new deluge($GLOBALS['delugeURL'], decrypt($GLOBALS['delugePassword']));
+			switch ($action) {
+				case 'pause':
+					$torrents = $deluge->pauseTorrent($target);
+					break;
+				case 'pauseAll':
+					$torrents = $deluge->pauseAllTorrents();
+					break;
+				case 'resume':
+					$torrents = $deluge->resumeTorrent($target);
+					break;
+				case 'resumeAll':
+					$torrents = $deluge->resumeAllTorrents();
+					break;
+				default:
+					# code...
+					break;
+			}
+			$api['content'] = $torrents;
+		} catch (Excecption $e) {
+			writeLog('error', 'Deluge Connect Function - Error: '.$e->getMessage(), 'SYSTEM');
+		}
+		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		return $api;
+	}
+	return false;
+}
 function getOrgUsers()
 {
     $result = allUsers();
