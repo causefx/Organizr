@@ -27,7 +27,7 @@ function gravatar($email = '')
 // Cookie Custom Function
 function coookie($type, $name, $value = '', $days = -1, $http = true)
 {
-    $badDomains = array('ddns.net','ddnsking.com','3utilities.com','bounceme.net','freedynamicdns.net','freedynamicdns.org','gotdns.ch','hopto.org','myddns.me','myftp.biz','myftp.org','myvnc.com','onthewifi.com','redirectme.net','serveblog.net','servecounterstrike.com','serveftp.com','servegame.com','servehalflife.com','servehttp.com','serveirc.com','serveminecraft.net','servemp3.com','servepics.com','servequake.com','sytes.net','viewdns.net','webhop.me','zapto.org');
+    $badDomains = array('ddns.net','ddnsking.com','3utilities.com','bounceme.net','duckdns.org','freedynamicdns.net','freedynamicdns.org','gotdns.ch','hopto.org','myddns.me','myftp.biz','myftp.org','myvnc.com','noip.com','onthewifi.com','redirectme.net','serveblog.net','servecounterstrike.com','serveftp.com','servegame.com','servehalflife.com','servehttp.com','serveirc.com','serveminecraft.net','servemp3.com','servepics.com','servequake.com','sytes.net','viewdns.net','webhop.me','zapto.org');
     if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https") {
         $Secure = true;
         $HTTPOnly = true;
@@ -47,7 +47,6 @@ function coookie($type, $name, $value = '', $days = -1, $http = true)
     if ($Port !== false) {
         $Domain = substr($Domain, 0, $Port);
     }
-    $Port = strpos($Domain, ':');
     $check = substr_count($Domain, '.');
     if ($check >= 3) {
         if (is_numeric($Domain[0])) {
