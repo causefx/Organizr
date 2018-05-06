@@ -787,3 +787,16 @@ span.homepage-text {
     margin-left: 91.666667%;
   }
 }
+input.has-success {
+    border-bottom: 8px solid #4CAF50;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+.message-center {
+    max-height: 250px;
+}
+.fc-alternate {
+    background: transparent;
+    border-bottom: 1px solid;
+    border-color: rgba(120,130,140,.13);
+}

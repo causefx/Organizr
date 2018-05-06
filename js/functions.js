@@ -3461,7 +3461,9 @@ function homepageRequests(timeout){
 }
 function homepageCalendar(timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.calendarRefresh;
-	//if(isHidden()){ return; }
+    if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
+        $('.fc-toolbar').addClass('fc-alternate');
+    }
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
 		var response = JSON.parse(data);
         $('#calendar').fullCalendar('removeEvents');
