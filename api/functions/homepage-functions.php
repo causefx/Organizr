@@ -949,7 +949,7 @@ function getHomepageList()
 						'value' => $GLOBALS['qBittorrentHideSeeding']
 					), array(
 						'type' => 'switch',
-						'name' => 'qBittorrentnHideCompleted',
+						'name' => 'qBittorrentHideCompleted',
 						'label' => 'Hide Completed',
 						'value' => $GLOBALS['qBittorrentHideCompleted']
 					),
