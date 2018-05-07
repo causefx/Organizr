@@ -4,7 +4,7 @@ function homepageConnect($array)
 {
 	switch ($array['data']['action']) {
 		case 'getPlexStreams':
-			return plexConnect('streams');
+			return (qualifyRequest($GLOBALS['homepagePlexStreamsAuth'])) ? plexConnect('streams') : false;
 			break;
 		case 'getPlexRecent':
 			return plexConnect('recent');
