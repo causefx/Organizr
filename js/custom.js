@@ -17,7 +17,7 @@ $(document).ready(function () {
     $(function () {
         //$("#preloader").fadeOut();
         var set = function () {
-            var topOffset = 60,
+            var topOffset = 40,
                 width = (window.innerWidth > 0) ? window.innerWidth : this.screen.width,
                 height = ((window.innerHeight > 0) ? window.innerHeight : this.screen.height) - 1;
             if (width < 768) {

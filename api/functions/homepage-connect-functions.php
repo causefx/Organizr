@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUndefinedFieldInspection */
 function homepageConnect($array)
 {
 	switch ($array['data']['action']) {
