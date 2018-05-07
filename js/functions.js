@@ -2802,6 +2802,7 @@ function ombiActions(id,action,type){
 	ajaxloader('.preloader-'+id,'in');
 	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
 		var response = JSON.parse(data);
+		console.log(response.data);
 		if(response.data !== false){
 			homepageRequests();
 			if(action !== 'add'){

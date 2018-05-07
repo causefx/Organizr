@@ -499,7 +499,6 @@ function getSSO()
 				'type' => 'switch',
 				'name' => 'ssoTautulli',
 				'label' => 'Enable',
-				
 				'value' => $GLOBALS['ssoTautulli']
 			)
 		)
@@ -1033,7 +1032,6 @@ function getImage()
 			# code...
 			break;
 	}
-	
 	if (isset($image_url) && isset($image_height) && isset($image_width) && isset($image_src)) {
 		$cachefile = $cacheDirectory . $key . '.jpg';
 		$cachetime = 604800;
@@ -1078,14 +1076,12 @@ function downloader($array)
 				case 'pause':
 					sabnzbdAction($array['data']['action'], $array['data']['target']);
 					break;
-				
 				default:
 					# code...
 					break;
 			}
 			break;
 		case 'nzbget':
-			
 			break;
 		default:
 			# code...
@@ -1110,7 +1106,6 @@ function sabnzbdAction($action = null, $target = null)
 				# code...
 				break;
 		}
-		
 		try {
 			$options = (localURL($url)) ? array('verify' => false) : array();
 			$response = Requests::get($url, array(), $options);
@@ -1225,7 +1220,6 @@ function libraryList($type = null)
 				};
 			}
 			break;
-		
 		default:
 			# code...
 			break;
@@ -1255,7 +1249,6 @@ function plexJoin($username, $email, $password)
 			'user[password]' => $password,
 		);
 		$response = Requests::post($url, $headers, $data, array());
-		
 		$json = json_decode($response->body, true);
 		$errors = (!empty($json['errors']) ? true : false);
 		$success = (!empty($json['user']) ? true : false);
