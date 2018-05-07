@@ -1,5 +1,4 @@
 <?php
-
 function homepageConnect($array)
 {
 	switch ($array['data']['action']) {
@@ -96,7 +95,6 @@ function resolveEmbyItem($itemDetails)
 	// Types
 	$embyItem['array-item'] = $item;
 	$embyItem['array-itemdetails'] = $itemDetails;
-	
 	switch (@$item['Type']) {
 		case 'Series':
 			$embyItem['type'] = 'tv';
@@ -247,7 +245,6 @@ function resolveEmbyItem($itemDetails)
 		'genres' => ($item['Genres']) ? $genres : '',
 		'actors' => ($item['People']) ? $actors : ''
 	);
-	
 	if (file_exists($cacheDirectory . $embyItem['nowPlayingKey'] . '.jpg')) {
 		$embyItem['nowPlayingImageURL'] = $cacheDirectoryWeb . $embyItem['nowPlayingKey'] . '.jpg';
 	}
@@ -805,7 +802,7 @@ function delugeConnect()
 			} else {
 				$api['content']['queueItems'] = $torrents;
 			}
-			//$api['content']['queueItems'] = $torrents;
+			$api['content']['queueItems'] = (empty($api['content']['queueItems'])) ? [] : $api['content']['queueItems'];
 			$api['content']['historyItems'] = false;
 		} catch (Excecption $e) {
 			writeLog('error', 'Deluge Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
@@ -924,7 +921,6 @@ function getCalendar()
 			}
 		}
 	}
-	
 	return ($calendarItems) ? $calendarItems : false;
 }
 
@@ -963,7 +959,6 @@ function getSonarrCalendar($array, $number)
 		} else {
 			$downloaded = "text-danger";
 		}
-		
 		$fanart = "/plugins/images/cache/no-np.png";
 		foreach ($child['series']['images'] as $image) {
 			if ($image['coverType'] == "fanart") {
@@ -1049,12 +1044,10 @@ function getRadarrCalendar($array, $number, $url)
 					$imageUrl = $image['url'];
 					$urlParts = explode("/", $url);
 					$imageParts = explode("/", $image['url']);
-					
 					if ($imageParts[1] == end($urlParts)) {
 						unset($imageParts[1]);
 						$imageUrl = implode("/", $imageParts);
 					}
-					
 					$banner = $url . $imageUrl;
 				}
 			}
@@ -1136,7 +1129,6 @@ function getCouchCalendar($array, $number)
 			} else {
 				$downloaded = "text-danger";
 			}
-			
 			if (!empty($child['info']['images']['backdrop_original'])) {
 				$banner = $child['info']['images']['backdrop_original'][0];
 			} elseif (!empty($child['info']['images']['backdrop'])) {
@@ -1170,7 +1162,6 @@ function getCouchCalendar($array, $number)
 				"videoCodec" => "",
 				"genres" => $child['info']['genres'],
 			);
-			
 			array_push($gotCalendar, array(
 				"id" => "CouchPotato-" . $number . "-" . $i,
 				"title" => $movieName,
@@ -1214,7 +1205,6 @@ function getSickrageCalendarWanted($array, $number)
 			$downloaded = "text-danger";
 		}
 		$bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
-		
 		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 		$cacheFile = $cacheDirectory . $seriesID . '.jpg';
 		$fanart = "/plugins/images/cache/no-np.png";
@@ -1222,7 +1212,6 @@ function getSickrageCalendarWanted($array, $number)
 			$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
 			unset($cacheFile);
 		}
-		
 		$details = array(
 			"seasonCount" => "",
 			"status" => $child['show_status'],
@@ -1270,7 +1259,6 @@ function getSickrageCalendarWanted($array, $number)
 			$downloaded = "text-danger";
 		}
 		$bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
-		
 		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 		$cacheFile = $cacheDirectory . $seriesID . '.jpg';
 		$fanart = "/plugins/images/cache/no-np.png";
@@ -1278,7 +1266,6 @@ function getSickrageCalendarWanted($array, $number)
 			$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
 			unset($cacheFile);
 		}
-		
 		$details = array(
 			"seasonCount" => "",
 			"status" => $child['show_status'],
@@ -1326,7 +1313,6 @@ function getSickrageCalendarWanted($array, $number)
 			$downloaded = "text-danger";
 		}
 		$bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
-		
 		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 		$cacheFile = $cacheDirectory . $seriesID . '.jpg';
 		$fanart = "/plugins/images/cache/no-np.png";
@@ -1334,7 +1320,6 @@ function getSickrageCalendarWanted($array, $number)
 			$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
 			unset($cacheFile);
 		}
-		
 		$details = array(
 			"seasonCount" => "",
 			"status" => $child['show_status'],
@@ -1382,7 +1367,6 @@ function getSickrageCalendarWanted($array, $number)
 			$downloaded = "text-danger";
 		}
 		$bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']) . ' - ' . $child['ep_name'];
-		
 		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 		$cacheFile = $cacheDirectory . $seriesID . '.jpg';
 		$fanart = "/plugins/images/cache/no-np.png";
@@ -1390,7 +1374,6 @@ function getSickrageCalendarWanted($array, $number)
 			$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
 			unset($cacheFile);
 		}
-		
 		$details = array(
 			"seasonCount" => "",
 			"status" => $child['show_status'],
@@ -1435,7 +1418,6 @@ function getSickrageCalendarHistory($array, $number)
 		$episodeAirDate = $child['date'];
 		$downloaded = "text-success";
 		$bottomTitle = 'S' . sprintf("%02d", $child['season']) . 'E' . sprintf("%02d", $child['episode']);
-		
 		$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 		$cacheFile = $cacheDirectory . $seriesID . '.jpg';
 		$fanart = "/plugins/images/cache/no-np.png";
@@ -1443,7 +1425,6 @@ function getSickrageCalendarHistory($array, $number)
 			$fanart = 'plugins/images/cache/' . $seriesID . '.jpg';
 			unset($cacheFile);
 		}
-		
 		$details = array(
 			"seasonCount" => "",
 			"status" => $child['status'],
@@ -1584,7 +1565,6 @@ function getOmbiRequests($type = "both")
 				case 'tv':
 					$tv = Requests::get($url . "/api/v1/Request/tv", $headers, $options);
 					break;
-				
 				default:
 					$movie = Requests::get($url . "/api/v1/Request/movie", $headers, $options);
 					$tv = Requests::get($url . "/api/v1/Request/tv", $headers, $options);
@@ -1675,12 +1655,11 @@ function testAPIConnection($array)
 				} catch (Requests_Exception $e) {
 					return $e->getMessage();
 				};
-			}else{
+			} else {
 				return 'URL and/or Token not setup';
 			}
 			break;
 		case 'emby':
-			
 			break;
 		case 'sonarr':
 			if (!empty($GLOBALS['sonarrURL']) && !empty($GLOBALS['sonarrToken'])) {
@@ -1704,7 +1683,7 @@ function testAPIConnection($array)
 						}
 					}
 				}
-			}else{
+			} else {
 				return 'URL/s and/or Token/s not setup';
 			}
 			break;
@@ -1730,12 +1709,12 @@ function testAPIConnection($array)
 						}
 					}
 				}
-			}else{
+			} else {
 				return 'URL/s and/or Token/s not setup';
 			}
 			break;
 		case 'sabnzbd':
-			if (!empty($GLOBALS['sabnzbdURL']) && !empty($GLOBALS['sabnzbdToken']) ) {
+			if (!empty($GLOBALS['sabnzbdURL']) && !empty($GLOBALS['sabnzbdToken'])) {
 				$url = qualifyURL($GLOBALS['sabnzbdURL']);
 				$url = $url . '/api?mode=queue&output=json&apikey=' . $GLOBALS['sabnzbdToken'];
 				try {
@@ -1747,7 +1726,7 @@ function testAPIConnection($array)
 				} catch (Requests_Exception $e) {
 					return $e->getMessage();
 				};
-			}else{
+			} else {
 				return 'URL and/or Token not setup';
 			}
 			break;
@@ -1764,7 +1743,7 @@ function testAPIConnection($array)
 				} catch (Requests_Exception $e) {
 					return $e->getMessage();
 				};
-			}else{
+			} else {
 				return 'URL and/or Username/Password not setup';
 			}
 			break;
@@ -1778,8 +1757,7 @@ function testAPIConnection($array)
 				} catch (\Excecption $e) {
 					return $e->getMessage();
 				}
-			}
-			else{
+			} else {
 				return 'URL and/or Password not setup';
 			}
 			break;
