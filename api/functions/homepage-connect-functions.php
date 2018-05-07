@@ -7,25 +7,25 @@ function homepageConnect($array)
 			return (qualifyRequest($GLOBALS['homepagePlexStreamsAuth'])) ? plexConnect('streams') : false;
 			break;
 		case 'getPlexRecent':
-			return plexConnect('recent');
+			return (qualifyRequest($GLOBALS['homepagePlexRecentAuth'])) ? plexConnect('recent') : false;
 			break;
 		case 'getPlexMetadata':
-			return plexConnect('metadata', $array['data']['key']);
+			return (qualifyRequest($GLOBALS['homepagePlexAuth'])) ? plexConnect('metadata', $array['data']['key']) : false;
 			break;
 		case 'getPlexSearch':
-			return plexConnect('search', $array['data']['query']);
+			return (qualifyRequest($GLOBALS['mediaSearchAuth'])) ? plexConnect('search', $array['data']['query']) : false;
 			break;
 		case 'getPlexPlaylists':
-			return getPlexPlaylists();
+			return (qualifyRequest($GLOBALS['homepagePlexPlaylistAuth'])) ? getPlexPlaylists() : false;
 			break;
 		case 'getEmbyStreams':
-			return embyConnect('streams');
+			return (qualifyRequest($GLOBALS['homepageEmbyStreamsAuth'])) ? embyConnect('streams') : false;
 			break;
 		case 'getEmbyRecent':
-			return embyConnect('recent');
+			return (qualifyRequest($GLOBALS['homepageEmbyRecentAuth'])) ? embyConnect('recent') : false;
 			break;
 		case 'getEmbyMetadata':
-			return embyConnect('metadata', $array['data']['key'], true);
+			return (qualifyRequest($GLOBALS['homepageEmbyAuth'])) ? embyConnect('metadata', $array['data']['key'], true) : false;
 			break;
 		case 'getSabnzbd':
 			return sabnzbdConnect();

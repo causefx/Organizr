@@ -12,7 +12,7 @@ function organizrSpecialSettings()
 				'type' => $GLOBALS['mediaSearchType'],
 			),
 			'ombi' => array(
-				'enabled' => (qualifyRequest($GLOBALS['homepageOmbiAuth']) && $GLOBALS['homepageOmbiEnabled'] == true && $GLOBALS['ssoOmbi']) ? true : false,
+				'enabled' => (qualifyRequest($GLOBALS['homepageOmbiAuth']) && $GLOBALS['homepageOmbiEnabled'] == true && $GLOBALS['ssoOmbi'] && isset($_COOKIE['Auth'])) ? true : false,
 			),
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
