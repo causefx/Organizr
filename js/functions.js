@@ -1197,6 +1197,9 @@ function buildInternalContainer(name,url,type){
 function buildMenuList(name,url,type,icon){
 	return `<li id="menu-`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span></a></li>`;
 }
+function splashMenu(arrayItems){
+
+}
 function tabProcess(arrayItems) {
 	var iFrameList = '';
 	var internalList = '';
@@ -3656,7 +3659,7 @@ function organizrSpecialSettings(array){
 	//media search
 	if(array.settings.homepage.search.enabled == true && typeof array.settings.homepage.search.type !== 'undefined'){
 		var htmlDOM = `
-		<li class=""><a class="waves-effect waves-light inline-popups" href="#mediaSearch-area" data-effect="mfp-zoom-out"> <i class="fa fa-search"></i></a></li>
+		<li class=""><a class="waves-effect waves-light inline-popups" href="#mediaSearch-area" data-effect="mfp-zoom-out"> <i class="ti-search"></i></a></li>
 		`;
 		var searchBoxResults = `
 		<a class="inline-popups hidden openResults" href="#mediaSearch-area" data-effect="mfp-zoom-out"></a>
