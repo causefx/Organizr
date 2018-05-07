@@ -1,7 +1,12 @@
-<?php
+<?php /** @noinspection SqlResolve */
+/** @noinspection SqlResolve */
+/** @noinspection SqlResolve */
+/** @noinspection SqlResolve */
+/** @noinspection SyntaxError */
 function login($array)
 {
 	// Grab username and Password from login form
+	$username = $password = '';
 	foreach ($array['data'] as $items) {
 		foreach ($items as $key => $value) {
 			if ($key == 'name') {
@@ -31,6 +36,7 @@ function login($array)
 					$authSuccess = $function($username, $password);
 				}
 				break;
+			/** @noinspection PhpMissingBreakStatementInspection */
 			case 'both':
 				if (function_exists($function)) {
 					$authSuccess = $function($username, $password);
@@ -47,6 +53,7 @@ function login($array)
 		if ($authSuccess) {
 			// Make sure user exists in database
 			$userExists = false;
+			$passwordMatches = false;
 			$token = (is_array($authSuccess) && isset($authSuccess['token']) ? $authSuccess['token'] : '');
 			if ($result['username']) {
 				$userExists = true;
@@ -99,7 +106,7 @@ function createDB($path, $filename)
 			'database' => $path . $filename,
 		]);
 		// Create Users
-		$users = $createDB->query('CREATE TABLE `users` (
+		$createDB->query('CREATE TABLE `users` (
     		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     		`username`	TEXT UNIQUE,
     		`password`	TEXT,
@@ -113,21 +120,21 @@ function createDB($path, $filename)
     		`auth_service`	TEXT DEFAULT \'internal\'
     	);');
 		// Create Tokens
-		$jwt = $createDB->query('CREATE TABLE `tokens` (
+		$createDB->query('CREATE TABLE `tokens` (
     		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     		`token`	TEXT UNIQUE,
     		`user_id`	INTEGER,
             `created` DATE,
             `expires` DATE
     	);');
-		$groups = $createDB->query('CREATE TABLE `groups` (
+		$createDB->query('CREATE TABLE `groups` (
     		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     		`group`	TEXT UNIQUE,
             `group_id`	INTEGER,
     		`image`	TEXT,
             `default` INTEGER
     	);');
-		$categories = $createDB->query('CREATE TABLE `categories` (
+		$createDB->query('CREATE TABLE `categories` (
     		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
             `order`	INTEGER,
     		`category`	TEXT UNIQUE,
@@ -136,7 +143,7 @@ function createDB($path, $filename)
             `default` INTEGER
     	);');
 		// Create Tabs
-		$tabs = $createDB->query('CREATE TABLE `tabs` (
+		$createDB->query('CREATE TABLE `tabs` (
     		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     		`order`	INTEGER,
     		`category_id`	INTEGER,
@@ -153,13 +160,13 @@ function createDB($path, $filename)
     		`ping_url`	TEXT
     	);');
 		// Create Options
-		$options = $createDB->query('CREATE TABLE `options` (
+		$createDB->query('CREATE TABLE `options` (
     		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     		`name`	TEXT UNIQUE,
     		`value`	TEXT
     	);');
 		// Create Invites
-		$invites = $createDB->query('CREATE TABLE `invites` (
+		$createDB->query('CREATE TABLE `invites` (
     		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     		`code`	TEXT UNIQUE,
     		`date`	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -456,7 +463,7 @@ function adminEditGroup($array)
 			}
 			break;
 		default:
-			# code...
+			return false;
 			break;
 	}
 }
@@ -537,7 +544,7 @@ function adminEditUser($array)
 			}
 			break;
 		default:
-			# code...
+			return false;
 			break;
 	}
 }
@@ -727,7 +734,7 @@ function editTabs($array)
 			}
 			break;
 		default:
-			# code...
+			return false;
 			break;
 	}
 }
@@ -827,7 +834,7 @@ function editCategories($array)
 			}
 			break;
 		default:
-			# code...
+			return false;
 			break;
 	}
 }
@@ -925,6 +932,7 @@ function allTabs()
 			return false;
 		}
 	}
+	return false;
 }
 
 function allGroups()
@@ -941,6 +949,7 @@ function allGroups()
 			return false;
 		}
 	}
+	return false;
 }
 
 function loadTabs()
@@ -970,4 +979,5 @@ function loadTabs()
 			return false;
 		}
 	}
+	return false;
 }
