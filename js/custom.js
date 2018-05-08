@@ -291,7 +291,14 @@ function doneTypingMediaSearch () {
         var response = JSON.parse(data);
         $('.mediaSearch-div').html('');
         $('.mediaSearch-div').html(buildMediaResults(response.data,server,query));
-        $('.openResults').trigger('click');
+        if(bowser.mobile !== true){
+            $('.resultBox-inside').slimScroll({
+                height: '100%',
+                position: 'right',
+                size: "5px",
+                color: '#dcdcdc'
+            });
+        }
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
     })
