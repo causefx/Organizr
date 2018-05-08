@@ -800,3 +800,7 @@ input.has-success {
     border-bottom: 1px solid;
     border-color: rgba(120,130,140,.13);
 }
+
+.fc-state-disabled {
+    display: none;
+}

@@ -5,7 +5,7 @@ $pageHomepage = '
 !function($) {
     "use strict";
     var CalendarApp = function() {
-        this.$body = $("body")
+        this.$body = $("body");
         this.$calendar = $("#calendar"),
         this.$event = ("#calendar-events div.calendar-events"),
         this.$categoryForm = $("#add-new-event form"),
@@ -26,12 +26,12 @@ $pageHomepage = '
 
         var $this = this;
         $this.$calendarObj = $this.$calendar.fullCalendar({
-            defaultView: (activeInfo.mobile) ? "list" : "'.$GLOBALS['calendarDefault'].'",
+            defaultView: (activeInfo.mobile) ? "list" : "' . $GLOBALS['calendarDefault'] . '",
             firstDay: "'.$GLOBALS['calendarFirstDay'].'",
             timeFormat: "'.$GLOBALS['calendarTimeFormat'].'",
             handleWindowResize: true,
             header: {
-               left: "prev,next",
+               left: "prev,next,today",
                center: "title",
                right: (activeInfo.mobile) ? "" : "month,basicWeek,basicDay,list",
             },
@@ -39,11 +39,11 @@ $pageHomepage = '
                basicDay: { buttonText: window.lang.translate("Day"), eventLimit: '.$GLOBALS['calendarLimit'].' },
                basicWeek: { buttonText: window.lang.translate("Week"), eventLimit: '.$GLOBALS['calendarLimit'].' },
                month: { buttonText: window.lang.translate("Month"), eventLimit: '.$GLOBALS['calendarLimit'].' },
-               today: { buttonText: window.lang.translate("Today") },
-               list: { buttonText: window.lang.translate("List"), duration: {months: 1} },
+               list: { buttonText: window.lang.translate("List"), duration: {days: 15} },
             },
             timezone: "local",
             editable: false,
+            navLinks: true, // can click day/week names to navigate views
             droppable: false, // this allows things to be dropped onto the calendar !!!
             selectable: false,
             height: "auto",
