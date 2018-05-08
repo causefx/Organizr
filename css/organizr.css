@@ -21,7 +21,7 @@
 
 .iframe {
     width: 100%;
-    height: calc(100vh - 60px);
+    height: calc(100vh - 40px);
     position: inherit;
     display: block;
 }
@@ -799,4 +799,13 @@ input.has-success {
     background: transparent;
     border-bottom: 1px solid;
     border-color: rgba(120,130,140,.13);
+}
+.resultBox-outside {
+    max-height: 96vh;
+}
+.resultBox-inside {
+    height: 100%;
+    max-height: 85vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }

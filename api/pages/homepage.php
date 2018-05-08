@@ -1,6 +1,6 @@
 <?php
-if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
-$pageHomepage = '
+if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+	$pageHomepage = '
 <script>
 !function($) {
     "use strict";
@@ -26,19 +26,19 @@ $pageHomepage = '
 
         var $this = this;
         $this.$calendarObj = $this.$calendar.fullCalendar({
-            defaultView: (activeInfo.mobile) ? "list" : "'.$GLOBALS['calendarDefault'].'",
-            firstDay: "'.$GLOBALS['calendarFirstDay'].'",
-            timeFormat: "'.$GLOBALS['calendarTimeFormat'].'",
+            defaultView: (activeInfo.mobile) ? "list" : "' . $GLOBALS['calendarDefault'] . '",
+            firstDay: "' . $GLOBALS['calendarFirstDay'] . '",
+            timeFormat: "' . $GLOBALS['calendarTimeFormat'] . '",
             handleWindowResize: true,
             header: {
                left: "prev,next",
                center: "title",
-               right: (activeInfo.mobile) ? "" : "month,basicWeek,basicDay,list",
+               right: (activeInfo.mobile) ? "" : "today,month,basicWeek,basicDay,list",
             },
             views: {
-               basicDay: { buttonText: window.lang.translate("Day"), eventLimit: '.$GLOBALS['calendarLimit'].' },
-               basicWeek: { buttonText: window.lang.translate("Week"), eventLimit: '.$GLOBALS['calendarLimit'].' },
-               month: { buttonText: window.lang.translate("Month"), eventLimit: '.$GLOBALS['calendarLimit'].' },
+               basicDay: { buttonText: window.lang.translate("Day"), eventLimit: ' . $GLOBALS['calendarLimit'] . ' },
+               basicWeek: { buttonText: window.lang.translate("Week"), eventLimit: ' . $GLOBALS['calendarLimit'] . ' },
+               month: { buttonText: window.lang.translate("Month"), eventLimit: ' . $GLOBALS['calendarLimit'] . ' },
                today: { buttonText: window.lang.translate("Today") },
                list: { buttonText: window.lang.translate("List"), duration: {months: 1} },
             },
@@ -73,7 +73,7 @@ function($) {
 }(window.jQuery);
 </script>
 <div class="container-fluid p-t-30" id="homepage-items">
-    '.buildHomepage().'
+    ' . buildHomepage() . '
 </div>
 <div id="open-youtube" class="white-popup mfp-with-anim mfp-hide">
     <div class="col-md-8 col-md-offset-2 youtube-div">  </div>

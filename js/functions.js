@@ -1113,7 +1113,7 @@ function userMenu(user){
 	if (user.data.user.loggedin === true) {
 		menuList += `
 			<li class="dropdown">
-				<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="javascript:void(0)"><img alt="user-img" class="img-circle" src="`+user.data.user.image+`" width="36"><b class="hidden-xs">`+user.data.user.username+`</b><span class="caret"></span></a>
+				<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="javascript:void(0)"><img alt="" class="img-circle" src="`+user.data.user.image+`" width="36"><b class="hidden-xs">`+user.data.user.username+`</b><span class="caret"></span></a>
 				<ul class="dropdown-menu dropdown-user animated flipInY">
 					<li>
 						<div class="dw-user-box">
@@ -1134,7 +1134,7 @@ function userMenu(user){
 	}else{
 		menuList += `
 			<li class="dropdown">
-					<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="javascript:void(0)"><img alt="user-img" class="img-circle" src="`+user.data.user.image+`" width="36"><b class="hidden-xs">`+user.data.user.username+`</b><span class="caret"></span></a>
+					<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="javascript:void(0)"><img alt="" class="img-circle" src="`+user.data.user.image+`" width="36"><b class="hidden-xs">`+user.data.user.username+`</b><span class="caret"></span></a>
 					<ul class="dropdown-menu dropdown-user animated flipInY">
 						<li>
 							<div class="dw-user-box">
@@ -2682,7 +2682,7 @@ function buildRequest(array){
     </div>
 	<div id="new-request" class="white-popup mfp-with-anim mfp-hide">
 		<div class="col-md-8 col-md-offset-2">
-			<div class="white-box m-b-0 search-div">
+			<div class="white-box m-b-0 search-div resultBox-outside">
 				<div class="form-group m-b-0">
 					<div id="request-input-div" class="input-group">
 						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control inline-focus">
@@ -2703,7 +2703,7 @@ function buildRequest(array){
                     </div>
 					<div class="clearfix"></div>
 				</div>
-				<div id="request-results" class="row el-element-overlay"></div>
+				<div id="request-results" class="row el-element-overlay resultBox-inside"></div>
 			</div>
 		</div>
 	</div>
@@ -2836,6 +2836,14 @@ function doneTyping () {
 	$('#request-page').val(page);
 	requestSearch(title, page).success(function(data) {
 		$('#request-results').html(buildRequestResult(data,'',title,page,true));
+        if(bowser.mobile !== true){
+            $('.resultBox-inside').slimScroll({
+                height: '100%',
+                position: 'right',
+                size: "5px",
+                color: '#dcdcdc'
+            });
+        }
 		$('.mfp-wrap').animate({
 			scrollTop:  '0'
 		}, 500);
@@ -2854,6 +2862,14 @@ function requestList (list, type, page=1) {
 			var results = data.items;
 		}
 		$('#request-results').html(buildRequestResult(data, type, list, page));
+        if(bowser.mobile !== true){
+            $('.resultBox-inside').slimScroll({
+                height: '100%',
+                position: 'right',
+                size: "5px",
+                color: '#dcdcdc'
+            });
+        }
 		$('.mfp-wrap').animate({
 			scrollTop: '0'
 		}, 500);
@@ -3662,17 +3678,16 @@ function organizrSpecialSettings(array){
 		<li class=""><a class="waves-effect waves-light inline-popups" href="#mediaSearch-area" data-effect="mfp-zoom-out"> <i class="ti-search"></i></a></li>
 		`;
 		var searchBoxResults = `
-		<a class="inline-popups hidden openResults" href="#mediaSearch-area" data-effect="mfp-zoom-out"></a>
 		<div id="mediaSearch-area" class="white-popup mfp-with-anim mfp-hide">
 			<div class="col-md-8 col-md-offset-2">
-				<div class="white-box m-b-0">
+				<div class="white-box m-b-0 resultBox-outside">
 					<div class="form-group m-b-0">
 
 							<input id="mediaSearchQuery" data-server="`+array.settings.homepage.search.type+`" lang="en" placeholder="Search My Media" type="text" class="form-control inline-focus">
 
 						<div class="clearfix"></div>
 					</div>
-					<div class="row el-element-overlay mediaSearch-div"></div>
+					<div class="row el-element-overlay mediaSearch-div resultBox-inside"></div>
 				</div>
 			</div>
 		</div>

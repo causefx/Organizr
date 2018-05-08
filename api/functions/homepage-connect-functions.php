@@ -172,7 +172,7 @@ function resolveEmbyItem($itemDetails)
 	$embyItem['uid'] = $item['Id'];
 	$embyItem['imageType'] = (isset($item['ImageTags']['Primary']) ? "Primary" : false);
 	$embyItem['elapsed'] = isset($itemDetails['PlayState']['PositionTicks']) && $itemDetails['PlayState']['PositionTicks'] !== '0' ? (int)$itemDetails['PlayState']['PositionTicks'] : null;
-    $embyItem['duration'] = isset($itemDetails['NowPlayingItem']['RunTimeTicks']) ? (int)$itemDetails['NowPlayingItem']['RunTimeTicks'] : (int)(isset($item['RunTimeTicks']) ? $item['RunTimeTicks'] : '');
+	$embyItem['duration'] = isset($itemDetails['NowPlayingItem']['RunTimeTicks']) ? (int)$itemDetails['NowPlayingItem']['RunTimeTicks'] : (int)(isset($item['RunTimeTicks']) ? $item['RunTimeTicks'] : '');
 	$embyItem['watched'] = ($embyItem['elapsed'] && $embyItem['duration'] ? floor(($embyItem['elapsed'] / $embyItem['duration']) * 100) : 0);
 	$embyItem['transcoded'] = isset($itemDetails['TranscodingInfo']['CompletionPercentage']) ? floor((int)$itemDetails['TranscodingInfo']['CompletionPercentage']) : 100;
 	$embyItem['stream'] = @$itemDetails['PlayState']['PlayMethod'];
@@ -240,7 +240,7 @@ function resolveEmbyItem($itemDetails)
 		'rating' => @(string)$item['CommunityRating'],
 		'duration' => @(string)$item['RunTimeTicks'],
 		'originallyAvailableAt' => @(string)$item['PremiereDate'],
-        'year' => (string)isset($item['ProductionYear']) ? $item['ProductionYear'] : '',
+		'year' => (string)isset($item['ProductionYear']) ? $item['ProductionYear'] : '',
 		//'studio' => (string)$item['studio'],
 		'tagline' => @(string)$item['Taglines'][0],
 		'genres' => ($item['Genres']) ? $genres : '',
