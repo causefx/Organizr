@@ -3814,7 +3814,12 @@ function buildMediaResults(array,source,term){
 }
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
-		var json = JSON.parse(data);
+        try {
+            var json = JSON.parse(data);
+        } catch (e) {
+            message('FATAL ERROR',data,'bottom-right','#FFF','error','60000');
+            return false;
+        }
 		if(json.data.user == false){ location.reload(); }
 		currentVersion = json.data.status.version;
 		activeInfo = {

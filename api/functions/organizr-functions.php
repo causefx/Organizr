@@ -849,7 +849,7 @@ function logoOrText()
 	if ($GLOBALS['useLogo'] == false) {
 		return '<h1>' . $GLOBALS['title'] . '</h1>';
 	} else {
-		return '<img style="max-width: 350px;" src="' . $GLOBALS['logo'] . '" alt="Home" />';
+		return '<img class="loginLogo" src="' . $GLOBALS['logo'] . '" alt="Home" />';
 	}
 }
 

@@ -812,3 +812,7 @@ input.has-success {
     overflow-x: hidden;
     overflow-y: scroll;
 }
+.loginLogo {
+    max-width: 350px;
+    max-height: 225px;
+}

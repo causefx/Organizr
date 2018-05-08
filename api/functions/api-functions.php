@@ -236,10 +236,10 @@ function updateDB($path, $filename, $oldVerNum = false)
 				}
 			}
 		}
-		updateConfig(array('configVersion' => $GLOBALS['installedVersion']));
 		return true;
 	} catch (Dibi\Exception $e) {
-		return $e;
+		writeLog('error', 'Update Function -  Error [' . $e . ']', 'Database');
+		return false;
 	}
 }
 
