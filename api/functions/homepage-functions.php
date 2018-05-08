@@ -520,6 +520,13 @@ function getHomepageList()
 						'options' => $groups
 					),
 					array(
+						'type' => 'text',
+						'attr' => 'onkeypress="return isNumberKey(event)"',
+						'name' => 'homepageRecentLimit',
+						'label' => 'Item Limit',
+						'value' => $GLOBALS['homepageRecentLimit'],
+					),
+					array(
 						'type' => 'select',
 						'name' => 'homepageRecentRefresh',
 						'label' => 'Refresh Seconds',
@@ -680,6 +687,13 @@ function getHomepageList()
 						'label' => 'Minimum Authorization',
 						'value' => $GLOBALS['homepageEmbyRecentAuth'],
 						'options' => $groups
+					),
+					array(
+						'type' => 'text',
+						'attr' => 'onkeypress="return isNumberKey(event)"',
+						'name' => 'homepageRecentLimit',
+						'label' => 'Item Limit',
+						'value' => $GLOBALS['homepageRecentLimit'],
 					),
 					array(
 						'type' => 'select',

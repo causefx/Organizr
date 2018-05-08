@@ -816,3 +816,6 @@ input.has-success {
     max-width: 350px;
     max-height: 225px;
 }
+.recent-items .owl-item {
+    height: 225px;
+}

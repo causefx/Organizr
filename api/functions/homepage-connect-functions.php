@@ -454,7 +454,7 @@ function plexConnect($action, $key = null)
 				$url = $url . "/status/sessions?X-Plex-Token=" . $GLOBALS['plexToken'];
 				break;
 			case 'recent':
-				$url = $url . "/library/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'];
+				$url = $url . "/library/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&limit=" . $GLOBALS['homepageRecentLimit'];
 				break;
 			case 'metadata':
 				$url = $url . "/library/metadata/" . $key . "?X-Plex-Token=" . $GLOBALS['plexToken'];
@@ -571,7 +571,7 @@ function embyConnect($action, $key = null, $skip = false)
 				} catch (Requests_Exception $e) {
 					writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				};
-				$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=false&Limit=100&api_key=' . $GLOBALS['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false');
+				$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=false&Limit=' . $GLOBALS['homepageRecentLimit'] . '&api_key=' . $GLOBALS['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false');
 				break;
 			case 'metadata':
 				$skip = true;

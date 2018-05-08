@@ -81,6 +81,12 @@ function contains(target, pattern){
     });
     return (value === 1)
 }
+function isNumberKey(evt) {
+    var charCode = (evt.which) ? evt.which : event.keyCode;
+    if ((charCode < 48 || charCode > 57))
+        return false;
+    return true;
+}
 function timerIncrement() {
     idleTime = idleTime + 1;
     if (idleTime > 19) { // 20 minutes
@@ -597,6 +603,9 @@ function buildFormItem(item){
 		case 'text':
 			return smallLabel+'<input data-changed="false" lang="en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
 			break;
+        case 'number':
+            return smallLabel+'<input data-changed="false" lang="en" type="number" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+            break;
 		case 'textbox':
 			return smallLabel+'<textarea data-changed="false" class="form-control'+extraClass+'"'+placeholder+id+name+disabled+type+attr+' autocomplete="new-password">'+textarea+'</textarea>';
 			break;
@@ -2475,7 +2484,7 @@ function buildRecent(array, type){
 	dropdown += (recent && movie) ? `<li><a data-filter="recent-movie" server-filter="`+type+`" href="javascript:void(0);">Movies</a></li>` : '';
 	dropdown += (recent && tv) ? `<li><a data-filter="recent-tv" server-filter="`+type+`" href="javascript:void(0);">Shows</a></li>` : '';
 	dropdown += (recent && video) ? `<li><a data-filter="recent-video" server-filter="`+type+`" href="javascript:void(0);">Videos</a></li>` : '';
-	//dropdown += (recent && music) ? `<li><a data-filter="recent-music" server-filter="`+type+`" href="javascript:void(0);">Music</a></li>` : '';
+	dropdown += (recent && music) ? `<li><a data-filter="recent-music" server-filter="`+type+`" href="javascript:void(0);">Music</a></li>` : '';
 	var dropdownMenu = `
 	<div class="btn-group pull-right">
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
