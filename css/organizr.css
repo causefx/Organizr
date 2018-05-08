@@ -802,6 +802,7 @@ input.has-success {
 }
 .fc-state-disabled {
     display: none;
+}
 .resultBox-outside {
     max-height: 96vh;
 }
