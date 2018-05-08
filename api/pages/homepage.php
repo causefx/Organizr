@@ -33,12 +33,12 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
             header: {
                left: "prev,next,today",
                center: "title",
-               right: (activeInfo.mobile) ? "" : "today,month,basicWeek,basicDay,list",
+               right: (activeInfo.mobile) ? "" : "month,basicWeek,basicDay,list",
             },
             views: {
-               basicDay: { buttonText: window.lang.translate("Day"), eventLimit: '.$GLOBALS['calendarLimit'].' },
-               basicWeek: { buttonText: window.lang.translate("Week"), eventLimit: '.$GLOBALS['calendarLimit'].' },
-               month: { buttonText: window.lang.translate("Month"), eventLimit: '.$GLOBALS['calendarLimit'].' },
+               basicDay: { buttonText: window.lang.translate("Day"), eventLimit: ' . $GLOBALS['calendarLimit'] . ' },
+               basicWeek: { buttonText: window.lang.translate("Week"), eventLimit: ' . $GLOBALS['calendarLimit'] . ' },
+               month: { buttonText: window.lang.translate("Month"), eventLimit: ' . $GLOBALS['calendarLimit'] . ' },
                list: { buttonText: window.lang.translate("List"), duration: {days: 15} },
             },
             timezone: "local",

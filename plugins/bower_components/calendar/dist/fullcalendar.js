@@ -11214,12 +11214,14 @@ function Calendar_constructor(element, overrides) {
 	function prev() {
 		date = currentView.computePrevDate(date);
 		renderView();
+        new SimpleBar($('.fc-scroller')[0]);
 	}
 
 
 	function next() {
 		date = currentView.computeNextDate(date);
 		renderView();
+        new SimpleBar($('.fc-scroller')[0]);
 	}
 
 
