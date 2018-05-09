@@ -2487,6 +2487,8 @@ function buildRecent(array, type){
 	dropdown += (recent && music) ? `<li><a data-filter="recent-music" server-filter="`+type+`" href="javascript:void(0);">Music</a></li>` : '';
 	var dropdownMenu = `
 	<div class="btn-group pull-right">
+		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('`+type+`-recent','previous');"><i class="fa fa-chevron-left"></i></button>
+		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('`+type+`-recent','next');"><i class="fa fa-chevron-right"></i></button>
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
 			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
 		</button>
@@ -2531,6 +2533,19 @@ function buildRecent(array, type){
     </div>
 	` : '';
 }
+function owlChange(elm,action){
+	switch (action){
+		case 'next':
+            $('.'+elm).trigger('next.owl');
+			break;
+		case 'previous':
+            $('.'+elm).trigger('prev.owl');
+			break;
+		default:
+			return false;
+	}
+	return false;
+}
 function cleanPlaylistTitle(string){
 	var test = string.split('.');
 	if(test.length > 1){
@@ -2544,6 +2559,7 @@ function buildPlaylist(array, type){
 	var playlist = (typeof array.content !== 'undefined') ? true : false;
 	var dropdown = '';
 	var first = '';
+    var firstButton = '';
 	var hidden = '';
 	var count = 0;
 	var items = '';
@@ -2554,6 +2570,7 @@ function buildPlaylist(array, type){
 			v.title = cleanPlaylistTitle(v.title);
 			count ++;
 			first = (count == 1) ? v.title : first;
+            firstButton = (count == 1) ? i+'-playlist' : firstButton;
 			hidden = (count == 1) ? '' : ' owl-hidden hidden';
 			dropdown += `<li><a data-filter="`+i+`" server-filter="`+type+`" data-title="`+encodeURI(v.title)+`" href="javascript:void(0);">`+v.title+`</a></li>`;
 
@@ -2565,8 +2582,10 @@ function buildPlaylist(array, type){
 			`;
 		});
 		var builtDropdown = `
+		<button type="button" class="btn btn-info waves-effect hidden-xs playlist-previous" onclick="owlChange('`+firstButton+`','previous');"><i class="fa fa-chevron-left"></i></button>
+		<button type="button" class="btn btn-info waves-effect hidden-xs playlist-next" onclick="owlChange('`+firstButton+`','next');"><i class="fa fa-chevron-right"></i></button>
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
-			<i class="mdi mdi-playlist-play m-r-5"></i><span class="caret"></span>
+			<i class="mdi mdi-playlist-play m-r-5 fa-lg"></i><span class="caret"></span>
 		</button>
 		<ul role="menu" class="dropdown-menu playlist-filter">
 			`+dropdown+`
@@ -2616,6 +2635,8 @@ function buildRequest(array){
 	var ombiButton = (activeInfo.settings.homepage.ombi.enabled == true) ? `<button href="#new-request" id="newRequestButton" class="btn btn-info waves-effect waves-light inline-popups" data-effect="mfp-zoom-out"><i class="fa fa-search m-l-5"></i></button>` : '';
 	if(requests){
 		var builtDropdown = `
+		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('request-items','previous');"><i class="fa fa-chevron-left"></i></button>
+		<button type="button" class="btn btn-info waves-effect hidden-xs" onclick="owlChange('request-items','next');"><i class="fa fa-chevron-right"></i></button>
 		<button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">
 			<i class="fa fa-filter m-r-5"></i><span class="caret"></span>
 		</button>

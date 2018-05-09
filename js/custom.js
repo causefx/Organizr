@@ -276,8 +276,9 @@ $(document).on("click", ".depenency-item", function(e) {
     alert($(this).attr('data-name'));
 });
 function doneTypingMediaSearch () {
-    var query = $('#mediaSearchQuery').val();
-    var server = $('#mediaSearchQuery').attr('data-server');
+    var mediaSearchQuery = $('#mediaSearchQuery');
+    var query = mediaSearchQuery.val();
+    var server = mediaSearchQuery.attr('data-server');
     switch (server) {
         case 'plex':
             var action = 'getPlexSearch';
@@ -289,7 +290,6 @@ function doneTypingMediaSearch () {
     }
     organizrAPI('POST','api/?v1/homepage/connect',{action:action, query:query}).success(function(data) {
         var response = JSON.parse(data);
-        $('.mediaSearch-div').html('');
         $('.mediaSearch-div').html(buildMediaResults(response.data,server,query));
         if(bowser.mobile !== true){
             $('.resultBox-inside').slimScroll({
@@ -1437,12 +1437,14 @@ $(document).on("click", ".filter-request-result", function () {
 //playlist filter
 $(document).on("click", ".playlist-filter li>a", function () {
     var filter = $(this).attr('data-filter');
+    var button = $(this).attr('data-filter')+'-playlist';
     var title = decodeURI($(this).attr('data-title'));
     var type = $(this).attr('server-filter'); //plex or emby
     $('.'+type+'-playlistTitle').html(title);
     $('.'+type+'-playlist').addClass('hidden');
     $('.'+filter+'-playlist').removeClass('hidden');
-
+    $('.playlist-next').attr('onclick','owlChange(\''+button+'\',\'next\');');
+    $('.playlist-previous').attr('onclick','owlChange(\''+button+'\',\'previous\');');
 
 });
 // refresh cache image
