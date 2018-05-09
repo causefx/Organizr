@@ -300,6 +300,7 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
 });
 // SEND TEST EMAIL
 $(document).on('click', '.phpmSendTestEmail', function() {
+    messageSingle('',window.lang.translate('Sending Test E-Mail'),'bottom-right','#FFF','info','5000');
     var post = {
         plugin:'PHPMailer/send/test', // used for switch case in your API call
     };
