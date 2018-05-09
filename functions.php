@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.75');
+ define('INSTALLEDVERSION', '1.80');
 // ===================================
 $debugOrganizr = true;
 if($debugOrganizr == true && file_exists('debug.php')){ require_once('debug.php'); }
