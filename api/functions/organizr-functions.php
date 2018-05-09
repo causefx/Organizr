@@ -48,6 +48,8 @@ function wizardConfig($array)
 		'registrationPassword' => $registrationPassword,
 	);
 	// Create Config
+	$GLOBALS['dbLocation'] = $location;
+	$GLOBALS['dbName'] = $dbName;
 	if (createConfig($configArray)) {
 		// Call DB Create
 		if (createDB($location, $dbName)) {
