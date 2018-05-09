@@ -2,7 +2,7 @@
 
 // ===================================
 // Define Version
- define('INSTALLEDVERSION', '1.75');
+ define('INSTALLEDVERSION', '1.80');
 // ===================================
 $debugOrganizr = true;
 if($debugOrganizr == true && file_exists('debug.php')){ require_once('debug.php'); }
@@ -1756,8 +1756,14 @@ function uploadAvatar($path, $ext_mask = null) {
 // Remove file
 function removeFiles($path) {
     if(is_file($path)) {
-        writeLog("success", "file was removed");
-        unlink($path);
+	    $fileType = getExtension($path);
+	    if(in_arrayi($fileType, array('jpg','jpeg','png','json','db','gif'))){
+		    writeLog("success", "file was removed");
+		unlink($path);
+	    } else{
+		 writeLog("error", "file was not removed");
+		 echo json_encode('Invalid File Type');   
+	    }
     } else {
   		writeLog("error", "file was not removed");
 		echo json_encode('No file specified for removal!');
@@ -4253,7 +4259,7 @@ function getExtension($string) {
 function showFile(){
 	$file = $_GET['file'];
 	$fileType = getExtension($file);
-	if($fileType != 'php'){
+	if($fileType == 'css' || $fileType == 'js'){
 		header("Content-type: ".mimeTypes()[$fileType]);
 		@readfile($file);
 	}
@@ -4754,6 +4760,7 @@ function getPing($url, $style, $refresh = null){
 			$class .= " animated flash loop-animation-timeout";
 		}
 	}
+	$style = htmlspecialchars($style, ENT_QUOTES);
 	echo '<span class="pingcheck badge ping-'.$class.'" style="position: absolute;z-index: 100;right: 5px; padding: 0px 0px;'.$style.';font-size: 10px;">&nbsp;</span>';
 }
 
