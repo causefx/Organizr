@@ -819,3 +819,32 @@ input.has-success {
 .recent-items .owl-item {
     height: 225px;
 }
+.tooltip-content5 {
+    position: absolute;
+    z-index: 9999;
+    min-width: 300px;
+    max-width: 350px;
+    left: 50%;
+    bottom: 100%;
+    font-size: 20px;
+    line-height: 1.4;
+    text-align: center;
+    font-weight: 400;
+    color: #fff;
+    background: 0 0;
+    opacity: 0;
+    margin: 0 0 20px -150px;
+    cursor: default;
+    pointer-events: none;
+    -webkit-font-smoothing: antialiased;
+    -webkit-transition: opacity .3s .3s;
+    transition: opacity .3s .3s;
+}
+.tooltip-inner2 {
+    background: #2b2b2b;
+    padding: 40px 0px;
+    -webkit-transform: translate3d(0,100%,0);
+    transform: translate3d(0,100%,0);
+    webkit-transition: -webkit-transform .3s;
+    transition: transform .3s;
+}

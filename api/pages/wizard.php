@@ -1,5 +1,4 @@
 <?php
-
 $pageWizard = '
 <script>
     (function() {
@@ -188,6 +187,18 @@ $pageWizard = '
                     <form class="form-horizontal" id="validation" name="validation" onsubmit="return false;">
                         <div class="wizard-content">
                             <div class="wizard-pane active" role="tabpanel">
+	                            <div class="panel panel-info">
+                                    <div class="panel-heading">
+                                        <i class="ti-alert fa-fw"></i> <span lang="en">Notice</span>
+                                        <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                                    </div>
+                                    <div class="panel-wrapper collapse in" aria-expanded="true">
+                                        <div class="panel-body">
+                                            <p lang="en">Personal has everything unlocked - no restrictions</p>
+                                            <p lang="en">Business has Media items hidden [Plex, Emby etc...]</p>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <label for="license" lang="en">Install Type</label>
                                     <div class="input-group">
@@ -201,6 +212,17 @@ $pageWizard = '
                                 </div>
                             </div>
                             <div class="wizard-pane" role="tabpanel">
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">
+                                        <i class="ti-alert fa-fw"></i> <span lang="en">Notice</span>
+                                        <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                                    </div>
+                                    <div class="panel-wrapper collapse in" aria-expanded="true">
+                                        <div class="panel-body">
+                                            <p lang="en">If using Plex or Emby - It is suggested that you use the username and email of the Admin account.</p>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <label for="username" lang="en">Username</label>
                                     <div class="input-group">
@@ -231,7 +253,8 @@ $pageWizard = '
                                     </div>
                                     <div class="panel-wrapper collapse in" aria-expanded="true">
                                         <div class="panel-body">
-                                            <p lang="en">The Hash Key will be used to decrypt all passwords etc... on the server.</p>
+                                            <p lang="en">The Hash Key will be used to decrypt all passwords etc... on the server. {User-Generated]</p>
+                                            <p lang="en">The Registration Password will lockout the registration field with this password. {User-Generated]</p>
                                             <p lang="en">The API Key will be used for all calls to organizr for the UI. [Auto-Generated]</p>
                                         </div>
                                     </div>
@@ -267,7 +290,9 @@ $pageWizard = '
                                     <div class="panel-wrapper collapse in" aria-expanded="true">
                                         <div class="panel-body">
                                             <p lang="en">The Database will contain sensitive information.  Please place in directory outside of root Web Directory.</p>
-                                            <p lang="en">Parent Directory: <code>'.dirname(__DIR__, 3).'</code>
+                                            <p lang="en">Suggested Directory: <code>' . dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'db</code> <a class="btn default btn-outline clipboard p-5" data-clipboard-text="' . dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'db" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
+                                            <p lang="en">Current Directory: <code>' . dirname(__DIR__, 2) . '</code> <a class="btn default btn-outline clipboard p-5" data-clipboard-text="' . dirname(__DIR__, 2) . '" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
+                                            <p lang="en">Parent Directory: <code>' . dirname(__DIR__, 3) . '</code> <a class="btn default btn-outline clipboard p-5" data-clipboard-text="' . dirname(__DIR__, 3) . '" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
                                         </div>
                                     </div>
                                 </div>
@@ -282,8 +307,8 @@ $pageWizard = '
                                     <label for="location" lang="en">Database Location</label>
                                     <div class="input-group">
                                         <div class="input-group-addon"><i class="ti-server"></i></div>
-                                        <input type="text" class="form-control wizardInput" name="location" id="form-location" placeholder="'.dirname(__DIR__, 3).'">
-                                        <span class="input-group-btn"><button class="btn btn-info testPath" lang="en" type="button">Test</button></span>
+                                        <input type="text" class="form-control wizardInput" name="location" id="form-location" placeholder="Enter path or copy from above">
+                                        <span class="input-group-btn"><button class="btn btn-info testPath" lang="en" type="button">Test / Create Path</button></span>
                                     </div>
                                 </div>
                             </div>
