@@ -792,6 +792,7 @@
 		function update_user($username, $email, $sha1, $role)
 		{
 			//Admin bypass
+			$trueAdmin = false;
 			if(!in_arrayi($_SESSION["username"], $this->get_admin_list())){
 				// logged in, but do the tokens match?
 				$token = $this->get_user_token($username);
@@ -810,6 +811,7 @@
 				if(isset($_COOKIE['Organizr_Token'])) {
 					if($this->jwtParse()){
 						$override = true;
+						$trueAdmin = true;
 					}
 				}
 				if($override){
@@ -822,7 +824,7 @@
 			if($email !="") {
 				$update = "UPDATE users SET email = '$email' WHERE username = '$username' COLLATE NOCASE";
 				$this->database->exec($update); }
-            if($role !="") {
+			if($role !="" && $trueAdmin) {
 				$update = "UPDATE users SET role = '$role' WHERE username = '$username' COLLATE NOCASE";
 				$this->database->exec($update); }
 			if($sha1 !="") {
@@ -850,36 +852,38 @@
 		 */
 		function invite_user($username = "none", $email, $server)
 		{
-			//lang shit
-			$language = new setLanguage;
-			$domain = getServerPath();
-			$topImage = $domain."images/organizr-logo-h.png";
-			$uServer = strtoupper($server);
-			$now = date("Y-m-d H:i:s");
-			$inviteCode = randomCode(6);
-			$username = (!empty($username) ? $username : strtoupper($server) . " User");
-			$link = getServerPath()."?inviteCode=".$inviteCode;
-			if($email !="") {
-				$insert = "INSERT INTO invites (username, email, code, valid, date) ";
-				$insert .= "VALUES ('".strtolower($username)."', '$email', '$inviteCode', 'Yes', '$now') ";
-				$this->database->exec($insert);
-			}
-   			writeLog("success", "$email has been invited to the $server server");
-			$this->info("$email has been invited to the $server server");
-			if($insert && User::use_mail)
-			{
-				$emailTemplate = array(
-					'type' => 'invite',
-					'body' => emailTemplateInviteUser,
-					'subject' => emailTemplateInviteUserSubject,
-					'user' => $username,
-					'password' => null,
-					'inviteCode' => $inviteCode,
-				);
-				$emailTemplate = emailTemplate($emailTemplate);
-				$subject = $emailTemplate['subject'];
-				$body = buildEmail($emailTemplate);
-                $this->startEmail($email, $username, $subject, $body);
+			if(in_arrayi($_SESSION["username"], $this->get_admin_list())){
+				//lang shit
+				$language = new setLanguage;
+				$domain = getServerPath();
+				$topImage = $domain."images/organizr-logo-h.png";
+				$uServer = strtoupper($server);
+				$now = date("Y-m-d H:i:s");
+				$inviteCode = randomCode(6);
+				$username = (!empty($username) ? $username : strtoupper($server) . " User");
+				$link = getServerPath()."?inviteCode=".$inviteCode;
+				if($email !="") {
+					$insert = "INSERT INTO invites (username, email, code, valid, date) ";
+					$insert .= "VALUES ('".strtolower($username)."', '$email', '$inviteCode', 'Yes', '$now') ";
+					$this->database->exec($insert);
+				}
+				writeLog("success", "$email has been invited to the $server server");
+				$this->info("$email has been invited to the $server server");
+				if($insert && User::use_mail)
+				{
+					$emailTemplate = array(
+						'type' => 'invite',
+						'body' => emailTemplateInviteUser,
+						'subject' => emailTemplateInviteUserSubject,
+						'user' => $username,
+						'password' => null,
+						'inviteCode' => $inviteCode,
+					);
+					$emailTemplate = emailTemplate($emailTemplate);
+					$subject = $emailTemplate['subject'];
+					$body = buildEmail($emailTemplate);
+			$this->startEmail($email, $username, $subject, $body);
+				}
 			}
 		}
 		/**

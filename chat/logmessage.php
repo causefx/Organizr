@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = "";
             }
         }else{
-           $message = $_GET["message"]; 
+           $message = htmlspecialchars($_GET["message"], ENT_QUOTES); 
         }
         $user = $_GET["user"];
         $avatar = $_GET["avatar"];
