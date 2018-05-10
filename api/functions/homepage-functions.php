@@ -590,7 +590,7 @@ function getHomepageList()
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',
-						'label' => ''
+						'label' => 'Please Save before Testing'
 					),
 					array(
 						'type' => 'button',
@@ -769,7 +769,7 @@ function getHomepageList()
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',
-						'label' => ''
+						'label' => 'Please Save before Testing'
 					),
 					array(
 						'type' => 'button',
@@ -836,7 +836,7 @@ function getHomepageList()
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',
-						'label' => ''
+						'label' => 'Please Save before Testing'
 					),
 					array(
 						'type' => 'button',
@@ -1068,7 +1068,7 @@ function getHomepageList()
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',
-						'label' => ''
+						'label' => 'Please Save before Testing'
 					),
 					array(
 						'type' => 'button',
@@ -1167,7 +1167,7 @@ function getHomepageList()
 						'value' => $GLOBALS['calendarRefresh'],
 						'options' => $time
 					),
-										array(
+					array(
 						'type' => 'switch',
 						'name' => 'sonarrUnmonitored',
 						'label' => 'Show Unmonitored',
@@ -1177,7 +1177,7 @@ function getHomepageList()
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',
-						'label' => ''
+						'label' => 'Please Save before Testing'
 					),
 					array(
 						'type' => 'button',
@@ -1280,7 +1280,7 @@ function getHomepageList()
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',
-						'label' => ''
+						'label' => 'Please Save before Testing'
 					),
 					array(
 						'type' => 'button',

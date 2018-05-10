@@ -955,7 +955,7 @@ function getSonarrCalendar($array, $number)
 		if ($downloaded == "0" && isset($unaired) && $episodePremier == "true") {
 			$downloaded = "text-primary animated flash";
 		} elseif ($downloaded == "0" && isset($unaired) && $monitored == "0") {
-			$downloaded = "text-dark";	
+			$downloaded = "text-dark";
 		} elseif ($downloaded == "0" && isset($unaired)) {
 			$downloaded = "text-info";
 		} elseif ($downloaded == "1") {
