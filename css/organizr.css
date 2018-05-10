@@ -862,7 +862,7 @@ input.has-success {
     display:none;
     -webkit-border-radius:60px;
     -moz-border-radius:60px;
-    border-radius:60px
+    border-radius:60px;
     z-index: 1;
 }
 #scroll span {
