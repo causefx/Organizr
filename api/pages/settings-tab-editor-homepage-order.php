@@ -30,13 +30,14 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	        newlink = ui.item.find( ".ordinal-position" ).attr("data-link");
 	        $("#homepage-values [name="+newlink+"]").val(seq);
 	        $("#homepage-values [name="+newlink+"]").attr("data-changed", "true");
+	        $("#submitHomepageOrder-save").removeClass("hidden");
 	    }
     });
 </script>
 <div class="panel bg-org panel-info">
     <div class="panel-heading">
 		<span lang="en">Homepage Order</span>
-        <button type="button" class="btn btn-success btn-circle pull-right m-r-5" onclick="submitHomepageOrder()" ><i class="fa fa-save"></i></button>
+        <button id="submitHomepageOrder-save" type="button" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right animated loop-animation rubberBand hidden" onclick="submitHomepageOrder()" ><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org" >

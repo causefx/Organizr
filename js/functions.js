@@ -652,7 +652,7 @@ function buildPluginsItem(array){
 		<!-- Plugin Settings Page -->
 		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup-block mfp-with-anim addFormTick" autocomplete="off">
 			<h1 class="pull-left" lang="en">`+v.name+` Settings</h1>
-			<button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+			<button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
 			<div class="clearfix"></div>
 			<fieldset id="`+v.idPrefix+`-settings-items" style="border:0;"></fieldset>
 			<div class="clearfix"></div>
@@ -754,7 +754,7 @@ function buildHomepageItem(array){
 				</div>
 				<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup-block mfp-with-anim homepageForm addFormTick">
 				    <fieldset style="border:0;">
-				    	<button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+				    	<button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
 						`+buildFormGroup(v.settings)+`
 					</fieldset>
 				    <div class="clearfix"></div>
@@ -1560,10 +1560,10 @@ function submitHomepageOrder(){
     //callbacks.add( buildCustomizeAppearance );
 	if(size > 0){
 		settingsAPI(post,callbacks);
+        $('#submitHomepageOrder-save').addClass('hidden');
 	}else{
 	    console.log('add error');
 	}
-
 }
 function submitTabOrder(){
 	var post = {
@@ -2970,6 +2970,7 @@ function buildDownloaderItem(array, source, type='none'){
                             <td class="downloader mouse" data-target="`+v.nzo_id+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>
                             <td class="hidden-xs"><span class="label label-info">`+v.cat+`</span></td>
                             <td class="hidden-xs">`+v.size+`</td>
+                            <td class="hidden-xs" alt="`+v.eta+`">`+v.timeleft+`</td>
                             <td class="text-right">
 								<div class="progress progress-lg m-b-0">
                                     <div class="progress-bar progress-bar-info" style="width: `+v.percentage+`%;" role="progressbar">`+v.percentage+`%</div>

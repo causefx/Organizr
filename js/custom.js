@@ -14,6 +14,19 @@ $(document).ready(function () {
     });
     "use strict";
     var body = $("body");
+
+    $(window).scroll(function(){
+        if ($(this).scrollTop() > 100) {
+            $('#scroll').fadeIn();
+        } else {
+            $('#scroll').fadeOut();
+        }
+    });
+    $('#scroll').click(function(){
+        $("html, body").animate({ scrollTop: 0 }, 600);
+        return false;
+    });
+
     $(function () {
         //$("#preloader").fadeOut();
         var set = function () {
@@ -126,7 +139,6 @@ function pageLoad(){
         }
         myLazyLoad.update();
     });
-
 
 
     /* ===== Tooltip Initialization ===== */

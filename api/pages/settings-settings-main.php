@@ -6,7 +6,7 @@ $pageSettingsSettingsMain = '
 <div class="panel bg-org panel-info">
     <div class="panel-heading">
 		<span lang="en">Organizr Settings</span>
-		<button id="settings-main-form-save" onclick="submitSettingsForm(\'settings-main-form\')" class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+		<button id="settings-main-form-save" onclick="submitSettingsForm(\'settings-main-form\')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org">
