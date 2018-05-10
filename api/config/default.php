@@ -41,6 +41,7 @@ return array(
 	'ssoOmbi' => false,
 	'ssoTautulli' => false,
 	'sonarrURL' => '',
+	'sonarrUnmonitored' => false,
 	'sonarrToken' => '',
 	'radarrURL' => '',
 	'radarrToken' => '',

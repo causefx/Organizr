@@ -769,7 +769,7 @@ function getHomepageList()
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',
-						'label' => 'Please save form before Test'
+						'label' => ''
 					),
 					array(
 						'type' => 'button',
@@ -1166,6 +1166,12 @@ function getHomepageList()
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['calendarRefresh'],
 						'options' => $time
+					),
+										array(
+						'type' => 'switch',
+						'name' => 'sonarrUnmonitored',
+						'label' => 'Show Unmonitored',
+						'value' => $GLOBALS['sonarrUnmonitored']
 					)
 				),
 				'Test Connection' => array(

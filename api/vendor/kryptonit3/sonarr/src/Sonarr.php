@@ -29,7 +29,7 @@ class Sonarr
      * @param string|null $end
      * @return array|object|string
      */
-    public function getCalendar($start = null, $end = null)
+    public function getCalendar($start = null, $end = null, $sonarrUnmonitored = 'false')
     {
         $uriData = [];
 
@@ -61,7 +61,10 @@ class Sonarr
                 exit();
             }
         }
-
+        if ( $sonarrUnmonitored == 'true' ) {
+            $uriData['unmonitored'] = 'true';
+	}
+            
         $response = [
             'uri' => 'calendar',
             'type' => 'get',
