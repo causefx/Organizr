@@ -99,8 +99,8 @@ function timerIncrement() {
 			//do nothing
 		}else{
 			location.reload();
-		};
-	}
+        }
+    }
 }
 function ajaxloader(element=null, action='out'){
 	var loader = `
@@ -818,8 +818,10 @@ function buildFormGroup(array){
 					override = v.override;
 				}
 				count++;
-				if(count%2 !== 0 ){ group += '<div class="row start">'; };
-				group += `
+                if (count % 2 !== 0) {
+                    group += '<div class="row start">';
+                }
+                group += `
 					<!-- INPUT BOX -->
 					<div class="col-md-`+override+` p-b-10">
 						<div class="form-group">
@@ -831,8 +833,10 @@ function buildFormGroup(array){
 					</div>
 					<!--/ INPUT BOX -->
 				`;
-				if(count%2 == 0 || count == total ){ group += '</div><!--end-->'; };
-			});
+                if (count % 2 == 0 || count == total) {
+                    group += '</div><!--end-->';
+                }
+            });
 			group += '</div>';
 		}
 	});
@@ -902,8 +906,7 @@ function buildSSO(){
 	organizrAPI('GET','api/?v1/sso').success(function(data) {
 		var response = JSON.parse(data);
 		$('#sso-form').html(buildFormGroup(response.data));
-		;
-	}).fail(function(xhr) {
+    }).fail(function (xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
@@ -1316,7 +1319,7 @@ function buildTabTypeSelect(tabID, typeID){
 			'type_id':2,
 			'type':'New Window'
 		}
-	]
+    ];
 	var typeSelect = '';
 	var selected = '';
 	$.each(array, function(i,v) {
@@ -1525,7 +1528,7 @@ function submitSettingsForm(form){
 
     }
     if(size > 0){
-        console.log(submit)
+        console.log(submit);
         settingsAPI(post,callbacks);
         $("#"+form+" :input").each(function(){
             var input = $(this);
@@ -2165,7 +2168,7 @@ $.urlParam = function(name){
     else{
        return decodeURI(results[1]) || 0;
     }
-}
+};
 function errorPage(error=null){
 	if(error){
 		local('set','error',error);
@@ -3329,7 +3332,7 @@ function buildMetadata(array, source){
 			rating = `<div class="col-xs-2 p-10"><div data-label="`+v.metadata.rating *10+`%" class="css-bar css-bar-`+Math.ceil(ratingRound/5)*5+` css-bar-sm m-b-0  css-bar-info"><img src="plugins/images/rotten.png" class="nowPlayingUserThumb" alt="User"></div></div>`;
 		}
 		var seconds = v.metadata.duration / 1000 ; // or "2000"
-		seconds = parseInt(seconds) //because moment js dont know to handle number in string format
+        seconds = parseInt(seconds); //because moment js dont know to handle number in string format
 		var format =  Math.floor(moment.duration(seconds,'seconds').asHours()) + ':' + moment.duration(seconds,'seconds').minutes() + ':' + moment.duration(seconds,'seconds').seconds();
 		metadata = `
 		<div class="white-box m-b-0">
@@ -3388,7 +3391,7 @@ function buildCalendarMetadata(array){
 			rating = `<div class="col-xs-2 p-10"><div data-label="`+array.ratings *10+`%" class="css-bar css-bar-`+Math.ceil(ratingRound/5)*5+` css-bar-sm m-b-0  css-bar-info"><img src="plugins/images/rotten.png" class="nowPlayingUserThumb" alt="User"></div></div>`;
 		}
 		var seconds = array.runtime / 1000 ; // or "2000"
-		seconds = parseInt(seconds) //because moment js dont know to handle number in string format
+    seconds = parseInt(seconds); //because moment js dont know to handle number in string format
 		var format =  Math.floor(moment.duration(seconds,'seconds').asHours()) + ':' + moment.duration(seconds,'seconds').minutes() + ':' + moment.duration(seconds,'seconds').seconds();
 		metadata = `
 		<div class="white-box m-b-0">
@@ -3573,9 +3576,12 @@ function homepageCalendar(timeout){
         $('.fc-toolbar').addClass('fc-alternate');
     }
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
+        console.log(data);
 		var response = JSON.parse(data);
+        console.log(response.data);
         $('#calendar').fullCalendar('removeEvents');
-        $('#calendar').fullCalendar('addEventSource', response.data);
+        $('#calendar').fullCalendar('addEventSource', response.data.events);
+        $('#calendar').fullCalendar('addEventSource', response.data.ical);
 		response = '';
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -3704,7 +3710,7 @@ function inlineLoad(){
 	   },
 	   close: function() {
 		  if(typeof player !== 'undefined'){
-			  console.log('STOP STOP STOP')
+              console.log('STOP STOP STOP');
 			  player.destroy();
 		  }
 		}
