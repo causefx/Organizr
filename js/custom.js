@@ -973,7 +973,7 @@ $(document).on('focusout', 'input.pick-a-color', function(e) {
 });
 $(document).on('change', '.addFormTick :input', function(e) {
     $(this).attr('data-changed', true);
-    $(this).addClass('has-success');
+    $(this).closest('.form-group').addClass('has-success');
     var formID = $(this).closest('form').attr('id');
     $('#'+formID+'-save').removeClass('hidden');
     console.log(formID);

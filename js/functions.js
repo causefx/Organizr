@@ -1529,13 +1529,13 @@ function submitSettingsForm(form){
         settingsAPI(post,callbacks);
         $("#"+form+" :input").each(function(){
             var input = $(this);
-            input.removeClass('has-success').removeClass('has-error');
+            input.closest('.form-group').removeClass('has-success').removeClass('has-error');
         });
         $('#'+form+'-save').addClass('hidden');
     }else{
         $("#"+form+" :input").each(function(){
             var input = $(this);
-            input.removeClass('has-success').addClass('has-error');
+            input.closest('.form-group').removeClass('has-success').addClass('has-error');
         });
     }
 }
