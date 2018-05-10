@@ -567,11 +567,11 @@ function embyConnect($action, $key = null, $skip = false)
 								break;
 							}
 						}
+						$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=false&Limit=' . $GLOBALS['homepageRecentLimit'] . '&api_key=' . $GLOBALS['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false');
 					}
 				} catch (Requests_Exception $e) {
 					writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				};
-				$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=false&Limit=' . $GLOBALS['homepageRecentLimit'] . '&api_key=' . $GLOBALS['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false');
 				break;
 			case 'metadata':
 				$skip = true;

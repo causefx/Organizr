@@ -2516,7 +2516,8 @@ function buildStream(array, type){
 }
 function buildRecent(array, type){
 	var recent = (typeof array.content !== 'undefined') ? true : false;
-	var movie = (recent) ? (array.content.filter(p => p.type == "movie").length > 0 ? true : false) : false;
+    array.content = (recent) ? Object.values(array.content) : false;
+    var movie = (recent) ? (array.content.filter(p => p.type == "movie").length > 0 ? true : false) : false;
 	var tv = (recent) ? (array.content.filter(p => p.type == "tv").length > 0 ? true : false) : false;
 	var video = (recent) ? (array.content.filter(p => p.type == "video").length > 0 ? true : false) : false;
 	var music = (recent) ? (array.content.filter(p => p.type == "music").length > 0 ? true : false) : false;
