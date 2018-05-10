@@ -833,7 +833,7 @@ function getCalendar()
 			foreach ($sonarrs as $key => $value) {
 				try {
 					$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-					$sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate), $key);
+					$sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate, $GLOBALS['sonarrUnmonitored']), $key);
 				} catch (Exception $e) {
 					writeLog('error', 'Sonarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				}
@@ -935,6 +935,7 @@ function getSonarrCalendar($array, $number)
 		$seriesName = $child['series']['title'];
 		$seriesID = $child['series']['tvdbId'];
 		$episodeID = $child['series']['tvdbId'];
+		$monitored = $child['monitored'];
 		if (!isset($episodeID)) {
 			$episodeID = "";
 		}
@@ -953,6 +954,8 @@ function getSonarrCalendar($array, $number)
 		$downloaded = $child['hasFile'];
 		if ($downloaded == "0" && isset($unaired) && $episodePremier == "true") {
 			$downloaded = "text-primary animated flash";
+		} elseif ($downloaded == "0" && isset($unaired) && $monitored == "0") {
+			$downloaded = "text-dark";	
 		} elseif ($downloaded == "0" && isset($unaired)) {
 			$downloaded = "text-info";
 		} elseif ($downloaded == "1") {
