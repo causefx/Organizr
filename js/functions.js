@@ -650,8 +650,10 @@ function buildPluginsItem(array){
 	$.each(array, function(i,v) {
 		var settingsPage = (v.settings == true) ? `
 		<!-- Plugin Settings Page -->
-		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup-block mfp-with-anim" autocomplete="off">
-			<h1 lang="en">`+v.name+` Settings</h1>
+		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup-block mfp-with-anim addFormTick" autocomplete="off">
+			<h1 class="pull-left" lang="en">`+v.name+` Settings</h1>
+			<button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+			<div class="clearfix"></div>
 			<fieldset id="`+v.idPrefix+`-settings-items" style="border:0;"></fieldset>
 			<div class="clearfix"></div>
 		</form>
@@ -750,8 +752,11 @@ function buildHomepageItem(array){
 						</div>
 					</div>
 				</div>
-				<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup-block mfp-with-anim homepageForm">
-				    <fieldset style="border:0;">`+buildFormGroup(v.settings)+`</fieldset>
+				<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup-block mfp-with-anim homepageForm addFormTick">
+				    <fieldset style="border:0;">
+				    	<button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+						`+buildFormGroup(v.settings)+`
+					</fieldset>
 				    <div class="clearfix"></div>
 				</form>
 				`;
@@ -778,22 +783,16 @@ function buildHomepage(){
 		customHTMLoneEditor.setTheme("ace/theme/idle_fingers");
 		customHTMLoneEditor.setShowPrintMargin(false);
 		customHTMLoneEditor.session.on('change', function(delta) {
-			if($('.customHTMLoneTextarea').val() == customHTMLoneEditor.getValue()){
-				$('.savecustomHTMLoneTextarea').addClass('hidden');
-			}else{
-				$('.savecustomHTMLoneTextarea').removeClass('hidden');
-			}
+            $('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue());
+            $('#homepage-CustomHTML-1-form-save').removeClass('hidden');
 		});
 		customHTMLtwoEditor = ace.edit("customHTMLtwoEditor");
 		customHTMLtwoEditor.session.setMode(new HTMLMode());
 		customHTMLtwoEditor.setTheme("ace/theme/idle_fingers");
 		customHTMLtwoEditor.setShowPrintMargin(false);
 		customHTMLtwoEditor.session.on('change', function(delta) {
-			if($('.customHTMLtwoTextarea').val() == customHTMLtwoEditor.getValue()){
-				$('.savecustomHTMLtwoTextarea').addClass('hidden');
-			}else{
-				$('.savecustomHTMLtwoTextarea').removeClass('hidden');
-			}
+            $('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue());
+            $('#homepage-CustomHTML-2-form-save').removeClass('hidden');
 		});
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -886,20 +885,9 @@ function buildCustomizeAppearance(){
 		cssEditor.setTheme("ace/theme/idle_fingers");
 		cssEditor.setShowPrintMargin(false);
 		cssEditor.session.on('change', function(delta) {
-			if($('.cssTextarea').val() == cssEditor.getValue()){
-				$('.saveCss').addClass('hidden');
-			}else{
-				$('.saveCss').removeClass('hidden');
-			}
+            $('.cssTextarea').val(cssEditor.getValue());
+            $('#customize-appearance-form-save').removeClass('hidden');
 		});
-		/*var colors = jsColorPicker('input.pick-a-color', {
-			customBG: '#222',
-			readOnly: false,
-			init: function(elm, colors) { // colors is a different instance (not connected to colorPicker)
-				elm.style.backgroundColor = elm.value;
-				elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
-			}
-		});*/
 		$("input.pick-a-color").ColorPickerSliders({
 			placement: 'bottom',
 			color: '#987654',
@@ -1496,6 +1484,61 @@ function buildTabEditorItem(array){
 	});
 	return tabList;
 }
+function submitSettingsForm(form){
+    var list = $( "#"+form ).serializeToJSON();
+    var size = 0;
+    var submit = {};
+    $.each(list, function(i,v) {
+        if(v !== '#987654' && i.includes('disable-pwd-mgr') == false){
+            size++;
+            var input = $( "#"+form+" [name='"+i+"']" );
+            var dataType = input.attr('data-type');
+            switch (dataType) {
+                case 'switch':
+                case 'checkbox':
+                    var value = input.prop("checked") ? true : false;
+                    break;
+				case 'select2':
+                    var value = input.val().toString();
+                    break;
+                default:
+                    var value = input.val();
+            }
+
+            submit[i] = {name: i , value: value, type: dataType};
+        }
+    });
+    var post = {
+        api:'api/?v1/update/config/multiple/form',
+        payload:submit,
+        messageTitle:'',
+        messageBody:'Updated Items',
+        error:'Organizr Function: API Connection Failed'
+    };
+    var callbacks = $.Callbacks();
+    // Custom Callbacks
+    switch(form){
+        case 'customize-appearance-form':
+            //callbacks.add( buildCustomizeAppearance );
+            break;
+        default:
+
+    }
+    if(size > 0){
+        console.log(submit)
+        settingsAPI(post,callbacks);
+        $("#"+form+" :input").each(function(){
+            var input = $(this);
+            input.removeClass('has-success').removeClass('has-error');
+        });
+        $('#'+form+'-save').addClass('hidden');
+    }else{
+        $("#"+form+" :input").each(function(){
+            var input = $(this);
+            input.removeClass('has-success').addClass('has-error');
+        });
+    }
+}
 function submitHomepageOrder(){
 	var list = $( "#homepage-values" ).serializeToJSON();
 	var size = 0;
@@ -1505,8 +1548,7 @@ function submitHomepageOrder(){
 			size++;
 			submit[i] = v;
 		}
-	})
-
+	});
     var post = {
         api:'api/?v1/update/config/multiple',
         payload:submit,
@@ -1519,7 +1561,7 @@ function submitHomepageOrder(){
 	if(size > 0){
 		settingsAPI(post,callbacks);
 	}else{
-			console.log('addd error');
+	    console.log('add error');
 	}
 
 }

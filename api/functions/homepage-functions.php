@@ -769,7 +769,7 @@ function getHomepageList()
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',
-						'label' => ''
+						'label' => 'Please save form before Test'
 					),
 					array(
 						'type' => 'button',

@@ -252,7 +252,7 @@ function addForgotPassword(){
     }
 }
 // CHANGE CUSTOMIZE Options
-$(document).on('change asColorPicker::close', '#PHPMAILER-settings-page :input', function(e) {
+$(document).on('change asColorPicker::close', '#PHPMAILER-settings-page1 :input', function(e) {
     var input = $(this);
     switch ($(this).attr('type')) {
         case 'switch':

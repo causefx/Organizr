@@ -144,7 +144,7 @@ function speedTestLaunch(){
 }
 
 // CHANGE CUSTOMIZE Options
-$(document).on('change asColorPicker::close', '#SPEEDTEST-settings-page :input', function(e) {
+$(document).on('change asColorPicker::close', '#SPEEDTEST-settings-page1 :input', function(e) {
     var input = $(this);
     switch ($(this).attr('type')) {
         case 'switch':

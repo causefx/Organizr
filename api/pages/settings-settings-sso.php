@@ -1,5 +1,4 @@
 <?php
-
 $pageSettingsSettingsSSO = '
 <script>
 	buildSSO();
@@ -7,10 +6,11 @@ $pageSettingsSettingsSSO = '
 <div class="panel bg-org panel-info">
     <div class="panel-heading">
 		<span lang="en">Single Sign-On</span>
+		<button id="sso-form-save" onclick="submitSettingsForm(\'sso-form\')" class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org">
-            <form id="sso-form" class="form-horizontal" onsbumit="return false;"></form>
+            <form id="sso-form" class="form-horizontal addFormTick" onsbumit="return false;"></form>
         </div>
     </div>
 </div>

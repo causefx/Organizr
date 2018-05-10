@@ -13,6 +13,9 @@ function organizrSpecialSettings()
 			),
 			'ombi' => array(
 				'enabled' => (qualifyRequest($GLOBALS['homepageOmbiAuth']) && $GLOBALS['homepageOmbiEnabled'] == true && $GLOBALS['ssoOmbi'] && isset($_COOKIE['Auth'])) ? true : false,
+				'auth' => (qualifyRequest($GLOBALS['homepageOmbiAuth'])) ? true : false,
+				'sso' => ($GLOBALS['ssoOmbi']) ? true : false,
+				'cookie' => (isset($_COOKIE['Auth'])) ? true : false,
 			),
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
@@ -746,6 +749,34 @@ function updateConfigMultiple($array)
 	return (updateConfig($array['data']['payload'])) ? true : false;
 }
 
+function updateConfigMultipleForm($array)
+{
+	$newItem = array();
+	foreach ($array['data']['payload'] as $k => $v) {
+		switch ($v['value']) {
+			case 'true':
+				$v['value'] = (bool)true;
+				break;
+			case 'false':
+				$v['value'] = (bool)false;
+				break;
+			default:
+				$v['value'] = $v['value'];
+		}
+		// Hash
+		if ($v['type'] == 'password') {
+			if (strpos($v['value'], '==') !== false) {
+				$v['value'] = $v['value'];
+			} else {
+				$v['value'] = encrypt($v['value']);
+			}
+		}
+		$newItem[$v['name']] = $v['value'];
+	}
+	//return $newItem;
+	return (updateConfig($newItem)) ? true : false;
+}
+
 function updateConfigItem($array)
 {
 	switch ($array['data']['value']) {
@@ -762,7 +793,6 @@ function updateConfigItem($array)
 	if ($array['data']['type'] == 'password') {
 		$array['data']['value'] = encrypt($array['data']['value']);
 	}
-	//return gettype($array['data']['value']).' - '.$array['data']['value'];
 	$newItem = array(
 		$array['data']['name'] => $array['data']['value']
 	);

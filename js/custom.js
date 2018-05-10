@@ -971,7 +971,29 @@ $(document).on('focusout', 'input.pick-a-color', function(e) {
         $(this).attr('style','');
     }
 });
-$(document).on('change colorPicker::close', '#customize-appearance-form :input', function(e) {
+$(document).on('change', '.addFormTick :input', function(e) {
+    $(this).attr('data-changed', true);
+    $(this).addClass('has-success');
+    var formID = $(this).closest('form').attr('id');
+    $('#'+formID+'-save').removeClass('hidden');
+    console.log(formID);
+    switch ($(this).attr('type')) {
+        case 'switch':
+        case 'checkbox':
+            var value = $(this).prop("checked") ? true : false;
+            break;
+        default:
+            var value = $(this).val();
+    }
+    if($(this).hasClass('themeChanger')){
+        changeTheme(value);
+    }
+    if($(this).hasClass('styleChanger')){
+        changeStyle(value);
+    }
+});
+// Added 1 while testing as we are getting rid of this
+$(document).on('change', '#customize-appearance-form1 :input', function(e) {
     $(this).attr('data-changed', true);
     //$(this).addClass('has-success');
     switch ($(this).attr('type')) {
@@ -1100,7 +1122,7 @@ $(document).on('click', '.disablePlugin', function() {
 
 });
 // SSO Option change
-$(document).on('change', '#sso-form :input', function(e) {
+$(document).on('change', '#sso-form1 :input', function(e) {
     var input = $(this);
     switch ($(this).attr('type')) {
         case 'switch':
@@ -1133,7 +1155,7 @@ $(document).on('change', '#sso-form :input', function(e) {
     );
 });
 // MAIN SETTINGS PAGE
-$(document).on('change', '#settings-main-form :input', function(e) {
+$(document).on('change', '#settings-main-form1 :input', function(e) {
     var input = $(this);
     switch ($(this).attr('type')) {
         case 'switch':
@@ -1363,7 +1385,7 @@ $(document).on("click", ".testPath", function () {
     }
 });
 // Save Homepage Form
-$(document).on('change', '.homepageForm :input', function(e) {
+$(document).on('change', '.homepageForm1 :input', function(e) {
     var input = $(this);
     switch ($(this).attr('type')) {
         case 'switch':
