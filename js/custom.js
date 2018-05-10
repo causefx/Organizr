@@ -971,7 +971,7 @@ $(document).on('focusout', 'input.pick-a-color', function(e) {
         $(this).attr('style','');
     }
 });
-$(document).on('change', '.addFormTick :input', function(e) {
+$(document).on('change keydown', '.addFormTick :input', function(e) {
     $(this).attr('data-changed', true);
     $(this).closest('.form-group').addClass('has-success');
     var formID = $(this).closest('form').attr('id');
