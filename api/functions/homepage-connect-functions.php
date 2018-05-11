@@ -1465,6 +1465,38 @@ function ombiAPI($array)
 	return ombiAction($array['data']['id'], $array['data']['action'], $array['data']['type']);
 }
 
+function ombiImport($type = null)
+{
+	if (!empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && !empty($type)) {
+		try {
+			$url = qualifyURL($GLOBALS['ombiURL']);
+			$headers = array(
+				"Accept" => "application/json",
+				"Content-Type" => "application/json",
+				"Apikey" => $GLOBALS['ombiToken']
+			);
+			$options = (localURL($url)) ? array('verify' => false) : array();
+			switch ($type) {
+				case 'emby':
+					$response = Requests::get($url . "/api/v1/Job/embyuserimporter", $headers, $options);
+					break;
+				case 'plex':
+					$response = Requests::get($url . "/api/v1/Job/plexuserimporter", $headers, $options);
+					break;
+				default:
+					break;
+			}
+			if ($response->success) {
+				writeLog('success', 'OMBI Connect Function - Ran User Import', 'SYSTEM');
+				return true;
+			}
+		} catch (Requests_Exception $e) {
+			writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		};
+	}
+	return false;
+}
+
 function ombiAction($id, $action, $type)
 {
 	if ($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest($GLOBALS['homepageOmbiAuth'])) {
