@@ -209,7 +209,14 @@ function pageLoad(){
                     this.st.focus = '#name';
                 }
                 this.st.mainClass = this.st.el.attr('data-effect');
-            }
+            },
+            beforeClose: function() {
+                // Callback available since v0.9.0
+                if(!$.magnificPopup.instance.currItem.inlineElement.find('.rubberBand').hasClass('hidden')){
+                    var magIndex = $.magnificPopup.instance.currItem.index;
+                    message('You forgot to save','<a class="mouse" onclick="$(\'.popup-with-form\').magnificPopup(\'open\','+magIndex+')">Would you like to go back?</a>','bottom-right','#FFF','warning','5000');
+                }
+            },
         }
     });
     // Inline popups

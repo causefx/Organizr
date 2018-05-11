@@ -520,8 +520,7 @@ function getHomepageList()
 						'options' => $groups
 					),
 					array(
-						'type' => 'text',
-						'attr' => 'onkeypress="return isNumberKey(event)"',
+						'type' => 'number',
 						'name' => 'homepageRecentLimit',
 						'label' => 'Item Limit',
 						'value' => $GLOBALS['homepageRecentLimit'],
@@ -689,8 +688,7 @@ function getHomepageList()
 						'options' => $groups
 					),
 					array(
-						'type' => 'text',
-						'attr' => 'onkeypress="return isNumberKey(event)"',
+						'type' => 'number',
 						'name' => 'homepageRecentLimit',
 						'label' => 'Item Limit',
 						'value' => $GLOBALS['homepageRecentLimit'],
@@ -1119,14 +1117,14 @@ function getHomepageList()
 				),
 				'Misc Options' => array(
 					array(
-						'type' => 'input',
+						'type' => 'number',
 						'name' => 'calendarStart',
 						'label' => '# of Days Before',
 						'value' => $GLOBALS['calendarStart'],
 						'placeholder' => ''
 					),
 					array(
-						'type' => 'input',
+						'type' => 'number',
 						'name' => 'calendarEnd',
 						'label' => '# of Days After',
 						'value' => $GLOBALS['calendarEnd'],
@@ -1228,14 +1226,14 @@ function getHomepageList()
 				),
 				'Misc Options' => array(
 					array(
-						'type' => 'input',
+						'type' => 'number',
 						'name' => 'calendarStart',
 						'label' => '# of Days Before',
 						'value' => $GLOBALS['calendarStart'],
 						'placeholder' => ''
 					),
 					array(
-						'type' => 'input',
+						'type' => 'number',
 						'name' => 'calendarEnd',
 						'label' => '# of Days After',
 						'value' => $GLOBALS['calendarEnd'],

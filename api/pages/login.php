@@ -1,5 +1,4 @@
 <?php
-
 $pageLogin = '
 <script>
 </script>
@@ -7,7 +6,7 @@ $pageLogin = '
   <div class="login-box login-sidebar animated slideInRight">
     <div class="white-box">
       <form class="form-horizontal form-material" id="loginform" onsubmit="return false;">
-        <a href="javascript:void(0)" class="text-center db visible-xs" id="login-logo">'.logoOrText().'</a>
+        <a href="javascript:void(0)" class="text-center db visible-xs" id="login-logo">' . logoOrText() . '</a>
 
         <div class="form-group m-t-40">
           <div class="col-xs-12">
@@ -35,7 +34,7 @@ $pageLogin = '
 
         <div class="form-group m-b-0">
           <div class="col-sm-12 text-center">
-            <p><span lang="en">Don\'t have an account?</span><a href="#" class="text-primary m-l-5 to-register"><b lang="en">Sign Up</b></a></p>
+            ' . showLogin() . '
           </div>
         </div>
       </form>
