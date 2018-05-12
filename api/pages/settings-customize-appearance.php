@@ -11,7 +11,7 @@ $pageSettingsCustomizeAppearance = '
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org">
-            <form id="customize-appearance-form" class="form-horizontal addFormTick" onsbumit="return false;"></form>
+            <form id="customize-appearance-form" class="addFormTick" onsbumit="return false;"></form>
         </div>
     </div>
 </div>

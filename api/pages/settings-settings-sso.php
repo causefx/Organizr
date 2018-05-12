@@ -10,7 +10,7 @@ $pageSettingsSettingsSSO = '
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org">
-            <form id="sso-form" class="form-horizontal addFormTick" onsbumit="return false;"></form>
+            <form id="sso-form" class="addFormTick" onsbumit="return false;"></form>
         </div>
     </div>
 </div>

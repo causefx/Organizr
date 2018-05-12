@@ -616,7 +616,7 @@ function buildFormItem(item){
 			return smallLabel+pwgMgr+'<input data-changed="false" lang="en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
 			break;
 		case 'password-alt':
-			return smallLabel+'<div class="input-group m-b-30">'+pwgMgr+'<input data-changed="false" lang="en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
+			return smallLabel+'<div class="input-group">'+pwgMgr+'<input data-changed="false" lang="en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
 			break;
 		case 'hidden':
 			return '<input data-changed="false" lang="en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
@@ -811,9 +811,11 @@ function buildFormGroup(array){
 		}else{
 			group += `
 				<!-- FORM GROUP -->
-				<h4 class="box-title" lang="en">`+i+`</h4>
-				<hr class="m-t-0 m-b-40">
-				<div class="row">
+				<div class="panel bg-org panel-info">
+                    <div class="panel-heading" lang="en">
+                        `+i+`
+                    </div>      
+				    <div class="panel-body">
 			`;
 			$.each(v, function(i,v) {
 				var override = '6';
@@ -828,8 +830,8 @@ function buildFormGroup(array){
 					<!-- INPUT BOX -->
 					<div class="col-md-`+override+` p-b-10">
 						<div class="form-group">
-							<label class="control-label col-md-3" lang="en">`+v.label+`</label>
-							<div class="col-md-9">
+							<label class="control-label col-md-12" lang="en">`+v.label+`</label>
+							<div class="col-md-12">
 								`+buildFormItem(v)+`
 							</div>
 						</div>
@@ -840,7 +842,7 @@ function buildFormGroup(array){
                     group += '</div><!--end-->';
                 }
             });
-			group += '</div>';
+			group += '</div></div>';
 		}
 	});
 	return group;

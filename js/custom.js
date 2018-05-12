@@ -1624,6 +1624,30 @@ $(document).on("click", ".testTab", function () {
         });
     }
 });
+$(document).on("click", ".testEditTab", function () {
+    var input = $('#edit-tab-form-inputURL');
+    if(input.val() == ''){
+        message('','Please enter a URL','bottom-right','#FFF','warning','5000');
+    }
+    if(input.val() !== ''){
+        var post = {
+            url:input.val()
+        }
+        organizrAPI('POST','api/?v1/test/iframe',post).success(function(data) {
+            var html = JSON.parse(data);
+            if(html.data == true){
+                $('.tabEditTestMessage.alert-success').removeClass('hidden');
+                $('.tabEditTestMessage.alert-danger').addClass('hidden');
+            }else{
+                $('.tabEditTestMessage.alert-danger').removeClass('hidden');
+                $('.tabEditTestMessage.alert-success').addClass('hidden');
+            }
+
+        }).fail(function(xhr) {
+            console.error("Organizr Function: Check Failed");
+        });
+    }
+});
 // new api key
 $(document).on("click", ".newAPIKey", function () {
     $('#settings-main-form [name=organizrAPI]').val(generateCode());

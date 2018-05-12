@@ -72,6 +72,14 @@ $( \'#tabEditorTable\' ).sortable({
     <input type="hidden" name="id" value="x">
     <h1 lang="en">Edit Tab</h1>
     <fieldset style="border:0;">
+    	<div class="alert alert-success alert-dismissable tabEditTestMessage hidden">
+        	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        	<span lang="en">Tab can be set as iFrame</span>
+        </div>
+        <div class="alert alert-danger alert-dismissable tabEditTestMessage hidden">
+        	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        	<span lang="en">Please set tab as [New Window] on next screen</span>
+        </div>
         <div class="form-group">
             <label class="control-label" for="edit-tab-form-inputName" lang="en">Tab Name</label>
             <input type="text" class="form-control" id="edit-tab-form-inputName" name="tabName" required="" autofocus>
@@ -85,6 +93,7 @@ $( \'#tabEditorTable\' ).sortable({
             <input type="text" class="form-control" id="edit-tab-form-inputImage" name="tabImage"  required="">
         </div>
     </fieldset>
+    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light row b-none testEditTab" type="button"><span class="btn-label"><i class="fa fa-flask"></i></span><span lang="en">Test Tab</span></button>
     <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none editTab" type="button"><span class="btn-label"><i class="fa fa-check"></i></span><span lang="en">Edit Tab</span></button>
     <div class="clearfix"></div>
 </form>
