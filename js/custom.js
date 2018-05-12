@@ -210,11 +210,11 @@ function pageLoad(){
                 }
                 this.st.mainClass = this.st.el.attr('data-effect');
             },
-            beforeClose: function() {
+            beforeClose: function () {
                 // Callback available since v0.9.0
-                if(!$.magnificPopup.instance.currItem.inlineElement.find('.rubberBand').hasClass('hidden')){
+                if (!$.magnificPopup.instance.currItem.inlineElement.find('.rubberBand').hasClass('hidden')) {
                     var magIndex = $.magnificPopup.instance.currItem.index;
-                    message('You forgot to save','<a class="mouse" onclick="$(\'.popup-with-form\').magnificPopup(\'open\','+magIndex+')">Would you like to go back?</a>','bottom-right','#FFF','warning','5000');
+                    message('You forgot to save', '<a class="mouse" onclick="$(\'.popup-with-form\').magnificPopup(\'open\',' + magIndex + ')">Would you like to go back?</a>', 'bottom-right', '#FFF', 'warning', '5000');
                 }
             },
         }
@@ -231,7 +231,7 @@ function pageLoad(){
        },
        close: function() {
           if(typeof player !== 'undefined'){
-              console.log('STOP STOP STOP')
+              console.log('STOP STOP STOP');
               player.destroy();
           }
         }
@@ -374,7 +374,7 @@ $(document).on("click", ".reset-button", function(e) {
     if(email !== ''){
 		var post = {
 	        email:email
-		}
+        };
         organizrAPI('POST','api/?v1/recover',post).success(function(data) {
             var html = JSON.parse(data);
             if(html.data == true){
@@ -934,7 +934,7 @@ $(document).on("click", ".editCategory", function () {
         messageBody:'Edited Category '+$('#edit-category-form [name=name]').val(),
         error:'Organizr Function: API Connection Failed'
     };
-    console.log(post)
+    console.log(post);
     if (typeof post.id == 'undefined' || post.id == '') {
         message('Edit Tab Error',' Could not get Tab ID','bottom-right','#FFF','error','5000');
     }
@@ -1277,7 +1277,7 @@ $(document).on("click", ".getPlexMachineSSO", function () {
                             var machine = $(this).attr('machineIdentifier');
                             machines += '<option value="'+machine+'">'+name+'</option>';
                         }
-                    })
+                    });
                     var listing = `<select class="form-control" id="ssoPlexMachineSelector" data-type="select">`+machines+`</select>`;
                     $('.ssoPlexMachineListing').html(listing);
                 } else {
@@ -1362,7 +1362,7 @@ $(document).on("click", ".getPlexMachineAuth", function () {
                             var machine = $(this).attr('machineIdentifier');
                             machines += '<option value="'+machine+'">'+name+'</option>';
                         }
-                    })
+                    });
                     var listing = `<select class="form-control" id="authPlexMachineSelector" data-type="select">`+machines+`</select>`;
                     $('.authPlexMachineListing').html(listing);
                 } else {
@@ -1392,7 +1392,7 @@ $(document).on("click", ".testPath", function () {
     }else{
         organizrAPI('POST','api/?v1/wizard_path',{path:path}).success(function(data) {
             var html = JSON.parse(data);
-            console.log(html)
+            console.log(html);
             if(html.data == true){
                 message('Path',' Path is good to go','bottom-right','#FFF','success','10000');
             }else{

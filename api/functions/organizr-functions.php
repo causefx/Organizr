@@ -414,12 +414,12 @@ function getSettingsMain()
 				'label' => 'Registration Password',
 				'value' => $GLOBALS['registrationPassword'],
 			),
-			array(
-				'type' => 'switch',
-				'name' => 'hideRegistration',
-				'label' => 'Hide Registration',
-				'value' => $GLOBALS['hideRegistration']
-			)
+            array(
+                'type' => 'switch',
+                'name' => 'hideRegistration',
+                'label' => 'Hide Registration',
+                'value' => $GLOBALS['hideRegistration']
+            )
 		)
 	);
 }
@@ -893,9 +893,9 @@ function logoOrText()
 
 function showLogin()
 {
-	if ($GLOBALS['hideRegistration'] == false) {
-		return '<p><span lang="en">Don\'t have an account?</span><a href="#" class="text-primary m-l-5 to-register"><b lang="en">Sign Up</b></a></p>';
-	}
+    if ($GLOBALS['hideRegistration'] == false) {
+        return '<p><span lang="en">Don\'t have an account?</span><a href="#" class="text-primary m-l-5 to-register"><b lang="en">Sign Up</b></a></p>';
+    }
 }
 
 function getImages()

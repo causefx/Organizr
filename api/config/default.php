@@ -146,6 +146,6 @@ return array(
 	'mediaSearch' => false,
 	'mediaSearchType' => '',
 	'mediaSearchAuth' => '1',
-	'registrationPassword' => '',
-	'hideRegistration' => false
+    'registrationPassword' => '',
+    'hideRegistration' => false
 );

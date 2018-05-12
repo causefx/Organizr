@@ -924,40 +924,43 @@ function getCalendar()
         }
     }
     // iCal URL
-    $icalEvents = array();
     if ($GLOBALS['homepageCalendarEnabled'] && qualifyRequest($GLOBALS['homepageCalendarAuth']) && !empty($GLOBALS['calendariCal'])) {
         $calendars = array();
         $calendarURLList = explode(',', $GLOBALS['calendariCal']);
+        $icalEvents = array();
         foreach ($calendarURLList as $key => $value) {
             $icsEvents = getIcsEventsAsArray($value);
-            $timeZone = trim($icsEvents [1] ['X-WR-TIMEZONE']);
-            unset($icsEvents [1]);
-            foreach ($icsEvents as $icsEvent) {
-                if (isset($icsEvent['DTSTART']) && isset($icsEvent['DTEND']) && isset($icsEvent['SUMMARY'])) {
-                    /* Getting start date and time */
-                    $start = isset($icsEvent ['DTSTART;VALUE=DATE']) ? $icsEvent ['DTSTART;VALUE=DATE'] : $icsEvent ['DTSTART'];
-                    /* Converting to datetime and apply the timezone to get proper date time */
-                    $startDt = new DateTime ($start);
-                    $startDt->setTimeZone(new DateTimezone ($timeZone));
-                    $startDate = $startDt->format(DateTime::ATOM);
-                    /* Getting end date with time */
-                    $end = isset($icsEvent ['DTEND;VALUE=DATE']) ? $icsEvent ['DTEND;VALUE=DATE'] : $icsEvent ['DTEND'];
-                    $endDt = new DateTime ($end);
-                    $endDate = $endDt->format(DateTime::ATOM);
-                    /* Getting the name of event */
-                    $eventName = $icsEvent['SUMMARY'];
-                    $icalEvents[] = array(
-                        'title' => $eventName,
-                        'start' => $startDate,
-                        'end' => $endDate
-                    );
+
+            if (isset($icsEvents) && !empty($icsEvents)) {
+                $timeZone = trim($icsEvents [1] ['X-WR-TIMEZONE']);
+                unset($icsEvents [1]);
+                foreach ($icsEvents as $icsEvent) {
+                    if (isset($icsEvent['DTSTART']) && isset($icsEvent['DTEND']) && isset($icsEvent['SUMMARY'])) {
+                        /* Getting start date and time */
+                        $start = isset($icsEvent ['DTSTART;VALUE=DATE']) ? $icsEvent ['DTSTART;VALUE=DATE'] : $icsEvent ['DTSTART'];
+                        /* Converting to datetime and apply the timezone to get proper date time */
+                        $startDt = new DateTime ($start);
+                        $startDt->setTimeZone(new DateTimezone ($timeZone));
+                        $startDate = $startDt->format(DateTime::ATOM);
+                        /* Getting end date with time */
+                        $end = isset($icsEvent ['DTEND;VALUE=DATE']) ? $icsEvent ['DTEND;VALUE=DATE'] : $icsEvent ['DTEND'];
+                        $endDt = new DateTime ($end);
+                        $endDate = $endDt->format(DateTime::ATOM);
+                        /* Getting the name of event */
+                        $eventName = $icsEvent['SUMMARY'];
+                        $icalEvents[] = array(
+                            'title' => $eventName,
+                            'start' => $startDate,
+                            'end' => $endDate
+                        );
+                    }
                 }
             }
         }
+        $calendarSources['ical'] = $icalEvents;
     }
 
     $calendarSources['events'] = $calendarItems;
-    $calendarSources['ical'] = $icalEvents;
     return ($calendarSources) ? $calendarSources : false;
 }
 
@@ -1503,34 +1506,34 @@ function ombiAPI($array)
 
 function ombiImport($type = null)
 {
-	if (!empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && !empty($type)) {
-		try {
-			$url = qualifyURL($GLOBALS['ombiURL']);
-			$headers = array(
-				"Accept" => "application/json",
-				"Content-Type" => "application/json",
-				"Apikey" => $GLOBALS['ombiToken']
-			);
-			$options = (localURL($url)) ? array('verify' => false) : array();
-			switch ($type) {
-				case 'emby':
-					$response = Requests::get($url . "/api/v1/Job/embyuserimporter", $headers, $options);
-					break;
-				case 'plex':
-					$response = Requests::get($url . "/api/v1/Job/plexuserimporter", $headers, $options);
-					break;
-				default:
-					break;
-			}
-			if ($response->success) {
-				writeLog('success', 'OMBI Connect Function - Ran User Import', 'SYSTEM');
-				return true;
-			}
-		} catch (Requests_Exception $e) {
-			writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-		};
-	}
-	return false;
+    if (!empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && !empty($type)) {
+        try {
+            $url = qualifyURL($GLOBALS['ombiURL']);
+            $headers = array(
+                "Accept" => "application/json",
+                "Content-Type" => "application/json",
+                "Apikey" => $GLOBALS['ombiToken']
+            );
+            $options = (localURL($url)) ? array('verify' => false) : array();
+            switch ($type) {
+                case 'emby':
+                    $response = Requests::get($url . "/api/v1/Job/embyuserimporter", $headers, $options);
+                    break;
+                case 'plex':
+                    $response = Requests::get($url . "/api/v1/Job/plexuserimporter", $headers, $options);
+                    break;
+                default:
+                    break;
+            }
+            if ($response->success) {
+                writeLog('success', 'OMBI Connect Function - Ran User Import', 'SYSTEM');
+                return true;
+            }
+        } catch (Requests_Exception $e) {
+            writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+        };
+    }
+    return false;
 }
 
 function ombiAction($id, $action, $type)

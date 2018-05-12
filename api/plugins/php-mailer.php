@@ -170,7 +170,7 @@ function phpmSendEmail($emailInfo)
 		if ($GLOBALS['PHPMAILER-smtpHostType'] !== 'n/a') {
 			$mail->SMTPSecure = $GLOBALS['PHPMAILER-smtpHostType'];
 		}
-		$mail->SMTPAuth = $GLOBALS['PHPMAILER-smtpHostAuth'];
+        $mail->SMTPAuth = $GLOBALS['PHPMAILER-smtpHostAuth'];
 		$mail->Username = $GLOBALS['PHPMAILER-smtpHostUsername'];
 		$mail->Password = decrypt($GLOBALS['PHPMAILER-smtpHostPassword']);
 		$mail->SMTPOptions = array(
