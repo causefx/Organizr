@@ -579,23 +579,32 @@ function getCustomizeAppearance()
 					'value' => $GLOBALS['alternateHomepageHeaders']
 				)
 			),
-			'custom' => '
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-info">
-                        <div class="panel-heading">
-                            <span lang="en">Notice</span>
-                        </div>
-                        <div class="panel-wrapper collapse in" aria-expanded="true">
-                            <div class="panel-body">
-                                <span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            ',
 			'Colors & Themes' => array(
+				array(
+					'type' => 'html',
+					'override' => 12,
+					'label' => 'Custom CSS [Can replace colors from above]',
+					'html' => '
+					<div class="row">
+					    <div class="col-lg-12">
+					        <div class="panel panel-info">
+					            <div class="panel-heading">
+					                <span lang="en">Notice</span>
+					            </div>
+					            <div class="panel-wrapper collapse in" aria-expanded="true">
+					                <div class="panel-body">
+					                    <span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+					',
+				),
+				array(
+					'type' => 'blank',
+					'label' => ''
+				),
 				array(
 					'type' => 'input',
 					'name' => 'headerColor',
@@ -704,6 +713,14 @@ function getCustomizeAppearance()
 							'value' => 'horizontal'
 						)
 					)
+				)
+			),
+			'Custom CSS' => array(
+				array(
+					'type' => 'html',
+					'override' => 12,
+					'label' => 'Custom CSS [Can replace colors from above]',
+					'html' => '<button type="button" class="hidden saveCss btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customCSSEditor" style="height:300px">' . $GLOBALS['customCss'] . '</div>'
 				),
 				array(
 					'type' => 'textbox',
@@ -713,12 +730,6 @@ function getCustomizeAppearance()
 					'value' => $GLOBALS['customCss'],
 					'placeholder' => 'No <style> tags needed',
 					'attr' => 'rows="10"',
-				),
-				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => 'Custom CSS [Can replace colors from above]',
-					'html' => '<button type="button" class="hidden saveCss btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customCSSEditor" style="height:300px">' . $GLOBALS['customCss'] . '</div>'
 				),
 			)
 		);

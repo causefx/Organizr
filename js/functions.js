@@ -681,7 +681,7 @@ function buildPluginsItem(array){
 						</div>
 					</div>
 					<div class="el-card-content">
-						<h3 class="box-title">`+v.name+`</h3>
+						<h3 class="box-title elip">`+v.name+`</h3>
 						<small class="elip text-uppercase p-b-10">`+v.category+`</small>
 					</div>
 				</div>
