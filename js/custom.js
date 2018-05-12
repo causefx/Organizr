@@ -212,9 +212,11 @@ function pageLoad(){
             },
             beforeClose: function() {
                 // Callback available since v0.9.0
-                if(!$.magnificPopup.instance.currItem.inlineElement.find('.rubberBand').hasClass('hidden')){
-                    var magIndex = $.magnificPopup.instance.currItem.index;
-                    message('You forgot to save','<a class="mouse" onclick="$(\'.popup-with-form\').magnificPopup(\'open\','+magIndex+')">Would you like to go back?</a>','bottom-right','#FFF','warning','5000');
+                if($.magnificPopup.instance.currItem.inlineElement.find('.rubberBand').length !== 0){
+                    if(!$.magnificPopup.instance.currItem.inlineElement.find('.rubberBand').hasClass('hidden')){
+                        var magIndex = $.magnificPopup.instance.currItem.index;
+                        message('You forgot to save','<a class="mouse" onclick="$(\'.popup-with-form\').magnificPopup(\'open\','+magIndex+')">Would you like to go back?</a>','bottom-right','#FFF','warning','5000');
+                    }
                 }
             },
         }
@@ -1596,6 +1598,31 @@ $(document).on("click", ".downloader", function(e) {
     });
     ajaxloader();
 
+});
+// test tab
+$(document).on("click", ".testTab", function () {
+    var input = $('#new-tab-form-inputURLNew');
+    if(input.val() == ''){
+        message('','Please enter a URL','bottom-right','#FFF','warning','5000');
+    }
+    if(input.val() !== ''){
+        var post = {
+            url:input.val()
+        }
+        organizrAPI('POST','api/?v1/test/iframe',post).success(function(data) {
+            var html = JSON.parse(data);
+            if(html.data == true){
+                $('.tabTestMessage.alert-success').removeClass('hidden');
+                $('.tabTestMessage.alert-danger').addClass('hidden');
+            }else{
+                $('.tabTestMessage.alert-danger').removeClass('hidden');
+                $('.tabTestMessage.alert-success').addClass('hidden');
+            }
+
+        }).fail(function(xhr) {
+            console.error("Organizr Function: Check Failed");
+        });
+    }
 });
 // new api key
 $(document).on("click", ".newAPIKey", function () {

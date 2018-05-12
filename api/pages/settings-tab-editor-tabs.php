@@ -1,5 +1,4 @@
 <?php
-
 $pageSettingsTabEditorTabs = '
 <script>
 buildTabEditor();
@@ -44,6 +43,14 @@ $( \'#tabEditorTable\' ).sortable({
 <form id="new-tab-form" class="mfp-hide white-popup-block mfp-with-anim">
     <h1 lang="en">Add New Tab</h1>
     <fieldset style="border:0;">
+    	<div class="alert alert-success alert-dismissable tabTestMessage hidden">
+        	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        	<span lang="en">Tab can be set as iFrame</span>
+        </div>
+        <div class="alert alert-danger alert-dismissable tabTestMessage hidden">
+        	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        	<span lang="en">Please set tab as [New Window] on next screen</span>
+        </div>
         <div class="form-group">
             <label class="control-label" for="new-tab-form-inputNameNew" lang="en">Tab Name</label>
             <input type="text" class="form-control" id="new-tab-form-inputNameNew" name="tabName" required="" autofocus>
@@ -57,6 +64,7 @@ $( \'#tabEditorTable\' ).sortable({
             <input type="text" class="form-control" id="new-tab-form-inputImageNew" name="tabImage"  required="">
         </div>
     </fieldset>
+    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light row b-none testTab" type="button"><span class="btn-label"><i class="fa fa-flask"></i></span><span lang="en">Test Tab</span></button>
     <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none addNewTab" type="button"><span class="btn-label"><i class="fa fa-plus"></i></span><span lang="en">Add Tab</span></button>
     <div class="clearfix"></div>
 </form>

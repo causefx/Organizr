@@ -1319,3 +1319,36 @@ function plexJoin($username, $email, $password)
 	};
 	return false;
 }
+
+function checkFrame($array, $url)
+{
+	if (array_key_exists("x-frame-options", $array)) {
+		if ($array['x-frame-options'] == "deny") {
+			return false;
+		} elseif ($array['x-frame-options'] == "sameorgin") {
+			$digest = parse_url($url);
+			$host = (isset($digest['host']) ? $digest['host'] : '');
+			if (getServer() == $host) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	} else {
+		if (!$array) {
+			return false;
+		}
+		return true;
+	}
+}
+
+function frameTest($url)
+{
+	$array = array_change_key_case(get_headers(qualifyURL($url), 1));
+	$url = qualifyURL($url);
+	if (checkFrame($array, $url)) {
+		return true;
+	} else {
+		return false;
+	}
+}
