@@ -3576,9 +3576,7 @@ function homepageCalendar(timeout){
         $('.fc-toolbar').addClass('fc-alternate');
     }
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
-        console.log(data);
 		var response = JSON.parse(data);
-        console.log(response.data);
         $('#calendar').fullCalendar('removeEvents');
         $('#calendar').fullCalendar('addEventSource', response.data.events);
         $('#calendar').fullCalendar('addEventSource', response.data.ical);
