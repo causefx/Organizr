@@ -881,3 +881,7 @@ input.has-success {
     opacity:1;filter:"alpha(opacity=100)";
     -ms-filter:"alpha(opacity=100)";
 }
+.white-popup-block {
+    max-width: 80%;
+}
+

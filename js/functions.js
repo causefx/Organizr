@@ -653,12 +653,19 @@ function buildPluginsItem(array){
 	$.each(array, function(i,v) {
 		var settingsPage = (v.settings == true) ? `
 		<!-- Plugin Settings Page -->
-		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup-block mfp-with-anim addFormTick" autocomplete="off">
-			<h1 class="pull-left" lang="en">`+v.name+` Settings</h1>
-			<button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
-			<div class="clearfix"></div>
-			<fieldset id="`+v.idPrefix+`-settings-items" style="border:0;"></fieldset>
-			<div class="clearfix"></div>
+		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup mfp-with-anim addFormTick col-md-10 col-md-offset-1" autocomplete="off">                			
+            <div class="panel bg-org panel-info">
+                <div class="panel-heading">
+                    <span lang="en">`+v.name+` Settings</span>
+                    <button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+                </div>
+                <div class="panel-wrapper collapse in" aria-expanded="true">
+                    <div class="panel-body bg-org p-0">
+                    <fieldset id="`+v.idPrefix+`-settings-items" style="border:0;" class=""></fieldset>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
 		</form>
 		` : '';
 		var href = (v.settings == true) ? '#'+v.idPrefix+'-settings-page' : 'javascript:void(0);';
@@ -755,10 +762,19 @@ function buildHomepageItem(array){
 						</div>
 					</div>
 				</div>
-				<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup-block mfp-with-anim homepageForm addFormTick">
-				    <fieldset style="border:0;">
-				    	<button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
-						`+buildFormGroup(v.settings)+`
+				<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup mfp-with-anim homepageForm addFormTick">
+				    <fieldset style="border:0;" class="col-md-10 col-md-offset-1">
+                        <div class="panel bg-org panel-info">
+                            <div class="panel-heading">
+                                <span lang="en">`+v.name+`</span>
+                                <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+                            </div>
+                            <div class="panel-wrapper collapse in" aria-expanded="true">
+                                <div class="panel-body bg-org p-0">
+                                    `+buildFormGroup(v.settings)+`
+                                </div>
+                            </div>
+                        </div>
 					</fieldset>
 				    <div class="clearfix"></div>
 				</form>
