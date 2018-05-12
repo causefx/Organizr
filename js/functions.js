@@ -263,10 +263,13 @@ function toggleParentActive(tab){
 	}
 }
 function switchTab(tab, type){
-	hideFrames();
-	closeSideMenu();
-	removeMenuActive();
-	toggleParentActive(tab);
+    if(type !== 2){
+        hideFrames();
+        closeSideMenu();
+        removeMenuActive();
+        toggleParentActive(tab);
+        setHash(tab);
+    }
 	switch (type) {
 		case 0:
 		case '0':
@@ -317,7 +320,7 @@ function switchTab(tab, type){
 		default:
 			console.error('Tab Function: Action not set');
 	}
-	setHash(tab);
+
 }
 function popTab(tab, type){
 	switch (type) {
