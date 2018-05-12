@@ -815,114 +815,153 @@ function delugeConnect()
 
 function getCalendar()
 {
-	$startDate = date('Y-m-d', strtotime("-" . $GLOBALS['calendarStart'] . " days"));
-	$endDate = date('Y-m-d', strtotime("+" . $GLOBALS['calendarEnd'] . " days"));
-	$calendarItems = array();
-	// SONARR CONNECT
-	if ($GLOBALS['homepageSonarrEnabled'] && qualifyRequest($GLOBALS['homepageSonarrAuth']) && !empty($GLOBALS['sonarrURL']) && !empty($GLOBALS['sonarrToken'])) {
-		$sonarrs = array();
-		$sonarrURLList = explode(',', $GLOBALS['sonarrURL']);
-		$sonarrTokenList = explode(',', $GLOBALS['sonarrToken']);
-		if (count($sonarrURLList) == count($sonarrTokenList)) {
-			foreach ($sonarrURLList as $key => $value) {
-				$sonarrs[$key] = array(
-					'url' => $value,
-					'token' => $sonarrTokenList[$key]
-				);
-			}
-			foreach ($sonarrs as $key => $value) {
-				try {
-					$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-					$sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate, $GLOBALS['sonarrUnmonitored']), $key);
-				} catch (Exception $e) {
-					writeLog('error', 'Sonarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-				}
-				if (!empty($sonarrCalendar)) {
-					$calendarItems = array_merge($calendarItems, $sonarrCalendar);
-				}
-			}
-		}
-	}
-	// RADARR CONNECT
-	if ($GLOBALS['homepageRadarrEnabled'] && qualifyRequest($GLOBALS['homepageRadarrAuth']) && !empty($GLOBALS['radarrURL']) && !empty($GLOBALS['radarrToken'])) {
-		$radarrs = array();
-		$radarrURLList = explode(',', $GLOBALS['radarrURL']);
-		$radarrTokenList = explode(',', $GLOBALS['radarrToken']);
-		if (count($radarrURLList) == count($radarrTokenList)) {
-			foreach ($radarrURLList as $key => $value) {
-				$radarrs[$key] = array(
-					'url' => $value,
-					'token' => $radarrTokenList[$key]
-				);
-			}
-			foreach ($radarrs as $key => $value) {
-				try {
-					$radarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-					$radarrCalendar = getRadarrCalendar($radarr->getCalendar($startDate, $endDate), $key, $value['url']);
-				} catch (Exception $e) {
-					writeLog('error', 'Radarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-				}
-				if (!empty($radarrCalendar)) {
-					$calendarItems = array_merge($calendarItems, $radarrCalendar);
-				}
-			}
-		}
-	}
-	// SICKRAGE/BEARD/MEDUSA CONNECT
-	if ($GLOBALS['homepageSickrageEnabled'] && qualifyRequest($GLOBALS['homepageSickrageAuth']) && !empty($GLOBALS['sickrageURL']) && !empty($GLOBALS['sickrageToken'])) {
-		$sicks = array();
-		$sickURLList = explode(',', $GLOBALS['sickrageURL']);
-		$sickTokenList = explode(',', $GLOBALS['sickrageToken']);
-		if (count($sickURLList) == count($sickTokenList)) {
-			foreach ($sickURLList as $key => $value) {
-				$sicks[$key] = array(
-					'url' => $value,
-					'token' => $sickTokenList[$key]
-				);
-			}
-			foreach ($sicks as $key => $value) {
-				try {
-					$sickrage = new Kryptonit3\SickRage\SickRage($value['url'], $value['token']);
-					$sickrageFuture = getSickrageCalendarWanted($sickrage->future(), $key);
-					$sickrageHistory = getSickrageCalendarHistory($sickrage->history("100", "downloaded"), $key);
-					if (!empty($sickrageFuture)) {
-						$calendarItems = array_merge($calendarItems, $sickrageFuture);
-					}
-					if (!empty($sickrageHistory)) {
-						$calendarItems = array_merge($calendarItems, $sickrageHistory);
-					}
-				} catch (Exception $e) {
-					writeLog('error', 'Sickrage Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-				}
-			}
-		}
-	}
-	// COUCHPOTATO CONNECT
-	if ($GLOBALS['homepageCouchpotatoEnabled'] && qualifyRequest($GLOBALS['homepageCouchpotatoAuth']) && !empty($GLOBALS['couchpotatoURL']) && !empty($GLOBALS['couchpotatoToken'])) {
-		$couchs = array();
-		$couchpotatoURLList = explode(',', $GLOBALS['couchpotatoURL']);
-		$couchpotatoTokenList = explode(',', $GLOBALS['couchpotatoToken']);
-		if (count($couchpotatoURLList) == count($couchpotatoTokenList)) {
-			foreach ($couchpotatoURLList as $key => $value) {
-				$couchs[$key] = array(
-					'url' => $value,
-					'token' => $couchpotatoTokenList[$key]
-				);
-			}
-			foreach ($couchs as $key => $value) {
-				try {
-					$couchpotato = new Kryptonit3\CouchPotato\CouchPotato($value['url'], $value['token']);
-					$couchCalendar = getCouchCalendar($couchpotato->getMediaList(), $key);
-					if (!empty($couchCalendar)) {
-						$calendarItems = array_merge($calendarItems, $couchCalendar);
-					}
-				} catch (Exception $e) {
-					writeLog('error', 'Sickrage Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-				}
-			}
-		}
-	}
-	return ($calendarItems) ? $calendarItems : false;
+    $startDate = date('Y-m-d', strtotime("-" . $GLOBALS['calendarStart'] . " days"));
+    $endDate = date('Y-m-d', strtotime("+" . $GLOBALS['calendarEnd'] . " days"));
+    $icalCalendarSources = array();
+    $calendarItems = array();
+    // SONARR CONNECT
+    if ($GLOBALS['homepageSonarrEnabled'] && qualifyRequest($GLOBALS['homepageSonarrAuth']) && !empty($GLOBALS['sonarrURL']) && !empty($GLOBALS['sonarrToken'])) {
+        $sonarrs = array();
+        $sonarrURLList = explode(',', $GLOBALS['sonarrURL']);
+        $sonarrTokenList = explode(',', $GLOBALS['sonarrToken']);
+        if (count($sonarrURLList) == count($sonarrTokenList)) {
+            foreach ($sonarrURLList as $key => $value) {
+                $sonarrs[$key] = array(
+                    'url' => $value,
+                    'token' => $sonarrTokenList[$key]
+                );
+            }
+            foreach ($sonarrs as $key => $value) {
+                try {
+                    $sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+                    $sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate), $key);
+                } catch (Exception $e) {
+                    writeLog('error', 'Sonarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+                }
+                if (!empty($sonarrCalendar)) {
+                    $calendarItems = array_merge($calendarItems, $sonarrCalendar);
+                }
+            }
+        }
+    }
+    // RADARR CONNECT
+    if ($GLOBALS['homepageRadarrEnabled'] && qualifyRequest($GLOBALS['homepageRadarrAuth']) && !empty($GLOBALS['radarrURL']) && !empty($GLOBALS['radarrToken'])) {
+        $radarrs = array();
+        $radarrURLList = explode(',', $GLOBALS['radarrURL']);
+        $radarrTokenList = explode(',', $GLOBALS['radarrToken']);
+        if (count($radarrURLList) == count($radarrTokenList)) {
+            foreach ($radarrURLList as $key => $value) {
+                $radarrs[$key] = array(
+                    'url' => $value,
+                    'token' => $radarrTokenList[$key]
+                );
+            }
+            foreach ($radarrs as $key => $value) {
+                try {
+                    $radarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+                    $radarrCalendar = getRadarrCalendar($radarr->getCalendar($startDate, $endDate), $key, $value['url']);
+                } catch (Exception $e) {
+                    writeLog('error', 'Radarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+                }
+                if (!empty($radarrCalendar)) {
+                    $calendarItems = array_merge($calendarItems, $radarrCalendar);
+                }
+            }
+        }
+    }
+    // SICKRAGE/BEARD/MEDUSA CONNECT
+    if ($GLOBALS['homepageSickrageEnabled'] && qualifyRequest($GLOBALS['homepageSickrageAuth']) && !empty($GLOBALS['sickrageURL']) && !empty($GLOBALS['sickrageToken'])) {
+        $sicks = array();
+        $sickURLList = explode(',', $GLOBALS['sickrageURL']);
+        $sickTokenList = explode(',', $GLOBALS['sickrageToken']);
+        if (count($sickURLList) == count($sickTokenList)) {
+            foreach ($sickURLList as $key => $value) {
+                $sicks[$key] = array(
+                    'url' => $value,
+                    'token' => $sickTokenList[$key]
+                );
+            }
+            foreach ($sicks as $key => $value) {
+                try {
+                    $sickrage = new Kryptonit3\SickRage\SickRage($value['url'], $value['token']);
+                    $sickrageFuture = getSickrageCalendarWanted($sickrage->future(), $key);
+                    $sickrageHistory = getSickrageCalendarHistory($sickrage->history("100", "downloaded"), $key);
+                    if (!empty($sickrageFuture)) {
+                        $calendarItems = array_merge($calendarItems, $sickrageFuture);
+                    }
+                    if (!empty($sickrageHistory)) {
+                        $calendarItems = array_merge($calendarItems, $sickrageHistory);
+                    }
+                } catch (Exception $e) {
+                    writeLog('error', 'Sickrage Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+                }
+            }
+        }
+    }
+    // COUCHPOTATO CONNECT
+    if ($GLOBALS['homepageCouchpotatoEnabled'] && qualifyRequest($GLOBALS['homepageCouchpotatoAuth']) && !empty($GLOBALS['couchpotatoURL']) && !empty($GLOBALS['couchpotatoToken'])) {
+        $couchs = array();
+        $couchpotatoURLList = explode(',', $GLOBALS['couchpotatoURL']);
+        $couchpotatoTokenList = explode(',', $GLOBALS['couchpotatoToken']);
+        if (count($couchpotatoURLList) == count($couchpotatoTokenList)) {
+            foreach ($couchpotatoURLList as $key => $value) {
+                $couchs[$key] = array(
+                    'url' => $value,
+                    'token' => $couchpotatoTokenList[$key]
+                );
+            }
+            foreach ($couchs as $key => $value) {
+                try {
+                    $couchpotato = new Kryptonit3\CouchPotato\CouchPotato($value['url'], $value['token']);
+                    $couchCalendar = getCouchCalendar($couchpotato->getMediaList(), $key);
+                    if (!empty($couchCalendar)) {
+                        $calendarItems = array_merge($calendarItems, $couchCalendar);
+                    }
+                } catch (Exception $e) {
+                    writeLog('error', 'Sickrage Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+                }
+            }
+        }
+    }
+    // iCal URL
+    if ($GLOBALS['homepageCalendarEnabled'] && qualifyRequest($GLOBALS['homepageCalendarAuth']) && !empty($GLOBALS['calendariCal'])) {
+        $calendars = array();
+        $calendarURLList = explode(',', $GLOBALS['calendariCal']);
+        $icalEvents = array();
+        foreach ($calendarURLList as $key => $value) {
+            $icsEvents = getIcsEventsAsArray($value);
+
+            if (isset($icsEvents) && !empty($icsEvents)) {
+                $timeZone = trim($icsEvents [1] ['X-WR-TIMEZONE']);
+                unset($icsEvents [1]);
+                foreach ($icsEvents as $icsEvent) {
+                    if (isset($icsEvent['DTSTART']) && isset($icsEvent['DTEND']) && isset($icsEvent['SUMMARY'])) {
+                        /* Getting start date and time */
+                        $start = isset($icsEvent ['DTSTART;VALUE=DATE']) ? $icsEvent ['DTSTART;VALUE=DATE'] : $icsEvent ['DTSTART'];
+                        /* Converting to datetime and apply the timezone to get proper date time */
+                        $startDt = new DateTime ($start);
+                        $startDt->setTimeZone(new DateTimezone ($timeZone));
+                        $startDate = $startDt->format(DateTime::ATOM);
+                        /* Getting end date with time */
+                        $end = isset($icsEvent ['DTEND;VALUE=DATE']) ? $icsEvent ['DTEND;VALUE=DATE'] : $icsEvent ['DTEND'];
+                        $endDt = new DateTime ($end);
+                        $endDate = $endDt->format(DateTime::ATOM);
+                        /* Getting the name of event */
+                        $eventName = $icsEvent['SUMMARY'];
+                        $icalEvents[] = array(
+                            'title' => $eventName,
+                            'start' => $startDate,
+                            'end' => $endDate
+                        );
+                    }
+                }
+            }
+        }
+        $calendarSources['ical'] = $icalEvents;
+    }
+
+    $calendarSources['events'] = $calendarItems;
+    return ($calendarSources) ? $calendarSources : false;
 }
 
 function getSonarrCalendar($array, $number)
@@ -1467,34 +1506,34 @@ function ombiAPI($array)
 
 function ombiImport($type = null)
 {
-	if (!empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && !empty($type)) {
-		try {
-			$url = qualifyURL($GLOBALS['ombiURL']);
-			$headers = array(
-				"Accept" => "application/json",
-				"Content-Type" => "application/json",
-				"Apikey" => $GLOBALS['ombiToken']
-			);
-			$options = (localURL($url)) ? array('verify' => false) : array();
-			switch ($type) {
-				case 'emby':
-					$response = Requests::get($url . "/api/v1/Job/embyuserimporter", $headers, $options);
-					break;
-				case 'plex':
-					$response = Requests::get($url . "/api/v1/Job/plexuserimporter", $headers, $options);
-					break;
-				default:
-					break;
-			}
-			if ($response->success) {
-				writeLog('success', 'OMBI Connect Function - Ran User Import', 'SYSTEM');
-				return true;
-			}
-		} catch (Requests_Exception $e) {
-			writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-		};
-	}
-	return false;
+    if (!empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && !empty($type)) {
+        try {
+            $url = qualifyURL($GLOBALS['ombiURL']);
+            $headers = array(
+                "Accept" => "application/json",
+                "Content-Type" => "application/json",
+                "Apikey" => $GLOBALS['ombiToken']
+            );
+            $options = (localURL($url)) ? array('verify' => false) : array();
+            switch ($type) {
+                case 'emby':
+                    $response = Requests::get($url . "/api/v1/Job/embyuserimporter", $headers, $options);
+                    break;
+                case 'plex':
+                    $response = Requests::get($url . "/api/v1/Job/plexuserimporter", $headers, $options);
+                    break;
+                default:
+                    break;
+            }
+            if ($response->success) {
+                writeLog('success', 'OMBI Connect Function - Ran User Import', 'SYSTEM');
+                return true;
+            }
+        } catch (Requests_Exception $e) {
+            writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+        };
+    }
+    return false;
 }
 
 function ombiAction($id, $action, $type)
