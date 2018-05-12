@@ -802,20 +802,22 @@ function buildHomepage(){
 	});
 }
 function buildFormGroup(array){
-	var group = '';
+    var mainCount = 0;
+	var group = '<div class="tab-content">';
+	var uList = '<ul class="nav customtab nav-tabs" role="tablist">';
 	$.each(array, function(i,v) {
+        mainCount++;
 		var count = 0;
 		var total = v.length;
+		var active = (mainCount == 1) ? 'active' : '';
+		var customID = createRandomString(10);
 		if(i == 'custom'){
 			group += v;
 		}else{
+		    uList += `<li role="presentation" class="`+active+`"><a href="#`+customID+cleanClass(i)+`" aria-controls="`+i+`" role="tab" data-toggle="tab" aria-expanded="false"><span> `+i+`</span></a></li>`;
 			group += `
 				<!-- FORM GROUP -->
-				<div class="panel bg-org panel-info">
-                    <div class="panel-heading" lang="en">
-                        `+i+`
-                    </div>      
-				    <div class="panel-body">
+				<div role="tabpanel" class="tab-pane fade in `+active+`" id="`+customID+cleanClass(i)+`">
 			`;
 			$.each(v, function(i,v) {
 				var override = '6';
@@ -842,10 +844,10 @@ function buildFormGroup(array){
                     group += '</div><!--end-->';
                 }
             });
-			group += '</div></div>';
+			group += '</div>';
 		}
 	});
-	return group;
+	return uList+'</ul>'+group;
 }
 function buildImageManagerViewItem(array){
 	var imageListing = '';
