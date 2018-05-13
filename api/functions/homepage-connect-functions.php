@@ -641,7 +641,11 @@ function nzbgetConnect()
 {
 	if ($GLOBALS['homepageNzbgetEnabled'] && !empty($GLOBALS['nzbgetURL']) && qualifyRequest($GLOBALS['homepageNzbgetAuth'])) {
 		$url = qualifyURL($GLOBALS['nzbgetURL']);
-		$url = $url . '/' . $GLOBALS['nzbgetUsername'] . ':' . decrypt($GLOBALS['nzbgetPassword']) . '/jsonrpc/listgroups';
+		if (!empty($GLOBALS['nzbgetUsername']) && !empty($GLOBALS['nzbgetPassword'])) {
+			$url = $url . '/' . $GLOBALS['nzbgetUsername'] . ':' . decrypt($GLOBALS['nzbgetPassword']) . '/jsonrpc/listgroups';
+		} else {
+			$url = $url . '/jsonrpc/listgroups';
+		}
 		try {
 			$options = (localURL($url)) ? array('verify' => false) : array();
 			$response = Requests::get($url, array(), $options);
@@ -652,7 +656,11 @@ function nzbgetConnect()
 			writeLog('error', 'NZBGet Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		};
 		$url = qualifyURL($GLOBALS['nzbgetURL']);
-		$url = $url . '/' . $GLOBALS['nzbgetUsername'] . ':' . decrypt($GLOBALS['nzbgetPassword']) . '/jsonrpc/history';
+		if (!empty($GLOBALS['nzbgetUsername']) && !empty($GLOBALS['nzbgetPassword'])) {
+			$url = $url . '/' . $GLOBALS['nzbgetUsername'] . ':' . decrypt($GLOBALS['nzbgetPassword']) . '/jsonrpc/history';
+		} else {
+			$url = $url . '/jsonrpc/history';
+		}
 		try {
 			$options = (localURL($url)) ? array('verify' => false) : array();
 			$response = Requests::get($url, array(), $options);
@@ -1811,9 +1819,13 @@ function testAPIConnection($array)
 			}
 			break;
 		case 'nzbget':
-			if (!empty($GLOBALS['nzbgetURL']) && !empty($GLOBALS['nzbgetUsername']) && !empty($GLOBALS['nzbgetPassword'])) {
+			if (!empty($GLOBALS['nzbgetURL'])) {
 				$url = qualifyURL($GLOBALS['nzbgetURL']);
-				$url = $url . '/' . $GLOBALS['nzbgetUsername'] . ':' . decrypt($GLOBALS['nzbgetPassword']) . '/jsonrpc/listgroups';
+				if (!empty($GLOBALS['nzbgetUsername']) && !empty($GLOBALS['nzbgetPassword'])) {
+					$url = $url . '/' . $GLOBALS['nzbgetUsername'] . ':' . decrypt($GLOBALS['nzbgetPassword']) . '/jsonrpc/listgroups';
+				} else {
+					$url = $url . '/jsonrpc/listgroups';
+				}
 				try {
 					$options = (localURL($url)) ? array('verify' => false) : array();
 					$response = Requests::get($url, array(), $options);

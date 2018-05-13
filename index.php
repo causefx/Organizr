@@ -171,7 +171,7 @@
 <script src="js/simplebar.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 <script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
-<script src="js/custom.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
+<script src="js/custom.min.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 <?php echo pluginFiles('js'); ?>
 </body>
 

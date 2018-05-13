@@ -1280,7 +1280,7 @@ $(document).on("click", ".getPlexMachineSSO", function () {
                             machines += '<option value="'+machine+'">'+name+'</option>';
                         }
                     });
-                    var listing = `<select class="form-control" id="ssoPlexMachineSelector" data-type="select">`+machines+`</select>`;
+                    var listing = '<select class="form-control" id="ssoPlexMachineSelector" data-type="select">'+machines+'</select>';
                     $('.ssoPlexMachineListing').html(listing);
                 } else {
                     $('.ssoPlexTokenMessage').text(xhr.statusText);
@@ -1365,7 +1365,7 @@ $(document).on("click", ".getPlexMachineAuth", function () {
                             machines += '<option value="'+machine+'">'+name+'</option>';
                         }
                     });
-                    var listing = `<select class="form-control" id="authPlexMachineSelector" data-type="select">`+machines+`</select>`;
+                    var listing = '<select class="form-control" id="authPlexMachineSelector" data-type="select">'+machines+'</select>';
                     $('.authPlexMachineListing').html(listing);
                 } else {
                     $('.authPlexTokenMessage').text(xhr.statusText);
