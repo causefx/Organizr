@@ -884,4 +884,6 @@ input.has-success {
 .white-popup-block {
     max-width: 80%;
 }
-
+ul.nav.customtab.nav-tabs.nav-low-margin {
+    margin: -25px -25px 0px -25px !important;
+}

@@ -660,7 +660,7 @@ function buildPluginsItem(array){
                     <button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
-                    <div class="panel-body bg-org p-0">
+                    <div class="panel-body bg-org">
                     <fieldset id="`+v.idPrefix+`-settings-items" style="border:0;" class=""></fieldset>
                     </div>
                     <div class="clearfix"></div>
@@ -770,7 +770,7 @@ function buildHomepageItem(array){
                                 <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                             </div>
                             <div class="panel-wrapper collapse in" aria-expanded="true">
-                                <div class="panel-body bg-org p-0">
+                                <div class="panel-body bg-org">
                                     `+buildFormGroup(v.settings)+`
                                 </div>
                             </div>
@@ -820,7 +820,7 @@ function buildHomepage(){
 function buildFormGroup(array){
     var mainCount = 0;
 	var group = '<div class="tab-content">';
-	var uList = '<ul class="nav customtab nav-tabs" role="tablist">';
+	var uList = '<ul class="nav customtab nav-tabs nav-low-margin" role="tablist">';
 	$.each(array, function(i,v) {
         mainCount++;
 		var count = 0;

@@ -9,7 +9,7 @@ $pageSettingsSettingsSSO = '
 		<button id="sso-form-save" onclick="submitSettingsForm(\'sso-form\')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
-        <div class="panel-body bg-org p-0">
+        <div class="panel-body bg-org">
             <form id="sso-form" class="addFormTick" onsbumit="return false;"></form>
         </div>
     </div>
