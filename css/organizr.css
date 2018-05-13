@@ -887,3 +887,6 @@ input.has-success {
 ul.nav.customtab.nav-tabs.nav-low-margin {
     margin: -25px -25px 0px -25px !important;
 }
+i.fa.fa-life-ring.fa-fw {
+    color: #C62828;
+}

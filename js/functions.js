@@ -1176,13 +1176,16 @@ function userMenu(user){
 	console.log(window.lang.translate('Welcome')+" "+user.data.user.username);
 }
 function menuExtras(active){
+    var supportFrame = buildFrameContainer('Organizr Support','https://organizr.app/support',1);
+    var adminMenu = (activeInfo.user.groupID <= 1) ? buildMenuList('Organizr Support','https://organizr.app/support',1,'fontawesome::life-ring'): '';
+    $(supportFrame).appendTo($('.iFrame-listing'));
 	if(active === true){
 		return `
 			<li class="devider"></li>
 			<li><a class="waves-effect" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span class="hide-menu" lang="en">Logout</span></a></li>
 			<li class="devider"></li>
 			<li><a href="https://github.com/causefx/organizr" target="_blank" class="waves-effect"><i class="fa fa-github fa-fw text-success"></i> <span class="hide-menu">GitHub</span></a></li>
-		`;
+		`+adminMenu;
 	}else{
 		return `
 			<li class="devider"></li>

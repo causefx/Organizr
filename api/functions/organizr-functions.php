@@ -2,6 +2,10 @@
 function organizrSpecialSettings()
 {
 	$refreshSearch = "Refresh";
+	$tautulliSearch = "tautulli_token";
+	$tautulli = array_filter($_COOKIE, function ($k) use ($tautulliSearch) {
+		return stripos($k, $tautulliSearch) !== false;
+	}, ARRAY_FILTER_USE_KEY);
 	return array(
 		'homepage' => array(
 			'refresh' => array_filter($GLOBALS, function ($k) use ($refreshSearch) {
@@ -21,6 +25,20 @@ function organizrSpecialSettings()
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
 			)
+		),
+		'sso' => array(
+			'plex' => array(
+				'enabled' => ($GLOBALS['ssoPlex']) ? true : false,
+				'cookie' => isset($_COOKIE['mpt']) ? true : false,
+			),
+			'ombi' => array(
+				'enabled' => ($GLOBALS['ssoOmbi']) ? true : false,
+				'cookie' => isset($_COOKIE['Auth']) ? true : false,
+			),
+			'tautulli' => array(
+				'enabled' => ($GLOBALS['ssoTautulli']) ? true : false,
+				'cookie' => !empty($tautulli) ? true : false,
+			),
 		)
 	);
 }
