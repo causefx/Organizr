@@ -35,7 +35,7 @@
     <link href="css/simplebar.css" rel="stylesheet">
     <link href="css/plyr.css" rel="stylesheet">
     <link id="style" href="css/dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
-    <link href="css/organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
+    <link href="css/organizr.min.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
 	<?php echo pluginFiles('css'); ?>
     <link id="theme" href="css/themes/Organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
     <style id="user-appearance"></style>

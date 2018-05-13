@@ -1,5 +1,7 @@
 # PhpStorm Files
 .idea/*
+node_modules/*
+package-lock.json
 
 # Windows image file caches
 Thumbs.db
@@ -51,8 +53,10 @@ Temporary Items
 
 # Files from my local computer
 php_errors.log
+
 # Backup Files
 .pydio_id
+
 .idea/*
 # =========================
 # Organizr files
