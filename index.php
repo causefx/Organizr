@@ -8,7 +8,7 @@
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
     <meta content="Organizr - Accept no others" name="description">
     <meta content="CauseFX" name="author">
-    <link href="plugins/images/favicon.png" rel="icon" sizes="16x16" type="image/png">
+	<?php echo favIcons(); ?>
     <title>Organizr v2</title>
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css" rel="stylesheet">

@@ -733,6 +733,42 @@ function getCustomizeAppearance()
 					)
 				)
 			),
+			'FavIcon' => array(
+				array(
+					'type' => 'textbox',
+					'name' => 'favIcon',
+					'class' => '',
+					'label' => 'Fav Icon Code',
+					'value' => $GLOBALS['favIcon'],
+					'placeholder' => 'Paste Contents from https://realfavicongenerator.net/',
+					'attr' => 'rows="10"',
+				),
+				array(
+					'type' => 'html',
+					'label' => 'Instructions',
+					'html' => '
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<a href="https://realfavicongenerator.net/" target="_blank"><span class="label label-info m-l-5">Visit FavIcon Site</span></a>
+						</div>
+						<div class="panel-wrapper collapse in">
+							<div class="panel-body">
+								<ul class="list-icons">
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> Click "Select your Favicon picture"</li>
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> Choose your image to use</li>
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> Edit settings to your liking</li>
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> At bottom of page on "Favicon Generator Options" under "Path" choose "I cannot or I do not want to place favicon files at the root of my web site."</li>
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> Enter this path <code>plugins/images/faviconCustom</code></li>
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> Click "Generate your Favicons and HTML code"</li>
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> Download and unzip file and place in <code>plugins/images/faviconCustom</code></li>
+									<li lang="en"><i class="fa fa-caret-right text-info"></i> Copy code and paste inside left box</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					'
+				),
+			),
 			'Custom CSS' => array(
 				array(
 					'type' => 'html',

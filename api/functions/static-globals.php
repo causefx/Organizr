@@ -1,30 +1,53 @@
 <?php
-
 // ===================================
 // Organizr Version
 $GLOBALS['installedVersion'] = '2.0.0-beta.100';
 // ===================================
 // Set GLOBALS from config file
-$GLOBALS['userConfigPath'] = dirname(__DIR__, 1).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'config.php';
-$GLOBALS['defaultConfigPath'] = dirname(__DIR__, 1).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'default.php';
+$GLOBALS['userConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
+$GLOBALS['defaultConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';
 $GLOBALS['currentTime'] = gmdate("Y-m-d\TH:i:s\Z");
 // Quick function for plugins
 function pluginFiles($type)
 {
-    $files = '';
-    switch ($type) {
-        case 'js':
-            foreach (glob(dirname(__DIR__, 1).DIRECTORY_SEPARATOR.'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . "*.js") as $filename) {
-                $files .= '<script src="api/plugins/js/'.basename($filename).'?v='.$GLOBALS['installedVersion'].'" defer="true"></script>';
-            }
-            break;
-        case 'css':
-            foreach (glob(dirname(__DIR__, 1).DIRECTORY_SEPARATOR.'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . "*.js") as $filename) {
-                $files .= '<link href="api/plugins/css/'.basename($filename).$GLOBALS['installedVersion'].'" rel="stylesheet">';
-            }
-            break;
-        default:
-            break;
-    }
-    return $files;
+	$files = '';
+	switch ($type) {
+		case 'js':
+			foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . "*.js") as $filename) {
+				$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $GLOBALS['installedVersion'] . '" defer="true"></script>';
+			}
+			break;
+		case 'css':
+			foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . "*.js") as $filename) {
+				$files .= '<link href="api/plugins/css/' . basename($filename) . $GLOBALS['installedVersion'] . '" rel="stylesheet">';
+			}
+			break;
+		default:
+			break;
+	}
+	return $files;
+}
+
+function favIcons()
+{
+	$favicon = '
+	<link rel="apple-touch-icon" sizes="180x180" href="plugins/images/favicon/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="plugins/images/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="plugins/images/favicon/favicon-16x16.png">
+	<link rel="manifest" href="plugins/images/favicon/site.webmanifest">
+	<link rel="mask-icon" href="plugins/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+	<link rel="shortcut icon" href="plugins/images/favicon/favicon.ico">
+	<meta name="msapplication-TileColor" content="#da532c">
+	<meta name="msapplication-TileImage" content="plugins/images/favicon/mstile-144x144.png">
+	<meta name="msapplication-config" content="plugins/images/favicon/browserconfig.xml">
+	<meta name="theme-color" content="#ffffff">
+	';
+	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+		if (isset($GLOBALS['favIcon'])) {
+			if ($GLOBALS['favIcon'] !== '') {
+				$favicon = $GLOBALS['favIcon'];
+			}
+		}
+	}
+	return $favicon;
 }
