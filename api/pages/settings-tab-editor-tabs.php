@@ -31,6 +31,7 @@ $( \'#tabEditorTable\' ).sortable({
                         <th lang="en style="text-align:center"">DEFAULT</th>
                         <th lang="en" style="text-align:center">ACTIVE</th>
                         <th lang="en" style="text-align:center">SPLASH</th>
+                        <th lang="en" style="text-align:center">PING</th>
                         <th lang="en" style="text-align:center">EDIT</th>
                         <th lang="en" style="text-align:center">DELETE</th>
                     </tr>
@@ -60,6 +61,10 @@ $( \'#tabEditorTable\' ).sortable({
             <input type="text" class="form-control" id="new-tab-form-inputURLNew" name="tabURL"  required="">
         </div>
         <div class="form-group">
+            <label class="control-label" for="new-tab-form-inputPingURLNew" lang="en">Ping URL</label>
+            <input type="text" class="form-control" id="new-tab-form-inputPingURLNew" name="pingURL"  placeholde="host/ip:port" rrequired="">
+        </div>
+        <div class="form-group">
             <label class="control-label" for="new-tab-form-inputImageNew" lang="en">Tab Image</label>
             <input type="text" class="form-control" id="new-tab-form-inputImageNew" name="tabImage"  required="">
         </div>
@@ -87,6 +92,10 @@ $( \'#tabEditorTable\' ).sortable({
         <div class="form-group">
             <label class="control-label" for="edit-tab-form-inputURL" lang="en">Tab URL</label>
             <input type="text" class="form-control" id="edit-tab-form-inputURL" name="tabURL"  required="">
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="edit-tab-form-pingURL" lang="en">Ping URL</label>
+            <input type="text" class="form-control" id="edit-tab-form-pingURL" name="pingURL" placeholde="host/ip:port" required="">
         </div>
         <div class="form-group">
             <label class="control-label" for="edit-tab-form-inputImage" lang="en">Tab Image</label>

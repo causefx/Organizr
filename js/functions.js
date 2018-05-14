@@ -1220,8 +1220,9 @@ function buildFrameContainer(name,url,type){
 function buildInternalContainer(name,url,type){
 	return `<div id="internal-`+cleanClass(name)+`" data-type="`+type+`" class="internal-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
 }
-function buildMenuList(name,url,type,icon){
-	return `<li id="menu-`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span></a></li>`;
+function buildMenuList(name,url,type,icon,ping=null){
+    var ping = (ping !== null) ? `<div class="menu-`+cleanClass(ping)+`-ping"></div>` : '';
+	return `<li id="menu-`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span>`+ping+`</a></li>`;
 }
 function splashMenu(arrayItems){
 
@@ -1261,7 +1262,7 @@ function tabProcess(arrayItems) {
 					default:
 						console.error('Tab Process: Action not set');
 				}
-				menuList = buildMenuList(v.name,v.url,v.type,v.image);
+				menuList = buildMenuList(v.name,v.url,v.type,v.image,v.ping_url);
 				if(v.category_id === 0){
 					$(menuList).prependTo($('#side-menu'));
 				}else{
@@ -1478,13 +1479,14 @@ function buildTabEditorItem(array){
 		var deleteDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : 'deleteTab';
 		var buttonDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : '';
 		tabList += `
-		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-image="`+v.image+`">
+		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
 			<input type="hidden" class="form-control order" name="tab[`+v.id+`].order" value="`+v.order+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].originalOrder" value="`+v.order+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].url_local" value="`+v.url_local+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].name" value="`+v.name+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].url" value="`+v.url+`">
+			<input type="hidden" class="form-control" name="tab[`+v.id+`].ping_url" value="`+v.ping_url+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].image" value="`+v.image+`">
 			<td style="text-align:center" class="text-center el-element-overlay">
 				<div class="el-card-item p-0">
@@ -1506,6 +1508,7 @@ function buildTabEditorItem(array){
 
 			<td style="text-align:center"><input `+buttonDisabled+` type="checkbox" class="js-switch enabledSwitch `+buttonDisabled+`" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].enabled" value="true" `+tof(v.enabled,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].enabled" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch splashSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].splash" value="true" `+tof(v.splash,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].splash" value="false"></td>
+			<td style="text-align:center"><input type="checkbox" class="js-switch pingSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].ping" value="true" `+tof(v.ping,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].ping" value="false"></td>
 			<td style="text-align:center"><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editTabButton popup-with-form" href="#edit-tab-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
 			<td style="text-align:center"><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5 `+deleteDisabled+`"><i class="ti-trash"></i></button></td>
 		</tr>
@@ -3916,6 +3919,39 @@ function buildMediaResults(array,source,term){
     `;
     return buttons+results;
 }
+function getPingList(arrayItems){
+    var pingList = [];
+    var timeout = (activeInfo.user.groupID < 1) ? activeInfo.settings.homepage.refresh.adminPingRefresh : activeInfo.settings.homepage.refresh.otherPingRefresh;
+    if (Array.isArray(arrayItems['data']['tabs']) && arrayItems['data']['tabs'].length > 0) {
+        $.each(arrayItems['data']['tabs'], function(i,v) {
+            if(v.ping && v.ping_url !== null){
+                pingList.push(v.ping_url);
+            }
+        });
+    }
+    return (pingList.length > 0) ? pingUpdate(pingList,timeout): false;
+}
+function pingUpdate(pingList,timeout){
+    console.log('starting checks');
+    organizrAPI('POST','api/?v1/ping',{pingList:pingList}).success(function(data) {
+        var response = JSON.parse(data);
+        if (response.data !== false || response.data !== null) {
+            console.log('checks completed');
+            $.each(response.data, function(i,v) {
+                if(v == false){
+                    var elm = $('.menu-'+cleanClass(i)+'-ping');
+                    elm.html('<div class="ping"><span class="heartbit"></span><span class="point"></span></div>');
+                    elm.parent().find('img').addClass('grayscale');
+                }
+            });
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'ping';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ pingUpdate(pingList,timeout); }, timeout);
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
@@ -3971,6 +4007,7 @@ function launch(){
 				tabProcess(json);
 				accountManager(json);
 				organizrSpecialSettings(json);
+                getPingList(json);
 				break;
 			default:
 				console.error('Organizr Function: Action not set or defined');

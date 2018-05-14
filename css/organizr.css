@@ -890,3 +890,35 @@ ul.nav.customtab.nav-tabs.nav-low-margin {
 i.fa.fa-life-ring.fa-fw {
     color: #C62828;
 }
+.ping {
+    position: relative;
+    margin-top: 0;
+}
+.ping .heartbit {
+    position: absolute;
+    top: -15px;
+    left: 15px;
+    height: 25px;
+    width: 25px;
+    z-index: 10;
+    border: 5px solid #ff7676;
+    border-radius: 70px;
+    -moz-animation: heartbit 1s ease-out;
+    -moz-animation-iteration-count: infinite;
+    -o-animation: heartbit 1s ease-out;
+    -o-animation-iteration-count: infinite;
+    -webkit-animation: heartbit 1s ease-out;
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+}
+.ping .point {
+    width: 6px;
+    height: 6px;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    border-radius: 30px;
+    background-color: #ff7676;
+    position: absolute;
+    left: 25px;
+    top: -5px;
+}

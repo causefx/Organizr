@@ -439,6 +439,29 @@ function getSettingsMain()
 				'label' => 'Hide Registration',
 				'value' => $GLOBALS['hideRegistration']
 			)
+		),
+		'Ping' => array(
+			array(
+				'type' => 'select',
+				'name' => 'pingAuth',
+				'label' => 'Minimum Authentication',
+				'value' => $GLOBALS['pingAuth'],
+				'options' => groupSelect()
+			),
+			array(
+				'type' => 'select',
+				'name' => 'adminPingRefresh',
+				'label' => 'Admin Refresh Seconds',
+				'value' => $GLOBALS['adminPingRefresh'],
+				'options' => optionTime()
+			),
+			array(
+				'type' => 'select',
+				'name' => 'otherPingRefresh',
+				'label' => 'Everyone Refresh Seconds',
+				'value' => $GLOBALS['otherPingRefresh'],
+				'options' => optionTime()
+			),
 		)
 	);
 }
@@ -1417,4 +1440,55 @@ function frameTest($url)
 	} else {
 		return false;
 	}
+}
+
+function ping($pings)
+{
+	if (qualifyRequest($GLOBALS['pingAuth'])) {
+		$type = gettype($pings);
+		$ping = new Ping("");
+		$ping->setTtl(128);
+		$ping->setTimeout(2);
+		switch ($type) {
+			case "array":
+				$results = [];
+				foreach ($pings as $k => $v) {
+					if (strpos($v, ':') !== false) {
+						$domain = explode(':', $v)[0];
+						$port = explode(':', $v)[1];
+						$ping->setHost($domain);
+						$ping->setPort($port);
+						$latency = $ping->ping('fsockopen');
+					} else {
+						$ping->setHost($v);
+						$latency = $ping->ping();
+					}
+					if ($latency || $latency === 0) {
+						$results[$v] = $latency;
+					} else {
+						$results[$v] = false;
+					}
+				}
+				break;
+			case "string":
+				if (strpos($pings, ':') !== false) {
+					$domain = explode(':', $pings)[0];
+					$port = explode(':', $pings)[1];
+					$ping->setHost($domain);
+					$ping->setPort($port);
+					$latency = $ping->ping('fsockopen');
+				} else {
+					$ping->setHost($pings);
+					$latency = $ping->ping();
+				}
+				if ($latency || $latency === 0) {
+					$results = $latency;
+				} else {
+					$results = false;
+				}
+				break;
+		}
+		return $results;
+	}
+	return false;
 }

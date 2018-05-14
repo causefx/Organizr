@@ -218,44 +218,6 @@ function getHomepageList()
 			'value' => 'emby'
 		)
 	);
-	$time = array(
-		array(
-			'name' => '5',
-			'value' => '5000'
-		),
-		array(
-			'name' => '10',
-			'value' => '10000'
-		),
-		array(
-			'name' => '15',
-			'value' => '15000'
-		),
-		array(
-			'name' => '30',
-			'value' => '30000'
-		),
-		array(
-			'name' => '60 [1 Minute]',
-			'value' => '60000'
-		),
-		array(
-			'name' => '300 [5 Minutes]',
-			'value' => '300000'
-		),
-		array(
-			'name' => '900 [15 Minutes]',
-			'value' => '900000'
-		),
-		array(
-			'name' => '1800 [30 Minutes]',
-			'value' => '1800000'
-		),
-		array(
-			'name' => '3600 [1 Hour]',
-			'value' => '3600000'
-		),
-	);
 	$limit = array(
 		array(
 			'name' => '1 Item',
@@ -502,7 +464,7 @@ function getHomepageList()
 					'name' => 'calendarRefresh',
 					'label' => 'Refresh Seconds',
 					'value' => $GLOBALS['calendarRefresh'],
-					'options' => $time
+					'options' => optionTime()
 				)
 			),
 		)
@@ -582,7 +544,7 @@ function getHomepageList()
 						'name' => 'homepageStreamRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['homepageStreamRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					),
 				),
 				'Recent Items' => array(
@@ -610,7 +572,7 @@ function getHomepageList()
 						'name' => 'homepageRecentRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['homepageRecentRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					),
 				),
 				'Media Search' => array(
@@ -750,7 +712,7 @@ function getHomepageList()
 						'name' => 'homepageStreamRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['homepageStreamRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					),
 				),
 				'Recent Items' => array(
@@ -778,7 +740,7 @@ function getHomepageList()
 						'name' => 'homepageRecentRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['homepageRecentRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					),
 				),
 				'Misc Options' => array(
@@ -841,7 +803,7 @@ function getHomepageList()
 						'name' => 'homepageDownloadRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['homepageDownloadRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					)
 				),
 				'Test Connection' => array(
@@ -908,7 +870,7 @@ function getHomepageList()
 						'name' => 'homepageDownloadRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['homepageDownloadRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					)
 				),
 				'Test Connection' => array(
@@ -986,7 +948,7 @@ function getHomepageList()
 						'name' => 'homepageDownloadRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['homepageDownloadRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					)
 				)
 			)
@@ -1062,7 +1024,7 @@ function getHomepageList()
 						'name' => 'homepageDownloadRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['homepageDownloadRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					)
 				)
 			)
@@ -1140,7 +1102,7 @@ function getHomepageList()
 						'name' => 'homepageDownloadRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['homepageDownloadRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					)
 				),
 				'Test Connection' => array(
@@ -1243,7 +1205,7 @@ function getHomepageList()
 						'name' => 'calendarRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['calendarRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					),
 					array(
 						'type' => 'switch',
@@ -1352,7 +1314,7 @@ function getHomepageList()
 						'name' => 'calendarRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['calendarRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					)
 				),
 				'Test Connection' => array(
@@ -1441,7 +1403,7 @@ function getHomepageList()
 						'name' => 'calendarRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['calendarRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					)
 				)
 			)
@@ -1516,7 +1478,7 @@ function getHomepageList()
 						'name' => 'calendarRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['calendarRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					)
 				)
 			)
@@ -1576,7 +1538,7 @@ function getHomepageList()
 						'name' => 'ombiRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['ombiRefresh'],
-						'options' => $time
+						'options' => optionTime()
 					)
 				)
 			)

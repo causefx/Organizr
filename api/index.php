@@ -343,6 +343,19 @@ switch ($function) {
 				break;
 		}
 		break;
+	case 'v1_ping':
+		switch ($method) {
+			case 'POST':
+				$result['status'] = 'success';
+				$result['statusText'] = 'success';
+				$result['data'] = ping($_POST['data']['pingList']);
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
 	case 'v1_test_api_connection':
 		switch ($method) {
 			case 'POST':

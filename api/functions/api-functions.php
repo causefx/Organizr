@@ -637,6 +637,23 @@ function editTabs($array)
 				return false;
 			}
 			break;
+		case 'changePing':
+			try {
+				$connect = new Dibi\Connection([
+					'driver' => 'sqlite3',
+					'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+				]);
+				$connect->query('
+                        UPDATE tabs SET', [
+					'ping' => $array['data']['tabPing'],
+				], '
+                        WHERE id=?', $array['data']['id']);
+				writeLog('success', 'Tab Editor Function - Tab: ' . $array['data']['tab'] . '\'s ping status was changed to [' . $array['data']['tabPingWord'] . ']', $GLOBALS['organizrUser']['username']);
+				return true;
+			} catch (Dibi\Exception $e) {
+				return false;
+			}
+			break;
 		case 'changeDefault':
 			try {
 				$connect = new Dibi\Connection([
@@ -678,6 +695,7 @@ function editTabs($array)
                     UPDATE tabs SET', [
 					'name' => $array['data']['tabName'],
 					'url' => $array['data']['tabURL'],
+					'ping_url' => $array['data']['pingURL'],
 					'image' => $array['data']['tabImage'],
 				], '
                     WHERE id=?', $array['data']['id']);
@@ -720,6 +738,7 @@ function editTabs($array)
 					'category_id' => $default,
 					'name' => $array['data']['tabName'],
 					'url' => $array['data']['tabURL'],
+					'ping_url' => $array['data']['pingURL'],
 					'default' => $array['data']['tabDefault'],
 					'enabled' => 1,
 					'group_id' => $array['data']['tabGroupID'],

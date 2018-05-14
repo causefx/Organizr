@@ -717,6 +717,24 @@ $(document).on("change", ".splashSwitch", function () {
     callbacks.add( buildTabEditor );
     settingsAPI(post,callbacks);
 });
+// CHANGE SPLASH TAB
+$(document).on("change", ".pingSwitch", function () {
+    //Create POST Array
+    var post = {
+        action:'changePing',
+        api:'api/?v1/settings/tab/editor/tabs',
+        id:$(this).parent().parent().attr("data-id"),
+        tab:$(this).parent().parent().attr("data-name"),
+        tabPing:$(this).prop("checked") ? 1 : 0,
+        tabPingWord:$(this).prop("checked") ? "On" : "Off",
+        messageTitle:'',
+        messageBody:'Tab Info updated for '+$(this).parent().parent().attr("data-name"),
+        error:'Organizr Function: Tab API Connection Failed'
+    };
+    var callbacks = $.Callbacks();
+    callbacks.add( buildTabEditor );
+    settingsAPI(post,callbacks);
+});
 // CHANGE DEFAULT TAB
 $(document).on("change", ".defaultSwitch", function () {
     //Create POST Array
@@ -767,6 +785,7 @@ $(document).on("click", ".deleteTab", function () {
 $(document).on("click", ".editTabButton", function () {
     $('#edit-tab-form [name=tabName]').val($(this).parent().parent().attr("data-name"));
     $('#edit-tab-form [name=tabURL]').val($(this).parent().parent().attr("data-url"));
+    $('#edit-tab-form [name=pingURL]').val($(this).parent().parent().attr("data-ping-url"));
     $('#edit-tab-form [name=tabImage]').val($(this).parent().parent().attr("data-image"));
     $('#edit-tab-form [name=id]').val($(this).parent().parent().attr("data-id"));
     if( $(this).parent().parent().attr("data-url").indexOf('/?v') > 0){
@@ -785,6 +804,7 @@ $(document).on("click", ".editTab", function () {
         tabName:$('#edit-tab-form [name=tabName]').val(),
         tabImage:$('#edit-tab-form [name=tabImage]').val(),
         tabURL:$('#edit-tab-form [name=tabURL]').val(),
+        pingURL:$('#edit-tab-form [name=pingURL]').val(),
         messageTitle:'',
         messageBody:'Edited Tab '+$('#edit-tab-form [name=tabName]').val(),
         error:'Organizr Function: Tab Editor API Connection Failed'
@@ -819,6 +839,7 @@ $(document).on("click", ".addNewTab", function () {
         tabName:$('#new-tab-form [name=tabName]').val(),
         tabImage:$('#new-tab-form [name=tabImage]').val(),
         tabURL:$('#new-tab-form [name=tabURL]').val(),
+        pingURL:$('#new-tab-form [name=pingURL]').val(),
         tabGroupID:1,
         tabEnabled:0,
         tabDefault:0,

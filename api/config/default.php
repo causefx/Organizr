@@ -149,5 +149,8 @@ return array(
 	'mediaSearchAuth' => '1',
 	'registrationPassword' => '',
 	'hideRegistration' => false,
-	'favIcon' => ''
+	'favIcon' => '',
+	'pingAuth' => '1',
+	'adminPingRefresh' => '60000',
+	'otherPingRefresh' => '600000'
 );
