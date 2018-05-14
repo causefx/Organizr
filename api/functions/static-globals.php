@@ -28,6 +28,18 @@ function pluginFiles($type)
 	return $files;
 }
 
+function loadConfigOnce($path = null)
+{
+	$path = ($path) ? $path : $GLOBALS['userConfigPath'];
+	if (!is_file($path)) {
+		return null;
+	} else {
+		return (array)call_user_func(function () use ($path) {
+			return include($path);
+		});
+	}
+}
+
 function favIcons()
 {
 	$favicon = '
@@ -42,10 +54,11 @@ function favIcons()
 	<meta name="msapplication-config" content="plugins/images/favicon/browserconfig.xml">
 	<meta name="theme-color" content="#ffffff">
 	';
-	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
-		if (isset($GLOBALS['favIcon'])) {
-			if ($GLOBALS['favIcon'] !== '') {
-				$favicon = $GLOBALS['favIcon'];
+	if (file_exists($GLOBALS['userConfigPath'])) {
+		$config = loadConfigOnce($GLOBALS['userConfigPath']);
+		if (isset($config['favIcon'])) {
+			if ($config['favIcon'] !== '') {
+				$favicon = $config['favIcon'];
 			}
 		}
 	}
