@@ -3659,7 +3659,7 @@ function humanFileSize(bytes, si) {
 //youtube search
 function youtubeSearch(searchQuery) {
 	return $.ajax({
-		url: "https://www.googleapis.com/youtube/v3/search?part=snippet&q="+searchQuery+"+offcial+trailer&part=snippet&maxResults=1&type=video&videoDuration=short&key=AIzaSyD-8SHutB60GCcSM8q_Fle38rJUV7ujd8k",
+		url: "https://www.googleapis.com/youtube/v3/search?part=snippet&q="+searchQuery+"+official+trailer&part=snippet&maxResults=1&type=video&videoDuration=short&key=AIzaSyD-8SHutB60GCcSM8q_Fle38rJUV7ujd8k",
 	});
 }
 function youtubeCheck(title,link){
