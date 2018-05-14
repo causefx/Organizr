@@ -1200,7 +1200,7 @@ function categoryProcess(arrayItems){
 			if(v.count !== 0 && v.category_id !== 0){
 				menuList += `
 					<li>
-						<a class="waves-effect" href="javascript:void(0)">`+iconPrefix(v.image)+`<span class="hide-menu">`+v.category+` <span class="fa arrow"></span> <span class="label label-rouded label-inverse pull-right">`+v.count+`</span></span></a>
+						<a class="waves-effect" href="javascript:void(0)">`+iconPrefix(v.image)+`<span class="hide-menu">`+v.category+` <span class="fa arrow"></span> <span class="label label-rouded label-inverse pull-right">`+v.count+`</span></span><div class="menu-category-ping"></div></a>
 						<ul class="nav nav-second-level category-`+v.category_id+` collapse"></ul>
 					</li>
 				`;
@@ -3932,16 +3932,19 @@ function getPingList(arrayItems){
     return (pingList.length > 0) ? pingUpdate(pingList,timeout): false;
 }
 function pingUpdate(pingList,timeout){
-    console.log('starting checks');
     organizrAPI('POST','api/?v1/ping',{pingList:pingList}).success(function(data) {
         var response = JSON.parse(data);
         if (response.data !== false || response.data !== null) {
-            console.log('checks completed');
             $.each(response.data, function(i,v) {
+                var elm = $('.menu-'+cleanClass(i)+'-ping');
+                var error = '<div class="ping"><span class="heartbit"></span><span class="point"></span></div>';
+                var success = '';
                 if(v == false){
-                    var elm = $('.menu-'+cleanClass(i)+'-ping');
-                    elm.html('<div class="ping"><span class="heartbit"></span><span class="point"></span></div>');
+                    elm.html(error);
                     elm.parent().find('img').addClass('grayscale');
+                }else{
+                    elm.html(success);
+                    elm.parent().find('img').removeClass('grayscale');
                 }
             });
         }
