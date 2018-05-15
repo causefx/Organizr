@@ -69,6 +69,10 @@ function optionTime()
 			'value' => '300000'
 		),
 		array(
+			'name' => '600 [10 Minutes]',
+			'value' => '600000'
+		),
+		array(
 			'name' => '900 [15 Minutes]',
 			'value' => '900000'
 		),
