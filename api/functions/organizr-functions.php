@@ -45,8 +45,14 @@ function organizrSpecialSettings()
 			'offlineSound' => $GLOBALS['pingOfflineSound'],
 			'auth' => $GLOBALS['pingAuth'],
 			'authMessage' => $GLOBALS['pingAuthMessage'],
+			'authMs' => $GLOBALS['pingAuthMs'],
+			'ms' => $GLOBALS['pingMs'],
 			'adminRefresh' => $GLOBALS['adminPingRefresh'],
 			'everyoneRefresh' => $GLOBALS['otherPingRefresh'],
+		),
+		'notifications' => array(
+			'backbone' => $GLOBALS['notificationBackbone'],
+			'position' => $GLOBALS['notificationPosition']
 		)
 	);
 }
@@ -478,6 +484,19 @@ function getSettingsMain()
 				'options' => getSounds()
 			),
 			array(
+				'type' => 'switch',
+				'name' => 'pingMs',
+				'label' => 'Show Ping Time',
+				'value' => $GLOBALS['pingMs']
+			),
+			array(
+				'type' => 'select',
+				'name' => 'pingAuthMs',
+				'label' => 'Minimum Authentication for Time Display',
+				'value' => $GLOBALS['pingAuthMs'],
+				'options' => groupSelect()
+			),
+			array(
 				'type' => 'select',
 				'name' => 'adminPingRefresh',
 				'label' => 'Admin Refresh Seconds',
@@ -784,6 +803,22 @@ function getCustomizeAppearance()
 						)
 					)
 				)
+			),
+			'Notifications' => array(
+				array(
+					'type' => 'select',
+					'name' => 'notificationBackbone',
+					'label' => 'Type',
+					'value' => $GLOBALS['notificationBackbone'],
+					'options' => optionNotificationTypes()
+				),
+				array(
+					'type' => 'select',
+					'name' => 'notificationPosition',
+					'label' => 'Position',
+					'value' => $GLOBALS['notificationPosition'],
+					'options' => optionNotificationPositions()
+				),
 			),
 			'FavIcon' => array(
 				array(

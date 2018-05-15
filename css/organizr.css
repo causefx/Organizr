@@ -896,12 +896,12 @@ i.fa.fa-life-ring.fa-fw {
 }
 .ping .heartbit {
     position: absolute;
-    top: -20px;
+    top: -15px;
     left: 15px;
-    height: 30px;
-    width: 30px;
+    height: 25px;
+    width: 25px;
     z-index: 10;
-    border: 5px solid #EF5350;
+    border: 5px solid #ff7676;
     border-radius: 70px;
     -moz-animation: heartbit 1s ease-out;
     -moz-animation-iteration-count: infinite;
@@ -912,18 +912,71 @@ i.fa.fa-life-ring.fa-fw {
     animation-iteration-count: infinite;
 }
 .ping .point {
-    width: 10px;
-    height: 10px;
+    width: 6px;
+    height: 6px;
     -webkit-border-radius: 30px;
     -moz-border-radius: 30px;
     border-radius: 30px;
-    background-color: #F44336;
+    background-color: #ff7676;
     position: absolute;
     left: 25px;
-    top: -10px;
+    top: -5px;
 }
 .sidebar .arrow {
     position: absolute;
     right: 20px;
     top: 17px;
+}
+/* NOTIFY ALTERS */
+.iziToast.success-notify>.iziToast-body .iziToast-icon {
+    color: rgb(0, 255, 184);
+}
+.iziToast.success-notify>.iziToast-body .iziToast-title,
+.iziToast.success-notify>.iziToast-body .iziToast-message {
+    color: white;
+}
+.success-notify .iziToast-progressbar div {
+    background: rgb(0, 255, 184);
+}
+.iziToast.success-notify.iziToast-layout2 {
+    background: #1b1a1a;
+}
+.iziToast.info-notify>.iziToast-body .iziToast-icon {
+    color: #3A83F0;
+}
+.iziToast.info-notify>.iziToast-body .iziToast-title,
+.iziToast.info-notify>.iziToast-body .iziToast-message {
+    color: white;
+}
+.info-notify .iziToast-progressbar div {
+    background: #3A83F0;
+}
+.iziToast.info-notify.iziToast-layout2 {
+    background: #1b1a1a;
+}
+.iziToast.warning-notify>.iziToast-body .iziToast-icon {
+    color: #FFEB3B;
+}
+.iziToast.warning-notify>.iziToast-body .iziToast-title,
+.iziToast.warning-notify>.iziToast-body .iziToast-message {
+    color: white;
+}
+.warning-notify .iziToast-progressbar div {
+    background: #FFEB3B;
+}
+.iziToast.warning-notify.iziToast-layout2 {
+    background: #1b1a1a;
+}
+.iziToast.error-notify>.iziToast-body .iziToast-icon {
+    color: #F44336;
+}
+.iziToast.error-notify>.iziToast-body .iziToast-title,
+.iziToast.error-notify>.iziToast-body .iziToast-message {
+    color: white;
+}
+.error-notify .iziToast-progressbar div {
+    background: #F44336;
+}
+.iziToast.error-notify.iziToast-layout2 {
+    background: #1b1a1a;
 }

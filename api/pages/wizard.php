@@ -129,19 +129,19 @@ $pageWizard = '
                     if(html.data == true){
                         location.reload();
                     }else if(html.data == \'token\'){
-                        message("",window.lang.translate(\'Could not create Token\'),"bottom-right","#FFF","error","3500");
+                        message("",window.lang.translate(\'Could not create Token\'),activeInfo.settings.notifications.position,"#FFF","error","3500");
 						console.error(\'Organizr Function: Could not create Token\');
 					}else if(html.data == \'db\'){
-						message("",window.lang.translate(\'Could not create DB - check permissions\'),"bottom-right","#FFF","error","3500");
+						message("",window.lang.translate(\'Could not create DB - check permissions\'),activeInfo.settings.notifications.position,"#FFF","error","3500");
 						console.error(\'Organizr Function: Could not create DB - check permissions\');
 					}else if(html.data == \'admin\'){
-						message("",window.lang.translate(\'Could not create admin acct\'),"bottom-right","#FFF","error","3500");
+						message("",window.lang.translate(\'Could not create admin acct\'),activeInfo.settings.notifications.position,"#FFF","error","3500");
 						console.error(\'Organizr Function: Could not create admin acct\');
 					}else if(html.data == \'config\'){
-						message("",window.lang.translate(\'Could not create config files - check permissions\'),"bottom-right","#FFF","error","3500");
+						message("",window.lang.translate(\'Could not create config files - check permissions\'),activeInfo.settings.notifications.position,"#FFF","error","3500");
 						console.error(\'Organizr Function: Could not create config files - check permissions\');
 					}else{
-						message("",window.lang.translate(\'Sign-up Error Occurred\'),"bottom-right","#FFF","error","3500");
+						message("",window.lang.translate(\'Sign-up Error Occurred\'),activeInfo.settings.notifications.position,"#FFF","error","3500");
                         console.error(\'Organizr Function: Sign-up Error Occurred\');
                     }
             	}).fail(function(xhr) {

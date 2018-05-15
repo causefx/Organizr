@@ -155,5 +155,9 @@ return array(
 	'adminPingRefresh' => '60000',
 	'otherPingRefresh' => '600000',
 	'pingOfflineSound' => 'plugins/sounds/default/open-ended.mp3',
-	'pingOnlineSound' => 'plugins/sounds/default/awareness.mp3'
+	'pingOnlineSound' => 'plugins/sounds/default/awareness.mp3',
+	'pingMs' => false,
+	'pingAuthMs' => '1',
+	'notificationBackbone' => 'toastr',
+	'notificationPosition' => 'br'
 );

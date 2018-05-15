@@ -41,6 +41,54 @@ function optionLimit()
 	);
 }
 
+function optionNotificationTypes()
+{
+	return array(
+		array(
+			'name' => 'Style 1',
+			'value' => 'toastr'
+		),
+		array(
+			'name' => 'Style 2',
+			'value' => 'izi'
+		),
+	);
+}
+
+function optionNotificationPositions()
+{
+	return array(
+		array(
+			'name' => 'Bottom Right',
+			'value' => 'br'
+		),
+		array(
+			'name' => 'Bottom Left',
+			'value' => 'bl'
+		),
+		array(
+			'name' => 'Bottom Center',
+			'value' => 'bc'
+		),
+		array(
+			'name' => 'Top Right',
+			'value' => 'tr'
+		),
+		array(
+			'name' => 'Top Left',
+			'value' => 'tl'
+		),
+		array(
+			'name' => 'Top Center',
+			'value' => 'tc'
+		),
+		array(
+			'name' => 'Center',
+			'value' => 'c'
+		),
+	);
+}
+
 function optionTime()
 {
 	return array(

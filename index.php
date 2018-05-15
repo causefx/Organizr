@@ -12,7 +12,6 @@
     <title>Organizr v2</title>
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css" rel="stylesheet">
-    <link href="plugins/bower_components/toast-master/css/jquery.toast.css" rel="stylesheet">
     <link href="plugins/bower_components/jquery-wizard-master/css/wizard.css" rel="stylesheet">
     <link href="plugins/bower_components/datatables/jquery.dataTables.min.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/jquery-wizard-master/libs/formvalidation/formValidation.min.css"
@@ -130,7 +129,6 @@
 <script src="plugins/bower_components/sidebar-nav/dist/sidebar-nav.js"></script>
 <script src="js/jquery.slimscroll.js"></script>
 <script src="js/waves.js"></script>
-<script src="plugins/bower_components/toast-master/js/jquery.toast.js"></script>
 <script src="plugins/bower_components/styleswitcher/jQuery.style.switcher.js"></script>
 <script src="plugins/bower_components/moment/moment.js"></script>
 <script src="plugins/bower_components/moment/moment-timezone.js"></script>

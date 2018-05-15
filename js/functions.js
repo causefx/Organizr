@@ -204,14 +204,13 @@ function noTabs(arrayItems){
 	}
 }
 function logout(){
-	message('',' Goodbye!','bottom-right','#FFF','success','10000');
+	message('',' Goodbye!',activeInfo.settings.notifications.position,'#FFF','success','10000');
 	organizrAPI('GET','api/?v1/logout').success(function(data) {
 		var html = JSON.parse(data);
 		if(html.data == true){
 			location.reload();
 		}else{
-			$.toast().reset('all');
-			message('Logout Error',' An Error Occured','bottom-right','#FFF','warning','10000');
+			message('Logout Error',' An Error Occured',activeInfo.settings.notifications.position,'#FFF','warning','10000');
 			console.error('Organizr Function: Logout failed');
 		}
 	}).fail(function(xhr) {
@@ -469,30 +468,6 @@ function closeCurrentTab(){
 		default:
 			console.error('Tab Function: Action not set');
 	}
-}
-function message(heading,text,position,color,icon,timeout){
-	$.toast({
-		heading: heading,
-		text: text,
-		position: position,
-		loaderBg: color,
-		icon: icon,
-		hideAfter: timeout,
-		stack: 6,
-		showHideTransition: 'slide',
-	});
-}
-function messageSingle(heading,text,position,color,icon,timeout){
-	$.toast({
-		heading: heading,
-		text: text,
-		position: position,
-		loaderBg: color,
-		icon: icon,
-		hideAfter: timeout,
-		stack: 1,
-		showHideTransition: 'slide',
-	});
 }
 function tabActions(event,name, type){
 	if(event.ctrlKey){
@@ -978,7 +953,7 @@ function settingsAPI(post, callbacks=null){
 	organizrAPI('POST',post.api,post).success(function(data) {
 		var response = JSON.parse(data);
 		console.log(response);
-		message(post.messageTitle,post.messageBody,"bottom-right","#FFF","success","5000");
+		message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
 		console.error(post.error);
@@ -1013,7 +988,7 @@ function buildLanguage(replace=false,newLang=null){
 	`;
 	if(replace == true){
 		$('#languageDropdown').replaceWith(lang);
-		message("",window.lang.translate('Changed Language To')+": "+newLang,"bottom-right","#FFF","success","3500");
+		message("",window.lang.translate('Changed Language To')+": "+newLang,activeInfo.settings.notifications.position,"#FFF","success","3500");
 	}else if(replace == 'wizard'){
 		$(lang).appendTo('.navbar-right');
 	}else{
@@ -1030,9 +1005,9 @@ function removeFile(path,name){
 		organizrAPI('POST','api/?v1/remove/file',post).success(function(data) {
 			var response = JSON.parse(data);
 			if(response.data == true){
-				messageSingle('',window.lang.translate('Removed File')+' - '+name,'bottom-right','#FFF','success','5000');
+				messageSingle('',window.lang.translate('Removed File')+' - '+name,activeInfo.settings.notifications.position,'#FFF','success','5000');
 			}else{
-				messageSingle('','File Removal Error','bottom-right','#FFF','error','5000');
+				messageSingle('','File Removal Error',activeInfo.settings.notifications.position,'#FFF','error','5000');
 			}
 		}).fail(function(xhr) {
 			console.error("Organizr Function: API Connection Failed");
@@ -1048,7 +1023,7 @@ function updateUserInformation(){
 	var password2 = $('#accountPassword2').val();
 	if(password1 != password2){
 		passwordMatch = false;
-		messageSingle('','Passwords do not match','bottom-right','#FFF','error','5000');
+		messageSingle('','Passwords do not match',activeInfo.settings.notifications.position,'#FFF','error','5000');
 	}
 	if(username !== '' && email !== '' && passwordMatch == true){
 		var post = {
@@ -1061,9 +1036,9 @@ function updateUserInformation(){
 			var response = JSON.parse(data);
 			if(response.data == true){
 				$.magnificPopup.close();
-				messageSingle('',window.lang.translate('User Info Updated'),'bottom-right','#FFF','success','5000');
+				messageSingle('',window.lang.translate('User Info Updated'),activeInfo.settings.notifications.position,'#FFF','success','5000');
 			}else{
-				messageSingle('',response.data,'bottom-right','#FFF','error','5000');
+				messageSingle('',response.data,activeInfo.settings.notifications.position,'#FFF','error','5000');
 			}
 		}).fail(function(xhr) {
 			console.error("Organizr Function: API Connection Failed");
@@ -1172,7 +1147,7 @@ function userMenu(user){
 		`;
 	}
 	$(menuList).appendTo('.navbar-right').html;
-	message("",window.lang.translate('Welcome')+" "+user.data.user.username,"bottom-right","#FFF","success","3500");
+	message("",window.lang.translate('Welcome')+" "+user.data.user.username,activeInfo.settings.notifications.position,"#FFF","success","3500");
 	console.log(window.lang.translate('Welcome')+" "+user.data.user.username);
 }
 function menuExtras(active){
@@ -1221,7 +1196,8 @@ function buildInternalContainer(name,url,type){
 	return `<div id="internal-`+cleanClass(name)+`" data-type="`+type+`" class="internal-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
 }
 function buildMenuList(name,url,type,icon,ping=null){
-    var ping = (ping !== null) ? `<div class="menu-`+cleanClass(ping)+`-ping" data-tab-name="`+name+`" data-previous-state=""></div>` : '';
+    var ping = (ping !== null) ? `<small class="menu-`+cleanClass(ping)+`-ping-ms hidden-xs label label-rouded label-inverse pull-right hidden">
+</small><div class="menu-`+cleanClass(ping)+`-ping" data-tab-name="`+name+`" data-previous-state=""></div>` : '';
 	return `<li id="menu-`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span>`+ping+`</a></li>`;
 }
 function splashMenu(arrayItems){
@@ -1709,7 +1685,7 @@ function updateCheck(){
 		}
 		if(latest !== currentVersion){
 			console.log('Update Function: Update to '+latest+' is available');
-			message(window.lang.translate('Update Available'),latest+' '+window.lang.translate('is available, goto')+' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);$.toast().reset(\'all\');$(\'#update-button\').click()"><span lang="en">Update Tab</span></a>','bottom-right','#FFF','update','60000');
+			message(window.lang.translate('Update Available'),latest+' '+window.lang.translate('is available, goto')+' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);$(\'#update-button\').click()"><span lang="en">Update Tab</span></a>',activeInfo.settings.notifications.position,'#FFF','update','60000');
 		}
 		$('#githubVersions').html(buildVersion(reverseObject(json)));
 	}).fail(function(xhr) {
@@ -1752,47 +1728,47 @@ function updateNow(){
 	console.log('Organizr Function: Starting Update Process');
 	$(updateBar()).appendTo('.organizr-area');
 	updateUpdateBar('Starting Download','5%');
-	messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),'bottom-right','#FFF','success','60000');
+	messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
 	organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:1}).success(function(data) {
 		var json = JSON.parse(data);
 		if(json.data == true){
 			updateUpdateBar('Starting Unzip','50%');
-			messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update File Downloaded'),'bottom-right','#FFF','success','60000');
+			messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update File Downloaded'),activeInfo.settings.notifications.position,'#FFF','success','60000');
 			organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:2}).success(function(data) {
 				var json = JSON.parse(data);
 				if(json.data == true){
 					updateUpdateBar('Starting Copy','70%');
-					messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update File Unzipped'),'bottom-right','#FFF','success','60000');
+					messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update File Unzipped'),activeInfo.settings.notifications.position,'#FFF','success','60000');
 					organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:3}).success(function(data) {
 						var json = JSON.parse(data);
 						if(json.data == true){
 							updateUpdateBar('Starting Cleanup','90%');
-							messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update Files Copied'),'bottom-right','#FFF','success','60000');
+							messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update Files Copied'),activeInfo.settings.notifications.position,'#FFF','success','60000');
 							organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:4}).success(function(data) {
 								var json = JSON.parse(data);
 								if(json.data == true){
 									updateUpdateBar('Restarting Organizr in','100%', true);
-									messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update Cleanup Finished'),'bottom-right','#FFF','success','60000');
+									messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update Cleanup Finished'),activeInfo.settings.notifications.position,'#FFF','success','60000');
 								}else{
-									message('',window.lang.translate('Update Cleanup Failed'),'bottom-right','#FFF','error','10000');
+									message('',window.lang.translate('Update Cleanup Failed'),activeInfo.settings.notifications.position,'#FFF','error','10000');
 								}
 							}).fail(function(xhr) {
 								console.error("Organizr Function: API Connection Failed");
 							});
 						}else{
-							message('',window.lang.translate('Update File Copy Failed'),'bottom-right','#FFF','error','10000');
+							message('',window.lang.translate('Update File Copy Failed'),activeInfo.settings.notifications.position,'#FFF','error','10000');
 						}
 					}).fail(function(xhr) {
 						console.error("Organizr Function: API Connection Failed");
 					});
 				}else{
-					message('',window.lang.translate('Update File Unzip Failed'),'bottom-right','#FFF','error','10000');
+					message('',window.lang.translate('Update File Unzip Failed'),activeInfo.settings.notifications.position,'#FFF','error','10000');
 				}
 			}).fail(function(xhr) {
 				console.error("Organizr Function: API Connection Failed");
 			});
 		}else{
-			message('',window.lang.translate('Update File Download Failed'),'bottom-right','#FFF','error','10000');
+			message('',window.lang.translate('Update File Download Failed'),activeInfo.settings.notifications.position,'#FFF','error','10000');
 		}
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
@@ -2149,7 +2125,7 @@ function checkMessage(){
 	if(check){
 		local('remove', 'message');
 		var message = check.split('|');
-		messageSingle(window.lang.translate(message[0]),window.lang.translate(message[1]),'bottom-right','#FFF',message[2],'10000');
+		messageSingle(window.lang.translate(message[0]),window.lang.translate(message[1]),activeInfo.settings.notifications.position,'#FFF',message[2],'10000');
 	}
 }
 function setError(error){
@@ -2914,14 +2890,14 @@ function ombiActions(id,action,type){
 			homepageRequests();
 			if(action !== 'add'){
 				$.magnificPopup.close();
-				message("",window.lang.translate('Updated Request Item'),"bottom-right","#FFF","success","3500");
+				message("",window.lang.translate('Updated Request Item'),activeInfo.settings.notifications.position,"#FFF","success","3500");
 			}else{
 				ajaxloader();
-				message("",window.lang.translate('Added Request Item'),"bottom-right","#FFF","success","3500");
+				message("",window.lang.translate('Added Request Item'),activeInfo.settings.notifications.position,"#FFF","success","3500");
 			}
 		}else{
 			ajaxloader();
-			message("",msg,"bottom-right","#FFF","error","3500");
+			message("",msg,activeInfo.settings.notifications.position,"#FFF","error","3500");
 		}
 	}).fail(function(xhr) {
 		ajaxloader();
@@ -3585,18 +3561,18 @@ function homepageRequests(timeout){
 	timeouts['ombi'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
 }
 function testAPIConnection(service){
-    messageSingle('',' Testing now...','bottom-right','#FFF','success','10000');
+    messageSingle('',' Testing now...',activeInfo.settings.notifications.position,'#FFF','info','10000');
     organizrAPI('POST','api/?v1/test/api/connection',{action:service}).success(function(data) {
         var response = JSON.parse(data);
         if(response.data == true){
-            messageSingle('',' API Connection Success','bottom-right','#FFF','success','10000');
+            messageSingle('',' API Connection Success',activeInfo.settings.notifications.position,'#FFF','success','10000');
         }else{
-            messageSingle('API Connection Failed',response.data,'bottom-right','#FFF','error','10000');
+            messageSingle('API Connection Failed',response.data,activeInfo.settings.notifications.position,'#FFF','error','10000');
         }
         console.log(response);
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
-        message('',' Organizr Error','bottom-right','#FFF','error','10000');
+        message('',' Organizr Error',activeInfo.settings.notifications.position,'#FFF','error','10000');
     });
 }
 function homepageCalendar(timeout){
@@ -3941,6 +3917,7 @@ function pingUpdate(pingList,timeout){
             });
             $.each(response.data, function(i,v) {
                 var elm = $('.menu-'+cleanClass(i)+'-ping');
+                var elmMs = $('.menu-'+cleanClass(i)+'-ping-ms');
                 var catElm = elm.parent().parent().parent().parent().children('a').find('.menu-category-ping');
                 var error = '<div class="ping"><span class="heartbit"></span><span class="point"></span></div>';
                 var success = '';
@@ -3949,24 +3926,26 @@ function pingUpdate(pingList,timeout){
                 var previousState = (elm.attr('data-previous-state') == "") ? '' : elm.attr('data-previous-state');
                 var tabName = elm.attr('data-tab-name');
                 var status = (v == false) ? 'down' : 'up';
+                var ms = (v == false) ? 'down' : v+'ms';
                 var sendMessage = (previousState !== status && previousState !== '' && activeInfo.user.groupID <= activeInfo.settings.ping.authMessage) ? true : false;
                 var audioDown = new Audio(activeInfo.settings.ping.offlineSound);
                 var audioUp = new Audio(activeInfo.settings.ping.onlineSound);
                 elm.attr('data-previous-state', status);
+                if(activeInfo.user.groupID <= activeInfo.settings.ping.authMs && activeInfo.settings.ping.ms){ elmMs.removeClass('hidden').html(ms); }
                 switch (status){
                     case 'down':
                         if(catElm.length > 0){ badCount = badCount + 1; catElm.attr('data-bad', badCount); }
                         elm.html(error);
                         catElm.html(error);
                         elm.parent().find('img').addClass('grayscale');
-                        var msg = (sendMessage) ? message(tabName,'Server Down','bottom-right','#FFF','error','600000') : '';
+                        var msg = (sendMessage) ? message(tabName,'Server Down',activeInfo.settings.notifications.position,'#FFF','error','600000') : '';
                         var audio = (sendMessage) ? audioDown.play() : '';
                         break;
                     default:
                         if(catElm.length > 0){ goodCount = goodCount + 1; catElm.attr('data-good', goodCount); if(badCount == 0){ catElm.html(success); } }
                         elm.html(success);
                         elm.parent().find('img').removeClass('grayscale');
-                        var msg = (sendMessage) ? message(tabName,'Server Back Online','bottom-right','#FFF','success','600000') : '';
+                        var msg = (sendMessage) ? message(tabName,'Server Back Online',activeInfo.settings.notifications.position,'#FFF','success','600000') : '';
                         var audio = (sendMessage) ? audioUp.play() : '';
                 }
             });
@@ -3978,12 +3957,260 @@ function pingUpdate(pingList,timeout){
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ pingUpdate(pingList,timeout); }, timeout);
 }
+function include(filename) {
+    var type = filename.split('.').pop();
+    switch (type){
+        case 'js':
+            var body = document.getElementsByTagName('body')[0];
+            var script = document.createElement('script');
+            script.src = filename;
+            script.type = 'text/javascript';
+            body.appendChild(script);
+            break;
+        case 'css':
+            var head = document.getElementById('style');
+            var script = document.createElement('link');
+            script.href = filename;
+            script.type = 'text/css';
+            script.rel = 'stylesheet';
+            head.appendChild(script);
+            break;
+        default:
+            return false;
+    }
+    return false;
+}
+function defineNotification(){
+    switch(activeInfo.settings.notifications.backbone){
+        case 'toastr':
+            include('plugins/bower_components/toast-master/css/jquery.toast.css');
+            include('plugins/bower_components/toast-master/js/jquery.toast.js');
+            window.notificationFunction = '$.toast';
+            break;
+        case 'izi':
+            include('plugins/bower_components/iziToast/css/iziToast.min.css');
+            include('plugins/bower_components/iziToast/js/iziToast.min.js');
+            window.notificationFunction = 'iziToast';
+            break;
+        default:
+            return false
+    }
+    window.notificationsReady = true;
+    return false;
+}
+function messagePositions(){
+    return {
+        "br":{
+            "toastr":"bottom-right",
+            "izi":"bottomRight",
+        },
+        "bl":{
+            "toastr":"bottom-left",
+            "izi":"bottomLeft",
+        },
+        "bc":{
+            "toastr":"bottom-center",
+            "izi":"bottomCenter",
+        },
+        "tr":{
+            "toastr":"top-right",
+            "izi":"topRight",
+        },
+        "tl":{
+            "toastr":"top-left",
+            "izi":"topLeft",
+        },
+        "tc":{
+            "toastr":"top-center",
+            "izi":"topCenter",
+        },
+        "c":{
+            "toastr":"center",
+            "izi":"center",
+        }
+    };
+}
+function message(heading,text,position,color,icon,timeout){
+    var bb = activeInfo.settings.notifications.backbone;
+    switch (bb) {
+        case 'toastr':
+            var ready = (eval( notificationFunction) !== undefined) ? true :false;
+            break;
+        case 'izi':
+            try {
+                var ready = (typeof eval(notificationFunction) !== undefined) ? true :false;
+            } catch (e) {
+                if (e instanceof SyntaxError) {
+                    setTimeout(function(){ message(heading,text,position,color,icon,timeout); }, 100);
+                }
+            }
+            break;
+        default:
+            var ready = false;
+    }
+    if(notificationsReady && ready){
+
+        position = messagePositions()[position][bb];
+        switch (bb) {
+            case 'toastr':
+                $.toast({
+                    heading: heading,
+                    text: text,
+                    position: position,
+                    loaderBg: color,
+                    icon: icon,
+                    hideAfter: timeout,
+                    stack: 6,
+                    showHideTransition: 'slide',
+                });
+                break;
+            case 'izi':
+                iziToast.settings({
+                    timeout: 4000,
+                    // closeOnClick: true,
+                    // closeOnEscape: true,
+                    close: true,
+                    progressBar: true,
+                    progressBarEasing: 'ease',
+                    // pauseOnHover: false,
+                    // zindex: 900,
+                    // maxWidth: 400,
+                    // rtl: true,
+                    // layout: 2,
+                    // resetOnHover: true,
+                    // imageWidth: 50,
+                    // balloon: true,
+                    // target: '.target',
+                    // icon: 'material-icons',
+                    // iconText: 'face',
+                    // animateInside: false,
+                    // transitionIn: 'flipInX',
+                    // transitionOut: 'fadeOutLeft',
+                    // titleSize: 20,
+                    // titleLineHeight: 20,
+                    // messageSize: 20,
+                    // messageLineHeight: 20,
+                });
+                switch (icon){
+                    case 'success':
+                        var msg = {
+                            class: icon+'-notify',
+                            title: heading,
+                            message: text,
+                            position: position,
+                            timeout: timeout,
+                            icon: 'mdi mdi-check-circle-outline',
+                            layout: 2,
+                            transitionIn: 'flipInX',
+                            transitionOut: 'flipOutX',
+                        };
+                        break;
+                    case 'info':
+                        var msg ={
+                            class: icon+'-notify',
+                            title: heading,
+                            message: text,
+                            position: position,
+                            timeout: timeout,
+                            icon: 'mdi mdi-information-outline',
+                            layout: 2,
+                            transitionIn: 'flipInX',
+                            transitionOut: 'flipOutX',
+                        };
+                        break;
+                    case 'error':
+                        var msg ={
+                            class: icon+'-notify',
+                            title: heading,
+                            message: text,
+                            position: position,
+                            timeout: timeout,
+                            theme: 'dark',
+                            icon: 'mdi mdi-close-circle-outline',
+                            layout: 2,
+                            iconColor: 'rgb(171, 11, 11)',
+                            transitionIn: 'flipInX',
+                            transitionOut: 'flipOutX',
+                            progressBarColor: 'rgb(171, 11, 11)',
+                        };
+                        break;
+                    case 'warning':
+                        var msg ={
+                            class: icon+'-notify',
+                            title: heading,
+                            message: text,
+                            position: position,
+                            timeout: timeout,
+                            backgroundColor: '#24292e',
+                            icon: 'mdi mdi-alert-circle-outline',
+                            layout: 2,
+                            iconColor: '#FFEB3B',
+                            transitionIn: 'flipInX',
+                            transitionOut: 'flipOutX',
+                            progressBarColor: '#FFEB3B',
+                        };
+                        break;
+                    default:
+                        var msg ={
+                            class: icon+'-notify',
+                            title: heading,
+                            message: text,
+                            position: position,
+                            timeout: timeout
+                        };
+                }
+                iziToast.show(msg);
+                break;
+            default:
+                console.log('msg not setup')
+        }
+
+    }else{
+        setTimeout(function(){ message(heading,text,position,color,icon,timeout); }, 100);
+    }
+
+}
+function messageSingle(heading,text,position,color,icon,timeout){
+    var bb = activeInfo.settings.notifications.backbone;
+    switch (bb) {
+        case 'toastr':
+            var ready = (eval( notificationFunction) !== undefined) ? true :false;
+            break;
+        case 'izi':
+            try {
+                var ready = (typeof eval(notificationFunction) !== undefined) ? true :false;
+            } catch (e) {
+                if (e instanceof SyntaxError) {
+                    setTimeout(function(){ messageSingle(heading,text,position,color,icon,timeout); }, 100);
+                }
+            }
+            break;
+        default:
+            var ready = false;
+    }
+    if(notificationsReady && ready){
+        switch (bb) {
+            case 'toastr':
+                $.toast().reset('all');
+                break;
+            case 'izi':
+                iziToast.destroy();
+                break;
+            default:
+                return false;
+        }
+        message(heading,text,position,color,icon,timeout);
+
+    }else{
+        setTimeout(function(){ messageSingle(heading,text,position,color,icon,timeout); }, 100);
+    }
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
             var json = JSON.parse(data);
         } catch (e) {
-            message('FATAL ERROR',data,'bottom-right','#FFF','error','60000');
+            message('FATAL ERROR',data,activeInfo.settings.notifications.position,'#FFF','error','60000');
             return false;
         }
 		if(json.data.user == false){ location.reload(); }
@@ -4013,6 +4240,7 @@ function launch(){
 		console.log("%cOrganizr","color: #66D9EF; font-size: 24px; font-family: Monospace;");
 		console.log("%cVersion: "+currentVersion,"color: #AD80FD; font-size: 12px; font-family: Monospace;");
 		console.log("%cStarting Up...","color: #F92671; font-size: 12px; font-family: Monospace;");
+		defineNotification();
 		checkMessage();
 		errorPage();
 		changeStyle(activeInfo.style);

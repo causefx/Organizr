@@ -9,7 +9,7 @@ $(document).ready(function () {
     pageLoad();
     var clipboard = new Clipboard('.clipboard');
     clipboard.on('success', function(e) {
-        message('Clipboard',e.text,'bottom-right','#FFF','info','5000');
+        message('Clipboard',e.text,activeInfo.settings.notifications.position,'#FFF','info','5000');
         e.clearSelection();
     });
     "use strict";
@@ -215,7 +215,7 @@ function pageLoad(){
                 if($.magnificPopup.instance.currItem.inlineElement.find('.rubberBand').length !== 0){
                     if(!$.magnificPopup.instance.currItem.inlineElement.find('.rubberBand').hasClass('hidden')){
                         var magIndex = $.magnificPopup.instance.currItem.index;
-                        message('You forgot to save','<a class="mouse" onclick="$(\'.popup-with-form\').magnificPopup(\'open\','+magIndex+')">Would you like to go back?</a>','bottom-right','#FFF','warning','5000');
+                        message('You forgot to save','<a class="mouse" onclick="$(\'.popup-with-form\').magnificPopup(\'open\','+magIndex+')">Would you like to go back?</a>',activeInfo.settings.notifications.position,'#FFF','warning','5000');
                     }
                 }
             },
@@ -341,8 +341,7 @@ $(document).on("click", ".login-button", function(e) {
             location.reload();
         }else if(html.data == 'mismatch'){
             $('div.login-box').unblock({});
-            $.toast().reset('all');
-            message('Login Error',' Wrong username/email/password combo','bottom-right','#FFF','warning','10000');
+            message('Login Error',' Wrong username/email/password combo',activeInfo.settings.notifications.position,'#FFF','warning','10000');
             console.error('Organizr Function: Login failed - wrong username/email/password');
         }
     }).fail(function(xhr) {
@@ -358,12 +357,10 @@ $(document).on("click", ".register-button", function(e) {
         if(html.data == true){
             location.reload();
         }else if(html.data == 'mismatch'){
-            $.toast().reset('all');
-            message('Registration Error',' Wrong Registration Password','bottom-right','#FFF','warning','10000');
+            message('Registration Error',' Wrong Registration Password',activeInfo.settings.notifications.position,'#FFF','warning','10000');
             console.error('Organizr Function: Registration failed - Wrong Registration Password');
         }else if(html.data == 'username taken'){
-            $.toast().reset('all');
-            message('Registration Error',' Registration Error - Username/Email Taken','bottom-right','#FFF','warning','10000');
+            message('Registration Error',' Registration Error - Username/Email Taken',activeInfo.settings.notifications.position,'#FFF','warning','10000');
             console.error('Organizr Function: Registration Failed - Username/Email Taken');
         }
     }).fail(function(xhr) {
@@ -380,22 +377,20 @@ $(document).on("click", ".reset-button", function(e) {
         organizrAPI('POST','api/?v1/recover',post).success(function(data) {
             var html = JSON.parse(data);
             if(html.data == true){
-                message('Recover Password',' Email Sent','bottom-right','#FFF','success','10000');
+                message('Recover Password',' Email Sent',activeInfo.settings.notifications.position,'#FFF','success','10000');
                 $('#leave-recover').trigger('click');
             }else if(html.data == 'an error occured'){
-                $.toast().reset('all');
-                message('Recover Error',' User Error','bottom-right','#FFF','warning','10000');
+                message('Recover Error',' User Error',activeInfo.settings.notifications.position,'#FFF','warning','10000');
                 console.error('Organizr Function: Recover failed - Wrong Registration Password');
             }else if(html.data == 'username taken'){
-                $.toast().reset('all');
-                message('Recover Error',' Registration Error - Username/Email Taken','bottom-right','#FFF','warning','10000');
+                message('Recover Error',' Registration Error - Username/Email Taken',activeInfo.settings.notifications.position,'#FFF','warning','10000');
                 console.error('Organizr Function: Recover Failed - Username/Email Taken');
             }
         }).fail(function(xhr) {
             console.error("Organizr Function: Login Failed");
         });
     }else{
-        message('Recover Error','Enter Email','bottom-right','#FFF','warning','10000');
+        message('Recover Error','Enter Email',activeInfo.settings.notifications.position,'#FFF','warning','10000');
     }
 });
 $(document).on("click", ".open-close", function () {
@@ -423,13 +418,13 @@ $(document).on("click", ".editGroup", function () {
         error:'Organizr Function: User Group API Connection Failed'
     };
     if (typeof post.id == 'undefined' || post.id == '') {
-        message('New Group Error',' Could not get Group ID','bottom-right','#FFF','error','5000');
+        message('New Group Error',' Could not get Group ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
     if (typeof post.groupName == 'undefined' || post.groupName == '') {
-        message('New Group Error',' Please set a Group Name','bottom-right','#FFF','warning','5000');
+        message('New Group Error',' Please set a Group Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if (typeof post.groupImage == 'undefined' || post.groupImage == '') {
-        message('New Group Error',' Please set a Group Image','bottom-right','#FFF','warning','5000');
+        message('New Group Error',' Please set a Group Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(post.id !== '' && post.groupName !== '' && post.groupImage !== '' ){
         var callbacks = $.Callbacks();
@@ -489,13 +484,13 @@ $(document).on("click", ".addNewGroup", function () {
         error:'Organizr Function: User Group API Connection Failed'
     };
     if (typeof post.newGroupID == 'undefined' || post.newGroupID == '') {
-        message('New Group Error',' Could not get next Group ID','bottom-right','#FFF','error','5000');
+        message('New Group Error',' Could not get next Group ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
     if (typeof post.newGroupName == 'undefined' || post.newGroupName == '') {
-        message('New Group Error',' Please set a Group Name','bottom-right','#FFF','warning','5000');
+        message('New Group Error',' Please set a Group Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if (typeof post.newGroupImage == 'undefined' || post.newGroupImage == '') {
-        message('New Group Error',' Please set a Group Image','bottom-right','#FFF','warning','5000');
+        message('New Group Error',' Please set a Group Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(post.newGroupID !== '' && post.newGroupName !== '' && post.newGroupImage !== '' ){
         var callbacks = $.Callbacks();
@@ -519,13 +514,13 @@ $(document).on("click", ".addNewUser", function () {
         error:'Organizr Function: User API Connection Failed'
     };
     if (typeof post.username == 'undefined' || post.username == '') {
-        message('New User Error',' Please set a Username','bottom-right','#FFF','error','5000');
+        message('New User Error',' Please set a Username',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
     if (typeof post.email == 'undefined' || post.email == '') {
-        message('New User Error',' Please set an Email','bottom-right','#FFF','warning','5000');
+        message('New User Error',' Please set an Email',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if (typeof post.password == 'undefined' || post.password == '') {
-        message('New User Error',' Please set a Password','bottom-right','#FFF','warning','5000');
+        message('New User Error',' Please set a Password',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(post.username !== '' && post.email !== '' && post.password !== '' ){
         var callbacks = $.Callbacks();
@@ -556,16 +551,16 @@ $(document).on("click", ".editUserAdmin", function () {
         error:'Organizr Function: API Connection Failed'
     };
     if (typeof post.id == 'undefined' || post.id == '') {
-        message('Edit User Error',' Could not get User ID','bottom-right','#FFF','error','5000');
+        message('Edit User Error',' Could not get User ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
     if (typeof post.username == 'undefined' || post.username == '') {
-        message('Edit User Error',' Please set a Username','bottom-right','#FFF','warning','5000');
+        message('Edit User Error',' Please set a Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if (typeof post.email == 'undefined' || post.email == '') {
-        message('Edit User Error',' Please set a User Email','bottom-right','#FFF','warning','5000');
+        message('Edit User Error',' Please set a User Email',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if (post.password !== '' && post.password !== $('#edit-user-form [name=password2]').val()){
-        message('Edit User Error',' Passwords do not match!','bottom-right','#FFF','warning','5000');
+        message('Edit User Error',' Passwords do not match!',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(post.id !== '' && post.username !== '' && post.email !== '' ){
         var callbacks = $.Callbacks();
@@ -810,16 +805,16 @@ $(document).on("click", ".editTab", function () {
         error:'Organizr Function: Tab Editor API Connection Failed'
     };
     if (typeof post.id == 'undefined' || post.id == '') {
-        message('Edit Tab Error',' Could not get Tab ID','bottom-right','#FFF','error','5000');
+        message('Edit Tab Error',' Could not get Tab ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
     if (typeof post.tabName == 'undefined' || post.tabName == '') {
-        message('Edit Tab Error',' Please set a Tab Name','bottom-right','#FFF','warning','5000');
+        message('Edit Tab Error',' Please set a Tab Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if (typeof post.tabImage == 'undefined' || post.tabImage == '') {
-        message('Edit Tab Error',' Please set a Tab Image','bottom-right','#FFF','warning','5000');
+        message('Edit Tab Error',' Please set a Tab Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if (typeof post.tabURL == 'undefined' || post.tabURL == '') {
-        message('Edit Tab Error',' Please set a Tab URL','bottom-right','#FFF','warning','5000');
+        message('Edit Tab Error',' Please set a Tab URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(post.id !== '' && post.tabName !== '' && post.tabImage !== '' && post.tabURL !== '' ){
         var callbacks = $.Callbacks();
@@ -849,16 +844,16 @@ $(document).on("click", ".addNewTab", function () {
         error:'Organizr Function: Tab API Connection Failed'
     };
     if (typeof post.tabOrder == 'undefined' || post.tabOrder == '') {
-        message('New Tab Error',' Could not get next Group ID','bottom-right','#FFF','error','5000');
+        message('New Tab Error',' Could not get next Group ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
     if (typeof post.tabName == 'undefined' || post.tabName == '') {
-        message('New Tab Error',' Please set a Tab Name','bottom-right','#FFF','error','5000');
+        message('New Tab Error',' Please set a Tab Name',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
     if (typeof post.tabURL == 'undefined' || post.tabURL == '') {
-        message('New Tab Error',' Please set a Tab URL','bottom-right','#FFF','warning','5000');
+        message('New Tab Error',' Please set a Tab URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if (typeof post.tabImage == 'undefined' || post.tabImage == '') {
-        message('New Tab Error',' Please set a Tab Image','bottom-right','#FFF','warning','5000');
+        message('New Tab Error',' Please set a Tab Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(post.tabOrder !== '' && post.tabName !== '' && post.tabURL !== '' && post.tabImage !== '' ){
         var callbacks = $.Callbacks();
@@ -889,16 +884,16 @@ $(document).on("click", ".addNewCategory", function () {
     };
     console.log(post);
     if (typeof post.categoryID == 'undefined' || post.categoryID == '') {
-        message('New Category Error',' Could not get next Category ID','bottom-right','#FFF','error','5000');
+        message('New Category Error',' Could not get next Category ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
     if (typeof post.categoryName == 'undefined' || post.categoryName == '') {
-        message('New Category Error',' Please set a Category Name','bottom-right','#FFF','error','5000');
+        message('New Category Error',' Please set a Category Name',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
     if (typeof post.categoryOrder == 'undefined' || post.categoryOrder == '') {
-        message('New Category Error',' Could not get Category Order','bottom-right','#FFF','warning','5000');
+        message('New Category Error',' Could not get Category Order',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if (typeof post.categoryImage == 'undefined' || post.categoryImage == '') {
-        message('New Category Error',' Please set a Category Image','bottom-right','#FFF','warning','5000');
+        message('New Category Error',' Please set a Category Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(post.categoryID !== '' && post.categoryName !== '' && post.categoryOrder !== '' && post.categoryImage !== '' ){
         var callbacks = $.Callbacks();
@@ -959,13 +954,13 @@ $(document).on("click", ".editCategory", function () {
     };
     console.log(post);
     if (typeof post.id == 'undefined' || post.id == '') {
-        message('Edit Tab Error',' Could not get Tab ID','bottom-right','#FFF','error','5000');
+        message('Edit Tab Error',' Could not get Tab ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
     if (typeof post.name == 'undefined' || post.name == '') {
-        message('Edit Tab Error',' Please set a Tab Name','bottom-right','#FFF','warning','5000');
+        message('Edit Tab Error',' Please set a Tab Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if (typeof post.image == 'undefined' || post.image == '') {
-        message('Edit Tab Error',' Please set a Tab Image','bottom-right','#FFF','warning','5000');
+        message('Edit Tab Error',' Please set a Tab Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(post.id !== '' && post.name !== '' && post.image !== ''){
         var callbacks = $.Callbacks();
@@ -1411,15 +1406,15 @@ $(document).on("click", ".closeErrorPage", function () {
 $(document).on("click", ".testPath", function () {
     var path = $("#form-location").val();
     if (typeof path == 'undefined' || path == '') {
-        message('Path Error',' Please enter a path for DB','bottom-right','#FFF','warning','10000');
+        message('Path Error',' Please enter a path for DB',activeInfo.settings.notifications.position,'#FFF','warning','10000');
     }else{
         organizrAPI('POST','api/?v1/wizard_path',{path:path}).success(function(data) {
             var html = JSON.parse(data);
             console.log(html);
             if(html.data == true){
-                message('Path',' Path is good to go','bottom-right','#FFF','success','10000');
+                message('Path',' Path is good to go',activeInfo.settings.notifications.position,'#FFF','success','10000');
             }else{
-                message('Path Error',' Path is not writable','bottom-right','#FFF','warning','10000');
+                message('Path Error',' Path is not writable',activeInfo.settings.notifications.position,'#FFF','warning','10000');
             }
         }).fail(function(xhr) {
             console.error("Organizr Function: Connection Failed");
@@ -1513,7 +1508,7 @@ $(document).on("click", ".playlist-filter li>a", function () {
 });
 // refresh cache image
 $(document).on("click", ".refreshImage", function(e) {
-    message('',' Refreshing Image...','bottom-right','#FFF','success','1000');
+    message('',' Refreshing Image...',activeInfo.settings.notifications.position,'#FFF','success','1000');
     e.preventDefault;
     var original = $(this).attr('data-image');
     var type = $(this).attr('data-type');
@@ -1534,7 +1529,7 @@ $(document).on("click", ".refreshImage", function(e) {
     //console.log(orginalElement)
     //console.log('replaced image with : '+original);
     setTimeout(function(){
-        message('Image Refreshed ',' Clear Cache Please','bottom-right','#FFF','success','3000');
+        message('Image Refreshed ',' Clear Cache Please',activeInfo.settings.notifications.position,'#FFF','success','3000');
     }, 1000);
 });
 // open tab code
@@ -1624,7 +1619,7 @@ $(document).on("click", ".downloader", function(e) {
 $(document).on("click", ".testTab", function () {
     var input = $('#new-tab-form-inputURLNew');
     if(input.val() == ''){
-        message('','Please enter a URL','bottom-right','#FFF','warning','5000');
+        message('','Please enter a URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(input.val() !== ''){
         var post = {
@@ -1648,7 +1643,7 @@ $(document).on("click", ".testTab", function () {
 $(document).on("click", ".testEditTab", function () {
     var input = $('#edit-tab-form-inputURL');
     if(input.val() == ''){
-        message('','Please enter a URL','bottom-right','#FFF','warning','5000');
+        message('','Please enter a URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(input.val() !== ''){
         var post = {

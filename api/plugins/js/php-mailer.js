@@ -48,11 +48,11 @@ function sendMail(){
     var subject = $('#sendEmailSubjectInput').val();
     var body = tinyMCE.get('sendEmail').getContent();
     if(to == ''){
-        messageSingle('','Please Enter Email','bottom-right','#FFF','error','5000');
+        messageSingle('','Please Enter Email',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }else if(subject == ''){
-        messageSingle('','Please Enter Subject','bottom-right','#FFF','error','5000');
+        messageSingle('','Please Enter Subject',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }else if(body == ''){
-        messageSingle('','Please Enter Body','bottom-right','#FFF','error','5000');
+        messageSingle('','Please Enter Body',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
     if(to !== '' && subject !== '' && body !== ''){
         var post = {
@@ -66,9 +66,9 @@ function sendMail(){
             var response = JSON.parse(data);
             if(response.data == true){
                 $.magnificPopup.close();
-                messageSingle('',window.lang.translate('Email Sent Successful'),'bottom-right','#FFF','success','5000');
+                messageSingle('',window.lang.translate('Email Sent Successful'),activeInfo.settings.notifications.position,'#FFF','success','5000');
             }else{
-                messageSingle('',response.data,'bottom-right','#FFF','error','5000');
+                messageSingle('',response.data,activeInfo.settings.notifications.position,'#FFF','error','5000');
             }
         }).fail(function(xhr) {
             console.error("Organizr Function: API Connection Failed");
@@ -300,7 +300,7 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
 });
 // SEND TEST EMAIL
 $(document).on('click', '.phpmSendTestEmail', function() {
-    messageSingle('',window.lang.translate('Sending Test E-Mail'),'bottom-right','#FFF','info','5000');
+    messageSingle('',window.lang.translate('Sending Test E-Mail'),activeInfo.settings.notifications.position,'#FFF','info','5000');
     var post = {
         plugin:'PHPMailer/send/test', // used for switch case in your API call
     };
@@ -308,9 +308,9 @@ $(document).on('click', '.phpmSendTestEmail', function() {
     organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
         var response = JSON.parse(data);
         if(response.data == true){
-            messageSingle('',window.lang.translate('Email Test Successful'),'bottom-right','#FFF','success','5000');
+            messageSingle('',window.lang.translate('Email Test Successful'),activeInfo.settings.notifications.position,'#FFF','success','5000');
         }else{
-            messageSingle('',response.data,'bottom-right','#FFF','error','5000');
+            messageSingle('',response.data,activeInfo.settings.notifications.position,'#FFF','error','5000');
         }
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");

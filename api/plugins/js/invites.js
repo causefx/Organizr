@@ -86,13 +86,13 @@ function joinPlex(){
     var password = $('#invitePlexJoinPassword');
     if(username.val() == ''){
         username.focus();
-        message('Invite Error',' Please Enter Username','bottom-right','#FFF','warning','5000');
+        message('Invite Error',' Please Enter Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }else if(email.val() == ''){
         email.focus();
-        message('Invite Error',' Please Enter Email','bottom-right','#FFF','warning','5000');
+        message('Invite Error',' Please Enter Email',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }else if(password.val() == ''){
         password.focus();
-        message('Invite Error',' Please Enter Passowrd','bottom-right','#FFF','warning','5000');
+        message('Invite Error',' Please Enter Passowrd',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(email.val() !== '' && username.val() !== '' && password.val() !== ''){
         organizrAPI('POST','api/?v1/plex/join',{username:username.val(), email:email.val(), password:password.val()}).success(function(data) {
@@ -100,11 +100,11 @@ function joinPlex(){
             if(response.data === true){
                 $('.invite-step-3-plex-no').toggleClass('hidden');
                 $('.invite-step-3-plex-yes').toggleClass('hidden');
-                message('Invite Function',' User Created','bottom-right','#FFF','success','5000');
+                message('Invite Function',' User Created',activeInfo.settings.notifications.position,'#FFF','success','5000');
                 $('#inviteUsernameInvite').val(username.val());
                 hasPlexUsername();
             }else{
-                message('Invite Error',' '+response.data,'bottom-right','#FFF','warning','5000');
+                message('Invite Error',' '+response.data,activeInfo.settings.notifications.position,'#FFF','warning','5000');
             }
     	}).fail(function(xhr) {
     		console.error("Organizr Function: API Connection Failed");
@@ -131,7 +131,7 @@ function hasPlexUsername(){
     var username = $('#inviteUsernameInvite');
     if(username.val() == ''){
         username.focus();
-        message('Invite Error',' Please Enter Username','bottom-right','#FFF','warning','5000');
+        message('Invite Error',' Please Enter Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }else{
         var post = {
             plugin:'Invites/codes',
@@ -149,7 +149,7 @@ function hasPlexUsername(){
             		local('remove', 'invite');
             	}
             }else{
-                message('Invite Error',' Code Incorrect','bottom-right','#FFF','warning','5000');
+                message('Invite Error',' Code Incorrect',activeInfo.settings.notifications.position,'#FFF','warning','5000');
             }
             ajaxloader();;
         }).fail(function(xhr) {
@@ -172,7 +172,7 @@ function verifyInvite(){
             $('.invite-step-1').toggleClass('hidden');
             $('.invite-step-2').toggleClass('hidden');
         }else{
-            message('Invite Error',' Code Incorrect','bottom-right','#FFF','warning','5000');
+            message('Invite Error',' Code Incorrect',activeInfo.settings.notifications.position,'#FFF','warning','5000');
         }
         if(local('get', 'invite')){
             local('remove', 'invite');
@@ -204,10 +204,10 @@ function createNewInvite(){
     var email = $('#new-invite-form-inputEmail');
     if(username.val() == ''){
         username.focus();
-        message('Invite Error',' Please Enter Username','bottom-right','#FFF','warning','5000');
+        message('Invite Error',' Please Enter Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }else if(email.val() == ''){
         email.focus();
-        message('Invite Error',' Please Enter Email','bottom-right','#FFF','warning','5000');
+        message('Invite Error',' Please Enter Email',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
 
     if(email.val() !== '' && username.val() !== ''){
@@ -223,11 +223,11 @@ function createNewInvite(){
             var response = JSON.parse(data);
             $.magnificPopup.close();
             ajaxloader();
-            message('Invite',' Invite Created','bottom-right','#FFF','success','5000');
+            message('Invite',' Invite Created',activeInfo.settings.notifications.position,'#FFF','success','5000');
         }).fail(function(xhr) {
             console.error("Organizr Function: API Connection Failed");
             ajaxloader();
-            message('Invite Error',' An Error Occured','bottom-right','#FFF','error','5000');
+            message('Invite Error',' An Error Occured',activeInfo.settings.notifications.position,'#FFF','error','5000');
         });
     }
 
@@ -244,11 +244,11 @@ function deleteInvite(id){
         $('#inviteItem-'+id).remove();
         //$.magnificPopup.close();
         ajaxloader();
-        message('Invite',' Invite Deleted','bottom-right','#FFF','success','5000');
+        message('Invite',' Invite Deleted',activeInfo.settings.notifications.position,'#FFF','success','5000');
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
         ajaxloader();
-        message('Invite Error',' An Error Occured','bottom-right','#FFF','error','5000');
+        message('Invite Error',' An Error Occured',activeInfo.settings.notifications.position,'#FFF','error','5000');
     });
 
 }
