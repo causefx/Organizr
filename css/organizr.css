@@ -896,12 +896,12 @@ i.fa.fa-life-ring.fa-fw {
 }
 .ping .heartbit {
     position: absolute;
-    top: -15px;
+    top: -20px;
     left: 15px;
-    height: 25px;
-    width: 25px;
+    height: 30px;
+    width: 30px;
     z-index: 10;
-    border: 5px solid #ff7676;
+    border: 5px solid #EF5350;
     border-radius: 70px;
     -moz-animation: heartbit 1s ease-out;
     -moz-animation-iteration-count: infinite;
@@ -912,13 +912,18 @@ i.fa.fa-life-ring.fa-fw {
     animation-iteration-count: infinite;
 }
 .ping .point {
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
     -webkit-border-radius: 30px;
     -moz-border-radius: 30px;
     border-radius: 30px;
-    background-color: #ff7676;
+    background-color: #F44336;
     position: absolute;
     left: 25px;
-    top: -5px;
+    top: -10px;
+}
+.sidebar .arrow {
+    position: absolute;
+    right: 20px;
+    top: 17px;
 }

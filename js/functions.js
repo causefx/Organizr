@@ -1200,7 +1200,7 @@ function categoryProcess(arrayItems){
 			if(v.count !== 0 && v.category_id !== 0){
 				menuList += `
 					<li>
-						<a class="waves-effect" href="javascript:void(0)">`+iconPrefix(v.image)+`<span class="hide-menu">`+v.category+` <span class="fa arrow"></span> <span class="label label-rouded label-inverse pull-right">`+v.count+`</span></span><div class="menu-category-ping"></div></a>
+						<a class="waves-effect" href="javascript:void(0)">`+iconPrefix(v.image)+`<span class="hide-menu">`+v.category+` <span class="fa arrow"></span> <span class="label label-rouded label-inverse pull-right">`+v.count+`</span></span><div class="menu-category-ping" data-good="0" data-bad="0"></div></a>
 						<ul class="nav nav-second-level category-`+v.category_id+` collapse"></ul>
 					</li>
 				`;
@@ -1221,7 +1221,7 @@ function buildInternalContainer(name,url,type){
 	return `<div id="internal-`+cleanClass(name)+`" data-type="`+type+`" class="internal-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
 }
 function buildMenuList(name,url,type,icon,ping=null){
-    var ping = (ping !== null) ? `<div class="menu-`+cleanClass(ping)+`-ping"></div>` : '';
+    var ping = (ping !== null) ? `<div class="menu-`+cleanClass(ping)+`-ping" data-tab-name="`+name+`" data-previous-state=""></div>` : '';
 	return `<li id="menu-`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span>`+ping+`</a></li>`;
 }
 function splashMenu(arrayItems){
@@ -3921,7 +3921,7 @@ function buildMediaResults(array,source,term){
 }
 function getPingList(arrayItems){
     var pingList = [];
-    var timeout = (activeInfo.user.groupID < 1) ? activeInfo.settings.homepage.refresh.adminPingRefresh : activeInfo.settings.homepage.refresh.otherPingRefresh;
+    var timeout = (activeInfo.user.groupID <= 1) ? activeInfo.settings.homepage.refresh.adminPingRefresh : activeInfo.settings.homepage.refresh.otherPingRefresh;
     if (Array.isArray(arrayItems['data']['tabs']) && arrayItems['data']['tabs'].length > 0) {
         $.each(arrayItems['data']['tabs'], function(i,v) {
             if(v.ping && v.ping_url !== null){
@@ -3932,27 +3932,42 @@ function getPingList(arrayItems){
     return (pingList.length > 0) ? pingUpdate(pingList,timeout): false;
 }
 function pingUpdate(pingList,timeout){
-    console.log('List Received - Starting check of the following list');
-    console.log(pingList);
     organizrAPI('POST','api/?v1/ping',{pingList:pingList}).success(function(data) {
         var response = JSON.parse(data);
         if (response.data !== false || response.data !== null) {
-            console.log('Results Received - Here are the results')
-            console.log(response.data);
+            $('.menu-category-ping').each(function( index ) {
+                $(this).attr('data-good','0');
+                $(this).attr('data-bad','0');
+            });
             $.each(response.data, function(i,v) {
                 var elm = $('.menu-'+cleanClass(i)+'-ping');
                 var catElm = elm.parent().parent().parent().parent().children('a').find('.menu-category-ping');
-                //console.log(catElm)
                 var error = '<div class="ping"><span class="heartbit"></span><span class="point"></span></div>';
                 var success = '';
-                if(v == false){
-                    elm.html(error);
-                    catElm.html(error);
-                    elm.parent().find('img').addClass('grayscale');
-                }else{
-                    elm.html(success);
-                    catElm.html(success);
-                    elm.parent().find('img').removeClass('grayscale');
+                var badCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-bad')) : 0;
+                var goodCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-good')) : 0;
+                var previousState = (elm.attr('data-previous-state') == "") ? '' : elm.attr('data-previous-state');
+                var tabName = elm.attr('data-tab-name');
+                var status = (v == false) ? 'down' : 'up';
+                var sendMessage = (previousState !== status && previousState !== '') ? true : false;
+                var audioDown = new Audio('plugins/sounds/default/open-ended.mp3');
+                var audioUp = new Audio('plugins/sounds/default/awareness.mp3');
+                elm.attr('data-previous-state', status);
+                switch (status){
+                    case 'down':
+                        if(catElm.length > 0){ badCount = badCount + 1; catElm.attr('data-bad', badCount); }
+                        elm.html(error);
+                        catElm.html(error);
+                        elm.parent().find('img').addClass('grayscale');
+                        var msg = (sendMessage) ? message(tabName,'Server Down','bottom-right','#FFF','error','600000') : '';
+                        var audio = (sendMessage) ? audioDown.play() : '';
+                        break;
+                    default:
+                        if(catElm.length > 0){ goodCount = goodCount + 1; catElm.attr('data-good', goodCount); if(badCount == 0){ catElm.html(success); } }
+                        elm.html(success);
+                        elm.parent().find('img').removeClass('grayscale');
+                        var msg = (sendMessage) ? message(tabName,'Server Back Online','bottom-right','#FFF','success','600000') : '';
+                        var audio = (sendMessage) ? audioUp.play() : '';
                 }
             });
         }
@@ -3962,6 +3977,20 @@ function pingUpdate(pingList,timeout){
     var timeoutTitle = 'ping';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ pingUpdate(pingList,timeout); }, timeout);
+}
+function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function(){
+        this.sound.play();
+    }
+    this.stop = function(){
+        this.sound.pause();
+    }
 }
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
