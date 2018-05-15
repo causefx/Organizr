@@ -39,6 +39,14 @@ function organizrSpecialSettings()
 				'enabled' => ($GLOBALS['ssoTautulli']) ? true : false,
 				'cookie' => !empty($tautulli) ? true : false,
 			),
+		),
+		'ping' => array(
+			'onlineSound' => $GLOBALS['pingOnlineSound'],
+			'offlineSound' => $GLOBALS['pingOfflineSound'],
+			'auth' => $GLOBALS['pingAuth'],
+			'authMessage' => $GLOBALS['pingAuthMessage'],
+			'adminRefresh' => $GLOBALS['adminPingRefresh'],
+			'everyoneRefresh' => $GLOBALS['otherPingRefresh'],
 		)
 	);
 }
@@ -447,6 +455,27 @@ function getSettingsMain()
 				'label' => 'Minimum Authentication',
 				'value' => $GLOBALS['pingAuth'],
 				'options' => groupSelect()
+			),
+			array(
+				'type' => 'select',
+				'name' => 'pingAuthMessage',
+				'label' => 'Minimum Authentication for Message and Sound',
+				'value' => $GLOBALS['pingAuthMessage'],
+				'options' => groupSelect()
+			),
+			array(
+				'type' => 'select',
+				'name' => 'pingOnlineSound',
+				'label' => 'Online Sound',
+				'value' => $GLOBALS['pingOnlineSound'],
+				'options' => getSounds()
+			),
+			array(
+				'type' => 'select',
+				'name' => 'pingOfflineSound',
+				'label' => 'Offline Sound',
+				'value' => $GLOBALS['pingOfflineSound'],
+				'options' => getSounds()
 			),
 			array(
 				'type' => 'select',
@@ -1036,6 +1065,24 @@ function getThemes()
 		);
 	}
 	return $themes;
+}
+
+function getSounds()
+{
+	$sounds = array();
+	foreach (glob(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'sounds' . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . "*.mp3") as $filename) {
+		$sounds[] = array(
+			'name' => preg_replace('/\\.[^.\\s]{3,4}$/', '', basename($filename)),
+			'value' => preg_replace('/\\.[^.\\s]{3,4}$/', '', 'plugins/sounds/default/' . basename($filename) . '.mp3')
+		);
+	}
+	foreach (glob(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'sounds' . DIRECTORY_SEPARATOR . 'custom' . DIRECTORY_SEPARATOR . "*.mp3") as $filename) {
+		$sounds[] = array(
+			'name' => preg_replace('/\\.[^.\\s]{3,4}$/', '', basename($filename)),
+			'value' => preg_replace('/\\.[^.\\s]{3,4}$/', '', 'plugins/sounds/custom/' . basename($filename) . '.mp3')
+		);
+	}
+	return $sounds;
 }
 
 function getBranches()

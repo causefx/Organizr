@@ -3949,9 +3949,9 @@ function pingUpdate(pingList,timeout){
                 var previousState = (elm.attr('data-previous-state') == "") ? '' : elm.attr('data-previous-state');
                 var tabName = elm.attr('data-tab-name');
                 var status = (v == false) ? 'down' : 'up';
-                var sendMessage = (previousState !== status && previousState !== '') ? true : false;
-                var audioDown = new Audio('plugins/sounds/default/open-ended.mp3');
-                var audioUp = new Audio('plugins/sounds/default/awareness.mp3');
+                var sendMessage = (previousState !== status && previousState !== '' && activeInfo.user.groupID <= activeInfo.settings.ping.authMessage) ? true : false;
+                var audioDown = new Audio(activeInfo.settings.ping.offlineSound);
+                var audioUp = new Audio(activeInfo.settings.ping.onlineSound);
                 elm.attr('data-previous-state', status);
                 switch (status){
                     case 'down':
@@ -3977,20 +3977,6 @@ function pingUpdate(pingList,timeout){
     var timeoutTitle = 'ping';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ pingUpdate(pingList,timeout); }, timeout);
-}
-function sound(src) {
-    this.sound = document.createElement("audio");
-    this.sound.src = src;
-    this.sound.setAttribute("preload", "auto");
-    this.sound.setAttribute("controls", "none");
-    this.sound.style.display = "none";
-    document.body.appendChild(this.sound);
-    this.play = function(){
-        this.sound.play();
-    }
-    this.stop = function(){
-        this.sound.pause();
-    }
 }
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
