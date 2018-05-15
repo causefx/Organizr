@@ -3932,9 +3932,13 @@ function getPingList(arrayItems){
     return (pingList.length > 0) ? pingUpdate(pingList,timeout): false;
 }
 function pingUpdate(pingList,timeout){
+    console.log('List Received - Starting check of the following list');
+    console.log(pingList);
     organizrAPI('POST','api/?v1/ping',{pingList:pingList}).success(function(data) {
         var response = JSON.parse(data);
         if (response.data !== false || response.data !== null) {
+            console.log('Results Received - Here are the results')
+            console.log(response.data);
             $.each(response.data, function(i,v) {
                 var elm = $('.menu-'+cleanClass(i)+'-ping');
                 var catElm = elm.parent().parent().parent().parent().children('a').find('.menu-category-ping');
