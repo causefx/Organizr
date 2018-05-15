@@ -3937,13 +3937,17 @@ function pingUpdate(pingList,timeout){
         if (response.data !== false || response.data !== null) {
             $.each(response.data, function(i,v) {
                 var elm = $('.menu-'+cleanClass(i)+'-ping');
+                var catElm = elm.parent().parent().parent().parent().children('a').find('.menu-category-ping');
+                //console.log(catElm)
                 var error = '<div class="ping"><span class="heartbit"></span><span class="point"></span></div>';
                 var success = '';
                 if(v == false){
                     elm.html(error);
+                    catElm.html(error);
                     elm.parent().find('img').addClass('grayscale');
                 }else{
                     elm.html(success);
+                    catElm.html(success);
                     elm.parent().find('img').removeClass('grayscale');
                 }
             });
