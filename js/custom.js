@@ -1013,7 +1013,6 @@ $(document).on('change keydown', '.addFormTick :input', function(e) {
     $(this).closest('.form-group').addClass('has-success');
     var formID = $(this).closest('form').attr('id');
     $('#'+formID+'-save').removeClass('hidden');
-    console.log(formID);
     switch ($(this).attr('type')) {
         case 'switch':
         case 'checkbox':
@@ -1028,48 +1027,13 @@ $(document).on('change keydown', '.addFormTick :input', function(e) {
     if($(this).hasClass('styleChanger')){
         changeStyle(value);
     }
-});
-// Added 1 while testing as we are getting rid of this
-$(document).on('change', '#customize-appearance-form1 :input', function(e) {
-    $(this).attr('data-changed', true);
-    //$(this).addClass('has-success');
-    switch ($(this).attr('type')) {
-        case 'switch':
-        case 'checkbox':
-            var value = $(this).prop("checked") ? true : false;
-            break;
-        default:
-            var value = $(this).val();
+    if($(this).hasClass('notifyChanger')){
+        activeInfo.settings.notifications.backbone = value;
+        defineNotification();
     }
-    var post = {
-        action:'editCustomizeAppearance',
-        api:'api/?v1/settings/customize/appearance',
-        name:$(this).attr("name"),
-        value:value,
-        messageTitle:'',
-        messageBody:'Updated Value for '+$(this).attr("name"),
-        error:'Organizr Function: API Connection Failed'
-    };
-    $('#customize-appearance-reload').removeClass('hidden');
-    var callbacks = $.Callbacks();
-    //callbacks.add( buildCustomizeAppearance );
-    settingsAPI(post,callbacks);
-    if($(this).hasClass('themeChanger')){
-        changeTheme(value);
+    if($(this).hasClass('notifyPositionChanger')){
+        activeInfo.settings.notifications.position = value;
     }
-    if($(this).hasClass('styleChanger')){
-        changeStyle(value);
-    }
-    //disable button then renable
-    $('#customize-appearance-form:input').prop('disabled', 'true');
-    setTimeout(
-        function(){
-            $('#customize-appearance-form :input').prop('disabled', null);
-            //input.emulateTab();
-        },
-        2000
-    );
-
 });
 //DELETE IMAGE
 $(document).on("click", ".deleteImage", function () {
@@ -1157,72 +1121,6 @@ $(document).on('click', '.disablePlugin', function() {
         }
     });
 
-});
-// SSO Option change
-$(document).on('change', '#sso-form1 :input', function(e) {
-    var input = $(this);
-    switch ($(this).attr('type')) {
-        case 'switch':
-        case 'checkbox':
-            var value = $(this).prop("checked") ? true : false;
-            break;
-        default:
-            var value = $(this).val();
-    }
-    var post = {
-        api:'api/?v1/update/config',
-        name:$(this).attr("name"),
-        type:$(this).attr("data-type"),
-        value:value,
-        messageTitle:'',
-        messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
-        error:'Organizr Function: API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    //callbacks.add( buildCustomizeAppearance );
-    settingsAPI(post,callbacks);
-    //disable button then renable
-    $('#sso-form :input').prop('disabled', 'true');
-    setTimeout(
-        function(){
-            $('#sso-form :input').prop('disabled', null);
-            input.emulateTab();
-        },
-        2000
-    );
-});
-// MAIN SETTINGS PAGE
-$(document).on('change', '#settings-main-form1 :input', function(e) {
-    var input = $(this);
-    switch ($(this).attr('type')) {
-        case 'switch':
-        case 'checkbox':
-            var value = $(this).prop("checked") ? true : false;
-            break;
-        default:
-            var value = $(this).val();
-    }
-    var post = {
-        api:'api/?v1/update/config',
-        name:$(this).attr("name"),
-        type:$(this).attr("data-type"),
-        value:value,
-        messageTitle:'',
-        messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
-        error:'Organizr Function: API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    //callbacks.add( buildCustomizeAppearance );
-    settingsAPI(post,callbacks);
-    //disable button then renable
-    $('#settings-main-form :input').prop('disabled', 'true');
-    setTimeout(
-        function(){
-            $('#settings-main-form :input').prop('disabled', null);
-            input.emulateTab();
-        },
-        2000
-    );
 });
 // AUTH BACKEND HIDE SHOW
 $(document).on('change', '#authSelect, #authBackendSelect', function(e) {
@@ -1420,40 +1318,6 @@ $(document).on("click", ".testPath", function () {
             console.error("Organizr Function: Connection Failed");
         });
     }
-});
-// Save Homepage Form
-$(document).on('change', '.homepageForm1 :input', function(e) {
-    var input = $(this);
-    switch ($(this).attr('type')) {
-        case 'switch':
-        case 'checkbox':
-            var value = $(this).prop("checked") ? true : false;
-            break;
-        default:
-            var value = $(this).val();
-    }
-    var post = {
-        api:'api/?v1/update/config',
-        name:$(this).attr("name"),
-        type:$(this).attr("data-type"),
-        value:value,
-        messageTitle:'',
-        messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
-        error:'Organizr Function: API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    //callbacks.add( buildCustomizeAppearance );
-    settingsAPI(post,callbacks);
-    //disable button then renable
-    $('.homepageForm :input').prop('disabled', 'true');
-    setTimeout(
-        function(){
-            $('.homepageForm :input').prop('disabled', null);
-            input.emulateTab();
-        },
-        2000
-    );
-
 });
 $(document).on({
     mouseenter: function () {

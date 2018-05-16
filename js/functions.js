@@ -4123,6 +4123,7 @@ function message(heading,text,position,color,icon,timeout){
                 console.log(heading,text,position,color,icon,timeout);
                 var msgFull = (heading !== '') ? heading + '<br/>' + text : text;
                 timeout = timeout / 1000;
+                alertify.set('notifier','position', position);
                 alertify.notify(msgFull, icon+'-alertify', timeout);
                 break;
             default:
