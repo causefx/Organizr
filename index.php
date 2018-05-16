@@ -30,6 +30,7 @@
     <link href="plugins/bower_components/owl.carousel/owl.carousel.min.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/owl.carousel/owl.theme.default.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/hover/hover-min.css" rel="stylesheet" type="text/css"/>
+
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/simplebar.css" rel="stylesheet">
     <link href="css/plyr.css" rel="stylesheet">

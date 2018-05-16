@@ -3928,8 +3928,8 @@ function pingUpdate(pingList,timeout){
                 var status = (v == false) ? 'down' : 'up';
                 var ms = (v == false) ? 'down' : v+'ms';
                 var sendMessage = (previousState !== status && previousState !== '' && activeInfo.user.groupID <= activeInfo.settings.ping.authMessage) ? true : false;
-                var audioDown = new Audio(activeInfo.settings.ping.offlineSound);
-                var audioUp = new Audio(activeInfo.settings.ping.onlineSound);
+                var audioDown = (sendMessage) ? new Audio(activeInfo.settings.ping.offlineSound) : '';
+                var audioUp = (sendMessage) ? new Audio(activeInfo.settings.ping.onlineSound) : '';
                 elm.attr('data-previous-state', status);
                 if(activeInfo.user.groupID <= activeInfo.settings.ping.authMs && activeInfo.settings.ping.ms){ elmMs.removeClass('hidden').html(ms); }
                 switch (status){
@@ -3992,40 +3992,52 @@ function defineNotification(){
             include('plugins/bower_components/iziToast/js/iziToast.min.js');
             window.notificationFunction = 'iziToast';
             break;
+        case 'alertify':
+            include('plugins/bower_components/alertify/alertify.min.css');
+            include('plugins/bower_components/alertify/default.min.css');
+            include('plugins/bower_components/alertify/alertify.min.js');
+            window.notificationFunction = 'alertify';
+            break;
         default:
             return false
     }
     window.notificationsReady = true;
-    return false;
 }
 function messagePositions(){
     return {
         "br":{
             "toastr":"bottom-right",
+            "alertify":"bottom-right",
             "izi":"bottomRight",
         },
         "bl":{
             "toastr":"bottom-left",
+            "alertify":"bottom-left",
             "izi":"bottomLeft",
         },
         "bc":{
             "toastr":"bottom-center",
+            "alertify":"bottom-center",
             "izi":"bottomCenter",
         },
         "tr":{
             "toastr":"top-right",
+            "alertify":"top-right",
             "izi":"topRight",
         },
         "tl":{
             "toastr":"top-left",
+            "alertify":"top-left",
             "izi":"topLeft",
         },
         "tc":{
             "toastr":"top-center",
+            "alertify":"top-center",
             "izi":"topCenter",
         },
         "c":{
             "toastr":"center",
+            "alertify":"bottom-center",
             "izi":"center",
         }
     };
@@ -4037,6 +4049,7 @@ function message(heading,text,position,color,icon,timeout){
             var ready = (eval( notificationFunction) !== undefined) ? true :false;
             break;
         case 'izi':
+        case 'alertify':
             try {
                 var ready = (typeof eval(notificationFunction) !== undefined) ? true :false;
             } catch (e) {
@@ -4049,7 +4062,6 @@ function message(heading,text,position,color,icon,timeout){
             var ready = false;
     }
     if(notificationsReady && ready){
-
         position = messagePositions()[position][bb];
         switch (bb) {
             case 'toastr':
@@ -4066,100 +4078,52 @@ function message(heading,text,position,color,icon,timeout){
                 break;
             case 'izi':
                 iziToast.settings({
-                    timeout: 4000,
-                    // closeOnClick: true,
-                    // closeOnEscape: true,
                     close: true,
                     progressBar: true,
                     progressBarEasing: 'ease',
-                    // pauseOnHover: false,
-                    // zindex: 900,
-                    // maxWidth: 400,
-                    // rtl: true,
-                    // layout: 2,
-                    // resetOnHover: true,
-                    // imageWidth: 50,
-                    // balloon: true,
-                    // target: '.target',
-                    // icon: 'material-icons',
-                    // iconText: 'face',
-                    // animateInside: false,
-                    // transitionIn: 'flipInX',
-                    // transitionOut: 'fadeOutLeft',
-                    // titleSize: 20,
-                    // titleLineHeight: 20,
-                    // messageSize: 20,
-                    // messageLineHeight: 20,
+                    class: icon+'-notify',
+                    title: heading,
+                    message: text,
+                    position: position,
+                    timeout: timeout,
+                    layout: 2,
+                    transitionIn: 'flipInX',
+                    transitionOut: 'flipOutX',
+                    balloon: false,
                 });
                 switch (icon){
                     case 'success':
                         var msg = {
-                            class: icon+'-notify',
-                            title: heading,
-                            message: text,
-                            position: position,
-                            timeout: timeout,
                             icon: 'mdi mdi-check-circle-outline',
-                            layout: 2,
-                            transitionIn: 'flipInX',
-                            transitionOut: 'flipOutX',
                         };
                         break;
                     case 'info':
                         var msg ={
-                            class: icon+'-notify',
-                            title: heading,
-                            message: text,
-                            position: position,
-                            timeout: timeout,
                             icon: 'mdi mdi-information-outline',
-                            layout: 2,
-                            transitionIn: 'flipInX',
-                            transitionOut: 'flipOutX',
                         };
                         break;
                     case 'error':
                         var msg ={
-                            class: icon+'-notify',
-                            title: heading,
-                            message: text,
-                            position: position,
-                            timeout: timeout,
-                            theme: 'dark',
                             icon: 'mdi mdi-close-circle-outline',
-                            layout: 2,
-                            iconColor: 'rgb(171, 11, 11)',
-                            transitionIn: 'flipInX',
-                            transitionOut: 'flipOutX',
-                            progressBarColor: 'rgb(171, 11, 11)',
                         };
                         break;
                     case 'warning':
                         var msg ={
-                            class: icon+'-notify',
-                            title: heading,
-                            message: text,
-                            position: position,
-                            timeout: timeout,
-                            backgroundColor: '#24292e',
                             icon: 'mdi mdi-alert-circle-outline',
-                            layout: 2,
-                            iconColor: '#FFEB3B',
-                            transitionIn: 'flipInX',
-                            transitionOut: 'flipOutX',
-                            progressBarColor: '#FFEB3B',
                         };
                         break;
                     default:
                         var msg ={
-                            class: icon+'-notify',
-                            title: heading,
-                            message: text,
-                            position: position,
-                            timeout: timeout
+                            icon: 'mdi mdi-alert-circle-outline',
                         };
                 }
                 iziToast.show(msg);
+                break;
+            case 'alertify':
+                console.log(heading,text,position,color,icon,timeout);
+                var msgFull = (heading !== '') ? heading + '<br/>' + text : text;
+                timeout = timeout / 1000;
+                alertify.notify(msgFull, icon+'-alertify', timeout);
                 break;
             default:
                 console.log('msg not setup')
@@ -4177,6 +4141,7 @@ function messageSingle(heading,text,position,color,icon,timeout){
             var ready = (eval( notificationFunction) !== undefined) ? true :false;
             break;
         case 'izi':
+        case 'alertify':
             try {
                 var ready = (typeof eval(notificationFunction) !== undefined) ? true :false;
             } catch (e) {
@@ -4195,6 +4160,9 @@ function messageSingle(heading,text,position,color,icon,timeout){
                 break;
             case 'izi':
                 iziToast.destroy();
+                break;
+            case 'alertify':
+                alertify.dismissAll();
                 break;
             default:
                 return false;

@@ -52,6 +52,10 @@ function optionNotificationTypes()
 			'name' => 'Style 2',
 			'value' => 'izi'
 		),
+		array(
+			'name' => 'Style 3',
+			'value' => 'alertify'
+		),
 	);
 }
 

@@ -940,6 +940,8 @@ i.fa.fa-life-ring.fa-fw {
 }
 .iziToast.success-notify.iziToast-layout2 {
     background: #1b1a1a;
+    border: 1px solid #232323;
+    border-bottom: transparent;
 }
 .iziToast.info-notify>.iziToast-body .iziToast-icon {
     color: #3A83F0;
@@ -953,6 +955,8 @@ i.fa.fa-life-ring.fa-fw {
 }
 .iziToast.info-notify.iziToast-layout2 {
     background: #1b1a1a;
+    border: 1px solid #232323;
+    border-bottom: transparent;
 }
 .iziToast.warning-notify>.iziToast-body .iziToast-icon {
     color: #FFEB3B;
@@ -966,6 +970,8 @@ i.fa.fa-life-ring.fa-fw {
 }
 .iziToast.warning-notify.iziToast-layout2 {
     background: #1b1a1a;
+    border: 1px solid #232323;
+    border-bottom: transparent;
 }
 .iziToast.error-notify>.iziToast-body .iziToast-icon {
     color: #F44336;
@@ -979,4 +985,17 @@ i.fa.fa-life-ring.fa-fw {
 }
 .iziToast.error-notify.iziToast-layout2 {
     background: #1b1a1a;
+    border: 1px solid #232323;
+    border-bottom: transparent;
 }
+.iziToast.success-notify.iziToast-balloon:before,
+.iziToast.info-notify.iziToast-balloon:before,
+.iziToast.warning-notify.iziToast-balloon:before,
+.iziToast.error-notify.iziToast-balloon:before {
+    border-top-color: #1b1a1a;
+}
+/* ALERTIFY ALERTS */
+.ajs-message.ajs-success-alertify { color: rgb(0, 255, 184);  background-color: #1b1a1a;  border-color: rgb(0, 255, 184); }
+.ajs-message.ajs-info-alertify { color: #3A83F0;  background-color: #1b1a1a;  border-color: #3A83F0; }
+.ajs-message.ajs-warning-alertify { color: #FFEB3B;  background-color: #1b1a1a;  border-color: #FFEB3B; }
+.ajs-message.ajs-error-alertify { color: #F44336;  background-color: #1b1a1a;  border-color: #F44336; }
