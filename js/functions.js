@@ -4080,6 +4080,10 @@ function message(heading,text,position,color,icon,timeout){
     if(notificationsReady && ready){
         oldPosition = position;
         position = messagePositions()[position][bb];
+        if(local('g','initial')){
+            setTimeout(function(){ message(heading,text,oldPosition,color,icon,timeout); }, 100);
+            return false;
+        }
         switch (bb) {
             case 'toastr':
                 $.toast({
@@ -4150,7 +4154,7 @@ function message(heading,text,position,color,icon,timeout){
                 }
                 var msgFull = (heading !== '') ? heading + '<br/>' + text : text;
                 new Noty({
-                    type: icon+'-noty',
+                    type: icon + '-noty',
                     layout: position,
                     text: msgFull,
                     progressBar: true,
@@ -4160,11 +4164,11 @@ function message(heading,text,position,color,icon,timeout){
                             var n = this;
                             var Timeline = new mojs.Timeline();
                             var body = new mojs.Html({
-                                el        : n.barDom,
-                                x         : {500: 0, delay: 0, duration: 500, easing: 'elastic.out'},
-                                isForce3d : true,
+                                el: n.barDom,
+                                x: {500: 0, delay: 0, duration: 500, easing: 'elastic.out'},
+                                isForce3d: true,
                                 onComplete: function () {
-                                    promise(function(resolve) {
+                                    promise(function (resolve) {
                                         resolve();
                                     })
                                 }
@@ -4172,11 +4176,11 @@ function message(heading,text,position,color,icon,timeout){
 
                             var parent = new mojs.Shape({
                                 parent: n.barDom,
-                                width      : 200,
-                                height     : n.barDom.getBoundingClientRect().height,
-                                radius     : 0,
-                                x          : {[150]: -150},
-                                duration   : 1.2 * 500,
+                                width: 200,
+                                height: n.barDom.getBoundingClientRect().height,
+                                radius: 0,
+                                x: {[150]: -150},
+                                duration: 1.2 * 500,
                                 isShowStart: true
                             });
 
@@ -4184,35 +4188,35 @@ function message(heading,text,position,color,icon,timeout){
                             parent.el.style['overflow'] = 'hidden';
 
                             var burst = new mojs.Burst({
-                                parent  : parent.el,
-                                count   : 10,
-                                top     : n.barDom.getBoundingClientRect().height + 75,
-                                degree  : 90,
-                                radius  : 75,
-                                angle   : {[-90]: 40},
+                                parent: parent.el,
+                                count: 10,
+                                top: n.barDom.getBoundingClientRect().height + 75,
+                                degree: 90,
+                                radius: 75,
+                                angle: {[-90]: 40},
                                 children: {
-                                    fill     : '#EBD761',
-                                    delay    : 'stagger(500, -50)',
-                                    radius   : 'rand(8, 25)',
+                                    fill: '#EBD761',
+                                    delay: 'stagger(500, -50)',
+                                    radius: 'rand(8, 25)',
                                     direction: -1,
-                                    isSwirl  : true
+                                    isSwirl: true
                                 }
                             });
 
                             var fadeBurst = new mojs.Burst({
-                                parent  : parent.el,
-                                count   : 2,
-                                degree  : 0,
-                                angle   : 75,
-                                radius  : {0: 100},
-                                top     : '90%',
+                                parent: parent.el,
+                                count: 2,
+                                degree: 0,
+                                angle: 75,
+                                radius: {0: 100},
+                                top: '90%',
                                 children: {
-                                    fill     : '#EBD761',
+                                    fill: '#EBD761',
                                     pathScale: [.65, 1],
-                                    radius   : 'rand(12, 15)',
+                                    radius: 'rand(12, 15)',
                                     direction: [-1, 1],
-                                    delay    : .8 * 500,
-                                    isSwirl  : true
+                                    delay: .8 * 500,
+                                    isSwirl: true
                                 }
                             });
 
@@ -4222,12 +4226,12 @@ function message(heading,text,position,color,icon,timeout){
                         close: function (promise) {
                             var n = this;
                             new mojs.Html({
-                                el        : n.barDom,
-                                x         : {0: 500, delay: 10, duration: 500, easing: 'cubic.out'},
-                                skewY     : {0: 10, delay: 10, duration: 500, easing: 'cubic.out'},
-                                isForce3d : true,
+                                el: n.barDom,
+                                x: {0: 500, delay: 10, duration: 500, easing: 'cubic.out'},
+                                skewY: {0: 10, delay: 10, duration: 500, easing: 'cubic.out'},
+                                isForce3d: true,
                                 onComplete: function () {
-                                    promise(function(resolve) {
+                                    promise(function (resolve) {
                                         resolve();
                                     })
                                 }
@@ -4323,6 +4327,8 @@ function launch(){
 		console.log("%cOrganizr","color: #66D9EF; font-size: 24px; font-family: Monospace;");
 		console.log("%cVersion: "+currentVersion,"color: #AD80FD; font-size: 12px; font-family: Monospace;");
 		console.log("%cStarting Up...","color: #F92671; font-size: 12px; font-family: Monospace;");
+        local('set','initial',true);
+        setTimeout(function(){ local('r','initial'); }, 3000);
 		defineNotification();
 		checkMessage();
 		errorPage();
