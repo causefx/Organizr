@@ -158,6 +158,6 @@ return array(
 	'pingOnlineSound' => 'plugins/sounds/default/awareness.mp3',
 	'pingMs' => false,
 	'pingAuthMs' => '1',
-	'notificationBackbone' => 'toastr',
+	'notificationBackbone' => 'izi',
 	'notificationPosition' => 'br'
 );

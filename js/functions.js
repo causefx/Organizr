@@ -3998,6 +3998,13 @@ function defineNotification(){
             include('plugins/bower_components/alertify/alertify.min.js');
             window.notificationFunction = 'alertify';
             break;
+        case 'noty':
+            include('plugins/bower_components/noty/noty.min.js');
+            include('plugins/bower_components/noty/mo.min.js');
+            include('plugins/bower_components/noty/noty.css');
+            include('plugins/bower_components/noty/mint.css');
+            window.notificationFunction = 'Noty';
+            break;
         default:
             return false
     }
@@ -4009,36 +4016,43 @@ function messagePositions(){
             "toastr":"bottom-right",
             "alertify":"bottom-right",
             "izi":"bottomRight",
+            "noty":"bottomRight",
         },
         "bl":{
             "toastr":"bottom-left",
             "alertify":"bottom-left",
             "izi":"bottomLeft",
+            "noty":"bottomLeft",
         },
         "bc":{
             "toastr":"bottom-center",
             "alertify":"bottom-center",
             "izi":"bottomCenter",
+            "noty":"bottomCenter",
         },
         "tr":{
             "toastr":"top-right",
             "alertify":"top-right",
             "izi":"topRight",
+            "noty":"topRight",
         },
         "tl":{
             "toastr":"top-left",
             "alertify":"top-left",
             "izi":"topLeft",
+            "noty":"topLeft",
         },
         "tc":{
             "toastr":"top-center",
             "alertify":"top-center",
             "izi":"topCenter",
+            "noty":"topCenter",
         },
         "c":{
             "toastr":"center",
             "alertify":"bottom-center",
             "izi":"center",
+            "noty":"center",
         }
     };
 }
@@ -4046,10 +4060,12 @@ function message(heading,text,position,color,icon,timeout){
     var bb = activeInfo.settings.notifications.backbone;
     switch (bb) {
         case 'toastr':
+
             var ready = (eval( notificationFunction) !== undefined) ? true :false;
             break;
         case 'izi':
         case 'alertify':
+        case 'noty':
             try {
                 var ready = (typeof eval(notificationFunction) !== undefined) ? true :false;
             } catch (e) {
@@ -4062,6 +4078,7 @@ function message(heading,text,position,color,icon,timeout){
             var ready = false;
     }
     if(notificationsReady && ready){
+        oldPosition = position;
         position = messagePositions()[position][bb];
         switch (bb) {
             case 'toastr':
@@ -4126,6 +4143,99 @@ function message(heading,text,position,color,icon,timeout){
                 alertify.set('notifier','position', position);
                 alertify.notify(msgFull, icon+'-alertify', timeout);
                 break;
+            case 'noty':
+                if(typeof mojs == 'undefined'){
+                    setTimeout(function(){ message(heading,text,oldPosition,color,icon,timeout); }, 100);
+                    return false;
+                }
+                var msgFull = (heading !== '') ? heading + '<br/>' + text : text;
+                new Noty({
+                    type: icon+'-noty',
+                    layout: position,
+                    text: msgFull,
+                    progressBar: true,
+                    timeout: timeout,
+                    animation: {
+                        open: function (promise) {
+                            var n = this;
+                            var Timeline = new mojs.Timeline();
+                            var body = new mojs.Html({
+                                el        : n.barDom,
+                                x         : {500: 0, delay: 0, duration: 500, easing: 'elastic.out'},
+                                isForce3d : true,
+                                onComplete: function () {
+                                    promise(function(resolve) {
+                                        resolve();
+                                    })
+                                }
+                            });
+
+                            var parent = new mojs.Shape({
+                                parent: n.barDom,
+                                width      : 200,
+                                height     : n.barDom.getBoundingClientRect().height,
+                                radius     : 0,
+                                x          : {[150]: -150},
+                                duration   : 1.2 * 500,
+                                isShowStart: true
+                            });
+
+                            n.barDom.style['overflow'] = 'visible';
+                            parent.el.style['overflow'] = 'hidden';
+
+                            var burst = new mojs.Burst({
+                                parent  : parent.el,
+                                count   : 10,
+                                top     : n.barDom.getBoundingClientRect().height + 75,
+                                degree  : 90,
+                                radius  : 75,
+                                angle   : {[-90]: 40},
+                                children: {
+                                    fill     : '#EBD761',
+                                    delay    : 'stagger(500, -50)',
+                                    radius   : 'rand(8, 25)',
+                                    direction: -1,
+                                    isSwirl  : true
+                                }
+                            });
+
+                            var fadeBurst = new mojs.Burst({
+                                parent  : parent.el,
+                                count   : 2,
+                                degree  : 0,
+                                angle   : 75,
+                                radius  : {0: 100},
+                                top     : '90%',
+                                children: {
+                                    fill     : '#EBD761',
+                                    pathScale: [.65, 1],
+                                    radius   : 'rand(12, 15)',
+                                    direction: [-1, 1],
+                                    delay    : .8 * 500,
+                                    isSwirl  : true
+                                }
+                            });
+
+                            Timeline.add(body, burst, fadeBurst, parent);
+                            Timeline.play();
+                        },
+                        close: function (promise) {
+                            var n = this;
+                            new mojs.Html({
+                                el        : n.barDom,
+                                x         : {0: 500, delay: 10, duration: 500, easing: 'cubic.out'},
+                                skewY     : {0: 10, delay: 10, duration: 500, easing: 'cubic.out'},
+                                isForce3d : true,
+                                onComplete: function () {
+                                    promise(function(resolve) {
+                                        resolve();
+                                    })
+                                }
+                            }).play();
+                        }
+                    }
+                }).show();
+                break;
             default:
                 console.log('msg not setup')
         }
@@ -4143,6 +4253,7 @@ function messageSingle(heading,text,position,color,icon,timeout){
             break;
         case 'izi':
         case 'alertify':
+        case 'noty':
             try {
                 var ready = (typeof eval(notificationFunction) !== undefined) ? true :false;
             } catch (e) {
@@ -4164,6 +4275,9 @@ function messageSingle(heading,text,position,color,icon,timeout){
                 break;
             case 'alertify':
                 alertify.dismissAll();
+                break;
+            case 'noty':
+                Noty.closeAll();
                 break;
             default:
                 return false;

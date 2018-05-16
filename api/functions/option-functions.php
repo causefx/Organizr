@@ -45,16 +45,20 @@ function optionNotificationTypes()
 {
 	return array(
 		array(
-			'name' => 'Style 1',
+			'name' => 'Toastr',
 			'value' => 'toastr'
 		),
 		array(
-			'name' => 'Style 2',
+			'name' => 'Izi',
 			'value' => 'izi'
 		),
 		array(
-			'name' => 'Style 3',
+			'name' => 'Alertify',
 			'value' => 'alertify'
+		),
+		array(
+			'name' => 'Noty',
+			'value' => 'noty'
 		),
 	);
 }
