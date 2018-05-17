@@ -185,7 +185,7 @@ function resolveEmbyItem($itemDetails)
 	$embyItem['user'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth'])) ? @(string)$itemDetails['UserName'] : "";
 	$embyItem['userThumb'] = '';
 	$embyItem['userAddress'] = (isset($itemDetails['RemoteEndPoint']) ? $itemDetails['RemoteEndPoint'] : "x.x.x.x");
-	$embyItem['address'] = $GLOBALS['embyTabURL'] ? '' : '';
+	$embyItem['address'] = $GLOBALS['embyTabURL'] ? rtrim($GLOBALS['embyTabURL'], '/') . "/web/itemdetails.html?id=" . $embyItem['uid'] : "https://app.emby.media/itemdetails.html?id=" . $embyItem['uid'] . "&serverId=" . $embyItem['id'];
 	$embyItem['nowPlayingOriginalImage'] = 'api/?v1/image&source=emby&type=' . $embyItem['nowPlayingImageType'] . '&img=' . $embyItem['nowPlayingThumb'] . '&height=' . $nowPlayingHeight . '&width=' . $nowPlayingWidth . '&key=' . $embyItem['nowPlayingKey'] . '$' . randString();
 	$embyItem['originalImage'] = 'api/?v1/image&source=emby&type=' . $embyItem['imageType'] . '&img=' . $embyItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $embyItem['key'] . '$' . randString();
 	$embyItem['openTab'] = $GLOBALS['embyTabURL'] && $GLOBALS['embyTabName'] ? true : false;
@@ -852,6 +852,31 @@ function getCalendar()
 			}
 		}
 	}
+	// LIDARR CONNECT
+	if ($GLOBALS['homepageLidarrEnabled'] && qualifyRequest($GLOBALS['homepageLidarrAuth']) && !empty($GLOBALS['lidarrURL']) && !empty($GLOBALS['lidarrToken'])) {
+		$lidarrs = array();
+		$lidarrURLList = explode(',', $GLOBALS['lidarrURL']);
+		$lidarrTokenList = explode(',', $GLOBALS['lidarrToken']);
+		if (count($lidarrURLList) == count($lidarrTokenList)) {
+			foreach ($lidarrURLList as $key => $value) {
+				$lidarrs[$key] = array(
+					'url' => $value,
+					'token' => $lidarrTokenList[$key]
+				);
+			}
+			foreach ($lidarrs as $key => $value) {
+				try {
+					$lidarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], true);
+					$lidarrCalendar = getLidarrCalendar($lidarr->getCalendar($startDate, $endDate), $key);
+				} catch (Exception $e) {
+					writeLog('error', 'Lidarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				}
+				if (!empty($lidarrCalendar)) {
+					$calendarItems = array_merge($calendarItems, $lidarrCalendar);
+				}
+			}
+		}
+	}
 	// RADARR CONNECT
 	if ($GLOBALS['homepageRadarrEnabled'] && qualifyRequest($GLOBALS['homepageRadarrAuth']) && !empty($GLOBALS['radarrURL']) && !empty($GLOBALS['radarrToken'])) {
 		$radarrs = array();
@@ -1055,6 +1080,67 @@ function getSonarrCalendar($array, $number)
 			"start" => $child['airDateUtc'],
 			"className" => "bg-calendar calendar-item tvID--" . $episodeID,
 			"imagetype" => "tv " . $downloaded,
+			"details" => $details
+		));
+	}
+	if ($i != 0) {
+		return $gotCalendar;
+	}
+	return false;
+}
+
+function getLidarrCalendar($array, $number)
+{
+	$array = json_decode($array, true);
+	$gotCalendar = array();
+	$i = 0;
+	foreach ($array as $child) {
+		$i++;
+		$albumName = $child['title'];
+		$artistName = $child['artist']['artistName'];
+		$albumID = '';
+		$releaseDate = $child['releaseDate'];
+		$releaseDate = strtotime($releaseDate);
+		$releaseDate = date("Y-m-d H:i:s", $releaseDate);
+		if (new DateTime() < new DateTime($releaseDate)) {
+			$unaired = true;
+		}
+		$downloaded = ($child['statistics']['percentOfEpisodes'] !== '100.0') ? '0' : '1';
+		if ($downloaded == "0" && isset($unaired)) {
+			$downloaded = "text-info";
+		} elseif ($downloaded == "1") {
+			$downloaded = "text-success";
+		} else {
+			$downloaded = "text-danger";
+		}
+		$fanart = "/plugins/images/cache/no-np.png";
+		foreach ($child['artist']['images'] as $image) {
+			if ($image['coverType'] == "fanart") {
+				$fanart = str_replace('http://', 'https://', $image['url']);
+			}
+		}
+		$details = array(
+			"seasonCount" => '',
+			"status" => '',
+			"topTitle" => $albumName,
+			"bottomTitle" => $artistName,
+			"overview" => isset($child['artist']['overview']) ? $child['artist']['overview'] : '',
+			"runtime" => '',
+			"image" => $fanart,
+			"ratings" => $child['artist']['ratings']['value'],
+			"videoQuality" => "unknown",
+			"audioChannels" => "unknown",
+			"audioCodec" => "unknown",
+			"videoCodec" => "unknown",
+			"size" => "unknown",
+			"genres" => $child['genres'],
+		);
+		array_push($gotCalendar, array(
+			"id" => "Lidarr-" . $number . "-" . $i,
+			"title" => $artistName,
+			"start" => $child['releaseDate'],
+			"className" => "bg-calendar calendar-item musicID--",
+			"imagetype" => "music " . $downloaded,
 			"details" => $details
 		));
 	}
@@ -1764,6 +1850,32 @@ function testAPIConnection($array)
 					foreach ($sonarrs as $key => $value) {
 						try {
 							$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+							$sonarr->getSystemStatus();
+							return true;
+						} catch (Exception $e) {
+							return $e->getMessage();
+						}
+					}
+				}
+			} else {
+				return 'URL/s and/or Token/s not setup';
+			}
+			break;
+		case 'lidarr':
+			if (!empty($GLOBALS['lidarrURL']) && !empty($GLOBALS['lidarrToken'])) {
+				$sonarrs = array();
+				$sonarrURLList = explode(',', $GLOBALS['lidarrURL']);
+				$sonarrTokenList = explode(',', $GLOBALS['lidarrToken']);
+				if (count($sonarrURLList) == count($sonarrTokenList)) {
+					foreach ($sonarrURLList as $key => $value) {
+						$sonarrs[$key] = array(
+							'url' => $value,
+							'token' => $sonarrTokenList[$key]
+						);
+					}
+					foreach ($sonarrs as $key => $value) {
+						try {
+							$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], true);
 							$sonarr->getSystemStatus();
 							return true;
 						} catch (Exception $e) {

@@ -1231,6 +1231,109 @@ function getHomepageList()
 			)
 		),
 		array(
+			'name' => 'Lidarr',
+			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
+			'image' => 'plugins/images/tabs/lidarr.png',
+			'category' => 'PMR',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageLidarrEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepageLidarrEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageLidarrAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageLidarrAuth'],
+						'options' => $groups
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'lidarrURL',
+						'label' => 'URL',
+						'value' => $GLOBALS['lidarrURL'],
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'lidarrToken',
+						'label' => 'Token',
+						'value' => $GLOBALS['lidarrToken']
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'number',
+						'name' => 'calendarStart',
+						'label' => '# of Days Before',
+						'value' => $GLOBALS['calendarStart'],
+						'placeholder' => ''
+					),
+					array(
+						'type' => 'number',
+						'name' => 'calendarEnd',
+						'label' => '# of Days After',
+						'value' => $GLOBALS['calendarEnd'],
+						'placeholder' => ''
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarFirstDay',
+						'label' => 'Start Day',
+						'value' => $GLOBALS['calendarFirstDay'],
+						'options' => $day
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarDefault',
+						'label' => 'Default View',
+						'value' => $GLOBALS['calendarDefault'],
+						'options' => $calendarDefault
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarTimeFormat',
+						'label' => 'Time Format',
+						'value' => $GLOBALS['calendarTimeFormat'],
+						'options' => $timeFormat
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarLimit',
+						'label' => 'Items Per Day',
+						'value' => $GLOBALS['calendarLimit'],
+						'options' => $limit
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['calendarRefresh'],
+						'options' => optionTime()
+					),
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'lidarr\')"'
+					),
+				)
+			)
+		),
+		array(
 			'name' => 'Radarr',
 			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
 			'image' => 'plugins/images/tabs/radarr.png',

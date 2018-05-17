@@ -11,10 +11,11 @@ class Sonarr
     protected $httpAuthUsername;
     protected $httpAuthPassword;
 
-    public function __construct($url, $apiKey, $httpAuthUsername = null, $httpAuthPassword = null)
+    public function __construct($url, $apiKey, $lidarr = false, $httpAuthUsername = null, $httpAuthPassword = null)
     {
         $this->url = rtrim($url, '/\\'); // Example: http://127.0.0.1:8989 (no trailing forward-backward slashes)
-        $this->apiKey = $apiKey;
+	    $this->apiKey = $apiKey;
+	    $this->lidarr = $lidarr;
         $this->httpAuthUsername = $httpAuthUsername;
         $this->httpAuthPassword = $httpAuthPassword;
     }
@@ -63,9 +64,11 @@ class Sonarr
         }
         if ( $sonarrUnmonitored == 'true' ) {
             $uriData['unmonitored'] = 'true';
-	}
-            
-        $response = [
+		}
+	    if ( $this->lidarr == true ) {
+		    $uriData['includeArtist'] = 'true';
+	    }
+	    $response = [
             'uri' => 'calendar',
             'type' => 'get',
             'data' => $uriData
@@ -603,29 +606,29 @@ class Sonarr
                 $this->httpAuthPassword
             ];
         }
-
+	    $lidarr = ( $this->lidarr == true ) ? 'v1/' : '';
         if ( $params['type'] == 'get' ) {
-            $url = $this->url . '/api/' . $params['uri'] . '?' . http_build_query($params['data']);
+            $url = $this->url . '/api/' . $lidarr . $params['uri'] . '?' . http_build_query($params['data']);
 
             return $client->get($url, $options);
         }
 
         if ( $params['type'] == 'put' ) {
-            $url = $this->url . '/api/' . $params['uri'];
+            $url = $this->url . '/api/' . $lidarr . $params['uri'];
             $options['json'] = $params['data'];
 
             return $client->put($url, $options);
         }
 
         if ( $params['type'] == 'post' ) {
-            $url = $this->url . '/api/' . $params['uri'];
+            $url = $this->url . '/api/' . $lidarr . $params['uri'];
             $options['json'] = $params['data'];
 
             return $client->post($url, $options);
         }
 
         if ( $params['type'] == 'delete' ) {
-            $url = $this->url . '/api/' . $params['uri'] . '?' . http_build_query($params['data']);
+            $url = $this->url . '/api/' . $lidarr . $params['uri'] . '?' . http_build_query($params['data']);
 
             return $client->delete($url, $options);
         }
