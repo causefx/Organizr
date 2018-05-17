@@ -1,79 +1,86 @@
 {
-    "2.0.0-alpha.100": {
-        "date":"20180108",
-        "title": "First Public Alpha",
-        "new": "Everything is new",
-        "fixed": "API Calls in settings page being to fast for refresh|Signup form submit issue in Wizard",
-        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
-    },
-	"2.0.0-alpha.110": {
-        "date":"20180109",
-        "title": "Small Addition",
-        "new": "3 Options for appearance|Upgrade module completed",
-        "fixed": "More API lag times",
-        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
-    },
-    "2.0.0-alpha.115": {
-        "date":"20180109",
-        "title": "Updater Fix",
-        "new": "New Updater Progress Bar",
-        "fixed": "Lag Times on updater|Added longer timeouts",
-        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
-    },
-    "2.0.0-alpha.120": {
-        "date":"2018-01-10 20:00:00",
-        "title": "Color Picker Testing",
-        "new": "",
-        "fixed": "Attempt to fix color picker",
-        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
-    },
-    "2.0.0-alpha.125": {
-        "date":"2018-01-10 23:00",
-        "title": "Image Manager",
-        "new": "Added Image Manager",
-        "fixed": "Color Selector|Wizard Preloader",
-        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
-    },
-	"2.0.0-alpha.130": {
-        "date":"2018-01-10 23:00",
-        "title": "Plugin Framework",
-        "new": "Plugin Framework nearly complete|Added Mail Plugin",
-        "fixed": "",
-        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
-    },
-	"2.0.0-alpha.200": {
-        "date":"2018-02-04 21:00",
-        "title": "Homepage Work Started",
-        "new": "Plex Streams on homepage|Plex Recent Added on homepage|Emby Streams on homepage|Emby Recent Added on homepage|SabNZBd on homepage",
-        "fixed": "Multiple things for performace",
-        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
-    },
-	"2.0.0-alpha.250": {
-        "date":"2018-02-05 21:00",
-        "title": "NZBGet Homepage",
-        "new": "NZBGet on homepage - please check for bugs",
-        "fixed": "",
-        "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
-    },
-	"2.0.0-alpha.800": {
-        "date":"2018-04-20 19:25",
-        "title": "Update so heavy - is it Stoned?",
-        "new": "Homepage Items - see below:|Downloader: Deluge - Transmission - Qbit|Calendar: Sonarr - Radarr - CouchPotato - Sickrage/Beard/Medusa|Ombi requests and approvals|Custom HTML (2 blocks)|Custom CSS|Plex Invites|Mail Templates",
-        "fixed": "Lots of minor little things",
-        "notes": "Beta coming soon"
-    },
-	"2.0.0-alpha.815": {
-        "date":"2018-04-24 21:36",
-        "title": "Bug Fixes",
-        "new": "",
-        "fixed": "Plex Now Playing bug not showing items|Invite menu not loaded on initial load",
-        "notes": "Beta coming soon"
-    },
-    "2.0.0-beta.100": {
-        "date":"2018-05-04 19:00",
-        "title": "First Beta Release",
-        "new": "SpeedTest|Email templates",
-        "fixed": "",
-        "notes": "RC coming soon"
-    }
+  "2.0.0-alpha.100": {
+    "date": "20180108",
+    "title": "First Public Alpha",
+    "new": "Everything is new",
+    "fixed": "API Calls in settings page being to fast for refresh|Sign-up form submit issue in Wizard",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.110": {
+    "date": "20180109",
+    "title": "Small Addition",
+    "new": "3 Options for appearance|Upgrade module completed",
+    "fixed": "More API lag times",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.115": {
+    "date": "20180109",
+    "title": "Updater Fix",
+    "new": "New Updater Progress Bar",
+    "fixed": "Lag Times on updater|Added longer timeouts",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.120": {
+    "date": "2018-01-10 20:00:00",
+    "title": "Color Picker Testing",
+    "new": "",
+    "fixed": "Attempt to fix color picker",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.125": {
+    "date": "2018-01-10 23:00",
+    "title": "Image Manager",
+    "new": "Added Image Manager",
+    "fixed": "Color Selector|Wizard Preloader",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.130": {
+    "date": "2018-01-10 23:00",
+    "title": "Plugin Framework",
+    "new": "Plugin Framework nearly complete|Added Mail Plugin",
+    "fixed": "",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.200": {
+    "date": "2018-02-04 21:00",
+    "title": "Homepage Work Started",
+    "new": "Plex Streams on homepage|Plex Recent Added on homepage|Emby Streams on homepage|Emby Recent Added on homepage|SabNZBd on homepage",
+    "fixed": "Multiple things for performance",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.250": {
+    "date": "2018-02-05 21:00",
+    "title": "NZBGet Homepage",
+    "new": "NZBGet on homepage - please check for bugs",
+    "fixed": "",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.800": {
+    "date": "2018-04-20 19:25",
+    "title": "Update so heavy - is it Stoned?",
+    "new": "Homepage Items - see below:|Downloader: Deluge - Transmission - Qbit|Calendar: Sonarr - Radarr - CouchPotato - Sickrage/Beard/Medusa|Ombi requests and approvals|Custom HTML (2 blocks)|Custom CSS|Plex Invites|Mail Templates",
+    "fixed": "Lots of minor little things",
+    "notes": "Beta coming soon"
+  },
+  "2.0.0-alpha.815": {
+    "date": "2018-04-24 21:36",
+    "title": "Bug Fixes",
+    "new": "",
+    "fixed": "Plex Now Playing bug not showing items|Invite menu not loaded on initial load",
+    "notes": "Beta coming soon"
+  },
+  "2.0.0-beta.100": {
+    "date": "2018-05-04 19:00",
+    "title": "First Beta Release",
+    "new": "SpeedTest|Email templates",
+    "fixed": "",
+    "notes": "RC coming soon"
+  },
+  "2.0.0-beta.200": {
+    "date": "2018-05-17 18:00",
+    "title": "Second Beta Release",
+    "new": "Homepage Test Button on some modules|Smaller Nav bar|Recent Item Limits|Nav buttons on sliders|Settings save revamped|Ombi user import on register|Test iFrame buttons|Ombi auth for requesting|Favicon support|Ping Support|New Alert Styles|New Lockout Timeout system",
+    "fixed": "Calendar Alt Title|Deluge Hide/Seed|More DDNS workarounds|Homepage auth issues|Deluge no results|PHPMailer plugin fixes|Wizard auto login",
+    "notes": "Calendar has Today Button now"
+  }
 }

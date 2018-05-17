@@ -6,7 +6,7 @@ function upgradeCheck()
 	$compare = new Composer\Semver\Comparator;
 	$oldVer = $GLOBALS['configVersion'];
 	// Upgrade check start for version below
-	$versionCheck = '2.0.0-alpha-100';
+	$versionCheck = '2.0.0-beta-200';
 	if ($compare->lessThan($oldVer, $versionCheck)) {
 		$updateDB = true;
 		$oldVer = $versionCheck;
