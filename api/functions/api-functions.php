@@ -983,7 +983,7 @@ function loadTabs()
 			$categories = $connect->fetchAll('SELECT * FROM categories ORDER BY `order` ASC');
 			$all['tabs'] = $tabs;
 			foreach ($tabs as $k => $v) {
-				$v['access_url'] = isset($v['url_local']) && $_SERVER['SERVER_ADDR'] == userIP() ? $v['url_local'] : $v['url'];
+				$v['access_url'] = isset($v['url_local']) && getenv('SERVER_ADDR') == userIP() ? $v['url_local'] : $v['url'];
 			}
 			$count = array_map(function ($element) {
 				return $element['category_id'];
