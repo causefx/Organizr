@@ -988,7 +988,23 @@ i.fa.fa-life-ring.fa-fw {
     border: 1px solid #232323;
     border-bottom: transparent;
 }
+.iziToast.update-notify>.iziToast-body .iziToast-icon {
+    color: #9e67f4;
+}
+.iziToast.update-notify>.iziToast-body .iziToast-title,
+.iziToast.update-notify>.iziToast-body .iziToast-message {
+    color: white;
+}
+.update-notify .iziToast-progressbar div {
+    background: #9e67f4;
+}
+.iziToast.update-notify.iziToast-layout2 {
+    background: #1b1a1a;
+    border: 1px solid #232323;
+    border-bottom: transparent;
+}
 .iziToast.success-notify.iziToast-balloon:before,
+.iziToast.update-notify.iziToast-balloon:before,
 .iziToast.info-notify.iziToast-balloon:before,
 .iziToast.warning-notify.iziToast-balloon:before,
 .iziToast.error-notify.iziToast-balloon:before {
@@ -999,6 +1015,7 @@ i.fa.fa-life-ring.fa-fw {
 .ajs-message.ajs-info-alertify { color: #3A83F0;  background-color: #1b1a1a;  border-color: #3A83F0; }
 .ajs-message.ajs-warning-alertify { color: #FFEB3B;  background-color: #1b1a1a;  border-color: #FFEB3B; }
 .ajs-message.ajs-error-alertify { color: #F44336;  background-color: #1b1a1a;  border-color: #F44336; }
+.ajs-message.ajs-update-alertify { color: #9e67f4;  background-color: #1b1a1a;  border-color: #9e67f4; }
 .noty_type__success-noty .noty_body{
     background: #1b1a1a;
     color: rgb(0, 255, 184);
@@ -1024,6 +1041,12 @@ i.fa.fa-life-ring.fa-fw {
     border: 1px solid #232323;
     border-bottom: transparent;
 }
+.noty_type__update-noty .noty_body{
+    background: #1b1a1a;
+    color: #9e67f4;
+    border: 1px solid #232323;
+    border-bottom: transparent;
+}
 
 .noty_type__success-noty.noty_has_timeout.noty_has_progressbar .noty_progressbar {
     background-color: rgb(0, 255, 184);
@@ -1037,6 +1060,9 @@ i.fa.fa-life-ring.fa-fw {
 .noty_type__error-noty.noty_has_timeout.noty_has_progressbar .noty_progressbar {
     background-color: #F44336;
 }
+.noty_type__update-noty.noty_has_timeout.noty_has_progressbar .noty_progressbar {
+    background-color: #9e67f4;
+}
 .noty_type__success-noty ellipse {
     fill: rgb(0, 255, 184);
 }
@@ -1048,4 +1074,7 @@ i.fa.fa-life-ring.fa-fw {
 }
 .noty_type__error-noty ellipse {
     fill: #F44336;
+}
+.noty_type__update-noty ellipse {
+    fill: #9e67f4;
 }

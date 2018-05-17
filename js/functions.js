@@ -4136,6 +4136,11 @@ function message(heading,text,position,color,icon,timeout){
                             icon: 'mdi mdi-alert-circle-outline',
                         };
                         break;
+                    case 'update':
+                        var msg ={
+                            icon: 'mdi mdi-webpack',
+                        };
+                        break;
                     default:
                         var msg ={
                             icon: 'mdi mdi-alert-circle-outline',

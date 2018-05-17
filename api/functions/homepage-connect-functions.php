@@ -1954,7 +1954,6 @@ function testAPIConnection($array)
 		case 'deluge':
 			if (!empty($GLOBALS['delugeURL']) && !empty($GLOBALS['delugePassword'])) {
 				try {
-					
 					$deluge = new deluge($GLOBALS['delugeURL'], decrypt($GLOBALS['delugePassword']));
 					$torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, hash, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate');
 					return true;
