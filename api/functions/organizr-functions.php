@@ -1109,6 +1109,7 @@ function auth()
 	$blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
 	$group = isset($_GET['group']) ? (int)$_GET['group'] : (int)0;
 	$currentIP = userIP();
+	$unlocked = ($GLOBALS['organizrUser']['locked'] == '1') ? false : true;
 	if (isset($GLOBALS['organizrUser'])) {
 		$currentUser = $GLOBALS['organizrUser']['username'];
 		$currentGroup = $GLOBALS['organizrUser']['groupID'];
@@ -1128,7 +1129,7 @@ function auth()
 		}
 	}
 	if ($group !== null) {
-		if (qualifyRequest($group)) {
+		if (qualifyRequest($group) && $unlocked) {
 			!$debug ? exit(http_response_code(200)) : die("$userInfo Authorized");
 		} else {
 			!$debug ? exit(http_response_code(401)) : die("$userInfo Not Authorized");
