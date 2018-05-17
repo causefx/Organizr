@@ -81,6 +81,7 @@ function createToken($username, $email, $image, $group, $groupID, $key, $days = 
 		->getToken(); // Retrieves the generated token
 		$jwttoken->getHeaders(); // Retrieves the token headers
 		$jwttoken->getClaims(); // Retrieves the token claims
+		coookie('set', 'organizrToken', $jwttoken, $days);
 		// Add token to DB
 		$addToken = [
 			'token' => (string)$jwttoken,
@@ -89,9 +90,9 @@ function createToken($username, $email, $image, $group, $groupID, $key, $days = 
 			'expires' => gmdate("Y-m-d\TH:i:s\Z", time() + (86400 * $days))
 		];
 		$database->query('INSERT INTO [tokens]', $addToken);
-		coookie('set', 'organizrToken', $jwttoken, $days);
 		return $jwttoken;
 	} catch (Dibi\Exception $e) {
+		writeLog('error', $e, 'SYSTEM');
 		return false;
 	}
 }

@@ -343,6 +343,10 @@ $(document).on("click", ".login-button", function(e) {
             $('div.login-box').unblock({});
             message('Login Error',' Wrong username/email/password combo',activeInfo.settings.notifications.position,'#FFF','warning','10000');
             console.error('Organizr Function: Login failed - wrong username/email/password');
+        }else{
+            $('div.login-box').unblock({});
+            message('Login Error',html.data,activeInfo.settings.notifications.position,'#FFF','warning','10000');
+            console.error('Organizr Function: Login failed');
         }
     }).fail(function(xhr) {
         console.error("Organizr Function: Login Failed");

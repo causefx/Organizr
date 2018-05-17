@@ -91,7 +91,7 @@ function login($array)
 			return 'mismatch';
 		}
 	} catch (Dibi\Exception $e) {
-		return 'error';
+		return $e;
 	}
 }
 
