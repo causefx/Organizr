@@ -159,5 +159,9 @@ return array(
 	'pingMs' => false,
 	'pingAuthMs' => '1',
 	'notificationBackbone' => 'izi',
-	'notificationPosition' => 'br'
+	'notificationPosition' => 'br',
+	'lockoutSystem' => false,
+	'lockoutTimeout' => '60',
+	'lockoutMaxAuth' => '0',
+	'lockoutMinAuth' => '1'
 );

@@ -348,6 +348,27 @@ $(document).on("click", ".login-button", function(e) {
         console.error("Organizr Function: Login Failed");
     });
 });
+$(document).on("click", ".unlockButton", function(e) {
+    e.preventDefault;
+    var post = {
+        password:$('#unlockPassword').val()
+    };
+    organizrAPI('POST','api/?v1/unlock',post).success(function(data) {
+        var html = JSON.parse(data);
+        console.log(html);
+        if(html.data == true){
+            location.reload();
+        }else if(html.data == 'Password Incorrect'){
+            message('Login Error',' Wrong password',activeInfo.settings.notifications.position,'#FFF','warning','10000');
+            console.error('Organizr Function: Login failed - wrong password');
+        }else{
+            message('Login Error',html.data,activeInfo.settings.notifications.position,'#FFF','warning','10000');
+            console.error('Organizr Function: Login failed');
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: Login Failed");
+    });
+});
 $(document).on("click", ".register-button", function(e) {
     e.preventDefault;
     var post = $( '#registerForm' ).serializeArray();
@@ -1603,6 +1624,9 @@ $(document).on('keydown', '#request-input', function () {
 });
 $(document).on('keydown', '#mediaSearchQuery', function () {
   clearTimeout(typingTimer);
+});
+$(document).on('keydown', 'body', function () {
+    blockDev();
 });
 /* ===== Open-Close Right Sidebar ===== */
 

@@ -53,6 +53,12 @@ function organizrSpecialSettings()
 		'notifications' => array(
 			'backbone' => $GLOBALS['notificationBackbone'],
 			'position' => $GLOBALS['notificationPosition']
+		),
+		'lockout' => array(
+			'enabled' => $GLOBALS['lockoutSystem'],
+			'timer' => $GLOBALS['lockoutTimeout'],
+			'minGroup' => $GLOBALS['lockoutMinAuth'],
+			'maxGroup' => $GLOBALS['lockoutMaxAuth']
 		)
 	);
 }
@@ -204,6 +210,56 @@ function recover($array)
 		}
 	} catch (Dibi\Exception $e) {
 		writeLog('error', 'User Management Function - Error - User: ' . $email . ' An error Occured', $email);
+		return 'an error occured';
+	}
+}
+
+function unlock($array)
+{
+	if ($array['data']['password'] == '') {
+		return 'Password Not Set';
+	}
+	try {
+		$connect = new Dibi\Connection([
+			'driver' => 'sqlite3',
+			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+		]);
+		$result = $connect->fetch('SELECT * FROM users WHERE id = ?', $GLOBALS['organizrUser']['userID']);
+		if (!password_verify($array['data']['password'], $result['password'])) {
+			return 'Password Incorrect';
+		}
+		$connect->query('
+            UPDATE users SET', [
+			'locked' => ''
+		], '
+            WHERE id=?', $GLOBALS['organizrUser']['userID']);
+		writeLog('success', 'User Lockout Function - User: ' . $GLOBALS['organizrUser']['username'] . '\'s account unlocked', $GLOBALS['organizrUser']['username']);
+		return true;
+	} catch (Dibi\Exception $e) {
+		writeLog('error', 'User Management Function - Error - User: ' . $GLOBALS['organizrUser']['username'] . ' An error Occured', $GLOBALS['organizrUser']['username']);
+		return 'an error occured';
+	}
+}
+
+function lock()
+{
+	if ($GLOBALS['organizrUser']['userID'] == '999') {
+		return 'Not Allowed on Guest';
+	}
+	try {
+		$connect = new Dibi\Connection([
+			'driver' => 'sqlite3',
+			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+		]);
+		$connect->query('
+            UPDATE users SET', [
+			'locked' => '1'
+		], '
+            WHERE id=?', $GLOBALS['organizrUser']['userID']);
+		writeLog('success', 'User Lockout Function - User: ' . $GLOBALS['organizrUser']['username'] . '\'s account unlocked', $GLOBALS['organizrUser']['username']);
+		return true;
+	} catch (Dibi\Exception $e) {
+		writeLog('error', 'User Management Function - Error - User: ' . $GLOBALS['organizrUser']['username'] . ' An error Occured', $GLOBALS['organizrUser']['username']);
 		return 'an error occured';
 	}
 }
@@ -431,7 +487,7 @@ function getSettingsMain()
 				'label' => 'Emby Token',
 				'value' => $GLOBALS['embyToken'],
 				'placeholder' => ''
-			)
+			),
 			/*array(
 				'type' => 'button',
 				'label' => 'Send Test',
@@ -440,7 +496,34 @@ function getSettingsMain()
 				'text' => 'Send'
 			)*/
 		),
-		'Misc' => array(
+		'Security' => array(
+			array(
+				'type' => 'number',
+				'name' => 'lockoutTimeout',
+				'label' => 'Inactivity Timer [Minutes]',
+				'value' => $GLOBALS['lockoutTimeout'],
+				'placeholder' => ''
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'lockoutSystem',
+				'label' => 'Inactivity Lock',
+				'value' => $GLOBALS['lockoutSystem']
+			),
+			array(
+				'type' => 'select',
+				'name' => 'lockoutMinAuth',
+				'label' => 'Lockout Groups From',
+				'value' => $GLOBALS['lockoutMinAuth'],
+				'options' => groupSelect()
+			),
+			array(
+				'type' => 'select',
+				'name' => 'lockoutMaxAuth',
+				'label' => 'Lockout Groups To',
+				'value' => $GLOBALS['lockoutMaxAuth'],
+				'options' => groupSelect()
+			),
 			array(
 				'type' => 'password-alt',
 				'name' => 'registrationPassword',

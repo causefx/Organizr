@@ -88,17 +88,18 @@ function isNumberKey(evt) {
     return true;
 }
 function timerIncrement() {
-    idleTime = idleTime + 1;
-    if (idleTime > 19) { // 20 minutes
-        //window.location.reload();
-		console.log('timedout!');
+    //check for cookieExpiry
+    if(hasCookie){
+        if(getCookie('organizrToken')){
+            //do nothing
+        }else{
+            location.reload();
+        }
     }
-	//check for cookieExpiry
-	if(hasCookie){
-		if(getCookie('organizrToken')){
-			//do nothing
-		}else{
-			location.reload();
+    idleTime = idleTime + 1;
+    if (idleTime > activeInfo.settings.lockout.timer && $('#lockScreen').length !== 1) {
+        if(activeInfo.user.groupID <= activeInfo.settings.lockout.minGroup && activeInfo.user.groupID >= activeInfo.settings.lockout.maxGroup){
+            lock();
         }
     }
 }
@@ -2096,7 +2097,7 @@ function loadAppearance(appearance){
 				background: url(`+appearance.loginWallpaper+`) center center/cover no-repeat!important;
 			    height: 100%;
 			    position: fixed;
-			    z-index: 999999;
+			    z-index: 1001;
 			    top: 0;
 			    width: 100%;
 			    -webkit-user-select: none;
@@ -4292,6 +4293,26 @@ function messageSingle(heading,text,position,color,icon,timeout){
         setTimeout(function(){ messageSingle(heading,text,position,color,icon,timeout); }, 100);
     }
 }
+function blockDev(e) {
+    var evtobj = window.event? event : e
+    if (evtobj.keyCode == 73 && evtobj.shiftKey && evtobj.ctrlKey){
+        evtobj.preventDefault();
+    }
+}
+function lock(){
+    organizrAPI('POST','api/?v1/lock','').success(function(data) {
+        var html = JSON.parse(data);
+        console.log(html);
+        if(html.data == true){
+            location.reload();
+        }else{
+            message('Login Error',html.data,activeInfo.settings.notifications.position,'#FFF','warning','10000');
+            console.error('Organizr Function: Login failed');
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: Login Failed");
+    });
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
@@ -4345,12 +4366,16 @@ function launch(){
 				break;
 			case "ok":
 				loadAppearance(json.appearance);
-				userMenu(json);
-				categoryProcess(json);
-				tabProcess(json);
-				accountManager(json);
-				organizrSpecialSettings(json);
-                getPingList(json);
+                if(activeInfo.user.locked == 1){
+                    buildLockscreen();
+                }else{
+                    userMenu(json);
+                    categoryProcess(json);
+                    tabProcess(json);
+                    accountManager(json);
+                    organizrSpecialSettings(json);
+                    getPingList(json);
+                }
 				break;
 			default:
 				console.error('Organizr Function: Action not set or defined');

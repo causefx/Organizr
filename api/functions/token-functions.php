@@ -81,6 +81,14 @@ function createToken($username, $email, $image, $group, $groupID, $key, $days = 
 		->getToken(); // Retrieves the generated token
 		$jwttoken->getHeaders(); // Retrieves the token headers
 		$jwttoken->getClaims(); // Retrieves the token claims
+		// Add token to DB
+		$addToken = [
+			'token' => (string)$jwttoken,
+			'user_id' => $result['id'],
+			'created' => $GLOBALS['currentTime'],
+			'expires' => gmdate("Y-m-d\TH:i:s\Z", time() + (86400 * $days))
+		];
+		$database->query('INSERT INTO [tokens]', $addToken);
 		coookie('set', 'organizrToken', $jwttoken, $days);
 		return $jwttoken;
 	} catch (Dibi\Exception $e) {
@@ -100,6 +108,12 @@ function validateToken($token, $global = false)
 					'driver' => 'sqlite3',
 					'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
 				]);
+				$tokenCheck = $database->fetch('SELECT * FROM tokens WHERE user_id = ? AND token = ?', $userInfo['userID'], $token);
+				if (!$tokenCheck) {
+					// Delete cookie & reload page
+					coookie('delete', 'organizrToken');
+					$GLOBALS['organizrUser'] = false;
+				}
 				$result = $database->fetch('SELECT * FROM users WHERE id = ?', $userInfo['userID']);
 				$GLOBALS['organizrUser'] = array(
 					"token" => $token,
@@ -112,6 +126,7 @@ function validateToken($token, $global = false)
 					"image" => $result['image'],
 					"userID" => $result['id'],
 					"loggedin" => true,
+					"locked" => $result['locked']
 				);
 			} catch (Dibi\Exception $e) {
 				$GLOBALS['organizrUser'] = false;
@@ -141,7 +156,8 @@ function getOrganizrUserToken()
 			//"groupImage"=>getGuest()['image'],
 			"image" => getGuest()['image'],
 			"userID" => null,
-			"loggedin" => false
+			"loggedin" => false,
+			"locked" => false
 		);
 	}
 }

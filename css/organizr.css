@@ -71,7 +71,7 @@
     background: url(../../plugins/images/login-register.jpg) center center/cover no-repeat !important;
     height: 100%;
     position: fixed;
-    z-index: 999999;
+    z-index: 1001;
     top: 0;
     width: 100%;
     -webkit-user-select: none;
