@@ -97,9 +97,11 @@ function timerIncrement() {
         }
     }
     idleTime = idleTime + 1;
-    if (idleTime > activeInfo.settings.lockout.timer && $('#lockScreen').length !== 1) {
-        if(activeInfo.user.groupID <= activeInfo.settings.lockout.minGroup && activeInfo.user.groupID >= activeInfo.settings.lockout.maxGroup){
-            lock();
+    if(activeInfo.settings.lockout.enabled){
+        if (idleTime > activeInfo.settings.lockout.timer && $('#lockScreen').length !== 1) {
+            if(activeInfo.user.groupID <= activeInfo.settings.lockout.minGroup && activeInfo.user.groupID >= activeInfo.settings.lockout.maxGroup){
+                lock();
+            }
         }
     }
 }
