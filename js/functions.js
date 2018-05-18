@@ -13,7 +13,9 @@ lang.init({
 });
 var timeouts = {};
 // Start Organizr
-launch();
+$(document).ready(function () {
+    launch();
+});
 /* NORMAL FUNCTIONS */
 function getHiddenProp(){
     var prefixes = ['webkit','moz','ms','o'];

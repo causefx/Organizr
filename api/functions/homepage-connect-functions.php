@@ -1957,7 +1957,7 @@ function testAPIConnection($array)
 					$deluge = new deluge($GLOBALS['delugeURL'], decrypt($GLOBALS['delugePassword']));
 					$torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, hash, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate');
 					return true;
-				} catch (\Excecption $e) {
+				} catch (Exception $e) {
 					return $e->getMessage();
 				}
 			} else {
