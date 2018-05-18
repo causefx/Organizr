@@ -2014,8 +2014,8 @@ function loadAppearance(appearance){
 		$('#main-logo').html(appearance.title);
 		$('#side-logo').html(appearance.title);
 	}else{
-		$('#main-logo').html('<img alt="home" class="dark-logo" height="40px" src="'+appearance.logo+'">');
-		$('#side-logo').html('<img alt="home" height="35px" src="'+appearance.logo+'">');
+		$('#main-logo').html('<img alt="home" class="dark-logo" src="'+appearance.logo+'">');
+		$('#side-logo').html('<img alt="home" class="dark-logo-side" src="'+appearance.logo+'">');
 	}
 	if(appearance.headerColor !== ''){
 		cssSettings += `

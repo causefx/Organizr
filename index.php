@@ -67,7 +67,7 @@
                 <!-- Logo -->
                 <a class="logo" href="javascript:void(0)">
                     <!-- Logo text image you can use text also -->
-                    <span class="hidden-xs" id="main-logo"></span>
+                    <span class="hidden-xs elip" id="main-logo"></span>
                 </a>
             </div>
             <!-- /Logo -->

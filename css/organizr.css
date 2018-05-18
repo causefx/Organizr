@@ -127,6 +127,8 @@ body.stop-scrolling {
     max-width: 220px;
     float: left;
     border-right: transparent;
+    display: inline-flex;
+    flex-wrap: nowrap;
 }
 
 .tabs-style-flip {
@@ -1077,4 +1079,19 @@ i.fa.fa-life-ring.fa-fw {
 }
 .noty_type__update-noty ellipse {
     fill: #9e67f4;
+}
+.navbar-header {
+    max-height: 40px;
+    overflow: hidden;
+}
+span#main-logo {
+    max-width: 220px;
+}
+img.dark-logo {
+    max-width: 220px;
+    max-height: 40px;
+}
+img.dark-logo-side {
+    max-width: 160px;
+    max-height: 35px;
 }
