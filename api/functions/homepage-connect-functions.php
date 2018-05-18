@@ -842,7 +842,7 @@ function getCalendar()
 			foreach ($sonarrs as $key => $value) {
 				try {
 					$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-					$sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate), $key);
+					$sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate, $GLOBALS['sonarrUnmonitored']), $key);
 				} catch (Exception $e) {
 					writeLog('error', 'Sonarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				}
