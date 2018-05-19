@@ -1113,6 +1113,7 @@ function accountManager(user){
 }
 function userMenu(user){
 	var menuList = buildLanguage();
+	menuList += '<li onclick="toggleFullScreen();"><a class="waves-effect waves-light"> <i class="ti-fullscreen fullscreen-icon"></i></a></li>';
 	if (user.data.user.loggedin === true) {
 		menuList += `
 			<li class="dropdown">
@@ -4322,6 +4323,39 @@ function lock(){
     }).fail(function(xhr) {
         console.error("Organizr Function: Login Failed");
     });
+}
+function openSettings(){
+    var tab = $("li[data-url='api/?v1/settings/page']").find('span').text();
+    tabActions('click',tab,0);
+}
+function openHomepage(){
+    var tab = $("li[data-url='api/?v1/homepage/page']").find('span').text();
+    tabActions('click',tab,0);
+}
+function toggleFullScreen() {
+    $('.fullscreen-icon').toggleClass('ti-fullscreen').toggleClass('mdi mdi-fullscreen-exit');
+    if (!document.fullscreenElement &&    // alternative standard method
+        !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
 }
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {

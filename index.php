@@ -164,6 +164,7 @@
 <script src="plugins/bower_components/bootstrap-select/bootstrap-select.min.js"></script>
 <script src="plugins/bower_components/tinymce/tinymce.min.js"></script>
 <script src="plugins/bower_components/multiselect/js/jquery.multi-select.js"></script>
+<script src="plugins/bower_components/mousetrap/mousetrap.min.js"></script>
 <script src="js/jquery.mousewheel.min.js"></script>
 <script src="js/plyr.js"></script>
 <script src="js/simplebar.js"></script>
