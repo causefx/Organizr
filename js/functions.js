@@ -979,7 +979,7 @@ function buildLanguage(replace=false,newLang=null){
 	});
 	var lang = `
 		<li class="dropdown" id="languageDropdown">
-			<a class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#" aria-expanded="false"> <i class="fa fa-language fa-lg fa-fw"></i><span></span></a>
+			<a class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#" aria-expanded="false"> <i class="fa fa-language"></i><span></span></a>
 			<ul class="dropdown-menu mailbox animated bounceInDown">
 				<li>
 					<div class="drop-title" lang="en">Choose Language</div>
@@ -1112,8 +1112,8 @@ function accountManager(user){
 	}
 }
 function userMenu(user){
-	var menuList = buildLanguage();
-	menuList += '<li onclick="toggleFullScreen();"><a class="waves-effect waves-light"> <i class="ti-fullscreen fullscreen-icon"></i></a></li>';
+	var menuList = '<li class="hidden-xs" onclick="toggleFullScreen();"><a class="waves-effect waves-light"> <i class="ti-fullscreen fullscreen-icon"></i></a></li>';
+	menuList += buildLanguage();
 	if (user.data.user.loggedin === true) {
 		menuList += `
 			<li class="dropdown">
