@@ -3,6 +3,11 @@
 // Organizr Version
 $GLOBALS['installedVersion'] = '2.0.0-beta.200';
 // ===================================
+// Quick php Version check
+$GLOBALS['minimumPHP'] = '7.0.0';
+if (!(version_compare(PHP_VERSION, $GLOBALS['minimumPHP']) >= 0)) {
+	die('Organizr needs PHP Version: ' . $GLOBALS['minimumPHP'] . '<br/> You have PHP Version: ' . PHP_VERSION);
+}
 // Set GLOBALS from config file
 $GLOBALS['userConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
 $GLOBALS['defaultConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';

@@ -6,6 +6,7 @@ require_once 'functions.php';
 $result = array();
 //Get request method
 $method = $_SERVER['REQUEST_METHOD'];
+$pretty = isset($_GET['pretty']) ? true : false;
 reset($_GET);
 $function = (key($_GET) ? str_replace("/", "_", key($_GET)) : false);
 //Exit if $function is blank
@@ -15,6 +16,7 @@ if ($function === false) {
 	exit(json_encode($result));
 }
 $result['request'] = key($_GET);
+$result['params'] = $_POST;
 switch ($function) {
 	case 'v1_settings_page':
 		switch ($method) {
@@ -675,7 +677,7 @@ switch ($function) {
 			case 'POST':
 				$result['status'] = 'success';
 				$result['statusText'] = 'success';
-				$result['data'] = lock($_POST);
+				$result['data'] = lock();
 				break;
 			default:
 				$result['status'] = 'error';
@@ -981,6 +983,7 @@ switch ($function) {
 	case 'v1_plugin':
 		switch ($method) {
 			case 'POST':
+			case 'GET':
 				// Include all plugin api Calls
 				foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
 					require_once $filename;
@@ -1057,4 +1060,9 @@ $result['generationDate'] = $GLOBALS['currentTime'];
 $generationTime += microtime(true);
 $result['generationTime'] = (sprintf('%f', $generationTime) * 1000) . 'ms';
 //return JSON array
-exit(json_encode($result, JSON_HEX_QUOT | JSON_HEX_TAG));
+if ($pretty) {
+	echo '<pre>' . json_encode($result, JSON_PRETTY_PRINT) . '</pre>';
+} else {
+	exit(json_encode($result, JSON_HEX_QUOT | JSON_HEX_TAG));
+}
+

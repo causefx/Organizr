@@ -319,7 +319,9 @@ function qualifyRequest($accessLevelNeeded)
 
 function getUserLevel()
 {
-	$requesterToken = isset(getallheaders()['Token']) ? getallheaders()['Token'] : false;
+	// Grab token
+	//$requesterToken = isset(getallheaders()['Token']) ? getallheaders()['Token'] : false;
+	$requesterToken = isset(getallheaders()['Token']) ? getallheaders()['Token'] : (isset($_GET['apikey']) ? $_GET['apikey'] : false);
 	// Check token or API key
 	// If API key, return 0 for admin
 	if (strlen($requesterToken) == 20 && $requesterToken == $GLOBALS['organizrAPI']) {
@@ -356,12 +358,12 @@ function organizrStatus()
 	if (!file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 		$status['status'] = "wizard";//wizard - ok for test
 	}
-	if (count($dependenciesInactive) > 0 || !is_writable(dirname(__DIR__, 2)) || !(version_compare(PHP_VERSION, '7.0.0') >= 0)) {
+	if (count($dependenciesInactive) > 0 || !is_writable(dirname(__DIR__, 2)) || !(version_compare(PHP_VERSION, $GLOBALS['minimumPHP']) >= 0)) {
 		$status['status'] = "dependencies";
 	}
 	$status['status'] = (!empty($status['status'])) ? $status['status'] : $status['status'] = "ok";
 	$status['writable'] = is_writable(dirname(__DIR__, 2)) ? 'yes' : 'no';
-	$status['minVersion'] = (version_compare(PHP_VERSION, '7.0.0') >= 0) ? 'yes' : 'no';
+	$status['minVersion'] = (version_compare(PHP_VERSION, $GLOBALS['minimumPHP']) >= 0) ? 'yes' : 'no';
 	$status['dependenciesActive'] = $dependenciesActive;
 	$status['dependenciesInactive'] = $dependenciesInactive;
 	$status['version'] = $GLOBALS['installedVersion'];
