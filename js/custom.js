@@ -300,6 +300,9 @@ function doneTypingMediaSearch () {
     var mediaSearchQuery = $('#mediaSearchQuery');
     var query = mediaSearchQuery.val();
     var server = mediaSearchQuery.attr('data-server');
+    if(query == '' || query == ' '){
+        return false;
+    }
     switch (server) {
         case 'plex':
             var action = 'getPlexSearch';

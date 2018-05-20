@@ -593,7 +593,7 @@ class Sonarr
      */
     protected function _request(array $params)
     {
-        $client = new Client();
+        $client = new Client(['verify' => false]);
         $options = [
             'headers' => [
                 'X-Api-Key' => $this->apiKey
