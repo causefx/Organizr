@@ -355,3 +355,9 @@ a.mytooltip {
     color: #232323;
     border-radius: 10px 10px 0 0;
 }
+span.select2-results {
+    background: #0e0e0e;
+}
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #232323;
+}

@@ -440,7 +440,7 @@ $(document).on('click', '#INVITES-settings-button', function() {
     organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
         var response = JSON.parse(data);
         $('#INVITES-settings-items').html(buildFormGroup(response.data));
-        $(".select2").select2();
+        $(".invite-select").select2();
         $('.selectpicker').selectpicker();
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");

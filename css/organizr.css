@@ -1094,3 +1094,41 @@ img.dark-logo-side {
     max-width: 160px;
     max-height: 35px;
 }
+.select2-container {
+    box-sizing: border-box;
+    display: inline-block;
+    margin: 0;
+    position: relative;
+    vertical-align: middle;
+    width: 100% !important;
+}
+span.select2-selection.select2-selection--single,
+span.select2-selection.select2-selection--multiple{
+    background: inherit;
+    height: 38px;
+}
+img.img-chooser {
+    width: 20px;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: inherit;
+    line-height: 38px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 38px;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 20px;
+}
+.select2-dropdown {
+    background-color: inherit;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    left: -100000px;
+    width: 100%;
+    z-index: 1051;
+}

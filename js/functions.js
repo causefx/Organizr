@@ -208,6 +208,25 @@ function noTabs(arrayItems){
 		$('.show-login').trigger('click');
 	}
 }
+function formatImage (icon) {
+    if (!icon.id || icon.text == 'Select or type Icon') {
+        return icon.text;
+    }
+    var baseUrl = "/user/pages/images/flags";
+    var $icon = $(
+        '<span><img src="' + icon.element.value + '" class="img-chooser" /> ' + icon.text + '</span>'
+    );
+    return $icon;
+}
+function formatIcon (icon) {
+    if (!icon.id || icon.text == 'Select or type Icon') {
+        return icon.text;
+    }
+    var $icon = $(
+        '<span>'+iconPrefix(icon.id)+ icon.text + '</span>'
+    );
+    return $icon;
+}
 function logout(){
 	message('',' Goodbye!',activeInfo.settings.notifications.position,'#FFF','success','10000');
 	organizrAPI('GET','api/?v1/logout').success(function(data) {
@@ -605,7 +624,7 @@ function buildFormItem(item){
 			return smallLabel+'<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+'>'+selectOptions(item.options, item.value)+'</select>';
 			break;
 		case 'select2':
-			return smallLabel+'<select class="select2 m-b-10 select2-multiple'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select>';
+			return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select>';
 			break;
 		case 'switch':
 		case 'checkbox':
@@ -1817,6 +1836,11 @@ function githubVersions() {
 	return $.ajax({
 		url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/version.json",
 	});
+}
+function allIcons() {
+    return $.ajax({
+        url: "/js/icons.json",
+    });
 }
 function organizrConnect(path){
 	return $.ajax({

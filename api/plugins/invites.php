@@ -217,6 +217,7 @@ function invitesGetSettings()
 			),
 			array(
 				'type' => 'select2',
+				'class' => 'select2-multiple invite-select',
 				'name' => 'INVITES-plexLibraries',
 				'label' => 'Libraries',
 				'value' => $GLOBALS['INVITES-plexLibraries'],

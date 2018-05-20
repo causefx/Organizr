@@ -12,6 +12,18 @@ $( \'#tabEditorTable\' ).sortable({
         submitTabOrder();
     }
 });
+$(".tabIconImageList").select2({
+	templateResult: formatImage,
+	templateSelection: formatImage,
+});
+allIcons().success(function(data) {
+    $(".tabIconIconList").select2({
+		data: data,
+		templateResult: formatIcon,
+		templateSelection: formatIcon,
+	});
+});
+
 </script>
 <div class="panel bg-org panel-info">
     <div class="panel-heading">
@@ -64,6 +76,16 @@ $( \'#tabEditorTable\' ).sortable({
             <label class="control-label" for="new-tab-form-inputPingURLNew" lang="en">Ping URL</label>
             <input type="text" class="form-control" id="new-tab-form-inputPingURLNew" name="pingURL"  placeholde="host/ip:port" rrequired="">
         </div>
+        <div class="row">
+	        <div class="form-group col-lg-6">
+	            <label class="control-label" for="new-tab-form-chooseImage" lang="en">Choose Image</label>
+	            ' . imageSelect("new-tab-form") . '
+	        </div>
+	        <div class="form-group col-lg-6">
+	            <label class="control-label" for="new-tab-form-chooseIcon" lang="en">Choose Icon</label>
+				<select class="form-control tabIconIconList" id="new-tab-form-chooseIcon" name="chooseIcon"><option lang="en">Select or type Icon</option></select>
+	        </div>
+	    </div>
         <div class="form-group">
             <label class="control-label" for="new-tab-form-inputImageNew" lang="en">Tab Image</label>
             <input type="text" class="form-control" id="new-tab-form-inputImageNew" name="tabImage"  required="">
@@ -97,6 +119,16 @@ $( \'#tabEditorTable\' ).sortable({
             <label class="control-label" for="edit-tab-form-pingURL" lang="en">Ping URL</label>
             <input type="text" class="form-control" id="edit-tab-form-pingURL" name="pingURL" placeholde="host/ip:port" required="">
         </div>
+        <div class="row">
+	        <div class="form-group col-lg-6">
+	            <label class="control-label" for="edit-tab-form-chooseImage" lang="en">Choose Image</label>
+	            ' . imageSelect("edit-tab-form") . '
+	        </div>
+	        <div class="form-group col-lg-6">
+	            <label class="control-label" for="edit-tab-form-chooseIcon" lang="en">Choose Icon</label>
+				<select class="form-control tabIconIconList" id="edit-tab-form-chooseIcon" name="chooseIcon"><option lang="en">Select or type Icon</option></select>
+	        </div>
+	    </div>
         <div class="form-group">
             <label class="control-label" for="edit-tab-form-inputImage" lang="en">Tab Image</label>
             <input type="text" class="form-control" id="edit-tab-form-inputImage" name="tabImage"  required="">

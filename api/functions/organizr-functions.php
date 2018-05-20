@@ -1172,6 +1172,18 @@ function getImages()
 	return $allIcons;
 }
 
+function imageSelect($form)
+{
+	$i = 1;
+	$images = getImages();
+	$return = '<select class="form-control tabIconImageList" id="' . $form . '-chooseImage" name="chooseImage"><option lang="en">Select or type Icon</option>';
+	foreach ($images as $image) {
+		$i++;
+		$return .= '<option value="' . $image . '">' . basename($image) . '</option>';
+	}
+	return $return . '</select>';
+}
+
 function editImages()
 {
 	$array = array();
