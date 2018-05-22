@@ -289,12 +289,11 @@ function inviteAction($username, $action = null, $type = null)
 								return false;
 								break;
 							default:
-								writeLog('error', 'Plex Invite Function - An error occured', $username);
+								writeLog('error', 'Plex Invite Function - An error occurred [' . $response->status_code . ']', $username);
 								return false;
 								break;
 						}
 					}
-					return false;
 				} catch (Requests_Exception $e) {
 					writeLog('error', 'Plex Invite Function - Error: ' . $e->getMessage(), 'SYSTEM');
 					return false;
