@@ -1222,7 +1222,7 @@ function categoryProcess(arrayItems){
 }
 function buildFrame(name,url){
 	return `
-		<iframe allowfullscreen="true" frameborder="0" id="frame-`+cleanClass(name)+`" data-name="`+cleanClass(name)+`" sandbox="allow-presentation allow-forms allow-same-origin allow-pointer-lock allow-scripts allow-popups allow-modals allow-top-navigation" scrolling="auto" src="`+url+`" class="iframe"></iframe>
+		<iframe allowfullscreen="true" frameborder="0" id="frame-`+cleanClass(name)+`" data-name="`+cleanClass(name)+`" scrolling="auto" src="`+url+`" class="iframe"></iframe>
 	`;
 }
 function buildFrameContainer(name,url,type){
@@ -2235,7 +2235,7 @@ function buildErrorPage(error){
 			<h1 class="text-`+color+`">`+error+`</h1>
 			<h3 class="text-uppercase">`+description+`</h3>
 			<p class="text-muted m-t-30 m-b-30" lang="en">`+message+`</p>
-			<a href="javascript:void(0);" class="btn btn-`+color+` btn-rounded waves-effect waves-light m-b-40 closeErrorPage" lang="en">OK</a>
+			<a href="javascript:void(0);" class="btn btn-`+color+` btn-rounded waves-effect waves-light m-b-40 closeErrorPage animated tada loop-animation" lang="en">OK</a>
 		</div>
 	</div>
 	`;
