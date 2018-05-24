@@ -1315,6 +1315,7 @@ function buildLockscreen(){
 function buildSplashScreenItem(arrayItems){
     var splashList = '';
     if (Array.isArray(arrayItems['data']['tabs']) && arrayItems['data']['tabs'].length > 0) {
+        arrayItems['data']['tabs'].sort((a, b) => parseFloat(a.order) - parseFloat(b.order));
         $.each(arrayItems['data']['tabs'], function(i,v) {
             if(v.enabled === 1 && v.splash === 1){
                 splashList += `
@@ -1335,7 +1336,7 @@ function buildSplashScreenItem(arrayItems){
 }
 function buildSplashScreen(json){
     var items = buildSplashScreenItem(json);
-    var menu = '<li ><a onclick="$(\'.splash-screen\').removeClass(\'hidden\').addClass(\'in\')"><i class="ti-settings fa-fw"></i> <span lang="en">Splash Page</span></a></li>';
+    var menu = '<li ><a href="javascript:void(0)" onclick="$(\'.splash-screen\').removeClass(\'hidden\').addClass(\'in\')"><i class="ti-layout-grid2 fa-fw"></i> <span lang="en">Splash Page</span></a></li>';
     if(items){
         closeSideMenu();
         console.log("Organizr Function: Adding Splash Screen");
@@ -4373,7 +4374,7 @@ function messageSingle(heading,text,position,color,icon,timeout){
     }
 }
 function blockDev(e) {
-    var evtobj = window.event? event : e
+    var evtobj = window.event ? event : e;
     if (evtobj.keyCode == 73 && evtobj.shiftKey && evtobj.ctrlKey){
         evtobj.preventDefault();
     }

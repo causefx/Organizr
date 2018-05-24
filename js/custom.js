@@ -1516,7 +1516,7 @@ $(document).on("click", ".testTab", function () {
     if(input.val() !== ''){
         var post = {
             url:input.val()
-        }
+        };
         organizrAPI('POST','api/?v1/test/iframe',post).success(function(data) {
             var html = JSON.parse(data);
             if(html.data == true){
@@ -1540,7 +1540,7 @@ $(document).on("click", ".testEditTab", function () {
     if(input.val() !== ''){
         var post = {
             url:input.val()
-        }
+        };
         organizrAPI('POST','api/?v1/test/iframe',post).success(function(data) {
             var html = JSON.parse(data);
             if(html.data == true){
@@ -1690,26 +1690,29 @@ Mousetrap.bind("c c", function() { closeCurrentTab() });
 Mousetrap.bind("s s", function() { openSettings() });
 Mousetrap.bind("h h", function() { openHomepage() });
 Mousetrap.bind("f f", function() { toggleFullScreen() });
+Mousetrap.bind("esc", function () {
+    $('.splash-screen').removeClass('in').addClass('hidden')
+});
 $(document).on('change', "#new-tab-form-chooseImage", function (e) {
-    var newIcon = $('#new-tab-form-chooseImage').val()
+    var newIcon = $('#new-tab-form-chooseImage').val();
     if(newIcon !== 'Select or type Icon'){
         $('#new-tab-form-inputImageNew').val(newIcon);
     }
 });
 $(document).on('change', "#edit-tab-form-chooseImage", function (e) {
-    var newIcon = $('#edit-tab-form-chooseImage').val()
+    var newIcon = $('#edit-tab-form-chooseImage').val();
     if(newIcon !== 'Select or type Icon'){
         $('#edit-tab-form-inputImage').val(newIcon);
     }
 });
 $(document).on('change', "#new-tab-form-chooseIcon", function (e) {
-    var newIcon = $('#new-tab-form-chooseIcon').val()
+    var newIcon = $('#new-tab-form-chooseIcon').val();
     if(newIcon !== 'Select or type Icon'){
         $('#new-tab-form-inputImageNew').val(newIcon);
     }
 });
 $(document).on('change', "#edit-tab-form-chooseIcon", function (e) {
-    var newIcon = $('#edit-tab-form-chooseIcon').val()
+    var newIcon = $('#edit-tab-form-chooseIcon').val();
     if(newIcon !== 'Select or type Icon'){
         $('#edit-tab-form-inputImage').val(newIcon);
     }
