@@ -1319,10 +1319,10 @@ function buildSplashScreenItem(arrayItems){
         $.each(arrayItems['data']['tabs'], function(i,v) {
             if(v.enabled === 1 && v.splash === 1){
                 splashList += `
-                <div class="col-lg-3 col-xs-12 col-xl-2 mouse" id="menu-`+cleanClass(v.name)+`" type="`+v.type+`" data-url="`+v.url+`" onclick="tabActions(event,'`+cleanClass(v.name)+`',`+v.type+`);">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 mouse" id="menu-`+cleanClass(v.name)+`" type="`+v.type+`" data-url="`+v.url+`" onclick="tabActions(event,'`+cleanClass(v.name)+`',`+v.type+`);">
                     <div class="panel panel-default">
                         <div class="panel-heading bg-info p-t-10 p-b-10">
-                            <span class="pull-left m-t-5">`+iconPrefix(v.image)+` &nbsp; `+v.name+`</span>
+                            <span class="pull-left m-t-5 elip">`+iconPrefix(v.image)+` &nbsp; `+v.name+`</span>
                             <div class="clearfix"></div>
                         </div>
                     </div>
@@ -1342,7 +1342,7 @@ function buildSplashScreen(json){
         console.log("Organizr Function: Adding Splash Screen");
         var splash = `
         <section id="splashScreen" class="lock-screen splash-screen fade in">
-            <div class="row p-20">`+items+`</div>
+            <div class="row p-20 flexbox">`+items+`</div>
         </section>
         `;
         $(splash).appendTo($('body'));
