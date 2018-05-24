@@ -285,6 +285,14 @@ function toggleParentActive(tab){
 		}
 	}
 }
+function swapBodyClass(tab){
+    var prior = $('body').attr('data-active-tab');
+    if(prior !== ''){
+        $('body').removeClass('active-tab-'+prior);
+    }
+    $('body').attr('data-active-tab', tab);
+    $('body').addClass('active-tab-'+tab);
+}
 function switchTab(tab, type){
     if(type !== 2){
         hideFrames();
@@ -292,6 +300,7 @@ function switchTab(tab, type){
         removeMenuActive();
         toggleParentActive(tab);
         setHash(tab);
+        swapBodyClass(tab);
     }
 	switch (type) {
 		case 0:
@@ -494,6 +503,7 @@ function closeCurrentTab(){
 	}
 }
 function tabActions(event,name, type){
+    $('.splash-screen').removeClass('in').addClass('hidden');
 	if(event.ctrlKey){
 		popTab(cleanClass(name), type);
 	}else if(event.altKey){
@@ -1226,9 +1236,6 @@ function buildMenuList(name,url,type,icon,ping=null){
 </small><div class="menu-`+cleanClass(ping)+`-ping" data-tab-name="`+name+`" data-previous-state=""></div>` : '';
 	return `<li id="menu-`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span>`+ping+`</a></li>`;
 }
-function splashMenu(arrayItems){
-
-}
 function tabProcess(arrayItems) {
 	var iFrameList = '';
 	var internalList = '';
@@ -1304,6 +1311,43 @@ function buildLockscreen(){
 		console.error("Organizr Function: Lockscreen Connection Failed");
 	});
 	$("#preloader").fadeOut();
+}
+function buildSplashScreenItem(arrayItems){
+    var splashList = '';
+    if (Array.isArray(arrayItems['data']['tabs']) && arrayItems['data']['tabs'].length > 0) {
+        $.each(arrayItems['data']['tabs'], function(i,v) {
+            if(v.enabled === 1 && v.splash === 1){
+                splashList += `
+                <div class="col-lg-3 col-xs-12 col-xl-2 mouse" id="menu-`+cleanClass(v.name)+`" type="`+v.type+`" data-url="`+v.url+`" onclick="tabActions(event,'`+cleanClass(v.name)+`',`+v.type+`);">
+                    <div class="panel panel-default">
+                        <div class="panel-heading bg-info p-t-10 p-b-10">
+                            <span class="pull-left m-t-5">`+iconPrefix(v.image)+` &nbsp; `+v.name+`</span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+                `;
+
+            }
+        });
+    }
+    return (splashList !== '') ? splashList : false;
+}
+function buildSplashScreen(json){
+    var items = buildSplashScreenItem(json);
+    var menu = '<li ><a onclick="$(\'.splash-screen\').removeClass(\'hidden\').addClass(\'in\')"><i class="ti-settings fa-fw"></i> <span lang="en">Splash Page</span></a></li>';
+    if(items){
+        closeSideMenu();
+        console.log("Organizr Function: Adding Splash Screen");
+        var splash = `
+        <section id="splashScreen" class="lock-screen splash-screen fade in">
+            <div class="row p-20">`+items+`</div>
+        </section>
+        `;
+        $(splash).appendTo($('body'));
+        $('.append-menu').after(menu);
+
+    }
 }
 function buildUserGroupSelect(array, userID, groupID){
 	var groupSelect = '';
@@ -4440,6 +4484,7 @@ function launch(){
                     userMenu(json);
                     categoryProcess(json);
                     tabProcess(json);
+                    buildSplashScreen(json);
                     accountManager(json);
                     organizrSpecialSettings(json);
                     getPingList(json);

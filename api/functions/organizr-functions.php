@@ -602,6 +602,29 @@ function getSettingsMain()
 function getSSO()
 {
 	return array(
+		'FYI' => array(
+			array(
+				'type' => 'html',
+				'label' => 'Important Information',
+				'override' => 12,
+				'html' => '
+				<div class="row">
+						    <div class="col-lg-12">
+						        <div class="panel panel-info">
+						            <div class="panel-heading">
+						                <span lang="en">Notice</span>
+						            </div>
+						            <div class="panel-wrapper collapse in" aria-expanded="true">
+						                <div class="panel-body">
+						                    <span lang="en">This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication<br/>Click Main on the sub-menu above.</span>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+				'
+			)
+		),
 		'Plex' => array(
 			array(
 				'type' => 'password-alt',

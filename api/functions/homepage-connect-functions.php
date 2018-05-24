@@ -1017,16 +1017,20 @@ function getSonarrCalendar($array, $number)
 			$episodeID = "";
 		}
 		//$episodeName = htmlentities($child['title'], ENT_QUOTES);
-		if ($child['episodeNumber'] == "1") {
-			$episodePremier = "true";
-		} else {
-			$episodePremier = "false";
-		}
 		$episodeAirDate = $child['airDateUtc'];
 		$episodeAirDate = strtotime($episodeAirDate);
 		$episodeAirDate = date("Y-m-d H:i:s", $episodeAirDate);
 		if (new DateTime() < new DateTime($episodeAirDate)) {
 			$unaired = true;
+		}
+		if ($child['episodeNumber'] == "1") {
+			$episodePremier = "true";
+		} else {
+			$episodePremier = "false";
+			$date = new DateTime($episodeAirDate);
+			$date->add(new DateInterval("PT1S"));
+			$date->format(DateTime::ATOM);
+			$child['airDateUtc'] = gmdate('Y-m-d\TH:i:s\Z', strtotime($date->format(DateTime::ATOM)));
 		}
 		$downloaded = $child['hasFile'];
 		if ($downloaded == "0" && isset($unaired) && $episodePremier == "true") {
