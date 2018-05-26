@@ -70,9 +70,12 @@ function getTautulliToken($username, $password)
 				if ($response->success) {
 					$token[$key]['token'] = json_decode($response->body, true)['token'];
 					$token[$key]['uuid'] = json_decode($response->body, true)['uuid'];
+					writeLog('success', 'Tautulli Token Function - Grabbed token from: ' . $url, $username);
+				} else {
+					writeLog('error', 'Tautulli Token Function - Error on URL: ' . $url, $username);
 				}
 			} catch (Requests_Exception $e) {
-				writeLog('success', 'Tautulli Token Function - Error: ' . $e->getMessage(), $username);
+				writeLog('error', 'Tautulli Token Function - Error: [' . $url . ']' . $e->getMessage(), $username);
 			};
 		}
 	}
