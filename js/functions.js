@@ -257,18 +257,21 @@ function removeMenuActive(){
 function swapDisplay(type){
 	switch (type) {
 		case 'internal':
+		    $('body').removeClass('fix-header');
 			$('.iFrame-listing').addClass('hidden').removeClass('show');
 			$('.internal-listing').addClass('show').removeClass('hidden');
 			$('.login-area').addClass('hidden').removeClass('show');
 			//$('body').removeClass('fix-header');
 			break;
 		case 'iframe':
+            $('body').addClass('fix-header');
 			$('.iFrame-listing').addClass('show').removeClass('hidden');
 			$('.internal-listing').addClass('hidden').removeClass('show');
 			$('.login-area').addClass('hidden').removeClass('show');
 			//$('body').addClass('fix-header');
 			break;
 		case 'login':
+            $('body').removeClass('fix-header');
 			$('.iFrame-listing').addClass('hidden').removeClass('show');
 			$('.internal-listing').addClass('hidden').removeClass('show');
 			$('.login-area').addClass('show').removeClass('hidden');

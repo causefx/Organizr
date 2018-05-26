@@ -1185,7 +1185,7 @@ function getRadarrCalendar($array, $number, $url)
 			}
 			$banner = "/plugins/images/cache/no-np.png";
 			foreach ($child['images'] as $image) {
-				if ($image['coverType'] == "banner") {
+				if ($image['coverType'] == "banner" || $image['coverType'] == "fanart") {
 					$url = rtrim($url, '/'); //remove trailing slash
 					$imageUrl = $image['url'];
 					$urlParts = explode("/", $url);
@@ -1221,11 +1221,11 @@ function getRadarrCalendar($array, $number, $url)
 				"runtime" => $child['runtime'],
 				"image" => $banner,
 				"ratings" => $child['ratings']['value'],
-				"videoQuality" => $child["hasFile"] ? $child['movieFile']['quality']['quality']['name'] : "unknown",
-				"audioChannels" => $child["hasFile"] ? $child['movieFile']['mediaInfo']['audioChannels'] : "unknown",
-				"audioCodec" => $child["hasFile"] ? $child['movieFile']['mediaInfo']['audioFormat'] : "unknown",
-				"videoCodec" => $child["hasFile"] ? $child['movieFile']['mediaInfo']['videoCodec'] : "unknown",
-				"size" => $child["hasFile"] ? $child['movieFile']['size'] : "unknown",
+				"videoQuality" => $child["hasFile"] ? @$child['movieFile']['quality']['quality']['name'] : "unknown",
+				"audioChannels" => $child["hasFile"] ? @$child['movieFile']['mediaInfo']['audioChannels'] : "unknown",
+				"audioCodec" => $child["hasFile"] ? @$child['movieFile']['mediaInfo']['audioFormat'] : "unknown",
+				"videoCodec" => $child["hasFile"] ? @$child['movieFile']['mediaInfo']['videoCodec'] : "unknown",
+				"size" => $child["hasFile"] ? @$child['movieFile']['size'] : "unknown",
 				"genres" => $child['genres'],
 			);
 			array_push($gotCalendar, array(
