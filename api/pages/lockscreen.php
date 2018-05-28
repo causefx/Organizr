@@ -16,7 +16,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
         </div>
         <div class="form-group ">
           <div class="col-xs-12">
-            <input id="unlockPassword" name="password" class="form-control" type="password" required="" placeholder="password" lang="en">
+            <input id="unlockPassword" name="password" class="form-control" type="password" required="" placeholder="password" lang="en" autofocus>
           </div>
         </div>
         <div class="form-group text-center">

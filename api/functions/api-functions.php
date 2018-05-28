@@ -204,7 +204,9 @@ function updateDB($path, $filename, $oldVerNum = false)
 			}
 		}
 		$connect->disconnect();
+		writeLog('success', 'Update Function -  Cached Old Database', 'Database');
 	} catch (Dibi\Exception $e) {
+		writeLog('error', 'Update Function -  Cache Error [' . $e . ']', 'Database');
 		return $e;
 	}
 	// Remove Current Database
@@ -222,6 +224,7 @@ function updateDB($path, $filename, $oldVerNum = false)
 		]);
 		// Restore Items
 		if ($success) {
+			writeLog('success', 'Update Function -  Created New Database', 'Database');
 			foreach ($cache as $table => $tableData) {
 				if ($tableData) {
 					$queryBase = 'INSERT INTO ' . $table . ' (`' . implode('`,`', array_keys(current($tableData))) . '`) values ';
@@ -236,6 +239,7 @@ function updateDB($path, $filename, $oldVerNum = false)
 				}
 			}
 		}
+		writeLog('success', 'Update Function -  Migrated Old Info to new Database', 'Database');
 		return true;
 	} catch (Dibi\Exception $e) {
 		writeLog('error', 'Update Function -  Error [' . $e . ']', 'Database');

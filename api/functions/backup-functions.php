@@ -11,10 +11,18 @@ function fileArray($files)
 	}
 }
 
-function backupDB()
+function backupDB($type = 'config')
 {
 	$directory = $GLOBALS['dbLocation'] . 'backups' . DIRECTORY_SEPARATOR;
 	@mkdir($directory, 0770, true);
+	switch ($type) {
+		case 'config':
+			break;
+		case 'full':
+			break;
+		default:
+		
+	}
 	$orgFiles = array(
 		'orgLog' => $GLOBALS['organizrLog'],
 		'loginLog' => $GLOBALS['organizrLoginLog'],
