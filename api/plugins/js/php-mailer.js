@@ -191,10 +191,10 @@ function buildEmailModal(){
             templates: templates,
             init_instance_callback: function (editor) {
                 editor.on('BeforeSetContent', function (e) {
-                    tinyMCE.get('sendEmail').execCommand('selectAll');
-                    tinyMCE.get('sendEmail').execCommand('delete');
+                    //tinyMCE.get('sendEmail').execCommand('selectAll');
+                    //tinyMCE.get('sendEmail').execCommand('delete');
                     $.each(e.target.settings.templates, function(i,v) {
-                        if(v.content == e.content){
+                        if($.trim(v.content) == $.trim(e.content)){
                             $('#sendEmailSubjectInput').val(v.description);
                         }
                     });
