@@ -2869,6 +2869,36 @@ function buildRequest(array){
 	</div>
 	` : '';
 }
+function pagination(c, m) {
+    var current = c,
+        last = m,
+        delta = 2,
+        left = current - delta,
+        right = current + delta + 1,
+        range = [],
+        rangeWithDots = [],
+        l;
+
+    for (let i = 1; i <= last; i++) {
+        if (i == 1 || i == last || i >= left && i < right) {
+            range.push(i);
+        }
+    }
+
+    for (let i of range) {
+        if (l) {
+            if (i - l === 2) {
+                rangeWithDots.push(l + 1);
+            } else if (i - l !== 1) {
+                rangeWithDots.push('...');
+            }
+        }
+        rangeWithDots.push(i);
+        l = i;
+    }
+
+    return rangeWithDots;
+}
 function buildRequestResult(array,media_type=null,list=null,page=null,search=false){
 	var comments = (typeof array.comments !== 'undefined') ? true : false;
 	var comment = '';
@@ -2878,6 +2908,15 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 	var tv = 0;
 	var movie = 0;
 	var total = 0;
+	var totalPages = array.total_pages;
+    var currentPage = (page * 1);
+    var pagePrevious = ((page * 1) - 1);
+    var pageNext = ((page * 1) + 1);
+    var pageFirst = 1;
+    var pageLast = totalPages;
+    var previousHidden = (currentPage == 1) ? 'disabled' : '';
+    var nextHidden = (currentPage == totalPages) ? 'disabled' : '';
+    var pageList = '';
 	if(array.results.length == 0){
 		return '<h2 class="text-center" lang="en">No Results</h2>';
 	}
@@ -2918,22 +2957,41 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 		}
 		comment = '';
 	});
-	if(total == 20 && (list) && (page) && (search == false)){
-		page = ((page * 1) + 1);
+	if((list) && (page) && (search == false)){
+        $.each(pagination(currentPage, totalPages), function(key,value) {
+            var activePage = (currentPage == value) ? 'active' : '';
+            var disabled = (value == '...') ? 'disabled' : '';
+            var pageLink = (value == '...') ? '' : `onclick="requestList('`+list+`', '`+media_type+`', '`+value+`');"`;
+            pageList += '<li class="'+activePage+disabled+'"> <a '+pageLink+' href="javascript:void(0)">'+value+'</a> </li>'
+        });
+
 		next = `
 		<div class="clearfix"></div>
-		<div class="col-lg-12">
-            <button class="btn btn-block btn-info" onclick="requestList('`+list+`', '`+media_type+`', '`+page+`');" lang="en">Load More</button>
+		<div class="button-box text-center p-b-0">
+            <ul class="pagination m-b-0">
+                <li class="`+previousHidden+`"> <a href="javascript:void(0)" onclick="requestList('`+list+`', '`+media_type+`', '`+pagePrevious+`');"><i class="fa fa-angle-left"></i></a> </li>
+ 
+                `+pageList+`
+                <li class="`+nextHidden+`"> <a href="javascript:void(0)" onclick="requestList('`+list+`', '`+media_type+`', '`+pageNext+`');"><i class="fa fa-angle-right"></i></a> </li>
+            </ul>
         </div>
 		`;
 	}
-	if(total == 20 && (list) && (page) && (search == true)){
-		page = ((page * 1) + 1);
-		$('#request-page').val(page);
-		next = `
+	if((list) && (page) && (search == true)){
+        $.each(pagination(currentPage, totalPages), function(key,value) {
+            var activePage = (currentPage == value) ? 'active' : '';
+            var disabled = (value == '...') ? 'disabled' : '';
+            var pageLink = (value == '...') ? '' : `onclick="$('#request-page').val(`+value+`);doneTyping();"`;
+            pageList += '<li class="'+activePage+disabled+'"> <a '+pageLink+' href="javascript:void(0)">'+value+'</a> </li>'
+        });
+        next = `
 		<div class="clearfix"></div>
-		<div class="col-lg-12">
-            <button class="btn btn-block btn-info" onclick="doneTyping();" lang="en">Load More</button>
+		<div class="button-box text-center p-b-0">
+            <ul class="pagination m-b-0">
+                <li class="`+previousHidden+`"> <a href="javascript:void(0)" onclick="$('#request-page').val(`+pagePrevious+`);doneTyping();"><i class="fa fa-angle-left"></i></a> </li>
+                `+pageList+`
+                <li class="`+nextHidden+`"> <a href="javascript:void(0)" onclick="$('#request-page').val(`+pageNext+`);doneTyping();"><i class="fa fa-angle-right"></i></a> </li>
+            </ul>
         </div>
 		`;
 	}
@@ -2944,7 +3002,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
         <button class="btn btn-info waves-effect waves-light filter-request-result" data-filter="request-result-tv"><span>`+tv+`</span> <i class="fa fa-tv m-l-5 fa-fw"></i></button>
     </div>
 	`;
-	return buttons+results+next;
+	return buttons+next+results+next;
 }
 function processRequest(id,type){
 	if(type == 'tv'){
@@ -3745,28 +3803,28 @@ function requestSearchList(list,page=1) {
 	var url = '';
 	switch (list) {
 		case 'top-movie':
-			url = 'https://api.themoviedb.org/3/movie/top_rated?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
+			url = 'https://api.themoviedb.org/3/movie/top_rated?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&region=US&page='+page;
 			break;
 		case 'pop-movie':
-			url = 'https://api.themoviedb.org/3/movie/popular?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
+			url = 'https://api.themoviedb.org/3/movie/popular?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&region=US&page='+page;
 			break;
 		case 'up-movie':
-			url = 'https://api.themoviedb.org/3/movie/upcoming?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
+			url = 'https://api.themoviedb.org/3/movie/upcoming?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&region=US&page='+page;
 			break;
 		case 'theatre-movie':
-			url = 'https://api.themoviedb.org/3/movie/now_playing?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
+			url = 'https://api.themoviedb.org/3/movie/now_playing?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&region=US&page='+page;
 			break;
 		case 'top-tv':
-			url = 'https://api.themoviedb.org/3/tv/top_rated?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
+			url = 'https://api.themoviedb.org/3/tv/top_rated?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&region=US&page='+page;
 			break;
 		case 'pop-tv':
-			url = 'https://api.themoviedb.org/3/tv/popular?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
+			url = 'https://api.themoviedb.org/3/tv/popular?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&region=US&page='+page;
 			break;
 		case 'today-tv':
-			url = 'https://api.themoviedb.org/3/tv/airing_today?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
+			url = 'https://api.themoviedb.org/3/tv/airing_today?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&region=US&page='+page;
 			break;
 		case 'org-mod':
-			url = 'https://api.themoviedb.org/4/list/64438?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
+			url = 'https://api.themoviedb.org/4/list/64438?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&region=US&page='+page;
 			break;
 		default:
 

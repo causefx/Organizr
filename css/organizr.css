@@ -1132,3 +1132,6 @@ img.img-chooser {
     width: 100%;
     z-index: 1051;
 }
+.fc-scroller .simplebar-track.horizontal {
+    display: none;
+}
