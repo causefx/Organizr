@@ -2943,6 +2943,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 								<span class="text-info p-5 font-normal">`+comment+`</span>
 	                            <ul class="el-info">
 	                                <li><a class="btn default btn-outline" href="javascript:void(0);" onclick="processRequest('`+v.id+`','`+media_type+`');"><i class="icon-link"></i>&nbsp; <span lang="en">Request</span></a></li>
+	                                <li><a class="btn default btn-outline" href="https://www.themoviedb.org/`+media_type+`/`+v.id+`" target="_blank"><i class="icon-info"></i></a></li>
 	                            </ul>
 	                        </div>
 	                    </div>

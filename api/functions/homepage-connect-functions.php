@@ -1072,9 +1072,9 @@ function getSonarrCalendar($array, $number)
 			"image" => $fanart,
 			"ratings" => $child['series']['ratings']['value'],
 			"videoQuality" => $child["hasFile"] ? $child['episodeFile']['quality']['quality']['name'] : "unknown",
-			"audioChannels" => $child["hasFile"] ? $child['episodeFile']['mediaInfo']['audioChannels'] : "unknown",
-			"audioCodec" => $child["hasFile"] ? $child['episodeFile']['mediaInfo']['audioCodec'] : "unknown",
-			"videoCodec" => $child["hasFile"] ? $child['episodeFile']['mediaInfo']['videoCodec'] : "unknown",
+			"audioChannels" => $child["hasFile"] && isset($child['episodeFile']['mediaInfo']) ? $child['episodeFile']['mediaInfo']['audioChannels'] : "unknown",
+			"audioCodec" => $child["hasFile"] && isset($child['episodeFile']['mediaInfo']) ? $child['episodeFile']['mediaInfo']['audioCodec'] : "unknown",
+			"videoCodec" => $child["hasFile"] && isset($child['episodeFile']['mediaInfo']) ? $child['episodeFile']['mediaInfo']['videoCodec'] : "unknown",
 			"size" => $child["hasFile"] ? $child['episodeFile']['size'] : "unknown",
 			"genres" => $child['series']['genres'],
 		);
