@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnusedLocalVariableInspection */
 // PLUGIN INFORMATION
 $GLOBALS['plugins'][]['PHP Mailer'] = array( // Plugin Name
 	'name' => 'PHP Mailer', // Plugin Name
@@ -10,7 +11,7 @@ $GLOBALS['plugins'][]['PHP Mailer'] = array( // Plugin Name
 	//'configFile'=>'php-mailer.php',
 	//'apiFile'=>'php-mailer.php',
 	'idPrefix' => 'PHPMAILER', // html element id prefix
-	'configPrefix' => 'PHPMAILER', // config file prefix for array items without the hypen
+	'configPrefix' => 'PHPMAILER', // config file prefix for array items without the hyphen
 	'version' => '1.0.0', // SemVer of plugin
 	'image' => 'plugins/images/php-mailer.png', // 1:1 non transparent image for plugin
 	'settings' => true, // does plugin need a settings page? true or false
@@ -28,7 +29,7 @@ function getEmails()
 		$type = 'none';
 	}
 	if ($type == 'plex') {
-		$emails = array_merge(libraryList('plex')['both'], getOrgUsers());
+		$emails = array_merge(userList('plex')['both'], getOrgUsers());
 	} elseif ($type == 'emby') {
 		$emails = getOrgUsers();
 	} else {
@@ -65,8 +66,9 @@ function phpmEmailTemplate($emailTemplate)
 
 function phpmBuildEmail($email)
 {
+	/** @noinspection PhpUnusedLocalVariableInspection */
 	$subject = (isset($email['subject'])) ? $email['subject'] : 'Message from Server';
-	$body = (isset($email['body'])) ? $email['body'] : 'Message Error Occured';
+	$body = (isset($email['body'])) ? $email['body'] : 'Message Error Occurred';
 	$type = (isset($email['type'])) ? $email['type'] : 'No Type';
 	switch ($type) {
 		case 'invite':
@@ -170,7 +172,7 @@ function phpmSendEmail($emailInfo)
 		if ($GLOBALS['PHPMAILER-smtpHostType'] !== 'n/a') {
 			$mail->SMTPSecure = $GLOBALS['PHPMAILER-smtpHostType'];
 		}
-        $mail->SMTPAuth = $GLOBALS['PHPMAILER-smtpHostAuth'];
+		$mail->SMTPAuth = $GLOBALS['PHPMAILER-smtpHostAuth'];
 		$mail->Username = $GLOBALS['PHPMAILER-smtpHostUsername'];
 		$mail->Password = decrypt($GLOBALS['PHPMAILER-smtpHostPassword']);
 		$mail->SMTPOptions = array(

@@ -1524,7 +1524,7 @@ function getOrgUsers()
 
 function convertPlexName($user, $type)
 {
-	$array = libraryList('plex');
+	$array = userList('plex');
 	switch ($type) {
 		case "username":
 		case "u":
@@ -1541,7 +1541,7 @@ function convertPlexName($user, $type)
 	return (!empty($plexUser) ? $plexUser : null);
 }
 
-function libraryList($type = null)
+function userList($type = null)
 {
 	switch ($type) {
 		case 'plex':
@@ -1557,9 +1557,6 @@ function libraryList($type = null)
 					if ($response->success) {
 						$libraryList = array();
 						$plex = simplexml_load_string($response->body);
-						foreach ($plex->SharedServer->Section as $child) {
-							$libraryList['libraries'][(string)$child['title']] = (string)$child['id'];
-						}
 						foreach ($plex->SharedServer as $child) {
 							if (!empty($child['username'])) {
 								$username = (string)strtolower($child['username']);
@@ -1568,6 +1565,40 @@ function libraryList($type = null)
 								$libraryList['emails'][$email] = (string)$child['id'];
 								$libraryList['both'][$username] = $email;
 							}
+						}
+						$libraryList = array_change_key_case($libraryList, CASE_LOWER);
+						return $libraryList;
+					}
+				} catch (Requests_Exception $e) {
+					writeLog('error', 'Plex Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				};
+			}
+			break;
+		default:
+			# code...
+			break;
+	}
+	return false;
+}
+
+function libraryList($type = null)
+{
+	switch ($type) {
+		case 'plex':
+			if (!empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'])) {
+				$url = 'https://plex.tv/api/servers/' . $GLOBALS['plexID'];
+				try {
+					$headers = array(
+						"Accept" => "application/json",
+						"X-Plex-Token" => $GLOBALS['plexToken']
+					);
+					$response = Requests::get($url, $headers, array());
+					libxml_use_internal_errors(true);
+					if ($response->success) {
+						$libraryList = array();
+						$plex = simplexml_load_string($response->body);
+						foreach ($plex->Server->Section as $child) {
+							$libraryList['libraries'][(string)$child['title']] = (string)$child['id'];
 						}
 						$libraryList = array_change_key_case($libraryList, CASE_LOWER);
 						return $libraryList;
