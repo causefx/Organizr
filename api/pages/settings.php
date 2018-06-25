@@ -67,10 +67,10 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                             </div>
                         </div>
                     </section>
-                    <! -- Customzie -->
+                    <! -- Customize -->
                     <section id="settings-main-customize">
                         <ul class="nav customtab2 nav-tabs" role="tablist">
-                            <li onclick="changeSettingsMenu(\'Settings::Customzie::Appearance\');loadSettingsPage(\'api/?v1/settings/customize/appearance\',\'#settings-customize-appearance\',\'Customize Appearance\');" role="presentation" class=""><a href="#settings-customize-appearance" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-eye"></i></span><span class="hidden-xs" lang="en">Appearance</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::Customize::Appearance\');loadSettingsPage(\'api/?v1/settings/customize/appearance\',\'#settings-customize-appearance\',\'Customize Appearance\');" role="presentation" class=""><a href="#settings-customize-appearance" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-eye"></i></span><span class="hidden-xs" lang="en">Appearance</span></a>
                             </li>
                         </ul>
                         <!-- Tab panes -->
