@@ -61,6 +61,17 @@ function parseDomain($value)
 	} else {
 		$Domain = '';
 	}
+	/*
+	if (is_numeric($Domain[0]) || strpos($Domain, '.') == false) {
+		$Domain = '';
+	} else {
+		if (substr($Domain, 0, 3) == 'www') {
+			$Domain = substr($Domain, 3, strlen($Domain) - 3);
+		} else {
+			$Domain = '.' . $Domain;
+		}
+	}
+	*/
 	return $Domain;
 }
 

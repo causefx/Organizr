@@ -58,7 +58,8 @@ function getTautulliToken($username, $password)
 				$url = $value . '/auth/signin';
 				$headers = array(
 					"Accept" => "application/json",
-					"Content-Type" => "application/x-www-form-urlencoded"
+					"Content-Type" => "application/x-www-form-urlencoded",
+					"User-Agent" => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null
 				);
 				$data = array(
 					"username" => $username,

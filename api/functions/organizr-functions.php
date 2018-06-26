@@ -59,6 +59,9 @@ function organizrSpecialSettings()
 			'timer' => $GLOBALS['lockoutTimeout'],
 			'minGroup' => $GLOBALS['lockoutMinAuth'],
 			'maxGroup' => $GLOBALS['lockoutMaxAuth']
+		),
+		'user' => array(
+			'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null
 		)
 	);
 }
@@ -301,7 +304,7 @@ function editUser($array)
 
 function logout()
 {
-	coookie('delete', 'organizrToken');
+	coookie('delete', $GLOBALS['cookieName']);
 	coookie('delete', 'mpt');
 	coookie('delete', 'Auth');
 	$GLOBALS['organizrUser'] = false;

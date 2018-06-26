@@ -81,7 +81,7 @@ function createToken($username, $email, $image, $group, $groupID, $key, $days = 
 		->getToken(); // Retrieves the generated token
 		$jwttoken->getHeaders(); // Retrieves the token headers
 		$jwttoken->getClaims(); // Retrieves the token claims
-		coookie('set', 'organizrToken', $jwttoken, $days);
+		coookie('set', $GLOBALS['cookieName'], $jwttoken, $days);
 		// Add token to DB
 		$addToken = [
 			'token' => (string)$jwttoken,
@@ -112,7 +112,7 @@ function validateToken($token, $global = false)
 				$tokenCheck = $database->fetch('SELECT * FROM tokens WHERE user_id = ? AND token = ?', $userInfo['userID'], $token);
 				if (!$tokenCheck) {
 					// Delete cookie & reload page
-					coookie('delete', 'organizrToken');
+					coookie('delete', $GLOBALS['cookieName']);
 					$GLOBALS['organizrUser'] = false;
 				}
 				$result = $database->fetch('SELECT * FROM users WHERE id = ?', $userInfo['userID']);
@@ -135,16 +135,16 @@ function validateToken($token, $global = false)
 		}
 	} else {
 		// Delete cookie & reload page
-		coookie('delete', 'organizrToken');
+		coookie('delete', $GLOBALS['cookieName']);
 		$GLOBALS['organizrUser'] = false;
 	}
 }
 
 function getOrganizrUserToken()
 {
-	if (isset($_COOKIE['organizrToken'])) {
+	if (isset($_COOKIE[$GLOBALS['cookieName']])) {
 		// Get token form cookie and validate
-		validateToken($_COOKIE['organizrToken'], true);
+		validateToken($_COOKIE[$GLOBALS['cookieName']], true);
 	} else {
 		$GLOBALS['organizrUser'] = array(
 			"token" => null,

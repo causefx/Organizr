@@ -43,4 +43,5 @@ return array(
 	'PHPMAILER-emailTemplateCustom-include-Four' => '',
 	'PHPMAILER-emailTemplateCustom-include-FourName' => 'Template #4',
 	'PHPMAILER-emailTemplateCustom-include-FourSubject' => '',
+	'PHPMAILER-verifyCert' => true,
 );

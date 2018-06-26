@@ -132,7 +132,7 @@ function phpmSendTestEmail()
 		$mail->Password = decrypt($GLOBALS['PHPMAILER-smtpHostPassword']);
 		$mail->SMTPOptions = array(
 			'ssl' => [
-				'verify_peer' => true,
+				'verify_peer' => $GLOBALS['PHPMAILER-verifyCert'],
 				'verify_depth' => 3,
 				'allow_self_signed' => true,
 				'peer_name' => $GLOBALS['PHPMAILER-smtpHost'],
@@ -177,7 +177,7 @@ function phpmSendEmail($emailInfo)
 		$mail->Password = decrypt($GLOBALS['PHPMAILER-smtpHostPassword']);
 		$mail->SMTPOptions = array(
 			'ssl' => [
-				'verify_peer' => true,
+				'verify_peer' => $GLOBALS['PHPMAILER-verifyCert'],
 				'verify_depth' => 3,
 				'allow_self_signed' => true,
 				'peer_name' => $GLOBALS['PHPMAILER-smtpHost'],
@@ -271,7 +271,13 @@ function phpmGetSettings()
 						'value' => 'n/a'
 					)
 				)
-			)
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'PHPMAILER-verifyCert',
+				'label' => 'Verify Certificate',
+				'value' => $GLOBALS['PHPMAILER-verifyCert']
+			),
 		),
 		'Sender Information' => array(
 			array(
