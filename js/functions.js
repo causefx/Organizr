@@ -2253,17 +2253,24 @@ $.urlParam = function(name){
        return decodeURI(results[1]) || 0;
     }
 };
-function errorPage(error=null){
+function errorPage(error=null,uri=null){
 	if(error){
 		local('set','error',error);
 	}
+    if(uri){
+        local('set','uri',uri);
+    }
 	//var urlParams = new URLSearchParams(window.location.search);
 	if($.urlParam('error') !== null){
 		local('set','error',$.urlParam('error'));
 	}
+    if($.urlParam('return') !== null){
+        local('set','uri',$.urlParam('return'));
+    }
 	if ( window.location !== window.parent.location ) {
 		var iframeError = local('get', 'error');
 		parent.errorPage(iframeError);
+        local('remove', 'uri');
 		$('html').html('');
 	  	return false;
 	}
@@ -2275,6 +2282,18 @@ function errorPage(error=null){
 		window.history.pushState({}, document.title, "/" );
 	}
 
+}
+function uriRedirect(uri=null){
+    if(uri){
+        local('set','uri',uri);
+    }
+    if(activeInfo.user.loggedin === true){
+        var redirect = local('get', 'uri');
+        local('remove', 'uri');
+        if(redirect !== null){
+            window.location.href = redirect;
+        }
+    }
 }
 function changeTheme(theme){
 	//$("#preloader").fadeIn();
@@ -4528,6 +4547,7 @@ function launch(){
 		defineNotification();
 		checkMessage();
 		errorPage();
+		uriRedirect();
 		changeStyle(activeInfo.style);
 		changeTheme(activeInfo.theme);
 		setSSO();

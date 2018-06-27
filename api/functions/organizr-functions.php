@@ -62,6 +62,9 @@ function organizrSpecialSettings()
 		),
 		'user' => array(
 			'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null
+		),
+		'misc' => array(
+			'return' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false,
 		)
 	);
 }
