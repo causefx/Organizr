@@ -1346,6 +1346,16 @@ function buildSplashScreen(json){
         var splash = `
         <section id="splashScreen" class="lock-screen splash-screen fade in">
             <div class="row p-20 flexbox">`+items+`</div>
+            <div class="row p-20 p-t-0 flexbox">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
+                    <div class="panel panel-default">
+                        <div class="panel-heading bg-info p-t-10 p-b-10">
+                            <span class="pull-left m-t-5 elip">`+iconPrefix('fontawesome::home')+` &nbsp; Close Splash</span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
         `;
         $(splash).appendTo($('body'));
@@ -2287,7 +2297,7 @@ function uriRedirect(uri=null){
     if(uri){
         local('set','uri',uri);
     }
-    if(activeInfo.user.loggedin === true){
+    if(activeInfo.user.loggedin === true && activeInfo.user.locked !== 1){
         var redirect = local('get', 'uri');
         local('remove', 'uri');
         if(redirect !== null){
