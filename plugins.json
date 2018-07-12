@@ -8,6 +8,7 @@
     "version": "1.0.0",
     "release_date": "2018-07-12",
     "last_updated": "2018-07-12",
+    "github_folder": "test",
     "files": {
       "/": "test.pdf",
       "/plugins/images/test": "test.png",
