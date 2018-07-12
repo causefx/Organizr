@@ -1,0 +1,19 @@
+{
+  "Test Plugin": {
+    "author": "CauseFX",
+    "description": "Some basic shit outlying what this shit does",
+    "icon": null,
+    "contact": null,
+    "website": null,
+    "version": "1.0.0",
+    "release_date": "2018-07-12",
+    "last_updated": "2018-07-12",
+    "files": {
+      "/": "test.pdf",
+      "/plugins/images/test": "test.png",
+      "/api/plugins/api/test": "index.php"
+    },
+    "images": {
+    }
+  }
+}
