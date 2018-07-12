@@ -3053,14 +3053,19 @@ function ombiActions(id,action,type){
 	ajaxloader('.preloader-'+id,'in');
 	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
 		var response = JSON.parse(data);
+		console.log(response.data);
 		if(response.data !== false){
+            var responseData = JSON.parse(response.data.bd);
+            console.log(responseData);
+            var responseMessage = (responseData.isError == true) ? responseData.errorMessage : 'Success';
+            var responseType = (responseData.isError == true) ? 'error' : 'success';
 			homepageRequests();
 			if(action !== 'add'){
 				$.magnificPopup.close();
-				message("",window.lang.translate('Updated Request Item'),activeInfo.settings.notifications.position,"#FFF","success","3500");
+				message(window.lang.translate('Updated Request Item'),responseMessage,activeInfo.settings.notifications.position,"#FFF",responseType,"3500");
 			}else{
 				ajaxloader();
-				message("",window.lang.translate('Added Request Item'),activeInfo.settings.notifications.position,"#FFF","success","3500");
+				message(window.lang.translate('Added Request Item'),responseMessage,activeInfo.settings.notifications.position,"#FFF",responseType,"3500");
 			}
 		}else{
 			ajaxloader();

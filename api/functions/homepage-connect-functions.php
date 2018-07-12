@@ -1109,7 +1109,7 @@ function getLidarrCalendar($array, $number)
 		if (new DateTime() < new DateTime($releaseDate)) {
 			$unaired = true;
 		}
-		$downloaded = ($child['statistics']['percentOfEpisodes'] !== '100.0') ? '0' : '1';
+		$downloaded = (isset($child['statistics']['percentOfEpisodes']) && $child['statistics']['percentOfEpisodes'] !== '100.0') ? '0' : '1';
 		if ($downloaded == "0" && isset($unaired)) {
 			$downloaded = "text-info";
 		} elseif ($downloaded == "1") {
