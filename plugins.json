@@ -2,9 +2,9 @@
   "Test Plugin": {
     "author": "CauseFX",
     "description": "Some basic shit outlying what this shit does",
-    "icon": null,
-    "contact": null,
-    "website": null,
+    "icon": "https://pbs.twimg.com/profile_images/469017630796296193/R-bEN4UP.png",
+    "contact": "causefx@organizr.app",
+    "website": "https://organizr.app",
     "version": "1.0.0",
     "release_date": "2018-07-12",
     "last_updated": "2018-07-12",
