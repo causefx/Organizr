@@ -1,4 +1,13 @@
 {
+  "info": {
+    "name": "test plugin",
+    "author": "CauseFX",
+    "contact": null,
+    "website": null,
+    "version": "1.0.0",
+    "release_date": "2018-07-12",
+    "last_updated": "2018-07-12"
+  },
   "files": {
     "/": "test.pdf",
     "/plugins/images/test": "test.png",
