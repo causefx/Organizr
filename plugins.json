@@ -1,6 +1,7 @@
 {
   "Test Plugin": {
     "author": "CauseFX",
+    "category": "Testing",
     "description": "Some basic shit outlying what this shit does",
     "icon": "https://pbs.twimg.com/profile_images/469017630796296193/R-bEN4UP.png",
     "contact": "causefx@organizr.app",
