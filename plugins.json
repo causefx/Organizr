@@ -16,6 +16,8 @@
       "/api/plugins/api/test": "index.php"
     },
     "images": {
+      "https://www.bloggingalways.com/wp-content/uploads/2017/11/Test-Logo.svg.png",
+      "https://lakeridgenewsonline.com/wp-content/uploads/2018/03/Testing.jpg"
     }
   }
 }
