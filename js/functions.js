@@ -970,22 +970,27 @@ function removePlugin(plugin=null){
         var html = JSON.parse(data);
         console.log(html);
         if(html.data == true){
-            /*if(activeInfo.settings.misc.installedPlugins !== ''){
+            if(activeInfo.settings.misc.installedPlugins !== ''){
                 installedPlugins = activeInfo.settings.misc.installedPlugins.split("|");
                 $.each(installedPlugins, function(i,v) {
                     var plugin = v.split(":");
                     installedPluginsList[plugin[0]] = plugin[1];
                 });
                 if(typeof installedPluginsList[plugin.name] !== 'undefined'){
-                    console.log(plugin.version);
-                    installedPluginsList[plugin.name] = plugin.version;
-                    activeInfo.settings.misc.installedPlugins = installedPlugins.toString().replace(/,/g , "|");
-                }else{
-                    activeInfo.settings.misc.installedPlugins = activeInfo.settings.misc.installedPlugins + '|' + plugin.name + ':' + plugin.version;
+                    $.each(installedPluginsList, function(i,v) {
+                        if(i !== plugin.name){
+                            if(installedPluginsListNew == ''){
+                                installedPluginsListNew += i+':'+v;
+                            }else{
+                                installedPluginsListNew += '|'+i+':'+v;
+                            }
+                        }
+                    });
+                    activeInfo.settings.misc.installedPlugins = installedPluginsListNew;
                 }
             }else{
-                activeInfo.settings.misc.installedPlugins = plugin.name + ':' + plugin.version;
-            }*/
+                activeInfo.settings.misc.installedPlugins = '';
+            }
             loadMarketplace('plugins');
             message('Plugin Removed',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
         }else{
@@ -1003,6 +1008,7 @@ function installPlugin(plugin=null){
     message('Installing Plugin',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
     console.log(plugin);
     var installedPluginsList = [];
+    var installedPluginsListNew = '';
     var installedPlugins = [];
     plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder);
     organizrAPI('POST','api/?v1/plugin/install',{plugin:plugin}).success(function(data) {
@@ -1016,9 +1022,15 @@ function installPlugin(plugin=null){
                     installedPluginsList[plugin[0]] = plugin[1];
                 });
                 if(typeof installedPluginsList[plugin.name] !== 'undefined'){
-                    console.log(plugin.version);
                     installedPluginsList[plugin.name] = plugin.version;
-                    activeInfo.settings.misc.installedPlugins = installedPlugins.toString().replace(/,/g , "|");
+                    $.each(installedPluginsList, function(i,v) {
+                        if(installedPluginsListNew == ''){
+                            installedPluginsListNew += i+':'+v;
+                        }else{
+                            installedPluginsListNew += '|'+i+':'+v;
+                        }
+                    });
+                    activeInfo.settings.misc.installedPlugins = installedPluginsListNew;
                 }else{
                     activeInfo.settings.misc.installedPlugins = activeInfo.settings.misc.installedPlugins + '|' + plugin.name + ':' + plugin.version;
                 }
