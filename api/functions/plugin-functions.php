@@ -50,10 +50,10 @@ function removePlugin($plugin)
 			'to' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $GLOBALS['root'] . $v['path'] . $v['fileName']),
 			'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $GLOBALS['root'] . $v['path'])
 		);
-		/*if (!rrmdir($file['to'])) {
+		if (!rrmdir($file['to'])) {
 			writeLog('error', 'Plugin Function -  Remove File Failed  for: ' . $v['githubPath'], $GLOBALS['organizrUser']['username']);
 			return false;
-		}*/
+		}
 	}
 	if ($GLOBALS['installedPlugins'] !== '') {
 		$installedPlugins = explode('|', $GLOBALS['installedPlugins']);
@@ -76,6 +76,6 @@ function removePlugin($plugin)
 	} else {
 		$installedPluginsNew = '';
 	}
-	//updateConfig(array('installedPlugins' => $installedPluginsNew));
+	updateConfig(array('installedPlugins' => $installedPluginsNew));
 	return true;
 }
