@@ -1,4 +1,5 @@
 <?php
 return array(
-    'NGXC_SAVE_PATH' => $GLOBALS['dbLocation']
+	'ngxc-enabled' => false,
+	'NGXC_SAVE_PATH' => ''
 );
