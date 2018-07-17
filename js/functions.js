@@ -721,6 +721,8 @@ function buildPluginsItem(array){
 		</li>
 		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
 		</li>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Marketplace');loadMarketplace('plugins');" role="presentation" class=""><a href="#settings-plugins-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a>
+		</li>
 	</ul>
 	<!-- Tab panes -->
 	<div class="tab-content">
@@ -749,11 +751,287 @@ function buildPluginsItem(array){
 				</div>
 			</div>
 		</div>
+		<div role="tabpanel" class="tab-pane fade" id="settings-plugins-marketplace">
+			<div class="panel bg-org panel-info">
+				<div class="panel-heading">
+					<span lang="en">Plugin Marketplace</span>
+				</div>
+				<div class="panel-wrapper collapse in" aria-expanded="true">
+					<div class="table-responsive">
+                        <table class="table table-hover manage-u-table">
+                            <thead>
+                                <tr>
+                                    <th width="70" class="text-center" lang="en">PLUGIN</th>
+                                    <th></th>
+                                    <th lang="en">CATEGORY</th>
+                                    <th lang="en">STATUS</th>
+                                    <th lang="en" style="text-align:center">INFO</th>
+                                    <th lang="en" style="text-align:center">INSTALL</th>
+                                    <th lang="en" style="text-align:center">DELETE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="managePluginTable"></tbody>
+                        </table>
+                    </div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	`;
 
 	return panes;
+}
+function loadMarketplace(type){
+    marketplaceJSON(type).success(function(data) {
+        var json = JSON.parse(data);
+        switch (type) {
+            case 'plugins':
+                loadMarketplacePluginsItems(json);
+                break;
+            case 'themes':
+                loadMarketplaceThemesItems(json);
+                break;
+            default:
+        }
+        console.log(json);
+    }).fail(function(xhr) {
+        console.error("Organizr Function: Github Connection Failed");
+    });
+}
+function loadMarketplacePluginsItems(plugins){
+    var pluginList = '';
+    $.each(plugins, function(i,v) {
+        if(v.icon == null || v.icon == ''){ v.icon = 'test.png'; }
+        v.status = pluginStatus(i,v.version);
+        var installButton = (v.status == 'Update Available') ? 'fa fa-download' : 'fa fa-plus';
+        var removeButton = (v.status == 'Not Installed') ? 'disabled' : '';
+        v.name = i;
+        pluginList += `
+            <tr class="pluginManagement" data-name="`+i+`" data-version="`+v.version+`">
+                <td class="text-center el-element-overlay">
+                    <div class="el-card-item p-0">
+                        <div class="el-card-avatar el-overlay-1 m-0">
+                            <img alt="user-img" src="`+v.icon+`" width="45">
+                        </div>
+                    </div>
+                </td>
+                <td>`+i+`
+                    <br><span class="text-muted">`+v.version+`</span></td>
+                <td>`+v.category+`</td>
+                <td>`+v.status+`</td>
+                <td style="text-align:center"><button type="button" onclick='aboutPlugin(`+JSON.stringify(v)+`);' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-plugin-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='installPlugin(`+JSON.stringify(v)+`);' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='removePlugin(`+JSON.stringify(v)+`);' class="btn btn-danger btn-outline btn-circle btn-lg" `+removeButton+`><i class="fa fa-trash"></i></button></td>
+            </tr>
+        `;
+
+    });
+    $('#managePluginTable').html(pluginList);
+}
+function aboutPluginImages(images){
+    var imageList = '';
+    if(Object.keys(images).length !== 0){
+        var imageCount = 0;
+        $.each(images, function(i,v) {
+            imageCount++;
+            var active = (imageCount == 1) ? 'active' : '';
+            imageList += `
+            <div class="`+active+` item">
+                <div class="overlaybg"><img src="`+v+`" /></div>
+                <div class="news-content"><span class="label label-info label-rounded">`+i+`</span></div>
+            </div>
+            `;
+        });
+    }else{
+        imageList += `
+            <div class="active item">
+                <div class="overlaybg"><img src="https://via.placeholder.com/350x150" /></div>
+            </div>
+        `;
+    }
+    return imageList;
+}
+function aboutPluginFiles(fileList){
+    var files = [];
+    $.each(fileList, function(i,v) {
+        var splitFiles = v.split('|');
+        var formattedSplit = [];
+        $.each(splitFiles, function(i,v) {
+            var arrayFilePush = {
+                "text": v
+            };
+            formattedSplit.push(arrayFilePush);
+        });
+        var arrayPush = {
+            "text": i,
+            "nodes": formattedSplit,
+        };
+        files.push(arrayPush);
+    });
+    return files;
+}
+function pluginFileList(fileList,folder){
+    var files = [];
+    $.each(fileList, function(i,v) {
+        var splitFiles = v.split('|');
+        var formattedSplit = [];
+        var prePath = (i.length !== 1) ? i+'/' : i;
+        $.each(splitFiles, function(i,v) {
+            var arrayPush = {
+                "fileName": v,
+                "path": prePath,
+                "githubPath": 'https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/'+folder+prePath+v,
+            };
+            files.push(arrayPush);
+        });
+    });
+    return files;
+}
+function aboutPlugin(plugin){
+    var files = aboutPluginFiles(plugin.files);
+    var imageList = aboutPluginImages(plugin.images);
+    var homepageLink = (plugin.website !== '' || plugin.website !== null) ? 'onclick="window.open(\''+plugin.website+'\',\'_blank\');"' : ' ';
+
+    var infoBox = `
+    <div class="row">
+        <div class="col-lg-6 col-sm-12 col-xs-12">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-xs-12">
+                    <div class="white-box p-10" id="aboutPluginScroll">
+                        `+plugin.description+`
+                    </div>
+                </div>
+                <div class="clearfix">&nbsp;</div>
+                <div class="col-lg-4 col-sm-4 col-xs-12">
+                    <div class="white-box mouse">
+                        <ul class="list-inline two-part text-center m-b-0">
+                            <li><i class="icon-envelope-open text-info"></i></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-4 col-xs-12">
+                    <div class="white-box mouse" `+homepageLink+`>
+                        <ul class="list-inline two-part text-center m-b-0">
+                            <li><i class="icon-home text-danger"></i></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-4 col-xs-12">
+                    <div class="white-box mouse" onclick="$('.pluginFileList').toggleClass('hidden');">
+                        <ul class="list-inline two-part text-center m-b-0">
+                            <li><i class="icon-folder text-purple"></i></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 pluginFileList hidden">
+                    <div id="treeview5" class=""></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-sm-12 col-xs-12">
+            <div class="news-slide m-b-15">
+                <div class="vcarousel slide">
+                    <!-- Carousel items -->
+                    <div class="carousel-inner">
+                        `+imageList+`
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    $('#about-plugin-title').html(plugin.name+'&nbsp;<small>'+plugin.version+'</small>');
+    $('#about-plugin-body').html(infoBox);
+    $('.vcarousel').carousel({
+        interval: 3000
+    });
+    $('#treeview5').treeview({
+        levels: 1,
+        expandIcon: 'ti-angle-right',
+        onhoverColor: "rgba(0, 0, 0, 0.05)",
+        selectedBackColor: "#03a9f3",
+        collapseIcon: 'ti-angle-down',
+        data: JSON.stringify(files)
+    });
+    $('#aboutPluginScroll').slimScroll({
+        height: '225px'
+    });
+}
+function installPlugin(plugin=null){
+    if(plugin == null){
+        return false;
+    }
+    console.log(plugin);
+    var installedPluginsList = [];
+    var installedPlugins = [];
+    if(activeInfo.settings.misc.installedPlugins !== ''){
+        installedPlugins = activeInfo.settings.misc.installedPlugins.split("|");
+        $.each(installedPlugins, function(i,v) {
+            var plugin = v.split(":");
+            installedPluginsList[plugin[0]] = plugin[1];
+        });
+        if(typeof installedPluginsList[plugin.name] !== 'undefined'){
+            console.log(plugin.version);
+            installedPluginsList[plugin.name] = plugin.version;
+            activeInfo.settings.misc.installedPlugins = installedPlugins.toString().replace(/,/g , "|");
+        }else{
+            activeInfo.settings.misc.installedPlugins = activeInfo.settings.misc.installedPlugins + '|' + plugin.name + ':' + plugin.version;
+        }
+    }else{
+        activeInfo.settings.misc.installedPlugins = plugin.name + ':' + plugin.version;
+    }
+    //loadMarketplace('plugins');
+
+    plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder);
+    organizrAPI('POST','api/?v1/plugin/install',{plugin:plugin}).success(function(data) {
+        var html = JSON.parse(data);
+        console.log(html);
+        /*if(html.data == true){
+            message('Path',' Path is good to go',activeInfo.settings.notifications.position,'#FFF','success','10000');
+        }else{
+            message('Path Error',' Path is not writable',activeInfo.settings.notifications.position,'#FFF','warning','10000');
+        }*/
+        message('Plugin Installed',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
+    }).fail(function(xhr) {
+        console.error("Organizr Function: Connection Failed");
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+function pluginStatus(name=null,version=null){
+    var installedPlugins = [];
+    var installedPluginsList = [];
+    if(activeInfo.settings.misc.installedPlugins !== ''){
+        installedPlugins = activeInfo.settings.misc.installedPlugins.split("|");
+        $.each(installedPlugins, function(i,v) {
+            var plugin = v.split(":");
+            installedPluginsList[plugin[0]] = plugin[1];
+        });
+        if(typeof installedPluginsList[name] !== 'undefined'){
+            if(version !== installedPluginsList[name]){
+                return 'Update Available';
+            }else{
+                return 'Up to date';
+            }
+        }else{
+            return 'Not Installed';
+        }
+    }else{
+        return 'Not Installed';
+    }
 }
 function buildHomepageItem(array){
 	var listing = '';
@@ -1416,6 +1694,7 @@ function buildTabTypeSelect(tabID, typeID){
 		}
 		typeSelect += '<option '+selected+' value="'+v.type_id+'">'+v.type+'</option>';
 	});
+	console.log(tabID);
 	return '<td><select name="tab['+tabID+'].type" class="form-control tabTypeSelect">'+typeSelect+'</select></td>';
 }
 function buildTabCategorySelect(array,tabID, categoryID){
@@ -1894,6 +2173,11 @@ function githubVersions() {
 	return $.ajax({
 		url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/version.json",
 	});
+}
+function marketplaceJSON(type) {
+    return $.ajax({
+        url: "https://raw.githubusercontent.com/causefx/Organizr/v2-"+type+"/"+type+".json",
+    });
 }
 function allIcons() {
     return $.ajax({

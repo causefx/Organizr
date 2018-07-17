@@ -7,6 +7,8 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'a
 foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR . '*.php') as $filename) {
 	require_once $filename;
 }
+// Set Root Directory
+$GLOBALS['root'] = dirname(__DIR__, 1);
 // Add in default and custom settings
 configLazy();
 // Define Logs and files after db location is set

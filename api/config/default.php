@@ -167,5 +167,8 @@ return array(
 	'lockoutSystem' => false,
 	'lockoutTimeout' => '60',
 	'lockoutMaxAuth' => '0',
-	'lockoutMinAuth' => '1'
+	'lockoutMinAuth' => '1',
+	'themeInstalled' => '',
+	'themeVersion' => '',
+	'installedPlugins' => ''
 );

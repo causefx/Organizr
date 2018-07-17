@@ -64,6 +64,9 @@ function organizrSpecialSettings()
 			'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null
 		),
 		'misc' => array(
+			'installedPlugins' => $GLOBALS['installedPlugins'],
+			'themeInstalled' => $GLOBALS['themeInstalled'],
+			'themeVersion' => $GLOBALS['themeVersion'],
 			'return' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false,
 		)
 	);
