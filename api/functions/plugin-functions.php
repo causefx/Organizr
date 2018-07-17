@@ -1,17 +1,8 @@
 <?php
 function installPlugin($plugin)
 {
-	//$array['data']['action']
-	/*
-	 *
-	 * if (downloadFileToPath($from, $to, $path)) {
-                writeLog('success', 'Update Function -  Downloaded Update File for Branch: '.$branch, $GLOBALS['organizrUser']['username']);
-                return true;
-            } else {
-                writeLog('error', 'Update Function -  Downloaded Update File Failed  for Branch: '.$branch, $GLOBALS['organizrUser']['username']);
-                return false;
-            }
-	 */
+	$name = $plugin['data']['plugin']['name'];
+	$version = $plugin['data']['plugin']['version'];
 	foreach ($plugin['data']['plugin']['downloadList'] as $k => $v) {
 		$file = array(
 			'from' => $v['githubPath'],
@@ -19,7 +10,48 @@ function installPlugin($plugin)
 			'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $GLOBALS['root'] . $v['path'])
 		);
 		if (!downloadFileToPath($file['from'], $file['to'], $file['path'])) {
-			writeLog('error', 'Update Function -  Downloaded File Failed  for: ' . $v['githubPath'], $GLOBALS['organizrUser']['username']);
+			writeLog('error', 'Plugin Function -  Downloaded File Failed  for: ' . $v['githubPath'], $GLOBALS['organizrUser']['username']);
+			return false;
+		}
+	}
+	if ($GLOBALS['installedPlugins'] !== '') {
+		$installedPlugins = explode('|', $GLOBALS['installedPlugins']);
+		foreach ($installedPlugins as $k => $v) {
+			$plugins = explode(':', $v);
+			$installedPluginsList[$plugins[0]] = $plugins[1];
+		}
+		if (isset($installedPluginsList[$name])) {
+			$installedPluginsList[$name] = $version;
+			$installedPluginsNew = '';
+			foreach ($installedPluginsList as $k => $v) {
+				if ($installedPluginsNew == '') {
+					$installedPluginsNew .= $k . ':' . $v;
+				} else {
+					$installedPluginsNew .= '|' . $k . ':' . $v;
+				}
+			}
+		} else {
+			$installedPluginsNew = $GLOBALS['installedPlugins'] . '|' . $name . ':' . $version;
+		}
+	} else {
+		$installedPluginsNew = $name . ':' . $version;
+	}
+	updateConfig(array('installedPlugins' => $installedPluginsNew));
+	return true;
+}
+
+function removePlugin($plugin)
+{
+	$name = $plugin['data']['plugin']['name'];
+	$version = $plugin['data']['plugin']['version'];
+	foreach ($plugin['data']['plugin']['downloadList'] as $k => $v) {
+		$file = array(
+			'from' => $v['githubPath'],
+			'to' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $GLOBALS['root'] . $v['path'] . $v['fileName']),
+			'path' => str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $GLOBALS['root'] . $v['path'])
+		);
+		if (!rrmdir($file['to'])) {
+			writeLog('error', 'Plugin Function -  Remove File Failed  for: ' . $v['githubPath'], $GLOBALS['organizrUser']['username']);
 			return false;
 		}
 	}

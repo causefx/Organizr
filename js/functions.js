@@ -957,42 +957,81 @@ function aboutPlugin(plugin){
         height: '225px'
     });
 }
+function removePlugin(plugin=null){
+    if(plugin == null){
+        return false;
+    }
+    message('Removing Plugin',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
+    console.log(plugin);
+    var installedPluginsList = [];
+    var installedPlugins = [];
+    plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder);
+    organizrAPI('POST','api/?v1/plugin/remove',{plugin:plugin}).success(function(data) {
+        var html = JSON.parse(data);
+        console.log(html);
+        if(html.data == true){
+            /*if(activeInfo.settings.misc.installedPlugins !== ''){
+                installedPlugins = activeInfo.settings.misc.installedPlugins.split("|");
+                $.each(installedPlugins, function(i,v) {
+                    var plugin = v.split(":");
+                    installedPluginsList[plugin[0]] = plugin[1];
+                });
+                if(typeof installedPluginsList[plugin.name] !== 'undefined'){
+                    console.log(plugin.version);
+                    installedPluginsList[plugin.name] = plugin.version;
+                    activeInfo.settings.misc.installedPlugins = installedPlugins.toString().replace(/,/g , "|");
+                }else{
+                    activeInfo.settings.misc.installedPlugins = activeInfo.settings.misc.installedPlugins + '|' + plugin.name + ':' + plugin.version;
+                }
+            }else{
+                activeInfo.settings.misc.installedPlugins = plugin.name + ':' + plugin.version;
+            }*/
+            loadMarketplace('plugins');
+            message('Plugin Removed',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
+        }else{
+            message('Remove Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
+        }
+    }).fail(function(xhr) {
+        message('Remove Failed',plugin.name,activeInfo.settings.notifications.position,"#FFF","warning","5000");
+        console.error("Organizr Function: Connection Failed");
+    });
+}
 function installPlugin(plugin=null){
     if(plugin == null){
         return false;
     }
+    message('Installing Plugin',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
     console.log(plugin);
     var installedPluginsList = [];
     var installedPlugins = [];
-    if(activeInfo.settings.misc.installedPlugins !== ''){
-        installedPlugins = activeInfo.settings.misc.installedPlugins.split("|");
-        $.each(installedPlugins, function(i,v) {
-            var plugin = v.split(":");
-            installedPluginsList[plugin[0]] = plugin[1];
-        });
-        if(typeof installedPluginsList[plugin.name] !== 'undefined'){
-            console.log(plugin.version);
-            installedPluginsList[plugin.name] = plugin.version;
-            activeInfo.settings.misc.installedPlugins = installedPlugins.toString().replace(/,/g , "|");
-        }else{
-            activeInfo.settings.misc.installedPlugins = activeInfo.settings.misc.installedPlugins + '|' + plugin.name + ':' + plugin.version;
-        }
-    }else{
-        activeInfo.settings.misc.installedPlugins = plugin.name + ':' + plugin.version;
-    }
-    //loadMarketplace('plugins');
-
     plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder);
     organizrAPI('POST','api/?v1/plugin/install',{plugin:plugin}).success(function(data) {
         var html = JSON.parse(data);
         console.log(html);
-        /*if(html.data == true){
-            message('Path',' Path is good to go',activeInfo.settings.notifications.position,'#FFF','success','10000');
+        if(html.data == true){
+            if(activeInfo.settings.misc.installedPlugins !== ''){
+                installedPlugins = activeInfo.settings.misc.installedPlugins.split("|");
+                $.each(installedPlugins, function(i,v) {
+                    var plugin = v.split(":");
+                    installedPluginsList[plugin[0]] = plugin[1];
+                });
+                if(typeof installedPluginsList[plugin.name] !== 'undefined'){
+                    console.log(plugin.version);
+                    installedPluginsList[plugin.name] = plugin.version;
+                    activeInfo.settings.misc.installedPlugins = installedPlugins.toString().replace(/,/g , "|");
+                }else{
+                    activeInfo.settings.misc.installedPlugins = activeInfo.settings.misc.installedPlugins + '|' + plugin.name + ':' + plugin.version;
+                }
+            }else{
+                activeInfo.settings.misc.installedPlugins = plugin.name + ':' + plugin.version;
+            }
+            loadMarketplace('plugins');
+            message('Plugin Installed',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
         }else{
-            message('Path Error',' Path is not writable',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-        }*/
-        message('Plugin Installed',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
+            message('Install Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
+        }
     }).fail(function(xhr) {
+        message('Install Failed',plugin.name,activeInfo.settings.notifications.position,"#FFF","warning","5000");
         console.error("Organizr Function: Connection Failed");
     });
 
