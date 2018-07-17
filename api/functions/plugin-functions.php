@@ -37,7 +37,7 @@ function installPlugin($plugin)
 		$installedPluginsNew = $name . ':' . $version;
 	}
 	updateConfig(array('installedPlugins' => $installedPluginsNew));
-	return true;
+	return 'Success!@!' . $installedPluginsNew;
 }
 
 function removePlugin($plugin)
@@ -77,5 +77,5 @@ function removePlugin($plugin)
 		$installedPluginsNew = '';
 	}
 	updateConfig(array('installedPlugins' => $installedPluginsNew));
-	return true;
+	return 'Success!@!' . $installedPluginsNew;
 }

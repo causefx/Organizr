@@ -794,7 +794,6 @@ function loadMarketplace(type){
                 break;
             default:
         }
-        console.log(json);
     }).fail(function(xhr) {
         console.error("Organizr Function: Github Connection Failed");
     });
@@ -962,37 +961,14 @@ function removePlugin(plugin=null){
         return false;
     }
     message('Removing Plugin',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
-    console.log(plugin);
-    var installedPluginsList = [];
-    var installedPlugins = [];
     plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder);
     organizrAPI('POST','api/?v1/plugin/remove',{plugin:plugin}).success(function(data) {
         var html = JSON.parse(data);
-        console.log(html);
-        if(html.data == true){
-            if(activeInfo.settings.misc.installedPlugins !== ''){
-                installedPlugins = activeInfo.settings.misc.installedPlugins.split("|");
-                $.each(installedPlugins, function(i,v) {
-                    var plugin = v.split(":");
-                    installedPluginsList[plugin[0]] = plugin[1];
-                });
-                if(typeof installedPluginsList[plugin.name] !== 'undefined'){
-                    $.each(installedPluginsList, function(i,v) {
-                        if(i !== plugin.name){
-                            if(installedPluginsListNew == ''){
-                                installedPluginsListNew += i+':'+v;
-                            }else{
-                                installedPluginsListNew += '|'+i+':'+v;
-                            }
-                        }
-                    });
-                    activeInfo.settings.misc.installedPlugins = installedPluginsListNew;
-                }
-            }else{
-                activeInfo.settings.misc.installedPlugins = '';
-            }
+        if(html.data.substr(0, 7) == 'Success'){
+            var newPlugins = html.data.split('!@!');
+            activeInfo.settings.misc.installedPlugins = newPlugins[1];
             loadMarketplace('plugins');
-            message('Plugin Removed',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
+            message(plugin.name+' Removed','Please Click Plugins Above to refresh',activeInfo.settings.notifications.position,"#FFF","success","5000");
         }else{
             message('Remove Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
         }
@@ -1006,39 +982,17 @@ function installPlugin(plugin=null){
         return false;
     }
     message('Installing Plugin',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
-    console.log(plugin);
     var installedPluginsList = [];
     var installedPluginsListNew = '';
     var installedPlugins = [];
     plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder);
     organizrAPI('POST','api/?v1/plugin/install',{plugin:plugin}).success(function(data) {
         var html = JSON.parse(data);
-        console.log(html);
-        if(html.data == true){
-            if(activeInfo.settings.misc.installedPlugins !== ''){
-                installedPlugins = activeInfo.settings.misc.installedPlugins.split("|");
-                $.each(installedPlugins, function(i,v) {
-                    var plugin = v.split(":");
-                    installedPluginsList[plugin[0]] = plugin[1];
-                });
-                if(typeof installedPluginsList[plugin.name] !== 'undefined'){
-                    installedPluginsList[plugin.name] = plugin.version;
-                    $.each(installedPluginsList, function(i,v) {
-                        if(installedPluginsListNew == ''){
-                            installedPluginsListNew += i+':'+v;
-                        }else{
-                            installedPluginsListNew += '|'+i+':'+v;
-                        }
-                    });
-                    activeInfo.settings.misc.installedPlugins = installedPluginsListNew;
-                }else{
-                    activeInfo.settings.misc.installedPlugins = activeInfo.settings.misc.installedPlugins + '|' + plugin.name + ':' + plugin.version;
-                }
-            }else{
-                activeInfo.settings.misc.installedPlugins = plugin.name + ':' + plugin.version;
-            }
+        if(html.data.substr(0, 7) == 'Success'){
+            var newPlugins = html.data.split('!@!');
+            activeInfo.settings.misc.installedPlugins = newPlugins[1];
             loadMarketplace('plugins');
-            message('Plugin Installed',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
+            message(plugin.name+' Installed','Please Click Plugins Above to refresh',activeInfo.settings.notifications.position,"#FFF","success","5000");
         }else{
             message('Install Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
         }
@@ -1046,21 +1000,6 @@ function installPlugin(plugin=null){
         message('Install Failed',plugin.name,activeInfo.settings.notifications.position,"#FFF","warning","5000");
         console.error("Organizr Function: Connection Failed");
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 function pluginStatus(name=null,version=null){
     var installedPlugins = [];
