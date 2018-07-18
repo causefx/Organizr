@@ -1062,6 +1062,9 @@ $(document).on('change keydown', '.addFormTick :input', function(e) {
     if($(this).hasClass('notifyPositionChanger')){
         activeInfo.settings.notifications.position = value;
     }
+    if($(this).hasClass('authDebug')){
+        activeInfo.settings.misc.authDebug = value;
+    }
 });
 //DELETE IMAGE
 $(document).on("click", ".deleteImage", function () {

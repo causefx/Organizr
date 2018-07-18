@@ -553,7 +553,8 @@ function getSettingsMain()
 				'name' => 'authDebug',
 				'label' => 'Nginx Auth Debug',
 				'help' => 'Important! Do not keep this enabled for too long as this opens up Authentication while testing.',
-				'value' => $GLOBALS['authDebug']
+				'value' => $GLOBALS['authDebug'],
+				'class' => 'authDebug'
 			)
 		),
 		'Ping' => array(

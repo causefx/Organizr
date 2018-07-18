@@ -817,7 +817,9 @@ function loadMarketplacePluginsItems(plugins){
                     </div>
                 </td>
                 <td>`+i+`
-                    <br><span class="text-muted">`+v.version+`</span></td>
+                    <br><span class="text-muted">`+v.version+`</span>
+                    <br><span class="text-muted">`+v.author+`</span>
+                </td>
                 <td>`+v.category+`</td>
                 <td>`+v.status+`</td>
                 <td style="text-align:center"><button type="button" onclick='aboutPlugin(`+JSON.stringify(v)+`);' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-plugin-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
@@ -1687,7 +1689,6 @@ function buildTabTypeSelect(tabID, typeID){
 		}
 		typeSelect += '<option '+selected+' value="'+v.type_id+'">'+v.type+'</option>';
 	});
-	console.log(tabID);
 	return '<td><select name="tab['+tabID+'].type" class="form-control tabTypeSelect">'+typeSelect+'</select></td>';
 }
 function buildTabCategorySelect(array,tabID, categoryID){
