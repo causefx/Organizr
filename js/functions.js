@@ -2640,6 +2640,7 @@ function buildStreamItem(array,source){
 		var width = 100;
 		var bg = '';
 		count++;
+        v.nowPlayingImageURL = (v.useImage) ? v.useImage : v.nowPlayingImageURL;
 		switch (v.type) {
 			case 'music':
 				icon = 'icon-music-tone-alt';
