@@ -52,36 +52,4 @@ php_errors.log
 # =========================
 # Organizr files
 # =========================
-databaseLocation.ini.php
-homepageSettings.ini.php
-loginLog.json
-custom.css
-_config.yml
-org.log
-org*.log
-test.php
-users.db
-speedtest.db
-chatpack.db
-config/cacert.pem
-config/config.php
-config/config*.bak.php
-config/users/
-config/users
-config/users*.db
-config/users*.bak.db
-config/tmp/*
-images/cache/*
-backups/*
-backups/
-backups
-test*.php
-tracy/
-logs/
-debug.php
-OrganizrV2/*
-orgv2/*
-test.php
-organizrLoginLog.json
-organizrLog.json
-api/config/config*
+.idea

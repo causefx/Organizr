@@ -2,7 +2,7 @@
   "Test Plugin": {
     "author": "CauseFX",
     "category": "Testing",
-    "description": "Some basic shit outlying what this shit does",
+    "description": "Do not use!!! This is just a test! Some basic shit outlying what this shit does",
     "icon": "https://pbs.twimg.com/profile_images/469017630796296193/R-bEN4UP.png",
     "contact": "causefx@organizr.app",
     "website": "https://organizr.app",
@@ -10,6 +10,7 @@
     "release_date": "2018-07-12",
     "last_updated": "2018-07-12",
     "github_folder": "test",
+    "license": "personal,business",
     "files": {
       "/": "test.pdf",
       "/plugins/images/test": "test.png",
@@ -31,6 +32,7 @@
     "release_date": "2018-07-12",
     "last_updated": "2018-07-17",
     "github_folder": "ngxc",
+    "license": "personal,business",
     "files": {
       "/plugins/images": "ngxc.png",
 	  "/api/plugins": "ngxc.php",
