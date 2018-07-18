@@ -27,9 +27,9 @@
     "icon": "https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/ngxc/plugins/images/ngxc.png",
     "contact": null,
     "website": "https://github.com/vertig0ne/organizr-ngxc/issues",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "release_date": "2018-07-12",
-    "last_updated": "2018-07-12",
+    "last_updated": "2018-07-17",
     "github_folder": "ngxc",
     "files": {
       "/plugins/images": "ngxc.png",
