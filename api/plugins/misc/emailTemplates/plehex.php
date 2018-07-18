@@ -136,7 +136,7 @@ $email = '
 			</tr>
 		</tbody>
 	</table>
-	<table bgcolor="#404952" border="0" cellpadding="0" cellspacing="0" class="100p" style="background-color: #404952; width: 100%;" width="100%">
+	<table bgcolor="#404952" border="0" cellpadding="0" cellspacing="0" class="100p" style="background-color: #404952; min-width: 100%;" width="100%">
 		<tbody>
 			<tr>
 				<td align="center" class="container-mobile" style="padding: 20px 25px 0px 25px;" valign="top">
@@ -155,7 +155,7 @@ $email = '
 			</tr>
 		</tbody>
 	</table>
-	<table bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" class="100p" style="background-color: #ffffff; width: 100%;" width="100%">
+	<table bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" class="100p" style="background-color: #ffffff; min-width: 100%;" width="100%">
 		<tbody>
 			<tr>
 				<td align="center" class="container-mobile-flush" style="padding-top: 60px; padding-right: 25px; padding-left: 25px;" valign="top">
@@ -171,7 +171,7 @@ $email = '
 			</tr>
 		</tbody>
 	</table>
-	<table bgcolor="#3F4245" border="0" cellpadding="0" cellspacing="0" class="100p" style="background-color: #3f4245; width: 100%;" width="100%">
+	<table bgcolor="#3F4245" border="0" cellpadding="0" cellspacing="0" class="100p" style="background-color: #3f4245; min-width: 100%;" width="100%">
 		<tbody>
 			<tr>
 				<td align="center" class="container-mobile" style="padding: 60px 25px 60px 25px;" valign="top">
