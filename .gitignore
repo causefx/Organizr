@@ -107,3 +107,29 @@ plugins/images/cache/*.jpg
 testdata*
 strings.txt
 strings.php
+# =========================
+# Plugin files
+# =========================
+api/plugins/*
+!api/plugins/invites.php
+!api/plugins/api/invites.php
+!api/plugins/config/invites.php
+!api/plugins/js/invites.js
+!api/plugins/php-mailer.php
+!api/plugins/api/php-mailer.php
+!api/plugins/config/php-mailer.php
+!api/plugins/js/php-mailer.js
+!api/plugins/speedTest.php
+!api/plugins/api/speedTest.php
+!api/plugins/config/speedTest.php
+!api/plugins/js/speedTest.js
+!api/plugins/misc/emailTemplates/default.php
+!api/plugins/misc/emailTemplates/gray.php
+!api/plugins/misc/emailTemplates/light.php
+!api/plugins/misc/emailTemplates/plehex.php
+!api/plugins/misc/speedTest/empty.php
+!api/plugins/misc/speedTest/garbage.php
+!api/plugins/misc/speedTest/getIP.php
+!api/plugins/misc/speedTest/telemetry.php
+!api/plugins/misc/speedTest/telemetry_settings.php
+!api/plugins/misc/speedTest/speedtest_worker.min.js
