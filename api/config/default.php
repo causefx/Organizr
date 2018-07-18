@@ -170,5 +170,6 @@ return array(
 	'lockoutMinAuth' => '1',
 	'themeInstalled' => '',
 	'themeVersion' => '',
-	'installedPlugins' => ''
+	'installedPlugins' => '',
+	'authDebug' => false
 );

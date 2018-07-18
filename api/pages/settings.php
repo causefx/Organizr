@@ -4,6 +4,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 <script>
     (function() {
         updateCheck();
+        authDebugCheck();
         [].slice.call(document.querySelectorAll(\'.sttabs\')).forEach(function(el) {
             new CBPFWTabs(el);
         });
@@ -34,7 +35,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                         <li onclick="changeSettingsMenu(\'Settings::User Management\')"><a href="#settings-main-user-management" class="sticon ti-user"><span lang="en">User Management</span></a></li>
                         <li onclick="changeSettingsMenu(\'Settings::Image Manager\');loadSettingsPage(\'api/?v1/settings/image/manager/view\',\'#settings-image-manager-view\',\'Image Viewer\');"><a href="#settings-main-image-manager" class="sticon ti-image"><span lang="en">Image Manager</span></a></li>
     					<li onclick="changeSettingsMenu(\'Settings::Plugins\');loadSettingsPage(\'api/?v1/settings/plugins\',\'#settings-main-plugins\',\'Plugins\');"><a href="#settings-main-plugins" class="sticon ti-plug"><span lang="en">Plugins</span></a></li>
-                        <li onclick="changeSettingsMenu(\'Settings::System Settings\')"><a href="#settings-main-system-settings" class="sticon ti-settings"><span lang="en">System Settings</span></a></li>
+                        <li onclick="changeSettingsMenu(\'Settings::System Settings\');authDebugCheck();"><a href="#settings-main-system-settings" class="sticon ti-settings"><span lang="en">System Settings</span></a></li>
                     </ul>
                 </nav>
                 <div class="content-wrap">

@@ -603,10 +603,11 @@ function buildFormItem(item){
 	var attr = (item.attr) ? ' '+item.attr : '';
 	var disabled = (item.disabled) ? ' disabled' : '';
 	var href = (item.href) ? ' href="'+item.href+'"' : '';
-	var smallLabel = (item.smallLabel) ? '<label langl="en">'+item.smallLabel+'</label>' : '';
-	var pwd1 = createRandomString(3);
-	var pwd2 = createRandomString(3);
-	var pwd3 = createRandomString(3);
+	var pwd1 = createRandomString(6);
+	var pwd2 = createRandomString(6);
+	var pwd3 = createRandomString(6);
+	var helpInfo = (item.help) ? '<div class="collapse" id="help-info-'+item.name+'">'+item.help+'</div>' : '';
+    var smallLabel = (item.smallLabel) ? '<label><span lang="en">'+item.smallLabel+'</span>`+helpTip+`</label>'+helpInfo : ''+helpInfo;
 	var pwgMgr = `
 	<input name="disable-pwd-mgr-`+pwd1+`" type="password" id="disable-pwd-mgr-`+pwd1+`" style="display: none;" value="disable-pwd-mgr-`+pwd1+`" />
 	<input name="disable-pwd-mgr-`+pwd2+`" type="password" id="disable-pwd-mgr-`+pwd2+`" style="display: none;" value="disable-pwd-mgr-`+pwd2+`" />
@@ -1124,11 +1125,13 @@ function buildFormGroup(array){
                 if (count % 2 !== 0) {
                     group += '<div class="row start">';
                 }
+                var helpID = '#help-info-'+v.name;
+                var helpTip = (v.help) ? '<a class="get-code" data-toggle="collapse" href="'+helpID+'" aria-expanded="true"><i class="fa fa-question-circle text-primary" title="Help" data-toggle="tooltip"></i></a>' : '';
                 group += `
 					<!-- INPUT BOX -->
 					<div class="col-md-`+override+` p-b-10">
 						<div class="form-group">
-							<label class="control-label col-md-12" lang="en">`+v.label+`</label>
+							<label class="control-label col-md-12"><span lang="en">`+v.label+`</span>`+helpTip+`</label>
 							<div class="col-md-12">
 								`+buildFormItem(v)+`
 							</div>
@@ -4747,6 +4750,11 @@ function blockDev(e) {
     var evtobj = window.event ? event : e;
     if (evtobj.keyCode == 73 && evtobj.shiftKey && evtobj.ctrlKey){
         evtobj.preventDefault();
+    }
+}
+function authDebugCheck(){
+    if(activeInfo.settings.misc.authDebug == true){
+        message('REMINDER','Auth Debug is still enabled',activeInfo.settings.notifications.position,'#FFF','warning','20000');
     }
 }
 function lock(){

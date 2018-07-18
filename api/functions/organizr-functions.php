@@ -68,6 +68,7 @@ function organizrSpecialSettings()
 			'themeInstalled' => $GLOBALS['themeInstalled'],
 			'themeVersion' => $GLOBALS['themeVersion'],
 			'return' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false,
+			'authDebug' => $GLOBALS['authDebug']
 		)
 	);
 }
@@ -546,6 +547,13 @@ function getSettingsMain()
 				'name' => 'hideRegistration',
 				'label' => 'Hide Registration',
 				'value' => $GLOBALS['hideRegistration']
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'authDebug',
+				'label' => 'Nginx Auth Debug',
+				'help' => 'Important! Do not keep this enabled for too long as this opens up Authentication while testing.',
+				'value' => $GLOBALS['authDebug']
 			)
 		),
 		'Ping' => array(
@@ -1137,7 +1145,7 @@ function editPlugins($array)
 
 function auth()
 {
-	$debug = false; // CAREFUL WHEN SETTING TO TRUE AS THIS OPENS AUTH UP
+	$debug = $GLOBALS['authDebug']; // CAREFUL WHEN SETTING TO TRUE AS THIS OPENS AUTH UP
 	$ban = isset($_GET['ban']) ? strtoupper($_GET['ban']) : "";
 	$whitelist = isset($_GET['whitelist']) ? $_GET['whitelist'] : false;
 	$blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
