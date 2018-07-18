@@ -1019,6 +1019,12 @@ $(document).on("click", ".changeDefaultCategory", function () {
 $(document).on("click", ".saveCss", function () {
     $('.cssTextarea').val(cssEditor.getValue()).trigger('change');
 });
+$(document).on("click", ".saveThemeCss", function () {
+    $('.cssThemeTextarea').val(cssThemeEditor.getValue()).trigger('change');
+});
+$(document).on("click", ".saveJava", function () {
+    $('.javaTextarea').val(javaEditor.getValue()).trigger('change');
+});
 $(document).on("click", ".savecustomHTMLoneTextarea", function () {
     $('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue()).trigger('change');
 });

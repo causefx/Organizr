@@ -546,7 +546,7 @@ function getSettingsMain()
 				'type' => 'switch',
 				'name' => 'hideRegistration',
 				'label' => 'Hide Registration',
-				'value' => $GLOBALS['hideRegistration']
+				'value' => $GLOBALS['hideRegistration'],
 			),
 			array(
 				'type' => 'switch',
@@ -751,6 +751,8 @@ function loadAppearance()
 	$appearance['buttonHoverColor'] = $GLOBALS['buttonHoverColor'];
 	$appearance['loginWallpaper'] = $GLOBALS['loginWallpaper'];
 	$appearance['customCss'] = $GLOBALS['customCss'];
+	$appearance['customThemeCss'] = $GLOBALS['customThemeCss'];
+	$appearance['customJava'] = $GLOBALS['customJava'];
 	return $appearance;
 }
 
@@ -1018,7 +1020,41 @@ function getCustomizeAppearance()
 					'placeholder' => 'No <style> tags needed',
 					'attr' => 'rows="10"',
 				),
-			)
+			),
+			'Theme CSS' => array(
+				array(
+					'type' => 'html',
+					'override' => 12,
+					'label' => 'Theme CSS [Can replace colors from above]',
+					'html' => '<button type="button" class="hidden saveCssTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeCSSEditor" style="height:300px">' . $GLOBALS['customThemeCss'] . '</div>'
+				),
+				array(
+					'type' => 'textbox',
+					'name' => 'customThemeCss',
+					'class' => 'hidden cssThemeTextarea',
+					'label' => '',
+					'value' => $GLOBALS['customThemeCss'],
+					'placeholder' => 'No <style> tags needed',
+					'attr' => 'rows="10"',
+				),
+			),
+			'Custom Javascript' => array(
+				array(
+					'type' => 'html',
+					'override' => 12,
+					'label' => 'Custom Javascript',
+					'html' => '<button type="button" class="hidden saveJava btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customJavaEditor" style="height:300px">' . $GLOBALS['customJava'] . '</div>'
+				),
+				array(
+					'type' => 'textbox',
+					'name' => 'customJava',
+					'class' => 'hidden javaTextarea',
+					'label' => '',
+					'value' => $GLOBALS['customJava'],
+					'placeholder' => 'No <script> tags needed',
+					'attr' => 'rows="10"',
+				),
+			),
 		);
 	}
 }

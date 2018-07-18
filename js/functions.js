@@ -606,7 +606,7 @@ function buildFormItem(item){
 	var pwd1 = createRandomString(6);
 	var pwd2 = createRandomString(6);
 	var pwd3 = createRandomString(6);
-	var helpInfo = (item.help) ? '<div class="collapse" id="help-info-'+item.name+'">'+item.help+'</div>' : '';
+	var helpInfo = (item.help) ? '<div class="collapse" id="help-info-'+item.name+'"><blockquote>'+item.help+'</blockquote></div>' : '';
     var smallLabel = (item.smallLabel) ? '<label><span lang="en">'+item.smallLabel+'</span>`+helpTip+`</label>'+helpInfo : ''+helpInfo;
 	var pwgMgr = `
 	<input name="disable-pwd-mgr-`+pwd1+`" type="password" id="disable-pwd-mgr-`+pwd1+`" style="display: none;" value="disable-pwd-mgr-`+pwd1+`" />
@@ -1128,7 +1128,7 @@ function buildFormGroup(array){
                     group += '<div class="row start">';
                 }
                 var helpID = '#help-info-'+v.name;
-                var helpTip = (v.help) ? '<a class="get-code" data-toggle="collapse" href="'+helpID+'" aria-expanded="true"><i class="fa fa-question-circle text-primary" title="Help" data-toggle="tooltip"></i></a>' : '';
+                var helpTip = (v.help) ? '<sup><a class="help-tip" data-toggle="collapse" href="'+helpID+'" aria-expanded="true"><i class="m-l-5 fa fa-question-circle text-info" title="Help" data-toggle="tooltip"></i></a></sup>' : '';
                 group += `
 					<!-- INPUT BOX -->
 					<div class="col-md-`+override+` p-b-10">
@@ -1200,6 +1200,24 @@ function buildCustomizeAppearance(){
             $('.cssTextarea').val(cssEditor.getValue());
             $('#customize-appearance-form-save').removeClass('hidden');
 		});
+        cssThemeEditor = ace.edit("customThemeCSSEditor");
+        var CssThemeMode = ace.require("ace/mode/css").Mode;
+        cssThemeEditor.session.setMode(new CssThemeMode());
+        cssThemeEditor.setTheme("ace/theme/idle_fingers");
+        cssThemeEditor.setShowPrintMargin(false);
+        cssThemeEditor.session.on('change', function(delta) {
+            $('.cssThemeTextarea').val(cssThemeEditor.getValue());
+            $('#customize-appearance-form-save').removeClass('hidden');
+        });
+        javaEditor = ace.edit("customJavaEditor");
+        var JavaMode = ace.require("ace/mode/javascript").Mode;
+        javaEditor.session.setMode(new JavaMode());
+        javaEditor.setTheme("ace/theme/idle_fingers");
+        javaEditor.setShowPrintMargin(false);
+        javaEditor.session.on('change', function(delta) {
+            $('.javaTextarea').val(javaEditor.getValue());
+            $('#customize-appearance-form-save').removeClass('hidden');
+        });
 		$("input.pick-a-color").ColorPickerSliders({
 			placement: 'bottom',
 			color: '#987654',
@@ -2480,6 +2498,12 @@ function loadAppearance(appearance){
 	if(appearance.customCss !== ''){
 		$('#custom-css').html(appearance.customCss);
 	}
+    if(appearance.customThemeCss !== ''){
+        $('#custom-theme-css').html(appearance.customThemeCss);
+    }
+    if(appearance.customJava !== ''){
+        $('#custom-javascript').html(appearance.customJava);
+    }
 
 }
 function clearForm(form){

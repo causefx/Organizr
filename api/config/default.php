@@ -146,6 +146,7 @@ return array(
 	'calendarTimeFormat' => 'h(:mm)t',
 	'calendarLimit' => '1000',
 	'customCss' => '',
+	'customThemeCss' => '',
 	'customHTMLone' => '',
 	'customHTMLtwo' => '',
 	'mediaSearch' => false,
@@ -171,5 +172,6 @@ return array(
 	'themeInstalled' => '',
 	'themeVersion' => '',
 	'installedPlugins' => '',
-	'authDebug' => false
+	'authDebug' => false,
+	'customJava' => ''
 );
