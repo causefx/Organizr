@@ -68,7 +68,8 @@ function organizrSpecialSettings()
 			'themeInstalled' => $GLOBALS['themeInstalled'],
 			'themeVersion' => $GLOBALS['themeVersion'],
 			'return' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false,
-			'authDebug' => $GLOBALS['authDebug']
+			'authDebug' => $GLOBALS['authDebug'],
+			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen']
 		)
 	);
 }
@@ -786,6 +787,12 @@ function getCustomizeAppearance()
 					'name' => 'loginWallpaper',
 					'label' => 'Login Wallpaper',
 					'value' => $GLOBALS['loginWallpaper']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'minimalLoginScreen',
+					'label' => 'Minimal Login Screen',
+					'value' => $GLOBALS['minimalLoginScreen']
 				)
 			),
 			'Options' => array(

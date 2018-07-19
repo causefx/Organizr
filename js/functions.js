@@ -275,6 +275,11 @@ function swapDisplay(type){
 			$('.iFrame-listing').addClass('hidden').removeClass('show');
 			$('.internal-listing').addClass('hidden').removeClass('show');
 			$('.login-area').addClass('show').removeClass('hidden');
+			if(activeInfo.settings.misc.minimalLoginScreen == true){
+                $('.sidebar').addClass('hidden');
+                $('.navbar').addClass('hidden');
+                $('#pagewrapper').addClass('hidden');
+            }
 			break;
 		default:
 	}

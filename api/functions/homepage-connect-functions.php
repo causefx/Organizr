@@ -311,7 +311,7 @@ function resolvePlexItem($item)
 		case 'clip':
 			$useImage = (isset($item['live']) ? "plugins/images/cache/livetv.png" : null);
 			$plexItem['type'] = 'clip';
-			$plexItem['title'] = (string)$item['title'];
+			$plexItem['title'] = (isset($item['live']) ? 'Live TV' : (string)$item['title']);
 			$plexItem['summary'] = (string)$item['summary'];
 			$plexItem['ratingKey'] = (string)$item['parentRatingKey'];
 			$plexItem['thumb'] = (string)$item['thumb'];

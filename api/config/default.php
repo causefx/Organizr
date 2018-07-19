@@ -173,5 +173,6 @@ return array(
 	'themeVersion' => '',
 	'installedPlugins' => '',
 	'authDebug' => false,
-	'customJava' => ''
+	'customJava' => '',
+	'minimalLoginScreen' => false
 );

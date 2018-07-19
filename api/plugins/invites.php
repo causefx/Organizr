@@ -267,7 +267,7 @@ function inviteAction($username, $action = null, $type = null)
 							$response = Requests::post($url, $headers, json_encode($data), array());
 							break;
 						case 'unshare':
-							$id = (is_numeric($username) ? $id : convertPlexName($username, "id"));
+							$id = (is_numeric($username) ? $username : convertPlexName($username, "id"));
 							$url = $url . $id;
 							$response = Requests::delete($url, $headers, array());
 							break;
@@ -286,6 +286,10 @@ function inviteAction($username, $action = null, $type = null)
 								break;
 							case 401:
 								writeLog('error', 'Plex Invite Function - Incorrect Token', 'SYSTEM');
+								return false;
+								break;
+							case 404:
+								writeLog('error', 'Plex Invite Function - Libraries not setup correct [' . $GLOBALS['INVITES-plexLibraries'] . ']', 'SYSTEM');
 								return false;
 								break;
 							default:
