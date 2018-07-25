@@ -74,7 +74,7 @@ allIcons().success(function(data) {
         </div>
         <div class="form-group">
             <label class="control-label" for="new-tab-form-inputPingURLNew" lang="en">Ping URL</label>
-            <input type="text" class="form-control" id="new-tab-form-inputPingURLNew" name="pingURL"  placeholde="host/ip:port" rrequired="">
+            <input type="text" class="form-control" id="new-tab-form-inputPingURLNew" name="pingURL"  placeholder="host/ip:port">
         </div>
         <div class="row">
 	        <div class="form-group col-lg-6">
@@ -117,7 +117,7 @@ allIcons().success(function(data) {
         </div>
         <div class="form-group">
             <label class="control-label" for="edit-tab-form-pingURL" lang="en">Ping URL</label>
-            <input type="text" class="form-control" id="edit-tab-form-pingURL" name="pingURL" placeholde="host/ip:port" required="">
+            <input type="text" class="form-control" id="edit-tab-form-pingURL" name="pingURL" placeholder="host/ip:port">
         </div>
         <div class="row">
 	        <div class="form-group col-lg-6">

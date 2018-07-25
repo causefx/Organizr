@@ -1688,7 +1688,7 @@ function buildTabGroupSelect(array, tabID, groupID){
 	});
 	return '<td><select name="tab['+tabID+'].group_id" class="form-control tabGroupSelect">'+groupSelect+'</select></td>';
 }
-function buildTabTypeSelect(tabID, typeID){
+function buildTabTypeSelect(tabID, typeID, disabled){
 	var array = [
 		{
 			'type_id':0,
@@ -1712,7 +1712,7 @@ function buildTabTypeSelect(tabID, typeID){
 		}
 		typeSelect += '<option '+selected+' value="'+v.type_id+'">'+v.type+'</option>';
 	});
-	return '<td><select name="tab['+tabID+'].type" class="form-control tabTypeSelect">'+typeSelect+'</select></td>';
+	return '<td><select name="tab['+tabID+'].type" class="form-control tabTypeSelect" '+disabled+'>'+typeSelect+'</select></td>';
 }
 function buildTabCategorySelect(array,tabID, categoryID){
 	var categorySelect = '';
@@ -1834,6 +1834,7 @@ function buildTabEditorItem(array){
 	$.each(array.tabs, function(i,v) {
 		var deleteDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : 'deleteTab';
 		var buttonDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : '';
+        var typeDisabled = v.url.indexOf('/?v1/') > 0 ? 'disabled' : '';
 		tabList += `
 		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
@@ -1859,7 +1860,7 @@ function buildTabEditorItem(array){
 			<td>`+v.name+`</td>
 			`+buildTabCategorySelect(array.categories,v.id, v.category_id)+`
 			`+buildTabGroupSelect(array.groups,v.id, v.group_id)+`
-			`+buildTabTypeSelect(v.id, v.type)+`
+			`+buildTabTypeSelect(v.id, v.type, typeDisabled)+`
 			<td style="text-align:center"><div class="radio radio-purple"><input onclick="radioLoop(this);" type="radio" class="defaultSwitch" id="tab[`+v.id+`].default" name="tab[`+v.id+`].default" value="true" `+tof(v.default,'c')+`><label for="tab[`+v.id+`].default"></label></div></td>
 
 			<td style="text-align:center"><input `+buttonDisabled+` type="checkbox" class="js-switch enabledSwitch `+buttonDisabled+`" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].enabled" value="true" `+tof(v.enabled,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].enabled" value="false"></td>
