@@ -15,11 +15,11 @@ configLazy();
 if (isset($GLOBALS['dbLocation'])) {
 	$GLOBALS['organizrLog'] = $GLOBALS['dbLocation'] . 'organizrLog.json';
 	$GLOBALS['organizrLoginLog'] = $GLOBALS['dbLocation'] . 'organizrLoginLog.json';
-	//Cookie name
-	$GLOBALS['cookieName'] = 'organizr_token_' . hash('sha256', $GLOBALS['organizrAPI']);
 	//Upgrade Check
 	upgradeCheck();
 }
+// Cookie name
+$GLOBALS['cookieName'] = isset($GLOBALS['organizrAPI']) ? 'organizr_token_' . hash('sha256', $GLOBALS['organizrAPI']) : 'organizr_token_temp';
 // Validate Token if set and set guest if not - sets GLOBALS
 getOrganizrUserToken();
 // Include all pages files
