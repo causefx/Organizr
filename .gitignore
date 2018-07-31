@@ -107,6 +107,10 @@ plugins/images/cache/*.jpg
 testdata*
 strings.txt
 strings.php
+plugins/theme_files/*
+plugins/plugin_files/*
+!plugins/theme_files/index.html
+!plugins/plugin_files/index.html
 # =========================
 # Plugin files
 # =========================
