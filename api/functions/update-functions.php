@@ -94,7 +94,7 @@ function downloadFileToPath($from, $to, $path)
 {
 	ini_set('max_execution_time', 0);
 	set_time_limit(0);
-	if (@!mkdir($path)) {
+	if (@!mkdir($path, 0777, true)) {
 		//writeLog("error", "organizr could not create upgrade folder");
 	}
 	$file = fopen($from, 'rb');

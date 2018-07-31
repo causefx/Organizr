@@ -1123,7 +1123,7 @@ function installTheme(theme=null){
     organizrAPI('POST','api/?v1/theme/install',{theme:theme}).success(function(data) {
         var html = JSON.parse(data);
         console.log(data);
-        if(html.data.substr(0, 7) == 'Success'){
+        if(html.data == true){
             activeInfo.settings.misc.themeInstalled = theme.name;
             activeInfo.settings.misc.themeVersion = theme.version;
             loadMarketplace('themes');
