@@ -65,8 +65,7 @@ function organizrSpecialSettings()
 		),
 		'misc' => array(
 			'installedPlugins' => $GLOBALS['installedPlugins'],
-			'themeInstalled' => $GLOBALS['themeInstalled'],
-			'themeVersion' => $GLOBALS['themeVersion'],
+			'installedThemes' => $GLOBALS['installedThemes'],
 			'return' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false,
 			'authDebug' => $GLOBALS['authDebug'],
 			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen']

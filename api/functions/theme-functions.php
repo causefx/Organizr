@@ -14,13 +14,30 @@ function installTheme($theme)
 			return false;
 		}
 	}
-	updateConfig(
-		array(
-			'themeInstalled' => $name,
-			'themeVersion' => $version,
-		)
-	);
-	return true;
+	if ($GLOBALS['installedThemes'] !== '') {
+		$installedThemes = explode('|', $GLOBALS['installedThemes']);
+		foreach ($installedThemes as $k => $v) {
+			$themes = explode(':', $v);
+			$installedThemesList[$themes[0]] = $themes[1];
+		}
+		if (isset($installedThemesList[$name])) {
+			$installedThemesList[$name] = $version;
+			$installedThemesNew = '';
+			foreach ($installedThemesList as $k => $v) {
+				if ($installedThemesNew == '') {
+					$installedThemesNew .= $k . ':' . $v;
+				} else {
+					$installedThemesNew .= '|' . $k . ':' . $v;
+				}
+			}
+		} else {
+			$installedThemesNew = $GLOBALS['installedThemes'] . '|' . $name . ':' . $version;
+		}
+	} else {
+		$installedThemesNew = $name . ':' . $version;
+	}
+	updateConfig(array('installedThemes' => $installedThemesNew));
+	return 'Success!@!' . $installedThemesNew;
 }
 
 function removeTheme($theme)

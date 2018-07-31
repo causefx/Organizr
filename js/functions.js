@@ -840,7 +840,7 @@ function loadMarketplaceThemesItems(themes){
     var themeList = '';
     $.each(themes, function(i,v) {
         if(v.icon == null || v.icon == ''){ v.icon = 'test.png'; }
-        v.status = pluginStatus(i,v.version);
+        v.status = themeStatus(i,v.version);
         var installButton = (v.status == 'Update Available') ? 'fa fa-download' : 'fa fa-plus';
         var removeButton = (v.status == 'Not Installed') ? 'disabled' : '';
         v.name = i;
@@ -1093,9 +1093,6 @@ function installPlugin(plugin=null){
         return false;
     }
     message('Installing Plugin',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
-    var installedPluginsList = [];
-    var installedPluginsListNew = '';
-    var installedPlugins = [];
     plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder,'plugins');
     organizrAPI('POST','api/?v1/plugin/install',{plugin:plugin}).success(function(data) {
         var html = JSON.parse(data);
@@ -1117,15 +1114,13 @@ function installTheme(theme=null){
         return false;
     }
     message('Installing Theme',theme.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
-    var installedTheme = activeInfo.settings.misc.themeInstalled;
-    var installedThemeVersion = activeInfo.settings.misc.themeVersion;
     theme.downloadList = pluginFileList(theme.files,theme.github_folder,'themes');
     organizrAPI('POST','api/?v1/theme/install',{theme:theme}).success(function(data) {
         var html = JSON.parse(data);
         console.log(data);
-        if(html.data == true){
-            activeInfo.settings.misc.themeInstalled = theme.name;
-            activeInfo.settings.misc.themeVersion = theme.version;
+        if(html.data.substr(0, 7) == 'Success'){
+            var newThemes = html.data.split('!@!');
+            activeInfo.settings.misc.installedThemes = newThemes[1];
             loadMarketplace('themes');
             message(theme.name+' Installed','Please Click Customize Above to refresh',activeInfo.settings.notifications.position,"#FFF","success","5000");
         }else{
@@ -1147,6 +1142,28 @@ function pluginStatus(name=null,version=null){
         });
         if(typeof installedPluginsList[name] !== 'undefined'){
             if(version !== installedPluginsList[name]){
+                return 'Update Available';
+            }else{
+                return 'Up to date';
+            }
+        }else{
+            return 'Not Installed';
+        }
+    }else{
+        return 'Not Installed';
+    }
+}
+function themeStatus(name=null,version=null){
+    var installedThemes = [];
+    var installedThemesList = [];
+    if(activeInfo.settings.misc.installedThemes !== ''){
+        installedThemes = activeInfo.settings.misc.installedThemes.split("|");
+        $.each(installedThemes, function(i,v) {
+            var theme = v.split(":");
+            installedThemesList[theme[0]] = theme[1];
+        });
+        if(typeof installedThemesList[name] !== 'undefined'){
+            if(version !== installedThemesList[name]){
                 return 'Update Available';
             }else{
                 return 'Up to date';

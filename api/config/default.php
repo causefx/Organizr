@@ -172,6 +172,7 @@ return array(
 	'themeInstalled' => '',
 	'themeVersion' => '',
 	'installedPlugins' => '',
+	'installedThemes' => '',
 	'authDebug' => false,
 	'customJava' => '',
 	'customThemeJava' => '',
