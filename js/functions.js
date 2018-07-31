@@ -836,6 +836,38 @@ function loadMarketplacePluginsItems(plugins){
     });
     $('#managePluginTable').html(pluginList);
 }
+function loadMarketplaceThemesItems(themes){
+    var themeList = '';
+    $.each(themes, function(i,v) {
+        if(v.icon == null || v.icon == ''){ v.icon = 'test.png'; }
+        v.status = pluginStatus(i,v.version);
+        var installButton = (v.status == 'Update Available') ? 'fa fa-download' : 'fa fa-plus';
+        var removeButton = (v.status == 'Not Installed') ? 'disabled' : '';
+        v.name = i;
+        themeList += `
+            <tr class="themeManagement" data-name="`+i+`" data-version="`+v.version+`">
+                <td class="text-center el-element-overlay">
+                    <div class="el-card-item p-0">
+                        <div class="el-card-avatar el-overlay-1 m-0">
+                            <img alt="user-img" src="`+v.icon+`" width="45">
+                        </div>
+                    </div>
+                </td>
+                <td>`+i+`
+                    <br><span class="text-muted">`+v.version+`</span>
+                    <br><span class="text-muted">`+v.author+`</span>
+                </td>
+                <td>`+v.category+`</td>
+                <td>`+v.status+`</td>
+                <td style="text-align:center"><button type="button" onclick='aboutTheme(`+JSON.stringify(v)+`);' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-theme-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='installTheme(`+JSON.stringify(v)+`);' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='removeTheme(`+JSON.stringify(v)+`);' class="btn btn-danger btn-outline btn-circle btn-lg" `+removeButton+`><i class="fa fa-trash"></i></button></td>
+            </tr>
+        `;
+
+    });
+    $('#manageThemeTable').html(themeList);
+}
 function aboutPluginImages(images){
     var imageList = '';
     if(Object.keys(images).length !== 0){
@@ -878,7 +910,7 @@ function aboutPluginFiles(fileList){
     });
     return files;
 }
-function pluginFileList(fileList,folder){
+function pluginFileList(fileList,folder,type){
     var files = [];
     $.each(fileList, function(i,v) {
         var splitFiles = v.split('|');
@@ -888,12 +920,83 @@ function pluginFileList(fileList,folder){
             var arrayPush = {
                 "fileName": v,
                 "path": prePath,
-                "githubPath": 'https://raw.githubusercontent.com/causefx/Organizr/v2-plugins/'+folder+prePath+v,
+                "githubPath": 'https://raw.githubusercontent.com/causefx/Organizr/v2-'+type+'/'+folder+prePath+v,
             };
             files.push(arrayPush);
         });
     });
     return files;
+}
+function aboutTheme(theme){
+    var files = aboutPluginFiles(theme.files);
+    console.log(files);
+    console.log(JSON.stringify(files));
+    var imageList = aboutPluginImages(theme.images);
+    var homepageLink = (theme.website !== '' || theme.website !== null) ? 'onclick="window.open(\''+theme.website+'\',\'_blank\');"' : ' ';
+
+    var infoBox = `
+    <div class="row">
+        <div class="col-lg-6 col-sm-12 col-xs-12">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-xs-12">
+                    <div class="white-box p-10" id="aboutThemeScroll">
+                        `+theme.description+`
+                    </div>
+                </div>
+                <div class="clearfix">&nbsp;</div>
+                <div class="col-lg-4 col-sm-4 col-xs-12">
+                    <div class="white-box mouse">
+                        <ul class="list-inline two-part text-center m-b-0">
+                            <li><i class="icon-envelope-open text-info"></i></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-4 col-xs-12">
+                    <div class="white-box mouse" `+homepageLink+`>
+                        <ul class="list-inline two-part text-center m-b-0">
+                            <li><i class="icon-home text-danger"></i></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-4 col-xs-12">
+                    <div class="white-box mouse" onclick="$('.themeFileList').toggleClass('hidden');">
+                        <ul class="list-inline two-part text-center m-b-0">
+                            <li><i class="icon-folder text-purple"></i></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xs-12 themeFileList hidden">
+                    <div id="treeviewTheme" class=""></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-sm-12 col-xs-12">
+            <div class="news-slide m-b-15">
+                <div class="vcarousel slide">
+                    <!-- Carousel items -->
+                    <div class="carousel-inner">
+                        `+imageList+`
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    $('#about-theme-title').html(theme.name+'&nbsp;<small>'+theme.version+'</small>');
+    $('#about-theme-body').html(infoBox);
+    $('.vcarousel').carousel({
+        interval: 3000
+    });
+    $('#treeviewTheme').treeview({
+        levels: 1,
+        expandIcon: 'ti-angle-right',
+        onhoverColor: "rgba(0, 0, 0, 0.05)",
+        selectedBackColor: "#03a9f3",
+        collapseIcon: 'ti-angle-down',
+        data: JSON.stringify(files)
+    });
+    $('#aboutThemeScroll').slimScroll({
+        height: '225px'
+    });
 }
 function aboutPlugin(plugin){
     var files = aboutPluginFiles(plugin.files);
@@ -969,7 +1072,7 @@ function removePlugin(plugin=null){
         return false;
     }
     message('Removing Plugin',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
-    plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder);
+    plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder,'plugins');
     organizrAPI('POST','api/?v1/plugin/remove',{plugin:plugin}).success(function(data) {
         var html = JSON.parse(data);
         if(html.data.substr(0, 7) == 'Success'){
@@ -993,7 +1096,7 @@ function installPlugin(plugin=null){
     var installedPluginsList = [];
     var installedPluginsListNew = '';
     var installedPlugins = [];
-    plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder);
+    plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder,'plugins');
     organizrAPI('POST','api/?v1/plugin/install',{plugin:plugin}).success(function(data) {
         var html = JSON.parse(data);
         if(html.data.substr(0, 7) == 'Success'){
@@ -1001,6 +1104,30 @@ function installPlugin(plugin=null){
             activeInfo.settings.misc.installedPlugins = newPlugins[1];
             loadMarketplace('plugins');
             message(plugin.name+' Installed','Please Click Plugins Above to refresh',activeInfo.settings.notifications.position,"#FFF","success","5000");
+        }else{
+            message('Install Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
+        }
+    }).fail(function(xhr) {
+        message('Install Failed',plugin.name,activeInfo.settings.notifications.position,"#FFF","warning","5000");
+        console.error("Organizr Function: Connection Failed");
+    });
+}
+function installTheme(theme=null){
+    if(theme == null){
+        return false;
+    }
+    message('Installing Theme',theme.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
+    var installedTheme = activeInfo.settings.misc.themeInstalled;
+    var installedThemeVersion = activeInfo.settings.misc.themeVersion;
+    theme.downloadList = pluginFileList(theme.files,theme.github_folder,'themes');
+    organizrAPI('POST','api/?v1/theme/install',{theme:theme}).success(function(data) {
+        var html = JSON.parse(data);
+        console.log(data);
+        if(html.data.substr(0, 7) == 'Success'){
+            activeInfo.settings.misc.themeInstalled = theme.name;
+            activeInfo.settings.misc.themeVersion = theme.version;
+            loadMarketplace('themes');
+            message(theme.name+' Installed','Please Click Customize Above to refresh',activeInfo.settings.notifications.position,"#FFF","success","5000");
         }else{
             message('Install Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
         }
@@ -1221,6 +1348,15 @@ function buildCustomizeAppearance(){
         javaEditor.setShowPrintMargin(false);
         javaEditor.session.on('change', function(delta) {
             $('.javaTextarea').val(javaEditor.getValue());
+            $('#customize-appearance-form-save').removeClass('hidden');
+        });
+        javaThemeEditor = ace.edit("customThemeJavaEditor");
+        var JavaThemeMode = ace.require("ace/mode/javascript").Mode;
+        javaThemeEditor.session.setMode(new JavaThemeMode());
+        javaThemeEditor.setTheme("ace/theme/idle_fingers");
+        javaThemeEditor.setShowPrintMargin(false);
+        javaThemeEditor.session.on('change', function(delta) {
+            $('.javaThemeTextarea').val(javaThemeEditor.getValue());
             $('#customize-appearance-form-save').removeClass('hidden');
         });
 		$("input.pick-a-color").ColorPickerSliders({
@@ -2501,11 +2637,14 @@ function loadAppearance(appearance){
 	if(cssSettings !== ''){
 		$('#user-appearance').html(cssSettings);
 	}
-	if(appearance.customCss !== ''){
-		$('#custom-css').html(appearance.customCss);
-	}
     if(appearance.customThemeCss !== ''){
         $('#custom-theme-css').html(appearance.customThemeCss);
+    }
+    if(appearance.customCss !== ''){
+        $('#custom-css').html(appearance.customCss);
+    }
+    if(appearance.customThemeJava !== ''){
+        $('#custom-theme-javascript').html(appearance.customThemeJava);
     }
     if(appearance.customJava !== ''){
         $('#custom-javascript').html(appearance.customJava);

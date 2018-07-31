@@ -174,5 +174,6 @@ return array(
 	'installedPlugins' => '',
 	'authDebug' => false,
 	'customJava' => '',
+	'customThemeJava' => '',
 	'minimalLoginScreen' => false
 );

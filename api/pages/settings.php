@@ -73,6 +73,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                         <ul class="nav customtab2 nav-tabs" role="tablist">
                             <li onclick="changeSettingsMenu(\'Settings::Customize::Appearance\');loadSettingsPage(\'api/?v1/settings/customize/appearance\',\'#settings-customize-appearance\',\'Customize Appearance\');" role="presentation" class=""><a href="#settings-customize-appearance" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-eye"></i></span><span class="hidden-xs" lang="en">Appearance</span></a>
                             </li>
+                            <li onclick="changeSettingsMenu(\'Settings::Customize::Marketplace\');loadMarketplace(\'themes\');" role="presentation" class=""><a href="#settings-customize-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a></li>
                         </ul>
                         <!-- Tab panes -->
                         <div class="tab-content">
@@ -80,6 +81,31 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                 <h2 lang="en">Loading...</h2>
                                 <div class="clearfix"></div>
                             </div>
+                            <div role="tabpanel" class="tab-pane fade" id="settings-customize-marketplace">
+								<div class="panel bg-org panel-info">
+									<div class="panel-heading">
+										<span lang="en">Theme Marketplace</span>
+									</div>
+									<div class="panel-wrapper collapse in" aria-expanded="true">
+										<div class="table-responsive">
+					                        <table class="table table-hover manage-u-table">
+					                            <thead>
+					                                <tr>
+					                                    <th width="70" class="text-center" lang="en">THEME</th>
+					                                    <th></th>
+					                                    <th lang="en">CATEGORY</th>
+					                                    <th lang="en">STATUS</th>
+					                                    <th lang="en" style="text-align:center">INFO</th>
+					                                    <th lang="en" style="text-align:center">INSTALL</th>
+					                                    <th lang="en" style="text-align:center">DELETE</th>
+					                                </tr>
+					                            </thead>
+					                            <tbody id="manageThemeTable"></tbody>
+					                        </table>
+					                    </div>
+									</div>
+								</div>
+							</div>
                         </div>
                     </section>
                     <! -- USER MANAGEMENT -->
@@ -263,5 +289,10 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
     <!--./row-->
 </div>
 <!-- /.container-fluid -->
+<form id="about-theme-form" class="mfp-hide white-popup-block mfp-with-anim">
+    <h2 id="about-theme-title">Loading...</h2>
+    <div class="clearfix"></div>
+    <div id="about-theme-body" class=""></div>
+</form>
 ';
 }

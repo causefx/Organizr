@@ -935,6 +935,44 @@ switch ($function) {
 				break;
 		}
 		break;
+	case 'v1_theme_install':
+		switch ($method) {
+			case 'POST':
+				if (qualifyRequest(1)) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = installTheme($_POST);
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
+	case 'v1_theme_remove':
+		switch ($method) {
+			case 'POST':
+				if (qualifyRequest(1)) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = removeTheme($_POST);
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
 	case 'v1_user_edit':
 		switch ($method) {
 			case 'POST':

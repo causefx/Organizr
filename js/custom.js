@@ -1025,6 +1025,9 @@ $(document).on("click", ".saveThemeCss", function () {
 $(document).on("click", ".saveJava", function () {
     $('.javaTextarea').val(javaEditor.getValue()).trigger('change');
 });
+$(document).on("click", ".saveThemeJava", function () {
+    $('.javaThemeTextarea').val(javaThemeEditor.getValue()).trigger('change');
+});
 $(document).on("click", ".savecustomHTMLoneTextarea", function () {
     $('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue()).trigger('change');
 });

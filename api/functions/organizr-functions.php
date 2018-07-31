@@ -754,6 +754,7 @@ function loadAppearance()
 	$appearance['customCss'] = $GLOBALS['customCss'];
 	$appearance['customThemeCss'] = $GLOBALS['customThemeCss'];
 	$appearance['customJava'] = $GLOBALS['customJava'];
+	$appearance['customThemeJava'] = $GLOBALS['customThemeJava'];
 	return $appearance;
 }
 
@@ -1058,6 +1059,23 @@ function getCustomizeAppearance()
 					'class' => 'hidden javaTextarea',
 					'label' => '',
 					'value' => $GLOBALS['customJava'],
+					'placeholder' => 'No <script> tags needed',
+					'attr' => 'rows="10"',
+				),
+			),
+			'Theme Javascript' => array(
+				array(
+					'type' => 'html',
+					'override' => 12,
+					'label' => 'Theme Javascript',
+					'html' => '<button type="button" class="hidden saveJavaTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeJavaEditor" style="height:300px">' . $GLOBALS['customThemeJava'] . '</div>'
+				),
+				array(
+					'type' => 'textbox',
+					'name' => 'customThemeJava',
+					'class' => 'hidden javaThemeTextarea',
+					'label' => '',
+					'value' => $GLOBALS['customThemeJava'],
 					'placeholder' => 'No <script> tags needed',
 					'attr' => 'rows="10"',
 				),

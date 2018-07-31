@@ -4,7 +4,6 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 <script>
 	buildPlugins();
 </script>
-<script src="plugins/bower_components/bootstrap-treeview-master/dist/bootstrap-treeview.min.js"></script>
 <div id="main-plugin-area"></div>
 <form id="about-plugin-form" class="mfp-hide white-popup-block mfp-with-anim">
     <h2 id="about-plugin-title">Loading...</h2>

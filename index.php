@@ -38,8 +38,8 @@
 	<?php echo pluginFiles('css'); ?>
     <link id="theme" href="css/themes/Organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
     <style id="user-appearance"></style>
-    <style id="custom-css"></style>
     <style id="custom-theme-css"></style>
+    <style id="custom-css"></style>
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
@@ -167,12 +167,14 @@
 <script src="plugins/bower_components/tinymce/tinymce.min.js"></script>
 <script src="plugins/bower_components/multiselect/js/jquery.multi-select.js"></script>
 <script src="plugins/bower_components/mousetrap/mousetrap.min.js"></script>
+<script src="plugins/bower_components/bootstrap-treeview-master/dist/bootstrap-treeview.min.js"></script>
 <script src="js/jquery.mousewheel.min.js"></script>
 <script src="js/plyr.js"></script>
 <script src="js/simplebar.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 <script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 <script src="js/custom.min.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
+<script id="custom-theme-javascript"></script>
 <script id="custom-javascript"></script>
 <?php echo pluginFiles('js'); ?>
 </body>
