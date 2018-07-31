@@ -1099,7 +1099,7 @@ function removeTheme(theme=null){
         if(html.data.substr(0, 7) == 'Success'){
             var newThemes = html.data.split('!@!');
             activeInfo.settings.misc.installedThemes = newThemes[1];
-            loadMarketplace('plugins');
+            loadMarketplace('themes');
             message(theme.name+' Removed','Please Click Customize Above to refresh',activeInfo.settings.notifications.position,"#FFF","success","5000");
         }else{
             message('Remove Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
