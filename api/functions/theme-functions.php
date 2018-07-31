@@ -55,16 +55,27 @@ function removeTheme($theme)
 			return false;
 		}
 	}
-	if ($GLOBALS['themeInstalled'] !== '') {
-		$installedTheme = $GLOBALS['themeInstalled'];
-		if ($installedTheme == $name) {
-			updateConfig(
-				array(
-					'themeInstalled' => '',
-					'themeVersion' => '',
-				)
-			);
+	if ($GLOBALS['installedThemes'] !== '') {
+		$installedThemes = explode('|', $GLOBALS['installedThemes']);
+		foreach ($installedThemes as $k => $v) {
+			$themes = explode(':', $v);
+			$installedThemesList[$themes[0]] = $themes[1];
 		}
+		if (isset($installedThemesList[$name])) {
+			$installedThemesNew = '';
+			foreach ($installedThemesList as $k => $v) {
+				if ($k !== $name) {
+					if ($installedThemesNew == '') {
+						$installedThemesNew .= $k . ':' . $v;
+					} else {
+						$installedThemesNew .= '|' . $k . ':' . $v;
+					}
+				}
+			}
+		}
+	} else {
+		$installedThemesNew = '';
 	}
-	return true;
+	updateConfig(array('installedThemes' => $installedThemesNew));
+	return 'Success!@!' . $installedThemesNew;
 }

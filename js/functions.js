@@ -1088,6 +1088,27 @@ function removePlugin(plugin=null){
         console.error("Organizr Function: Connection Failed");
     });
 }
+function removeTheme(theme=null){
+    if(theme == null){
+        return false;
+    }
+    message('Removing Plugin',theme.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
+    theme.downloadList = pluginFileList(theme.files,theme.github_folder,'plugins');
+    organizrAPI('POST','api/?v1/theme/remove',{theme:theme}).success(function(data) {
+        var html = JSON.parse(data);
+        if(html.data.substr(0, 7) == 'Success'){
+            var newThemes = html.data.split('!@!');
+            activeInfo.settings.misc.installedThemes = newThemes[1];
+            loadMarketplace('plugins');
+            message(theme.name+' Removed','Please Click Customize Above to refresh',activeInfo.settings.notifications.position,"#FFF","success","5000");
+        }else{
+            message('Remove Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
+        }
+    }).fail(function(xhr) {
+        message('Remove Failed',theme.name,activeInfo.settings.notifications.position,"#FFF","warning","5000");
+        console.error("Organizr Function: Connection Failed");
+    });
+}
 function installPlugin(plugin=null){
     if(plugin == null){
         return false;
@@ -1127,7 +1148,7 @@ function installTheme(theme=null){
             message('Install Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
         }
     }).fail(function(xhr) {
-        message('Install Failed',plugin.name,activeInfo.settings.notifications.position,"#FFF","warning","5000");
+        message('Install Failed',theme.name,activeInfo.settings.notifications.position,"#FFF","warning","5000");
         console.error("Organizr Function: Connection Failed");
     });
 }
