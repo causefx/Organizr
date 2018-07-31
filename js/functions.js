@@ -929,8 +929,6 @@ function pluginFileList(fileList,folder,type){
 }
 function aboutTheme(theme){
     var files = aboutPluginFiles(theme.files);
-    console.log(files);
-    console.log(JSON.stringify(files));
     var imageList = aboutPluginImages(theme.images);
     var homepageLink = (theme.website !== '' || theme.website !== null) ? 'onclick="window.open(\''+theme.website+'\',\'_blank\');"' : ' ';
 
