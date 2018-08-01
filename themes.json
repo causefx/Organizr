@@ -3,7 +3,7 @@
     "author": "Burry",
     "category": "Testing",
     "description": "A theme for Organizr v2 that emulates the style of Plex",
-    "icon": "https://zhf1943ap1t4f26r11i05c7l-wpengine.netdna-ssl.com/wp-content/uploads/2018/03/plex-pms-icon.jpg",
+    "icon": "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/icon.png",
     "contact": null,
     "website": "https://github.com/Burry/organizr-v2-plex-theme",
     "version": "2.5.2",
@@ -24,6 +24,12 @@
       "Splash": "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/2.png",
       "Homepage": "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/3.png",
       "Search": "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/4.png"
+    },
+    "css": {
+
+    },
+    "javascript": {
+
     }
   }
 }
