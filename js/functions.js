@@ -2808,7 +2808,9 @@ function setSSO(){
 	$.each(activeInfo.sso, function(i,v) {
 		if(v !== false){
 			local('set', i, v);
-		}
+		}else{
+		    local('r', i);
+        }
 	});
 }
 function buildStreamItem(array,source){
