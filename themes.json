@@ -1,35 +1,39 @@
 {
-  "Plex Theme": {
-    "author": "Burry",
-    "category": "Testing",
-    "description": "A theme for Organizr v2 that emulates the style of Plex",
-    "icon": "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/icon.png",
-    "contact": null,
-    "website": "https://github.com/Burry/organizr-v2-plex-theme",
-    "version": "2.5.2",
-    "release_date": "2018-07-31",
-    "last_updated": "2018-07-31",
-    "github_folder": "plex_theme",
-    "license": "personal,business",
-    "files": {
-      "/css/themes": "Plex.css",
-      "/plugins/theme_files/plex_theme/images": "rotten.svg",
-      "/plugins/theme_files/plex_theme/images/background": "blur-dark.png|blur-light.png|noise.png",
-      "/plugins/theme_files/plex_theme/images/cache": "no-request.svg|not-found.svg",
-      "/plugins/theme_files/plex_theme/images/groups": "admin.svg|coadmin.svg|guest.svg|poweruser.svg|superuser.svg|user.svg",
-      "/plugins/theme_files/plex_theme/images/tabs": "ombi.svg"
-    },
-    "images": {
-      "Login": "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/1.png",
-      "Splash": "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/2.png",
-      "Homepage": "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/3.png",
-      "Search": "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/4.png"
-    },
-    "css": {
-
-    },
-    "javascript": {
-
+    "Plex Theme": {
+        "author": "Grant Burry",
+        "category": "Testing",
+        "description": "A theme for Organizr that emulates the style of Plex",
+        "icon":
+            "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/icon.png",
+        "contact": null,
+        "website": "https://github.com/Burry/organizr-v2-plex-theme",
+        "version": "2.6.1",
+        "release_date": "2018-07-31",
+        "last_updated": "2018-08-06",
+        "github_folder": "plex_theme",
+        "license": "personal,business",
+        "files": {
+            "/css/themes": "Plex.css",
+            "/plugins/theme_files/plex_theme/images": "rotten.svg",
+            "/plugins/theme_files/plex_theme/images/background":
+                "blur-dark.png|blur-light.png|noise.png",
+            "/plugins/theme_files/plex_theme/images/cache":
+                "no-request.svg|not-found.svg",
+            "/plugins/theme_files/plex_theme/images/groups":
+                "admin.svg|coadmin.svg|guest.svg|poweruser.svg|superuser.svg|user.svg",
+            "/plugins/theme_files/plex_theme/images/tabs": "ombi.svg"
+        },
+        "images": {
+            "Login":
+                "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/1.png",
+            "Splash":
+                "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/2.png",
+            "Homepage":
+                "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/3.png",
+            "Search":
+                "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/4.png"
+        },
+        "css": {},
+        "javascript": {}
     }
-  }
 }
