@@ -27,7 +27,7 @@ function gravatar($email = '')
 	return $gravurl;
 }
 
-function parseDomain($value)
+function parseDomain($value, $force = false)
 {
 	$badDomains = array('ddns.net', 'ddnsking.com', '3utilities.com', 'bounceme.net', 'duckdns.org', 'freedynamicdns.net', 'freedynamicdns.org', 'gotdns.ch', 'hopto.org', 'myddns.me', 'myds.me', 'myftp.biz', 'myftp.org', 'myvnc.com', 'noip.com', 'onthewifi.com', 'redirectme.net', 'serveblog.net', 'servecounterstrike.com', 'serveftp.com', 'servegame.com', 'servehalflife.com', 'servehttp.com', 'serveirc.com', 'serveminecraft.net', 'servemp3.com', 'servepics.com', 'servequake.com', 'sytes.net', 'viewdns.net', 'webhop.me', 'zapto.org');
 	$Domain = $value;
@@ -72,7 +72,7 @@ function parseDomain($value)
 		}
 	}
 	*/
-	return $Domain;
+	return ($force) ? $value : $Domain;
 }
 
 // Cookie Custom Function
@@ -93,6 +93,7 @@ function coookie($type, $name, $value = '', $days = -1, $http = true)
 	}
 	$Path = '/';
 	$Domain = parseDomain($_SERVER['HTTP_HOST']);
+	$DomainTest = parseDomain($_SERVER['HTTP_HOST'], true);
 	if ($type == 'set') {
 		$_COOKIE[$name] = $value;
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
@@ -101,12 +102,24 @@ function coookie($type, $name, $value = '', $days = -1, $http = true)
 			. (empty($Domain) ? '' : '; domain=' . $Domain)
 			. (!$Secure ? '' : '; secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
+		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
+			. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + (86400 * $days)) . ' GMT')
+			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
+			. (!$Secure ? '' : '; secure')
+			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 	} elseif ($type == 'delete') {
 		unset($_COOKIE[$name]);
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
 			. (empty($Path) ? '' : '; path=' . $Path)
 			. (empty($Domain) ? '' : '; domain=' . $Domain)
+			. (!$Secure ? '' : '; secure')
+			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
+		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
+			. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
+			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
 			. (!$Secure ? '' : '; secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 	}
