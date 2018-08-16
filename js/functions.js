@@ -1926,7 +1926,7 @@ function buildUserManagementItem(array){
 				<br/><span class="text-muted">`+moment(v.register_date).format('LT')+`</span></td>
 			`+buildUserGroupSelect(array.groups,v.id,v.group_id)+`
 			<td><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editUserButton popup-with-form" href="#edit-user-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
-			<td><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-20"><i class="ti-email"></i></button></td>
+			<td><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-20 emailUser"><i class="ti-email"></i></button></td>
 			<td><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5 `+disabledDelete+`"><i class="ti-trash"></i></button></td>
 		</tr>
 		`;

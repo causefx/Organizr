@@ -1583,7 +1583,7 @@ $(document).on("click", ".purgeLog", function () {
     }
 
 });
-//Show Passowrd
+//Show Password
 $(document).on("click", ".showPassword", function () {
     var toggle = $(this).parent().parent().find('.password-alt');
     if (toggle.attr('type') === "password") {
@@ -1592,6 +1592,15 @@ $(document).on("click", ".showPassword", function () {
         toggle.attr('type', 'password');
     }
     $(this).find('.passwordToggle').toggleClass('fa-eye').toggleClass('fa-eye-slash');
+});
+$(document).on("click", ".emailUser", function () {
+    var email = $(this).parent().parent().attr('data-email');
+    if(activeInfo.plugins["PHPMAILER-enabled"] == true){
+        $('.emailModal').click();
+        $('#sendEmailToInput').val(email);
+    }else{
+        message('Email','Plugin not setup',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+    }
 });
 // calendar popups
 $(document).on('click', "a[class*=ID-]", function(){
