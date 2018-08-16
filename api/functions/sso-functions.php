@@ -40,6 +40,7 @@ function getOmbiToken($username, $password)
 		$response = Requests::post($url, $headers, json_encode($data), $options);
 		if ($response->success) {
 			$token = json_decode($response->body, true)['access_token'];
+			writeLog('success', 'Ombi Token Function - Grabbed token.', $username);
 		}
 		return ($token) ? $token : false;
 	} catch (Requests_Exception $e) {

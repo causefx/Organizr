@@ -68,7 +68,8 @@ function organizrSpecialSettings()
 			'installedThemes' => $GLOBALS['installedThemes'],
 			'return' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false,
 			'authDebug' => $GLOBALS['authDebug'],
-			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen']
+			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen'],
+			'unsortedTabs' => $GLOBALS['unsortedTabs']
 		)
 	);
 }
@@ -801,6 +802,22 @@ function getCustomizeAppearance()
 					'name' => 'alternateHomepageHeaders',
 					'label' => 'Alternate Homepage Titles',
 					'value' => $GLOBALS['alternateHomepageHeaders']
+				),
+				array(
+					'type' => 'select',
+					'name' => 'unsortedTabs',
+					'label' => 'Unsorted Tab Placement',
+					'value' => $GLOBALS['unsortedTabs'],
+					'options' => array(
+						array(
+							'name' => 'Top',
+							'value' => 'top'
+						),
+						array(
+							'name' => 'Bottom',
+							'value' => 'bottom'
+						)
+					)
 				)
 			),
 			'Colors & Themes' => array(

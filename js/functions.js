@@ -1744,7 +1744,11 @@ function tabProcess(arrayItems) {
 				}
 				menuList = buildMenuList(v.name,v.url,v.type,v.image,v.ping_url);
 				if(v.category_id === 0){
-					$(menuList).prependTo($('#side-menu'));
+                    if(activeInfo.settings.misc.unsortedTabs === 'top'){
+                        $(menuList).prependTo($('#side-menu'));
+                    }else if(activeInfo.settings.misc.unsortedTabs === 'bottom') {
+                        $(menuList).appendTo($('#side-menu'));
+                    }
 				}else{
 					$(menuList).prependTo($('.category-'+v.category_id));
 				}

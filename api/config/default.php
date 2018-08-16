@@ -176,5 +176,6 @@ return array(
 	'authDebug' => false,
 	'customJava' => '',
 	'customThemeJava' => '',
-	'minimalLoginScreen' => false
+	'minimalLoginScreen' => false,
+	'unsortedTabs' => 'top'
 );

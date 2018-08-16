@@ -34,6 +34,7 @@ function parseDomain($value, $force = false)
 	$Port = strpos($Domain, ':');
 	if ($Port !== false) {
 		$Domain = substr($Domain, 0, $Port);
+		$value = $Domain;
 	}
 	$check = substr_count($Domain, '.');
 	if ($check >= 3) {

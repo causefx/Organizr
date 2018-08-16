@@ -983,7 +983,8 @@ function loadTabs()
 				'driver' => 'sqlite3',
 				'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
 			]);
-			$tabs = $connect->fetchAll('SELECT * FROM tabs WHERE `group_id` >= ? AND `enabled` = 1 ORDER BY `order` DESC', $GLOBALS['organizrUser']['groupID']);
+			$sort = ($GLOBALS['unsortedTabs'] == 'top') ? 'DESC' : 'ASC';
+			$tabs = $connect->fetchAll('SELECT * FROM tabs WHERE `group_id` >= ? AND `enabled` = 1 ORDER BY `order` ' . $sort, $GLOBALS['organizrUser']['groupID']);
 			$categories = $connect->fetchAll('SELECT * FROM categories ORDER BY `order` ASC');
 			$all['tabs'] = $tabs;
 			foreach ($tabs as $k => $v) {
