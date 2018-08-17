@@ -26,6 +26,14 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 
         var $this = this;
         $this.$calendarObj = $this.$calendar.fullCalendar({
+        	customButtons: {
+			    filterCalendar: {
+			      text: \'Filter\',
+			      click: function() {
+			        $(\'#calendar-filter-modal\').modal(\'show\');
+			      }
+			    }
+			  },
             defaultView: (activeInfo.mobile) ? "list" : "' . $GLOBALS['calendarDefault'] . '",
             firstDay: "' . $GLOBALS['calendarFirstDay'] . '",
             timeFormat: "' . $GLOBALS['calendarTimeFormat'] . '",
@@ -33,7 +41,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
             header: {
                left: "prev,next,today",
                center: "title",
-               right: (activeInfo.mobile) ? "" : "month,basicWeek,basicDay,list",
+               right: (activeInfo.mobile) ? "filterCalendar" : "filterCalendar,month,basicWeek,basicDay,list",
             },
             views: {
                basicDay: { buttonText: window.lang.translate("Day"), eventLimit: ' . $GLOBALS['calendarLimit'] . ' },
@@ -50,15 +58,15 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
             eventRender: function eventRender( event, element, view ) {
                 if (typeof filter !== "undefined") {
                     if(filter === "all"){
-                        return event.imagetype === event.imagetype;
+                        return event.imagetypeFilter === event.imagetypeFilter;
                     }else if(filter !== "all"){
-                        return filter === event.imagetype;
+                        return filter === event.imagetypeFilter;
                     }
                     if(filter === null){
-                        return event.imagetype === event.imagetype;
+                        return event.imagetypeFilter === event.imagetypeFilter;
                     }
                 }else {
-                    return event.imagetype === event.imagetype;
+                    return event.imagetypeFilter === event.imagetypeFilter;
                 }
             },
         });
@@ -79,5 +87,32 @@ function($) {
     <div class="col-md-8 col-md-offset-2 youtube-div">  </div>
 </div>
 <!-- /.container-fluid -->
+<!--  modal content -->
+<div id="calendar-filter-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="mySmallModalLabel" lane="en">Filter Calendar</h4> </div>
+            <div class="modal-body">
+            	<div class="row">
+                    
+                    <div class="col-md-12">
+                        <label class="control-label" lang="en">Choose Media Type</label>
+                        <select class="form-control form-white" data-placeholder="Choose media type" id="choose-calender-filter">
+                            <option value="all">All</option>
+                            <option value="tv">TV</option>
+                            <option value="film">Movie</option>
+                            <option value="music">Music</option>
+                        </select>
+                    </div>
+                </div>
+			</div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
 ';
 }
