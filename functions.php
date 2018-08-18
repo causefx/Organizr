@@ -648,7 +648,7 @@ function resolveEmbyItem($address, $token, $item, $nowPlaying = false, $showName
 	}else{
 		$URL = EMBYURL."/web/itemdetails.html?id=".$itemDetails['Id'];
 	}*/
-	$URL = EMBYURL."/web/itemdetails.html?id=".$itemDetails['Id'];
+	$URL = EMBYURL."/web/#!/itemdetails.html?id=".$itemDetails['Id'];
 	switch ($itemDetails['Type']) {
 		case 'Episode':
 		case 'Series':
