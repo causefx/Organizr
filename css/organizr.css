@@ -171,7 +171,13 @@ img.lazyload.tabImages {
     top: 37px;
     position: relative;
 }
-
+.recent-sponsor {
+    background-position: center;
+    background-size: cover;
+    height: 150px;
+    width: 150px;
+    position: relative;
+}
 .recent-poster {
     background-position: center;
     background-size: cover;

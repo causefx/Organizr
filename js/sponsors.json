@@ -1,0 +1,16 @@
+{
+  "Microsoft": {
+    "company_name": "Microsoft",
+    "website": "https://microsoft.com",
+    "about": "This is the company info here",
+    "coupon": null,
+    "coupon_about": null
+  },
+  "Google": {
+    "company_name": "Google",
+    "website": "https://google.com",
+    "about": "This is the company info here",
+    "coupon": "102938667as",
+    "coupon_about": "something there"
+  }
+}
