@@ -1,18 +1,2 @@
 {
-  "Microsoft": {
-    "company_name": "Microsoft",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg",
-    "website": "https://microsoft.com",
-    "about": "This is the company info here",
-    "coupon": null,
-    "coupon_about": null
-  },
-  "Google": {
-    "company_name": "Google",
-    "logo": "https://pbs.twimg.com/profile_images/972154872261853184/RnOg6UyU_400x400.jpg",
-    "website": "https://google.com",
-    "about": "This is the company info here",
-    "coupon": "102938667as",
-    "coupon_about": "something there"
-  }
 }
