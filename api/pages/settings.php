@@ -5,6 +5,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
     (function() {
         updateCheck();
         authDebugCheck();
+        sponsorLoad();
         [].slice.call(document.querySelectorAll(\'.sttabs\')).forEach(function(el) {
             new CBPFWTabs(el);
         });
@@ -193,6 +194,11 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
     											<li><a href="https://github.com/causefx/organizr" target="_blank"><i class="mdi mdi-github-box mdi-24px"></i></a></li>
     										</ul>
     									</div>
+    									<div class="well bg-org">
+                                            <h4 lang="en">Want to help translate?</h4>
+                                            <p lang="en">Head on over to POEditor and help us translate Organizr into your language</p>
+                                            <button class="fcbtn btn btn-primary btn-outline btn-1b"><a href="https://poeditor.com/join/project/T6l68hksTE" target="_blank" lang="en">I Want to Help</a></button>
+                                        </div>
     								</div>
                                     <div class="col-lg-6 col-sm-12 col-md-6">
                                         <div class="white-box bg-org">
@@ -210,14 +216,37 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                             </ul>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 col-sm-12 col-md-6">
-                                        <div class="well bg-org">
-                                            <h4 lang="en">Want to help translate?</h4>
-                                            <p lang="en">Head on over to POEditor and help us translate Organizr into your language</p>
-                                            <button class="fcbtn btn btn-primary btn-outline btn-1b"><a href="https://poeditor.com/join/project/T6l68hksTE" target="_blank" lang="en">I Want to Help</a></button>
-                                        </div>
-                                    </div>
     							</div>
+    							
+    							
+    							<div class="row">
+	                            	
+	                                <div class="col-lg-12">
+							            <div class="panel panel-default">
+											
+											<div class="panel-heading bg-org p-t-10 p-b-10">
+												<span class="pull-left m-t-5"><span lang="en">Sponsors</span></span>
+												
+										
+												<div class="clearfix"></div>
+											</div>
+									
+							                <div class="panel-wrapper p-b-0 collapse in bg-org">
+												
+							                	<div id="sponsorList" class="owl-carousel owl-theme sponsor-items">
+							                	
+											        
+
+							        			</div>
+							        			<div id="sponsorListModals"></div>
+											
+										
+							                </div>
+							            </div>
+							        </div>
+    							
+    							</div>
+
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-donate">

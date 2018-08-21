@@ -2249,6 +2249,100 @@ function updateCheck(){
 		console.error("Organizr Function: Github Connection Failed");
 	});
 }
+function sponsorLoad(){
+    sponsorsJSON().success(function(data) {
+        var json = JSON.parse(data);
+        /*for (var a in reverseObject(json)){
+            var latest = a;
+            break;
+        }
+        if(latest !== currentVersion){
+            console.log('Update Function: Update to '+latest+' is available');
+            message(window.lang.translate('Update Available'),latest+' '+window.lang.translate('is available, goto')+' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);$(\'#update-button\').click()"><span lang="en">Update Tab</span></a>',activeInfo.settings.notifications.position,'#FFF','update','60000');
+        }*/
+        $('#sponsorList').html(buildSponsor(json));
+        $('#sponsorListModals').html(buildSponsorModal(json));
+        $('.sponsor-items').owlCarousel({
+            nav:false,
+            autoplay:true,
+            dots:false,
+            margin:10,
+            autoWidth:true,
+            items:4
+        });
+    }).fail(function(xhr) {
+        console.error("Organizr Function: Github Connection Failed");
+    });
+}
+function sponsorAbout(id,array){
+    var coupon = (array.coupon == null) ? false : true;
+    var couponAbout = (array.coupon_about == null) ? false : true;
+    var extraInfo = (coupon && couponAbout) ? `
+        <br><span class="label label-rouded label-info pull-right">`+array.coupon+`</span>
+        <br><span class="mail-desc">`+array.coupon_about+`</span>
+    ` : '';
+    return `
+        <!--  modal content -->
+        <div id="sponsor-`+id+`-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel-`+id+`" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="mySmallModalLabel-`+id+`">`+array.company_name+`</h4> </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="comment-center p-t-10">
+                                    <div class="comment-body b-none">
+                                        <div class="user-img"> <img src="`+array.logo+`" alt="user" class="img-circle"> </div>
+                                        <div class="mail-contnet">
+                                            <h5><a href="`+array.website+`" target="_blank">`+array.company_name+`</a></h5> 
+                                            `+array.about+extraInfo+`
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+    `;
+}
+function buildSponsor(array){
+    var sponsors = '';
+    $.each(array, function(i,v) {
+        var sponsorAboutModal = (v.about) ? 'data-toggle="modal" data-target="#sponsor-'+i+'-modal"' : '';
+        sponsors += `
+            <!-- /.usercard -->
+            <div class="item lazyload recent-sponsor mouse imageSource mouse" `+sponsorAboutModal+` data-src="`+v.logo+`">
+                <span class="elip recent-title">`+v.company_name+`</span>
+            </div>
+            <!-- /.usercard-->
+        `;
+
+    });
+    sponsors += `
+        <!-- /.usercard -->
+        <div class="item lazyload recent-sponsor mouse imageSource mouse" onclick="window.open('https://www.patreon.com/bePatron?c=1320444&rid=2874514', '_blank')" data-src="plugins/images/sponsor.png">
+            <span class="elip recent-title" lang="en">Become Sponsor</span>
+        </div>
+        <!-- /.usercard-->
+    `;
+    return sponsors;
+}
+function buildSponsorModal(array){
+    var sponsors = '';
+    $.each(array, function(i,v) {
+        var sponsorAboutModal = (v.about) ? sponsorAbout(i,v) : '';
+        sponsors += sponsorAboutModal;
+
+    });
+    return sponsors;
+}
 function updateBar(){
 	return `
 	<div class="white-box m-0">
@@ -2367,6 +2461,11 @@ function githubVersions() {
 	return $.ajax({
 		url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/version.json",
 	});
+}
+function sponsorsJSON() {
+    return $.ajax({
+        url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/sponsors.json",
+    });
 }
 function marketplaceJSON(type) {
     return $.ajax({
