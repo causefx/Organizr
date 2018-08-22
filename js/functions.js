@@ -1552,6 +1552,46 @@ function updateUserInformation(){
 	}
 }
 function accountManager(user){
+    var passwordMessage = '';
+    switch(activeInfo.settings.misc.authBackend){
+        case 'plex':
+            passwordMessage = `
+                <div class="col-lg-12">
+                    <div class="panel panel-info">
+                        <div class="panel-heading"> <span lang="en">Password Notice</span>
+                            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                        </div>
+                        <div class="panel-wrapper collapse in" aria-expanded="true">
+                            <div class="panel-body bg-org">
+                                <p lang="en">If you signed in with a Plex Acct... Please use the following link to change your password there:</p><br>
+                                <p><a href="https://app.plex.tv/auth#?resetPassword" target="_blank">Change Password on Plex Website</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            break;
+        case 'emby':
+            passwordMessage = `
+                <div class="col-lg-12">
+                    <div class="panel panel-info">
+                        <div class="panel-heading"> <span lang="en">Password Notice</span>
+                            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                        </div>
+                        <div class="panel-wrapper collapse in" aria-expanded="true">
+                            <div class="panel-body bg-org">
+                                <p lang="en">If you signed in with a Emby Acct... Please use the following link to change your password there:</p><br>
+                                <p><a href="https://emby.media/community/index.php?app=core&module=global&section=lostpass" target="_blank">Change Password on Emby Website</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            break;
+        default:
+            passwordMessage = '';
+            break;
+    }
 	if (user.data.user.loggedin === true) {
 		var accountDiv = `
 		<div id="account-area" class="white-popup mfp-with-anim mfp-hide">
@@ -1562,11 +1602,9 @@ function accountManager(user){
 							<div class="panel-heading">
 								<span lang="en">Account Information</span>
 								<div class="btn-group pull-right">
-
 									<button class="btn btn-info waves-effect waves-light" type="button" onclick="updateUserInformation();">
 										<i class="fa fa-save"></i>
 									</button>
-
 								</div>
 							</div>
 							<div class="panel-wrapper collapse in main-email-panel" aria-expanded="true">
@@ -1596,6 +1634,7 @@ function accountManager(user){
 													<label class="control-label" lang="en">Verify Password</label>
 													<input type="password" id="accountPassword2" class="form-control"></div>
 											</div>
+											`+passwordMessage+`
 										</div>
 										<!--/row-->
 									</div>

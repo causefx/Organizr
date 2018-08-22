@@ -26,7 +26,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
     </div>
     <!--.row-->
     <div class="row">
-        <!-- Tabstyle start -->
+        <!-- Tab style start -->
         <section class="">
             <div class="sttabs tabs-style-flip">
                 <nav>
@@ -194,11 +194,12 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
     											<li><a href="https://github.com/causefx/organizr" target="_blank"><i class="mdi mdi-github-box mdi-24px"></i></a></li>
     										</ul>
     									</div>
-    									<div class="well bg-org">
-                                            <h4 lang="en">Want to help translate?</h4>
-                                            <p lang="en">Head on over to POEditor and help us translate Organizr into your language</p>
-                                            <button class="fcbtn btn btn-primary btn-outline btn-1b"><a href="https://poeditor.com/join/project/T6l68hksTE" target="_blank" lang="en">I Want to Help</a></button>
-                                        </div>
+    									<a href="https://poeditor.com/join/project/T6l68hksTE" target="_blank">
+	                                        <div class="well bg-org">
+	                                            <h4 lang="en">Want to help translate?</h4>
+	                                            <p lang="en">Head on over to POEditor and help us translate Organizr into your language</p>
+	                                        </div>
+	                                    </a>
     								</div>
                                     <div class="col-lg-6 col-sm-12 col-md-6">
                                         <div class="white-box bg-org">
@@ -212,41 +213,24 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                                 <li><div class="bg-info"><i class="mdi mdi-package-variant-closed mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Webserver Version</span> ' . $_SERVER['SERVER_SOFTWARE'] . '</li>
                                                 <hr class="m-t-10">
                                                 <li><div class="bg-info"><i class="mdi mdi-account-card-details mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">License</span> ' . ucwords($GLOBALS['license']) . '</li>
-
                                             </ul>
                                         </div>
                                     </div>
     							</div>
-    							
-    							
     							<div class="row">
-	                            	
 	                                <div class="col-lg-12">
 							            <div class="panel panel-default">
-											
 											<div class="panel-heading bg-org p-t-10 p-b-10">
 												<span class="pull-left m-t-5"><span lang="en">Sponsors</span></span>
-												
-										
 												<div class="clearfix"></div>
 											</div>
-									
 							                <div class="panel-wrapper p-b-0 collapse in bg-org">
-												
-							                	<div id="sponsorList" class="owl-carousel owl-theme sponsor-items">
-							                	
-											        
-
-							        			</div>
+							                	<div id="sponsorList" class="owl-carousel owl-theme sponsor-items"></div>
 							        			<div id="sponsorListModals"></div>
-											
-										
 							                </div>
 							            </div>
 							        </div>
-    							
     							</div>
-
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-donate">
@@ -268,7 +252,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                         </ul>
                                         <div class="tab-content">
                                             <div class="tab-pane active" id="donate-paypal">
-                                                <blockquote>I have choosen to go with PayPal Pools so everyone can see how much people have donated.<br/>Please click the button to continue.</blockquote>
+                                                <blockquote>I have chosen to go with PayPal Pools so everyone can see how much people have donated.<br/>Please click the button to continue.</blockquote>
                                                 <button onclick="window.open(\'https://paypal.me/pools/c/83JNaMBESR\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
                                             </div>
                                             <div class="tab-pane" id="donate-square">
@@ -295,7 +279,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                                 <div class="clearfix"></div>
                                             </div>
                                             <div class="tab-pane" id="donate-patreon">
-                                                <blockquote>Need specialized support or just want to support Orgainzr?  If so head to Pateron...<br/>Please click the button to continue.</blockquote>
+                                                <blockquote>Need specialized support or just want to support Organizr?  If so head to Patreon...<br/>Please click the button to continue.</blockquote>
                                                 <button onclick="window.open(\'https://www.patreon.com/bePatron?u=8370887\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
                                             </div>
                                         </div>

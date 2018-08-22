@@ -69,7 +69,8 @@ function organizrSpecialSettings()
 			'return' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false,
 			'authDebug' => $GLOBALS['authDebug'],
 			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen'],
-			'unsortedTabs' => $GLOBALS['unsortedTabs']
+			'unsortedTabs' => $GLOBALS['unsortedTabs'],
+			'authBackend' => $GLOBALS['authBackend']
 		)
 	);
 }
