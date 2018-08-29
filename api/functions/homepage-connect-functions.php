@@ -84,10 +84,10 @@ function resolveEmbyItem($itemDetails)
 		return false;
 	};
 	// Static Height & Width
-	$height = 300;
-	$width = 200;
-	$nowPlayingHeight = 675;
-	$nowPlayingWidth = 1200;
+	$height = getCacheImageSize('h');
+	$width = getCacheImageSize('w');
+	$nowPlayingHeight = getCacheImageSize('nph');
+	$nowPlayingWidth = getCacheImageSize('npw');
 	$actorHeight = 450;
 	$actorWidth = 300;
 	// Cache Directories
@@ -272,13 +272,35 @@ function resolveEmbyItem($itemDetails)
 	return $embyItem;
 }
 
+function getCacheImageSize($type)
+{
+	switch ($type) {
+		case 'height':
+		case 'h':
+			return 300 * $GLOBALS['cacheImageSize'];
+			break;
+		case 'width':
+		case 'w':
+			return 200 * $GLOBALS['cacheImageSize'];
+			break;
+		case 'nowPlayingHeight':
+		case 'nph':
+			return 675 * $GLOBALS['cacheImageSize'];
+			break;
+		case 'nowPlayingWidth':
+		case 'npw':
+			return 1200 * $GLOBALS['cacheImageSize'];
+			break;
+	}
+}
+
 function resolvePlexItem($item)
 {
 	// Static Height & Width
-	$height = 300;
-	$width = 200;
-	$nowPlayingHeight = 675;
-	$nowPlayingWidth = 1200;
+	$height = getCacheImageSize('h');
+	$width = getCacheImageSize('w');
+	$nowPlayingHeight = getCacheImageSize('nph');
+	$nowPlayingWidth = getCacheImageSize('npw');
 	// Cache Directories
 	$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 	$cacheDirectoryWeb = 'plugins/images/cache/';

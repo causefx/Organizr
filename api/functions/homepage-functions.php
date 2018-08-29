@@ -626,6 +626,26 @@ function getHomepageList()
 						'label' => 'Plex Tab WAN URL',
 						'value' => $GLOBALS['plexTabURL'],
 						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'cacheImageSize',
+						'label' => 'Image Cache Size',
+						'value' => $GLOBALS['cacheImageSize'],
+						'options' => array(
+							array(
+								'name' => 'Low',
+								'value' => '1'
+							),
+							array(
+								'name' => 'Mid',
+								'value' => '2'
+							),
+							array(
+								'name' => 'High',
+								'value' => '3'
+							)
+						)
 					)
 				),
 				'Test Connection' => array(
@@ -757,6 +777,30 @@ function getHomepageList()
 						'label' => 'Emby Tab WAN URL',
 						'value' => $GLOBALS['embyTabURL'],
 						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'cacheImageSize',
+						'label' => 'Image Cache Size',
+						'value' => $GLOBALS['cacheImageSize'],
+						'options' => array(
+							array(
+								'name' => 'Low',
+								'value' => '.5'
+							),
+							array(
+								'name' => '1x',
+								'value' => '1'
+							),
+							array(
+								'name' => '2x',
+								'value' => '2'
+							),
+							array(
+								'name' => '3x',
+								'value' => '3'
+							)
+						)
 					)
 				)
 			)

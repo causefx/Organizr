@@ -177,5 +177,6 @@ return array(
 	'customJava' => '',
 	'customThemeJava' => '',
 	'minimalLoginScreen' => false,
-	'unsortedTabs' => 'top'
+	'unsortedTabs' => 'top',
+	'cacheImageSize' => '2'
 );
