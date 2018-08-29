@@ -1085,6 +1085,7 @@ function getSonarrCalendar($array, $number)
 			"className" => "bg-calendar calendar-item tvID--" . $episodeID,
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
+			"downloadFilter" => $downloaded,
 			"details" => $details
 		));
 	}
@@ -1147,6 +1148,7 @@ function getLidarrCalendar($array, $number)
 			"className" => "bg-calendar calendar-item musicID--",
 			"imagetype" => "music " . $downloaded,
 			"imagetypeFilter" => "music",
+			"downloadFilter" => $downloaded,
 			"details" => $details
 		));
 	}
@@ -1237,6 +1239,7 @@ function getRadarrCalendar($array, $number, $url)
 				"className" => "bg-calendar movieID--" . $movieID,
 				"imagetype" => "film " . $downloaded,
 				"imagetypeFilter" => "film",
+				"downloadFilter" => $downloaded,
 				"details" => $details
 			));
 		}
@@ -1318,6 +1321,7 @@ function getCouchCalendar($array, $number)
 				"className" => "bg-calendar calendar-item movieID--" . $movieID,
 				"imagetype" => "film " . $downloaded,
 				"imagetypeFilter" => "film",
+				"downloadFilter" => $downloaded,
 				"details" => $details
 			));
 		}
@@ -1385,6 +1389,7 @@ function getSickrageCalendarWanted($array, $number)
 			"className" => "bg-calendar calendar-item tvID--" . $episodeID,
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
+			"downloadFilter" => $downloaded,
 			"details" => $details,
 		));
 	}
@@ -1440,6 +1445,7 @@ function getSickrageCalendarWanted($array, $number)
 			"className" => "bg-calendar calendar-item tvID--" . $episodeID,
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
+			"downloadFilter" => $downloaded,
 			"details" => $details,
 		));
 	}
@@ -1495,6 +1501,7 @@ function getSickrageCalendarWanted($array, $number)
 			"className" => "bg-calendar calendar-item tvID--" . $episodeID,
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
+			"downloadFilter" => $downloaded,
 			"details" => $details,
 		));
 	}
@@ -1550,6 +1557,7 @@ function getSickrageCalendarWanted($array, $number)
 			"className" => "bg-calendar calendar-item tvID--" . $episodeID,
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
+			"downloadFilter" => $downloaded,
 			"details" => $details,
 		));
 	}
@@ -1602,6 +1610,7 @@ function getSickrageCalendarHistory($array, $number)
 			"className" => "bg-calendar calendar-item tvID--" . $episodeID,
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
+			"downloadFilter" => $downloaded,
 			"details" => $details,
 		));
 	}

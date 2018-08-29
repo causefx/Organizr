@@ -1738,9 +1738,11 @@ $(document).on('change', "#edit-tab-form-chooseIcon", function (e) {
         $('#edit-tab-form-inputImage').val(newIcon);
     }
 });
-$(document).on('change', "#choose-calender-filter", function (e) {
+$(document).on('change', "#choose-calender-filter, #choose-calender-filter-status", function (e) {
     filter = $('#choose-calender-filter').val();
+    filterDownload = $('#choose-calender-filter-status').val();
     $('#calendar-filter-modal').modal('hide');
     console.log("Calendar Filter: "+filter);
+    console.log("Calendar Filter: "+filterDownload);
     $('#calendar').fullCalendar('rerenderEvents');
 });

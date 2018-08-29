@@ -56,17 +56,18 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
             selectable: false,
             height: "auto",
             eventRender: function eventRender( event, element, view ) {
-                if (typeof filter !== "undefined") {
-                    if(filter === "all"){
-                        return event.imagetypeFilter === event.imagetypeFilter;
-                    }else if(filter !== "all"){
-                        return filter === event.imagetypeFilter;
-                    }
-                    if(filter === null){
-                        return event.imagetypeFilter === event.imagetypeFilter;
+                if (typeof filter !== "undefined" && filterDownload !== "undefined") {
+                    if(filter === "all" && filterDownload === "all"){
+                        return (event.imagetypeFilter === event.imagetypeFilter && event.downloadFilter === event.downloadFilter);
+                    }else if(filter !== "all" && filterDownload !== "all"){
+                        return filter === event.imagetypeFilter && filterDownload === event.downloadFilter;
+                    }else if(filter !== "all" && filterDownload === "all"){
+                        return filter === event.imagetypeFilter && event.downloadFilter === event.downloadFilter;
+                    }else if(filter === "all" && filterDownload !== "all"){
+                        return event.imagetypeFilter === event.imagetypeFilter && filterDownload === event.downloadFilter;
                     }
                 }else {
-                    return event.imagetypeFilter === event.imagetypeFilter;
+                    return event.imagetypeFilter === event.imagetypeFilter && event.downloadFilter === event.downloadFilter;
                 }
             },
         });
@@ -104,6 +105,15 @@ function($) {
                             <option value="tv">TV</option>
                             <option value="film">Movie</option>
                             <option value="music">Music</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="control-label" lang="en">Choose Media Status</label>
+                        <select class="form-control form-white" data-placeholder="Choose media status" id="choose-calender-filter-status">
+                            <option value="all">All</option>
+                            <option value="text-success">Downloaded</option>
+                            <option value="text-danger">Missing</option>
+                            <option value="text-primary animated flash">Premier</option>
                         </select>
                     </div>
                 </div>
