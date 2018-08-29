@@ -635,14 +635,18 @@ function getHomepageList()
 						'options' => array(
 							array(
 								'name' => 'Low',
+								'value' => '.5'
+							),
+							array(
+								'name' => '1x',
 								'value' => '1'
 							),
 							array(
-								'name' => 'Mid',
+								'name' => '2x',
 								'value' => '2'
 							),
 							array(
-								'name' => 'High',
+								'name' => '3x',
 								'value' => '3'
 							)
 						)
