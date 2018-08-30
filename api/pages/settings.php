@@ -238,6 +238,9 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                     <div class="white-box bg-org">
                                         <ul class="nav nav-tabs tabs customtab">
                                             <li class="tab active">
+                                                <a href="#donate-beer" data-toggle="tab" aria-expanded="true"> <span class=""><i class="fa fa-beer text-warning"></i></span> <span class="hidden-xs" lang="en">Beerpay.io</span> </a>
+                                            </li>
+                                            <li class="tab">
                                                 <a href="#donate-paypal" data-toggle="tab" aria-expanded="true"> <span class=""><i class="fa fa-paypal text-info"></i></span> <span class="hidden-xs" lang="en">PayPal</span> </a>
                                             </li>
                                             <li class="tab">
@@ -251,7 +254,11 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                             </li>
                                         </ul>
                                         <div class="tab-content">
-                                            <div class="tab-pane active" id="donate-paypal">
+                                        	<div class="tab-pane active" id="donate-beer">
+                                                <blockquote>Want to show support on Beerpay.io?  Send me a beer :)<br/>Please click the button to continue.</blockquote>
+                                                <button onclick="window.open(\'https://beerpay.io/causefx/Organizr\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
+                                            </div>
+                                            <div class="tab-pane" id="donate-paypal">
                                                 <blockquote>I have chosen to go with PayPal Pools so everyone can see how much people have donated.<br/>Please click the button to continue.</blockquote>
                                                 <button onclick="window.open(\'https://paypal.me/pools/c/83JNaMBESR\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
                                             </div>

@@ -1745,4 +1745,5 @@ $(document).on('change', "#choose-calender-filter, #choose-calender-filter-statu
     console.log("Calendar Filter: "+filter);
     console.log("Calendar Filter: "+filterDownload);
     $('#calendar').fullCalendar('rerenderEvents');
+    new SimpleBar($('.fc-scroller')[0]);
 });
