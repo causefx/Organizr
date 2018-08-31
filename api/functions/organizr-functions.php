@@ -1842,3 +1842,10 @@ function ping($pings)
 	}
 	return false;
 }
+
+function guestHash($start, $end)
+{
+	$ip = $_SERVER['REMOTE_ADDR'];
+	$ip = md5($ip);
+	return substr($ip, $start, $end);
+}

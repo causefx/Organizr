@@ -1,0 +1,32 @@
+{
+    "chmod": "0755",
+    "finder": [
+        {
+            "in": "",
+            "name": "autoload.php"
+        },
+        {
+            "in": "src",
+            "name": "*.php"
+        },
+        {
+            "in": "lib",
+            "name": "*.php"
+        },
+        {
+            "in": "vendor/composer",
+            "name": "*.php"
+        },
+        {
+            "in": "vendor/paragonie",
+            "name": "*.php"
+        }
+    ],
+    "compactors": [
+        "Herrera\\Box\\Compactor\\Php"
+    ],
+    "main": "vendor/autoload.php",
+    "output": "sodium-compat.phar",
+    "shebang": false,
+    "stub": true
+}
