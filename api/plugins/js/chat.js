@@ -6,7 +6,7 @@ function chatLaunch(){
             chatLaunch();
         }, 1000);
     }else{
-        if(activeInfo.plugins["CHAT-enabled"] == true){
+        if(activeInfo.plugins["CHAT-enabled"] == true && activeInfo.plugins.includes["CHAT-authKey-include"] !== '' && activeInfo.plugins.includes["CHAT-appID-include"] !== '' && activeInfo.plugins.includes["CHAT-cluster-include"] !== ''){
             if (activeInfo.user.groupID <= activeInfo.plugins.includes["CHAT-Auth-include"]) {
                 var menuList = `<li><a class=""  onclick="tabActions(event,'chat','plugin');chatEntry();"><i class="fa fa-comments-o fa-fw"></i> <span lang="en">Chat</span><small class="chat-counter label label-rouded label-info pull-right hidden">0</small></a></li>`;
 				var htmlDOM = `
@@ -56,7 +56,7 @@ function chatLaunch(){
                         $('.custom-send').html('<button class="btn btn-info btn-rounded custom-send-button" type="button">Send</button>');
                         $(".chat-list").scrollTop($(".chat-list")[0].scrollHeight);
                         if($('#container-plugin-chat').hasClass('hidden')){
-                            var chatSound =  new Audio(activeInfo.settings.misc.newMessageSound);
+                            var chatSound =  new Audio(activeInfo.plugins.includes["CHAT-newMessageSound-include"]);
                             chatSound.play();
                             message(data.username,data.message,activeInfo.settings.notifications.position,"#FFF","success","20000");
                             $('.profile-image').addClass('animated loop-animation rubberBand');

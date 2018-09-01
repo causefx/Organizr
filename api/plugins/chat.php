@@ -71,7 +71,7 @@ function chatGetSettings()
 				'type' => 'select',
 				'name' => 'newMessageSound',
 				'label' => 'Message Sound',
-				'value' => $GLOBALS['newMessageSound'],
+				'value' => $GLOBALS['CHAT-newMessageSound-include'],
 				'options' => getSounds()
 			),
 		),

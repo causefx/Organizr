@@ -8,4 +8,5 @@ return array(
 	'CHAT-secret' => '',
 	'CHAT-messageLoadLimit' => '200',
 	'CHAT-userRefreshTimeout' => '60000',
+	'CHAT-newMessageSound-include' => 'plugins/sounds/default/newmessage.mp3',
 );
