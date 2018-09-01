@@ -119,6 +119,10 @@ api/plugins/*
 !api/plugins/api/invites.php
 !api/plugins/config/invites.php
 !api/plugins/js/invites.js
+!api/plugins/chat.php
+!api/plugins/api/chat.php
+!api/plugins/config/chat.php
+!api/plugins/js/chat.js
 !api/plugins/php-mailer.php
 !api/plugins/api/php-mailer.php
 !api/plugins/config/php-mailer.php
