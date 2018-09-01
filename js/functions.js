@@ -4962,7 +4962,6 @@ function message(heading,text,position,color,icon,timeout){
                 iziToast.show(msg);
                 break;
             case 'alertify':
-                console.log(heading,text,position,color,icon,timeout);
                 var msgFull = (heading !== '') ? heading + '<br/>' + text : text;
                 timeout = timeout / 1000;
                 alertify.set('notifier','position', position);

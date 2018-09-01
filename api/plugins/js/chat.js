@@ -193,7 +193,6 @@ function getMessagesAndUsers(timeout){
             $('.chat-list').append(formatMessage(v));
         });
         $('.chatonline').html(formatUsers(response.data));
-        console.log('Loaded Messages from Organizr Chat DB');
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
     });
