@@ -67,7 +67,7 @@ function chatLaunch(){
                 channel.bind('pusher:subscription_succeeded', function(members) {
                     console.log('Chat Websocket Connected!');
                     console.log('Connecting to Organizr Chat DB');
-                    getMessagesAndUsers(activeInfo.settings.homepage.refresh["CHAT-userRefreshTimeout"]);
+                    getMessagesAndUsers(activeInfo.settings.homepage.refresh["CHAT-userRefreshTimeout"], true);
                 });
                 /*jslint browser: true*/
                 /*global $, jQuery, alert*/
@@ -185,22 +185,23 @@ function chatEntry(){
     $('.chat-input-send').focus();
     $('.chat-counter').addClass('hidden').html('0');
 }
-function getMessagesAndUsers(timeout){
+function getMessagesAndUsers(timeout, initial = false){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh["CHAT-userRefreshTimeout"];
     organizrAPI('GET','api/?v1/plugin&plugin=chat&cmd=chat/message').success(function(data) {
         var response = JSON.parse(data);
-        $.each(response.data, function (i, v){
-            $('.chat-list').append(formatMessage(v));
-        });
+        if(initial == true){
+            $.each(response.data, function (i, v){
+                $('.chat-list').append(formatMessage(v));
+            });
+        }
         $('.chatonline').html(formatUsers(response.data));
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
     });
     var timeoutTitle = 'ChatUserList';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
-    timeouts[timeoutTitle] = setTimeout(function(){ getMessagesAndUsers(timeout); }, timeout);
+    timeouts[timeoutTitle] = setTimeout(function(){ getMessagesAndUsers(timeout, false); }, timeout);
 }
 $(document).on('click', '.profile-pic', function(e) {
     $('.profile-image').removeClass('animated loop-animation rubberBand');
-    console.log('test')
 });
