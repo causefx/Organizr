@@ -120,6 +120,15 @@ function createDB($path, $filename)
     		`auth_service`	TEXT DEFAULT \'internal\'
     	);');
 		// Create Tokens
+		$createDB->query('CREATE TABLE `chatroom` (
+    		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    		`username`	TEXT,
+    		`gravatar`	TEXT,
+    		`uid`	TEXT,
+            `date` DATE,
+            `ip` TEXT,
+            `message` TEXT
+    	);');
 		$createDB->query('CREATE TABLE `tokens` (
     		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     		`token`	TEXT UNIQUE,

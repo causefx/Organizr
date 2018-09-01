@@ -70,7 +70,8 @@ function organizrSpecialSettings()
 			'authDebug' => $GLOBALS['authDebug'],
 			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen'],
 			'unsortedTabs' => $GLOBALS['unsortedTabs'],
-			'authBackend' => $GLOBALS['authBackend']
+			'authBackend' => $GLOBALS['authBackend'],
+			'newMessageSound' => $GLOBALS['newMessageSound'],
 		)
 	);
 }

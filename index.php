@@ -114,6 +114,7 @@
     <div class="login-area hidden"></div>
     <div class="p-0" id="page-wrapper">
         <div class="organizr-area"></div>
+        <div class="plugin-listing p-0 hidden"></div>
         <div class="internal-listing p-0 hidden"></div>
         <div class="iFrame-listing p-0 hidden"></div>
     </div>
@@ -176,6 +177,7 @@
 <script src="js/custom.min.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
 <script id="custom-theme-javascript"></script>
 <script id="custom-javascript"></script>
+<script src="https://js.pusher.com/4.1/pusher.min.js"></script>
 <?php echo pluginFiles('js'); ?>
 </body>
 

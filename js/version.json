@@ -82,5 +82,12 @@
     "new": "Homepage Test Button on some modules|Smaller Nav bar|Recent Item Limits|Nav buttons on sliders|Settings save revamped|Ombi user import on register|Test iFrame buttons|Ombi auth for requesting|Favicon support|Ping Support|New Alert Styles|New Lockout Timeout system",
     "fixed": "Calendar Alt Title|Deluge Hide/Seed|More DDNS workarounds|Homepage auth issues|Deluge no results|PHPMailer plugin fixes|Wizard auto login",
     "notes": "Calendar has Today Button now"
+  },
+  "2.0.0-beta.500": {
+    "date": "2018-08-31 23:59",
+    "title": "A Bunch of things since last real release",
+    "new": "Chat System - Powered by Pusher|Keyboard Shortcuts|Fullscreen button|Icon and Image selector for tabs|Multiple Tautulli SSO|Pagination to search|Redirect added to error page|Auth Debug toggle|Custom CSS and JS for themes|Theme Marketplace|Plugin Marketplace|Calendar Sorting|Email user from user mgmt|Tab sort for unsorted|Cache image size option",
+    "fixed": "Deluge Test Button|PHP5.6 Error|Sonarr local cert|Plex Invite error codes|Email center fixes #891|Fixed log out issues|Fixed Cookie issues - Use any domain you want now",
+    "notes": "Lots of small fixes"
   }
 }

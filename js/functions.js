@@ -246,7 +246,8 @@ function reloadOrganizr(){
 }
 function hideFrames(){
 	$(".iFrame-listing div[class^='frame-container']").addClass("hidden").removeClass('show');
-	$(".internal-listing div[class^='internal-container']").addClass("hidden").removeClass('show');
+    $(".internal-listing div[class^='internal-container']").addClass("hidden").removeClass('show');
+    $(".plugin-listing div[class^='plugin-container']").addClass("hidden").removeClass('show');
 }
 function closeSideMenu(){
 	$('.fix-header').removeClass('show-sidebar');
@@ -261,6 +262,7 @@ function swapDisplay(type){
 			$('.iFrame-listing').addClass('hidden').removeClass('show');
 			$('.internal-listing').addClass('show').removeClass('hidden');
 			$('.login-area').addClass('hidden').removeClass('show');
+            $('.plugin-listing').addClass('hidden').removeClass('show');
 			//$('body').removeClass('fix-header');
 			break;
 		case 'iframe':
@@ -268,6 +270,7 @@ function swapDisplay(type){
 			$('.iFrame-listing').addClass('show').removeClass('hidden');
 			$('.internal-listing').addClass('hidden').removeClass('show');
 			$('.login-area').addClass('hidden').removeClass('show');
+            $('.plugin-listing').addClass('hidden').removeClass('show');
 			//$('body').addClass('fix-header');
 			break;
 		case 'login':
@@ -275,12 +278,19 @@ function swapDisplay(type){
 			$('.iFrame-listing').addClass('hidden').removeClass('show');
 			$('.internal-listing').addClass('hidden').removeClass('show');
 			$('.login-area').addClass('show').removeClass('hidden');
+            $('.plugin-listing').addClass('hidden').removeClass('show');
 			if(activeInfo.settings.misc.minimalLoginScreen == true){
                 $('.sidebar').addClass('hidden');
                 $('.navbar').addClass('hidden');
                 $('#pagewrapper').addClass('hidden');
             }
 			break;
+        case 'plugin':
+            $('.iFrame-listing').addClass('hidden').removeClass('show');
+            $('.internal-listing').addClass('hidden').removeClass('show');
+            $('.login-area').addClass('hidden').removeClass('show');
+            $('.plugin-listing').addClass('show').removeClass('hidden');
+            break;
 		default:
 	}
 }
@@ -307,8 +317,10 @@ function switchTab(tab, type){
         closeSideMenu();
         removeMenuActive();
         toggleParentActive(tab);
-        setHash(tab);
         swapBodyClass(tab);
+    }
+    if(type !== 2 && type !== 'plugin'){
+        setHash(tab);
     }
 	switch (type) {
 		case 0:
@@ -357,6 +369,10 @@ function switchTab(tab, type){
 		case 'popout':
 			popTab(cleanClass(tab), type);
 			break;
+        case 'plugin':
+            swapDisplay('plugin');
+            $('#container-plugin-'+tab).addClass("show").removeClass('hidden');
+            break;
 		default:
 			console.error('Tab Function: Action not set');
 	}
@@ -1656,7 +1672,7 @@ function userMenu(user){
 	if (user.data.user.loggedin === true) {
 		menuList += `
 			<li class="dropdown">
-				<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="javascript:void(0)"><img alt="" class="img-circle" src="`+user.data.user.image+`" width="36"><b class="hidden-xs">`+user.data.user.username+`</b><span class="caret"></span></a>
+				<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="javascript:void(0)"><img alt="" class="img-circle profile-image" src="`+user.data.user.image+`" width="36"><b class="hidden-xs">`+user.data.user.username+`</b><span class="caret"></span></a>
 				<ul class="dropdown-menu dropdown-user animated flipInY">
 					<li>
 						<div class="dw-user-box">
@@ -1678,7 +1694,7 @@ function userMenu(user){
 	}else{
 		menuList += `
 			<li class="dropdown">
-					<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="javascript:void(0)"><img alt="" class="img-circle" src="`+user.data.user.image+`" width="36"><b class="hidden-xs">`+user.data.user.username+`</b><span class="caret"></span></a>
+					<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="javascript:void(0)"><img alt="" class="img-circle profile-image" src="`+user.data.user.image+`" width="36"><b class="hidden-xs">`+user.data.user.username+`</b><span class="caret"></span></a>
 					<ul class="dropdown-menu dropdown-user animated flipInY">
 						<li>
 							<div class="dw-user-box">

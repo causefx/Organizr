@@ -12,6 +12,13 @@ function upgradeCheck()
 		$oldVer = $versionCheck;
 	}
 	// End Upgrade check start for version above
+	// Upgrade check start for version below
+	$versionCheck = '2.0.0-beta-500';
+	if ($compare->lessThan($oldVer, $versionCheck)) {
+		$updateDB = true;
+		$oldVer = $versionCheck;
+	}
+	// End Upgrade check start for version above
 	if ($updateDB == true) {
 		//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 		// Upgrade database to latest version

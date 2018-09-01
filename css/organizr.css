@@ -1141,3 +1141,10 @@ img.img-chooser {
 .fc-scroller .simplebar-track.horizontal {
     display: none;
 }
+.chat-main-box {
+    height: calc(100vh - 40px);
+}
+.chat-list,
+.chatonline {
+    height: calc(100vh - 130px) !important;
+}
