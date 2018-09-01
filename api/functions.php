@@ -16,7 +16,9 @@ if (isset($GLOBALS['dbLocation'])) {
 	$GLOBALS['organizrLog'] = $GLOBALS['dbLocation'] . 'organizrLog.json';
 	$GLOBALS['organizrLoginLog'] = $GLOBALS['dbLocation'] . 'organizrLoginLog.json';
 	//Upgrade Check
-	upgradeCheck();
+	if (qualifyRequest(1)) {
+		upgradeCheck();
+	}
 }
 // Cookie name
 $GLOBALS['cookieName'] = isset($GLOBALS['organizrAPI']) ? 'organizr_token_' . hash('sha256', $GLOBALS['organizrAPI']) : 'organizr_token_temp';

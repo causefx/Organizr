@@ -1058,11 +1058,11 @@ $info = '
                                                                                                                                                     <tr>
 
                                                                                                                                                         <td align="center" valign="middle" width="24" class="mcnFollowIconContent">
-                                                                                                                                                            <a href="https://organizr.us" target="_blank"><img src="https://cdn-images.mailchimp.com/icons/social-block-v2/color-link-48.png" style="display:block;" height="24" width="24" class=""></a>
+                                                                                                                                                            <a href="https://organizr.app" target="_blank"><img src="https://cdn-images.mailchimp.com/icons/social-block-v2/color-link-48.png" style="display:block;" height="24" width="24" class=""></a>
                                                                                                                                                         </td>
 
                                                                                                                                                         <td align="left" valign="middle" class="mcnFollowTextContent" style="padding-left:5px;">
-                                                                                                                                                            <a href="https://organizr.us" target="" style="font-family: Helvetica;font-size: 12px;text-decoration: none;color: #FFFFFF;font-weight: bold;">Website</a>
+                                                                                                                                                            <a href="https://organizr.app" target="" style="font-family: Helvetica;font-size: 12px;text-decoration: none;color: #FFFFFF;font-weight: bold;">Website</a>
                                                                                                                                                         </td>
 
                                                                                                                                                     </tr>

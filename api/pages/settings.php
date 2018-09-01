@@ -188,9 +188,9 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
     										</div>
     										<hr>
     										<ul class="dp-table profile-social-icons">
-    											<li><a href="https://organizr.us" target="_blank"><i class="mdi mdi-web mdi-24px"></i></a></li>
+    											<li><a href="https://organizr.app" target="_blank"><i class="mdi mdi-web mdi-24px"></i></a></li>
     											<li><a href="https://reddit.com/r/organizr" target="_blank"><i class="mdi mdi-reddit mdi-24px"></i></a></li>
-    											<li><a href="https://organizr.us/discord" target="_blank"><i class="mdi mdi-discord mdi-24px"></i></a></li>
+    											<li><a href="https://organizr.app/discord" target="_blank"><i class="mdi mdi-discord mdi-24px"></i></a></li>
     											<li><a href="https://github.com/causefx/organizr" target="_blank"><i class="mdi mdi-github-box mdi-24px"></i></a></li>
     										</ul>
     									</div>
