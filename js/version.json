@@ -89,5 +89,12 @@
     "new": "Chat System - Powered by Pusher|Keyboard Shortcuts|Fullscreen button|Icon and Image selector for tabs|Multiple Tautulli SSO|Pagination to search|Redirect added to error page|Auth Debug toggle|Custom CSS and JS for themes|Theme Marketplace|Plugin Marketplace|Calendar Sorting|Email user from user mgmt|Tab sort for unsorted|Cache image size option",
     "fixed": "Deluge Test Button|PHP5.6 Error|Sonarr local cert|Plex Invite error codes|Email center fixes #891|Fixed log out issues|Fixed Cookie issues - Use any domain you want now",
     "notes": "Lots of small fixes"
+  },
+  "2.0.0-beta.600": {
+    "date": "2018-09-02 02:00",
+    "title": "2FA - Finally",
+    "new": "Google 2FA - More services to come",
+    "fixed": "Small Chat dupe bug",
+    "notes": "More small fixes"
   }
 }
