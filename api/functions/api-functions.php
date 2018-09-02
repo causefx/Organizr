@@ -209,43 +209,49 @@ function createDB($path, $filename)
 // Upgrade Database
 function updateDB($oldVerNum = false)
 {
-	// Create Temp DB First
-	$migrationDB = 'tempMigration.db';
-	$pathDigest = pathinfo($GLOBALS['dbLocation'] . $GLOBALS['dbName']);
-	if (file_exists($GLOBALS['dbLocation'] . $migrationDB)) {
-		unlink($GLOBALS['dbLocation'] . $migrationDB);
-	}
-	copy($GLOBALS['dbLocation'] . $GLOBALS['dbName'], $pathDigest['dirname'] . '/' . $pathDigest['filename'] . '[' . date('Y-m-d_H-i-s') . ']' . ($oldVerNum ? '[' . $oldVerNum . ']' : '') . '.bak.db');
-	@unlink($GLOBALS['dbLocation'] . $GLOBALS['dbName']);
-	$success = createDB($GLOBALS['dbLocation'], $migrationDB);
-	try {
-		$connectOldDB = new Dibi\Connection([
-			'driver' => 'sqlite3',
-			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
-		]);
-		$connectNewDB = new Dibi\Connection([
-			'driver' => 'sqlite3',
-			'database' => $GLOBALS['dbLocation'] . $migrationDB,
-		]);
-		$tables = $connectOldDB->fetchAll('SELECT name FROM sqlite_master WHERE type="table"');
-		foreach ($tables as $table) {
-			$data = $connectOldDB->fetchAll('SELECT * FROM ' . $table['name']);
-			foreach ($data as $row) {
-				$connectNewDB->query('INSERT into ' . $table['name'], $row);
-			}
-		}
-		$connectOldDB->disconnect();
-		$connectNewDB->disconnect();
-		// Remove Current Database
+	$tempLock = $GLOBALS['dbLocation'] . 'DBLOCK.txt';
+	if (!file_exists($tempLock)) {
+		touch($tempLock);
+		// Create Temp DB First
+		$migrationDB = 'tempMigration.db';
+		$pathDigest = pathinfo($GLOBALS['dbLocation'] . $GLOBALS['dbName']);
 		if (file_exists($GLOBALS['dbLocation'] . $migrationDB)) {
-			copy($GLOBALS['dbLocation'] . $migrationDB, $GLOBALS['dbLocation'] . $GLOBALS['dbName']);
-			//unlink($GLOBALS['dbLocation'] . $migrationDB);
+			unlink($GLOBALS['dbLocation'] . $migrationDB);
 		}
-		writeLog('success', 'Update Function -  Migrated Old Info to new Database', 'Database');
-		return true;
-	} catch (Dibi\Exception $e) {
-		writeLog('error', 'Update Function -  Error [' . $e . ']', 'Database');
-		return false;
+		copy($GLOBALS['dbLocation'] . $GLOBALS['dbName'], $pathDigest['dirname'] . '/' . $pathDigest['filename'] . '[' . date('Y-m-d_H-i-s') . ']' . ($oldVerNum ? '[' . $oldVerNum . ']' : '') . '.bak.db');
+		@unlink($GLOBALS['dbLocation'] . $GLOBALS['dbName']);
+		$success = createDB($GLOBALS['dbLocation'], $migrationDB);
+		try {
+			$connectOldDB = new Dibi\Connection([
+				'driver' => 'sqlite3',
+				'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+			]);
+			$connectNewDB = new Dibi\Connection([
+				'driver' => 'sqlite3',
+				'database' => $GLOBALS['dbLocation'] . $migrationDB,
+			]);
+			$tables = $connectOldDB->fetchAll('SELECT name FROM sqlite_master WHERE type="table"');
+			foreach ($tables as $table) {
+				$data = $connectOldDB->fetchAll('SELECT * FROM ' . $table['name']);
+				foreach ($data as $row) {
+					$connectNewDB->query('INSERT into ' . $table['name'], $row);
+				}
+			}
+			$connectOldDB->disconnect();
+			$connectNewDB->disconnect();
+			// Remove Current Database
+			if (file_exists($GLOBALS['dbLocation'] . $migrationDB)) {
+				copy($GLOBALS['dbLocation'] . $migrationDB, $GLOBALS['dbLocation'] . $GLOBALS['dbName']);
+				@unlink($GLOBALS['dbLocation'] . $migrationDB);
+			}
+			writeLog('success', 'Update Function -  Migrated Old Info to new Database', 'Database');
+			unlink($tempLock);
+			return true;
+		} catch (Dibi\Exception $e) {
+			writeLog('error', 'Update Function -  Error [' . $e . ']', 'Database');
+			unlink($tempLock);
+			return false;
+		}
 	}
 }
 
