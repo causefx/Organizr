@@ -11,15 +11,24 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '3109cb1a231dcd04bee1f9f620d46975' => __DIR__ . '/..' . '/paragonie/sodium_compat/autoload.php',
+        'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
         '0097ca414fcb37c7130ac24b05f485f8' => __DIR__ . '/..' . '/dibi/dibi/src/loader.php',
     );
 
     public static $prefixLengthsPsr4 = array (
+        'S' => 
+        array (
+            'Symfony\\Polyfill\\Util\\' => 22,
+            'Symfony\\Polyfill\\Php56\\' => 23,
+        ),
         'P' => 
         array (
             'Pusher\\' => 7,
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
+            'PragmaRX\\Google2FA\\Tests\\' => 25,
+            'PragmaRX\\Google2FA\\' => 19,
+            'ParagonIE\\ConstantTime\\' => 23,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
         'L' => 
@@ -45,6 +54,14 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
     );
 
     public static $prefixDirsPsr4 = array (
+        'Symfony\\Polyfill\\Util\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-util',
+        ),
+        'Symfony\\Polyfill\\Php56\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php56',
+        ),
         'Pusher\\' => 
         array (
             0 => __DIR__ . '/..' . '/pusher/pusher-php-server/src',
@@ -56,6 +73,18 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
+        'PragmaRX\\Google2FA\\Tests\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/pragmarx/google2fa/tests',
+        ),
+        'PragmaRX\\Google2FA\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/pragmarx/google2fa/src',
+        ),
+        'ParagonIE\\ConstantTime\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/paragonie/constant_time_encoding/src',
         ),
         'PHPMailer\\PHPMailer\\' => 
         array (

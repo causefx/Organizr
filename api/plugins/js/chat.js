@@ -26,7 +26,7 @@ function chatLaunch(){
                                     <div class="col-sm-12">
                                         <textarea class="form-control chat-input-send" placeholder="Type your message"></textarea>
                                         <div class="custom-send">
-                                            <button class="btn btn-info btn-rounded custom-send-button" type="button">Send</button>
+                                            <button type="button" class="btn btn-info btn-lg custom-send-button"><i class="fa fa-paper-plane fa-2x"></i> </button>
                                         </div>
                                     </div>
                                 </div>
@@ -53,7 +53,7 @@ function chatLaunch(){
                     function(data) {
                         formatMessage(data);
                         $('.chat-list').append(formatMessage(data));
-                        $('.custom-send').html('<button class="btn btn-info btn-rounded custom-send-button" type="button">Send</button>');
+                        $('.custom-send').html('<button type="button" class="btn btn-info btn-lg custom-send-button"><i class="fa fa-paper-plane fa-2x"></i> </button>');
                         $(".chat-list").scrollTop($(".chat-list")[0].scrollHeight);
                         if($('#container-plugin-chat').hasClass('hidden')){
                             var chatSound =  new Audio(activeInfo.plugins.includes["CHAT-newMessageSound-include"]);
@@ -135,7 +135,7 @@ $('body').on('click', '.custom-send-button', function(e) {
         // Clear the message input field
         $('.chat-input-send').val('');
         // Show a loading image while sending
-        $('.custom-send').html('<button class="btn btn-info btn-rounded custom-send-button" disabled type="button"><i class="fa fa-spinner fa-pulse "></i></button>');
+        $('.custom-send').html('<button type="button" class="btn btn-info btn-lg custom-send-button" disabled><i class="fa fa-spinner fa-pulse fa-2x"></i> </button>');
     }
 });
 function formatMessage(msg){

@@ -70,6 +70,19 @@ function login($array)
                     	WHERE id=?', $result['id']);
 					writeLog('success', 'Login Function - User Password updated from backend', $username);
 				}
+				// 2FA might go here
+				if ($result['auth_service'] !== 'internal' && strpos($result['auth_service'], '::') !== false) {
+					$TFA = explode('::', $result['auth_service']);
+					// Is code with login info?
+					if ($tfaCode == '') {
+						return '2FA';
+					} else {
+						if (!verify2FA($TFA[1], $tfaCode, $TFA[0])) {
+							return '2FA-incorrect';
+						}
+					}
+				}
+				// End 2FA
 				// authentication passed - 1) mark active and update token
 				if (createToken($result['username'], $result['email'], $result['image'], $result['group'], $result['group_id'], $GLOBALS['organizrHash'], $days)) {
 					writeLoginLog($username, 'success');

@@ -128,7 +128,8 @@ function validateToken($token, $global = false)
 					"image" => $result['image'],
 					"userID" => $result['id'],
 					"loggedin" => true,
-					"locked" => $result['locked']
+					"locked" => $result['locked'],
+					"authService" => explode('::', $result['auth_service'])[0]
 				);
 			} catch (Dibi\Exception $e) {
 				$GLOBALS['organizrUser'] = false;
@@ -160,7 +161,8 @@ function getOrganizrUserToken()
 			"image" => getGuest()['image'],
 			"userID" => null,
 			"loggedin" => false,
-			"locked" => false
+			"locked" => false,
+			"authService" => null
 		);
 	}
 }

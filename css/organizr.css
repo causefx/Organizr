@@ -1148,3 +1148,13 @@ img.img-chooser {
 .chatonline {
     height: calc(100vh - 130px) !important;
 }
+.tfa-input{
+    font-size: 400%;
+    height: 100%;
+}
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}

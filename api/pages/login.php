@@ -5,9 +5,25 @@ $pageLogin = '
 <section id="wrapper" class="login-register">
   <div class="login-box login-sidebar animated slideInRight">
     <div class="white-box">
-      <form class="form-horizontal form-material" id="loginform" onsubmit="return false;">
+      <form class="form-horizontal" id="loginform" onsubmit="return false;">
         <a href="javascript:void(0)" class="text-center db visible-xs" id="login-logo">' . logoOrText() . '</a>
-
+		<div id="tfa-div" class="form-group hidden">
+          <div class="col-xs-12">
+            <div class="panel panel-warning animated tada">
+                <div class="panel-heading"> 2FA
+                    <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                </div>
+                <div class="panel-wrapper collapse in" aria-expanded="true">
+                    <div class="panel-body">
+	                    <div class="input-group" style="width: 100%;">
+	                        <div class="input-group-addon hidden-xs"><i class="ti-lock"></i></div>
+	                        <input type="text" class="form-control tfa-input" name="tfaCode" placeholder="Code" autocomplete="off" autocorrect="off" autocapitalize="off" maxlength="6" spellcheck="false" autofocus="">
+	                    </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
         <div class="form-group m-t-40">
           <div class="col-xs-12">
             <input class="form-control" name="username" type="text" required="" placeholder="Username" autofocus>

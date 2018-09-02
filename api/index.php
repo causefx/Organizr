@@ -996,6 +996,82 @@ switch ($function) {
 				break;
 		}
 		break;
+	case 'v1_2fa_create':
+		switch ($method) {
+			case 'POST':
+				if (qualifyRequest(998)) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = create2FA($_POST['data']['type']);
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
+	case 'v1_2fa_save':
+		switch ($method) {
+			case 'POST':
+				if (qualifyRequest(998)) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = save2FA($_POST['data']['secret'], $_POST['data']['type']);
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
+	case 'v1_2fa_verify':
+		switch ($method) {
+			case 'POST':
+				if (qualifyRequest(998)) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = verify2FA($_POST['data']['secret'], $_POST['data']['code'], $_POST['data']['type']);
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
+	case 'v1_2fa_remove':
+		switch ($method) {
+			case 'GET':
+				if (qualifyRequest(998)) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = remove2FA();
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
 	case 'v1_logout':
 		switch ($method) {
 			case 'GET':

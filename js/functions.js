@@ -1567,6 +1567,126 @@ function updateUserInformation(){
 		ajaxloader();
 	}
 }
+function twoFA(action, type, secret = null){
+    switch(action){
+        case 'activate':
+            organizrAPI('POST','api/?v1/2fa/create',{type:type}).success(function(data) {
+                var html = JSON.parse(data);
+                $('.twofa-modal-title').html(html.data.type);
+                $('.twofa-modal-image').html('<img class="center" src="'+html.data.url+'">');
+                $('.twofa-modal-secret').html(html.data.secret);
+                $('#twofa-modal').modal('show');
+            }).fail(function(xhr) {
+                console.error("Organizr Function: Connection Failed");
+            });
+            break;
+        case 'deactivate':
+            organizrAPI('GET','api/?v1/2fa/remove').success(function(data) {
+                var html = JSON.parse(data);
+                $('.2fa-list').replaceWith(buildTwoFA('internal'));
+            }).fail(function(xhr) {
+                console.error("Organizr Function: Connection Failed");
+            });
+            break;
+        case 'verify':
+            var secret = $('.twofa-modal-secret').text();
+            var code = $('#twofa-verify').val();
+            if(type !== '' && secret !== '' && code !== ''){
+                organizrAPI('POST','api/?v1/2fa/verify',{type:type, secret:secret, code:code}).success(function(data) {
+                    var html = JSON.parse(data);
+                    if(html.data == true){
+                        message('2FA Success','Input Code Validated! Saving...',activeInfo.settings.notifications.position,"#FFF","success","5000");
+                        $('#twofa-modal').modal('hide');
+                        twoFA('save', type, secret);
+                    }else{
+                        message('2FA Failed','Code Incorrect',activeInfo.settings.notifications.position,"#FFF","warning","5000");
+                    }
+                }).fail(function(xhr) {
+                    console.error("Organizr Function: Connection Failed");
+                });
+            }else{
+                message('2FA Failed','Input Code',activeInfo.settings.notifications.position,"#FFF","warning","5000");
+            }
+            break;
+        case 'save':
+            organizrAPI('POST','api/?v1/2fa/save',{type:type, secret:secret}).success(function(data) {
+                var html = JSON.parse(data);
+                console.log(html);
+                if(html.data == true){
+                    message('2FA Success','2FA Saved',activeInfo.settings.notifications.position,"#FFF","success","5000");
+                    $('.2fa-list').replaceWith(buildTwoFA(type));
+                }else{
+                    message('2FA Failed','2FA Error!',activeInfo.settings.notifications.position,"#FFF","warning","5000");
+                }
+            }).fail(function(xhr) {
+                console.error("Organizr Function: Connection Failed");
+            });
+            break;
+    }
+}
+function buildTwoFA(current){
+    switch(current){
+        case 'internal':
+            var option = `
+                <div class="col-lg-3 col-sm-6 row-in-br">
+                    <ul class="col-in">
+                        <li>
+                            <span class="circle circle-md bg-info"><i class="mdi mdi-webpack mdi-24px"></i></span>
+                        </li>
+                        <li class="col-middle">
+                            <h5>Organizr Authenticator</h5>
+                            <h5><span lang="en">Current</span></h5>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-sm-6 row-in-br">
+                    <ul class="col-in">
+                        <li>
+                            <span class="circle circle-md bg-info"><i class="fa fa-google"></i></span>
+                        </li>
+                        <li class="col-middle">
+                            <h5>Google Authenticator</h5>
+                            <h5><a href="javascript:void(0)" onclick="twoFA('activate','google');"><span lang="en">Activate</span></a></h5>
+                        </li>
+                    </ul>
+                </div>
+            `;
+            break;
+        case 'google':
+            var option = `
+                <div class="col-lg-3 col-sm-6 row-in-br">
+                    <ul class="col-in">
+                        <li>
+                            <span class="circle circle-md bg-info"><i class="fa fa-google"></i></span>
+                        </li>
+                        <li class="col-middle">
+                            <h5>Google Authenticator</h5>
+                            <h5><a href="javascript:void(0)" onclick="twoFA('deactivate','google');"><span lang="en">Deactivate</span></a></h5>
+                        </li>
+                    </ul>
+                </div>
+            `;
+            break;
+        default:
+            break;
+    }
+    var element = `
+    <div class="white-box 2fa-list">
+        <div class="row row-in">
+            `+option+`
+        </div>
+    </div>
+    `;
+
+
+
+
+
+
+
+
+    return element;
+}
 function accountManager(user){
     var passwordMessage = '';
     switch(activeInfo.settings.misc.authBackend){
@@ -1610,6 +1730,36 @@ function accountManager(user){
     }
 	if (user.data.user.loggedin === true) {
 		var accountDiv = `
+        <!-- 2fa modal content -->
+        <div id="twofa-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="twofa-modal-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="twofa-modal-label">Enable 2FA</h4> </div>
+                    <div class="modal-body">
+                        <h4 class="twofa-modal-title text-center text-uppercase"></h4>
+                        <p class="twofa-modal-image"></p>
+                        <h5 class="twofa-modal-secret text-center"></h5>
+                        <div class="form-group m-t-10">
+                            <div class="input-group" style="width: 100%;">
+                                <div class="input-group-addon hidden-xs"><i class="ti-lock"></i></div>
+                                <input type="text" class="form-control tfa-input" id="twofa-verify" placeholder="Code" autocomplete="off" autocorrect="off" autocapitalize="off" maxlength="6" spellcheck="false" autofocus="" required="">
+                            </div>
+                            <br>
+                            <button class="btn btn-block btn-info" onclick="twoFA('verify','google');">Verify</button>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
 		<div id="account-area" class="white-popup mfp-with-anim mfp-hide">
 			<div class="col-md-10 col-md-offset-1">
 				<div class="row">
@@ -1626,6 +1776,7 @@ function accountManager(user){
 							<div class="panel-wrapper collapse in main-email-panel" aria-expanded="true">
 								<div class="panel-body">
 									<div class="form-body">
+									    `+buildTwoFA(user.data.user.authService)+`
 										<div class="row">
 											<div class="col-md-6">
 												<div class="form-group">
