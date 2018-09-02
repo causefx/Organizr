@@ -101,19 +101,20 @@ function($) {
                     <div class="col-md-12">
                         <label class="control-label" lang="en">Choose Media Type</label>
                         <select class="form-control form-white" data-placeholder="Choose media type" id="choose-calender-filter">
-                            <option value="all">All</option>
-                            <option value="tv">TV</option>
-                            <option value="film">Movie</option>
-                            <option value="music">Music</option>
+                            <option value="all" lang="en">All</option>
+                            <option value="tv" lang="en">TV</option>
+                            <option value="film" lang="en">Movie</option>
+                            <option value="music" lang="en">Music</option>
                         </select>
                     </div>
                     <div class="col-md-12">
                         <label class="control-label" lang="en">Choose Media Status</label>
                         <select class="form-control form-white" data-placeholder="Choose media status" id="choose-calender-filter-status">
-                            <option value="all">All</option>
-                            <option value="text-success">Downloaded</option>
-                            <option value="text-danger">Missing</option>
-                            <option value="text-primary animated flash">Premier</option>
+                            <option value="all" lang="en">All</option>
+                            <option value="text-success" lang="en">Downloaded</option>
+                            <option value="text-info" lang="en">Unaired</option>
+                            <option value="text-danger" lang="en">Missing</option>
+                            <option value="text-primary animated flash" lang="en">Premier</option>
                         </select>
                     </div>
                 </div>
