@@ -71,7 +71,7 @@ function organizrSpecialSettings()
 			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen'],
 			'unsortedTabs' => $GLOBALS['unsortedTabs'],
 			'authBackend' => $GLOBALS['authBackend'],
-			'newMessageSound' => $GLOBALS['newMessageSound'],
+			'newMessageSound' => $GLOBALS['CHAT-newMessageSound-include'],
 		)
 	);
 }
