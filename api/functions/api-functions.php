@@ -218,13 +218,13 @@ function updateDB($oldVerNum = false)
 		if (file_exists($GLOBALS['dbLocation'] . $migrationDB)) {
 			unlink($GLOBALS['dbLocation'] . $migrationDB);
 		}
-		copy($GLOBALS['dbLocation'] . $GLOBALS['dbName'], $pathDigest['dirname'] . '/' . $pathDigest['filename'] . '[' . date('Y-m-d_H-i-s') . ']' . ($oldVerNum ? '[' . $oldVerNum . ']' : '') . '.bak.db');
-		@unlink($GLOBALS['dbLocation'] . $GLOBALS['dbName']);
+		$backupDB = $pathDigest['dirname'] . '/' . $pathDigest['filename'] . '[' . date('Y-m-d_H-i-s') . ']' . ($oldVerNum ? '[' . $oldVerNum . ']' : '') . '.bak.db';
+		copy($GLOBALS['dbLocation'] . $GLOBALS['dbName'], $backupDB);
 		$success = createDB($GLOBALS['dbLocation'], $migrationDB);
 		try {
 			$connectOldDB = new Dibi\Connection([
 				'driver' => 'sqlite3',
-				'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+				'database' => $backupDB,
 			]);
 			$connectNewDB = new Dibi\Connection([
 				'driver' => 'sqlite3',
@@ -241,6 +241,7 @@ function updateDB($oldVerNum = false)
 			$connectNewDB->disconnect();
 			// Remove Current Database
 			if (file_exists($GLOBALS['dbLocation'] . $migrationDB)) {
+				@unlink($GLOBALS['dbLocation'] . $GLOBALS['dbName']);
 				copy($GLOBALS['dbLocation'] . $migrationDB, $GLOBALS['dbLocation'] . $GLOBALS['dbName']);
 				@unlink($GLOBALS['dbLocation'] . $migrationDB);
 			}
