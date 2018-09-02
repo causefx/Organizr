@@ -207,59 +207,39 @@ function createDB($path, $filename)
 }
 
 // Upgrade Database
-function updateDB($path, $filename, $oldVerNum = false)
+function updateDB($oldVerNum = false)
 {
+	// Create Temp DB First
+	$migrationDB = 'tempMigration.db';
+	$pathDigest = pathinfo($GLOBALS['dbLocation'] . $GLOBALS['dbName']);
+	if (file_exists($GLOBALS['dbLocation'] . $migrationDB)) {
+		unlink($GLOBALS['dbLocation'] . $migrationDB);
+	}
+	copy($GLOBALS['dbLocation'] . $GLOBALS['dbName'], $pathDigest['dirname'] . '/' . $pathDigest['filename'] . '[' . date('Y-m-d_H-i-s') . ']' . ($oldVerNum ? '[' . $oldVerNum . ']' : '') . '.bak.db');
+	@unlink($GLOBALS['dbLocation'] . $GLOBALS['dbName']);
+	$success = createDB($GLOBALS['dbLocation'], $migrationDB);
 	try {
-		$connect = new Dibi\Connection([
+		$connectOldDB = new Dibi\Connection([
 			'driver' => 'sqlite3',
-			'database' => $path . $filename,
+			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
 		]);
-		// Cache current DB
-		$cache = array();
-		foreach ($connect->query('SELECT name FROM sqlite_master WHERE type="table";') as $table) {
-			foreach ($connect->query('SELECT * FROM ' . $table['name'] . ';') as $key => $row) {
-				foreach ($row as $k => $v) {
-					if (is_string($k)) {
-						$cache[$table['name']][$key][$k] = $v;
-					}
-				}
+		$connectNewDB = new Dibi\Connection([
+			'driver' => 'sqlite3',
+			'database' => $GLOBALS['dbLocation'] . $migrationDB,
+		]);
+		$tables = $connectOldDB->fetchAll('SELECT name FROM sqlite_master WHERE type="table"');
+		foreach ($tables as $table) {
+			$data = $connectOldDB->fetchAll('SELECT * FROM ' . $table['name']);
+			foreach ($data as $row) {
+				$connectNewDB->query('INSERT into ' . $table['name'], $row);
 			}
 		}
-		$connect->disconnect();
-		writeLog('success', 'Update Function -  Cached Old Database', 'Database');
-	} catch (Dibi\Exception $e) {
-		writeLog('error', 'Update Function -  Cache Error [' . $e . ']', 'Database');
-		return $e;
-	}
-	// Remove Current Database
-	$pathDigest = pathinfo($path . $filename);
-	if (file_exists($path . $filename)) {
-		copy($path . $filename, $pathDigest['dirname'] . '/' . $pathDigest['filename'] . '[' . date('Y-m-d_H-i-s') . ']' . ($oldVerNum ? '[' . $oldVerNum . ']' : '') . '.bak.db');
-		unlink($path . $filename);
-	}
-	// Create New Database
-	$success = createDB($path, $filename);
-	try {
-		$GLOBALS['connect'] = new Dibi\Connection([
-			'driver' => 'sqlite3',
-			'database' => $path . $filename,
-		]);
-		// Restore Items
-		if ($success) {
-			writeLog('success', 'Update Function -  Created New Database', 'Database');
-			foreach ($cache as $table => $tableData) {
-				if ($tableData) {
-					$queryBase = 'INSERT INTO ' . $table . ' (`' . implode('`,`', array_keys(current($tableData))) . '`) values ';
-					$insertValues = array();
-					reset($tableData);
-					foreach ($tableData as $key => $value) {
-						$insertValues[] = '(' . implode(',', array_map(function ($d) {
-								return (isset($d) ? str_replace('\/', '/', json_encode($d)) : 'null');
-							}, $value)) . ')';
-					}
-					$GLOBALS['connect']->query($queryBase . implode(',', $insertValues) . ';');
-				}
-			}
+		$connectOldDB->disconnect();
+		$connectNewDB->disconnect();
+		// Remove Current Database
+		if (file_exists($GLOBALS['dbLocation'] . $migrationDB)) {
+			copy($GLOBALS['dbLocation'] . $migrationDB, $GLOBALS['dbLocation'] . $GLOBALS['dbName']);
+			//unlink($GLOBALS['dbLocation'] . $migrationDB);
 		}
 		writeLog('success', 'Update Function -  Migrated Old Info to new Database', 'Database');
 		return true;

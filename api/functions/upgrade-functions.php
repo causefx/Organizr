@@ -22,7 +22,7 @@ function upgradeCheck()
 	if ($updateDB == true) {
 		//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;
 		// Upgrade database to latest version
-		$updateSuccess = (updateDB($GLOBALS['dbLocation'], $GLOBALS['dbName'], $oldVer)) ? true : false;
+		$updateSuccess = (updateDB($oldVer)) ? true : false;
 	}
 	// Update config.php version if different to the installed version
 	if ($updateSuccess && $GLOBALS['installedVersion'] !== $GLOBALS['configVersion']) {
