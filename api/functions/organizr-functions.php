@@ -30,6 +30,7 @@ function organizrSpecialSettings()
 			'plex' => array(
 				'enabled' => ($GLOBALS['ssoPlex']) ? true : false,
 				'cookie' => isset($_COOKIE['mpt']) ? true : false,
+				'machineID' => $GLOBALS['plexID'],
 			),
 			'ombi' => array(
 				'enabled' => ($GLOBALS['ssoOmbi']) ? true : false,

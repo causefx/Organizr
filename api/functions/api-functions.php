@@ -70,6 +70,16 @@ function login($array)
                     	WHERE id=?', $result['id']);
 					writeLog('success', 'Login Function - User Password updated from backend', $username);
 				}
+				if ($token !== '') {
+					if ($token !== $result['plex_token']) {
+						$database->query('
+	                        UPDATE users SET', [
+							'plex_token' => $token
+						], '
+	                        WHERE id=?', $result['id']);
+						writeLog('success', 'Login Function - User Plex Token updated from backend', $username);
+					}
+				}
 				// 2FA might go here
 				if ($result['auth_service'] !== 'internal' && strpos($result['auth_service'], '::') !== false) {
 					$TFA = explode('::', $result['auth_service']);
