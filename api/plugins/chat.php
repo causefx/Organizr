@@ -74,6 +74,13 @@ function chatGetSettings()
 				'value' => $GLOBALS['CHAT-newMessageSound-include'],
 				'options' => getSounds()
 			),
+			array(
+				'type' => 'switch',
+				'name' => 'CHAT-useSSL',
+				'label' => 'Use Pusher SSL',
+				'help' => 'If messages get stuck sending, please turn this option off.',
+				'value' => $GLOBALS['CHAT-useSSL']
+			)
 		),
 		'Connection' => array(
 			array(
@@ -126,7 +133,7 @@ function sendChatMessage($array)
 		$connect->query('INSERT INTO [chatroom]', $newMessage);
 		$options = array(
 			'cluster' => $GLOBALS['CHAT-cluster-include'],
-			'useTLS' => true
+			'useTLS' => $GLOBALS['CHAT-useSSL']
 		);
 		$pusher = new Pusher\Pusher(
 			$GLOBALS['CHAT-authKey-include'],

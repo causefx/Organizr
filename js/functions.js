@@ -1687,6 +1687,68 @@ function buildTwoFA(current){
 
     return element;
 }
+function revokeToken(token,id){
+    organizrAPI('POST','api/?v1/token/revoke',{token:token}).success(function(data) {
+        var response = JSON.parse(data);
+        if(response.data == true){
+            $('#token-'+id).fadeOut();
+            message(window.lang.translate('Removed Token'),"",activeInfo.settings.notifications.position,"#FFF","success","3500");
+        }else{
+            message(window.lang.translate('Error: Removing Token'),"",activeInfo.settings.notifications.position,"#FFF","error","3500");
+        }
+    }).fail(function(xhr) {
+        ajaxloader();
+        console.error("Organizr Function: API Connection Failed");
+    });
+}
+function buildActiveTokens(array) {
+    console.log(array);
+    var tokens = '';
+    $.each(array, function(i,v) {
+        var className = (activeInfo.user.token == v.token) ? 'bg-success text-inverse' : '';
+        var extraText = (activeInfo.user.token == v.token) ? '<span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="Current Token">...'+v.token.substr(-10, 10)+'</span>' : v.token.substr(-10, 10);
+        tokens += `
+            <tr id="token-`+v.id+`" class="`+className+`">
+                <td>`+v.id+`</td>
+                <td>`+extraText+`</td>
+                <td>`+moment(v.created).format('LLL')+`</td>
+                <td>`+moment(v.expires).format('LLL')+`</td>
+                <td>
+                    <button class="btn btn-danger waves-effect waves-light" type="button" onclick="revokeToken('`+v.token+`', '`+v.id+`');"><i class="fa fa-ban"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+    return `
+        <div class="col-lg-12">
+            <div class="panel panel-info">
+                <div class="panel-heading"> <span lang="en">Active Tokens</span>
+                    <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-plus"></i></a> </div>
+                </div>
+                <div class="panel-wrapper collapse" aria-expanded="true">
+                    <div class="panel-body bg-org p-0">
+                        <div class="table-responsive">
+                            <table class="table color-table info-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Token</th>
+                                        <th>Created</th>
+                                        <th>Expires</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    `+tokens+`
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
 function accountManager(user){
     var passwordMessage = '';
     switch(activeInfo.settings.misc.authBackend){
@@ -1695,9 +1757,9 @@ function accountManager(user){
                 <div class="col-lg-12">
                     <div class="panel panel-info">
                         <div class="panel-heading"> <span lang="en">Password Notice</span>
-                            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-plus"></i></a> </div>
                         </div>
-                        <div class="panel-wrapper collapse in" aria-expanded="true">
+                        <div class="panel-wrapper collapse" aria-expanded="true">
                             <div class="panel-body bg-org">
                                 <p lang="en">If you signed in with a Plex Acct... Please use the following link to change your password there:</p><br>
                                 <p><a href="https://app.plex.tv/auth#?resetPassword" target="_blank">Change Password on Plex Website</a></p>
@@ -1729,6 +1791,7 @@ function accountManager(user){
             break;
     }
 	if (user.data.user.loggedin === true) {
+	    var activeTokens = buildActiveTokens(user.data.user.tokenList);
 		var accountDiv = `
         <!-- 2fa modal content -->
         <div id="twofa-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="twofa-modal-label" aria-hidden="true">
@@ -1801,7 +1864,7 @@ function accountManager(user){
 													<label class="control-label" lang="en">Verify Password</label>
 													<input type="password" id="accountPassword2" class="form-control"></div>
 											</div>
-											`+passwordMessage+`
+											`+activeTokens+passwordMessage+`
 										</div>
 										<!--/row-->
 									</div>

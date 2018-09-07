@@ -62,7 +62,7 @@ function organizrSpecialSettings()
 			'maxGroup' => $GLOBALS['lockoutMaxAuth']
 		),
 		'user' => array(
-			'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null
+			'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
 		),
 		'misc' => array(
 			'installedPlugins' => $GLOBALS['installedPlugins'],

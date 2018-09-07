@@ -1035,3 +1035,33 @@ function loadTabs()
 	}
 	return false;
 }
+
+function getActiveTokens()
+{
+	try {
+		$connect = new Dibi\Connection([
+			'driver' => 'sqlite3',
+			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+		]);
+		$all = $connect->fetchAll('SELECT * FROM `tokens` WHERE `user_id` = ? AND `expires` > ?', $GLOBALS['organizrUser']['userID'], $GLOBALS['currentTime']);
+		return $all;
+	} catch (Dibi\Exception $e) {
+		return false;
+	}
+}
+
+function revokeToken($array)
+{
+	if ($array['data']['token']) {
+		try {
+			$connect = new Dibi\Connection([
+				'driver' => 'sqlite3',
+				'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+			]);
+			$connect->query('DELETE FROM tokens WHERE user_id = ? AND token = ?', $GLOBALS['organizrUser']['userID'], $array['data']['token']);
+			return true;
+		} catch (Dibi\Exception $e) {
+			return false;
+		}
+	}
+}

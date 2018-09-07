@@ -109,7 +109,8 @@ function validateToken($token, $global = false)
 					'driver' => 'sqlite3',
 					'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
 				]);
-				$tokenCheck = $database->fetch('SELECT * FROM tokens WHERE user_id = ? AND token = ?', $userInfo['userID'], $token);
+				$all = $database->fetchAll('SELECT * FROM `tokens` WHERE `user_id` = ? AND `expires` > ?', $userInfo['userID'], $GLOBALS['currentTime']);
+				$tokenCheck = (searchArray($all, 'token', $token) !== false);
 				if (!$tokenCheck) {
 					// Delete cookie & reload page
 					coookie('delete', $GLOBALS['cookieName']);
@@ -129,6 +130,7 @@ function validateToken($token, $global = false)
 					"userID" => $result['id'],
 					"loggedin" => true,
 					"locked" => $result['locked'],
+					"tokenList" => $all,
 					"authService" => explode('::', $result['auth_service'])[0]
 				);
 			} catch (Dibi\Exception $e) {
@@ -162,6 +164,7 @@ function getOrganizrUserToken()
 			"userID" => null,
 			"loggedin" => false,
 			"locked" => false,
+			"tokenList" => null,
 			"authService" => null
 		);
 	}

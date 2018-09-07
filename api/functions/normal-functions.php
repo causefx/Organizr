@@ -348,6 +348,15 @@ function array_filter_key(array $array, $callback)
 	return array_intersect_key($array, array_flip($matchedKeys));
 }
 
+function searchArray($array, $field, $value)
+{
+	foreach ($array as $key => $item) {
+		if ($item[$field] === $value)
+			return $key;
+	}
+	return false;
+}
+
 // Qualify URL
 function qualifyURL($url, $return = false)
 {
