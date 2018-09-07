@@ -250,7 +250,7 @@ function hideFrames(){
     $(".plugin-listing div[class^='plugin-container']").addClass("hidden").removeClass('show');
 }
 function closeSideMenu(){
-	$('.fix-header').removeClass('show-sidebar');
+	$('.content-wrapper').removeClass('show-sidebar');
 }
 function removeMenuActive(){
 	$("#side-menu a").removeClass('active');
