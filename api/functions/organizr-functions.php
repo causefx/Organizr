@@ -318,6 +318,7 @@ function logout()
 	coookie('delete', $GLOBALS['cookieName']);
 	coookie('delete', 'mpt');
 	coookie('delete', 'Auth');
+	revokeToken(array('data' => array('token' => $GLOBALS['organizrUser']['token'])));
 	$GLOBALS['organizrUser'] = false;
 	return true;
 }
