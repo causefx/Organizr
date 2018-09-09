@@ -986,10 +986,10 @@ function getCalendar()
 		foreach ($calendarURLList as $key => $value) {
 			$icsEvents = getIcsEventsAsArray($value);
 			if (isset($icsEvents) && !empty($icsEvents)) {
-				$timeZone = trim($icsEvents [1] ['X-WR-TIMEZONE']);
+				$timeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : date_default_timezone_get();
 				unset($icsEvents [1]);
 				foreach ($icsEvents as $icsEvent) {
-					if (isset($icsEvent['DTSTART']) && isset($icsEvent['DTEND']) && isset($icsEvent['SUMMARY'])) {
+					if ((isset($icsEvent['DTSTART']) || isset($icsEvent['DTSTART;VALUE=DATE'])) && (isset($icsEvent['DTEND']) || isset($icsEvent['DTEND;VALUE=DATE'])) && isset($icsEvent['SUMMARY'])) {
 						/* Getting start date and time */
 						$start = isset($icsEvent ['DTSTART;VALUE=DATE']) ? $icsEvent ['DTSTART;VALUE=DATE'] : $icsEvent ['DTSTART'];
 						/* Converting to datetime and apply the timezone to get proper date time */
