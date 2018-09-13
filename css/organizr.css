@@ -1158,3 +1158,14 @@ img.img-chooser {
     margin-right: auto;
     width: 50%;
 }
+.fc-status {
+    width: 0px;
+    height: 100%;
+    display: block;
+    position: absolute;
+    border-radius: 5px;
+}
+span.fc-image,
+span.fc-title {
+    margin-left: 5px;
+}

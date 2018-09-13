@@ -1108,6 +1108,7 @@ function getSonarrCalendar($array, $number)
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
 			"downloadFilter" => $downloaded,
+			"bgColor" => str_replace('text', 'bg', $downloaded),
 			"details" => $details
 		));
 	}
@@ -1171,6 +1172,7 @@ function getLidarrCalendar($array, $number)
 			"imagetype" => "music " . $downloaded,
 			"imagetypeFilter" => "music",
 			"downloadFilter" => $downloaded,
+			"bgColor" => str_replace('text', 'bg', $downloaded),
 			"details" => $details
 		));
 	}
@@ -1262,6 +1264,7 @@ function getRadarrCalendar($array, $number, $url)
 				"imagetype" => "film " . $downloaded,
 				"imagetypeFilter" => "film",
 				"downloadFilter" => $downloaded,
+				"bgColor" => str_replace('text', 'bg', $downloaded),
 				"details" => $details
 			));
 		}
@@ -1344,6 +1347,7 @@ function getCouchCalendar($array, $number)
 				"imagetype" => "film " . $downloaded,
 				"imagetypeFilter" => "film",
 				"downloadFilter" => $downloaded,
+				"bgColor" => str_replace('text', 'bg', $downloaded),
 				"details" => $details
 			));
 		}
@@ -1412,6 +1416,7 @@ function getSickrageCalendarWanted($array, $number)
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
 			"downloadFilter" => $downloaded,
+			"bgColor" => str_replace('text', 'bg', $downloaded),
 			"details" => $details,
 		));
 	}
@@ -1468,6 +1473,7 @@ function getSickrageCalendarWanted($array, $number)
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
 			"downloadFilter" => $downloaded,
+			"bgColor" => str_replace('text', 'bg', $downloaded),
 			"details" => $details,
 		));
 	}
@@ -1524,6 +1530,7 @@ function getSickrageCalendarWanted($array, $number)
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
 			"downloadFilter" => $downloaded,
+			"bgColor" => str_replace('text', 'bg', $downloaded),
 			"details" => $details,
 		));
 	}
@@ -1580,6 +1587,7 @@ function getSickrageCalendarWanted($array, $number)
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
 			"downloadFilter" => $downloaded,
+			"bgColor" => str_replace('text', 'bg', $downloaded),
 			"details" => $details,
 		));
 	}
@@ -1633,6 +1641,7 @@ function getSickrageCalendarHistory($array, $number)
 			"imagetype" => "tv " . $downloaded,
 			"imagetypeFilter" => "tv",
 			"downloadFilter" => $downloaded,
+			"bgColor" => str_replace('text', 'bg', $downloaded),
 			"details" => $details,
 		));
 	}

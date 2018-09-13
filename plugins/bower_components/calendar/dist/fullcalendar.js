@@ -6671,7 +6671,7 @@ DayGrid.mixin({
 				(htmlEscape(event.title || '') || '&nbsp;') + // we always want one line of height
 			'</span>';
         imageHtml =
-			'<span class="fc-image"><i class="fa fa-' +
+			'<span class="fc-status '+ event.bgColor +'"></span><span class="fc-image"><i class="fa fa-' +
 				(htmlEscape(event.imagetype || '') || '&nbsp;') + // we always want one line of height
 			'"></i></span>';
 
@@ -14546,7 +14546,7 @@ var ListViewGrid = Grid.extend({
 				(htmlEscape(event.title || '') || '&nbsp;') + // we always want one line of height
 			'</span>';
         imageHtml =
-			'<span class="fc-image"><i class="fa fa-' +
+			'<span class="fc-status '+ event.bgColor +'"></span><span class="fc-image"><i class="fa fa-' +
 				(htmlEscape(event.imagetype || '') || '&nbsp;') + // we always want one line of height
 			'"></i></span>';
 

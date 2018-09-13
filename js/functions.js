@@ -628,7 +628,7 @@ function buildFormItem(item){
 	var pwd2 = createRandomString(6);
 	var pwd3 = createRandomString(6);
 	var helpInfo = (item.help) ? '<div class="collapse" id="help-info-'+item.name+'"><blockquote>'+item.help+'</blockquote></div>' : '';
-    var smallLabel = (item.smallLabel) ? '<label><span lang="en">'+item.smallLabel+'</span>`+helpTip+`</label>'+helpInfo : ''+helpInfo;
+    var smallLabel = (item.smallLabel) ? '<label><span lang="en">'+item.smallLabel+'</span></label>'+helpInfo : ''+helpInfo;
 	var pwgMgr = `
 	<input name="disable-pwd-mgr-`+pwd1+`" type="password" id="disable-pwd-mgr-`+pwd1+`" style="display: none;" value="disable-pwd-mgr-`+pwd1+`" />
 	<input name="disable-pwd-mgr-`+pwd2+`" type="password" id="disable-pwd-mgr-`+pwd2+`" style="display: none;" value="disable-pwd-mgr-`+pwd2+`" />
