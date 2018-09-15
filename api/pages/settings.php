@@ -271,7 +271,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                                 <div class="col-lg-4 col-xs-12">
                                                     <div class="lazyload qr-code" data-src="plugins/images/Bitcoin_QR_code.png"></div>
                                                     <div class="clearfix"></div>
-                                                    <code>1JLWKSSGDDKDNLJPWBNXFQMCXI8UUOHZVV</code>
+                                                    <code>18dNtPKgor6pV5DJhYNqFxLJJ2BKugo4K9</code>
                                                 </div>
                                                 <div class="col-lg-4 col-xs-12">
                                                     <div class="lazyload qr-code" data-src="plugins/images/Litecoin_QR_code.png"></div>
