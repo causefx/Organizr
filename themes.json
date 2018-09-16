@@ -7,9 +7,9 @@
             "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/icon.png",
         "contact": null,
         "website": "https://github.com/Burry/organizr-v2-plex-theme",
-        "version": "2.6.2",
+        "version": "2.6.4",
         "release_date": "2018-07-31",
-        "last_updated": "2018-08-07",
+        "last_updated": "2018-08-15",
         "github_folder": "plex_theme",
         "license": "personal,business",
         "files": {
