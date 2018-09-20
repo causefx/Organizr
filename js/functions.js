@@ -1702,7 +1702,6 @@ function revokeToken(token,id){
     });
 }
 function buildActiveTokens(array) {
-    console.log(array);
     var tokens = '';
     $.each(array, function(i,v) {
         var className = (activeInfo.user.token == v.token) ? 'bg-success text-inverse' : '';
@@ -3394,6 +3393,7 @@ function buildRequestItem(array, extra=null){
 	var items = '';
 	$.each(array, function(i,v) {
 			if(extra == null){
+                var approveID = (v.type == 'tv') ? v.id : v.request_id;
 				var badge = '';
 				var badge2 = '';
 				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/cache/no-np.png';
@@ -3415,8 +3415,8 @@ function buildRequestItem(array, extra=null){
                     <ul role="menu" class="dropdown-menu">
 						<li><h5 class="text-center" lang="en">Request Options</h5></li>
 						<li class="divider"></li>
-						`+buildRequestAdminMenuItem(v.approved, 'approved',v.request_id,v.type)+`
-						`+buildRequestAdminMenuItem(v.available, 'available',v.request_id,v.type)+`
+						`+buildRequestAdminMenuItem(v.approved, 'approved',approveID,v.type)+`
+						`+buildRequestAdminMenuItem(v.available, 'available',approveID,v.type)+`
 						<li><a class="mouse" onclick="ombiActions('`+v.request_id+`', 'delete', '`+v.type+`');" lang="en">Delete</a></li>
                     </ul>
                 </div>`;
@@ -3694,7 +3694,7 @@ function buildRequest(array){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left"><span lang="en">Requested Content</span></h4>
+			<h4 class="pull-left"><span lang="en">Requests</span></h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -3704,7 +3704,7 @@ function buildRequest(array){
 	}else{
 		var header = `
 		<div class="panel-heading bg-info p-t-10 p-b-10">
-			<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; Requested Content</span>
+			<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; Requests</span>
 			<div class="btn-group pull-right">
 					`+builtDropdown+`
 			</div>
@@ -3913,6 +3913,12 @@ function ombiActions(id,action,type){
 		var response = JSON.parse(data);
 		console.log(response.data);
 		if(response.data !== false){
+            if(action == 'delete'){
+                homepageRequests();
+                $.magnificPopup.close();
+                message(window.lang.translate('Deleted Request Item'),'',activeInfo.settings.notifications.position,"#FFF",'success',"3500");
+                return true;
+            }
             var responseData = JSON.parse(response.data.bd);
             console.log(responseData);
             var responseMessage = (responseData.isError == true) ? responseData.errorMessage : 'Success';

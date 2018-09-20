@@ -12,7 +12,7 @@ function ssoCheck($username, $password, $token = null)
 		}
 	}
 	if ($GLOBALS['ssoTautulli']) {
-		$tautulliToken = getTautulliToken($username, $password);
+		$tautulliToken = getTautulliToken($username, $password, $token);
 		if ($tautulliToken) {
 			foreach ($tautulliToken as $key => $value) {
 				coookie('set', 'tautulli_token_' . $value['uuid'], $value['token'], 7, false);
@@ -48,9 +48,8 @@ function getOmbiToken($username, $password)
 	};
 }
 
-function getTautulliToken($username, $password)
+function getTautulliToken($username, $password, $plexToken = null)
 {
-	$tautulli = array();
 	$token = null;
 	$tautulliURLList = explode(',', $GLOBALS['tautulliURL']);
 	if (count($tautulliURLList) !== 0) {
@@ -65,6 +64,7 @@ function getTautulliToken($username, $password)
 				$data = array(
 					"username" => $username,
 					"password" => $password,
+					"token" => $plexToken,
 					"remember_me" => 1,
 				);
 				$options = (localURL($url)) ? array('verify' => false) : array();
