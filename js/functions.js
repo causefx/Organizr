@@ -4267,7 +4267,10 @@ function buildDownloaderItem(array, source, type='none'){
 function buildDownloader(array, source){
 	var menu = `<ul class="nav customtab nav-tabs pull-right" role="tablist">`;
 	var listing = '';
-	var queueItems = (typeof array.content.queueItems !== 'undefined') ? array.content.queueItems : false;
+	if(typeof array.content == 'undefined'){
+	    return false;
+    }
+    var queueItems = (typeof array.content.queueItems !== 'undefined') ? array.content.queueItems : false;
 	var historyItems = (typeof array.content.historyItems !== 'undefined') ? array.content.historyItems : false;
 	var downloader = (queueItems || historyItems) ? true : false;
 	var state = '';
