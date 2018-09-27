@@ -1790,6 +1790,7 @@ function accountManager(user){
             break;
     }
 	if (user.data.user.loggedin === true) {
+	    var twoFADisable = (buildTwoFA(user.data.user.authService) == 'internal') ? '' : 'disabled';
 	    var activeTokens = buildActiveTokens(user.data.user.tokenList);
 		var accountDiv = `
         <!-- 2fa modal content -->
@@ -1843,12 +1844,12 @@ function accountManager(user){
 											<div class="col-md-6">
 												<div class="form-group">
 													<label class="control-label" lang="en">Username</label>
-													<input type="text" id="accountUsername" class="form-control" value="`+activeInfo.user.username+`"></div>
+													<input `+twoFADisable+` type="text" id="accountUsername" class="form-control" value="`+activeInfo.user.username+`"></div>
 											</div>
 											<div class="col-md-6">
 												<div class="form-group">
 													<label class="control-label" lang="en">Email</label>
-													<input type="text" id="accountEmail" class="form-control" value="`+activeInfo.user.email+`"></div>
+													<input `+twoFADisable+` type="text" id="accountEmail" class="form-control" value="`+activeInfo.user.email+`"></div>
 											</div>
 										</div>
 										<!--/row-->
