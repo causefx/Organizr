@@ -3129,7 +3129,7 @@ function errorPage(error=null,uri=null){
 	if($.urlParam('error') !== null){
 		local('set','error',$.urlParam('error'));
 	}
-    if($.urlParam('return') !== null){
+    if($.urlParam('return') !== null && activeInfo.user.loggedin !== true){
         local('set','uri',$.urlParam('return'));
     }
 	if ( window.location !== window.parent.location ) {
