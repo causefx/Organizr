@@ -2134,6 +2134,7 @@ function buildTabGroupSelect(array, tabID, groupID){
 	return '<td><select name="tab['+tabID+'].group_id" class="form-control tabGroupSelect">'+groupSelect+'</select></td>';
 }
 function buildTabTypeSelect(tabID, typeID, disabled){
+    console.log(tabID, typeID, disabled);
 	var array = [
 		{
 			'type_id':0,
@@ -2155,9 +2156,10 @@ function buildTabTypeSelect(tabID, typeID, disabled){
 		if(v.type_id == typeID){
 			selected = 'selected';
 		}
-		typeSelect += '<option '+selected+' value="'+v.type_id+'">'+v.type+'</option>';
+        var disabledAttr = (disabled === 'disabled' && v.type !== 'Internal') ? 'disabled' : '';
+		typeSelect += '<option '+selected+' value="'+v.type_id+'" '+disabledAttr+'>'+v.type+'</option>';
 	});
-	return '<td><select name="tab['+tabID+'].type" class="form-control tabTypeSelect" '+disabled+'>'+typeSelect+'</select></td>';
+	return '<td><select name="tab['+tabID+'].type" class="form-control tabTypeSelect">'+typeSelect+'</select></td>';
 }
 function buildTabCategorySelect(array,tabID, categoryID){
 	var categorySelect = '';
