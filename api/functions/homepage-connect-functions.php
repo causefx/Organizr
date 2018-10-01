@@ -100,6 +100,7 @@ function resolveEmbyItem($itemDetails)
 		case 'Series':
 			$embyItem['type'] = 'tv';
 			$embyItem['title'] = $item['Name'];
+			$embyItem['secondaryTitle'] = '';
 			$embyItem['summary'] = '';
 			$embyItem['ratingKey'] = $item['Id'];
 			$embyItem['thumb'] = $item['Id'];
@@ -112,6 +113,7 @@ function resolveEmbyItem($itemDetails)
 		case 'Episode':
 			$embyItem['type'] = 'tv';
 			$embyItem['title'] = $item['SeriesName'];
+			$embyItem['secondaryTitle'] = '';
 			$embyItem['summary'] = '';
 			$embyItem['ratingKey'] = $item['Id'];
 			$embyItem['thumb'] = (isset($item['SeriesId']) ? $item['SeriesId'] : $item['Id']);
@@ -127,6 +129,7 @@ function resolveEmbyItem($itemDetails)
 		case 'Audio':
 			$embyItem['type'] = 'music';
 			$embyItem['title'] = $item['Name'];
+			$embyItem['secondaryTitle'] = '';
 			$embyItem['summary'] = '';
 			$embyItem['ratingKey'] = $item['Id'];
 			$embyItem['thumb'] = $item['Id'];
@@ -141,6 +144,7 @@ function resolveEmbyItem($itemDetails)
 		case 'Movie':
 			$embyItem['type'] = 'movie';
 			$embyItem['title'] = $item['Name'];
+			$embyItem['secondaryTitle'] = '';
 			$embyItem['summary'] = '';
 			$embyItem['ratingKey'] = $item['Id'];
 			$embyItem['thumb'] = $item['Id'];
@@ -155,6 +159,7 @@ function resolveEmbyItem($itemDetails)
 		case 'Video':
 			$embyItem['type'] = 'video';
 			$embyItem['title'] = $item['Name'];
+			$embyItem['secondaryTitle'] = '';
 			$embyItem['summary'] = '';
 			$embyItem['ratingKey'] = $item['Id'];
 			$embyItem['thumb'] = $item['Id'];
@@ -309,6 +314,7 @@ function resolvePlexItem($item)
 		case 'season':
 			$plexItem['type'] = 'tv';
 			$plexItem['title'] = (string)$item['parentTitle'];
+			$plexItem['secondaryTitle'] = (string)$item['title'];
 			$plexItem['summary'] = (string)$item['parentSummary'];
 			$plexItem['ratingKey'] = (string)$item['parentRatingKey'];
 			$plexItem['thumb'] = (string)$item['thumb'];
@@ -320,6 +326,7 @@ function resolvePlexItem($item)
 		case 'episode':
 			$plexItem['type'] = 'tv';
 			$plexItem['title'] = (string)$item['grandparentTitle'];
+			$plexItem['secondaryTitle'] = (string)$item['parentTitle'];
 			$plexItem['summary'] = (string)$item['title'];
 			$plexItem['ratingKey'] = (string)$item['parentRatingKey'];
 			$plexItem['thumb'] = ($item['parentThumb'] ? (string)$item['parentThumb'] : (string)$item['grandparentThumb']);
@@ -334,6 +341,7 @@ function resolvePlexItem($item)
 			$useImage = (isset($item['live']) ? "plugins/images/cache/livetv.png" : null);
 			$plexItem['type'] = 'clip';
 			$plexItem['title'] = (isset($item['live']) ? 'Live TV' : (string)$item['title']);
+			$plexItem['secondaryTitle'] = '';
 			$plexItem['summary'] = (string)$item['summary'];
 			$plexItem['ratingKey'] = (string)$item['parentRatingKey'];
 			$plexItem['thumb'] = (string)$item['thumb'];
@@ -346,7 +354,8 @@ function resolvePlexItem($item)
 		case 'album':
 		case 'track':
 			$plexItem['type'] = 'music';
-			$plexItem['title'] = (string)$item['parentTitle'] . ' - ' . (string)$item['title'];
+			$plexItem['title'] = (string)$item['parentTitle'];
+			$plexItem['secondaryTitle'] = (string)$item['title'];
 			$plexItem['summary'] = (string)$item['title'];
 			$plexItem['ratingKey'] = (string)$item['parentRatingKey'];
 			$plexItem['thumb'] = (string)$item['thumb'];
@@ -360,6 +369,7 @@ function resolvePlexItem($item)
 		default:
 			$plexItem['type'] = 'movie';
 			$plexItem['title'] = (string)$item['title'];
+			$plexItem['secondaryTitle'] = (string)$item['year'];
 			$plexItem['summary'] = (string)$item['summary'];
 			$plexItem['ratingKey'] = (string)$item['ratingKey'];
 			$plexItem['thumb'] = (string)$item['thumb'];

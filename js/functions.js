@@ -3324,7 +3324,7 @@ function buildRecentItem(array, type, extra=null){
 				<div class="hover-homepage-item">
 					<a class="btn default refreshImage" data-type="recent-item" data-image="`+v.originalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a>
 				</div>
-				<span class="elip recent-title">`+v.title+`</span>
+				<span class="elip recent-title">`+v.title+`<br/>`+v.secondaryTitle+`</span>
 				<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
 			        <div class="col-md-8 col-md-offset-2 `+v.uid+`-metadata-info"></div>
 			    </div>
@@ -4950,7 +4950,7 @@ function getPingList(arrayItems){
     return (pingList.length > 0) ? pingUpdate(pingList,timeout): false;
 }
 function pingUpdate(pingList,timeout){
-    organizrAPI('POST','api/?v1/ping',{pingList:pingList}).success(function(data) {
+    organizrAPI('POST','api/?v1/ping/list',{pingList:pingList}).success(function(data) {
         var response = JSON.parse(data);
         if (response.data !== false || response.data !== null) {
             $('.menu-category-ping').each(function( index ) {

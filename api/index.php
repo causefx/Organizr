@@ -345,7 +345,7 @@ switch ($function) {
 				break;
 		}
 		break;
-	case 'v1_ping':
+	case 'v1_ping_list':
 		switch ($method) {
 			case 'POST':
 				$result['status'] = 'success';
@@ -1222,6 +1222,32 @@ switch ($function) {
 					$result['statusText'] = 'API/Token invalid or not set';
 					$result['data'] = null;
 				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
+	case 'v1_version':
+		switch ($method) {
+			case 'GET':
+				$result['status'] = 'success';
+				$result['statusText'] = 'success';
+				$result['data'] = $GLOBALS['installedVersion'];
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
+	case 'v1_ping':
+		switch ($method) {
+			case 'GET':
+				$result['status'] = 'success';
+				$result['statusText'] = 'success';
+				$result['data'] = 'pong';
 				break;
 			default:
 				$result['status'] = 'error';
