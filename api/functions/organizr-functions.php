@@ -325,7 +325,7 @@ function logout()
 
 function qualifyRequest($accessLevelNeeded)
 {
-	if (getUserLevel() <= $accessLevelNeeded) {
+	if (getUserLevel() <= $accessLevelNeeded && getUserLevel() !== null) {
 		return true;
 	} else {
 		return false;
