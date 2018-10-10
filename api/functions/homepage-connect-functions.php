@@ -789,7 +789,8 @@ function rTorrentConnect()
 		try {
 			$torrents = array();
 			$digest = qualifyURL($GLOBALS['rTorrentURL'], true);
-			$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . '/RPC2';
+			$passwordInclude = ($GLOBALS['rTorrentUsername'] != '' && $GLOBALS['rTorrentPassword'] != '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
+			$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/RPC2';
 			$options = (localURL($url)) ? array('verify' => false) : array();
 			$data = xmlrpc_encode_request("d.multicall2", array(
 				"",
@@ -2139,7 +2140,8 @@ function testAPIConnection($array)
 			if (!empty($GLOBALS['rTorrentURL'])) {
 				try {
 					$digest = qualifyURL($GLOBALS['rTorrentURL'], true);
-					$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . '/RPC2';
+					$passwordInclude = ($GLOBALS['rTorrentUsername'] != '' && $GLOBALS['rTorrentPassword'] != '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
+					$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/RPC2';
 					$options = (localURL($url)) ? array('verify' => false) : array();
 					$data = xmlrpc_encode_request("system.listMethods", null);
 					$response = Requests::post($url, array(), $data, $options);

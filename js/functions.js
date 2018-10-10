@@ -4174,8 +4174,6 @@ function buildDownloaderItem(array, source, type='none'){
                     if(array == 0){
                         return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
                     }
-                    console.log(array);
-
                     $.each(array, function(i,v) {
                         var percent = Math.floor((v.downloaded / v.size) * 100);
                         var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
