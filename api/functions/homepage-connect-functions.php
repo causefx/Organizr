@@ -816,7 +816,7 @@ function rTorrentConnect()
 			), array());
 			$response = Requests::post($url, array(), $data, $options);
 			if ($response->success) {
-				$torrentList = xmlrpc_decode(str_replace('i8>', 'i4>', $response->body));
+				$torrentList = xmlrpc_decode(str_replace('i8>', 'string>', $response->body));
 				foreach ($torrentList as $key => $value) {
 					$tempStatus = rTorrentStatus($value[13], $value[10], $value[6]);
 					if ($tempStatus == 'Seeding' && $GLOBALS['rTorrentHideSeeding']) {
