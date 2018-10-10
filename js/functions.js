@@ -4186,6 +4186,7 @@ function buildDownloaderItem(array, source, type='none'){
 							<td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
 							<td class="hidden-xs"><i class="fa fa-upload"></i>&nbsp;`+upload+`</td>
 							<td class="hidden-xs">`+size+`</td>
+							<td class="hidden-xs">`+v.label+`</td>
 							<td class="text-right">
 								<div class="progress progress-lg m-b-0">
 									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>

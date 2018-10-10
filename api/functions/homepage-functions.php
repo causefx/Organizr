@@ -364,6 +364,22 @@ function getHomepageList()
 			'name' => 'Size Asc',
 			'value' => 'sizea'
 		),
+		array(
+			'name' => 'Label Desc',
+			'value' => 'labeld'
+		),
+		array(
+			'name' => 'Label Asc',
+			'value' => 'labela'
+		),
+		array(
+			'name' => 'Status Desc',
+			'value' => 'statusd'
+		),
+		array(
+			'name' => 'Status Asc',
+			'value' => 'statusa'
+		),
 	);
 	$qBittorrentSortOptions = array(
 		array(

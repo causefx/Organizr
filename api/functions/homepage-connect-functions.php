@@ -814,6 +814,12 @@ function rTorrentConnect()
 				"f.size_bytes=",
 				"f.size_chunks=",
 				"f.completed_chunks=",
+				"d.custom=",
+				"d.custom1=",
+				"d.custom2=",
+				"d.custom3=",
+				"d.custom4=",
+				"d.custom5=",
 			), array());
 			$response = Requests::post($url, array(), $data, $options);
 			if ($response->success) {
@@ -841,8 +847,11 @@ function rTorrentConnect()
 							'hash' => $value[12],
 							'complete' => ($value[13]) ? 'yes' : 'no',
 							'ratio' => $value[14],
+							'label' => $value[20],
 							'status' => $tempStatus,
 							'temp' => $value[16] . ' - ' . $value[17] . ' - ' . $value[18],
+							'custom' => $value[19] . ' - ' . $value[20] . ' - ' . $value[21],
+							'custom2' => $value[22] . ' - ' . $value[23] . ' - ' . $value[24],
 						);
 					}
 				}
