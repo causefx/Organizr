@@ -1120,7 +1120,7 @@ function getHomepageList()
 		array(
 			'name' => 'rTorrent',
 			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
-			'image' => 'plugins/images/tabs/ruTorrent.png',
+			'image' => 'plugins/images/tabs/rtorrent.png',
 			'category' => 'Downloader',
 			'settings' => array(
 				'FYI' => array(
