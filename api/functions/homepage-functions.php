@@ -341,6 +341,14 @@ function getHomepageList()
 	);
 	$rTorrentSortOptions = array(
 		array(
+			'name' => 'Date Desc',
+			'value' => 'dated'
+		),
+		array(
+			'name' => 'Date Asc',
+			'value' => 'datea'
+		),
+		array(
 			'name' => 'Hash Desc',
 			'value' => 'hashd'
 		),
