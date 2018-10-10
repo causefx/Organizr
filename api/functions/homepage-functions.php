@@ -17,6 +17,7 @@ function homepageOrder()
 		"homepageOrdertransmission" => $GLOBALS['homepageOrdertransmission'],
 		"homepageOrderqBittorrent" => $GLOBALS['homepageOrderqBittorrent'],
 		"homepageOrderdeluge" => $GLOBALS['homepageOrderdeluge'],
+		"homepageOrderrTorrent" => $GLOBALS['homepageOrderrTorrent'],
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -58,6 +59,18 @@ function buildHomepageItem($homepageItem)
                 // homepageOrderqBittorrent
                 homepageDownloader("qBittorrent", "' . $GLOBALS['homepageDownloadRefresh'] . '");
                 // End homepageOrderqBittorrent
+                </script>
+                ';
+			}
+			break;
+		case 'homepageOrderrTorrent':
+			if ($GLOBALS['homepagerTorrentEnabled']) {
+				$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+				$item .= '
+                <script>
+                // homepageOrderrTorrent
+                homepageDownloader("rTorrent", "' . $GLOBALS['homepageDownloadRefresh'] . '");
+                // End homepageOrderrTorrent
                 </script>
                 ';
 			}
@@ -326,6 +339,32 @@ function getHomepageList()
 			'value' => 'H:mm'
 		)
 	);
+	$rTorrentSortOptions = array(
+		array(
+			'name' => 'Hash Desc',
+			'value' => 'hashd'
+		),
+		array(
+			'name' => 'Hash Asc',
+			'value' => 'hasha'
+		),
+		array(
+			'name' => 'Name Desc',
+			'value' => 'named'
+		),
+		array(
+			'name' => 'Name Asc',
+			'value' => 'namea'
+		),
+		array(
+			'name' => 'Size Desc',
+			'value' => 'sized'
+		),
+		array(
+			'name' => 'Size Asc',
+			'value' => 'sizea'
+		),
+	);
 	$qBittorrentSortOptions = array(
 		array(
 			'name' => 'Hash',
@@ -388,6 +427,7 @@ function getHomepageList()
 			'value' => 'category'
 		)
 	);
+	$xmlStatus = (extension_loaded('xmlrpc')) ? 'Installed' : 'Not Installed';
 	return array(array(
 		'name' => 'Calendar',
 		'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
@@ -1078,6 +1118,100 @@ function getHomepageList()
 			)
 		),
 		array(
+			'name' => 'rTorrent',
+			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
+			'image' => 'plugins/images/tabs/ruTorrent.png',
+			'category' => 'Downloader',
+			'settings' => array(
+				'FYI' => array(
+					array(
+						'type' => 'html',
+						'label' => '',
+						'override' => 12,
+						'html' => '
+						<div class="row">
+						    <div class="col-lg-12">
+						        <div class="panel panel-info">
+						            <div class="panel-heading">
+						                <span lang="en">This module requires XMLRPC</span>
+						            </div>
+						            <div class="panel-wrapper collapse in" aria-expanded="true">
+						                <div class="panel-body">
+						                    <span lang="en">Status: [ <b>' . $xmlStatus . '</b> ]</span>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+						'
+					)
+				),
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepagerTorrentEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepagerTorrentEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepagerTorrentAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepagerTorrentAuth'],
+						'options' => $groups
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'rTorrentURL',
+						'label' => 'URL',
+						'value' => $GLOBALS['rTorrentURL'],
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'rTorrentUsername',
+						'label' => 'Username',
+						'value' => $GLOBALS['rTorrentUsername']
+					),
+					array(
+						'type' => 'password',
+						'name' => 'rTorrentPassword',
+						'label' => 'Password',
+						'value' => $GLOBALS['rTorrentPassword']
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'rTorrentHideSeeding',
+						'label' => 'Hide Seeding',
+						'value' => $GLOBALS['rTorrentHideSeeding']
+					), array(
+						'type' => 'switch',
+						'name' => 'rTorrentHideCompleted',
+						'label' => 'Hide Completed',
+						'value' => $GLOBALS['rTorrentHideCompleted']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'rTorrentSortOrder',
+						'label' => 'Order',
+						'value' => $GLOBALS['rTorrentSortOrder'],
+						'options' => $rTorrentSortOptions
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageDownloadRefresh'],
+						'options' => optionTime()
+					)
+				)
+			)
+		),
+		array(
 			'name' => 'Deluge',
 			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
 			'image' => 'plugins/images/tabs/deluge.png',
@@ -1093,7 +1227,7 @@ function getHomepageList()
                             <div class="panel-wrapper collapse in" aria-expanded="true">
                                 <div class="panel-body">
 									<ul class="list-icons">
-                                        <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://github.com/idlesign/deluge-webapi/raw/master/dist/WebAPI-0.2.1-py2.7.egg" target="_blank">Download Plugin</a></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://github.com/idlesign/deluge-webapi/tree/master/dist" target="_blank">Download Plugin</a></li>
                                         <li><i class="fa fa-chevron-right text-danger"></i> Open Deluge Web UI, go to "Preferences -> Plugins -> Install plugin" and choose egg file.</li>
                                         <li><i class="fa fa-chevron-right text-danger"></i> Activate WebAPI plugin </li>
                                     </ul>
@@ -1826,6 +1960,13 @@ function buildHomepageSettings()
 				$class = 'bg-qbit';
 				$image = 'plugins/images/tabs/qBittorrent.png';
 				if (!$GLOBALS['homepageqBittorrentEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderrTorrent':
+				$class = 'bg-qbit';
+				$image = 'plugins/images/tabs/ruTorrent.png';
+				if (!$GLOBALS['homepagerTorrentEnabled']) {
 					$class .= ' faded';
 				}
 				break;

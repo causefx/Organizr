@@ -4168,6 +4168,39 @@ function buildDownloaderItem(array, source, type='none'){
 
 			}
 			break;
+        case 'rTorrent':
+            switch (type) {
+                case 'queue':
+                    if(array == 0){
+                        return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+                    }
+                    console.log(array);
+
+                    $.each(array, function(i,v) {
+                        var percent = Math.floor((v.downloaded / v.size) * 100);
+                        var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
+                        var upload = v.seed !== '' ? humanFileSize(v.seed,true) : "0 B";
+                        var download = v.leech !== '' ? humanFileSize(v.leech,true) : "0 B";
+                        items += `
+						<tr>
+							<td class="max-texts">`+v.name+`</td>
+							<td class="hidden-xs">`+v.status+`</td>
+							<td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
+							<td class="hidden-xs"><i class="fa fa-upload"></i>&nbsp;`+upload+`</td>
+							<td class="hidden-xs">`+size+`</td>
+							<td class="text-right">
+								<div class="progress progress-lg m-b-0">
+									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+								</div>
+							</td>
+						</tr>
+						`;
+                    });
+                    break;
+                default:
+
+            }
+            break;
 
 		case 'qBittorrent':
 			switch (type) {
@@ -4484,6 +4517,9 @@ function homepageDownloader(type, timeout){
 		case 'deluge':
 			var action = 'getDeluge';
 			break;
+        case 'rTorrent':
+            var action = 'getrTorrent';
+            break;
 		default:
 
 	}

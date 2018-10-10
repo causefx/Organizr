@@ -39,6 +39,9 @@ function homepageConnect($array)
 		case 'getqBittorrent':
 			return qBittorrentConnect();
 			break;
+		case 'getrTorrent':
+			return rTorrentConnect();
+			break;
 		case 'getDeluge':
 			return delugeConnect();
 			break;
@@ -759,6 +762,111 @@ function transmissionConnect()
 			}
 		} catch (Requests_Exception $e) {
 			writeLog('error', 'Transmission Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		};
+		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		return $api;
+	}
+	return false;
+}
+
+function rTorrentStatus($completed, $state, $status)
+{
+	if ($completed && $state && $status == 'seed') {
+		$state = 'Seeding';
+	} elseif (!$completed && !$state && $status == 'leech') {
+		$state = 'Stopped';
+	} elseif (!$completed && $state && $status == 'leech') {
+		$state = 'Downloading';
+	} elseif ($completed && !$state && $status == 'seed') {
+		$state = 'Finished';
+	}
+	return $state;
+}
+
+function rTorrentConnect()
+{
+	if ($GLOBALS['homepagerTorrentEnabled'] && !empty($GLOBALS['rTorrentURL']) && qualifyRequest($GLOBALS['homepagerTorrentAuth'])) {
+		try {
+			$torrents = array();
+			$digest = qualifyURL($GLOBALS['rTorrentURL'], true);
+			$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . '/RPC2';
+			$options = (localURL($url)) ? array('verify' => false) : array();
+			$data = xmlrpc_encode_request("d.multicall2", array(
+				"",
+				"main",
+				"d.name=",
+				"d.base_path=",
+				"d.up.total=",
+				"d.size_bytes=",
+				"d.down.total=",
+				"d.completed_bytes=",
+				"d.connection_current=",
+				"d.down.rate=",
+				"d.up.rate=",
+				"d.creation_date=",
+				"d.state=",
+				"d.group.name=",
+				"d.hash=",
+				"d.complete=",
+				"d.ratio=",
+				"d.chunk_size=",
+				"f.size_bytes=",
+				"f.size_chunks=",
+				"f.completed_chunks=",
+			), array());
+			$response = Requests::post($url, array(), $data, $options);
+			if ($response->success) {
+				$torrentList = xmlrpc_decode(str_replace('i8>', 'i4>', $response->body));
+				foreach ($torrentList as $key => $value) {
+					$tempStatus = rTorrentStatus($value[13], $value[10], $value[6]);
+					if ($tempStatus == 'Seeding' && $GLOBALS['rTorrentHideSeeding']) {
+						//do nothing
+					} elseif ($tempStatus == 'Finished' && $GLOBALS['rTorrentHideCompleted']) {
+						//do nothing
+					} else {
+						$torrents[$key] = array(
+							'name' => $value[0],
+							'base' => $value[1],
+							'upTotal' => $value[2],
+							'size' => $value[3],
+							'downTotal' => $value[4],
+							'downloaded' => $value[5],
+							'connectionState' => $value[6],
+							'leech' => $value[7],
+							'seed' => $value[8],
+							'date' => $value[9],
+							'state' => ($value[10]) ? 'on' : 'off',
+							'group' => $value[11],
+							'hash' => $value[12],
+							'complete' => ($value[13]) ? 'yes' : 'no',
+							'ratio' => $value[14],
+							'status' => $tempStatus,
+							'temp' => $value[16] . ' - ' . $value[17] . ' - ' . $value[18],
+						);
+					}
+				}
+				if (count($torrents) !== 0) {
+					usort($torrents, function ($a, $b) {
+						$direction = substr($GLOBALS['rTorrentSortOrder'], -1);
+						$sort = substr($GLOBALS['rTorrentSortOrder'], 0, strlen($GLOBALS['rTorrentSortOrder']) - 1);
+						switch ($direction) {
+							case 'a':
+								return $a[$sort] <=> $b[$sort];
+								break;
+							case 'd':
+								return $b[$sort] <=> $a[$sort];
+								break;
+							default:
+								return $b['date'] <=> $a['date'];
+						}
+					});
+				}
+				$api['content']['queueItems'] = $torrents;
+				$api['content']['historyItems'] = false;
+			}
+		} catch
+		(Requests_Exception $e) {
+			writeLog('error', 'rTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		};
 		$api['content'] = isset($api['content']) ? $api['content'] : false;
 		return $api;
