@@ -2135,7 +2135,7 @@ function testAPIConnection($array)
 				return 'URL and/or Password not setup';
 			}
 			break;
-		case 'rTorrent':
+		case 'rtorrent':
 			if (!empty($GLOBALS['rTorrentURL'])) {
 				try {
 					$digest = qualifyURL($GLOBALS['rTorrentURL'], true);
