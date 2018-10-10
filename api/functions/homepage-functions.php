@@ -1120,7 +1120,7 @@ function getHomepageList()
 		array(
 			'name' => 'rTorrent',
 			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
-			'image' => 'plugins/images/tabs/rtorrent.png',
+			'image' => 'plugins/images/tabs/rTorrent.png',
 			'category' => 'Downloader',
 			'settings' => array(
 				'FYI' => array(
@@ -1208,6 +1208,20 @@ function getHomepageList()
 						'value' => $GLOBALS['homepageDownloadRefresh'],
 						'options' => optionTime()
 					)
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'rtorrent\')"'
+					),
 				)
 			)
 		),
@@ -1965,7 +1979,7 @@ function buildHomepageSettings()
 				break;
 			case 'homepageOrderrTorrent':
 				$class = 'bg-qbit';
-				$image = 'plugins/images/tabs/ruTorrent.png';
+				$image = 'plugins/images/tabs/rTorrent.png';
 				if (!$GLOBALS['homepagerTorrentEnabled']) {
 					$class .= ' faded';
 				}

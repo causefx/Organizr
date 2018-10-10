@@ -2135,6 +2135,28 @@ function testAPIConnection($array)
 				return 'URL and/or Password not setup';
 			}
 			break;
+		case 'rTorrent':
+			if (!empty($GLOBALS['rTorrentURL'])) {
+				try {
+					$digest = qualifyURL($GLOBALS['rTorrentURL'], true);
+					$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . '/RPC2';
+					$options = (localURL($url)) ? array('verify' => false) : array();
+					$data = xmlrpc_encode_request("system.listMethods", null);
+					$response = Requests::post($url, array(), $data, $options);
+					if ($response->success) {
+						$methods = xmlrpc_decode(str_replace('i8>', 'i4>', $response->body));
+						if (count($methods) !== 0) {
+							return true;
+						}
+					}
+					return false;
+				} catch
+				(Requests_Exception $e) {
+					writeLog('error', 'rTorrent Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+					return $e->getMessage();
+				};
+			}
+			break;
 		default :
 			return false;
 	}
