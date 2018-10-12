@@ -2134,7 +2134,6 @@ function buildTabGroupSelect(array, tabID, groupID){
 	return '<td><select name="tab['+tabID+'].group_id" class="form-control tabGroupSelect">'+groupSelect+'</select></td>';
 }
 function buildTabTypeSelect(tabID, typeID, disabled){
-    console.log(tabID, typeID, disabled);
 	var array = [
 		{
 			'type_id':0,
@@ -2304,7 +2303,7 @@ function buildTabEditorItem(array){
 					</div>
 				</div>
 			</td>
-			<td>`+v.name+`</td>
+			<td><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+v.url+`">`+v.name+`</span></td>
 			`+buildTabCategorySelect(array.categories,v.id, v.category_id)+`
 			`+buildTabGroupSelect(array.groups,v.id, v.group_id)+`
 			`+buildTabTypeSelect(v.id, v.type, typeDisabled)+`
@@ -4186,7 +4185,7 @@ function buildDownloaderItem(array, source, type='none'){
 							<td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
 							<td class="hidden-xs"><i class="fa fa-upload"></i>&nbsp;`+upload+`</td>
 							<td class="hidden-xs">`+size+`</td>
-							<td class="hidden-xs">`+v.label+`</td>
+							<td class="hidden-xs"><span class="label label-info">`+v.label+`</span></td>
 							<td class="text-right">
 								<div class="progress progress-lg m-b-0">
 									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>

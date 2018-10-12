@@ -616,6 +616,9 @@ span.homepage-text {
 	padding-bottom: 0px !important;
 }
 .simplebar-content {
+    padding-bottom: 0px !important;
+}
+.simplebar-content {
     min-height: auto !important;
     overflow-x: auto !important;
 }
