@@ -3061,9 +3061,12 @@ function loadAppearance(appearance){
 
 }
 function clearForm(form){
-	$(form+" input[type=text]", form+" input[type=password]").each(function() {
+	$(form+" input[type=text]").each(function() {
         $(this).val('');
-    })
+    });
+    $(form+" input[type=password]").each(function() {
+        $(this).val('');
+    });
 }
 function checkMessage(){
 	var check = (local('get','message')) ? local('get','message') : false;
