@@ -168,6 +168,28 @@ function randString($length = 10, $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
 	return $tmp;
 }
 
+function isEncrypted($password)
+{
+	switch (strlen($password)) {
+		case '24':
+			return (strpos($password, '==') !== false) ? true : false;
+			break;
+		case '44':
+			return (substr($password, -1, 1) == '=') ? true : false;
+			break;
+		case '64':
+			return true;
+		case '88':
+			return (strpos($password, '==') !== false) ? true : false;
+			break;
+		case '108':
+			return (substr($password, -1, 1) == '=') ? true : false;
+			break;
+		default:
+			return false;
+	}
+}
+
 function encrypt($password, $key = null)
 {
 	$key = (isset($GLOBALS['organizrHash'])) ? $GLOBALS['organizrHash'] : $key;

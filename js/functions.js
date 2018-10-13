@@ -3914,6 +3914,7 @@ function ombiActions(id,action,type){
 	//console.log(id,action,type);
 	var msg = (activeInfo.user.groupID <= 1) ? '<a href="https://github.com/tidusjar/Ombi/issues/2176" target="_blank">Not Org Fault - Ask Ombi</a>' : 'Connection Error to Request Server';
 	ajaxloader('.preloader-'+id,'in');
+    ajaxloader('.mfp-content .white-popup .col-md-8 .white-box .user-bg','in');
 	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
 		var response = JSON.parse(data);
 		console.log(response.data);

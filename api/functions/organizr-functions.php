@@ -1151,7 +1151,7 @@ function updateConfigMultipleForm($array)
 		}
 		// Hash
 		if ($v['type'] == 'password') {
-			if (strpos($v['value'], '==') !== false) {
+			if (isEncrypted($v['value'])) {
 				$v['value'] = $v['value'];
 			} else {
 				$v['value'] = encrypt($v['value']);
@@ -1855,9 +1855,15 @@ function guestHash($start, $end)
 
 function importUserButtons()
 {
+	$emptyButtons = '
+		<div class="col-md-12">
+            <div class="white-box bg-org">
+                <h3 class="box-title m-0" lang="en">Currently User import is available for Plex only.</h3> </div>
+        </div>
+	';
 	$buttons = '';
 	if (!empty($GLOBALS['plexToken'])) {
 		$buttons .= '<button class="btn bg-plex text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'plex\')" type="button"><span class="btn-label"><i class="mdi mdi-plex"></i></span><span lang="en">Import Plex Users</span></button>';
 	}
-	return $buttons;
+	return ($buttons !== '') ? $buttons : $emptyButtons;
 }
