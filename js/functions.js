@@ -4181,9 +4181,12 @@ function buildDownloaderItem(array, source, type='none'){
                         var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
                         var upload = v.seed !== '' ? humanFileSize(v.seed,true) : "0 B";
                         var download = v.leech !== '' ? humanFileSize(v.leech,true) : "0 B";
+                        var date = new Date(0);
+                        date.setUTCSeconds(v.date);
+                        date = moment(date).format('LLL');
                         items += `
 						<tr>
-							<td class="max-texts">`+v.name+`</td>
+							<td class="max-texts"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+date+`">`+v.name+`</span></td>
 							<td class="hidden-xs">`+v.status+`</td>
 							<td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
 							<td class="hidden-xs"><i class="fa fa-upload"></i>&nbsp;`+upload+`</td>
