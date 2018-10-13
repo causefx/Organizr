@@ -1,5 +1,154 @@
 [
   {
+    "text": "AlphaNumeric",
+    "children": [
+      {
+        "id": "alphanumeric::A",
+        "text": "A"
+      },
+      {
+        "id": "alphanumeric::B",
+        "text": "B"
+      },
+      {
+        "id": "alphanumeric::C",
+        "text": "C"
+      },
+      {
+        "id": "alphanumeric::D",
+        "text": "D"
+      },
+      {
+        "id": "alphanumeric::E",
+        "text": "E"
+      },
+      {
+        "id": "alphanumeric::F",
+        "text": "F"
+      },
+      {
+        "id": "alphanumeric::G",
+        "text": "G"
+      },
+      {
+        "id": "alphanumeric::H",
+        "text": "H"
+      },
+      {
+        "id": "alphanumeric::I",
+        "text": "I"
+      },
+      {
+        "id": "alphanumeric::J",
+        "text": "J"
+      },
+      {
+        "id": "alphanumeric::K",
+        "text": "K"
+      },
+      {
+        "id": "alphanumeric::L",
+        "text": "L"
+      },
+      {
+        "id": "alphanumeric::M",
+        "text": "M"
+      },
+      {
+        "id": "alphanumeric::N",
+        "text": "N"
+      },
+      {
+        "id": "alphanumeric::O",
+        "text": "O"
+      },
+      {
+        "id": "alphanumeric::P",
+        "text": "P"
+      },
+      {
+        "id": "alphanumeric::Q",
+        "text": "Q"
+      },
+      {
+        "id": "alphanumeric::R",
+        "text": "R"
+      },
+      {
+        "id": "alphanumeric::S",
+        "text": "S"
+      },
+      {
+        "id": "alphanumeric::T",
+        "text": "T"
+      },
+      {
+        "id": "alphanumeric::U",
+        "text": "U"
+      },
+      {
+        "id": "alphanumeric::V",
+        "text": "V"
+      },
+      {
+        "id": "alphanumeric::W",
+        "text": "W"
+      },
+      {
+        "id": "alphanumeric::X",
+        "text": "X"
+      },
+      {
+        "id": "alphanumeric::Y",
+        "text": "Y"
+      },
+      {
+        "id": "alphanumeric::Z",
+        "text": "Z"
+      },
+      {
+        "id": "alphanumeric::Z",
+        "text": "Z"
+      },
+      {
+        "id": "alphanumeric::1",
+        "text": "1"
+      },
+      {
+        "id": "alphanumeric::2",
+        "text": "2"
+      },
+      {
+        "id": "alphanumeric::3",
+        "text": "3"
+      },
+      {
+        "id": "alphanumeric::4",
+        "text": "4"
+      },
+      {
+        "id": "alphanumeric::5",
+        "text": "5"
+      },
+      {
+        "id": "alphanumeric::6",
+        "text": "6"
+      },
+      {
+        "id": "alphanumeric::7",
+        "text": "7"
+      },
+      {
+        "id": "alphanumeric::8",
+        "text": "8"
+      },
+      {
+        "id": "alphanumeric::9",
+        "text": "9"
+      }
+    ]
+  },
+  {
     "text": "Font Awesome",
     "children": [
       {

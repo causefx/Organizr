@@ -180,12 +180,15 @@ function iconPrefix(source){
 		"fontawesome":"fa fa-",
 		"themify":"ti-",
 		"simpleline":"icon-",
-		"weathericon":"wi wi-",
+        "weathericon":"wi wi-",
+        "alphanumeric":"fa-fw",
 	};
 	if(Array.isArray(tabIcon) && tabIcon.length === 2){
-		if(tabIcon[0] !== 'url'){
+		if(tabIcon[0] !== 'url' && tabIcon[0] !== 'alphanumeric'){
 			return '<i class="'+icons[tabIcon[0]]+tabIcon[1]+' fa-fw"></i>';
-		}else{
+		}else if(tabIcon[0] == 'alphanumeric'){
+            return '<i class="fa-fw">'+tabIcon[1]+'</i>';
+        }else{
 			return '<img class="fa-fw" src="'+tabIcon[1]+'" alt="tabIcon" />';
 		}
 	}else{

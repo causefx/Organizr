@@ -93,6 +93,7 @@ body.stop-scrolling {
     font-size: 35px;
     text-align: center !important;
     width: 35px !important;
+    font-style: normal;
 }
 
 .tabEditorIcon img {
