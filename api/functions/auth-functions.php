@@ -1,9 +1,9 @@
 <?php
 function authRegister($username, $password, $defaults, $email)
 {
-    if ($GLOBALS['authBackend'] !== '') {
-        ombiImport($GLOBALS['authBackend']);
-    }
+	if ($GLOBALS['authBackend'] !== '') {
+		ombiImport($GLOBALS['authBackend']);
+	}
 	if (createUser($username, $password, $defaults, $email)) {
 		writeLog('success', 'Registration Function - A User has registered', $username);
 		if ($GLOBALS['PHPMAILER-enabled']) {
@@ -61,6 +61,50 @@ function checkPlexUser($username)
 		return false;
 	} catch (Requests_Exception $e) {
 		writeLog('success', 'Plex User Check Function - Error: ' . $e->getMessage(), $username);
+	}
+	return false;
+}
+
+function allPlexUsers($newOnly = false)
+{
+	try {
+		if (!empty($GLOBALS['plexToken'])) {
+			$url = 'https://plex.tv/pms/friends/all';
+			$headers = array(
+				'X-Plex-Token' => $GLOBALS['plexToken'],
+			);
+			$response = Requests::get($url, $headers);
+			if ($response->success) {
+				libxml_use_internal_errors(true);
+				$userXML = simplexml_load_string($response->body);
+				if (is_array($userXML) || is_object($userXML)) {
+					$results = array();
+					foreach ($userXML as $child) {
+						if (((string)$child['username'] !== '') && ((string)$child['email'] !== '')) {
+							if ($newOnly) {
+								$taken = usernameTaken((string)$child['username'], (string)$child['email']);
+								if (!$taken) {
+									$results[] = array(
+										'username' => (string)$child['username'],
+										'email' => (string)$child['email']
+									);
+								}
+							} else {
+								$results[] = array(
+									'username' => (string)$child['username'],
+									'email' => (string)$child['email']
+								);
+							}
+							
+						}
+					}
+					return $results;
+				}
+			}
+		}
+		return false;
+	} catch (Requests_Exception $e) {
+		writeLog('success', 'Plex User Function - Error: ' . $e->getMessage(), $username);
 	}
 	return false;
 }

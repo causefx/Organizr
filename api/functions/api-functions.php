@@ -969,6 +969,39 @@ function createUser($username, $password, $defaults, $email = null)
 	}
 }
 
+function importUsers($array)
+{
+	$imported = 0;
+	$defaults = defaultUserGroup();
+	foreach ($array as $user) {
+		$password = random_ascii_string(30);
+		if ($user['username'] !== '' && $user['email'] !== '' && $password !== '' && $defaults !== '') {
+			$newUser = createUser($user['username'], $password, $defaults, $user['email']);
+			if (!$newUser) {
+				writeLog('error', 'Import Function - Error', $user['username']);
+			} else {
+				$imported++;
+			}
+		}
+	}
+	return $imported;
+}
+
+function importUsersType($array)
+{
+	$type = $array['data']['type'];
+	if ($type !== '') {
+		switch ($type) {
+			case 'plex':
+				return importUsers(allPlexUsers(true));
+				break;
+			default:
+				return false;
+		}
+	}
+	return false;
+}
+
 function allTabs()
 {
 	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {

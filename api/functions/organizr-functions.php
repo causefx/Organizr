@@ -1852,3 +1852,12 @@ function guestHash($start, $end)
 	$ip = md5($ip);
 	return substr($ip, $start, $end);
 }
+
+function importUserButtons()
+{
+	$buttons = '';
+	if (!empty($GLOBALS['plexToken'])) {
+		$buttons .= '<button class="btn bg-plex text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'plex\')" type="button"><span class="btn-label"><i class="mdi mdi-plex"></i></span><span lang="en">Import Plex Users</span></button>';
+	}
+	return $buttons;
+}

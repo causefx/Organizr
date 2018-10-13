@@ -4800,6 +4800,22 @@ function inlineLoad(){
 	  midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
 	});
 }
+//Import Users
+function importUsers(type){
+    $('.importUsersButton').attr('disabled', true);
+    messageSingle('',window.lang.translate('Importing Users'),activeInfo.settings.notifications.position,'#FFF','success','5000');
+    organizrAPI('POST','api/?v1/import/users',{type:type}).success(function(data) {
+        var response = JSON.parse(data);
+        if(response.data !== false){
+            messageSingle('',window.lang.translate('Imported [' + response.data + '] Users'),activeInfo.settings.notifications.position,'#FFF','success','5000');
+            $('.importUsersButton').attr('disabled', false);
+        }else{
+            messageSingle('','Imported Users Error',activeInfo.settings.notifications.position,'#FFF','error','5000');
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+}
 //Settings change auth
 function changeAuth(){
     var type = $('#authSelect').val();
