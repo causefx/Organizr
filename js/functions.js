@@ -4339,7 +4339,7 @@ function buildDownloader(array, source){
 
 		}
 		menu += `
-			<li role="presentation" class="active"><a href="#`+source+`-queue" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-download"></i></span><span class="hidden-xs"> QUEUE</span></a></li>
+			<li role="presentation" class="active" onclick="homepageDownloader('`+source+`')"><a href="#`+source+`-queue" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-download"></i></span><span class="hidden-xs"> QUEUE</span></a></li>
 			`;
 		listing += `
 		<div role="tabpanel" class="tab-pane fade active in" id="`+source+`-queue">
