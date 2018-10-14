@@ -804,7 +804,7 @@ function rTorrentConnect()
 				"d.connection_current=",
 				"d.down.rate=",
 				"d.up.rate=",
-				"d.creation_date=",
+				"d.load_date=",
 				"d.state=",
 				"d.group.name=",
 				"d.hash=",

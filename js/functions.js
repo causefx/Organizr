@@ -265,23 +265,23 @@ function swapDisplay(type){
 			$('.iFrame-listing').addClass('hidden').removeClass('show');
 			$('.internal-listing').addClass('show').removeClass('hidden');
 			$('.login-area').addClass('hidden').removeClass('show');
-            $('.plugin-listing').addClass('hidden').removeClass('show');
+			$('.plugin-listing').addClass('hidden').removeClass('show');
 			//$('body').removeClass('fix-header');
 			break;
 		case 'iframe':
-            $('body').addClass('fix-header');
+		    $('body').addClass('fix-header');
 			$('.iFrame-listing').addClass('show').removeClass('hidden');
 			$('.internal-listing').addClass('hidden').removeClass('show');
 			$('.login-area').addClass('hidden').removeClass('show');
-            $('.plugin-listing').addClass('hidden').removeClass('show');
+			$('.plugin-listing').addClass('hidden').removeClass('show');
 			//$('body').addClass('fix-header');
 			break;
 		case 'login':
-            $('body').removeClass('fix-header');
+		    $('body').removeClass('fix-header');
 			$('.iFrame-listing').addClass('hidden').removeClass('show');
 			$('.internal-listing').addClass('hidden').removeClass('show');
 			$('.login-area').addClass('show').removeClass('hidden');
-            $('.plugin-listing').addClass('hidden').removeClass('show');
+			$('.plugin-listing').addClass('hidden').removeClass('show');
 			if(activeInfo.settings.misc.minimalLoginScreen == true){
                 $('.sidebar').addClass('hidden');
                 $('.navbar').addClass('hidden');
