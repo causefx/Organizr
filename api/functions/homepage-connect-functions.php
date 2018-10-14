@@ -1808,9 +1808,13 @@ function ombiImport($type = null)
 			if ($response->success) {
 				writeLog('success', 'OMBI Connect Function - Ran User Import', 'SYSTEM');
 				return true;
+			}else{
+				writeLog('error', 'OMBI Connect Function - Error: Connection Unsuccessful', 'SYSTEM');
+				return false;
 			}
 		} catch (Requests_Exception $e) {
 			writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			return false;
 		};
 	}
 	return false;
