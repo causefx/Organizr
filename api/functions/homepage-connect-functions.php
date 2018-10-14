@@ -790,7 +790,8 @@ function rTorrentConnect()
 			$torrents = array();
 			$digest = qualifyURL($GLOBALS['rTorrentURL'], true);
 			$passwordInclude = ($GLOBALS['rTorrentUsername'] != '' && $GLOBALS['rTorrentPassword'] != '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
-			$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/RPC2';
+			$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
+			$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
 			$options = (localURL($url)) ? array('verify' => false) : array();
 			$data = xmlrpc_encode_request("d.multicall2", array(
 				"",
@@ -1808,7 +1809,7 @@ function ombiImport($type = null)
 			if ($response->success) {
 				writeLog('success', 'OMBI Connect Function - Ran User Import', 'SYSTEM');
 				return true;
-			}else{
+			} else {
 				writeLog('error', 'OMBI Connect Function - Error: Connection Unsuccessful', 'SYSTEM');
 				return false;
 			}
