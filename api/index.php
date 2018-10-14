@@ -1290,8 +1290,8 @@ $generationTime += microtime(true);
 $result['generationTime'] = (sprintf('%f', $generationTime) * 1000) . 'ms';
 //return JSON array
 if ($pretty) {
-	echo '<pre>' . json_encode($result, JSON_PRETTY_PRINT) . '</pre>';
+	echo '<pre>' . safe_json_encode($result, JSON_PRETTY_PRINT) . '</pre>';
 } else {
-	exit(json_encode($result, JSON_HEX_QUOT | JSON_HEX_TAG));
+	exit(safe_json_encode($result, JSON_HEX_QUOT | JSON_HEX_TAG));
 }
 
