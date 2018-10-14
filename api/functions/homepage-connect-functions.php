@@ -2155,7 +2155,8 @@ function testAPIConnection($array)
 				try {
 					$digest = qualifyURL($GLOBALS['rTorrentURL'], true);
 					$passwordInclude = ($GLOBALS['rTorrentUsername'] != '' && $GLOBALS['rTorrentPassword'] != '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
-					$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . '/RPC2';
+					$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
+					$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
 					$options = (localURL($url)) ? array('verify' => false) : array();
 					$data = xmlrpc_encode_request("system.listMethods", null);
 					$response = Requests::post($url, array(), $data, $options);
