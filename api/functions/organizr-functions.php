@@ -1290,7 +1290,7 @@ function showoAuth()
 {
 	$buttons = '';
 	if ($GLOBALS['plexoAuth']) {
-		$buttons .= '<a href="javascript:void(0)" onclick="oAuth(\'plex\')" class="btn bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <i aria-hidden="true" class="mdi mdi-plex"></i> </a>';
+		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <i aria-hidden="true" class="mdi mdi-plex"></i> </a>';
 	}
 	return ($buttons) ? '
 		<div class="row">

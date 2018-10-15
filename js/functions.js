@@ -4694,7 +4694,7 @@ function oAuthLoop(type,code) {
             break;
     }
 }
-function oAuth(type){
+function oAuthStart(type){
     switch(type){
         case 'plex':
             $.ajax({
@@ -4706,28 +4706,23 @@ function oAuth(type){
                 },
                 url: 'https://plex.tv/api/v2/pins?strong=true',
                 cache: false,
-                async: true,
+                async: false,
                 complete: function(xhr, status) {
                     if (xhr.status === 201) {
                         var result = $.parseXML(xhr.responseText),
                         $xml = $( result ), $title = $xml.find( "pin" ), $id = $title.find("id");
                         var id = $title['0'].attributes.id.value;
                         var code = $title['0'].attributes.code.value;
-
                         window.open(`https://app.plex.tv/auth/#!?clientID=01010101-10101010&code=`+code, "Organizr!!", `menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=1050,height=1050,left=0`);
-                        console.log(id,code);
                         var loopAuth = setInterval(function(){
-                            // Do your update stuff...
                             var success =  oAuthLoop('plex',id).success(function(data) {
                                 $xml = $( data ), $title = $xml.find( "pin" ), $id = $title.find("id");
                                 var id = $title['0'].attributes.id.value;
                                 var code = $title['0'].attributes.code.value;
                                 var authToken = $title['0'].attributes.authToken.value;
                                 success = (authToken !== '') ? authToken : false;
-                                console.log('checking: ' + id);
                                 if(success !== false){
                                     clearInterval(loopAuth);
-                                    console.log('stopping loop cuz we good to go!');
                                     $('#oAuth-Input').val(success);
                                     $('#oAuthType-Input').val('plex');
                                     $('#login-username-Input').addClass('hidden');
@@ -4742,10 +4737,6 @@ function oAuth(type){
                     }
                 }
             });
-
-
-
-
             break;
         default:
             break;
