@@ -61,18 +61,12 @@ function getTautulliToken($username, $password, $plexToken = null)
 					"Content-Type" => "application/x-www-form-urlencoded",
 					"User-Agent" => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null
 				);
-				if ($token) {
-					$data = array(
-						"token" => $plexToken,
-						"remember_me" => 1,
-					);
-				} else {
-					$data = array(
-						"username" => $username,
-						"password" => $password,
-						"remember_me" => 1,
-					);
-				}
+				$data = array(
+					"username" => $username,
+					"password" => $password,
+					"token" => $plexToken,
+					"remember_me" => 1,
+				);
 				$options = (localURL($url)) ? array('verify' => false) : array();
 				$response = Requests::post($url, $headers, $data, $options);
 				if ($response->success) {

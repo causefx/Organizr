@@ -313,11 +313,21 @@ function editUser($array)
 	}
 }
 
+function clearTautulliTokens()
+{
+	foreach (array_keys($_COOKIE) as $k => $v) {
+		if (strpos($v, 'tautulli') !== false) {
+			coookie('delete', $v);
+		}
+	}
+}
+
 function logout()
 {
 	coookie('delete', $GLOBALS['cookieName']);
 	coookie('delete', 'mpt');
 	coookie('delete', 'Auth');
+	clearTautulliTokens();
 	revokeToken(array('data' => array('token' => $GLOBALS['organizrUser']['token'])));
 	$GLOBALS['organizrUser'] = false;
 	return true;
