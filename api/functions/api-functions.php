@@ -56,15 +56,17 @@ function login($array)
 			// Has oAuth Token!
 			switch ($oAuthType) {
 				case 'plex':
-					$tokenInfo = checkPlexToken($oAuth);
-					if ($tokenInfo) {
-						$authSuccess = array(
-							'username' => $tokenInfo['user']['username'],
-							'email' => $tokenInfo['user']['email'],
-							'image' => $tokenInfo['user']['thumb'],
-							'token' => $tokenInfo['user']['authToken']
-						);
-						$authSuccess = ((!empty($GLOBALS['plexAdmin']) && strtolower($GLOBALS['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
+					if ($GLOBALS['plexoAuth']) {
+						$tokenInfo = checkPlexToken($oAuth);
+						if ($tokenInfo) {
+							$authSuccess = array(
+								'username' => $tokenInfo['user']['username'],
+								'email' => $tokenInfo['user']['email'],
+								'image' => $tokenInfo['user']['thumb'],
+								'token' => $tokenInfo['user']['authToken']
+							);
+							$authSuccess = ((!empty($GLOBALS['plexAdmin']) && strtolower($GLOBALS['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
+						}
 					}
 					break;
 				default:
