@@ -1169,7 +1169,7 @@ function updateConfigMultipleForm($array)
 		}
 		// Hash
 		if ($v['type'] == 'password') {
-			if (isEncrypted($v['value'])) {
+			if (isEncrypted($v['value']) || $v['value'] == '') {
 				$v['value'] = $v['value'];
 			} else {
 				$v['value'] = encrypt($v['value']);
