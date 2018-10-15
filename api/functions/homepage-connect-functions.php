@@ -1798,6 +1798,9 @@ function ombiImport($type = null)
 			$options = (localURL($url)) ? array('verify' => false) : array();
 			switch ($type) {
 				case 'emby':
+				case 'emby_local':
+				case 'emby_connect':
+				case 'emby_all':
 					$response = Requests::get($url . "/api/v1/Job/embyuserimporter", $headers, $options);
 					break;
 				case 'plex':
