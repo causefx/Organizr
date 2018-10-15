@@ -160,8 +160,8 @@ body.stop-scrolling {
 img.lazyload.tabImages {
     height: 120px !important;
     object-fit: contain;
-    -webkit-filter: drop-shadow(0px 0px 0px black);
-    filter: drop-shadow(0px 0px 0px black);
+    /*-webkit-filter: drop-shadow(0px 0px 0px black);
+    filter: drop-shadow(0px 0px 0px black);*/
 }
 
 .recent-cover {
