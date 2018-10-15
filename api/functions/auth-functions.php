@@ -64,7 +64,7 @@ function checkPlexUser($username)
 {
 	try {
 		if (!empty($GLOBALS['plexToken'])) {
-			$url = 'https://plex.tv/pms/friends/all';
+			$url = 'https://plex.tv/api/users';
 			$headers = array(
 				'X-Plex-Token' => $GLOBALS['plexToken'],
 			);
@@ -76,7 +76,9 @@ function checkPlexUser($username)
 					$usernameLower = strtolower($username);
 					foreach ($userXML as $child) {
 						if (isset($child['username']) && strtolower($child['username']) == $usernameLower || isset($child['email']) && strtolower($child['email']) == $usernameLower) {
-							return true;
+							if ((string)$child->Server['machineIdentifier'] == $GLOBALS['plexID']) {
+								return true;
+							}
 						}
 					}
 				}
@@ -93,7 +95,7 @@ function allPlexUsers($newOnly = false)
 {
 	try {
 		if (!empty($GLOBALS['plexToken'])) {
-			$url = 'https://plex.tv/pms/friends/all';
+			$url = 'https://plex.tv/api/users';
 			$headers = array(
 				'X-Plex-Token' => $GLOBALS['plexToken'],
 			);
@@ -104,7 +106,7 @@ function allPlexUsers($newOnly = false)
 				if (is_array($userXML) || is_object($userXML)) {
 					$results = array();
 					foreach ($userXML as $child) {
-						if (((string)$child['username'] !== '') && ((string)$child['email'] !== '')) {
+						if (((string)$child['restricted'] == '0')) {
 							if ($newOnly) {
 								$taken = usernameTaken((string)$child['username'], (string)$child['email']);
 								if (!$taken) {
@@ -116,7 +118,7 @@ function allPlexUsers($newOnly = false)
 							} else {
 								$results[] = array(
 									'username' => (string)$child['username'],
-									'email' => (string)$child['email']
+									'email' => (string)$child['email'],
 								);
 							}
 							

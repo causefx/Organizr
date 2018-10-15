@@ -22,7 +22,7 @@ function ssoCheck($username, $password, $token = null)
 	return true;
 }
 
-function getOmbiToken($username, $password)
+function getOmbiToken($username, $password, $token = null)
 {
 	try {
 		$url = $GLOBALS['ombiURL'] . '/api/v1/Token';
@@ -34,7 +34,7 @@ function getOmbiToken($username, $password)
 		$data = array(
 			"username" => $username,
 			"password" => $password,
-			"rememberMe" => "true",
+			"rememberMe" => "true"
 		);
 		$options = (localURL($url)) ? array('verify' => false) : array();
 		$response = Requests::post($url, $headers, json_encode($data), $options);
