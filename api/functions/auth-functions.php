@@ -145,7 +145,7 @@ function plugin_auth_plex($username, $password)
 				'Content-Type' => 'application/x-www-form-urlencoded',
 				'X-Plex-Product' => 'Organizr',
 				'X-Plex-Version' => '2.0',
-				'X-Plex-Client-Identifier' => '01010101-10101010',
+				'X-Plex-Client-Identifier' => $GLOBALS['uuid'],
 			);
 			$data = array(
 				'user[login]' => $username,

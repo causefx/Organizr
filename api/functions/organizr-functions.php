@@ -73,6 +73,7 @@ function organizrSpecialSettings()
 			'unsortedTabs' => $GLOBALS['unsortedTabs'],
 			'authBackend' => $GLOBALS['authBackend'],
 			'newMessageSound' => $GLOBALS['CHAT-newMessageSound-include'],
+			'uuid' => $GLOBALS['uuid'],
 		)
 	);
 }
@@ -1760,7 +1761,7 @@ function plexJoin($username, $email, $password)
 			'Content-Type' => 'application/x-www-form-urlencoded',
 			'X-Plex-Product' => 'Organizr',
 			'X-Plex-Version' => '2.0',
-			'X-Plex-Client-Identifier' => '01010101-10101010',
+			'X-Plex-Client-Identifier' => $GLOBALS['uuid'],
 		);
 		$data = array(
 			'user[email]' => $email,

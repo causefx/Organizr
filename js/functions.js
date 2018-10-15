@@ -4678,65 +4678,164 @@ function homepageCalendar(timeout){
 	if(typeof timeouts['calendar'] !== 'undefined'){ clearTimeout(timeouts['calendar']); }
 	timeouts['calendar'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
-function oAuthLoop(type,code) {
+// Thanks Swifty!
+function PopupCenter(url, title, w, h) {
+    // Fixes dual-screen position                         Most browsers      Firefox
+    var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : window.screenX;
+    var dualScreenTop = window.screenTop != undefined ? window.screenTop : window.screenY;
+    var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+    var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+    var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+    var top = ((height / 2) - (h / 2)) + dualScreenTop;
+    var newWindow = window.open(url, title, 'scrollbars=yes, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+    // Puts focus on the newWindow
+    if (window.focus) {
+        newWindow.focus();
+    }
+    return newWindow;
+}
+function getPlexHeaders(){
+    return {
+        'Accept': 'application/json',
+        'X-Plex-Product': activeInfo.appearance.title,
+        'X-Plex-Version': '2.0',
+        'X-Plex-Client-Identifier': activeInfo.settings.misc.uuid,
+    };
+}
+var plex_oauth_window = null;
+const plex_oauth_loader = '<style>' +
+    '.login-loader-container {' +
+    'font-family: "Open Sans", Arial, sans-serif;' +
+    'position: absolute;' +
+    'top: 0;' +
+    'right: 0;' +
+    'bottom: 0;' +
+    'left: 0;' +
+    '}' +
+    '.login-loader-message {' +
+    'color: #282A2D;' +
+    'text-align: center;' +
+    'position: absolute;' +
+    'left: 50%;' +
+    'top: 25%;' +
+    'transform: translate(-50%, -50%);' +
+    '}' +
+    '.login-loader {' +
+    'border: 5px solid #ccc;' +
+    '-webkit-animation: spin 1s linear infinite;' +
+    'animation: spin 1s linear infinite;' +
+    'border-top: 5px solid #282A2D;' +
+    'border-radius: 50%;' +
+    'width: 50px;' +
+    'height: 50px;' +
+    'position: relative;' +
+    'left: calc(50% - 25px);' +
+    '}' +
+    '@keyframes spin {' +
+    '0% { transform: rotate(0deg); }' +
+    '100% { transform: rotate(360deg); }' +
+    '}' +
+    '</style>' +
+    '<div class="login-loader-container">' +
+    '<div class="login-loader-message">' +
+    '<div class="login-loader"></div>' +
+    '<br>' +
+    'Redirecting to the Plex login page...' +
+    '</div>' +
+    '</div>';
+function closePlexOAuthWindow() {
+    if (plex_oauth_window) {
+        plex_oauth_window.close();
+    }
+}
+getPlexOAuthPin = function () {
+    var x_plex_headers = getPlexHeaders();
+    var deferred = $.Deferred();
+    $.ajax({
+        url: 'https://plex.tv/api/v2/pins?strong=true',
+        type: 'POST',
+        headers: x_plex_headers,
+        success: function(data) {
+            deferred.resolve({pin: data.id, code: data.code});
+        },
+        error: function() {
+            closePlexOAuthWindow();
+            deferred.reject();
+        }
+    });
+    return deferred;
+};
+var polling = null;
+function PlexOAuth(success, error, pre) {
+    if (typeof pre === "function") {
+        pre()
+    }
+    closePlexOAuthWindow();
+    plex_oauth_window = PopupCenter('', 'Plex-OAuth', 600, 700);
+    $(plex_oauth_window.document.body).html(plex_oauth_loader);
+    getPlexOAuthPin().then(function (data) {
+        var x_plex_headers = getPlexHeaders();
+        const pin = data.pin;
+        const code = data.code;
+        plex_oauth_window.location = 'https://app.plex.tv/auth/#!?clientID=' + x_plex_headers['X-Plex-Client-Identifier'] + '&code=' + code;
+        polling = pin;
+        (function poll() {
+            $.ajax({
+                url: 'https://plex.tv/api/v2/pins/' + pin,
+                type: 'GET',
+                headers: x_plex_headers,
+                success: function (data) {
+                    if (data.authToken){
+                        closePlexOAuthWindow();
+                        if (typeof success === "function") {
+                            success('plex',data.authToken)
+                        }
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (textStatus !== "timeout") {
+                        closePlexOAuthWindow();
+                        if (typeof error === "function") {
+                            error()
+                        }
+                    }
+                },
+                complete: function () {
+                    if (!plex_oauth_window.closed && polling === pin){
+                        setTimeout(function() {poll()}, 1000);
+                    }
+                },
+                timeout: 10000
+            });
+        })();
+    }, function () {
+        closePlexOAuthWindow();
+        if (typeof error === "function") {
+            error()
+        }
+    });
+}
+function oAuthSuccess(type,token){
     switch(type) {
         case 'plex':
-            return $.ajax({
-                type: 'GET',
-                headers: {
-                    'X-Plex-Product':'Organizr',
-                    'X-Plex-Version':'2.0',
-                    'X-Plex-Client-Identifier':'01010101-10101010'
-                },
-                url: 'https://plex.tv/api/v2/pins/'+code,
-            });
+            $('#oAuth-Input').val(token);
+            $('#oAuthType-Input').val(type);
+            $('#login-username-Input').addClass('hidden');
+            $('#login-password-Input').addClass('hidden');
+            $('#oAuth-div').removeClass('hidden');
+            $('.login-button').trigger('click');
+            break;
         default:
             break;
     }
 }
+function oAuthError(){
+    messageSingle('',window.lang.translate('Error Connecting to oAuth Provider'),activeInfo.settings.notifications.position,'#FFF','error','5000');
+}
 function oAuthStart(type){
     switch(type){
         case 'plex':
-            $.ajax({
-                type: 'POST',
-                headers: {
-                    'X-Plex-Product':'Organizr',
-                    'X-Plex-Version':'2.0',
-                    'X-Plex-Client-Identifier':'01010101-10101010'
-                },
-                url: 'https://plex.tv/api/v2/pins?strong=true',
-                cache: false,
-                async: false,
-                complete: function(xhr, status) {
-                    if (xhr.status === 201) {
-                        var result = $.parseXML(xhr.responseText),
-                        $xml = $( result ), $title = $xml.find( "pin" ), $id = $title.find("id");
-                        var id = $title['0'].attributes.id.value;
-                        var code = $title['0'].attributes.code.value;
-                        window.open(`https://app.plex.tv/auth/#!?clientID=01010101-10101010&code=`+code, "Organizr!!", `menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=1050,height=1050,left=0`);
-                        var loopAuth = setInterval(function(){
-                            var success =  oAuthLoop('plex',id).success(function(data) {
-                                $xml = $( data ), $title = $xml.find( "pin" ), $id = $title.find("id");
-                                var id = $title['0'].attributes.id.value;
-                                var code = $title['0'].attributes.code.value;
-                                var authToken = $title['0'].attributes.authToken.value;
-                                success = (authToken !== '') ? authToken : false;
-                                if(success !== false){
-                                    clearInterval(loopAuth);
-                                    $('#oAuth-Input').val(success);
-                                    $('#oAuthType-Input').val('plex');
-                                    $('#login-username-Input').addClass('hidden');
-                                    $('#login-password-Input').addClass('hidden');
-                                    $('#oAuth-div').removeClass('hidden');
-                                    $('.login-button').trigger('click');
-                                }
-                            });
-                        }, 1000);
-                    } else {
-                        console.log('An error - will add message later');
-                    }
-                }
-            });
+            PlexOAuth(oAuthSuccess,oAuthError);
             break;
         default:
             break;
@@ -5548,6 +5647,7 @@ function launch(){
 			branch:json.branch,
 			sso:json.sso,
 			settings:json.settings,
+            appearance:json.appearance,
 			theme:json.theme,
 			style:json.style,
 			version:json.version

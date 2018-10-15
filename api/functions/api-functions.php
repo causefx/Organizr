@@ -436,7 +436,7 @@ function getGuest()
 				'driver' => 'sqlite3',
 				'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
 			]);
-			$all = $connect->fetch('SELECT * FROM groups WHERE `group` = "Guest"');
+			$all = $connect->fetch('SELECT * FROM groups WHERE `group_id` = 999');
 			return $all;
 		} catch (Dibi\Exception $e) {
 			return false;
