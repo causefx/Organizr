@@ -188,5 +188,6 @@ return array(
 	'customThemeJava' => '',
 	'minimalLoginScreen' => false,
 	'unsortedTabs' => 'top',
-	'cacheImageSize' => '2'
+	'cacheImageSize' => '2',
+	'plexoAuth' => false
 );

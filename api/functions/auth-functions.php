@@ -36,6 +36,30 @@ function authRegister($username, $password, $defaults, $email)
 	return false;
 }
 
+function checkPlexToken($token = '')
+{
+	try {
+		if (($token !== '')) {
+			$url = 'https://plex.tv/users/account.json';
+			$headers = array(
+				'X-Plex-Token' => $token,
+				'Content-Type' => 'application/json',
+				'Accept' => 'application/json'
+			);
+			$response = Requests::get($url, $headers);
+			if ($response->success) {
+				return json_decode($response->body, true);
+			}
+		} else {
+			return false;
+		}
+		
+	} catch (Requests_Exception $e) {
+		writeLog('success', 'Plex Token Check Function - Error: ' . $e->getMessage(), SYSTEM);
+	}
+	return false;
+}
+
 function checkPlexUser($username)
 {
 	try {

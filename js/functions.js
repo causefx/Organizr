@@ -4678,6 +4678,79 @@ function homepageCalendar(timeout){
 	if(typeof timeouts['calendar'] !== 'undefined'){ clearTimeout(timeouts['calendar']); }
 	timeouts['calendar'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
+function oAuthLoop(type,code) {
+    switch(type) {
+        case 'plex':
+            return $.ajax({
+                type: 'GET',
+                headers: {
+                    'X-Plex-Product':'Organizr',
+                    'X-Plex-Version':'2.0',
+                    'X-Plex-Client-Identifier':'01010101-10101010'
+                },
+                url: 'https://plex.tv/api/v2/pins/'+code,
+            });
+        default:
+            break;
+    }
+}
+function oAuth(type){
+    switch(type){
+        case 'plex':
+            $.ajax({
+                type: 'POST',
+                headers: {
+                    'X-Plex-Product':'Organizr',
+                    'X-Plex-Version':'2.0',
+                    'X-Plex-Client-Identifier':'01010101-10101010'
+                },
+                url: 'https://plex.tv/api/v2/pins?strong=true',
+                cache: false,
+                async: true,
+                complete: function(xhr, status) {
+                    if (xhr.status === 201) {
+                        var result = $.parseXML(xhr.responseText),
+                        $xml = $( result ), $title = $xml.find( "pin" ), $id = $title.find("id");
+                        var id = $title['0'].attributes.id.value;
+                        var code = $title['0'].attributes.code.value;
+
+                        window.open(`https://app.plex.tv/auth/#!?clientID=01010101-10101010&code=`+code, "Organizr!!", `menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=1050,height=1050,left=0`);
+                        console.log(id,code);
+                        var loopAuth = setInterval(function(){
+                            // Do your update stuff...
+                            var success =  oAuthLoop('plex',id).success(function(data) {
+                                $xml = $( data ), $title = $xml.find( "pin" ), $id = $title.find("id");
+                                var id = $title['0'].attributes.id.value;
+                                var code = $title['0'].attributes.code.value;
+                                var authToken = $title['0'].attributes.authToken.value;
+                                success = (authToken !== '') ? authToken : false;
+                                console.log('checking: ' + id);
+                                if(success !== false){
+                                    clearInterval(loopAuth);
+                                    console.log('stopping loop cuz we good to go!');
+                                    $('#oAuth-Input').val(success);
+                                    $('#oAuthType-Input').val('plex');
+                                    $('#login-username-Input').addClass('hidden');
+                                    $('#login-password-Input').addClass('hidden');
+                                    $('#oAuth-div').removeClass('hidden');
+                                    $('.login-button').trigger('click');
+                                }
+                            });
+                        }, 1000);
+                    } else {
+                        console.log('An error - will add message later');
+                    }
+                }
+            });
+
+
+
+
+            break;
+        default:
+            break;
+    }
+}
 function clearAJAX(id='all'){
 	if(id == 'all'){
 		$.each(timeouts, function(i,v) {

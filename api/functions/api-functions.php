@@ -6,7 +6,7 @@
 function login($array)
 {
 	// Grab username and Password from login form
-	$username = $password = '';
+	$username = $password = $oAuth = $oAuthType = '';
 	foreach ($array['data'] as $items) {
 		foreach ($items as $key => $value) {
 			if ($key == 'name') {
@@ -22,6 +22,7 @@ function login($array)
 	}
 	$username = strtolower($username);
 	$days = (isset($remember)) ? 7 : 1;
+	$oAuth = (isset($oAuth)) ? $oAuth : false;
 	try {
 		$database = new Dibi\Connection([
 			'driver' => 'sqlite3',
@@ -29,31 +30,53 @@ function login($array)
 		]);
 		$authSuccess = false;
 		$function = 'plugin_auth_' . $GLOBALS['authBackend'];
-		$result = $database->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE', $username, $username);
-		switch ($GLOBALS['authType']) {
-			case 'external':
-				if (function_exists($function)) {
-					$authSuccess = $function($username, $password);
-				}
-				break;
-			/** @noinspection PhpMissingBreakStatementInspection */
-			case 'both':
-				if (function_exists($function)) {
-					$authSuccess = $function($username, $password);
-				}
-			// no break
-			default: // Internal
-				if (!$authSuccess) {
-					// perform the internal authentication step
-					if (password_verify($password, $result['password'])) {
-						$authSuccess = true;
+		if (!$oAuth) {
+			$result = $database->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE', $username, $username);
+			switch ($GLOBALS['authType']) {
+				case 'external':
+					if (function_exists($function)) {
+						$authSuccess = $function($username, $password);
 					}
-				}
+					break;
+				/** @noinspection PhpMissingBreakStatementInspection */
+				case 'both':
+					if (function_exists($function)) {
+						$authSuccess = $function($username, $password);
+					}
+				// no break
+				default: // Internal
+					if (!$authSuccess) {
+						// perform the internal authentication step
+						if (password_verify($password, $result['password'])) {
+							$authSuccess = true;
+						}
+					}
+			}
+		} else {
+			// Has oAuth Token!
+			switch ($oAuthType) {
+				case 'plex':
+					$tokenInfo = checkPlexToken($oAuth);
+					if ($tokenInfo) {
+						$authSuccess = array(
+							'username' => $tokenInfo['user']['username'],
+							'email' => $tokenInfo['user']['email'],
+							'image' => $tokenInfo['user']['thumb'],
+							'token' => $tokenInfo['user']['authToken']
+						);
+						$authSuccess = ((!empty($GLOBALS['plexAdmin']) && strtolower($GLOBALS['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
+					}
+					break;
+				default:
+					return 'error';
+					break;
+			}
+			$result = ($authSuccess) ? $database->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE', $authSuccess['username'], $authSuccess['email']) : '';
 		}
 		if ($authSuccess) {
 			// Make sure user exists in database
 			$userExists = false;
-			$passwordMatches = false;
+			$passwordMatches = ($oAuth) ? true : false;
 			$token = (is_array($authSuccess) && isset($authSuccess['token']) ? $authSuccess['token'] : '');
 			if ($result['username']) {
 				$userExists = true;

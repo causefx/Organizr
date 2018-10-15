@@ -474,6 +474,13 @@ function getSettingsMain()
 				'attr' => 'data-effect="mfp-3d-unfold"'
 			),
 			array(
+				'type' => 'switch',
+				'name' => 'plexoAuth',
+				'label' => 'Enable Plex oAuth',
+				'class' => 'popup-with-form plexAuth switchAuth',
+				'value' => $GLOBALS['plexoAuth']
+			),
+			array(
 				'type' => 'input',
 				'name' => 'authBackendHost',
 				'class' => 'ldapAuth ftpAuth switchAuth',
@@ -1277,6 +1284,21 @@ function showLogin()
 	if ($GLOBALS['hideRegistration'] == false) {
 		return '<p><span lang="en">Don\'t have an account?</span><a href="#" class="text-primary m-l-5 to-register"><b lang="en">Sign Up</b></a></p>';
 	}
+}
+
+function showoAuth()
+{
+	$buttons = '';
+	if ($GLOBALS['plexoAuth']) {
+		$buttons .= '<a href="javascript:void(0)" onclick="oAuth(\'plex\')" class="btn bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <i aria-hidden="true" class="mdi mdi-plex"></i> </a>';
+	}
+	return ($buttons) ? '
+		<div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 m-t-10 text-center">
+                <div class="social">' . $buttons . '</div>
+            </div>
+        </div>
+	' : '';
 }
 
 function getImages()
