@@ -6,7 +6,7 @@ function ssoCheck($username, $password, $token = null)
 		coookie('set', 'mpt', $token, 7);
 	}
 	if ($GLOBALS['ssoOmbi']) {
-		$ombiToken = getOmbiToken($username, $password);
+		$ombiToken = getOmbiToken($username, $password, $token);
 		if ($ombiToken) {
 			coookie('set', 'Auth', $ombiToken, 7, false);
 		}
@@ -55,7 +55,7 @@ function getTautulliToken($username, $password, $plexToken = null)
 	if (count($tautulliURLList) !== 0) {
 		foreach ($tautulliURLList as $key => $value) {
 			try {
-				$url = $value . '/auth/signin';
+				$url = qualifyURL($value);
 				$headers = array(
 					"Accept" => "application/json",
 					"Content-Type" => "application/x-www-form-urlencoded",
@@ -68,7 +68,7 @@ function getTautulliToken($username, $password, $plexToken = null)
 					"remember_me" => 1,
 				);
 				$options = (localURL($url)) ? array('verify' => false) : array();
-				$response = Requests::post($url, $headers, $data, $options);
+				$response = Requests::post($url . '/auth/signin', $headers, $data, $options);
 				if ($response->success) {
 					$token[$key]['token'] = json_decode($response->body, true)['token'];
 					$token[$key]['uuid'] = json_decode($response->body, true)['uuid'];

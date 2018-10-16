@@ -48,7 +48,7 @@ function verify2FA($secret, $code, $type)
 	switch ($type) {
 		case 'google':
 			$google2fa = new PragmaRX\Google2FA\Google2FA();
-			$google2fa->setWindow(0);
+			$google2fa->setWindow(5);
 			$valid = $google2fa->verifyKey($secret, $code);
 			break;
 		default:
