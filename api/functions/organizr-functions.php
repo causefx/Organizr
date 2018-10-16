@@ -31,14 +31,20 @@ function organizrSpecialSettings()
 				'enabled' => ($GLOBALS['ssoPlex']) ? true : false,
 				'cookie' => isset($_COOKIE['mpt']) ? true : false,
 				'machineID' => $GLOBALS['plexID'],
+				'token' => ($GLOBALS['plexToken'] !== '') ? true : false,
+				'oAuth' => ($GLOBALS['plexoAuth']) ? true : false,
+				'backend' => ($GLOBALS['authBackend'] == 'plex') ? true : false,
 			),
 			'ombi' => array(
 				'enabled' => ($GLOBALS['ssoOmbi']) ? true : false,
 				'cookie' => isset($_COOKIE['Auth']) ? true : false,
+				'url' => ($GLOBALS['ombiURL'] !== '') ? true : false,
+				'api' => ($GLOBALS['ombiToken'] !== '') ? true : false,
 			),
 			'tautulli' => array(
 				'enabled' => ($GLOBALS['ssoTautulli']) ? true : false,
 				'cookie' => !empty($tautulli) ? true : false,
+				'url' => ($GLOBALS['tautulliURL'] !== '') ? true : false,
 			),
 		),
 		'ping' => array(
@@ -729,6 +735,12 @@ function getSSO()
 				'label' => 'Ombi URL',
 				'value' => $GLOBALS['ombiURL'],
 				'placeholder' => 'http(s)://hostname:port'
+			),
+			array(
+				'type' => 'password-alt',
+				'name' => 'ombiToken',
+				'label' => 'Token',
+				'value' => $GLOBALS['ombiToken']
 			),
 			array(
 				'type' => 'switch',
