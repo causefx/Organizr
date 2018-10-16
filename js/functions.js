@@ -18,6 +18,9 @@ $(document).ready(function () {
     launch();
 });
 /* NORMAL FUNCTIONS */
+function getLangStrings(){
+    console.log(JSON.stringify(window.langStrings))
+}
 function getHiddenProp(){
     var prefixes = ['webkit','moz','ms','o'];
     // if 'hidden' is natively supported just return it
