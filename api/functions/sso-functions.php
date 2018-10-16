@@ -22,11 +22,11 @@ function ssoCheck($username, $password, $token = null)
 	return true;
 }
 
-function getOmbiToken($username, $password, $token = null)
+function getOmbiToken($username, $password, $oAuthToken = null)
 {
+	$token = null;
 	try {
 		$url = $GLOBALS['ombiURL'] . '/api/v1/Token';
-		$token = null;
 		$headers = array(
 			"Accept" => "application/json",
 			"Content-Type" => "application/json"
@@ -42,10 +42,10 @@ function getOmbiToken($username, $password, $token = null)
 			$token = json_decode($response->body, true)['access_token'];
 			writeLog('success', 'Ombi Token Function - Grabbed token.', $username);
 		}
-		return ($token) ? $token : false;
 	} catch (Requests_Exception $e) {
 		writeLog('success', 'Ombi Token Function - Error: ' . $e->getMessage(), $username);
 	};
+	return ($token) ? $token : false;
 }
 
 function getTautulliToken($username, $password, $plexToken = null)

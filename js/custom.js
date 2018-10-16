@@ -356,7 +356,9 @@ $(document).on("click", ".login-button", function(e) {
             console.error('Organizr Function: Login failed');
         }
     }).fail(function(xhr) {
-        console.error("Organizr Function: Login Failed");
+        $('div.login-box').unblock({});
+        message('Login Error','API Connection Failed',activeInfo.settings.notifications.position,'#FFF','warning','10000');
+        console.error("Organizr Function: API Connection Failed");
     });
 });
 $(document).on("click", ".unlockButton", function(e) {
