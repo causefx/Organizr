@@ -1801,10 +1801,10 @@ function ombiImport($type = null)
 				case 'emby_local':
 				case 'emby_connect':
 				case 'emby_all':
-					$response = Requests::get($url . "/api/v1/Job/embyuserimporter", $headers, $options);
+					$response = Requests::post($url . "/api/v1/Job/embyuserimporter", $headers, $options);
 					break;
 				case 'plex':
-					$response = Requests::get($url . "/api/v1/Job/plexuserimporter", $headers, $options);
+					$response = Requests::post($url . "/api/v1/Job/plexuserimporter", $headers, $options);
 					break;
 				default:
 					break;

@@ -26,7 +26,7 @@ function getOmbiToken($username, $password, $oAuthToken = null)
 {
 	$token = null;
 	try {
-		$url = $GLOBALS['ombiURL'] . '/api/v1/Token';
+		$url = qualifyURL($GLOBALS['ombiURL']);
 		$headers = array(
 			"Accept" => "application/json",
 			"Content-Type" => "application/json"
@@ -37,7 +37,7 @@ function getOmbiToken($username, $password, $oAuthToken = null)
 			"rememberMe" => "true"
 		);
 		$options = (localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::post($url, $headers, json_encode($data), $options);
+		$response = Requests::post($url . '/api/v1/Token', $headers, json_encode($data), $options);
 		if ($response->success) {
 			$token = json_decode($response->body, true)['access_token'];
 			writeLog('success', 'Ombi Token Function - Grabbed token.', $username);
