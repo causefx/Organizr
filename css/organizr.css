@@ -423,6 +423,18 @@ th.fc-list-header > .fc-list-heading-alt {
     overflow: hidden;
     width: 32px;
     height: 32px;
+    transition: all .2s ease;
+    z-index: 1;
+}
+/* thanks burry */
+.item:hover .inside-over-request-div {
+    opacity: 0;
+    top: -60px;
+}
+
+.item:hover .inside-request-div {
+    opacity: 0;
+    top: -46px;
 }
 
 .inside-request-div {
@@ -464,7 +476,7 @@ th.fc-list-header > .fc-list-heading-alt {
 .hover-homepage-item:hover {
     background: radial-gradient(farthest-corner at 50% 50%, rgba(50, 50, 50, .5) 50%, #323232 100%);
     opacity: 1;
-    transition: linear .5s;
+    transition: linear .2s;
 }
 
 .hover-homepage-item {
@@ -526,9 +538,9 @@ input#inviteCodeInput {
     -ms-transform: perspective(2.5em) rotateX(15deg) scaleY(0.8);
     -o-transform: perspective(2.5em) rotateX(15deg) scaleY(0.8);
     transform: perspective(2.5em) rotateX(15deg) scaleY(0.8);
-    -webkit-transition: all 0.5s;
-    -moz-transition: all 0.5s;
-    transition: all 0.5s;
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    transition: all 0.2s;
     display: inline-block;
     text-align: center;
     text-transform: uppercase;

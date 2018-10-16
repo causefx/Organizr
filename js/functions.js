@@ -1,5 +1,6 @@
 // Create language switcher instance
 var lang = new Lang();
+var langStrings = { "token": {} };
 loadLanguageList();
 lang.init({
 	defaultLang: 'en',
