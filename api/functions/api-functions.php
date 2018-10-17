@@ -560,6 +560,7 @@ function adminEditUser($array)
                         UPDATE users SET', [
 						'username' => $array['data']['username'],
 						'email' => $array['data']['email'],
+						'image' => gravatar($array['data']['email']),
 					], '
                         WHERE id=?', $array['data']['id']);
 					if (!empty($array['data']['password'])) {

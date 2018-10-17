@@ -300,6 +300,7 @@ function editUser($array)
                 UPDATE users SET', [
 				'username' => $array['data']['username'],
 				'email' => $array['data']['email'],
+				'image' => gravatar($array['data']['email']),
 			], '
                 WHERE id=?', $GLOBALS['organizrUser']['userID']);
 			if (!empty($array['data']['password'])) {
