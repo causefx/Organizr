@@ -1,9 +1,10 @@
 <?php
-function authRegister($username, $password, $defaults, $email)
+function authRegister($username, $password, $defaults, $email, $token = null)
 {
 	if ($GLOBALS['authBackend'] !== '') {
 		ombiImport($GLOBALS['authBackend']);
 	}
+	ssoCheck($username, $password, $token);
 	if (createUser($username, $password, $defaults, $email)) {
 		writeLog('success', 'Registration Function - A User has registered', $username);
 		if ($GLOBALS['PHPMAILER-enabled']) {

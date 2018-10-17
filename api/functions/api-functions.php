@@ -129,8 +129,8 @@ function login($array)
 				}
 			} else {
 				// Create User
-				ssoCheck($username, $password, $token);
-				return authRegister((is_array($authSuccess) && isset($authSuccess['username']) ? $authSuccess['username'] : $username), $password, defaultUserGroup(), (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''));
+				//ssoCheck($username, $password, $token);
+				return authRegister((is_array($authSuccess) && isset($authSuccess['username']) ? $authSuccess['username'] : $username), $password, defaultUserGroup(), (is_array($authSuccess) && isset($authSuccess['email']) ? $authSuccess['email'] : ''), $token);
 			}
 		} else {
 			// authentication failed
