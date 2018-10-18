@@ -18,6 +18,63 @@ $(document).ready(function () {
     launch();
 });
 /* NORMAL FUNCTIONS */
+function toggleDebug(){
+    $('.debugModal').modal('show')
+}
+function highlightObject(json) {
+    if (typeof json != 'string') {
+        json = JSON.stringify(json, undefined, 2);
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+function orgDebug(cmd) {
+    var cmd = $('#debug-input').val();
+    var result = '';
+    if (cmd !== '') {
+        result = eval(cmd);
+    }
+    if (result !== '') {
+        console.log(result);
+        console.log(typeof result);
+        $('#debugResultsBox').removeClass('hidden');
+        $('#debugResults').html(formatDebug(result));
+    } else {
+
+    }
+}
+function formatDebug(result){
+    var formatted = '';
+    switch (typeof result) {
+        case 'object':
+            formatted = highlightObject(result);
+            break;
+        default:
+            formatted = result;
+
+    }
+    return '<pre>' + formatted + '</pre>';
+}
+function orgDebugList(cmd){
+    if(cmd !== ''){
+        $('#debug-input').val(cmd);
+        orgDebug();
+    }
+}
 function getLangStrings(){
     console.log(JSON.stringify(window.langStrings))
 }
@@ -1908,6 +1965,7 @@ function userMenu(user){
 					<li class="append-menu"><a class="inline-popups" href="#account-area" data-effect="mfp-zoom-out"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 					<li class="divider" role="separator"></li>
 					<li><a href="javascript:void(0)" onclick="lock();"><i class="ti-lock fa-fw"></i> <span lang="en">Lock Screen</span></a></li>
+					<li><a href="javascript:void(0)" onclick="toggleDebug();"><i class="mdi mdi-bug fa-fw"></i> <span lang="en">Debug Area</span></a></li>
 					<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 				</ul><!-- /.dropdown-user -->
 			</li><!-- /.dropdown -->
@@ -3210,11 +3268,11 @@ function buildStreamItem(array,source){
 		switch (v.type) {
 			case 'music':
 				icon = 'icon-music-tone-alt';
-				width = 56;
-				bg = `
+				width = (v.nowPlayingImageURL !== 'plugins/images/cache/no-np.png') ? 56 : 100;
+				bg = (v.nowPlayingImageURL !== 'plugins/images/cache/no-np.png') ? `
 				<img class="imageSource imageSourceLeft" src="`+v.nowPlayingImageURL+`">
 				<img class="imageSource imageSourceRight" src="`+v.nowPlayingImageURL+`">
-				`;
+				` : '';
 				break;
 			case 'movie':
 				icon = 'icon-film';

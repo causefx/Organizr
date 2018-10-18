@@ -144,7 +144,9 @@ function pageLoad(){
     /* ===== Tooltip Initialization ===== */
 
     $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
+        if(bowser.mobile !== true) {
+            $('[data-toggle="tooltip"]').tooltip();
+        }
         /*$('body').tooltip({
             selector: '[data-toggle="tooltip"]'
         });*/
@@ -1717,6 +1719,7 @@ Mousetrap.bind("c c", function() { closeCurrentTab() });
 Mousetrap.bind("s s", function() { openSettings() });
 Mousetrap.bind("h h", function() { openHomepage() });
 Mousetrap.bind("f f", function() { toggleFullScreen() });
+Mousetrap.bind("d d", function() { toggleDebug() });
 Mousetrap.bind("esc", function () {
     $('.splash-screen').removeClass('in').addClass('hidden')
 });
@@ -1752,4 +1755,9 @@ $(document).on('change', "#choose-calender-filter, #choose-calender-filter-statu
     console.log("Calendar Filter: "+filterDownload);
     $('#calendar').fullCalendar('rerenderEvents');
     new SimpleBar($('.fc-scroller')[0]);
+});
+$('#debug-input').keyup(function(e){
+    if(e.keyCode == 13) {
+        orgDebug();
+    }
 });

@@ -118,6 +118,63 @@
         <div class="internal-listing p-0 hidden"></div>
         <div class="iFrame-listing p-0 hidden"></div>
     </div>
+    <!-- sample modal content -->
+    <div class="modal fade debugModal" tabindex="-1" role="dialog" aria-labelledby="debugModal"
+         aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="debugModal" lang="en">Organizr Debug Area</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="white-box m-0">
+                        <div class="steamline">
+                            <div class="sl-item">
+                                <div class="sl-left bg-success"><i class="mdi mdi-code-tags"></i></div>
+                                <div class="sl-right">
+                                    <div class="form-group m-b-0">
+                                        <div id="" class="input-group">
+                                            <input id="debug-input" lang="en" placeholder="Input Command" type="text"
+                                                   class="form-control inline-focus">
+                                            <div class="input-group-btn">
+                                                <button type="button"
+                                                        class="btn waves-effect waves-light btn-info dropdown-toggle"
+                                                        data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span>
+                                                    <span class="caret"></span></button>
+                                                <ul class="dropdown-menu dropdown-menu-right">
+                                                    <li><a onclick="orgDebugList('activeInfo.settings.sso.ombi');"
+                                                           href="javascript:void(0)"
+                                                           lang="en">Ombi SSO</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="debugResultsBox" class="sl-item hidden">
+                                <div class="sl-left bg-info"><i class="mdi mdi-receipt"></i></div>
+                                <div class="sl-right">
+                                    <div><a href="#">Results</a></div>
+                                    <div id="debugResults" class="desc"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Close
+                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
     <!-- ============================================================== -->
     <!-- End Page Content -->
     <!-- ============================================================== -->
