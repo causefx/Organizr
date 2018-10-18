@@ -50,6 +50,7 @@ function organizrSpecialSettings()
 		'ping' => array(
 			'onlineSound' => $GLOBALS['pingOnlineSound'],
 			'offlineSound' => $GLOBALS['pingOfflineSound'],
+			'statusSounds' => $GLOBALS['statusSounds'],
 			'auth' => $GLOBALS['pingAuth'],
 			'authMessage' => $GLOBALS['pingAuthMessage'],
 			'authMs' => $GLOBALS['pingAuthMs'],
@@ -621,6 +622,13 @@ function getSettingsMain()
 				'name' => 'pingMs',
 				'label' => 'Show Ping Time',
 				'value' => $GLOBALS['pingMs']
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'statusSounds',
+				'label' => 'Enable Notify Sounds',
+				'value' => $GLOBALS['statusSounds'],
+				'help' => 'Will play a sound if the server goes down and will play sound if comes back up.',
 			),
 			array(
 				'type' => 'select',

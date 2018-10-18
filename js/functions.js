@@ -49,10 +49,9 @@ function orgDebug(cmd) {
         result = eval(cmd);
     }
     if (result !== '') {
-        console.log(result);
-        console.log(typeof result);
         $('#debugResultsBox').removeClass('hidden');
         $('#debugResults').html(formatDebug(result));
+        $('.cmdName').text(cmd);
     } else {
 
     }
@@ -67,7 +66,7 @@ function formatDebug(result){
             formatted = result;
 
     }
-    return '<pre>' + formatted + '</pre>';
+    return '<pre class="whitebox bg-org text-success">' + formatted + '</pre>';
 }
 function orgDebugList(cmd){
     if(cmd !== ''){
@@ -5266,14 +5265,14 @@ function pingUpdate(pingList,timeout){
                         catElm.html(error);
                         elm.parent().find('img').addClass('grayscale');
                         var msg = (sendMessage) ? message(tabName,'Server Down',activeInfo.settings.notifications.position,'#FFF','error','600000') : '';
-                        var audio = (sendMessage) ? audioDown.play() : '';
+                        var audio = (sendMessage && activeInfo.settings.ping.statusSounds) ? audioDown.play() : '';
                         break;
                     default:
                         if(catElm.length > 0){ goodCount = goodCount + 1; catElm.attr('data-good', goodCount); if(badCount == 0){ catElm.html(success); } }
                         elm.html(success);
                         elm.parent().find('img').removeClass('grayscale');
                         var msg = (sendMessage) ? message(tabName,'Server Back Online',activeInfo.settings.notifications.position,'#FFF','success','600000') : '';
-                        var audio = (sendMessage) ? audioUp.play() : '';
+                        var audio = (sendMessage && activeInfo.settings.ping.statusSounds) ? audioUp.play() : '';
                 }
             });
         }

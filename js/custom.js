@@ -55,6 +55,8 @@ $(document).ready(function () {
             }
             if (height > topOffset) {
                 $("#page-wrapper").css("min-height", (height) + "px");
+                //$("#page-wrapper").css("max-height", (height) + "px");
+
             }
         },
         url = window.location,

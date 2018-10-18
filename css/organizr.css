@@ -1185,3 +1185,19 @@ span.fc-image,
 span.fc-title {
     margin-left: 5px;
 }
+.string { color: green; }
+.number { color: darkorange; }
+.boolean { color: blue; }
+.null { color: magenta; }
+.key { color: #53e69d; }
+/*
+body,
+html {
+    overflow: hidden;
+}
+
+#page-wrapper {
+    max-height: 568px;
+    min-height: 568px;
+}
+*/

@@ -189,5 +189,6 @@ return array(
 	'minimalLoginScreen' => false,
 	'unsortedTabs' => 'top',
 	'cacheImageSize' => '2',
-	'plexoAuth' => false
+	'plexoAuth' => false,
+	'statusSounds' => false
 );

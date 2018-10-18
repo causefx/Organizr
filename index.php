@@ -140,7 +140,7 @@
                                             <div class="input-group-btn">
                                                 <button type="button"
                                                         class="btn waves-effect waves-light btn-info dropdown-toggle"
-                                                        data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span>
+                                                        data-toggle="dropdown" aria-expanded="false"><span lang="en">Commands</span>
                                                     <span class="caret"></span></button>
                                                 <ul class="dropdown-menu dropdown-menu-right">
                                                     <li><a onclick="orgDebugList('activeInfo.settings.sso.ombi');"
@@ -156,7 +156,8 @@
                             <div id="debugResultsBox" class="sl-item hidden">
                                 <div class="sl-left bg-info"><i class="mdi mdi-receipt"></i></div>
                                 <div class="sl-right">
-                                    <div><a href="#">Results</a></div>
+                                    <div><span lang="en">Results For cmd:</span>&nbsp;<span class="cmdName"></span>
+                                    </div>
                                     <div id="debugResults" class="desc"></div>
                                 </div>
                             </div>
