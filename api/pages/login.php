@@ -1,6 +1,9 @@
 <?php
 $pageLogin = '
 <script>
+if(activeInfo.settings.login.rememberMe){
+	$(\'#checkbox-login\').prop(\'checked\',true);
+}
 </script>
 <section id="wrapper" class="login-register">
   <div class="login-box login-sidebar animated slideInRight">
@@ -51,7 +54,7 @@ $pageLogin = '
         <div class="form-group">
           <div class="col-md-12">
             <div class="checkbox checkbox-primary pull-left p-t-0 remember-me">
-              <input id="checkbox-login" name="remember" type="checkbox" checked>
+              <input id="checkbox-login" name="remember" type="checkbox">
               <label for="checkbox-login" lang="en">Remember Me</label>
             </div>
         	</div>

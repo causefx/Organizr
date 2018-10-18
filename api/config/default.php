@@ -190,5 +190,7 @@ return array(
 	'unsortedTabs' => 'top',
 	'cacheImageSize' => '2',
 	'plexoAuth' => false,
-	'statusSounds' => false
+	'statusSounds' => false,
+	'rememberMeDays' => '7',
+	'rememberMe' => true
 );

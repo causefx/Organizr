@@ -3,19 +3,19 @@ function ssoCheck($username, $password, $token = null)
 {
 	$test = '';
 	if ($GLOBALS['ssoPlex'] && $token) {
-		coookie('set', 'mpt', $token, 7);
+		coookie('set', 'mpt', $token, $GLOBALS['rememberMeDays']);
 	}
 	if ($GLOBALS['ssoOmbi']) {
 		$ombiToken = getOmbiToken($username, $password, $token);
 		if ($ombiToken) {
-			coookie('set', 'Auth', $ombiToken, 7, false);
+			coookie('set', 'Auth', $ombiToken, $GLOBALS['rememberMeDays'], false);
 		}
 	}
 	if ($GLOBALS['ssoTautulli']) {
 		$tautulliToken = getTautulliToken($username, $password, $token);
 		if ($tautulliToken) {
 			foreach ($tautulliToken as $key => $value) {
-				coookie('set', 'tautulli_token_' . $value['uuid'], $value['token'], 7, false);
+				coookie('set', 'tautulli_token_' . $value['uuid'], $value['token'], $GLOBALS['rememberMeDays'], false);
 			}
 		}
 	}

@@ -71,6 +71,10 @@ function organizrSpecialSettings()
 		'user' => array(
 			'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
 		),
+		'login' => array(
+			'rememberMe' => $GLOBALS['rememberMe'],
+			'rememberMeDays' => $GLOBALS['rememberMeDays'],
+		),
 		'misc' => array(
 			'installedPlugins' => $GLOBALS['installedPlugins'],
 			'installedThemes' => $GLOBALS['installedThemes'],
@@ -157,7 +161,7 @@ function register($array)
 		writeLog('success', 'Registration Function - Registration Password Verified', $username);
 		if (createUser($username, $password, $defaults, $email)) {
 			writeLog('success', 'Registration Function - A User has registered', $username);
-			if (createToken($username, $email, gravatar($email), $defaults['group'], $defaults['group_id'], $GLOBALS['organizrHash'], 1)) {
+			if (createToken($username, $email, gravatar($email), $defaults['group'], $defaults['group_id'], $GLOBALS['organizrHash'], $GLOBALS['rememberMeDays'])) {
 				writeLoginLog($username, 'success');
 				writeLog('success', 'Login Function - A User has logged in', $username);
 				return true;
@@ -548,12 +552,6 @@ function getSettingsMain()
 				'placeholder' => ''
 			),
 			array(
-				'type' => 'switch',
-				'name' => 'lockoutSystem',
-				'label' => 'Inactivity Lock',
-				'value' => $GLOBALS['lockoutSystem']
-			),
-			array(
 				'type' => 'select',
 				'name' => 'lockoutMinAuth',
 				'label' => 'Lockout Groups From',
@@ -568,6 +566,22 @@ function getSettingsMain()
 				'options' => groupSelect()
 			),
 			array(
+				'type' => 'switch',
+				'name' => 'lockoutSystem',
+				'label' => 'Inactivity Lock',
+				'value' => $GLOBALS['lockoutSystem']
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'authDebug',
+				'label' => 'Nginx Auth Debug',
+				'help' => 'Important! Do not keep this enabled for too long as this opens up Authentication while testing.',
+				'value' => $GLOBALS['authDebug'],
+				'class' => 'authDebug'
+			)
+		),
+		'Login' => array(
+			array(
 				'type' => 'password-alt',
 				'name' => 'registrationPassword',
 				'label' => 'Registration Password',
@@ -580,13 +594,20 @@ function getSettingsMain()
 				'value' => $GLOBALS['hideRegistration'],
 			),
 			array(
+				'type' => 'number',
+				'name' => 'rememberMeDays',
+				'label' => 'Remember Me Length',
+				'help' => 'Number of days cookies and tokens will be valid for',
+				'value' => $GLOBALS['rememberMeDays'],
+				'placeholder' => ''
+			),
+			array(
 				'type' => 'switch',
-				'name' => 'authDebug',
-				'label' => 'Nginx Auth Debug',
-				'help' => 'Important! Do not keep this enabled for too long as this opens up Authentication while testing.',
-				'value' => $GLOBALS['authDebug'],
-				'class' => 'authDebug'
-			)
+				'name' => 'rememberMe',
+				'label' => 'Remember Me',
+				'help' => 'Default status of Remember Me button on login screen',
+				'value' => $GLOBALS['rememberMe'],
+			),
 		),
 		'Ping' => array(
 			array(

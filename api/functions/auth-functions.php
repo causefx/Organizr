@@ -25,7 +25,7 @@ function authRegister($username, $password, $defaults, $email, $token = null)
 			);
 			phpmSendEmail($sendEmail);
 		}
-		if (createToken($username, $email, gravatar($email), $defaults['group'], $defaults['group_id'], $GLOBALS['organizrHash'], 7)) {
+		if (createToken($username, $email, gravatar($email), $defaults['group'], $defaults['group_id'], $GLOBALS['organizrHash'], $GLOBALS['rememberMeDays'])) {
 			writeLoginLog($username, 'success');
 			writeLog('success', 'Login Function - A User has logged in', $username);
 			return true;

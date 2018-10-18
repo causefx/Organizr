@@ -21,7 +21,7 @@ function login($array)
 		}
 	}
 	$username = strtolower($username);
-	$days = (isset($remember)) ? 7 : 1;
+	$days = (isset($remember)) ? $GLOBALS['rememberMeDays'] : 1;
 	$oAuth = (isset($oAuth)) ? $oAuth : false;
 	try {
 		$database = new Dibi\Connection([
