@@ -1,9 +1,11 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
+
+declare(strict_types=1);
 
 namespace Dibi\Reflection;
 
@@ -24,24 +26,21 @@ class Database
 	/** @var Dibi\Reflector */
 	private $reflector;
 
-	/** @var string */
+	/** @var string|null */
 	private $name;
 
-	/** @var array */
+	/** @var Table[]|null */
 	private $tables;
 
 
-	public function __construct(Dibi\Reflector $reflector, $name)
+	public function __construct(Dibi\Reflector $reflector, string $name = null)
 	{
 		$this->reflector = $reflector;
 		$this->name = $name;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getName()
+	public function getName(): ?string
 	{
 		return $this->name;
 	}
@@ -50,7 +49,7 @@ class Database
 	/**
 	 * @return Table[]
 	 */
-	public function getTables()
+	public function getTables(): array
 	{
 		$this->init();
 		return array_values($this->tables);
@@ -60,7 +59,7 @@ class Database
 	/**
 	 * @return string[]
 	 */
-	public function getTableNames()
+	public function getTableNames(): array
 	{
 		$this->init();
 		$res = [];
@@ -71,11 +70,7 @@ class Database
 	}
 
 
-	/**
-	 * @param  string
-	 * @return Table
-	 */
-	public function getTable($name)
+	public function getTable(string $name): Table
 	{
 		$this->init();
 		$l = strtolower($name);
@@ -88,21 +83,14 @@ class Database
 	}
 
 
-	/**
-	 * @param  string
-	 * @return bool
-	 */
-	public function hasTable($name)
+	public function hasTable(string $name): bool
 	{
 		$this->init();
 		return isset($this->tables[strtolower($name)]);
 	}
 
 
-	/**
-	 * @return void
-	 */
-	protected function init()
+	protected function init(): void
 	{
 		if ($this->tables === null) {
 			$this->tables = [];

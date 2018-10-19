@@ -11,8 +11,8 @@ namespace Dibi\Drivers;
 
 
 /**
- * Alias for SqliteDriver driver.
+ * Alias for SqliteResult driver.
  */
-class Sqlite3Driver extends SqliteDriver
+class Sqlite3Result extends SqliteResult
 {
 }

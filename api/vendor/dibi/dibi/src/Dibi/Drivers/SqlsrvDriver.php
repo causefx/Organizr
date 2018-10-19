@@ -1,19 +1,20 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
+
+declare(strict_types=1);
 
 namespace Dibi\Drivers;
 
 use Dibi;
-use Dibi\Connection;
 use Dibi\Helpers;
 
 
 /**
- * The dibi driver for Microsoft SQL Server and SQL Azure databases.
+ * The driver for Microsoft SQL Server and SQL Azure databases.
  *
  * Driver options:
  *   - host => the MS SQL server host name. It can also include a port number (hostname:port)
@@ -23,23 +24,16 @@ use Dibi\Helpers;
  *   - options (array) => connection options {@link https://msdn.microsoft.com/en-us/library/cc296161(SQL.90).aspx}
  *   - charset => character encoding to set (default is UTF-8)
  *   - resource (resource) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
-class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
+class SqlsrvDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $connection;
 
-	/** @var resource|null */
-	private $resultSet;
-
-	/** @var bool */
-	private $autoFree = true;
-
-	/** @var int|false  Affected rows */
-	private $affectedRows = false;
+	/** @var int|null  Affected rows */
+	private $affectedRows;
 
 	/** @var string */
 	private $version = '';
@@ -48,21 +42,12 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct()
+	public function __construct(array $config)
 	{
 		if (!extension_loaded('sqlsrv')) {
 			throw new Dibi\NotSupportedException("PHP extension 'sqlsrv' is not loaded.");
 		}
-	}
 
-
-	/**
-	 * Connects to a database.
-	 * @return void
-	 * @throws Dibi\Exception
-	 */
-	public function connect(array &$config)
-	{
 		Helpers::alias($config, 'options|UID', 'username');
 		Helpers::alias($config, 'options|PWD', 'password');
 		Helpers::alias($config, 'options|Database', 'database');
@@ -75,9 +60,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			$options = $config['options'];
 
 			// Default values
-			if (!isset($options['CharacterSet'])) {
-				$options['CharacterSet'] = 'UTF-8';
-			}
+			$options['CharacterSet'] = $options['CharacterSet'] ?? 'UTF-8';
 			$options['PWD'] = (string) $options['PWD'];
 			$options['UID'] = (string) $options['UID'];
 			$options['Database'] = (string) $options['Database'];
@@ -95,9 +78,8 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Disconnects from a database.
-	 * @return void
 	 */
-	public function disconnect()
+	public function disconnect(): void
 	{
 		@sqlsrv_close($this->connection); // @ - connection can be already disconnected
 	}
@@ -105,13 +87,11 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Executes the SQL query.
-	 * @param  string      SQL statement.
-	 * @return Dibi\ResultDriver|null
 	 * @throws Dibi\DriverException
 	 */
-	public function query($sql)
+	public function query(string $sql): ?Dibi\ResultDriver
 	{
-		$this->affectedRows = false;
+		$this->affectedRows = null;
 		$res = sqlsrv_query($this->connection, $sql);
 
 		if ($res === false) {
@@ -119,7 +99,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			throw new Dibi\DriverException($info[0]['message'], $info[0]['code'], $sql);
 
 		} elseif (is_resource($res)) {
-			$this->affectedRows = sqlsrv_rows_affected($res);
+			$this->affectedRows = Helpers::false2Null(sqlsrv_rows_affected($res));
 			return sqlsrv_num_fields($res) ? $this->createResultDriver($res) : null;
 		}
 		return null;
@@ -128,9 +108,8 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|false  number of rows or false on error
 	 */
-	public function getAffectedRows()
+	public function getAffectedRows(): ?int
 	{
 		return $this->affectedRows;
 	}
@@ -138,26 +117,23 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|false  int on success or false on failure
 	 */
-	public function getInsertId($sequence)
+	public function getInsertId(?string $sequence): ?int
 	{
 		$res = sqlsrv_query($this->connection, 'SELECT SCOPE_IDENTITY()');
 		if (is_resource($res)) {
 			$row = sqlsrv_fetch_array($res, SQLSRV_FETCH_NUMERIC);
-			return $row[0];
+			return Dibi\Helpers::intVal($row[0]);
 		}
-		return false;
+		return null;
 	}
 
 
 	/**
 	 * Begins a transaction (if supported).
-	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function begin($savepoint = null)
+	public function begin(string $savepoint = null): void
 	{
 		sqlsrv_begin_transaction($this->connection);
 	}
@@ -165,11 +141,9 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Commits statements in a transaction.
-	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function commit($savepoint = null)
+	public function commit(string $savepoint = null): void
 	{
 		sqlsrv_commit($this->connection);
 	}
@@ -177,11 +151,9 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Rollback changes in a transaction.
-	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback($savepoint = null)
+	public function rollback(string $savepoint = null): void
 	{
 		sqlsrv_rollback($this->connection);
 	}
@@ -199,9 +171,8 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection reflector.
-	 * @return Dibi\Reflector
 	 */
-	public function getReflector()
+	public function getReflector(): Dibi\Reflector
 	{
 		return new SqlsrvReflector($this);
 	}
@@ -209,14 +180,11 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Result set driver factory.
-	 * @param  resource
-	 * @return Dibi\ResultDriver
+	 * @param  resource  $resource
 	 */
-	public function createResultDriver($resource)
+	public function createResultDriver($resource): SqlsrvResult
 	{
-		$res = clone $this;
-		$res->resultSet = $resource;
-		return $res;
+		return new SqlsrvResult($resource);
 	}
 
 
@@ -225,53 +193,38 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  string    value
-	 * @return string    encoded value
 	 */
-	public function escapeText($value)
+	public function escapeText(string $value): string
 	{
 		return "'" . str_replace("'", "''", $value) . "'";
 	}
 
 
-	/**
-	 * @param  string
-	 * @return string
-	 */
-	public function escapeBinary($value)
+	public function escapeBinary(string $value): string
 	{
 		return "'" . str_replace("'", "''", $value) . "'";
 	}
 
 
-	/**
-	 * @param  string
-	 * @return string
-	 */
-	public function escapeIdentifier($value)
+	public function escapeIdentifier(string $value): string
 	{
 		// @see https://msdn.microsoft.com/en-us/library/ms176027.aspx
 		return '[' . str_replace(']', ']]', $value) . ']';
 	}
 
 
-	/**
-	 * @param  bool
-	 * @return string
-	 */
-	public function escapeBool($value)
+	public function escapeBool(bool $value): string
 	{
 		return $value ? '1' : '0';
 	}
 
 
 	/**
-	 * @param  \DateTime|\DateTimeInterface|string|int
-	 * @return string
+	 * @param  \DateTimeInterface|string|int  $value
 	 */
-	public function escapeDate($value)
+	public function escapeDate($value): string
 	{
-		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+		if (!$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
 		return $value->format("'Y-m-d'");
@@ -279,25 +232,21 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 
 	/**
-	 * @param  \DateTime|\DateTimeInterface|string|int
-	 * @return string
+	 * @param  \DateTimeInterface|string|int  $value
 	 */
-	public function escapeDateTime($value)
+	public function escapeDateTime($value): string
 	{
-		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+		if (!$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
-		return $value->format("'Y-m-d H:i:s.u'");
+		return 'CONVERT(DATETIME2(7), ' . $value->format("'Y-m-d H:i:s.u'") . ')';
 	}
 
 
 	/**
 	 * Encodes string for use in a LIKE statement.
-	 * @param  string
-	 * @param  int
-	 * @return string
 	 */
-	public function escapeLike($value, $pos)
+	public function escapeLike(string $value, int $pos): string
 	{
 		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
@@ -305,32 +254,9 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 
 	/**
-	 * Decodes data from result set.
-	 * @param  string
-	 * @return string
-	 */
-	public function unescapeBinary($value)
-	{
-		return $value;
-	}
-
-
-	/** @deprecated */
-	public function escape($value, $type)
-	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
-		return Helpers::escape($this, $value, $type);
-	}
-
-
-	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string
-	 * @param  int|null
-	 * @param  int|null
-	 * @return void
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
@@ -350,90 +276,5 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
 			$sql = sprintf('%s OFFSET %d ROWS', rtrim($sql), $offset);
 		}
-	}
-
-
-	/********************* result set ****************d*g**/
-
-
-	/**
-	 * Automatically frees the resources allocated for this result set.
-	 * @return void
-	 */
-	public function __destruct()
-	{
-		$this->autoFree && $this->getResultResource() && $this->free();
-	}
-
-
-	/**
-	 * Returns the number of rows in a result set.
-	 * @return int
-	 */
-	public function getRowCount()
-	{
-		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
-	}
-
-
-	/**
-	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     true for associative array, false for numeric
-	 * @return array    array on success, nonarray if no next record
-	 */
-	public function fetch($assoc)
-	{
-		return sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC);
-	}
-
-
-	/**
-	 * Moves cursor position without fetching row.
-	 * @param  int   the 0-based cursor pos to seek to
-	 * @return bool  true on success, false if unable to seek to specified record
-	 */
-	public function seek($row)
-	{
-		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
-	}
-
-
-	/**
-	 * Frees the resources allocated for this result set.
-	 * @return void
-	 */
-	public function free()
-	{
-		sqlsrv_free_stmt($this->resultSet);
-		$this->resultSet = null;
-	}
-
-
-	/**
-	 * Returns metadata for all columns in a result set.
-	 * @return array
-	 */
-	public function getResultColumns()
-	{
-		$columns = [];
-		foreach ((array) sqlsrv_field_metadata($this->resultSet) as $fieldMetadata) {
-			$columns[] = [
-				'name' => $fieldMetadata['Name'],
-				'fullname' => $fieldMetadata['Name'],
-				'nativetype' => $fieldMetadata['Type'],
-			];
-		}
-		return $columns;
-	}
-
-
-	/**
-	 * Returns the result set resource.
-	 * @return resource|null
-	 */
-	public function getResultResource()
-	{
-		$this->autoFree = false;
-		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 }

@@ -1,17 +1,22 @@
+<?php
+declare(strict_types=1);
+?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Using DateTime | dibi</h1>
+<h1>Using DateTime | Dibi</h1>
 
 <?php
 
-require __DIR__ . '/../src/loader.php';
+if (@!include __DIR__ . '/../vendor/autoload.php') {
+	die('Install packages using `composer install`');
+}
 
 date_default_timezone_set('Europe/Prague');
 
 
 // CHANGE TO REAL PARAMETERS!
-dibi::connect([
-	'driver' => 'sqlite3',
+$dibi = new Dibi\Connection([
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 	'formatDate' => "'Y-m-d'",
 	'formatDateTime' => "'Y-m-d H-i-s'",
@@ -19,7 +24,7 @@ dibi::connect([
 
 
 // generate and dump SQL
-dibi::test('
+$dibi->test('
 	INSERT INTO [mytable]', [
 		'id' => 123,
 		'date' => new DateTime('12.3.2007'),

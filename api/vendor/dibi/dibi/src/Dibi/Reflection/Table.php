@@ -1,9 +1,11 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
+
+declare(strict_types=1);
 
 namespace Dibi\Reflection;
 
@@ -34,16 +36,16 @@ class Table
 	/** @var bool */
 	private $view;
 
-	/** @var array */
+	/** @var Column[]|null */
 	private $columns;
 
-	/** @var array */
+	/** @var ForeignKey[]|null */
 	private $foreignKeys;
 
-	/** @var array */
+	/** @var Index[]|null */
 	private $indexes;
 
-	/** @var Index */
+	/** @var Index|null */
 	private $primaryKey;
 
 
@@ -55,19 +57,13 @@ class Table
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}
 
 
-	/**
-	 * @return bool
-	 */
-	public function isView()
+	public function isView(): bool
 	{
 		return $this->view;
 	}
@@ -76,7 +72,7 @@ class Table
 	/**
 	 * @return Column[]
 	 */
-	public function getColumns()
+	public function getColumns(): array
 	{
 		$this->initColumns();
 		return array_values($this->columns);
@@ -86,7 +82,7 @@ class Table
 	/**
 	 * @return string[]
 	 */
-	public function getColumnNames()
+	public function getColumnNames(): array
 	{
 		$this->initColumns();
 		$res = [];
@@ -97,11 +93,7 @@ class Table
 	}
 
 
-	/**
-	 * @param  string
-	 * @return Column
-	 */
-	public function getColumn($name)
+	public function getColumn(string $name): Column
 	{
 		$this->initColumns();
 		$l = strtolower($name);
@@ -114,11 +106,7 @@ class Table
 	}
 
 
-	/**
-	 * @param  string
-	 * @return bool
-	 */
-	public function hasColumn($name)
+	public function hasColumn(string $name): bool
 	{
 		$this->initColumns();
 		return isset($this->columns[strtolower($name)]);
@@ -128,7 +116,7 @@ class Table
 	/**
 	 * @return ForeignKey[]
 	 */
-	public function getForeignKeys()
+	public function getForeignKeys(): array
 	{
 		$this->initForeignKeys();
 		return $this->foreignKeys;
@@ -138,27 +126,21 @@ class Table
 	/**
 	 * @return Index[]
 	 */
-	public function getIndexes()
+	public function getIndexes(): array
 	{
 		$this->initIndexes();
 		return $this->indexes;
 	}
 
 
-	/**
-	 * @return Index
-	 */
-	public function getPrimaryKey()
+	public function getPrimaryKey(): Index
 	{
 		$this->initIndexes();
 		return $this->primaryKey;
 	}
 
 
-	/**
-	 * @return void
-	 */
-	protected function initColumns()
+	protected function initColumns(): void
 	{
 		if ($this->columns === null) {
 			$this->columns = [];
@@ -169,10 +151,7 @@ class Table
 	}
 
 
-	/**
-	 * @return void
-	 */
-	protected function initIndexes()
+	protected function initIndexes(): void
 	{
 		if ($this->indexes === null) {
 			$this->initColumns();
@@ -190,10 +169,7 @@ class Table
 	}
 
 
-	/**
-	 * @return void
-	 */
-	protected function initForeignKeys()
+	protected function initForeignKeys(): void
 	{
 		throw new Dibi\NotImplementedException;
 	}

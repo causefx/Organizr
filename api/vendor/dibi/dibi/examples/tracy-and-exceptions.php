@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 if (@!include __DIR__ . '/../vendor/autoload.php') {
 	die('Install dependencies using `composer install --dev`');
@@ -9,22 +10,19 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 Tracy\Debugger::enable();
 
 
-$connection = dibi::connect([
-	'driver' => 'sqlite3',
+$dibi = new Dibi\Connection([
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
-	'profiler' => [
-		'run' => true,
-	],
 ]);
 
 
 // add panel to debug bar
 $panel = new Dibi\Bridges\Tracy\Panel;
-$panel->register($connection);
+$panel->register($dibi);
 
 
 // throws error because SQL is bad
-dibi::query('SELECT FROM customers WHERE customer_id < ?', 38);
+$dibi->query('SELECT FROM customers WHERE customer_id < ?', 38);
 
 ?><!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 

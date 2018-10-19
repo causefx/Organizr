@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use Dibi\Type;
 
@@ -13,18 +14,18 @@ date_default_timezone_set('Europe/Prague');
 ?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Result Set Data Types | dibi</h1>
+<h1>Result Set Data Types | Dibi</h1>
 
 <?php
 
-dibi::connect([
-	'driver' => 'sqlite3',
+$dibi = new Dibi\Connection([
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 ]);
 
 
 // using manual hints
-$res = dibi::query('SELECT * FROM [customers]');
+$res = $dibi->query('SELECT * FROM [customers]');
 
 $res->setType('customer_id', Type::INTEGER)
 	->setType('added', Type::DATETIME)
@@ -40,7 +41,7 @@ Tracy\Dumper::dump($res->fetch());
 
 
 // using auto-detection (works well with MySQL or other strictly typed databases)
-$res = dibi::query('SELECT * FROM [customers]');
+$res = $dibi->query('SELECT * FROM [customers]');
 
 Tracy\Dumper::dump($res->fetch());
 // outputs:

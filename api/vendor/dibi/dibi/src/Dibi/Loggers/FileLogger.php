@@ -1,9 +1,11 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
+
+declare(strict_types=1);
 
 namespace Dibi\Loggers;
 
@@ -11,7 +13,7 @@ use Dibi;
 
 
 /**
- * dibi file logger.
+ * Dibi file logger.
  */
 class FileLogger
 {
@@ -24,18 +26,17 @@ class FileLogger
 	public $filter;
 
 
-	public function __construct($file, $filter = null)
+	public function __construct(string $file, int $filter = null)
 	{
 		$this->file = $file;
-		$this->filter = $filter ? (int) $filter : Dibi\Event::QUERY;
+		$this->filter = $filter ?: Dibi\Event::QUERY;
 	}
 
 
 	/**
 	 * After event notification.
-	 * @return void
 	 */
-	public function logEvent(Dibi\Event $event)
+	public function logEvent(Dibi\Event $event): void
 	{
 		if (($event->type & $this->filter) === 0) {
 			return;

@@ -1,16 +1,21 @@
+<?php
+declare(strict_types=1);
+?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Using Fluent Syntax | dibi</h1>
+<h1>Using Fluent Syntax | Dibi</h1>
 
 <?php
 
-require __DIR__ . '/../src/loader.php';
+if (@!include __DIR__ . '/../vendor/autoload.php') {
+	die('Install packages using `composer install`');
+}
 
 date_default_timezone_set('Europe/Prague');
 
 
-dibi::connect([
-	'driver' => 'sqlite3',
+$dibi = new Dibi\Connection([
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 ]);
 
@@ -23,7 +28,7 @@ $record = [
 ];
 
 // SELECT ...
-dibi::select('product_id')->as('id')
+$dibi->select('product_id')->as('id')
 	->select('title')
 	->from('products')
 	->innerJoin('orders')->using('(product_id)')
@@ -35,35 +40,35 @@ dibi::select('product_id')->as('id')
 
 
 // SELECT ...
-echo dibi::select('title')->as('id')
+echo $dibi->select('title')->as('id')
 	->from('products')
 	->fetchSingle();
 // -> Chair (as result of query: SELECT [title] AS [id] FROM [products])
 
 
 // INSERT ...
-dibi::insert('products', $record)
+$dibi->insert('products', $record)
 	->setFlag('IGNORE')
 	->test();
 // -> INSERT IGNORE INTO [products] ([title], [price], [active]) VALUES ('Super product', 318, 1)
 
 
 // UPDATE ...
-dibi::update('products', $record)
+$dibi->update('products', $record)
 	->where('product_id = ?', $id)
 	->test();
 // -> UPDATE [products] SET [title]='Super product', [price]=318, [active]=1 WHERE product_id = 10
 
 
 // DELETE ...
-dibi::delete('products')
+$dibi->delete('products')
 	->where('product_id = ?', $id)
 	->test();
 // -> DELETE FROM [products] WHERE product_id = 10
 
 
 // custom commands
-dibi::command()
+$dibi->command()
 	->update('products')
 	->where('product_id = ?', $id)
 	->set($record)
@@ -71,7 +76,7 @@ dibi::command()
 // -> UPDATE [products] SET [title]='Super product', [price]=318, [active]=1 WHERE product_id = 10
 
 
-dibi::command()
+$dibi->command()
 	->truncate('products')
 	->test();
 // -> TRUNCATE [products]

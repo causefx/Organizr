@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 if (@!include __DIR__ . '/../vendor/autoload.php') {
 	die('Install dependencies using `composer install --dev`');
@@ -9,25 +10,22 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 Tracy\Debugger::enable();
 
 
-$connection = dibi::connect([
-	'driver' => 'sqlite3',
+$dibi = new Dibi\Connection([
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
-	'profiler' => [
-		'run' => true,
-	],
 ]);
 
 
 // add panel to debug bar
 $panel = new Dibi\Bridges\Tracy\Panel;
-$panel->register($connection);
+$panel->register($dibi);
 
 
 // query will be logged
-dibi::query('SELECT 123');
+$dibi->query('SELECT 123');
 
 // result set will be dumped
-Tracy\Debugger::barDump(dibi::fetchAll('SELECT * FROM customers WHERE customer_id < ?', 38), '[customers]');
+Tracy\Debugger::barDump($dibi->fetchAll('SELECT * FROM customers WHERE customer_id < ?', 38), '[customers]');
 
 
 ?>

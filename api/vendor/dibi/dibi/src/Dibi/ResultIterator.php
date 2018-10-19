@@ -1,24 +1,17 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
+
+declare(strict_types=1);
 
 namespace Dibi;
 
 
 /**
  * External result set iterator.
- *
- * This can be returned by Result::getIterator() method or using foreach
- * <code>
- * $result = dibi::query('SELECT * FROM table');
- * foreach ($result as $row) {
- *    print_r($row);
- * }
- * unset($result);
- * </code>
  */
 class ResultIterator implements \Iterator, \Countable
 {
@@ -31,12 +24,9 @@ class ResultIterator implements \Iterator, \Countable
 	private $row;
 
 	/** @var int */
-	private $pointer;
+	private $pointer = 0;
 
 
-	/**
-	 * @param  Result
-	 */
 	public function __construct(Result $result)
 	{
 		$this->result = $result;
@@ -45,9 +35,8 @@ class ResultIterator implements \Iterator, \Countable
 
 	/**
 	 * Rewinds the iterator to the first element.
-	 * @return void
 	 */
-	public function rewind()
+	public function rewind(): void
 	{
 		$this->pointer = 0;
 		$this->result->seek(0);
@@ -77,9 +66,8 @@ class ResultIterator implements \Iterator, \Countable
 
 	/**
 	 * Moves forward to next element.
-	 * @return void
 	 */
-	public function next()
+	public function next(): void
 	{
 		$this->row = $this->result->fetch();
 		$this->pointer++;
@@ -88,9 +76,8 @@ class ResultIterator implements \Iterator, \Countable
 
 	/**
 	 * Checks if there is a current element after calls to rewind() or next().
-	 * @return bool
 	 */
-	public function valid()
+	public function valid(): bool
 	{
 		return !empty($this->row);
 	}
@@ -98,9 +85,8 @@ class ResultIterator implements \Iterator, \Countable
 
 	/**
 	 * Required by the Countable interface.
-	 * @return int
 	 */
-	public function count()
+	public function count(): int
 	{
 		return $this->result->getRowCount();
 	}

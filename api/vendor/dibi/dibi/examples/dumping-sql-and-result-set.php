@@ -1,19 +1,24 @@
+<?php
+declare(strict_types=1);
+?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Dumping SQL and Result Set | dibi</h1>
+<h1>Dumping SQL and Result Set | Dibi</h1>
 
 <?php
 
-require __DIR__ . '/../src/loader.php';
+if (@!include __DIR__ . '/../vendor/autoload.php') {
+	die('Install packages using `composer install`');
+}
 
 
-dibi::connect([
-	'driver' => 'sqlite3',
+$dibi = new Dibi\Connection([
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 ]);
 
 
-$res = dibi::query('
+$res = $dibi->query('
 	SELECT * FROM products
 	INNER JOIN orders USING (product_id)
 	INNER JOIN customers USING (customer_id)

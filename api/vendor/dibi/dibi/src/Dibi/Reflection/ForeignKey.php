@@ -1,9 +1,11 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
+
+declare(strict_types=1);
 
 namespace Dibi\Reflection;
 
@@ -27,26 +29,20 @@ class ForeignKey
 	private $references;
 
 
-	public function __construct($name, array $references)
+	public function __construct(string $name, array $references)
 	{
 		$this->name = $name;
 		$this->references = $references;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function getReferences()
+	public function getReferences(): array
 	{
 		return $this->references;
 	}
