@@ -216,7 +216,9 @@ function createDB($path, $filename)
     		`type`	INTEGER,
     		`splash`	INTEGER,
     		`ping`		INTEGER,
-    		`ping_url`	TEXT
+    		`ping_url`	TEXT,
+    		`timeout`	INTEGER,
+    		`timeout_ms`	INTEGER
     	);');
 		// Create Options
 		$createDB->query('CREATE TABLE `options` (
