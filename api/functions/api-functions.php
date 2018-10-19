@@ -181,6 +181,8 @@ function createDB($path, $filename)
     		`id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     		`token`	TEXT UNIQUE,
     		`user_id`	INTEGER,
+    		`browser`	TEXT,
+    		`ip`	TEXT,
             `created` DATE,
             `expires` DATE
     	);');
