@@ -877,8 +877,8 @@ $(document).on("click", ".addNewTab", function () {
         tabEnabled:0,
         tabDefault:0,
         tabType:1,
-        messageTitle:'',
-        messageBody:'Created Tab '+$('#new-tab-form [name=tabName]').val(),
+        messageTitle:'Created Tab '+$('#new-tab-form [name=tabName]').val(),
+        messageBody:'Please <a href="javascript(\'window.location.reload(false);\');">RELOAD</a> page to update',
         error:'Organizr Function: Tab API Connection Failed'
     };
     if (typeof post.tabOrder == 'undefined' || post.tabOrder == '') {

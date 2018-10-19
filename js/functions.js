@@ -4241,11 +4241,14 @@ function buildDownloaderItem(array, source, type='none'){
                     if(array == 0){
                         return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
                     }
+                    //console.log(array);
                     $.each(array, function(i,v) {
                         var percent = Math.floor((v.downloaded / v.size) * 100);
                         var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
                         var upload = v.seed !== '' ? humanFileSize(v.seed,true) : "0 B";
                         var download = v.leech !== '' ? humanFileSize(v.leech,true) : "0 B";
+                        var upTotal = v.upTotal !== '' ? humanFileSize(v.upTotal,false) : "0 B";
+                        var downTotal = v.downTotal !== '' ? humanFileSize(v.downTotal,false) : "0 B";
                         var date = new Date(0);
                         date.setUTCSeconds(v.date);
                         date = moment(date).format('LLL');
@@ -4253,8 +4256,8 @@ function buildDownloaderItem(array, source, type='none'){
 						<tr>
 							<td class="max-texts"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+date+`">`+v.name+`</span></td>
 							<td class="hidden-xs">`+v.status+`</td>
-							<td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
-							<td class="hidden-xs"><i class="fa fa-upload"></i>&nbsp;`+upload+`</td>
+							<td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+downTotal+`"><i class="fa fa-download"></i>&nbsp;`+download+`</span></td>
+							<td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+upTotal+`"><i class="fa fa-upload"></i>&nbsp;`+upload+`</span></td>
 							<td class="hidden-xs">`+size+`</td>
 							<td class="hidden-xs"><span class="label label-info">`+v.label+`</span></td>
 							<td class="text-right">
