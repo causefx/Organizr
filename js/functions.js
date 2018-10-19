@@ -5310,7 +5310,8 @@ function include(filename) {
     return false;
 }
 function defineNotification(){
-    switch(activeInfo.settings.notifications.backbone){
+    var bb = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.backbone : 'izi';
+    switch(bb){
         case 'toastr':
             include('plugins/bower_components/toast-master/css/jquery.toast.css');
             include('plugins/bower_components/toast-master/js/jquery.toast.js');
@@ -5386,7 +5387,7 @@ function messagePositions(){
     };
 }
 function message(heading,text,position,color,icon,timeout){
-    var bb = activeInfo.settings.notifications.backbone;
+    var bb = (typeof activeInfo !== 'undefined') ? activeInfo.settings.notifications.backbone : 'izi';
     switch (bb) {
         case 'toastr':
 
@@ -5683,12 +5684,22 @@ function toggleFullScreen() {
         }
     }
 }
+function orgErrorCode(code){
+    switch (code) {
+        case 'upgrading':
+            window.location.href = './plugins/static/upgrade.html';
+        default:
+
+    }
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
             var json = JSON.parse(data);
         } catch (e) {
-            message('FATAL ERROR',data,activeInfo.settings.notifications.position,'#FFF','error','60000');
+            orgErrorCode(data);
+            defineNotification();
+            message('FATAL ERROR',data,'br','#FFF','error','60000');
             return false;
         }
 		if(json.data.user == false){ location.reload(); }
