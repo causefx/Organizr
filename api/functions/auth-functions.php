@@ -77,8 +77,12 @@ function checkPlexUser($username)
 					$usernameLower = strtolower($username);
 					foreach ($userXML as $child) {
 						if (isset($child['username']) && strtolower($child['username']) == $usernameLower || isset($child['email']) && strtolower($child['email']) == $usernameLower) {
+							writeLog('success', 'Plex User Check - Found User on Friends List', $username);
 							if ((string)$child->Server['machineIdentifier'] == $GLOBALS['plexID']) {
+								writeLog('success', 'Plex User Check - User Approved for Login', $username);
 								return true;
+							} else {
+								writeLog('error', 'Plex User Check - User not Approved User', $username);
 							}
 						}
 					}
@@ -87,7 +91,7 @@ function checkPlexUser($username)
 		}
 		return false;
 	} catch (Requests_Exception $e) {
-		writeLog('success', 'Plex User Check Function - Error: ' . $e->getMessage(), $username);
+		writeLog('error', 'Plex User Check Function - Error: ' . $e->getMessage(), $username);
 	}
 	return false;
 }

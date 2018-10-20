@@ -5428,20 +5428,6 @@ function message(heading,text,position,color,icon,timeout){
                 });
                 break;
             case 'izi':
-                iziToast.settings({
-                    close: true,
-                    progressBar: true,
-                    progressBarEasing: 'ease',
-                    class: icon+'-notify',
-                    title: heading,
-                    message: text,
-                    position: position,
-                    timeout: timeout,
-                    layout: 2,
-                    transitionIn: 'flipInX',
-                    transitionOut: 'flipOutX',
-                    balloon: false,
-                });
                 switch (icon){
                     case 'success':
                         var msg = {
@@ -5473,7 +5459,21 @@ function message(heading,text,position,color,icon,timeout){
                             icon: 'mdi mdi-alert-circle-outline',
                         };
                 }
-                iziToast.show(msg);
+                iziToast.show({
+                    close: true,
+                    progressBar: true,
+                    progressBarEasing: 'ease',
+                    class: icon+'-notify',
+                    title: heading,
+                    message: text,
+                    position: position,
+                    timeout: timeout,
+                    layout: 2,
+                    transitionIn: 'flipInX',
+                    transitionOut: 'flipOutX',
+                    balloon: false,
+                    icon: msg['icon'],
+                });
                 break;
             case 'alertify':
                 var msgFull = (heading !== '') ? heading + '<br/>' + text : text;
