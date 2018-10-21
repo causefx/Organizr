@@ -113,6 +113,8 @@ function login($array)
 						return '2FA';
 					} else {
 						if (!verify2FA($TFA[1], $tfaCode, $TFA[0])) {
+							writeLoginLog($username, 'error');
+							writeLog('error', 'Login Function - Wrong 2FA', $username);
 							return '2FA-incorrect';
 						}
 					}
