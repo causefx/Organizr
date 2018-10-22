@@ -83,7 +83,7 @@ function organizrSpecialSettings()
 			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen'],
 			'unsortedTabs' => $GLOBALS['unsortedTabs'],
 			'authBackend' => $GLOBALS['authBackend'],
-			'newMessageSound' => $GLOBALS['CHAT-newMessageSound-include'],
+			'newMessageSound' => (isset($GLOBALS['CHAT-newMessageSound-include'])) ? $GLOBALS['CHAT-newMessageSound-include'] : '',
 			'uuid' => $GLOBALS['uuid'],
 		)
 	);

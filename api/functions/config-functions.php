@@ -85,7 +85,7 @@ function configLazy()
 	if (file_exists($GLOBALS['userConfigPath'])) {
 		$config = fillDefaultConfig(loadConfig($GLOBALS['userConfigPath']));
 	} else {
-		$config = loadConfig($GLOBALS['defaultConfigPath']);
+		$config = fillDefaultConfig(loadConfig($GLOBALS['defaultConfigPath']));
 	}
 	if (is_array($config)) {
 		defineConfig($config);

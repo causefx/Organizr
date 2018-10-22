@@ -4,6 +4,7 @@ var idleTime = 0;
 var hasCookie = false;
 $(document).ajaxComplete(function () {
     pageLoad();
+    //new SimpleBar($('.internal-listing')[0]);
 });
 $(document).ready(function () {
     pageLoad();

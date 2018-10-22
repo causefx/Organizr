@@ -1200,4 +1200,11 @@ html {
     max-height: 568px;
     min-height: 568px;
 }
+.internal-listing {
+    min-height: inherit;
+    max-height: inherit;
+}
+.internal-listing .simplebar-track.horizontal {
+    display: none;
+}
 */
