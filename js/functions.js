@@ -4067,320 +4067,301 @@ function requestList (list, type, page=1) {
 	});
 }
 function buildDownloaderItem(array, source, type='none'){
-	var items = '';
+    console.log(array);
+    var queue = '';
+    var history = '';
 	switch (source) {
 		case 'sabnzbd':
-			switch (type) {
-				case 'queue':
-					if(array.queue.slots.length == 0){
-						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
-					}
-					$.each(array.queue.slots, function(i,v) {
-						var action = (v.status == "Downloading") ? 'pause' : 'resume';
-						var actionIcon = (v.status == "Downloading") ? 'pause' : 'play';
-						items += `
-						<tr>
-							<td class="max-texts">`+v.filename+`</td>
-							<td class="hidden-xs">`+v.status+`</td>
-                            <td class="downloader mouse" data-target="`+v.nzo_id+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>
-                            <td class="hidden-xs"><span class="label label-info">`+v.cat+`</span></td>
-                            <td class="hidden-xs">`+v.size+`</td>
-                            <td class="hidden-xs" alt="`+v.eta+`">`+v.timeleft+`</td>
-                            <td class="text-right">
-								<div class="progress progress-lg m-b-0">
-                                    <div class="progress-bar progress-bar-info" style="width: `+v.percentage+`%;" role="progressbar">`+v.percentage+`%</div>
-                                </div>
-							</td>
-                        </tr>
-						`;
-					});
-					break;
-				case 'history':
-					if(array.history.slots.length == 0){
-						return '<tr><td class="max-texts" lang="en">Nothing in history</td></tr>';
-					}
-					$.each(array.history.slots, function(i,v) {
-						items += `
-						<tr>
-							<td class="max-texts">`+v.name+`</td>
-                            <td class="hidden-xs">`+v.status+`</td>
-                            <td class="hidden-xs"><span class="label label-info">`+v.category+`</span></td>
-                            <td class="hidden-xs">`+v.size+`</td>
-                            <td class="text-right">
-								<div class="progress progress-lg m-b-0">
-                                    <div class="progress-bar progress-bar-info" style="width: 100%;" role="progressbar">100%</div>
-                                </div>
-							</td>
-                        </tr>
-						`;
-					});
-					break;
-				default:
-					return false;
-			}
+            if(array.content.queueItems.queue.slots.length == 0){
+                queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+            }
+            $.each(array.content.queueItems.queue.slots, function(i,v) {
+                var action = (v.status == "Downloading") ? 'pause' : 'resume';
+                var actionIcon = (v.status == "Downloading") ? 'pause' : 'play';
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.filename+`</td>
+                    <td class="hidden-xs">`+v.status+`</td>
+                    <td class="downloader mouse" data-target="`+v.nzo_id+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>
+                    <td class="hidden-xs"><span class="label label-info">`+v.cat+`</span></td>
+                    <td class="hidden-xs">`+v.size+`</td>
+                    <td class="hidden-xs" alt="`+v.eta+`">`+v.timeleft+`</td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+v.percentage+`%;" role="progressbar">`+v.percentage+`%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            if(array.content.historyItems.history.slots.length == 0){
+                history = '<tr><td class="max-texts" lang="en">Nothing in history</td></tr>';
+            }
+            $.each(array.content.historyItems.history.slots, function(i,v) {
+                history += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td class="hidden-xs">`+v.status+`</td>
+                    <td class="hidden-xs"><span class="label label-info">`+v.category+`</span></td>
+                    <td class="hidden-xs">`+v.size+`</td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: 100%;" role="progressbar">100%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
 			break;
 		case 'nzbget':
-			switch (type) {
-				case 'queue':
-					if(array.result.length == 0){
-						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
-					}
-					$.each(array.result, function(i,v) {
-						var action = (v.Status == "Downloading") ? 'pause' : 'resume';
-						var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
-						var percent = Math.floor((v.FileSizeMB - v.RemainingSizeMB) * 100 / v.FileSizeMB);
-						v.Category = (v.Category !== '') ? v.Category : 'Not Set';
-						items += `
-						<tr>
-							<td class="max-texts">`+v.NZBName+`</td>
-							<td class="hidden-xs">`+v.Status+`</td>
-							<!--<td class="downloader mouse" data-target="`+v.NZBID+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>-->
-							<td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
-							<td class="hidden-xs">`+humanFileSize(v.FileSizeLo,true)+`</td>
-							<td class="text-right">
-								<div class="progress progress-lg m-b-0">
-									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
-								</div>
-							</td>
-						</tr>
-						`;
-					});
-					break;
-				case 'history':
-					if(array.result.length == 0){
-						return '<tr><td class="max-texts" lang="en">Nothing in history</td></tr>';
-					}
-					$.each(array.result, function(i,v) {
-						v.Category = (v.Category !== '') ? v.Category : 'Not Set';
-						items += `
-						<tr>
-							<td class="max-texts">`+v.NZBName+`</td>
-							<td class="hidden-xs">`+v.Status+`</td>
-							<td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
-							<td class="hidden-xs">`+humanFileSize(v.FileSizeLo,true)+`</td>
-							<td class="text-right">
-								<div class="progress progress-lg m-b-0">
-									<div class="progress-bar progress-bar-info" style="width: 100%;" role="progressbar">100%</div>
-								</div>
-							</td>
-						</tr>
-						`;
-					});
-					break;
-				default:
-
-			}
+            if(array.content.queueItems.result.length == 0){
+                queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+            }
+            $.each(array.content.queueItems.result, function(i,v) {
+                var action = (v.Status == "Downloading") ? 'pause' : 'resume';
+                var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
+                var percent = Math.floor((v.FileSizeMB - v.RemainingSizeMB) * 100 / v.FileSizeMB);
+                v.Category = (v.Category !== '') ? v.Category : 'Not Set';
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.NZBName+`</td>
+                    <td class="hidden-xs">`+v.Status+`</td>
+                    <!--<td class="downloader mouse" data-target="`+v.NZBID+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>-->
+                    <td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
+                    <td class="hidden-xs">`+humanFileSize(v.FileSizeLo,true)+`</td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            if(array.content.historyItems.result.length == 0){
+                history = '<tr><td class="max-texts" lang="en">Nothing in history</td></tr>';
+            }
+            $.each(array.content.historyItems.result, function(i,v) {
+                v.Category = (v.Category !== '') ? v.Category : 'Not Set';
+                history += `
+                <tr>
+                    <td class="max-texts">`+v.NZBName+`</td>
+                    <td class="hidden-xs">`+v.Status+`</td>
+                    <td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
+                    <td class="hidden-xs">`+humanFileSize(v.FileSizeLo,true)+`</td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: 100%;" role="progressbar">100%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
 			break;
 		case 'transmission':
-			switch (type) {
-				case 'queue':
-					if(array.arguments.torrents == 0){
-						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
-					}
-					$.each(array.arguments.torrents, function(i,v) {
-						switch (v.status) {
-							case 7:
-							case '7':
-								var status = 'No Peers';
-								break;
-							case 6:
-							case '6':
-								var status = 'Seeding';
-								break;
-							case 5:
-							case '5':
-								var status = 'Seeding Queued';
-								break;
-							case 4:
-							case '4':
-								var status = 'Downloading';
-								break;
-							case 3:
-							case '3':
-								var status = 'Queued';
-								break;
-							case 2:
-							case '2':
-								var status = 'Checking Files';
-								break;
-							case 1:
-							case '1':
-								var status = 'File Check Queued';
-								break;
-							case 0:
-							case '0':
-								var status = 'Complete';
-								break;
-							default:
-								var status = 'Complete';
-						}
-						var percent = Math.floor(v.percentDone * 100);
-						v.Category = (v.Category !== '') ? v.Category : 'Not Set';
-						items += `
-						<tr>
-							<td class="max-texts">`+v.name+`</td>
-							<td class="hidden-xs">`+status+`</td>
-							<td class="hidden-xs">`+v.downloadDir+`</td>
-							<td class="hidden-xs">`+humanFileSize(v.totalSize,true)+`</td>
-							<td class="text-right">
-								<div class="progress progress-lg m-b-0">
-									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
-								</div>
-							</td>
-						</tr>
-						`;
-					});
-					break;
-				default:
-
-			}
+            if(array.content.queueItems.arguments.torrents == 0){
+                queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+            }
+            $.each(array.content.queueItems.arguments.torrents, function(i,v) {
+                switch (v.status) {
+                    case 7:
+                    case '7':
+                        var status = 'No Peers';
+                        break;
+                    case 6:
+                    case '6':
+                        var status = 'Seeding';
+                        break;
+                    case 5:
+                    case '5':
+                        var status = 'Seeding Queued';
+                        break;
+                    case 4:
+                    case '4':
+                        var status = 'Downloading';
+                        break;
+                    case 3:
+                    case '3':
+                        var status = 'Queued';
+                        break;
+                    case 2:
+                    case '2':
+                        var status = 'Checking Files';
+                        break;
+                    case 1:
+                    case '1':
+                        var status = 'File Check Queued';
+                        break;
+                    case 0:
+                    case '0':
+                        var status = 'Complete';
+                        break;
+                    default:
+                        var status = 'Complete';
+                }
+                var percent = Math.floor(v.percentDone * 100);
+                v.Category = (v.Category !== '') ? v.Category : 'Not Set';
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td class="hidden-xs">`+status+`</td>
+                    <td class="hidden-xs">`+v.downloadDir+`</td>
+                    <td class="hidden-xs">`+humanFileSize(v.totalSize,true)+`</td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
 			break;
         case 'rTorrent':
-            switch (type) {
-                case 'queue':
-                    if(array == 0){
-                        return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
-                    }
-                    //console.log(array);
-                    $.each(array, function(i,v) {
-                        var percent = Math.floor((v.downloaded / v.size) * 100);
-                        var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
-                        var upload = v.seed !== '' ? humanFileSize(v.seed,true) : "0 B";
-                        var download = v.leech !== '' ? humanFileSize(v.leech,true) : "0 B";
-                        var upTotal = v.upTotal !== '' ? humanFileSize(v.upTotal,false) : "0 B";
-                        var downTotal = v.downTotal !== '' ? humanFileSize(v.downTotal,false) : "0 B";
-                        var date = new Date(0);
-                        date.setUTCSeconds(v.date);
-                        date = moment(date).format('LLL');
-                        items += `
-						<tr>
-							<td class="max-texts"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+date+`">`+v.name+`</span></td>
-							<td class="hidden-xs">`+v.status+`</td>
-							<td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+downTotal+`"><i class="fa fa-download"></i>&nbsp;`+download+`</span></td>
-							<td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+upTotal+`"><i class="fa fa-upload"></i>&nbsp;`+upload+`</span></td>
-							<td class="hidden-xs">`+size+`</td>
-							<td class="hidden-xs"><span class="label label-info">`+v.label+`</span></td>
-							<td class="text-right">
-								<div class="progress progress-lg m-b-0">
-									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
-								</div>
-							</td>
-						</tr>
-						`;
-                    });
-                    break;
-                default:
-
+            if(array.content.queueItems == 0){
+                queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
+            //console.log(array);
+            $.each(array.content.queueItems, function(i,v) {
+                var percent = Math.floor((v.downloaded / v.size) * 100);
+                var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
+                var upload = v.seed !== '' ? humanFileSize(v.seed,true) : "0 B";
+                var download = v.leech !== '' ? humanFileSize(v.leech,true) : "0 B";
+                var upTotal = v.upTotal !== '' ? humanFileSize(v.upTotal,false) : "0 B";
+                var downTotal = v.downTotal !== '' ? humanFileSize(v.downTotal,false) : "0 B";
+                var date = new Date(0);
+                date.setUTCSeconds(v.date);
+                date = moment(date).format('LLL');
+                queue += `
+                <tr>
+                    <td class="max-texts"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+date+`">`+v.name+`</span></td>
+                    <td class="hidden-xs">`+v.status+`</td>
+                    <td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+downTotal+`"><i class="fa fa-download"></i>&nbsp;`+download+`</span></td>
+                    <td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+upTotal+`"><i class="fa fa-upload"></i>&nbsp;`+upload+`</span></td>
+                    <td class="hidden-xs">`+size+`</td>
+                    <td class="hidden-xs"><span class="label label-info">`+v.label+`</span></td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
             break;
-
 		case 'qBittorrent':
-			switch (type) {
-				case 'queue':
-					if(array.arguments.torrents == 0){
-						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
-					}
-					$.each(array.arguments.torrents, function(i,v) {
-						switch (v.state) {
-							case 'stalledDL':
-								var status = 'No Peers';
-								break;
-							case 'metaDL':
-								var status = 'Getting Metadata';
-								break;
-							case 'uploading':
-								var status = 'Seeding';
-								break;
-							case 'queuedUP':
-								var status = 'Seeding Queued';
-								break;
-							case 'downloading':
-								var status = 'Downloading';
-								break;
-							case 'queuedDL':
-								var status = 'Queued';
-								break;
-							case 'checkingDL':
-							case 'checkingUP':
-								var status = 'Checking Files';
-								break;
-							case 'pausedDL':
-								var status = 'Paused';
-								break;
-							case 'pausedUP':
-								var status = 'Complete';
-								break;
-							default:
-								var status = 'Complete';
-						}
-						var percent = Math.floor(v.progress * 100);
-						var size = v.total_size != -1 ? humanFileSize(v.total_size,true) : "?";
-						items += `
-						<tr>
-							<td class="max-texts">`+v.name+`</td>
-							<td class="hidden-xs">`+status+`</td>
-							<td class="hidden-xs">`+v.save_path+`</td>
-							<td class="hidden-xs">`+size+`</td>
-							<td class="text-right">
-								<div class="progress progress-lg m-b-0">
-									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
-								</div>
-							</td>
-						</tr>
-						`;
-					});
-					break;
-				default:
-
-			}
+            if(array.content.queueItems.arguments.torrents == 0){
+                queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+            }
+            $.each(array.content.queueItems.arguments.torrents, function(i,v) {
+                switch (v.state) {
+                    case 'stalledDL':
+                        var status = 'No Peers';
+                        break;
+                    case 'metaDL':
+                        var status = 'Getting Metadata';
+                        break;
+                    case 'uploading':
+                        var status = 'Seeding';
+                        break;
+                    case 'queuedUP':
+                        var status = 'Seeding Queued';
+                        break;
+                    case 'downloading':
+                        var status = 'Downloading';
+                        break;
+                    case 'queuedDL':
+                        var status = 'Queued';
+                        break;
+                    case 'checkingDL':
+                    case 'checkingUP':
+                        var status = 'Checking Files';
+                        break;
+                    case 'pausedDL':
+                        var status = 'Paused';
+                        break;
+                    case 'pausedUP':
+                        var status = 'Complete';
+                        break;
+                    default:
+                        var status = 'Complete';
+                }
+                var percent = Math.floor(v.progress * 100);
+                var size = v.total_size != -1 ? humanFileSize(v.total_size,true) : "?";
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td class="hidden-xs">`+status+`</td>
+                    <td class="hidden-xs">`+v.save_path+`</td>
+                    <td class="hidden-xs">`+size+`</td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
 			break;
 		case 'deluge':
-			switch (type) {
-				case 'queue':
-					if(array.length == 0){
-						return '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
-					}
-					$.each(array, function(i,v) {
-						var percent = Math.floor(v.progress);
-						var size = v.total_size != -1 ? humanFileSize(v.total_size,true) : "?";
-						var upload = v.upload_payload_rate != -1 ? humanFileSize(v.upload_payload_rate,true) : "?";
-						var download = v.download_payload_rate != -1 ? humanFileSize(v.download_payload_rate,true) : "?";
-						var action = (v.Status == "Downloading") ? 'pause' : 'resume';
-						var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
-						items += `
-						<tr>
-							<td class="max-texts">`+v.name+`</td>
-							<td class="hidden-xs">`+v.state+`</td>
-							<td class="hidden-xs">`+size+`</td>
-							<td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
-							<td class="hidden-xs"><i class="fa fa-upload"></i>&nbsp;`+upload+`</td>
-							<td class="text-right">
-								<div class="progress progress-lg m-b-0">
-									<div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
-								</div>
-							</td>
-						</tr>
-						`;
-					});
-					break;
-				default:
-
-			}
+            if(array.content.queueItems.length == 0){
+                queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+            }
+            $.each(array.content.queueItems, function(i,v) {
+                var percent = Math.floor(v.progress);
+                var size = v.total_size != -1 ? humanFileSize(v.total_size,true) : "?";
+                var upload = v.upload_payload_rate != -1 ? humanFileSize(v.upload_payload_rate,true) : "?";
+                var download = v.download_payload_rate != -1 ? humanFileSize(v.download_payload_rate,true) : "?";
+                var action = (v.Status == "Downloading") ? 'pause' : 'resume';
+                var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td class="hidden-xs">`+v.state+`</td>
+                    <td class="hidden-xs">`+size+`</td>
+                    <td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
+                    <td class="hidden-xs"><i class="fa fa-upload"></i>&nbsp;`+upload+`</td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
 			break;
 		default:
 			return false;
 	}
-	return items;
+    if(queue !== ''){
+        $('.'+source+'-queue').html(queue);
+    }
+    if(history !== ''){
+        $('.'+source+'-history').html(history);
+    }
 }
-function buildDownloader(array, source){
+function buildDownloader(source){
+    var queueButton = 'QUEUE';
+    var historyButton = 'HISTORY';
+    switch (source) {
+        case 'sabnzbd':
+        case 'nzbget':
+            var queue = true;
+            var history = true;
+            break;
+        case 'transmission':
+        case 'qBittorrent':
+        case 'deluge':
+        case 'rTorrent':
+            var queue = true;
+            var history = false;
+            queueButton = 'REFRESH';
+            break;
+        default:
+            var queue = false;
+            var history = false;
+
+    }
 	var menu = `<ul class="nav customtab nav-tabs pull-right" role="tablist">`;
 	var listing = '';
-	if(typeof array.content == 'undefined'){
-	    return false;
-    }
-    var queueItems = (typeof array.content.queueItems !== 'undefined') ? array.content.queueItems : false;
-	var historyItems = (typeof array.content.historyItems !== 'undefined') ? array.content.historyItems : false;
-	var downloader = (queueItems || historyItems) ? true : false;
 	var state = '';
 	var active = '';
 	var headerAlt = '';
@@ -4389,8 +4370,8 @@ function buildDownloader(array, source){
 	//console.log(queueItems);
 	//console.log(historyItems);
 	//console.log(downloader);
-	if(queueItems){
-		switch (source) {
+	if(queue){
+		/*switch (source) {
 			case 'sabnzbd':
 				if(queueItems.queue.paused){
 					state = `<span class="downloader mouse" data-source="sabnzbd" data-action="resume" data-target="main"><i class="fa fa-play"></i></span>`;
@@ -4401,30 +4382,30 @@ function buildDownloader(array, source){
 				break;
 			default:
 
-		}
+		}*/
 		menu += `
-			<li role="presentation" class="active" onclick="homepageDownloader('`+source+`')"><a href="#`+source+`-queue" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-download"></i></span><span class="hidden-xs"> QUEUE</span></a></li>
+			<li role="presentation" class="active" onclick="homepageDownloader('`+source+`')"><a href="#`+source+`-queue" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-download"></i></span><span class="hidden-xs">`+queueButton+`</span></a></li>
 			`;
 		listing += `
 		<div role="tabpanel" class="tab-pane fade active in" id="`+source+`-queue">
 			<div class="inbox-center table-responsive" data-simplebar>
 				<table class="table table-hover">
-					<tbody class="`+source+`-queue">`+buildDownloaderItem(array.content.queueItems, source, 'queue')+`</tbody>
+					<tbody class="`+source+`-queue"></tbody>
 				</table>
 			</div>
 			<div class="clearfix"></div>
 		</div>
 		`;
 	}
-	if(historyItems){
+	if(history){
 		menu += `
-		<li role="presentation" class=""><a href="#`+source+`-history" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-time"></i></span> <span class="hidden-xs">HISTORY</span></a></li>
+		<li role="presentation" class=""><a href="#`+source+`-history" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-time"></i></span> <span class="hidden-xs">`+historyButton+`</span></a></li>
 		`;
 		listing += `
 		<div role="tabpanel" class="tab-pane fade" id="`+source+`-history">
 			<div class="inbox-center table-responsive" data-simplebar>
 				<table class="table table-hover">
-					<tbody class="`+source+`-history">`+buildDownloaderItem(array.content.historyItems, source, 'history')+`</tbody>
+					<tbody class="`+source+`-history"></tbody>
 				</table>
 			</div>
 			<div class="clearfix"></div>
@@ -4449,7 +4430,7 @@ function buildDownloader(array, source){
 		</div>
 		`;
 	}
-	return downloader ? `
+	return `
 	<div class="row">
 		`+headerAlt+`
 		<div class="col-lg-12">
@@ -4459,7 +4440,7 @@ function buildDownloader(array, source){
 	        </div>
 		</div>
 	</div>
-	` : '';
+	`;
 }
 function buildMetadata(array, source){
 	var metadata = '';
@@ -4597,9 +4578,10 @@ function homepageDownloader(type, timeout){
 	}
 	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
 		var response = JSON.parse(data);
-		document.getElementById('homepageOrder'+type).innerHTML = '';
+		//document.getElementById('homepageOrder'+type).innerHTML = '';
 		if(response.data !== null){
-			$('#homepageOrder'+type).html(buildDownloader(response.data, type));
+		    console.log(response.data);
+			buildDownloaderItem(response.data, type);
 		}
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");

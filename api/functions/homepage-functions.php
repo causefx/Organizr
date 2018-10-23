@@ -57,6 +57,7 @@ function buildHomepageItem($homepageItem)
 				$item .= '
                 <script>
                 // homepageOrderqBittorrent
+                $("#' . $homepageItem . '").html(buildDownloader("qBittorrent"));
                 homepageDownloader("qBittorrent", "' . $GLOBALS['homepageDownloadRefresh'] . '");
                 // End homepageOrderqBittorrent
                 </script>
@@ -69,6 +70,7 @@ function buildHomepageItem($homepageItem)
 				$item .= '
                 <script>
                 // homepageOrderrTorrent
+                $("#' . $homepageItem . '").html(buildDownloader("rTorrent"));
                 homepageDownloader("rTorrent", "' . $GLOBALS['homepageDownloadRefresh'] . '");
                 // End homepageOrderrTorrent
                 </script>
@@ -81,6 +83,7 @@ function buildHomepageItem($homepageItem)
 				$item .= '
 				<script>
 				// Deluge
+				$("#' . $homepageItem . '").html(buildDownloader("deluge"));
 				homepageDownloader("deluge", "' . $GLOBALS['homepageDownloadRefresh'] . '");
 				// End Deluge
 				</script>
@@ -93,6 +96,7 @@ function buildHomepageItem($homepageItem)
 				$item .= '
 				<script>
 				// Transmission
+				$("#' . $homepageItem . '").html(buildDownloader("transmission"));
 				homepageDownloader("transmission", "' . $GLOBALS['homepageDownloadRefresh'] . '");
 				// End Transmission
 				</script>
@@ -105,6 +109,7 @@ function buildHomepageItem($homepageItem)
 				$item .= '
 				<script>
 				// NZBGet
+				$("#' . $homepageItem . '").html(buildDownloader("nzbget"));
 				homepageDownloader("nzbget", "' . $GLOBALS['homepageDownloadRefresh'] . '");
 				// End NZBGet
 				</script>
@@ -117,6 +122,7 @@ function buildHomepageItem($homepageItem)
 				$item .= '
 				<script>
 				// SabNZBd
+				$("#' . $homepageItem . '").html(buildDownloader("sabnzbd"));
 				homepageDownloader("sabnzbd", "' . $GLOBALS['homepageDownloadRefresh'] . '");
 				// End SabNZBd
 				</script>
