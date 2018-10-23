@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi\Reflection;
 
 use Dibi;
@@ -21,8 +19,9 @@ use Dibi;
  * @property-read string $type
  * @property-read mixed $nativeType
  * @property-read int|null $size
- * @property-read bool $nullable
- * @property-read bool $autoIncrement
+ * @property-read bool|null $unsigned
+ * @property-read bool|null $nullable
+ * @property-read bool|null $autoIncrement
  * @property-read mixed $default
  */
 class Column
@@ -43,25 +42,37 @@ class Column
 	}
 
 
-	public function getName(): string
+	/**
+	 * @return string
+	 */
+	public function getName()
 	{
 		return $this->info['name'];
 	}
 
 
-	public function getFullName(): string
+	/**
+	 * @return string
+	 */
+	public function getFullName()
 	{
-		return $this->info['fullname'] ?? null;
+		return isset($this->info['fullname']) ? $this->info['fullname'] : null;
 	}
 
 
-	public function hasTable(): bool
+	/**
+	 * @return bool
+	 */
+	public function hasTable()
 	{
 		return !empty($this->info['table']);
 	}
 
 
-	public function getTable(): Table
+	/**
+	 * @return Table
+	 */
+	public function getTable()
 	{
 		if (empty($this->info['table']) || !$this->reflector) {
 			throw new Dibi\Exception('Table is unknown or not available.');
@@ -70,39 +81,66 @@ class Column
 	}
 
 
-	public function getTableName(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getTableName()
 	{
 		return isset($this->info['table']) && $this->info['table'] != null ? $this->info['table'] : null; // intentionally ==
 	}
 
 
-	public function getType(): ?string
+	/**
+	 * @return string
+	 */
+	public function getType()
 	{
 		return Dibi\Helpers::getTypeCache()->{$this->info['nativetype']};
 	}
 
 
-	public function getNativeType(): string
+	/**
+	 * @return string
+	 */
+	public function getNativeType()
 	{
 		return $this->info['nativetype'];
 	}
 
 
-	public function getSize(): ?int
+	/**
+	 * @return int|null
+	 */
+	public function getSize()
 	{
 		return isset($this->info['size']) ? (int) $this->info['size'] : null;
 	}
 
 
-	public function isNullable(): bool
+	/**
+	 * @return bool|null
+	 */
+	public function isUnsigned()
 	{
-		return !empty($this->info['nullable']);
+		return isset($this->info['unsigned']) ? (bool) $this->info['unsigned'] : null;
 	}
 
 
-	public function isAutoIncrement(): bool
+	/**
+	 * @return bool|null
+	 */
+	public function isNullable()
 	{
-		return !empty($this->info['autoincrement']);
+		return isset($this->info['nullable']) ? (bool) $this->info['nullable'] : null;
+	}
+
+
+	/**
+	 * @return bool|null
+	 */
+	public function isAutoIncrement()
+	{
+		return isset($this->info['autoincrement']) ? (bool) $this->info['autoincrement'] : null;
 	}
 
 
@@ -111,15 +149,16 @@ class Column
 	 */
 	public function getDefault()
 	{
-		return $this->info['default'] ?? null;
+		return isset($this->info['default']) ? $this->info['default'] : null;
 	}
 
 
 	/**
+	 * @param  string
 	 * @return mixed
 	 */
-	public function getVendorInfo(string $key)
+	public function getVendorInfo($key)
 	{
-		return $this->info['vendor'][$key] ?? null;
+		return isset($this->info['vendor'][$key]) ? $this->info['vendor'][$key] : null;
 	}
 }

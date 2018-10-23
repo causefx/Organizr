@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi;
 
 
@@ -26,13 +24,13 @@ abstract class HashMapBase
 	}
 
 
-	public function setCallback(callable $callback): void
+	public function setCallback(callable $callback)
 	{
 		$this->callback = $callback;
 	}
 
 
-	public function getCallback(): callable
+	public function getCallback()
 	{
 		return $this->callback;
 	}
@@ -45,7 +43,7 @@ abstract class HashMapBase
  */
 final class HashMap extends HashMapBase
 {
-	public function __set(string $nm, $val)
+	public function __set($nm, $val)
 	{
 		if ($nm === '') {
 			$nm = "\xFF";
@@ -54,13 +52,13 @@ final class HashMap extends HashMapBase
 	}
 
 
-	public function __get(string $nm)
+	public function __get($nm)
 	{
 		if ($nm === '') {
 			$nm = "\xFF";
-			return isset($this->$nm) ? $this->$nm : $this->$nm = $this->getCallback()('');
+			return isset($this->$nm) ? $this->$nm : $this->$nm = call_user_func($this->getCallback(), '');
 		} else {
-			return $this->$nm = $this->getCallback()($nm);
+			return $this->$nm = call_user_func($this->getCallback(), $nm);
 		}
 	}
 }

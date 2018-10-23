@@ -1,6 +1,3 @@
-<?php
-declare(strict_types=1);
-?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
 <h1>Using Transactions | Dibi</h1>
@@ -13,7 +10,7 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 
 
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ]);
 

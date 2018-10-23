@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi;
 
 
@@ -20,9 +18,12 @@ class Exception extends \Exception
 
 
 	/**
-	 * @param  int|string  $code
+	 * @param  string  Message describing the exception
+	 * @param  string|int
+	 * @param  string  SQL command
+	 * @param  \Exception
 	 */
-	public function __construct(string $message = '', $code = 0, string $sql = null, \Throwable $previous = null)
+	public function __construct($message = '', $code = 0, $sql = null, \Exception $previous = null)
 	{
 		parent::__construct($message, 0, $previous);
 		$this->code = $code;
@@ -30,13 +31,19 @@ class Exception extends \Exception
 	}
 
 
-	final public function getSql(): ?string
+	/**
+	 * @return string  The SQL passed to the constructor
+	 */
+	final public function getSql()
 	{
 		return $this->sql;
 	}
 
 
-	public function __toString(): string
+	/**
+	 * @return string  string represenation of exception with SQL command
+	 */
+	public function __toString()
 	{
 		return parent::__toString() . ($this->sql ? "\nSQL: " . $this->sql : '');
 	}
@@ -56,7 +63,7 @@ class DriverException extends Exception
  */
 class PcreException extends Exception
 {
-	public function __construct(string $message = '%msg.')
+	public function __construct($message = '%msg.')
 	{
 		static $messages = [
 			PREG_INTERNAL_ERROR => 'Internal error',
@@ -66,7 +73,7 @@ class PcreException extends Exception
 			5 => 'Offset didn\'t correspond to the begin of a valid UTF-8 code point', // PREG_BAD_UTF8_OFFSET_ERROR
 		];
 		$code = preg_last_error();
-		parent::__construct(str_replace('%msg', $messages[$code] ?? 'Unknown error', $message), $code);
+		parent::__construct(str_replace('%msg', isset($messages[$code]) ? $messages[$code] : 'Unknown error', $message), $code);
 	}
 }
 
@@ -92,18 +99,22 @@ class ProcedureException extends Exception
 
 	/**
 	 * Construct the exception.
+	 * @param  string  Message describing the exception
+	 * @param  int     Some code
+	 * @param  string SQL command
 	 */
-	public function __construct(string $message = '', int $code = 0, string $severity = '', string $sql = null)
+	public function __construct($message = '', $code = 0, $severity = '', $sql = null)
 	{
-		parent::__construct($message, $code, $sql);
+		parent::__construct($message, (int) $code, $sql);
 		$this->severity = $severity;
 	}
 
 
 	/**
 	 * Gets the exception severity.
+	 * @return string
 	 */
-	public function getSeverity(): string
+	public function getSeverity()
 	{
 		return $this->severity;
 	}

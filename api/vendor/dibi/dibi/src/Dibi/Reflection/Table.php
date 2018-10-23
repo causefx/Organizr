@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi\Reflection;
 
 use Dibi;
@@ -57,13 +55,19 @@ class Table
 	}
 
 
-	public function getName(): string
+	/**
+	 * @return string
+	 */
+	public function getName()
 	{
 		return $this->name;
 	}
 
 
-	public function isView(): bool
+	/**
+	 * @return bool
+	 */
+	public function isView()
 	{
 		return $this->view;
 	}
@@ -72,7 +76,7 @@ class Table
 	/**
 	 * @return Column[]
 	 */
-	public function getColumns(): array
+	public function getColumns()
 	{
 		$this->initColumns();
 		return array_values($this->columns);
@@ -82,7 +86,7 @@ class Table
 	/**
 	 * @return string[]
 	 */
-	public function getColumnNames(): array
+	public function getColumnNames()
 	{
 		$this->initColumns();
 		$res = [];
@@ -93,7 +97,11 @@ class Table
 	}
 
 
-	public function getColumn(string $name): Column
+	/**
+	 * @param  string
+	 * @return Column
+	 */
+	public function getColumn($name)
 	{
 		$this->initColumns();
 		$l = strtolower($name);
@@ -106,7 +114,11 @@ class Table
 	}
 
 
-	public function hasColumn(string $name): bool
+	/**
+	 * @param  string
+	 * @return bool
+	 */
+	public function hasColumn($name)
 	{
 		$this->initColumns();
 		return isset($this->columns[strtolower($name)]);
@@ -116,7 +128,7 @@ class Table
 	/**
 	 * @return ForeignKey[]
 	 */
-	public function getForeignKeys(): array
+	public function getForeignKeys()
 	{
 		$this->initForeignKeys();
 		return $this->foreignKeys;
@@ -126,21 +138,27 @@ class Table
 	/**
 	 * @return Index[]
 	 */
-	public function getIndexes(): array
+	public function getIndexes()
 	{
 		$this->initIndexes();
 		return $this->indexes;
 	}
 
 
-	public function getPrimaryKey(): Index
+	/**
+	 * @return Index
+	 */
+	public function getPrimaryKey()
 	{
 		$this->initIndexes();
 		return $this->primaryKey;
 	}
 
 
-	protected function initColumns(): void
+	/**
+	 * @return void
+	 */
+	protected function initColumns()
 	{
 		if ($this->columns === null) {
 			$this->columns = [];
@@ -151,7 +169,10 @@ class Table
 	}
 
 
-	protected function initIndexes(): void
+	/**
+	 * @return void
+	 */
+	protected function initIndexes()
 	{
 		if ($this->indexes === null) {
 			$this->initColumns();
@@ -169,7 +190,10 @@ class Table
 	}
 
 
-	protected function initForeignKeys(): void
+	/**
+	 * @return void
+	 */
+	protected function initForeignKeys()
 	{
 		throw new Dibi\NotImplementedException;
 	}

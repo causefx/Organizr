@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi\Loggers;
 
 use Dibi;
@@ -26,17 +24,18 @@ class FileLogger
 	public $filter;
 
 
-	public function __construct(string $file, int $filter = null)
+	public function __construct($file, $filter = null)
 	{
 		$this->file = $file;
-		$this->filter = $filter ?: Dibi\Event::QUERY;
+		$this->filter = $filter ? (int) $filter : Dibi\Event::QUERY;
 	}
 
 
 	/**
 	 * After event notification.
+	 * @return void
 	 */
-	public function logEvent(Dibi\Event $event): void
+	public function logEvent(Dibi\Event $event)
 	{
 		if (($event->type & $this->filter) === 0) {
 			return;

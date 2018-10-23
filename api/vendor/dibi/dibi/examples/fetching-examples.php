@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 if (@!include __DIR__ . '/../vendor/autoload.php') {
 	die('Install dependencies using `composer install --dev`');
@@ -15,7 +14,7 @@ Tracy\Debugger::enable();
 <?php
 
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ]);
 

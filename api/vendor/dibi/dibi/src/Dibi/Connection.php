@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi;
 
 use Traversable;
@@ -18,21 +16,24 @@ use Traversable;
  * @property-read int $affectedRows
  * @property-read int $insertId
  */
-class Connection implements IConnection
+class Connection
 {
 	use Strict;
 
 	/** @var array of function (Event $event); Occurs after query is executed */
-	public $onEvent = [];
+	public $onEvent;
 
 	/** @var array  Current connection configuration */
 	private $config;
 
-	/** @var Driver|null */
+	/** @var Driver */
 	private $driver;
 
 	/** @var Translator|null */
 	private $translator;
+
+	/** @var bool  Is connected? */
+	private $connected = false;
 
 	/** @var HashMap Substitutes for identifiers */
 	private $substitutes;
@@ -43,22 +44,20 @@ class Connection implements IConnection
 	 *   - lazy (bool) => if true, connection will be established only when required
 	 *   - result (array) => result set options
 	 *       - formatDateTime => date-time format (if empty, DateTime objects will be returned)
-	 *   - profiler (array)
+	 *   - profiler (array or bool)
 	 *       - run (bool) => enable profiler?
 	 *       - file => file to log
 	 *   - substitutes (array) => map of driver specific substitutes (under development)
-	 *   - onConnect (array) => list of SQL queries to execute (by Connection::query()) after connection is established
-	 * @param  array   $config  connection parameters
+	 * @param  mixed   connection parameters
+	 * @param  string  connection name
 	 * @throws Exception
 	 */
-	public function __construct($config, string $name = null)
+	public function __construct($config, $name = null)
 	{
 		if (is_string($config)) {
-			trigger_error(__METHOD__ . '() Configuration should be array.', E_USER_DEPRECATED);
 			parse_str($config, $config);
 
 		} elseif ($config instanceof Traversable) {
-			trigger_error(__METHOD__ . '() Configuration should be array.', E_USER_DEPRECATED);
 			$tmp = [];
 			foreach ($config as $key => $val) {
 				$tmp[$key] = $val instanceof Traversable ? iterator_to_array($val) : $val;
@@ -66,7 +65,7 @@ class Connection implements IConnection
 			$config = $tmp;
 
 		} elseif (!is_array($config)) {
-			throw new \InvalidArgumentException('Configuration must be array.');
+			throw new \InvalidArgumentException('Configuration must be array, string or object.');
 		}
 
 		Helpers::alias($config, 'username', 'user');
@@ -74,25 +73,50 @@ class Connection implements IConnection
 		Helpers::alias($config, 'host', 'hostname');
 		Helpers::alias($config, 'result|formatDate', 'resultDate');
 		Helpers::alias($config, 'result|formatDateTime', 'resultDateTime');
-		$config['driver'] = $config['driver'] ?? 'mysqli';
+
+		if (!isset($config['driver'])) {
+			$config['driver'] = \dibi::$defaultDriver;
+		}
+
+		if ($config['driver'] instanceof Driver) {
+			$this->driver = $config['driver'];
+			$config['driver'] = get_class($this->driver);
+		} elseif (is_subclass_of($config['driver'], 'Dibi\Driver')) {
+			$this->driver = new $config['driver'];
+		} else {
+			$class = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($config['driver'])));
+			$class = "Dibi\\Drivers\\{$class}Driver";
+			if (!class_exists($class)) {
+				throw new Exception("Unable to create instance of dibi driver '$class'.");
+			}
+			$this->driver = new $class;
+		}
+
 		$config['name'] = $name;
 		$this->config = $config;
 
 		// profiler
-		if (isset($config['profiler']['file']) && (!isset($config['profiler']['run']) || $config['profiler']['run'])) {
-			$filter = $config['profiler']['filter'] ?? Event::QUERY;
-			$this->onEvent[] = [new Loggers\FileLogger($config['profiler']['file'], $filter), 'logEvent'];
+		$profilerCfg = &$config['profiler'];
+		if (is_scalar($profilerCfg)) {
+			$profilerCfg = ['run' => (bool) $profilerCfg];
+		}
+		if (!empty($profilerCfg['run'])) {
+			$filter = isset($profilerCfg['filter']) ? $profilerCfg['filter'] : Event::QUERY;
+
+			if (isset($profilerCfg['file'])) {
+				$this->onEvent[] = [new Loggers\FileLogger($profilerCfg['file'], $filter), 'logEvent'];
+			}
+
+			if (Loggers\FirePhpLogger::isAvailable()) {
+				$this->onEvent[] = [new Loggers\FirePhpLogger($filter), 'logEvent'];
+			}
 		}
 
-		$this->substitutes = new HashMap(function (string $expr) { return ":$expr:"; });
+		$this->substitutes = new HashMap(function ($expr) { return ":$expr:"; });
 		if (!empty($config['substitutes'])) {
 			foreach ($config['substitutes'] as $key => $value) {
 				$this->substitutes->$key = $value;
 			}
-		}
-
-		if (isset($config['onConnect']) && !is_array($config['onConnect'])) {
-			throw new \InvalidArgumentException("Configuration option 'onConnect' must be array.");
 		}
 
 		if (empty($config['lazy'])) {
@@ -103,10 +127,11 @@ class Connection implements IConnection
 
 	/**
 	 * Automatically frees the resources allocated for this result set.
+	 * @return void
 	 */
 	public function __destruct()
 	{
-		if ($this->driver && $this->driver->getResource()) {
+		if ($this->connected && $this->driver->getResource()) {
 			$this->disconnect();
 		}
 	}
@@ -114,37 +139,19 @@ class Connection implements IConnection
 
 	/**
 	 * Connects to a database.
+	 * @return void
 	 */
-	final public function connect(): void
+	final public function connect()
 	{
-		if ($this->config['driver'] instanceof Driver) {
-			$this->driver = $this->config['driver'];
-			return;
-
-		} elseif (is_subclass_of($this->config['driver'], Driver::class)) {
-			$class = $this->config['driver'];
-
-		} else {
-			$class = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($this->config['driver'])));
-			$class = "Dibi\\Drivers\\{$class}Driver";
-			if (!class_exists($class)) {
-				throw new Exception("Unable to create instance of Dibi driver '$class'.");
-			}
-		}
-
 		$event = $this->onEvent ? new Event($this, Event::CONNECT) : null;
 		try {
-			$this->driver = new $class($this->config);
+			$this->driver->connect($this->config);
+			$this->connected = true;
 			if ($event) {
 				$this->onEvent($event->done());
 			}
-			if (isset($this->config['onConnect'])) {
-				foreach ($this->config['onConnect'] as $sql) {
-					$this->query($sql);
-				}
-			}
 
-		} catch (DriverException $e) {
+		} catch (Exception $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
@@ -155,44 +162,61 @@ class Connection implements IConnection
 
 	/**
 	 * Disconnects from a database.
+	 * @return void
 	 */
-	final public function disconnect(): void
+	final public function disconnect()
 	{
-		if ($this->driver) {
-			$this->driver->disconnect();
-			$this->driver = null;
-		}
+		$this->driver->disconnect();
+		$this->connected = false;
 	}
 
 
 	/**
 	 * Returns true when connection was established.
+	 * @return bool
 	 */
-	final public function isConnected(): bool
+	final public function isConnected()
 	{
-		return (bool) $this->driver;
+		return $this->connected;
 	}
 
 
 	/**
 	 * Returns configuration variable. If no $key is passed, returns the entire array.
 	 * @see self::__construct
+	 * @param  string
+	 * @param  mixed  default value to use if key not found
 	 * @return mixed
 	 */
-	final public function getConfig(string $key = null, $default = null)
+	final public function getConfig($key = null, $default = null)
 	{
-		return $key === null
-			? $this->config
-			: ($this->config[$key] ?? $default);
+		if ($key === null) {
+			return $this->config;
+
+		} elseif (isset($this->config[$key])) {
+			return $this->config[$key];
+
+		} else {
+			return $default;
+		}
+	}
+
+
+	/** @deprecated */
+	public static function alias(&$config, $key, $alias)
+	{
+		trigger_error(__METHOD__ . '() is deprecated, use Helpers::alias().', E_USER_DEPRECATED);
+		Helpers::alias($config, $key, $alias);
 	}
 
 
 	/**
 	 * Returns the driver and connects to a database in lazy mode.
+	 * @return Driver
 	 */
-	final public function getDriver(): Driver
+	final public function getDriver()
 	{
-		if (!$this->driver) {
+		if (!$this->connected) {
 			$this->connect();
 		}
 		return $this->driver;
@@ -201,32 +225,38 @@ class Connection implements IConnection
 
 	/**
 	 * Generates (translates) and executes SQL query.
-	 * @param  mixed  ...$args
+	 * @param  array|mixed      one or more arguments
+	 * @return Result|int   result set or number of affected rows
 	 * @throws Exception
 	 */
-	final public function query(...$args): Result
+	final public function query($args)
 	{
+		$args = func_get_args();
 		return $this->nativeQuery($this->translateArgs($args));
 	}
 
 
 	/**
 	 * Generates SQL query.
-	 * @param  mixed  ...$args
+	 * @param  array|mixed      one or more arguments
+	 * @return string
 	 * @throws Exception
 	 */
-	final public function translate(...$args): string
+	final public function translate($args)
 	{
+		$args = func_get_args();
 		return $this->translateArgs($args);
 	}
 
 
 	/**
 	 * Generates and prints SQL query.
-	 * @param  mixed  ...$args
+	 * @param  array|mixed  one or more arguments
+	 * @return bool
 	 */
-	final public function test(...$args): bool
+	final public function test($args)
 	{
+		$args = func_get_args();
 		try {
 			Helpers::dump($this->translateArgs($args));
 			return true;
@@ -244,21 +274,25 @@ class Connection implements IConnection
 
 	/**
 	 * Generates (translates) and returns SQL query as DataSource.
-	 * @param  mixed  ...$args
+	 * @param  array|mixed      one or more arguments
+	 * @return DataSource
 	 * @throws Exception
 	 */
-	final public function dataSource(...$args): DataSource
+	final public function dataSource($args)
 	{
+		$args = func_get_args();
 		return new DataSource($this->translateArgs($args), $this);
 	}
 
 
 	/**
 	 * Generates SQL query.
+	 * @param  array
+	 * @return string
 	 */
-	protected function translateArgs(array $args): string
+	protected function translateArgs($args)
 	{
-		if (!$this->driver) {
+		if (!$this->connected) {
 			$this->connect();
 		}
 		if (!$this->translator) {
@@ -271,11 +305,13 @@ class Connection implements IConnection
 
 	/**
 	 * Executes the SQL query.
+	 * @param  string           SQL statement.
+	 * @return Result|int   result set or number of affected rows
 	 * @throws Exception
 	 */
-	final public function nativeQuery(string $sql): Result
+	final public function nativeQuery($sql)
 	{
-		if (!$this->driver) {
+		if (!$this->connected) {
 			$this->connect();
 		}
 
@@ -284,14 +320,19 @@ class Connection implements IConnection
 		try {
 			$res = $this->driver->query($sql);
 
-		} catch (DriverException $e) {
+		} catch (Exception $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
 			throw $e;
 		}
 
-		$res = $this->createResultSet($res ?: new Drivers\NoDataResult(max(0, $this->driver->getAffectedRows())));
+		if ($res) {
+			$res = $this->createResultSet($res);
+		} else {
+			$res = $this->driver->getAffectedRows();
+		}
+
 		if ($event) {
 			$this->onEvent($event->done($res));
 		}
@@ -301,15 +342,16 @@ class Connection implements IConnection
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
+	 * @return int  number of rows
 	 * @throws Exception
 	 */
-	public function getAffectedRows(): int
+	public function getAffectedRows()
 	{
-		if (!$this->driver) {
+		if (!$this->connected) {
 			$this->connect();
 		}
 		$rows = $this->driver->getAffectedRows();
-		if ($rows === null || $rows < 0) {
+		if (!is_int($rows) || $rows < 0) {
 			throw new Exception('Cannot retrieve number of affected rows.');
 		}
 		return $rows;
@@ -319,7 +361,7 @@ class Connection implements IConnection
 	/**
 	 * @deprecated
 	 */
-	public function affectedRows(): int
+	public function affectedRows()
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use getAffectedRows()', E_USER_DEPRECATED);
 		return $this->getAffectedRows();
@@ -328,25 +370,27 @@ class Connection implements IConnection
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
+	 * @param  string     optional sequence name
+	 * @return int
 	 * @throws Exception
 	 */
-	public function getInsertId(string $sequence = null): int
+	public function getInsertId($sequence = null)
 	{
-		if (!$this->driver) {
+		if (!$this->connected) {
 			$this->connect();
 		}
 		$id = $this->driver->getInsertId($sequence);
 		if ($id < 1) {
 			throw new Exception('Cannot retrieve last generated ID.');
 		}
-		return $id;
+		return Helpers::intVal($id);
 	}
 
 
 	/**
 	 * @deprecated
 	 */
-	public function insertId(string $sequence = null): int
+	public function insertId($sequence = null)
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use getInsertId()', E_USER_DEPRECATED);
 		return $this->getInsertId($sequence);
@@ -355,10 +399,12 @@ class Connection implements IConnection
 
 	/**
 	 * Begins a transaction (if supported).
+	 * @param  string  optional savepoint name
+	 * @return void
 	 */
-	public function begin(string $savepoint = null): void
+	public function begin($savepoint = null)
 	{
-		if (!$this->driver) {
+		if (!$this->connected) {
 			$this->connect();
 		}
 		$event = $this->onEvent ? new Event($this, Event::BEGIN, $savepoint) : null;
@@ -368,7 +414,7 @@ class Connection implements IConnection
 				$this->onEvent($event->done());
 			}
 
-		} catch (DriverException $e) {
+		} catch (Exception $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
@@ -379,10 +425,12 @@ class Connection implements IConnection
 
 	/**
 	 * Commits statements in a transaction.
+	 * @param  string  optional savepoint name
+	 * @return void
 	 */
-	public function commit(string $savepoint = null): void
+	public function commit($savepoint = null)
 	{
-		if (!$this->driver) {
+		if (!$this->connected) {
 			$this->connect();
 		}
 		$event = $this->onEvent ? new Event($this, Event::COMMIT, $savepoint) : null;
@@ -392,7 +440,7 @@ class Connection implements IConnection
 				$this->onEvent($event->done());
 			}
 
-		} catch (DriverException $e) {
+		} catch (Exception $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
@@ -403,10 +451,12 @@ class Connection implements IConnection
 
 	/**
 	 * Rollback changes in a transaction.
+	 * @param  string  optional savepoint name
+	 * @return void
 	 */
-	public function rollback(string $savepoint = null): void
+	public function rollback($savepoint = null)
 	{
-		if (!$this->driver) {
+		if (!$this->connected) {
 			$this->connect();
 		}
 		$event = $this->onEvent ? new Event($this, Event::ROLLBACK, $savepoint) : null;
@@ -416,7 +466,7 @@ class Connection implements IConnection
 				$this->onEvent($event->done());
 			}
 
-		} catch (DriverException $e) {
+		} catch (Exception $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
@@ -427,8 +477,10 @@ class Connection implements IConnection
 
 	/**
 	 * Result set factory.
+	 * @param  ResultDriver
+	 * @return Result
 	 */
-	public function createResultSet(ResultDriver $resultDriver): Result
+	public function createResultSet(ResultDriver $resultDriver)
 	{
 		$res = new Result($resultDriver);
 		return $res->setFormat(Type::DATE, $this->config['result']['formatDate'])
@@ -439,38 +491,62 @@ class Connection implements IConnection
 	/********************* fluent SQL builders ****************d*g**/
 
 
-	public function command(): Fluent
+	/**
+	 * @return Fluent
+	 */
+	public function command()
 	{
 		return new Fluent($this);
 	}
 
 
-	public function select(...$args): Fluent
+	/**
+	 * @param  mixed    column name
+	 * @return Fluent
+	 */
+	public function select($args)
 	{
-		return $this->command()->select(...$args);
+		$args = func_get_args();
+		return $this->command()->__call('select', $args);
 	}
 
 
 	/**
-	 * @param  string|string[]  $table
+	 * @param  string   table
+	 * @param  array
+	 * @return Fluent
 	 */
-	public function update($table, iterable $args): Fluent
+	public function update($table, $args)
 	{
+		if (!(is_array($args) || $args instanceof Traversable)) {
+			throw new \InvalidArgumentException('Arguments must be array or Traversable.');
+		}
 		return $this->command()->update('%n', $table)->set($args);
 	}
 
 
-	public function insert(string $table, iterable $args): Fluent
+	/**
+	 * @param  string   table
+	 * @param  array
+	 * @return Fluent
+	 */
+	public function insert($table, $args)
 	{
 		if ($args instanceof Traversable) {
 			$args = iterator_to_array($args);
+		} elseif (!is_array($args)) {
+			throw new \InvalidArgumentException('Arguments must be array or Traversable.');
 		}
 		return $this->command()->insert()
 			->into('%n', $table, '(%n)', array_keys($args))->values('%l', $args);
 	}
 
 
-	public function delete(string $table): Fluent
+	/**
+	 * @param  string   table
+	 * @return Fluent
+	 */
+	public function delete($table)
 	{
 		return $this->command()->delete()->from('%n', $table);
 	}
@@ -481,8 +557,9 @@ class Connection implements IConnection
 
 	/**
 	 * Returns substitution hashmap.
+	 * @return HashMap
 	 */
-	public function getSubstitutes(): HashMap
+	public function getSubstitutes()
 	{
 		return $this->substitutes;
 	}
@@ -490,12 +567,13 @@ class Connection implements IConnection
 
 	/**
 	 * Provides substitution.
+	 * @return string
 	 */
-	public function substitute(string $value): string
+	public function substitute($value)
 	{
 		return strpos($value, ':') === false
 			? $value
-			: preg_replace_callback('#:([^:\s]*):#', function (array $m) { return $this->substitutes->{$m[1]}; }, $value);
+			: preg_replace_callback('#:([^:\s]*):#', function ($m) { return $this->substitutes->{$m[1]}; }, $value);
 	}
 
 
@@ -504,59 +582,62 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
-	 * @param  mixed  ...$args
+	 * @param  array|mixed    one or more arguments
+	 * @return Row|false
 	 * @throws Exception
 	 */
-	public function fetch(...$args): ?Row
+	public function fetch($args)
 	{
+		$args = func_get_args();
 		return $this->query($args)->fetch();
 	}
 
 
 	/**
 	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
-	 * @param  mixed  ...$args
+	 * @param  array|mixed    one or more arguments
 	 * @return Row[]|array[]
 	 * @throws Exception
 	 */
-	public function fetchAll(...$args): array
+	public function fetchAll($args)
 	{
+		$args = func_get_args();
 		return $this->query($args)->fetchAll();
 	}
 
 
 	/**
 	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
-	 * @param  mixed  ...$args
+	 * @param  array|mixed    one or more arguments
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function fetchSingle(...$args)
+	public function fetchSingle($args)
 	{
+		$args = func_get_args();
 		return $this->query($args)->fetchSingle();
 	}
 
 
 	/**
 	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
-	 * @param  mixed  ...$args
+	 * @param  array|mixed    one or more arguments
+	 * @return array
 	 * @throws Exception
 	 */
-	public function fetchPairs(...$args): array
+	public function fetchPairs($args)
 	{
+		$args = func_get_args();
 		return $this->query($args)->fetchPairs();
 	}
 
 
-	public static function literal(string $value): Literal
+	/**
+	 * @return Literal
+	 */
+	public static function literal($value)
 	{
 		return new Literal($value);
-	}
-
-
-	public static function expression(...$args): Expression
-	{
-		return new Expression(...$args);
 	}
 
 
@@ -565,10 +646,11 @@ class Connection implements IConnection
 
 	/**
 	 * Import SQL dump from file.
-	 * @param  callable  $onProgress  function (int $count, ?float $percent): void
+	 * @param  string  filename
+	 * @param  callable  function (int $count, ?float $percent): void
 	 * @return int  count of sql commands
 	 */
-	public function loadFile(string $file, callable $onProgress = null): int
+	public function loadFile($file, callable $onProgress = null)
 	{
 		return Helpers::loadFromFile($this, $file, $onProgress);
 	}
@@ -576,13 +658,14 @@ class Connection implements IConnection
 
 	/**
 	 * Gets a information about the current database.
+	 * @return Reflection\Database
 	 */
-	public function getDatabaseInfo(): Reflection\Database
+	public function getDatabaseInfo()
 	{
-		if (!$this->driver) {
+		if (!$this->connected) {
 			$this->connect();
 		}
-		return new Reflection\Database($this->driver->getReflector(), $this->config['database'] ?? null);
+		return new Reflection\Database($this->driver->getReflector(), isset($this->config['database']) ? $this->config['database'] : null);
 	}
 
 
@@ -604,10 +687,10 @@ class Connection implements IConnection
 	}
 
 
-	protected function onEvent($arg): void
+	protected function onEvent($arg)
 	{
-		foreach ($this->onEvent as $handler) {
-			$handler($arg);
+		foreach ($this->onEvent ?: [] as $handler) {
+			call_user_func($handler, $arg);
 		}
 	}
 }

@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 use Dibi\Type;
 
@@ -19,7 +18,7 @@ date_default_timezone_set('Europe/Prague');
 <?php
 
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ]);
 

@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi\Drivers;
 
 use Dibi;
@@ -32,8 +30,9 @@ class MySqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns list of tables.
+	 * @return array
 	 */
-	public function getTables(): array
+	public function getTables()
 	{
 		$res = $this->driver->query('SHOW FULL TABLES');
 		$tables = [];
@@ -49,8 +48,10 @@ class MySqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all columns in a table.
+	 * @param  string
+	 * @return array
 	 */
-	public function getColumns(string $table): array
+	public function getColumns($table)
 	{
 		$res = $this->driver->query("SHOW FULL COLUMNS FROM {$this->driver->escapeIdentifier($table)}");
 		$columns = [];
@@ -61,6 +62,7 @@ class MySqlReflector implements Dibi\Reflector
 				'table' => $table,
 				'nativetype' => strtoupper($type[0]),
 				'size' => isset($type[1]) ? (int) $type[1] : null,
+				'unsigned' => (bool) strstr($row['Type'], 'unsigned'),
 				'nullable' => $row['Null'] === 'YES',
 				'default' => $row['Default'],
 				'autoincrement' => $row['Extra'] === 'auto_increment',
@@ -73,8 +75,10 @@ class MySqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all indexes in a table.
+	 * @param  string
+	 * @return array
 	 */
-	public function getIndexes(string $table): array
+	public function getIndexes($table)
 	{
 		$res = $this->driver->query("SHOW INDEX FROM {$this->driver->escapeIdentifier($table)}");
 		$indexes = [];
@@ -90,9 +94,11 @@ class MySqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
+	 * @param  string
+	 * @return array
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function getForeignKeys(string $table): array
+	public function getForeignKeys($table)
 	{
 		$data = $this->driver->query("SELECT `ENGINE` FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = {$this->driver->escapeText($table)}")->fetch(true);
 		if ($data['ENGINE'] !== 'InnoDB') {

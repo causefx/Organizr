@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi;
 
 
@@ -21,13 +19,13 @@ class Expression
 	private $values;
 
 
-	public function __construct(...$values)
+	public function __construct()
 	{
-		$this->values = $values;
+		$this->values = func_get_args();
 	}
 
 
-	public function getValues(): array
+	public function getValues()
 	{
 		return $this->values;
 	}

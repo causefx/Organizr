@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi\Reflection;
 
 use Dibi;
@@ -34,25 +32,37 @@ class Index
 	}
 
 
-	public function getName(): string
+	/**
+	 * @return string
+	 */
+	public function getName()
 	{
 		return $this->info['name'];
 	}
 
 
-	public function getColumns(): array
+	/**
+	 * @return array
+	 */
+	public function getColumns()
 	{
 		return $this->info['columns'];
 	}
 
 
-	public function isUnique(): bool
+	/**
+	 * @return bool
+	 */
+	public function isUnique()
 	{
 		return !empty($this->info['unique']);
 	}
 
 
-	public function isPrimary(): bool
+	/**
+	 * @return bool
+	 */
+	public function isPrimary()
 	{
 		return !empty($this->info['primary']);
 	}

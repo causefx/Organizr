@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi;
 
 
@@ -49,9 +47,10 @@ class DataSource implements IDataSource
 
 
 	/**
-	 * @param  string  $sql  command or table or view name, as data source
+	 * @param  string  SQL command or table or view name, as data source
+	 * @param  Connection  connection
 	 */
-	public function __construct(string $sql, Connection $connection)
+	public function __construct($sql, Connection $connection)
 	{
 		if (strpbrk($sql, " \t\r\n") === false) {
 			$this->sql = $connection->getDriver()->escapeIdentifier($sql); // table name
@@ -64,10 +63,11 @@ class DataSource implements IDataSource
 
 	/**
 	 * Selects columns to query.
-	 * @param  string|array  $col  column name or array of column names
-	 * @param  string  $as        column alias
+	 * @param  string|array  column name or array of column names
+	 * @param  string        column alias
+	 * @return self
 	 */
-	public function select($col, string $as = null): self
+	public function select($col, $as = null)
 	{
 		if (is_array($col)) {
 			$this->cols = $col;
@@ -81,8 +81,10 @@ class DataSource implements IDataSource
 
 	/**
 	 * Adds conditions to query.
+	 * @param  mixed  conditions
+	 * @return self
 	 */
-	public function where($cond): self
+	public function where($cond)
 	{
 		if (is_array($cond)) {
 			// TODO: not consistent with select and orderBy
@@ -97,14 +99,16 @@ class DataSource implements IDataSource
 
 	/**
 	 * Selects columns to order by.
-	 * @param  string|array  $row  column name or array of column names
+	 * @param  string|array  column name or array of column names
+	 * @param  string        sorting direction
+	 * @return self
 	 */
-	public function orderBy($row, string $direction = 'ASC'): self
+	public function orderBy($row, $sorting = 'ASC')
 	{
 		if (is_array($row)) {
 			$this->sorting = $row;
 		} else {
-			$this->sorting[$row] = $direction;
+			$this->sorting[$row] = $sorting;
 		}
 		$this->result = null;
 		return $this;
@@ -113,8 +117,11 @@ class DataSource implements IDataSource
 
 	/**
 	 * Limits number of rows.
+	 * @param  int|null limit
+	 * @param  int offset
+	 * @return self
 	 */
-	public function applyLimit(int $limit, int $offset = null): self
+	public function applyLimit($limit, $offset = null)
 	{
 		$this->limit = $limit;
 		$this->offset = $offset;
@@ -123,7 +130,10 @@ class DataSource implements IDataSource
 	}
 
 
-	final public function getConnection(): Connection
+	/**
+	 * @return Connection
+	 */
+	final public function getConnection()
 	{
 		return $this->connection;
 	}
@@ -134,8 +144,9 @@ class DataSource implements IDataSource
 
 	/**
 	 * Returns (and queries) Result.
+	 * @return Result
 	 */
-	public function getResult(): Result
+	public function getResult()
 	{
 		if ($this->result === null) {
 			$this->result = $this->connection->nativeQuery($this->__toString());
@@ -144,7 +155,10 @@ class DataSource implements IDataSource
 	}
 
 
-	public function getIterator(): ResultIterator
+	/**
+	 * @return ResultIterator
+	 */
+	public function getIterator()
 	{
 		return $this->getResult()->getIterator();
 	}
@@ -152,8 +166,9 @@ class DataSource implements IDataSource
 
 	/**
 	 * Generates, executes SQL query and fetches the single row.
+	 * @return Row|false
 	 */
-	public function fetch(): ?Row
+	public function fetch()
 	{
 		return $this->getResult()->fetch();
 	}
@@ -161,7 +176,7 @@ class DataSource implements IDataSource
 
 	/**
 	 * Like fetch(), but returns only first field.
-	 * @return mixed  value on success, null if no next record
+	 * @return mixed  value on success, false if no next record
 	 */
 	public function fetchSingle()
 	{
@@ -171,8 +186,9 @@ class DataSource implements IDataSource
 
 	/**
 	 * Fetches all records from table.
+	 * @return array
 	 */
-	public function fetchAll(): array
+	public function fetchAll()
 	{
 		return $this->getResult()->fetchAll();
 	}
@@ -180,8 +196,10 @@ class DataSource implements IDataSource
 
 	/**
 	 * Fetches all records from table and returns associative tree.
+	 * @param  string  associative descriptor
+	 * @return array
 	 */
-	public function fetchAssoc(string $assoc): array
+	public function fetchAssoc($assoc)
 	{
 		return $this->getResult()->fetchAssoc($assoc);
 	}
@@ -189,8 +207,11 @@ class DataSource implements IDataSource
 
 	/**
 	 * Fetches all records from table like $key => $value pairs.
+	 * @param  string  associative key
+	 * @param  string  value
+	 * @return array
 	 */
-	public function fetchPairs(string $key = null, string $value = null): array
+	public function fetchPairs($key = null, $value = null)
 	{
 		return $this->getResult()->fetchPairs($key, $value);
 	}
@@ -198,8 +219,9 @@ class DataSource implements IDataSource
 
 	/**
 	 * Discards the internal cache.
+	 * @return void
 	 */
-	public function release(): void
+	public function release()
 	{
 		$this->result = $this->count = $this->totalCount = null;
 	}
@@ -210,8 +232,9 @@ class DataSource implements IDataSource
 
 	/**
 	 * Returns this data source wrapped in Fluent object.
+	 * @return Fluent
 	 */
-	public function toFluent(): Fluent
+	public function toFluent()
 	{
 		return $this->connection->select('*')->from('(%SQL) t', $this->__toString());
 	}
@@ -219,8 +242,9 @@ class DataSource implements IDataSource
 
 	/**
 	 * Returns this data source wrapped in DataSource object.
+	 * @return DataSource
 	 */
-	public function toDataSource(): self
+	public function toDataSource()
 	{
 		return new self($this->__toString(), $this->connection);
 	}
@@ -228,8 +252,9 @@ class DataSource implements IDataSource
 
 	/**
 	 * Returns SQL query.
+	 * @return string
 	 */
-	public function __toString(): string
+	public function __toString()
 	{
 		try {
 			return $this->connection->translate('
@@ -239,7 +264,7 @@ FROM %SQL', $this->sql, '
 %ex', $this->sorting ? ['ORDER BY %by', $this->sorting] : null, '
 %ofs %lmt', $this->offset, $this->limit
 			);
-		} catch (\Throwable $e) {
+		} catch (\Exception $e) {
 			trigger_error($e->getMessage(), E_USER_ERROR);
 			return '';
 		}
@@ -251,8 +276,9 @@ FROM %SQL', $this->sql, '
 
 	/**
 	 * Returns the number of rows in a given data source.
+	 * @return int
 	 */
-	public function count(): int
+	public function count()
 	{
 		if ($this->count === null) {
 			$this->count = $this->conds || $this->offset || $this->limit
@@ -267,8 +293,9 @@ FROM %SQL', $this->sql, '
 
 	/**
 	 * Returns the number of rows in a given data source.
+	 * @return int
 	 */
-	public function getTotalCount(): int
+	public function getTotalCount()
 	{
 		if ($this->totalCount === null) {
 			$this->totalCount = Helpers::intVal($this->connection->nativeQuery(

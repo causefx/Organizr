@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi;
 
 
@@ -27,6 +25,9 @@ class ResultIterator implements \Iterator, \Countable
 	private $pointer = 0;
 
 
+	/**
+	 * @param  Result
+	 */
 	public function __construct(Result $result)
 	{
 		$this->result = $result;
@@ -35,8 +36,9 @@ class ResultIterator implements \Iterator, \Countable
 
 	/**
 	 * Rewinds the iterator to the first element.
+	 * @return void
 	 */
-	public function rewind(): void
+	public function rewind()
 	{
 		$this->pointer = 0;
 		$this->result->seek(0);
@@ -66,8 +68,9 @@ class ResultIterator implements \Iterator, \Countable
 
 	/**
 	 * Moves forward to next element.
+	 * @return void
 	 */
-	public function next(): void
+	public function next()
 	{
 		$this->row = $this->result->fetch();
 		$this->pointer++;
@@ -76,8 +79,9 @@ class ResultIterator implements \Iterator, \Countable
 
 	/**
 	 * Checks if there is a current element after calls to rewind() or next().
+	 * @return bool
 	 */
-	public function valid(): bool
+	public function valid()
 	{
 		return !empty($this->row);
 	}
@@ -85,8 +89,9 @@ class ResultIterator implements \Iterator, \Countable
 
 	/**
 	 * Required by the Countable interface.
+	 * @return int
 	 */
-	public function count(): int
+	public function count()
 	{
 		return $this->result->getRowCount();
 	}

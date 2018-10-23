@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi\Reflection;
 
 use Dibi;
@@ -29,20 +27,26 @@ class ForeignKey
 	private $references;
 
 
-	public function __construct(string $name, array $references)
+	public function __construct($name, array $references)
 	{
 		$this->name = $name;
 		$this->references = $references;
 	}
 
 
-	public function getName(): string
+	/**
+	 * @return string
+	 */
+	public function getName()
 	{
 		return $this->name;
 	}
 
 
-	public function getReferences(): array
+	/**
+	 * @return array
+	 */
+	public function getReferences()
 	{
 		return $this->references;
 	}

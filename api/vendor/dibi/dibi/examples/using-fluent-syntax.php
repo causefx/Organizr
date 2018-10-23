@@ -1,6 +1,3 @@
-<?php
-declare(strict_types=1);
-?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
 <h1>Using Fluent Syntax | Dibi</h1>
@@ -15,7 +12,7 @@ date_default_timezone_set('Europe/Prague');
 
 
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ]);
 

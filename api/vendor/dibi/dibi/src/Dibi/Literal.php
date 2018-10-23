@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi;
 
 
@@ -27,7 +25,10 @@ class Literal
 	}
 
 
-	public function __toString(): string
+	/**
+	 * @return string
+	 */
+	public function __toString()
 	{
 		return $this->value;
 	}

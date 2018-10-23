@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4a53496f136ee22d88ec83f8ce65ab7d",
+    "content-hash": "0e5ee280433e4a8e418c7b3a14dc39ff",
     "packages": [
         {
             "name": "composer/semver",
@@ -70,37 +70,40 @@
         },
         {
             "name": "dibi/dibi",
-            "version": "v4.0.1",
+            "version": "v3.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dg/dibi.git",
-                "reference": "811974139eb2b8f16fd0aa6ff104de1d416b8b35"
+                "reference": "906e1f240742124e49562cace271916e1b08c991"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dg/dibi/zipball/811974139eb2b8f16fd0aa6ff104de1d416b8b35",
-                "reference": "811974139eb2b8f16fd0aa6ff104de1d416b8b35",
+                "url": "https://api.github.com/repos/dg/dibi/zipball/906e1f240742124e49562cace271916e1b08c991",
+                "reference": "906e1f240742124e49562cace271916e1b08c991",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1"
+                "php": ">=5.4.4"
             },
             "replace": {
                 "dg/dibi": "*"
             },
             "require-dev": {
-                "nette/tester": "~2.0",
+                "nette/tester": "~1.7",
                 "tracy/tracy": "~2.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.0-dev"
+                    "dev-master": "3.2-dev"
                 }
             },
             "autoload": {
                 "classmap": [
                     "src/"
+                ],
+                "files": [
+                    "src/loader.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -130,7 +133,7 @@
                 "sqlite",
                 "sqlsrv"
             ],
-            "time": "2018-09-17T11:50:54+00:00"
+            "time": "2018-09-17T11:47:10+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

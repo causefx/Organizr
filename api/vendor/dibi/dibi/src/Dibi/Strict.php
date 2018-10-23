@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi;
 
 use ReflectionClass;
@@ -27,13 +25,11 @@ trait Strict
 	 * Call to undefined method.
 	 * @throws \LogicException
 	 */
-	public function __call(string $name, array $args)
+	public function __call($name, $args)
 	{
-		$class = get_class($this);
-		if ($cb = self::extensionMethod($class . '::' . $name)) { // back compatiblity
-			trigger_error("Extension methods such as $class::$name() are deprecated", E_USER_DEPRECATED);
+		if ($cb = self::extensionMethod(get_class($this) . '::' . $name)) { // back compatiblity
 			array_unshift($args, $this);
-			return $cb(...$args);
+			return call_user_func_array($cb, $args);
 		}
 		$class = method_exists($this, $name) ? 'parent' : get_class($this);
 		$items = (new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC);
@@ -46,7 +42,7 @@ trait Strict
 	 * Call to undefined static method.
 	 * @throws \LogicException
 	 */
-	public static function __callStatic(string $name, array $args)
+	public static function __callStatic($name, $args)
 	{
 		$rc = new ReflectionClass(get_called_class());
 		$items = array_intersect($rc->getMethods(ReflectionMethod::IS_PUBLIC), $rc->getMethods(ReflectionMethod::IS_STATIC));
@@ -59,7 +55,7 @@ trait Strict
 	 * Access to undeclared property.
 	 * @throws \LogicException
 	 */
-	public function &__get(string $name)
+	public function &__get($name)
 	{
 		if ((method_exists($this, $m = 'get' . $name) || method_exists($this, $m = 'is' . $name))
 			&& (new ReflectionMethod($this, $m))->isPublic()
@@ -78,7 +74,7 @@ trait Strict
 	 * Access to undeclared property.
 	 * @throws \LogicException
 	 */
-	public function __set(string $name, $value)
+	public function __set($name, $value)
 	{
 		$rc = new ReflectionClass($this);
 		$items = array_diff($rc->getProperties(ReflectionProperty::IS_PUBLIC), $rc->getProperties(ReflectionProperty::IS_STATIC));
@@ -87,7 +83,10 @@ trait Strict
 	}
 
 
-	public function __isset(string $name): bool
+	/**
+	 * @return bool
+	 */
+	public function __isset($name)
 	{
 		return false;
 	}
@@ -97,7 +96,7 @@ trait Strict
 	 * Access to undeclared property.
 	 * @throws \LogicException
 	 */
-	public function __unset(string $name)
+	public function __unset($name)
 	{
 		$class = get_class($this);
 		throw new \LogicException("Attempt to unset undeclared property $class::$$name.");
@@ -105,16 +104,29 @@ trait Strict
 
 
 	/**
+	 * @param  string  method name
+	 * @param  callable
 	 * @return mixed
-	 * @deprecated
 	 */
-	public static function extensionMethod(string $name, callable $callback = null)
+	public static function extensionMethod($name, $callback = null)
 	{
 		if (strpos($name, '::') === false) {
 			$class = get_called_class();
 		} else {
-			[$class, $name] = explode('::', $name);
+			list($class, $name) = explode('::', $name);
 			$class = (new ReflectionClass($class))->getName();
+		}
+
+		if (self::$extMethods === null) { // for backwards compatibility
+			$list = get_defined_functions();
+			foreach ($list['user'] as $fce) {
+				$pair = explode('_prototype_', $fce);
+				if (count($pair) === 2) {
+					trigger_error("Extension method defined as $fce() is deprecated, use $class::extensionMethod('$name', ...).", E_USER_DEPRECATED);
+					self::$extMethods[$pair[1]][(new ReflectionClass($pair[0]))->getName()] = $fce;
+					self::$extMethods[$pair[1]][''] = null;
+				}
+			}
 		}
 
 		$list = &self::$extMethods[strtolower($name)];
@@ -132,7 +144,6 @@ trait Strict
 			return $cache = false;
 
 		} else { // setter
-			trigger_error("Extension methods such as $class::$name() are deprecated", E_USER_DEPRECATED);
 			$list[$class] = $callback;
 			$list[''] = null;
 		}

@@ -11,19 +11,32 @@ use Dibi;
 
 
 /**
- * The driver interacting with databases via ODBC connections.
+ * The driver for MySQL database.
  *
  * Driver options:
- *   - dsn => driver specific DSN
+ *   - host => the MySQL server host name
+ *   - port (int) => the port number to attempt to connect to the MySQL server
+ *   - socket => the socket or named pipe
  *   - username (or user)
  *   - password (or pass)
+ *   - database => the database name to select
+ *   - flags (int) => driver specific constants (MYSQL_CLIENT_*)
+ *   - charset => character encoding to set (default is utf8)
  *   - persistent (bool) => try to find a persistent link?
+ *   - unbuffered (bool) => sends query without fetching and buffering the result rows automatically?
+ *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - resource (resource) => existing connection resource
- *   - microseconds (bool) => use microseconds in datetime format?
+ *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
-class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
+class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 {
 	use Dibi\Strict;
+
+	const ERROR_ACCESS_DENIED = 1045;
+
+	const ERROR_DUPLICATE_ENTRY = 1062;
+
+	const ERROR_DATA_TRUNCATED = 1265;
 
 	/** @var resource|null */
 	private $connection;
@@ -34,14 +47,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/** @var bool */
 	private $autoFree = true;
 
-	/** @var bool */
-	private $microseconds = true;
-
-	/** @var int|false  Affected rows */
-	private $affectedRows = false;
-
-	/** @var int  Cursor */
-	private $row = 0;
+	/** @var bool  Is buffered (seekable and countable)? */
+	private $buffered;
 
 
 	/**
@@ -49,8 +56,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function __construct()
 	{
-		if (!extension_loaded('odbc')) {
-			throw new Dibi\NotSupportedException("PHP extension 'odbc' is not loaded.");
+		if (!extension_loaded('mysql')) {
+			throw new Dibi\NotSupportedException("PHP extension 'mysql' is not loaded.");
 		}
 	}
 
@@ -64,28 +71,67 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	{
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
+
 		} else {
 			// default values
+			Dibi\Helpers::alias($config, 'flags', 'options');
 			$config += [
-				'username' => ini_get('odbc.default_user'),
-				'password' => ini_get('odbc.default_pw'),
-				'dsn' => ini_get('odbc.default_db'),
+				'charset' => 'utf8',
+				'timezone' => date('P'),
+				'username' => ini_get('mysql.default_user'),
+				'password' => ini_get('mysql.default_password'),
 			];
+			if (!isset($config['host'])) {
+				$host = ini_get('mysql.default_host');
+				if ($host) {
+					$config['host'] = $host;
+					$config['port'] = ini_get('mysql.default_port');
+				} else {
+					if (!isset($config['socket'])) {
+						$config['socket'] = ini_get('mysql.default_socket');
+					}
+					$config['host'] = null;
+				}
+			}
+
+			if (empty($config['socket'])) {
+				$host = $config['host'] . (empty($config['port']) ? '' : ':' . $config['port']);
+			} else {
+				$host = ':' . $config['socket'];
+			}
 
 			if (empty($config['persistent'])) {
-				$this->connection = @odbc_connect($config['dsn'], $config['username'], $config['password']); // intentionally @
+				$this->connection = @mysql_connect($host, $config['username'], $config['password'], true, $config['flags']); // intentionally @
 			} else {
-				$this->connection = @odbc_pconnect($config['dsn'], $config['username'], $config['password']); // intentionally @
+				$this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['flags']); // intentionally @
 			}
 		}
 
 		if (!is_resource($this->connection)) {
-			throw new Dibi\DriverException(odbc_errormsg() . ' ' . odbc_error());
+			throw new Dibi\DriverException(mysql_error(), mysql_errno());
 		}
 
-		if (isset($config['microseconds'])) {
-			$this->microseconds = (bool) $config['microseconds'];
+		if (isset($config['charset'])) {
+			if (!@mysql_set_charset($config['charset'], $this->connection)) { // intentionally @
+				$this->query("SET NAMES '$config[charset]'");
+			}
 		}
+
+		if (isset($config['database'])) {
+			if (!@mysql_select_db($config['database'], $this->connection)) { // intentionally @
+				throw new Dibi\DriverException(mysql_error($this->connection), mysql_errno($this->connection));
+			}
+		}
+
+		if (isset($config['sqlmode'])) {
+			$this->query("SET sql_mode='$config[sqlmode]'");
+		}
+
+		if (isset($config['timezone'])) {
+			$this->query("SET time_zone='$config[timezone]'");
+		}
+
+		$this->buffered = empty($config['unbuffered']);
 	}
 
 
@@ -95,7 +141,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function disconnect()
 	{
-		@odbc_close($this->connection); // @ - connection can be already disconnected
+		@mysql_close($this->connection); // @ - connection can be already disconnected
 	}
 
 
@@ -107,17 +153,37 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function query($sql)
 	{
-		$this->affectedRows = false;
-		$res = @odbc_exec($this->connection, $sql); // intentionally @
+		if ($this->buffered) {
+			$res = @mysql_query($sql, $this->connection); // intentionally @
+		} else {
+			$res = @mysql_unbuffered_query($sql, $this->connection); // intentionally @
+		}
 
-		if ($res === false) {
-			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
+		if ($code = mysql_errno($this->connection)) {
+			throw MySqliDriver::createException(mysql_error($this->connection), $code, $sql);
 
 		} elseif (is_resource($res)) {
-			$this->affectedRows = odbc_num_rows($res);
-			return odbc_num_fields($res) ? $this->createResultDriver($res) : null;
+			return $this->createResultDriver($res);
 		}
-		return null;
+	}
+
+
+	/**
+	 * Retrieves information about the most recently executed query.
+	 * @return array
+	 */
+	public function getInfo()
+	{
+		$res = [];
+		preg_match_all('#(.+?): +(\d+) *#', mysql_info($this->connection), $matches, PREG_SET_ORDER);
+		if (preg_last_error()) {
+			throw new Dibi\PcreException;
+		}
+
+		foreach ($matches as $m) {
+			$res[$m[1]] = (int) $m[2];
+		}
+		return $res;
 	}
 
 
@@ -127,7 +193,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function getAffectedRows()
 	{
-		return $this->affectedRows;
+		return mysql_affected_rows($this->connection);
 	}
 
 
@@ -137,7 +203,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function getInsertId($sequence)
 	{
-		throw new Dibi\NotSupportedException('ODBC does not support autoincrementing.');
+		return mysql_insert_id($this->connection);
 	}
 
 
@@ -149,9 +215,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function begin($savepoint = null)
 	{
-		if (!odbc_autocommit($this->connection, false)) {
-			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
-		}
+		$this->query($savepoint ? "SAVEPOINT $savepoint" : 'START TRANSACTION');
 	}
 
 
@@ -163,10 +227,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function commit($savepoint = null)
 	{
-		if (!odbc_commit($this->connection)) {
-			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
-		}
-		odbc_autocommit($this->connection, true);
+		$this->query($savepoint ? "RELEASE SAVEPOINT $savepoint" : 'COMMIT');
 	}
 
 
@@ -178,20 +239,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function rollback($savepoint = null)
 	{
-		if (!odbc_rollback($this->connection)) {
-			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
-		}
-		odbc_autocommit($this->connection, true);
-	}
-
-
-	/**
-	 * Is in transaction?
-	 * @return bool
-	 */
-	public function inTransaction()
-	{
-		return !odbc_autocommit($this->connection);
+		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT $savepoint" : 'ROLLBACK');
 	}
 
 
@@ -211,7 +259,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function getReflector()
 	{
-		return $this;
+		return new MySqlReflector($this);
 	}
 
 
@@ -238,7 +286,10 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function escapeText($value)
 	{
-		return "'" . str_replace("'", "''", $value) . "'";
+		if (!is_resource($this->connection)) {
+			throw new Dibi\Exception('Lost connection to server.');
+		}
+		return "'" . mysql_real_escape_string($value, $this->connection) . "'";
 	}
 
 
@@ -248,7 +299,10 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function escapeBinary($value)
 	{
-		return "'" . str_replace("'", "''", $value) . "'";
+		if (!is_resource($this->connection)) {
+			throw new Dibi\Exception('Lost connection to server.');
+		}
+		return "_binary'" . mysql_real_escape_string($value, $this->connection) . "'";
 	}
 
 
@@ -258,7 +312,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function escapeIdentifier($value)
 	{
-		return '[' . str_replace(['[', ']'], ['[[', ']]'], $value) . ']';
+		// @see http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
+		return '`' . str_replace('`', '``', $value) . '`';
 	}
 
 
@@ -268,7 +323,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function escapeBool($value)
 	{
-		return $value ? '1' : '0';
+		return $value ? 1 : 0;
 	}
 
 
@@ -281,7 +336,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
-		return $value->format('#m/d/Y#');
+		return $value->format("'Y-m-d'");
 	}
 
 
@@ -294,7 +349,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
-		return $value->format($this->microseconds ? '#m/d/Y H:i:s.u#' : '#m/d/Y H:i:s#');
+		return $value->format("'Y-m-d H:i:s.u'");
 	}
 
 
@@ -306,7 +361,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function escapeLike($value, $pos)
 	{
-		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
+		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
@@ -339,14 +394,13 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
-		if ($offset) {
-			throw new Dibi\NotSupportedException('Offset is not supported by this database.');
-
-		} elseif ($limit < 0) {
+		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
-		} elseif ($limit !== null) {
-			$sql = 'SELECT TOP ' . Dibi\Helpers::intVal($limit) . ' * FROM (' . $sql . ') t';
+		} elseif ($limit !== null || $offset) {
+			// see http://dev.mysql.com/doc/refman/5.0/en/select.html
+			$sql .= ' LIMIT ' . ($limit === null ? '18446744073709551615' : Dibi\Helpers::intVal($limit))
+				. ($offset ? ' OFFSET ' . Dibi\Helpers::intVal($offset) : '');
 		}
 	}
 
@@ -360,9 +414,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function __destruct()
 	{
-		if ($this->autoFree && $this->getResultResource()) {
-			$this->free();
-		}
+		$this->autoFree && $this->getResultResource() && $this->free();
 	}
 
 
@@ -372,8 +424,10 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function getRowCount()
 	{
-		// will return -1 with many drivers :-(
-		return odbc_num_rows($this->resultSet);
+		if (!$this->buffered) {
+			throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
+		}
+		return mysql_num_rows($this->resultSet);
 	}
 
 
@@ -384,20 +438,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function fetch($assoc)
 	{
-		if ($assoc) {
-			return odbc_fetch_array($this->resultSet, ++$this->row);
-		} else {
-			$set = $this->resultSet;
-			if (!odbc_fetch_row($set, ++$this->row)) {
-				return false;
-			}
-			$count = odbc_num_fields($set);
-			$cols = [];
-			for ($i = 1; $i <= $count; $i++) {
-				$cols[] = odbc_result($set, $i);
-			}
-			return $cols;
-		}
+		return mysql_fetch_array($this->resultSet, $assoc ? MYSQL_ASSOC : MYSQL_NUM);
 	}
 
 
@@ -405,11 +446,15 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * Moves cursor position without fetching row.
 	 * @param  int   the 0-based cursor pos to seek to
 	 * @return bool  true on success, false if unable to seek to specified record
+	 * @throws Dibi\Exception
 	 */
 	public function seek($row)
 	{
-		$this->row = $row;
-		return true;
+		if (!$this->buffered) {
+			throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
+		}
+
+		return mysql_data_seek($this->resultSet, $row);
 	}
 
 
@@ -419,7 +464,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function free()
 	{
-		odbc_free_result($this->resultSet);
+		mysql_free_result($this->resultSet);
 		$this->resultSet = null;
 	}
 
@@ -430,14 +475,17 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function getResultColumns()
 	{
-		$count = odbc_num_fields($this->resultSet);
+		$count = mysql_num_fields($this->resultSet);
 		$columns = [];
-		for ($i = 1; $i <= $count; $i++) {
+		for ($i = 0; $i < $count; $i++) {
+			$row = (array) mysql_fetch_field($this->resultSet, $i);
 			$columns[] = [
-				'name' => odbc_field_name($this->resultSet, $i),
-				'table' => null,
-				'fullname' => odbc_field_name($this->resultSet, $i),
-				'nativetype' => odbc_field_type($this->resultSet, $i),
+				'name' => $row['name'],
+				'table' => $row['table'],
+				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
+				'nativetype' => strtoupper($row['type']),
+				'type' => $row['type'] === 'time' ? Dibi\Type::TIME_INTERVAL : null,
+				'vendor' => $row,
 			];
 		}
 		return $columns;
@@ -452,77 +500,5 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	{
 		$this->autoFree = false;
 		return is_resource($this->resultSet) ? $this->resultSet : null;
-	}
-
-
-	/********************* Dibi\Reflector ****************d*g**/
-
-
-	/**
-	 * Returns list of tables.
-	 * @return array
-	 */
-	public function getTables()
-	{
-		$res = odbc_tables($this->connection);
-		$tables = [];
-		while ($row = odbc_fetch_array($res)) {
-			if ($row['TABLE_TYPE'] === 'TABLE' || $row['TABLE_TYPE'] === 'VIEW') {
-				$tables[] = [
-					'name' => $row['TABLE_NAME'],
-					'view' => $row['TABLE_TYPE'] === 'VIEW',
-				];
-			}
-		}
-		odbc_free_result($res);
-		return $tables;
-	}
-
-
-	/**
-	 * Returns metadata for all columns in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getColumns($table)
-	{
-		$res = odbc_columns($this->connection);
-		$columns = [];
-		while ($row = odbc_fetch_array($res)) {
-			if ($row['TABLE_NAME'] === $table) {
-				$columns[] = [
-					'name' => $row['COLUMN_NAME'],
-					'table' => $table,
-					'nativetype' => $row['TYPE_NAME'],
-					'size' => $row['COLUMN_SIZE'],
-					'nullable' => (bool) $row['NULLABLE'],
-					'default' => $row['COLUMN_DEF'],
-				];
-			}
-		}
-		odbc_free_result($res);
-		return $columns;
-	}
-
-
-	/**
-	 * Returns metadata for all indexes in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getIndexes($table)
-	{
-		throw new Dibi\NotImplementedException;
-	}
-
-
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getForeignKeys($table)
-	{
-		throw new Dibi\NotImplementedException;
 	}
 }

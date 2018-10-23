@@ -11,21 +11,22 @@
 		}
 	],
 	"require": {
-		"php": ">=7.1"
+		"php": ">=5.4.4"
 	},
 	"require-dev": {
 		"tracy/tracy": "~2.2",
-		"nette/tester": "~2.0"
+		"nette/tester": "~1.7"
 	},
 	"replace": {
 		"dg/dibi": "*"
 	},
 	"autoload": {
-		"classmap": ["src/"]
+		"classmap": ["src/"],
+		"files": ["src/loader.php"]
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "4.0-dev"
+			"dev-master": "3.2-dev"
 		}
 	}
 }

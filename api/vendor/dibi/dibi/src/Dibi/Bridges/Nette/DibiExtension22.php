@@ -5,13 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi\Bridges\Nette;
 
 use Dibi;
 use Nette;
-use Tracy;
 
 
 /**
@@ -19,11 +16,11 @@ use Tracy;
  */
 class DibiExtension22 extends Nette\DI\CompilerExtension
 {
-	/** @var bool|null */
+	/** @var bool */
 	private $debugMode;
 
 
-	public function __construct(bool $debugMode = null)
+	public function __construct($debugMode = null)
 	{
 		$this->debugMode = $debugMode;
 	}
@@ -38,7 +35,9 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 			$this->debugMode = $container->parameters['debugMode'];
 		}
 
-		$useProfiler = $config['profiler'] ?? (class_exists(Tracy\Debugger::class) && $this->debugMode);
+		$useProfiler = isset($config['profiler'])
+			? $config['profiler']
+			: class_exists('Tracy\Debugger') && $this->debugMode;
 
 		unset($config['profiler']);
 
@@ -51,19 +50,19 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 		}
 
 		$connection = $container->addDefinition($this->prefix('connection'))
-			->setFactory(Dibi\Connection::class, [$config])
-			->setAutowired($config['autowired'] ?? true);
+			->setFactory('Dibi\Connection', [$config])
+			->setAutowired(isset($config['autowired']) ? $config['autowired'] : true);
 
-		if (class_exists(Tracy\Debugger::class)) {
+		if (class_exists('Tracy\Debugger')) {
 			$connection->addSetup(
 				[new Nette\DI\Statement('Tracy\Debugger::getBlueScreen'), 'addPanel'],
-				[[Dibi\Bridges\Tracy\Panel::class, 'renderException']]
+				[['Dibi\Bridges\Tracy\Panel', 'renderException']]
 			);
 		}
 		if ($useProfiler) {
 			$panel = $container->addDefinition($this->prefix('panel'))
-				->setFactory(Dibi\Bridges\Tracy\Panel::class, [
-					$config['explain'] ?? true,
+				->setFactory('Dibi\Bridges\Tracy\Panel', [
+					isset($config['explain']) ? $config['explain'] : true,
 					isset($config['filter']) && $config['filter'] === false ? Dibi\Event::ALL : Dibi\Event::QUERY,
 				]);
 			$connection->addSetup([$panel, 'register'], [$connection]);

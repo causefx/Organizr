@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi\Drivers;
 
 use Dibi;
@@ -14,6 +12,7 @@ use Dibi;
 
 /**
  * The reflector for Microsoft SQL Server and SQL Azure databases.
+ * @internal
  */
 class SqlsrvReflector implements Dibi\Reflector
 {
@@ -31,8 +30,9 @@ class SqlsrvReflector implements Dibi\Reflector
 
 	/**
 	 * Returns list of tables.
+	 * @return array
 	 */
-	public function getTables(): array
+	public function getTables()
 	{
 		$res = $this->driver->query("SELECT TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES WHERE [TABLE_SCHEMA] = 'dbo'");
 		$tables = [];
@@ -48,8 +48,10 @@ class SqlsrvReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all columns in a table.
+	 * @param  string
+	 * @return array
 	 */
-	public function getColumns(string $table): array
+	public function getColumns($table)
 	{
 		$res = $this->driver->query("
 			SELECT c.name as COLUMN_NAME, c.is_identity AS AUTO_INCREMENT
@@ -85,6 +87,7 @@ class SqlsrvReflector implements Dibi\Reflector
 				'table' => $table,
 				'nativetype' => strtoupper($row['DATA_TYPE']),
 				'size' => $row['CHARACTER_MAXIMUM_LENGTH'],
+				'unsigned' => true,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
 				'autoincrement' => $autoIncrements[$row['COLUMN_NAME']],
@@ -97,8 +100,10 @@ class SqlsrvReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all indexes in a table.
+	 * @param  string
+	 * @return array
 	 */
-	public function getIndexes(string $table): array
+	public function getIndexes($table)
 	{
 		$keyUsagesRes = $this->driver->query(sprintf('EXEC [sys].[sp_helpindex] @objname = N%s', $this->driver->escapeText($table)));
 		$keyUsages = [];
@@ -112,7 +117,7 @@ class SqlsrvReflector implements Dibi\Reflector
 			$indexes[$row['name']]['name'] = $row['name'];
 			$indexes[$row['name']]['unique'] = $row['is_unique'] === 1;
 			$indexes[$row['name']]['primary'] = $row['is_primary_key'] === 1;
-			$indexes[$row['name']]['columns'] = $keyUsages[$row['name']] ?? [];
+			$indexes[$row['name']]['columns'] = isset($keyUsages[$row['name']]) ? $keyUsages[$row['name']] : [];
 		}
 		return array_values($indexes);
 	}
@@ -120,8 +125,10 @@ class SqlsrvReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
+	 * @param  string
+	 * @return array
 	 */
-	public function getForeignKeys(string $table): array
+	public function getForeignKeys($table)
 	{
 		throw new Dibi\NotImplementedException;
 	}

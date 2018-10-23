@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi;
 
 
@@ -20,13 +18,15 @@ class Helpers
 
 	/**
 	 * Prints out a syntax highlighted version of the SQL command or Result.
-	 * @param  string|Result  $sql
+	 * @param  string|Result
+	 * @param  bool  return output instead of printing it?
+	 * @return string
 	 */
-	public static function dump($sql = null, bool $return = false): ?string
+	public static function dump($sql = null, $return = false)
 	{
 		ob_start();
 		if ($sql instanceof Result && PHP_SAPI === 'cli') {
-			$hasColors = (substr((string) getenv('TERM'), 0, 5) === 'xterm');
+			$hasColors = (substr(getenv('TERM'), 0, 5) === 'xterm');
 			$maxLen = 0;
 			foreach ($sql as $i => $row) {
 				if ($i === 0) {
@@ -88,8 +88,8 @@ class Helpers
 			// syntax highlight
 			$highlighter = "#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is";
 			if (PHP_SAPI === 'cli') {
-				if (substr((string) getenv('TERM'), 0, 5) === 'xterm') {
-					$sql = preg_replace_callback($highlighter, function (array $m) {
+				if (substr(getenv('TERM'), 0, 5) === 'xterm') {
+					$sql = preg_replace_callback($highlighter, function ($m) {
 						if (!empty($m[1])) { // comment
 							return "\033[1;30m" . $m[1] . "\033[0m";
 
@@ -108,7 +108,7 @@ class Helpers
 
 			} else {
 				$sql = htmlspecialchars($sql);
-				$sql = preg_replace_callback($highlighter, function (array $m) {
+				$sql = preg_replace_callback($highlighter, function ($m) {
 					if (!empty($m[1])) { // comment
 						return '<em style="color:gray">' . $m[1] . '</em>';
 
@@ -130,16 +130,16 @@ class Helpers
 			return ob_get_clean();
 		} else {
 			ob_end_flush();
-			return null;
 		}
 	}
 
 
 	/**
 	 * Finds the best suggestion.
+	 * @return string|null
 	 * @internal
 	 */
-	public static function getSuggestion(array $items, string $value): ?string
+	public static function getSuggestion(array $items, $value)
 	{
 		$best = null;
 		$min = (strlen($value) / 4 + 1) * 10 + .1;
@@ -155,7 +155,7 @@ class Helpers
 
 
 	/** @internal */
-	public static function escape(Driver $driver, $value, string $type): string
+	public static function escape(Driver $driver, $value, $type)
 	{
 		static $types = [
 			Type::TEXT => 'text',
@@ -175,9 +175,11 @@ class Helpers
 
 	/**
 	 * Heuristic type detection.
+	 * @param  string
+	 * @return string|null
 	 * @internal
 	 */
-	public static function detectType(string $type): ?string
+	public static function detectType($type)
 	{
 		static $patterns = [
 			'^_' => Type::TEXT, // PostgreSQL arrays
@@ -189,7 +191,6 @@ class Helpers
 			'TIME' => Type::DATETIME, // DATETIME, TIMESTAMP
 			'DATE' => Type::DATE,
 			'BOOL' => Type::BOOL,
-			'JSON' => Type::JSON,
 		];
 
 		foreach ($patterns as $s => $val) {
@@ -204,7 +205,7 @@ class Helpers
 	/**
 	 * @internal
 	 */
-	public static function getTypeCache(): HashMap
+	public static function getTypeCache()
 	{
 		if (self::$types === null) {
 			self::$types = new HashMap([__CLASS__, 'detectType']);
@@ -215,8 +216,12 @@ class Helpers
 
 	/**
 	 * Apply configuration alias or default values.
+	 * @param  array  connect configuration
+	 * @param  string key
+	 * @param  string alias key
+	 * @return void
 	 */
-	public static function alias(array &$config, string $key, string $alias): void
+	public static function alias(&$config, $key, $alias)
 	{
 		$foo = &$config;
 		foreach (explode('|', $key) as $key) {
@@ -234,7 +239,7 @@ class Helpers
 	 * Import SQL dump from file.
 	 * @return int  count of sql commands
 	 */
-	public static function loadFromFile(Connection $connection, string $file, callable $onProgress = null): int
+	public static function loadFromFile(Connection $connection, $file, callable $onProgress = null)
 	{
 		@set_time_limit(0); // intentionally @
 
@@ -259,7 +264,7 @@ class Helpers
 				$sql = '';
 				$count++;
 				if ($onProgress) {
-					$onProgress($count, isset($stat['size']) ? $size * 100 / $stat['size'] : null);
+					call_user_func($onProgress, $count, isset($stat['size']) ? $size * 100 / $stat['size'] : null);
 				}
 
 			} else {
@@ -271,7 +276,7 @@ class Helpers
 			$driver->query($sql);
 			$count++;
 			if ($onProgress) {
-				$onProgress($count, isset($stat['size']) ? 100 : null);
+				call_user_func($onProgress, $count, isset($stat['size']) ? 100 : null);
 			}
 		}
 		fclose($handle);
@@ -281,25 +286,15 @@ class Helpers
 
 	/**
 	 * @internal
+	 * @return string|int
 	 */
-	public static function false2Null($val)
-	{
-		return $val === false ? null : $val;
-	}
-
-
-	/**
-	 * @internal
-	 */
-	public static function intVal($value): int
+	public static function intVal($value)
 	{
 		if (is_int($value)) {
 			return $value;
 		} elseif (is_string($value) && preg_match('#-?\d++\z#A', $value)) {
-			if (is_float($value * 1)) {
-				throw new Exception("Number $value is greater than integer.");
-			}
-			return (int) $value;
+			// support for long numbers - keep them unchanged
+			return is_float($number = $value * 1) ? $value : $number;
 		} else {
 			throw new Exception("Expected number, '$value' given.");
 		}

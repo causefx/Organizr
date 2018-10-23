@@ -5,8 +5,6 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Dibi;
 
 
@@ -26,44 +24,63 @@ interface IDataSource extends \Countable, \IteratorAggregate
 interface Driver
 {
 	/**
-	 * Disconnects from a database.
+	 * Connects to a database.
+	 * @param  array
+	 * @return void
 	 * @throws Exception
 	 */
-	function disconnect(): void;
+	function connect(array &$config);
+
+	/**
+	 * Disconnects from a database.
+	 * @return void
+	 * @throws Exception
+	 */
+	function disconnect();
 
 	/**
 	 * Internal: Executes the SQL query.
+	 * @param  string      SQL statement.
+	 * @return ResultDriver|null
 	 * @throws DriverException
 	 */
-	function query(string $sql): ?ResultDriver;
+	function query($sql);
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
+	 * @return int|false  number of rows or false on error
 	 */
-	function getAffectedRows(): ?int;
+	function getAffectedRows();
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
+	 * @return int|false  int on success or false on failure
 	 */
-	function getInsertId(?string $sequence): ?int;
+	function getInsertId($sequence);
 
 	/**
 	 * Begins a transaction (if supported).
+	 * @param  string  optional savepoint name
+	 * @return void
 	 * @throws DriverException
 	 */
-	function begin(string $savepoint = null): void;
+	function begin($savepoint = null);
 
 	/**
 	 * Commits statements in a transaction.
+	 * @param  string  optional savepoint name
+	 * @return void
 	 * @throws DriverException
 	 */
-	function commit(string $savepoint = null): void;
+	function commit($savepoint = null);
 
 	/**
 	 * Rollback changes in a transaction.
+	 * @param  string  optional savepoint name
+	 * @return void
 	 * @throws DriverException
 	 */
-	function rollback(string $savepoint = null): void;
+	function rollback($savepoint = null);
 
 	/**
 	 * Returns the connection resource.
@@ -73,39 +90,63 @@ interface Driver
 
 	/**
 	 * Returns the connection reflector.
+	 * @return Reflector
 	 */
-	function getReflector(): Reflector;
+	function getReflector();
 
 	/**
 	 * Encodes data for use in a SQL statement.
+	 * @param  string    value
+	 * @return string    encoded value
 	 */
-	function escapeText(string $value): string;
-
-	function escapeBinary(string $value): string;
-
-	function escapeIdentifier(string $value): string;
-
-	function escapeBool(bool $value): string;
+	function escapeText($value);
 
 	/**
-	 * @param  \DateTimeInterface|string|int  $value
+	 * @param  string
+	 * @return string
 	 */
-	function escapeDate($value): string;
+	function escapeBinary($value);
 
 	/**
-	 * @param  \DateTimeInterface|string|int  $value
+	 * @param  string
+	 * @return string
 	 */
-	function escapeDateTime($value): string;
+	function escapeIdentifier($value);
+
+	/**
+	 * @param  bool
+	 * @return string
+	 */
+	function escapeBool($value);
+
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
+	function escapeDate($value);
+
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
+	function escapeDateTime($value);
 
 	/**
 	 * Encodes string for use in a LIKE statement.
+	 * @param  string
+	 * @param  int
+	 * @return string
 	 */
-	function escapeLike(string $value, int $pos): string;
+	function escapeLike($value, $pos);
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
+	 * @param  string
+	 * @param  int|null
+	 * @param  int|null
+	 * @return void
 	 */
-	function applyLimit(string &$sql, ?int $limit, ?int $offset): void;
+	function applyLimit(&$sql, $limit, $offset);
 }
 
 
@@ -116,33 +157,38 @@ interface ResultDriver
 {
 	/**
 	 * Returns the number of rows in a result set.
+	 * @return int
 	 */
-	function getRowCount(): int;
+	function getRowCount();
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @return bool  true on success, false if unable to seek to specified record
+	 * @param  int      the 0-based cursor pos to seek to
+	 * @return bool     true on success, false if unable to seek to specified record
 	 * @throws Exception
 	 */
-	function seek(int $row): bool;
+	function seek($row);
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool  $type  true for associative array, false for numeric
+	 * @param  bool     true for associative array, false for numeric
+	 * @return array    array on success, nonarray if no next record
 	 * @internal
 	 */
-	function fetch(bool $type): ?array;
+	function fetch($type);
 
 	/**
 	 * Frees the resources allocated for this result set.
+	 * @param  resource  result set resource
+	 * @return void
 	 */
-	function free(): void;
+	function free();
 
 	/**
 	 * Returns metadata for all columns in a result set.
 	 * @return array of {name, nativetype [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor ]}
 	 */
-	function getResultColumns(): array;
+	function getResultColumns();
 
 	/**
 	 * Returns the result set resource.
@@ -152,8 +198,10 @@ interface ResultDriver
 
 	/**
 	 * Decodes data from result set.
+	 * @param  string
+	 * @return string
 	 */
-	function unescapeBinary(string $value): string;
+	function unescapeBinary($value);
 }
 
 
@@ -166,82 +214,26 @@ interface Reflector
 	 * Returns list of tables.
 	 * @return array of {name [, (bool) view ]}
 	 */
-	function getTables(): array;
+	function getTables();
 
 	/**
 	 * Returns metadata for all columns in a table.
+	 * @param  string
 	 * @return array of {name, nativetype [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor ]}
 	 */
-	function getColumns(string $table): array;
+	function getColumns($table);
 
 	/**
 	 * Returns metadata for all indexes in a table.
+	 * @param  string
 	 * @return array of {name, (array of names) columns [, (bool) unique, (bool) primary ]}
 	 */
-	function getIndexes(string $table): array;
+	function getIndexes($table);
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
+	 * @param  string
+	 * @return array
 	 */
-	function getForeignKeys(string $table): array;
-}
-
-
-/**
- * Dibi connection.
- */
-interface IConnection
-{
-	/**
-	 * Connects to a database.
-	 */
-	function connect(): void;
-
-	/**
-	 * Disconnects from a database.
-	 */
-	function disconnect(): void;
-
-	/**
-	 * Returns true when connection was established.
-	 */
-	function isConnected(): bool;
-
-	/**
-	 * Returns the driver and connects to a database in lazy mode.
-	 */
-	function getDriver(): Driver;
-
-	/**
-	 * Generates (translates) and executes SQL query.
-	 * @throws Exception
-	 */
-	function query(...$args): Result;
-
-	/**
-	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @throws Exception
-	 */
-	function getAffectedRows(): int;
-
-	/**
-	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @throws Exception
-	 */
-	function getInsertId(string $sequence = null): int;
-
-	/**
-	 * Begins a transaction (if supported).
-	 */
-	function begin(string $savepoint = null): void;
-
-	/**
-	 * Commits statements in a transaction.
-	 */
-	function commit(string $savepoint = null): void;
-
-	/**
-	 * Rollback changes in a transaction.
-	 */
-	function rollback(string $savepoint = null): void;
+	function getForeignKeys($table);
 }
