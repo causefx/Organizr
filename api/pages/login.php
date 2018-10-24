@@ -13,14 +13,7 @@ if(activeInfo.settings.login.rememberMe){
         <div id="oAuth-div" class="form-group hidden">
           <div class="col-xs-12">
             <div class="panel panel-success animated tada">
-                <div class="panel-heading"> oAuth
-                    <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
-                </div>
-                <div class="panel-wrapper collapse in" aria-expanded="true">
-                    <div class="panel-body">
-	                   oAuth Was Successful - Please wait...
-                    </div>
-                </div>
+                <div class="panel-heading">oAuth Successful - Please wait...</div>
             </div>
           </div>
         </div>

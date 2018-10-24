@@ -4067,7 +4067,7 @@ function requestList (list, type, page=1) {
 	});
 }
 function buildDownloaderItem(array, source, type='none'){
-    console.log(array);
+    //console.log(array);
     var queue = '';
     var history = '';
 	switch (source) {
@@ -4442,6 +4442,106 @@ function buildDownloader(source){
 	</div>
 	`;
 }
+function buildDownloaderCombined(source){
+    var first = ($('.combinedDownloadRow').length == 0) ? true : false;
+    var active = (first) ? 'active' : '';
+    var queueButton = 'QUEUE';
+    var historyButton = 'HISTORY';
+    switch (source) {
+        case 'sabnzbd':
+        case 'nzbget':
+            var queue = true;
+            var history = true;
+            break;
+        case 'transmission':
+        case 'qBittorrent':
+        case 'deluge':
+        case 'rTorrent':
+            var queue = true;
+            var history = false;
+            queueButton = 'REFRESH';
+            break;
+        default:
+            var queue = false;
+            var history = false;
+
+    }
+
+    var mainMenu = `<ul class="nav customtab nav-tabs combinedMenuList" role="tablist">`;
+    var addToMainMenu = `<li role="presentation" class="`+active+`"><a href="#combined-`+source+`" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class=""><img src="./plugins/images/tabs/`+source+`.png" class="homepageImageTitle"></span></a></li>`;
+    var listing = '';
+
+    var headerAlt = '';
+    var header = '';
+
+
+    var menu = `<ul class="nav customtab nav-tabs pull-right" role="tablist">`;
+    if(queue){
+        menu += `
+			<li role="presentation" class="active" onclick="homepageDownloader('`+source+`')"><a href="#`+source+`-queue" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-download"></i></span><span class="hidden-xs">`+queueButton+`</span></a></li>
+			`;
+        listing += `
+		<div role="tabpanel" class="tab-pane fade active in" id="`+source+`-queue">
+			<div class="inbox-center table-responsive" data-simplebar>
+				<table class="table table-hover">
+					<tbody class="`+source+`-queue"></tbody>
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		`;
+    }
+    if(history){
+        menu += `
+		<li role="presentation" class=""><a href="#`+source+`-history" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-time"></i></span> <span class="hidden-xs">`+historyButton+`</span></a></li>
+		`;
+        listing += `
+		<div role="tabpanel" class="tab-pane fade" id="`+source+`-history">
+			<div class="inbox-center table-responsive" data-simplebar>
+				<table class="table table-hover">
+					<tbody class="`+source+`-history"></tbody>
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		`;
+    }
+    menu += '</ul><div class="clearfix"></div>';
+    var listingMain = '<div role="tabpanel" class="tab-pane fade '+active+' in" id="combined-'+source+'">'+menu+'<div class="tab-content m-t-0 listingSingle">'+listing+'</div></div>';
+    mainMenu += (first) ? addToMainMenu + '</ul>' : '';
+    if(first){
+        if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
+            var headerAlt = `
+            <div class="col-md-12">
+                `+mainMenu+`
+                <div class="clearfix"></div>
+            </div>
+            `;
+        }else{
+            var header = `
+            <div class="white-box bg-info m-b-0 p-b-0 p-10 mailbox-widget">
+                `+mainMenu+`
+                <div class="clearfix"></div>
+            </div>
+            `;
+        }
+        var built = `
+        <div class="row combinedDownloadRow">
+            `+headerAlt+`
+            <div class="col-lg-12">
+                `+header+`
+                <div class="white-box p-0">
+                    <div class="tab-content m-t-0 listingMain">`+listingMain+`</div>
+                </div>
+            </div>
+        </div>
+        `;
+        $('#homepageOrderdownloader').html(built);
+    }else{
+        $(addToMainMenu).appendTo('.combinedMenuList');
+        $(listingMain).appendTo('.listingMain');
+    }
+}
 function buildMetadata(array, source){
 	var metadata = '';
 	var genres = '';
@@ -4580,7 +4680,6 @@ function homepageDownloader(type, timeout){
 		var response = JSON.parse(data);
 		//document.getElementById('homepageOrder'+type).innerHTML = '';
 		if(response.data !== null){
-		    console.log(response.data);
 			buildDownloaderItem(response.data, type);
 		}
 	}).fail(function(xhr) {
