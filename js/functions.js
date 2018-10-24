@@ -4131,7 +4131,7 @@ function buildDownloaderItem(array, source, type='none'){
                 var action = (v.Status == "Downloading") ? 'pause' : 'resume';
                 var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
                 var percent = Math.floor((v.FileSizeMB - v.RemainingSizeMB) * 100 / v.FileSizeMB);
-                var size = v.FileSizeLo * 1000000;
+                var size = v.FileSizeMB * 1000000;
                 v.Category = (v.Category !== '') ? v.Category : 'Not Set';
                 queue += `
                 <tr>
@@ -4153,7 +4153,7 @@ function buildDownloaderItem(array, source, type='none'){
             }
             $.each(array.content.historyItems.result, function(i,v) {
                 v.Category = (v.Category !== '') ? v.Category : 'Not Set';
-                var size = v.FileSizeLo * 1000000;
+                var size = v.FileSizeMB * 1000000;
                 history += `
                 <tr>
                     <td class="max-texts">`+v.NZBName+`</td>
