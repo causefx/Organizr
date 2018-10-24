@@ -40,7 +40,7 @@ allIcons().success(function(data) {
                         <th lang="en">CATEGORY</th>
                         <th lang="en">GROUP</th>
                         <th lang="en">TYPE</th>
-                        <th lang="en style="text-align:center"">DEFAULT</th>
+                        <th lang="en" style="text-align:center">DEFAULT</th>
                         <th lang="en" style="text-align:center">ACTIVE</th>
                         <th lang="en" style="text-align:center">SPLASH</th>
                         <th lang="en" style="text-align:center">PING</th>

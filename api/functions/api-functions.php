@@ -220,7 +220,8 @@ function createDB($path, $filename)
     		`ping`		INTEGER,
     		`ping_url`	TEXT,
     		`timeout`	INTEGER,
-    		`timeout_ms`	INTEGER
+    		`timeout_ms`	INTEGER,
+    		`preload`	INTEGER
     	);');
 		// Create Options
 		$createDB->query('CREATE TABLE `options` (

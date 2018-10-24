@@ -2052,6 +2052,17 @@ function tabProcess(arrayItems) {
                     defaultTabName = cleanClass(v.name);
                     defaultTabType = v.type;
                 }
+                var menuList = buildMenuList(v.name,v.url,v.type,v.image,v.ping_url);
+                if(v.category_id === 0){
+                    if(activeInfo.settings.misc.unsortedTabs === 'top'){
+                        $(menuList).prependTo($('#side-menu'));
+                    }else if(activeInfo.settings.misc.unsortedTabs === 'bottom') {
+                        $(menuList).appendTo($('#side-menu'));
+                    }
+                }else{
+                    $(menuList).prependTo($('.category-'+v.category_id));
+                }
+                $('#side-menu').metisMenu({ toggle: false });
 				switch (v.type) {
 					case 0:
 					case '0':
@@ -2064,6 +2075,16 @@ function tabProcess(arrayItems) {
 					case 'iframe':
 						iFrameList = buildFrameContainer(v.name,v.url,v.type);
 						$(iFrameList).appendTo($('.iFrame-listing'));
+						//Auto load tabs (soon)
+                        /*
+                        var newTab = $('#container-'+cleanClass(v.name));
+                        var tabURL = newTab.attr('data-url');
+
+                        console.log('Tab Function: Preloading new tab for: '+cleanClass(v.name));
+                        $('#menu-'+cleanClass(v.name)+' a').children().addClass('tabLoaded');
+                        newTab.addClass("loaded");
+                        $(buildFrame(cleanClass(v.name),tabURL)).appendTo(newTab);
+                        */
 						break;
 					case 2:
 					case 3:
@@ -2075,17 +2096,6 @@ function tabProcess(arrayItems) {
 					default:
 						console.error('Tab Process: Action not set');
 				}
-				menuList = buildMenuList(v.name,v.url,v.type,v.image,v.ping_url);
-				if(v.category_id === 0){
-                    if(activeInfo.settings.misc.unsortedTabs === 'top'){
-                        $(menuList).prependTo($('#side-menu'));
-                    }else if(activeInfo.settings.misc.unsortedTabs === 'bottom') {
-                        $(menuList).appendTo($('#side-menu'));
-                    }
-				}else{
-					$(menuList).prependTo($('.category-'+v.category_id));
-				}
-				$('#side-menu').metisMenu({ toggle: false });
 			}
 		});
 		getDefault(defaultTabName,defaultTabType);
@@ -4121,6 +4131,7 @@ function buildDownloaderItem(array, source, type='none'){
                 var action = (v.Status == "Downloading") ? 'pause' : 'resume';
                 var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
                 var percent = Math.floor((v.FileSizeMB - v.RemainingSizeMB) * 100 / v.FileSizeMB);
+                var size = v.FileSizeLo * 1000000;
                 v.Category = (v.Category !== '') ? v.Category : 'Not Set';
                 queue += `
                 <tr>
@@ -4128,7 +4139,7 @@ function buildDownloaderItem(array, source, type='none'){
                     <td class="hidden-xs">`+v.Status+`</td>
                     <!--<td class="downloader mouse" data-target="`+v.NZBID+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>-->
                     <td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
-                    <td class="hidden-xs">`+humanFileSize(v.FileSizeLo,true)+`</td>
+                    <td class="hidden-xs">`+humanFileSize(size,true)+`</td>
                     <td class="text-right">
                         <div class="progress progress-lg m-b-0">
                             <div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
@@ -4142,12 +4153,13 @@ function buildDownloaderItem(array, source, type='none'){
             }
             $.each(array.content.historyItems.result, function(i,v) {
                 v.Category = (v.Category !== '') ? v.Category : 'Not Set';
+                var size = v.FileSizeLo * 1000000;
                 history += `
                 <tr>
                     <td class="max-texts">`+v.NZBName+`</td>
                     <td class="hidden-xs">`+v.Status+`</td>
                     <td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
-                    <td class="hidden-xs">`+humanFileSize(v.FileSizeLo,true)+`</td>
+                    <td class="hidden-xs">`+humanFileSize(size,true)+`</td>
                     <td class="text-right">
                         <div class="progress progress-lg m-b-0">
                             <div class="progress-bar progress-bar-info" style="width: 100%;" role="progressbar">100%</div>
@@ -4468,7 +4480,7 @@ function buildDownloaderCombined(source){
     }
 
     var mainMenu = `<ul class="nav customtab nav-tabs combinedMenuList" role="tablist">`;
-    var addToMainMenu = `<li role="presentation" class="`+active+`"><a href="#combined-`+source+`" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class=""><img src="./plugins/images/tabs/`+source+`.png" class="homepageImageTitle"></span></a></li>`;
+    var addToMainMenu = `<li role="presentation" class="`+active+`"><a onclick="homepageDownloader('`+source+`')" href="#combined-`+source+`" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class=""><img src="./plugins/images/tabs/`+source+`.png" class="homepageImageTitle"></span></a></li>`;
     var listing = '';
 
     var headerAlt = '';
@@ -4507,6 +4519,7 @@ function buildDownloaderCombined(source){
 		`;
     }
     menu += '</ul><div class="clearfix"></div>';
+    menu = ((queue) && (history)) ? menu : '';
     var listingMain = '<div role="tabpanel" class="tab-pane fade '+active+' in" id="combined-'+source+'">'+menu+'<div class="tab-content m-t-0 listingSingle">'+listing+'</div></div>';
     mainMenu += (first) ? addToMainMenu + '</ul>' : '';
     if(first){
