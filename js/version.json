@@ -96,5 +96,12 @@
     "new": "Google 2FA - More services to come",
     "fixed": "Small Chat dupe bug",
     "notes": "More small fixes"
+  },
+  "2.0.0-beta.800": {
+    "date": "2018-10-25 22:40",
+    "title": "Closer to v2.0",
+    "new": "rTorrent HP Support|Plex OAuth|Tautulli SSO using Plex OAuth|Import Plex Users|Combined Downloaders on HP|Account Area Active Token Section|Alphanumberic tab icons|Debug Area WIP|Remember me length setting|Disable ping sound",
+    "fixed": "NZBGet file size bug|Password Save bug|Auth issue if DB has wrong permissions|Ombi TV show issue|Scrollbars on FF|Token revoke on logout|BTC address|Homepage and Settings tab type non-change fix|Tab settings not reset (#942)|SSO code position (#946)|Gravatar email change fix (#951)",
+    "notes": "Added plex token to db for plex users|Added SSL option to chat|Added Bazzrr logo|Disable username and email change if 2FA enabled|Misc UI changes"
   }
 }
