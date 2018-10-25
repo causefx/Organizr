@@ -9,6 +9,7 @@ $(document).ajaxComplete(function () {
 $(document).ready(function () {
     pageLoad();
     var clipboard = new Clipboard('.clipboard');
+    var internalClipboard = new Clipboard('#internal-clipboard');
     clipboard.on('success', function(e) {
         message('Clipboard',e.text,activeInfo.settings.notifications.position,'#FFF','info','5000');
         e.clearSelection();

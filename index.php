@@ -180,6 +180,7 @@
     <!-- End Page Content -->
     <!-- ============================================================== -->
     <a href="#" id="scroll" style="display: none;"><span></span></a>
+    <button id="internal-clipboard" class="hidden"></button>
 </div>
 <!-- /#wrapper -->
 <!-- jQuery -->

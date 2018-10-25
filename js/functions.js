@@ -23,7 +23,7 @@ function toggleDebug(){
 }
 function highlightObject(json) {
     if (typeof json != 'string') {
-        json = JSON.stringify(json, undefined, 2);
+        json = JSON.stringify(json, undefined, '\t');
     }
     json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
@@ -74,8 +74,19 @@ function orgDebugList(cmd){
         orgDebug();
     }
 }
+function clipboard(trigger = true, string = null){
+    let clipboard = $('#internal-clipboard');
+    if(string){
+        clipboard.attr('data-clipboard-text',string );
+    }
+    if(trigger){
+        clipboard.click();
+    }
+}
 function getLangStrings(){
-    console.log(JSON.stringify(window.langStrings))
+    let strings = JSON.stringify(window.langStrings, null, '\t');
+    clipboard(true,strings);
+    console.log('Copied JSON Strings to clipboard');
 }
 function getHiddenProp(){
     var prefixes = ['webkit','moz','ms','o'];

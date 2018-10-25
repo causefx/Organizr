@@ -603,7 +603,8 @@
 
                 if (!translation) {
                     if (console && console.log) {
-                        console.log('Translation for "' + text + '" not found in language pack: ' + lang + ' Type or copy this string into this console to get a full strings missing output: getLangStrings()');
+                        //console.log('Translation for "' + text + '" not found in language pack: ' + lang + ' Type or copy this string into this console to get a full strings missing output: getLangStrings()');
+                        //console.log('Translation not found in language pack: ' + lang + ' Type this command into this console to get a full strings missing output: getLangStrings()');
                         langStrings['token'][text] = text;
                     }
                 }
