@@ -279,8 +279,8 @@ function updateDB($oldVerNum = false)
 					writeLog('success', 'Update Function -  Grabbed Table data for Table: ' . $table['name'], 'Database');
 					foreach ($data as $row) {
 						$connectNewDB->query('INSERT into ' . $table['name'], $row);
-						writeLog('success', 'Update Function -  Wrote Table data for Table: ' . $table['name'], 'Database');
 					}
+					writeLog('success', 'Update Function -  Wrote Table data for Table: ' . $table['name'], 'Database');
 				}
 				writeLog('success', 'Update Function -  All Table data converted - Starting Movement', 'Database');
 				$connectOldDB->disconnect();
@@ -289,7 +289,7 @@ function updateDB($oldVerNum = false)
 				if (file_exists($GLOBALS['dbLocation'] . $migrationDB)) {
 					$oldFileSize = filesize($GLOBALS['dbLocation'] . $GLOBALS['dbName']);
 					$newFileSize = filesize($GLOBALS['dbLocation'] . $migrationDB);
-					if ($newFileSize >= $oldFileSize) {
+					if ($newFileSize > 0) {
 						writeLog('success', 'Update Function -  Table Size of new DB ok..', 'Database');
 						@unlink($GLOBALS['dbLocation'] . $GLOBALS['dbName']);
 						copy($GLOBALS['dbLocation'] . $migrationDB, $GLOBALS['dbLocation'] . $GLOBALS['dbName']);
