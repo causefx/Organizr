@@ -291,19 +291,19 @@ function updateDB($oldVerNum = false)
 						copy($GLOBALS['dbLocation'] . $migrationDB, $GLOBALS['dbLocation'] . $GLOBALS['dbName']);
 						@unlink($GLOBALS['dbLocation'] . $migrationDB);
 						writeLog('success', 'Update Function -  Migrated Old Info to new Database', 'Database');
-						unlink($tempLock);
+						@unlink($tempLock);
 						return true;
 					}
 				}
-				unlink($tempLock);
+				@unlink($tempLock);
 				return false;
 			} catch (Dibi\Exception $e) {
 				writeLog('error', 'Update Function -  Error [' . $e . ']', 'Database');
-				unlink($tempLock);
+				@unlink($tempLock);
 				return false;
 			}
 		}
-		unlink($tempLock);
+		@unlink($tempLock);
 		return false;
 	}
 	return false;

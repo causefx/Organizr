@@ -3,6 +3,12 @@ function upgradeCheck()
 {
 	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 		$tempLock = $GLOBALS['dbLocation'] . 'DBLOCK.txt';
+		$updateComplete = $GLOBALS['dbLocation'] . 'completed.txt';
+		$cleanup = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "upgrade" . DIRECTORY_SEPARATOR;
+		if (file_exists($updateComplete)) {
+			@unlink($updateComplete);
+			@rrmdir($cleanup);
+		}
 		if (file_exists($tempLock)) {
 			die('upgrading');
 		}

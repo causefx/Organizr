@@ -32,6 +32,10 @@ function upgradeInstall($branch = 'v2-master', $stage)
 		case '3':
 			if (rcopy($source, $destination)) {
 				writeLog('success', 'Update Function -  Overwrited Files using Updated Files from Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
+				$updateComplete = $GLOBALS['dbLocation'] . 'completed.txt';
+				if (!file_exists($updateComplete)) {
+					touch($updateComplete);
+				}
 				return true;
 			} else {
 				writeLog('error', 'Update Function -  Overwrite Failed for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
