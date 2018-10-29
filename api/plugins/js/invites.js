@@ -194,7 +194,7 @@ function getInvite(invite=null){
 		//show error page
 		$('.inviteModal').trigger('click');
         $('#inviteCodeInput').val(local('get', 'invite'));
-		window.history.pushState({}, document.title, "/" );
+		window.history.pushState({}, document.title, "./" );
         local('remove', 'invite');
 	}
 

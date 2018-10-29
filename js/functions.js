@@ -3233,7 +3233,7 @@ function errorPage(error=null,uri=null){
 		$('.error-page').html(buildErrorPage(local('get', 'error')));
 		$('.error-page').fadeIn();
 		local('remove', 'error');
-		window.history.pushState({}, document.title, "/" );
+		window.history.pushState({}, document.title, "./" );
 	}
 
 }
@@ -4498,7 +4498,7 @@ function buildDownloaderCombined(source){
     var header = '';
 
 
-    var menu = `<ul class="nav customtab nav-tabs pull-right" role="tablist">`;
+    var menu = `<ul class="nav customtab nav-tabs m-t-5" role="tablist">`;
     if(queue){
         menu += `
 			<li role="presentation" class="active" onclick="homepageDownloader('`+source+`')"><a href="#`+source+`-queue" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-download"></i></span><span class="hidden-xs">`+queueButton+`</span></a></li>

@@ -34,10 +34,12 @@ function getOmbiToken($username, $password, $oAuthToken = null)
 		$data = array(
 			"username" => $username,
 			"password" => $password,
-			"rememberMe" => "true"
+			"rememberMe" => "true",
+			"plexToken" => $oAuthToken
 		);
+		$endpoint = ($oAuthToken) ? '/api/v1/Token/plextoken' : '/api/v1/Token';
 		$options = (localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::post($url . '/api/v1/Token', $headers, json_encode($data), $options);
+		$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 		if ($response->success) {
 			$token = json_decode($response->body, true)['access_token'];
 			writeLog('success', 'Ombi Token Function - Grabbed token.', $username);
