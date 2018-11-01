@@ -170,7 +170,7 @@ function timerIncrement() {
         }
     }
     idleTime = idleTime + 1;
-    if(activeInfo.settings.lockout.enabled){
+    if(activeInfo.settings.lockout.enabled && activeInfo.settings.user.oAuthLogin !== true){
         if (idleTime > activeInfo.settings.lockout.timer && $('#lockScreen').length !== 1) {
             if(activeInfo.user.groupID <= activeInfo.settings.lockout.minGroup && activeInfo.user.groupID >= activeInfo.settings.lockout.maxGroup){
                 lock();
@@ -5743,6 +5743,10 @@ function authDebugCheck(){
     }
 }
 function lock(){
+    if(activeInfo.settings.user.oAuthLogin == true){
+        message('Lock Disabled','Lock function disabled if logged in via oAuth',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+        return false;
+    }
     organizrAPI('POST','api/?v1/lock','').success(function(data) {
         var html = JSON.parse(data);
         console.log(html);

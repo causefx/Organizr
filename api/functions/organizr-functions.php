@@ -70,6 +70,7 @@ function organizrSpecialSettings()
 		),
 		'user' => array(
 			'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
+			'oAuthLogin' => isset($_COOKIE['oAuth']) ? true : false
 		),
 		'login' => array(
 			'rememberMe' => $GLOBALS['rememberMe'],
@@ -340,6 +341,7 @@ function logout()
 	coookie('delete', $GLOBALS['cookieName']);
 	coookie('delete', 'mpt');
 	coookie('delete', 'Auth');
+	coookie('delete', 'oAuth');
 	clearTautulliTokens();
 	revokeToken(array('data' => array('token' => $GLOBALS['organizrUser']['token'])));
 	$GLOBALS['organizrUser'] = false;

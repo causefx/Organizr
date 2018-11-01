@@ -65,6 +65,7 @@ function login($array)
 								'image' => $tokenInfo['user']['thumb'],
 								'token' => $tokenInfo['user']['authToken']
 							);
+							coookie('set', 'oAuth', 'true', $GLOBALS['rememberMeDays']);
 							$authSuccess = ((!empty($GLOBALS['plexAdmin']) && strtolower($GLOBALS['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
 						}
 					}
