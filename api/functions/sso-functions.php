@@ -43,9 +43,11 @@ function getOmbiToken($username, $password, $oAuthToken = null)
 		if ($response->success) {
 			$token = json_decode($response->body, true)['access_token'];
 			writeLog('success', 'Ombi Token Function - Grabbed token.', $username);
+		} else {
+			writeLog('error', 'Ombi Token Function - Ombi did not return Token', $username);
 		}
 	} catch (Requests_Exception $e) {
-		writeLog('success', 'Ombi Token Function - Error: ' . $e->getMessage(), $username);
+		writeLog('error', 'Ombi Token Function - Error: ' . $e->getMessage(), $username);
 	};
 	return ($token) ? $token : false;
 }
