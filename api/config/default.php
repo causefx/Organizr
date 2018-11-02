@@ -123,6 +123,7 @@ return array(
 	'homepageOmbiRequestAuth' => '1',
 	'ombiLimitUser' => false,
 	'ombiRefresh' => '600000',
+	'ombiTvDefault' => 'all',
 	'homepageOrdercustomhtml' => '1',
 	'homepageOrdercustomhtmlTwo' => '2',
 	'homepageOrdertransmission' => '3',

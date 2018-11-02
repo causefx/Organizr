@@ -484,9 +484,14 @@ function plexConnect($action, $key = null)
 	if ($GLOBALS['homepagePlexEnabled'] && !empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'] && qualifyRequest($GLOBALS['homepagePlexAuth']))) {
 		$url = qualifyURL($GLOBALS['plexURL']);
 		$ignore = array();
+		$resolve = true;
 		switch ($action) {
 			case 'streams':
 				$url = $url . "/status/sessions?X-Plex-Token=" . $GLOBALS['plexToken'];
+				break;
+			case 'libraries':
+				$url = $url . "/library/sections?X-Plex-Token=" . $GLOBALS['plexToken'];
+				$resolve = false;
 				break;
 			case 'recent':
 				$url = $url . "/library/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&limit=" . $GLOBALS['homepageRecentLimit'];
@@ -517,7 +522,7 @@ function plexConnect($action, $key = null)
 						$items[] = resolvePlexItem($child);
 					}
 				}
-				$api['content'] = $items;
+				$api['content'] = ($resolve) ? $items : $plex;
 				$api['plexID'] = $GLOBALS['plexID'];
 				$api['showNames'] = true;
 				$api['group'] = '1';
@@ -1782,7 +1787,7 @@ function getSickrageCalendarHistory($array, $number)
 
 function ombiAPI($array)
 {
-	return ombiAction($array['data']['id'], $array['data']['action'], $array['data']['type']);
+	return ombiAction($array['data']['id'], $array['data']['action'], $array['data']['type'], $array['data']);
 }
 
 function ombiImport($type = null)
@@ -1824,7 +1829,7 @@ function ombiImport($type = null)
 	return false;
 }
 
-function ombiAction($id, $action, $type)
+function ombiAction($id, $action, $type, $fullArray = null)
 {
 	if ($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest($GLOBALS['homepageOmbiAuth'])) {
 		$url = qualifyURL($GLOBALS['ombiURL']);
@@ -1842,9 +1847,9 @@ function ombiAction($id, $action, $type)
 				$type = 'tv';
 				$add = array(
 					'tvDbId' => $id,
-					'requestAll' => true,
-					'latestSeason' => true,
-					'firstSeason' => true
+					'requestAll' => ombiTVDefault('all'),
+					'latestSeason' => ombiTVDefault('last'),
+					'firstSeason' => ombiTVDefault('first')
 				);
 				break;
 			default:

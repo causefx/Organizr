@@ -290,6 +290,20 @@ function buildHomepageItem($homepageItem)
 function getHomepageList()
 {
 	$groups = groupSelect();
+	$ombiTvOptions = array(
+		array(
+			'name' => 'All Seasons',
+			'value' => 'all'
+		),
+		array(
+			'name' => 'First Season Only',
+			'value' => 'first'
+		),
+		array(
+			'name' => 'Last Season Only',
+			'value' => 'last'
+		),
+	);
 	$mediaServers = array(
 		array(
 			'name' => 'N/A',
@@ -1960,6 +1974,13 @@ function getHomepageList()
 						'options' => $groups
 					),
 					array(
+						'type' => 'select',
+						'name' => 'ombiTvDefault',
+						'label' => 'TV Show Default Request',
+						'value' => $GLOBALS['ombiTvDefault'],
+						'options' => $ombiTvOptions
+					),
+					array(
 						'type' => 'switch',
 						'name' => 'ombiLimitUser',
 						'label' => 'Limit to User',
@@ -2174,4 +2195,19 @@ function buildHomepageSettings()
 	$homepageList .= '</div>';
 	$inputList .= '</form>';
 	return $homepageList . $inputList;
+}
+
+function ombiTVDefault($type)
+{
+	switch ($type) {
+		case 'all':
+			return ($type == $GLOBALS['ombiTvDefault']) ? true : false;
+		case 'first':
+			return ($type == $GLOBALS['ombiTvDefault']) ? true : false;
+		case 'last':
+			return ($type == $GLOBALS['ombiTvDefault']) ? true : false;
+		default:
+			return false;
+	}
+	return false;
 }
