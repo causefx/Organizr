@@ -143,9 +143,21 @@
                                                         data-toggle="dropdown" aria-expanded="false"><span lang="en">Commands</span>
                                                     <span class="caret"></span></button>
                                                 <ul class="dropdown-menu dropdown-menu-right">
+                                                    <li><a onclick="orgDebugList('activeInfo.settings.sso');"
+                                                           href="javascript:void(0)"
+                                                           lang="en">SSO</a></li>
                                                     <li><a onclick="orgDebugList('activeInfo.settings.sso.ombi');"
                                                            href="javascript:void(0)"
                                                            lang="en">Ombi SSO</a></li>
+                                                    <li><a onclick="orgDebugList('activeInfo.settings.sso.plex');"
+                                                           href="javascript:void(0)"
+                                                           lang="en">Plex SSO</a></li>
+                                                    <li><a onclick="orgDebugList('activeInfo.settings.sso.tautulli');"
+                                                           href="javascript:void(0)"
+                                                           lang="en">Tautulli SSO</a></li>
+                                                    <li><a onclick="orgDebugList('activeInfo.settings.sso.misc');"
+                                                           href="javascript:void(0)"
+                                                           lang="en">Misc SSO</a></li>
                                                 </ul>
                                             </div>
                                         </div>

@@ -27,12 +27,17 @@ function organizrSpecialSettings()
 			)
 		),
 		'sso' => array(
+			'misc' => array(
+				'oAuthLogin' => isset($_COOKIE['oAuth']) ? true : false,
+				'rememberMe' => $GLOBALS['rememberMe'],
+				'rememberMeDays' => $GLOBALS['rememberMeDays']
+			),
 			'plex' => array(
 				'enabled' => ($GLOBALS['ssoPlex']) ? true : false,
 				'cookie' => isset($_COOKIE['mpt']) ? true : false,
 				'machineID' => $GLOBALS['plexID'],
 				'token' => ($GLOBALS['plexToken'] !== '') ? true : false,
-				'oAuth' => ($GLOBALS['plexoAuth']) ? true : false,
+				'oAuthEnabled' => ($GLOBALS['plexoAuth']) ? true : false,
 				'backend' => ($GLOBALS['authBackend'] == 'plex') ? true : false,
 			),
 			'ombi' => array(
