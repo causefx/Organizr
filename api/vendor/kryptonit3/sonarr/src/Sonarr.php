@@ -38,7 +38,7 @@ class Sonarr
             if ( $this->validateDate($start) ) {
                 $uriData['start'] = $start;
             } else {
-                echo json_encode(array(
+                return json_encode(array(
                     'error' => array(
                         'msg' => 'Start date string was not recognized as a valid DateTime. Format must be yyyy-mm-dd.',
                         'code' => 400,
@@ -52,7 +52,7 @@ class Sonarr
             if ( $this->validateDate($end) ) {
                 $uriData['end'] = $end;
             } else {
-                echo json_encode(array(
+                return json_encode(array(
                     'error' => array(
                         'msg' => 'End date string was not recognized as a valid DateTime. Format must be yyyy-mm-dd.',
                         'code' => 400,
@@ -651,7 +651,7 @@ class Sonarr
                 ]
             );
         } catch ( \Exception $e ) {
-            echo json_encode(array(
+            return json_encode(array(
                 'error' => array(
                     'msg' => $e->getMessage(),
                     'code' => $e->getCode(),

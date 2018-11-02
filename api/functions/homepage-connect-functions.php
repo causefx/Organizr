@@ -998,7 +998,9 @@ function getCalendar()
 			foreach ($sonarrs as $key => $value) {
 				try {
 					$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-					$sonarrCalendar = getSonarrCalendar($sonarr->getCalendar($startDate, $endDate, $GLOBALS['sonarrUnmonitored']), $key);
+					$sonarr = $sonarr->getCalendar($startDate, $endDate, $GLOBALS['sonarrUnmonitored']);
+					$result = json_decode($sonarr, true);
+					$sonarrCalendar = (array_key_exists('error', $result)) ? '' : getSonarrCalendar($sonarr, $key);;
 				} catch (Exception $e) {
 					writeLog('error', 'Sonarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				}
@@ -1023,7 +1025,9 @@ function getCalendar()
 			foreach ($lidarrs as $key => $value) {
 				try {
 					$lidarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], true);
-					$lidarrCalendar = getLidarrCalendar($lidarr->getCalendar($startDate, $endDate), $key);
+					$lidarr = $lidarr->getCalendar($startDate, $endDate);
+					$result = json_decode($lidarr, true);
+					$lidarrCalendar = (array_key_exists('error', $result)) ? '' : getLidarrCalendar($lidarr, $key);;
 				} catch (Exception $e) {
 					writeLog('error', 'Lidarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				}
@@ -1048,7 +1052,9 @@ function getCalendar()
 			foreach ($radarrs as $key => $value) {
 				try {
 					$radarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-					$radarrCalendar = getRadarrCalendar($radarr->getCalendar($startDate, $endDate), $key, $value['url']);
+					$radarr = $radarr->getCalendar($startDate, $endDate);
+					$result = json_decode($radarr, true);
+					$radarrCalendar = (array_key_exists('error', $result)) ? '' : getRadarrCalendar($radarr, $key, $value['url']);
 				} catch (Exception $e) {
 					writeLog('error', 'Radarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				}
@@ -2044,10 +2050,10 @@ function testAPIConnection($array)
 					foreach ($sonarrs as $key => $value) {
 						try {
 							$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-							$sonarr->getSystemStatus();
-							return true;
+							$result = json_decode($sonarr->getSystemStatus(), true);
+							return (array_key_exists('error', $result)) ? $result['error']['msg'] : true;
 						} catch (Exception $e) {
-							return $e->getMessage();
+							return strip($e->getMessage());
 						}
 					}
 				}
@@ -2070,8 +2076,8 @@ function testAPIConnection($array)
 					foreach ($sonarrs as $key => $value) {
 						try {
 							$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], true);
-							$sonarr->getSystemStatus();
-							return true;
+							$result = json_decode($sonarr->getSystemStatus(), true);
+							return (array_key_exists('error', $result)) ? $result['error']['msg'] : true;
 						} catch (Exception $e) {
 							return $e->getMessage();
 						}
@@ -2096,8 +2102,8 @@ function testAPIConnection($array)
 					foreach ($sonarrs as $key => $value) {
 						try {
 							$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-							$sonarr->getSystemStatus();
-							return true;
+							$result = json_decode($sonarr->getSystemStatus(), true);
+							return (array_key_exists('error', $result)) ? $result['error']['msg'] : true;
 						} catch (Exception $e) {
 							return $e->getMessage();
 						}
