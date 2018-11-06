@@ -4093,6 +4093,15 @@ function buildDownloaderItem(array, source, type='none'){
     var history = '';
 	switch (source) {
 		case 'sabnzbd':
+            if(array.content.queueItems.queue.paused){
+                var state = `<a href="#"><span class="downloader mouse" data-source="sabnzbd" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a>`;
+                var active = 'grayscale';
+            }else{
+                var state = `<a href="#"><span class="downloader mouse" data-source="sabnzbd" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>`;
+                var active = '';
+            }
+            $('.sabnzbd-downloader-action').html(state);
+
             if(array.content.queueItems.queue.slots.length == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
@@ -4394,18 +4403,6 @@ function buildDownloader(source){
 	//console.log(historyItems);
 	//console.log(downloader);
 	if(queue){
-		/*switch (source) {
-			case 'sabnzbd':
-				if(queueItems.queue.paused){
-					state = `<span class="downloader mouse" data-source="sabnzbd" data-action="resume" data-target="main"><i class="fa fa-play"></i></span>`;
-					active = 'grayscale';
-				}else{
-					state = `<span class="downloader mouse" data-source="sabnzbd" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span>`;
-				}
-				break;
-			default:
-
-		}*/
 		menu += `
 			<li role="presentation" class="active" onclick="homepageDownloader('`+source+`')"><a href="#`+source+`-queue" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-download"></i></span><span class="hidden-xs">`+queueButton+`</span></a></li>
 			`;
@@ -4489,15 +4486,11 @@ function buildDownloaderCombined(source){
             var history = false;
 
     }
-
     var mainMenu = `<ul class="nav customtab nav-tabs combinedMenuList" role="tablist">`;
     var addToMainMenu = `<li role="presentation" class="`+active+`"><a onclick="homepageDownloader('`+source+`')" href="#combined-`+source+`" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class=""><img src="./plugins/images/tabs/`+source+`.png" class="homepageImageTitle"></span></a></li>`;
     var listing = '';
-
     var headerAlt = '';
     var header = '';
-
-
     var menu = `<ul class="nav customtab nav-tabs m-t-5" role="tablist">`;
     if(queue){
         menu += `
@@ -4529,7 +4522,7 @@ function buildDownloaderCombined(source){
 		</div>
 		`;
     }
-    menu += '</ul><div class="clearfix"></div>';
+    menu += '<li class="'+source+'-downloader-action"></li></ul><div class="clearfix"></div>';
     menu = ((queue) && (history)) ? menu : '';
     var listingMain = '<div role="tabpanel" class="tab-pane fade '+active+' in" id="combined-'+source+'">'+menu+'<div class="tab-content m-t-0 listingSingle">'+listing+'</div></div>';
     mainMenu += (first) ? addToMainMenu + '</ul>' : '';

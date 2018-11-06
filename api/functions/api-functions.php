@@ -84,7 +84,9 @@ function login($array)
 			if ($result['username']) {
 				$userExists = true;
 				$username = $result['username'];
-				$passwordMatches = (password_verify($password, $result['password'])) ? true : false;
+				if ($passwordMatches == false) {
+					$passwordMatches = (password_verify($password, $result['password'])) ? true : false;
+				}
 			}
 			if ($userExists) {
 				//does org password need to be updated
