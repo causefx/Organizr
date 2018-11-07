@@ -1765,3 +1765,21 @@ $('#debug-input').keyup(function(e){
         orgDebug();
     }
 });
+// settings menu open if not open
+$(document).on('click', ".sticon", function(){
+    var target = $(this).attr('href');
+    var menu = $(target).find('.customtab2 > li');
+    if(menu.length !== 0){
+        var isActive = false;
+        $(menu).each(function (index, value) {
+            var hasClass = $(this).hasClass('active');
+            if(hasClass){
+                isActive = true;
+            }
+        });
+        if(isActive == false){
+            let el = $(menu).find('a').first();
+            $(el).trigger('click');
+        }
+    }
+});
