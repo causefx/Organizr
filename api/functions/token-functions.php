@@ -87,6 +87,8 @@ function createToken($username, $email, $image, $group, $groupID, $key, $days = 
 			'token' => (string)$jwttoken,
 			'user_id' => $result['id'],
 			'created' => $GLOBALS['currentTime'],
+			'browser' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
+			'ip' => userIP(),
 			'expires' => gmdate("Y-m-d\TH:i:s\Z", time() + (86400 * $days))
 		];
 		$database->query('INSERT INTO [tokens]', $addToken);

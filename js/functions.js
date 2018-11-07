@@ -1776,8 +1776,11 @@ function revokeToken(token,id){
     });
 }
 function buildActiveTokens(array) {
+    var parser = new UAParser();
     var tokens = '';
     $.each(array, function(i,v) {
+        parser.setUA(v.browser);
+        var result = parser.getResult();
         var className = (activeInfo.user.token == v.token) ? 'bg-success text-inverse' : '';
         var extraText = (activeInfo.user.token == v.token) ? '<span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="Current Token">...'+v.token.substr(-10, 10)+'</span>' : v.token.substr(-10, 10);
         tokens += `
@@ -1786,6 +1789,31 @@ function buildActiveTokens(array) {
                 <td>`+extraText+`</td>
                 <td>`+moment(v.created).format('LLL')+`</td>
                 <td>`+moment(v.expires).format('LLL')+`</td>
+                <td><a data-toggle="collapse" href="#token-`+v.id+`-info" aria-expanded="false" href="javascript:void(0)">`+(result.browser.name)+`</a>
+                    <div id="token-`+v.id+`-info" class="table-responsive collapse">
+                        <table class="table color-bordered-table purple-bordered-table">
+                            <tbody class="bg-org">
+                                <tr>
+                                    <td>Browser</td>
+                                    <td>`+result.browser.name+`</td>
+                                </tr>
+                                <tr>
+                                    <td>Version</td>
+                                    <td>`+result.browser.version+`</td>
+                                </tr>
+                                <tr>
+                                    <td>OS</td>
+                                    <td>`+result.os.name+`</td>
+                                </tr>
+                                <tr>
+                                    <td>Version</td>
+                                    <td>`+result.os.version+`</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+</td>
+                <td>`+(v.ip)+`</td>
                 <td>
                     <button class="btn btn-danger waves-effect waves-light" type="button" onclick="revokeToken('`+v.token+`', '`+v.id+`');"><i class="fa fa-ban"></i></button>
                 </td>
@@ -1808,6 +1836,8 @@ function buildActiveTokens(array) {
                                         <th>Token</th>
                                         <th>Created</th>
                                         <th>Expires</th>
+                                        <th>Browser</th>
+                                        <th>IP</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -1915,29 +1945,40 @@ function accountManager(user){
 									<div class="form-body">
 									    `+buildTwoFA(user.data.user.authService)+`
 										<div class="row">
-											<div class="col-md-6">
-												<div class="form-group">
-													<label class="control-label" lang="en">Username</label>
-													<input `+twoFADisable+` type="text" id="accountUsername" class="form-control" value="`+activeInfo.user.username+`"></div>
-											</div>
-											<div class="col-md-6">
-												<div class="form-group">
-													<label class="control-label" lang="en">Email</label>
-													<input `+twoFADisable+` type="text" id="accountEmail" class="form-control" value="`+activeInfo.user.email+`"></div>
-											</div>
+                                            <div class="col-lg-12">
+                                                <div class="panel panel-info">
+                                                    <div class="panel-heading"> <span lang="en">User Information</span>
+                                                        <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-plus"></i></a> </div>
+                                                    </div>
+                                                    <div class="panel-wrapper collapse" aria-expanded="true">
+                                                        <div class="panel-body bg-org p-0 p-t-10">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label class="control-label" lang="en">Username</label>
+                                                                    <input `+twoFADisable+` type="text" id="accountUsername" class="form-control" value="`+activeInfo.user.username+`"></div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label class="control-label" lang="en">Email</label>
+                                                                    <input `+twoFADisable+` type="text" id="accountEmail" class="form-control" value="`+activeInfo.user.email+`"></div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label class="control-label" lang="en">Password</label>
+                                                                    <input type="password" id="accountPassword1" class="form-control"></div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label class="control-label" lang="en">Verify Password</label>
+                                                                    <input type="password" id="accountPassword2" class="form-control"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
 										</div>
 										<!--/row-->
 										<div class="row">
-											<div class="col-md-6">
-												<div class="form-group">
-													<label class="control-label" lang="en">Password</label>
-													<input type="password" id="accountPassword1" class="form-control"></div>
-											</div>
-											<div class="col-md-6">
-												<div class="form-group">
-													<label class="control-label" lang="en">Verify Password</label>
-													<input type="password" id="accountPassword2" class="form-control"></div>
-											</div>
 											`+activeTokens+passwordMessage+`
 										</div>
 										<!--/row-->
