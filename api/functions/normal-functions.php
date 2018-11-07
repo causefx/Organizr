@@ -579,3 +579,8 @@ function gen_uuid()
 		mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
 	);
 }
+
+function dbExtension($string)
+{
+	return (substr($string, -3) == '.db') ? $string : $string . '.db';
+}

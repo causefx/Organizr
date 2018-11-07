@@ -111,7 +111,7 @@ function wizardConfig($array)
 		}
 	}
 	$location = cleanDirectory($location);
-	$dbName = $dbName . '.db';
+	$dbName = dbExtension($dbName);
 	$configVersion = $GLOBALS['installedVersion'];
 	$configArray = array(
 		'dbName' => $dbName,
