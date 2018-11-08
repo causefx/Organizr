@@ -944,28 +944,33 @@ function qBittorrentConnect()
 	return false;
 }
 
+function delugeStatus($queued, $status, $state)
+{
+	if ($queued == '-1' && $state == '100' && ($status == 'Seeding' || $status == 'Queued' || $status == 'Paused')) {
+		$state = 'Seeding';
+	} elseif ($state !== '100') {
+		$state = 'Downloading';
+	} else {
+		$state = 'Finished';
+	}
+	return $state;
+}
+
 function delugeConnect()
 {
 	if ($GLOBALS['homepageDelugeEnabled'] && !empty($GLOBALS['delugeURL']) && !empty($GLOBALS['delugePassword']) && qualifyRequest($GLOBALS['homepageDelugeAuth'])) {
 		try {
 			$deluge = new deluge($GLOBALS['delugeURL'], decrypt($GLOBALS['delugePassword']));
 			$torrents = $deluge->getTorrents(null, 'comment, download_payload_rate, eta, hash, is_finished, is_seed, message, name, paused, progress, queue, state, total_size, upload_payload_rate');
-			if ($GLOBALS['delugeHideSeeding'] || $GLOBALS['delugeHideCompleted']) {
-				$filter = array();
-				if ($GLOBALS['delugeHideSeeding']) {
-					array_push($filter, 'Seeding', 'Uploading', 'queuedUP');
+			foreach ($torrents as $key => $value) {
+				$tempStatus = delugeStatus($value->queue, $value->state, $value->progress);
+				if ($tempStatus == 'Seeding' && $GLOBALS['delugeHideSeeding']) {
+					//do nothing
+				} elseif ($tempStatus == 'Finished' && $GLOBALS['delugeHideCompleted']) {
+					//do nothing
+				} else {
+					$api['content']['queueItems'][] = $value;
 				}
-				if ($GLOBALS['delugeHideCompleted']) {
-					array_push($filter, 'Seeding', 'Completed');
-				}
-				//prettyPrint($torrents);
-				foreach ($torrents as $key => $value) {
-					if (!in_array($value->state, $filter)) {
-						$api['content']['queueItems'][] = $value;
-					}
-				}
-			} else {
-				$api['content']['queueItems'] = $torrents;
 			}
 			$api['content']['queueItems'] = (empty($api['content']['queueItems'])) ? [] : $api['content']['queueItems'];
 			$api['content']['historyItems'] = false;
