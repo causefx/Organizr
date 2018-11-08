@@ -785,7 +785,7 @@ function rTorrentStatus($completed, $state, $status)
 	} elseif ($completed && !$state && $status == 'seed') {
 		$state = 'Finished';
 	}
-	return $state;
+	return ($state) ? $state : $status;
 }
 
 function rTorrentConnect()
@@ -953,7 +953,7 @@ function delugeStatus($queued, $status, $state)
 	} else {
 		$state = 'Finished';
 	}
-	return $state;
+	return ($state) ? $state : $status;
 }
 
 function delugeConnect()
