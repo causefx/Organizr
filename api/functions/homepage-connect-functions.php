@@ -661,7 +661,7 @@ function sabnzbdConnect()
 			writeLog('error', 'SabNZBd Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		};
 		$url = qualifyURL($GLOBALS['sabnzbdURL']);
-		$url = $url . '/api?mode=history&output=json&apikey=' . $GLOBALS['sabnzbdToken'];
+		$url = $url . '/api?mode=history&output=json&limit=100&apikey=' . $GLOBALS['sabnzbdToken'];
 		try {
 			$options = (localURL($url)) ? array('verify' => false) : array();
 			$response = Requests::get($url, array(), $options);

@@ -53,7 +53,7 @@ function buildHomepageItem($homepageItem)
 		case 'homepageOrdernoticeguest':
 			break;
 		case 'homepageOrderqBittorrent':
-			if ($GLOBALS['homepageqBittorrentEnabled']) {
+			if ($GLOBALS['homepageqBittorrentEnabled'] && qualifyRequest($GLOBALS['homepageqBittorrentAuth'])) {
 				if ($GLOBALS['qBittorrentCombine']) {
 					$item .= '
 	                <script>
@@ -77,7 +77,7 @@ function buildHomepageItem($homepageItem)
 			}
 			break;
 		case 'homepageOrderrTorrent':
-			if ($GLOBALS['homepagerTorrentEnabled']) {
+			if ($GLOBALS['homepagerTorrentEnabled'] && qualifyRequest($GLOBALS['homepagerTorrentAuth'])) {
 				if ($GLOBALS['rTorrentCombine']) {
 					$item .= '
 	                <script>
@@ -101,7 +101,7 @@ function buildHomepageItem($homepageItem)
 			}
 			break;
 		case 'homepageOrderdeluge':
-			if ($GLOBALS['homepageDelugeEnabled']) {
+			if ($GLOBALS['homepageDelugeEnabled'] && qualifyRequest($GLOBALS['homepageDelugeAuth'])) {
 				if ($GLOBALS['delugeCombine']) {
 					$item .= '
 					<script>
@@ -125,7 +125,7 @@ function buildHomepageItem($homepageItem)
 			}
 			break;
 		case 'homepageOrdertransmission':
-			if ($GLOBALS['homepageTransmissionEnabled']) {
+			if ($GLOBALS['homepageTransmissionEnabled'] && qualifyRequest($GLOBALS['homepageTransmissionAuth'])) {
 				if ($GLOBALS['transmissionCombine']) {
 					$item .= '
 					<script>
@@ -149,7 +149,7 @@ function buildHomepageItem($homepageItem)
 			}
 			break;
 		case 'homepageOrdernzbget':
-			if ($GLOBALS['homepageNzbgetEnabled']) {
+			if ($GLOBALS['homepageNzbgetEnabled'] && qualifyRequest($GLOBALS['homepageNzbgetAuth'])) {
 				if ($GLOBALS['nzbgetCombine']) {
 					$item .= '
 					<script>
@@ -173,7 +173,7 @@ function buildHomepageItem($homepageItem)
 			}
 			break;
 		case 'homepageOrdersabnzbd':
-			if ($GLOBALS['homepageSabnzbdEnabled']) {
+			if ($GLOBALS['homepageSabnzbdEnabled'] && qualifyRequest($GLOBALS['homepageSabnzbdAuth'])) {
 				if ($GLOBALS['sabnzbdCombine']) {
 					$item .= '
 					<script>
