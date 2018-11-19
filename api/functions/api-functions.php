@@ -728,6 +728,23 @@ function editTabs($array)
 				return false;
 			}
 			break;
+		case 'changePreload':
+			try {
+				$connect = new Dibi\Connection([
+					'driver' => 'sqlite3',
+					'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+				]);
+				$connect->query('
+                        UPDATE tabs SET', [
+					'preload' => $array['data']['tabPreload'],
+				], '
+                        WHERE id=?', $array['data']['id']);
+				writeLog('success', 'Tab Editor Function - Tab: ' . $array['data']['tab'] . '\'s preload status was changed to [' . $array['data']['tabPreloadWord'] . ']', $GLOBALS['organizrUser']['username']);
+				return true;
+			} catch (Dibi\Exception $e) {
+				return false;
+			}
+			break;
 		case 'changeDefault':
 			try {
 				$connect = new Dibi\Connection([

@@ -770,6 +770,24 @@ $(document).on("change", ".pingSwitch", function () {
     callbacks.add( buildTabEditor );
     settingsAPI(post,callbacks);
 });
+// CHANGE PRELOAD TAB
+$(document).on("change", ".preloadSwitch", function () {
+    //Create POST Array
+    var post = {
+        action:'changePreload',
+        api:'api/?v1/settings/tab/editor/tabs',
+        id:$(this).parent().parent().attr("data-id"),
+        tab:$(this).parent().parent().attr("data-name"),
+        tabPreload:$(this).prop("checked") ? 1 : 0,
+        tabPreloadWord:$(this).prop("checked") ? "On" : "Off",
+        messageTitle:'',
+        messageBody:'Tab Info updated for '+$(this).parent().parent().attr("data-name"),
+        error:'Organizr Function: Tab API Connection Failed'
+    };
+    var callbacks = $.Callbacks();
+    callbacks.add( buildTabEditor );
+    settingsAPI(post,callbacks);
+});
 // CHANGE DEFAULT TAB
 $(document).on("change", ".defaultSwitch", function () {
     //Create POST Array

@@ -44,6 +44,7 @@ allIcons().success(function(data) {
                         <th lang="en" style="text-align:center">ACTIVE</th>
                         <th lang="en" style="text-align:center">SPLASH</th>
                         <th lang="en" style="text-align:center">PING</th>
+                        <th lang="en" style="text-align:center">PRELOAD</th>
                         <th lang="en" style="text-align:center">EDIT</th>
                         <th lang="en" style="text-align:center">DELETE</th>
                     </tr>

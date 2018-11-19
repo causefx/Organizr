@@ -2121,22 +2121,27 @@ function tabProcess(arrayItems) {
 					case 'internal':
 						internalList = buildInternalContainer(v.name,v.access_url,v.type);
 						$(internalList).appendTo($('.internal-listing'));
+                        if(v.preload){
+                            var newTab = $('#internal-'+cleanClass(v.name));
+                            console.log('Tab Function: Preloading new tab for: '+cleanClass(v.name));
+                            $('#menu-'+cleanClass(v.name)+' a').children().addClass('tabLoaded');
+                            newTab.addClass("loaded");
+                            loadInternal(v.access_url,cleanClass(v.name));
+                        }
 						break;
 					case 1:
 					case '1':
-					case 'iframe':
+                    case 'iframe':
 						iFrameList = buildFrameContainer(v.name,v.access_url,v.type);
 						$(iFrameList).appendTo($('.iFrame-listing'));
-						//Auto load tabs (soon)
-                        /*
-                        var newTab = $('#container-'+cleanClass(v.name));
-                        var tabURL = newTab.attr('data-url');
-
-                        console.log('Tab Function: Preloading new tab for: '+cleanClass(v.name));
-                        $('#menu-'+cleanClass(v.name)+' a').children().addClass('tabLoaded');
-                        newTab.addClass("loaded");
-                        $(buildFrame(cleanClass(v.name),tabURL)).appendTo(newTab);
-                        */
+                        if(v.preload){
+                            var newTab = $('#container-'+cleanClass(v.name));
+                            var tabURL = newTab.attr('data-url');
+                            console.log('Tab Function: Preloading new tab for: '+cleanClass(v.name));
+                            $('#menu-'+cleanClass(v.name)+' a').children().addClass('tabLoaded');
+                            newTab.addClass("loaded");
+                            $(buildFrame(cleanClass(v.name),tabURL)).appendTo(newTab);
+                        }
 						break;
 					case 2:
 					case 3:
@@ -2438,6 +2443,7 @@ function buildTabEditorItem(array){
 			<td style="text-align:center"><input `+buttonDisabled+` type="checkbox" class="js-switch enabledSwitch `+buttonDisabled+`" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].enabled" value="true" `+tof(v.enabled,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].enabled" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch splashSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].splash" value="true" `+tof(v.splash,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].splash" value="false"></td>
 			<td style="text-align:center"><input type="checkbox" class="js-switch pingSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].ping" value="true" `+tof(v.ping,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].ping" value="false"></td>
+			<td style="text-align:center"><input type="checkbox" class="js-switch preloadSwitch" data-size="small" data-color="#99d683" data-secondary-color="#f96262" name="tab[`+v.id+`].preload" value="true" `+tof(v.preload,'c')+`/><input type="hidden" class="form-control" name="tab[`+v.id+`].preload" value="false"></td>
 			<td style="text-align:center"><button type="button" class="btn btn-info btn-outline btn-circle btn-lg m-r-5 editTabButton popup-with-form" href="#edit-tab-form" data-effect="mfp-3d-unfold"><i class="ti-pencil-alt"></i></button></td>
 			<td style="text-align:center"><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5 `+deleteDisabled+`"><i class="ti-trash"></i></button></td>
 		</tr>
