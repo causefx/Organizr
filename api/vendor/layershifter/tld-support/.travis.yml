@@ -1,0 +1,27 @@
+language: php
+
+php:
+  - 5.5
+  - 5.6
+  - 7.0
+  - hhvm
+
+install:
+  - composer self-update
+  - composer --prefer-source install
+
+notifications:
+  email: false
+
+env:
+  global:
+    - CODECLIMATE_REPO_TOKEN=3f96e0739f5ada6c5e2aedb71278a9b1ba2db06dc139426ae8d657b0f3020308
+
+before_script:
+  - mkdir -p build/logs
+
+script:
+  - ./vendor/bin/phpunit -v --coverage-clover ./build/logs/clover.xml
+
+after_script:
+  - ./vendor/bin/test-reporter --coverage-report ./build/logs/clover.xml

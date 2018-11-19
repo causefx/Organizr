@@ -2104,7 +2104,7 @@ function tabProcess(arrayItems) {
                     defaultTabName = cleanClass(v.name);
                     defaultTabType = v.type;
                 }
-                var menuList = buildMenuList(v.name,v.url,v.type,v.image,v.ping_url);
+                var menuList = buildMenuList(v.name,v.access_url,v.type,v.image,v.ping_url);
                 if(v.category_id === 0){
                     if(activeInfo.settings.misc.unsortedTabs === 'top'){
                         $(menuList).prependTo($('#side-menu'));
@@ -2119,13 +2119,13 @@ function tabProcess(arrayItems) {
 					case 0:
 					case '0':
 					case 'internal':
-						internalList = buildInternalContainer(v.name,v.url,v.type);
+						internalList = buildInternalContainer(v.name,v.access_url,v.type);
 						$(internalList).appendTo($('.internal-listing'));
 						break;
 					case 1:
 					case '1':
 					case 'iframe':
-						iFrameList = buildFrameContainer(v.name,v.url,v.type);
+						iFrameList = buildFrameContainer(v.name,v.access_url,v.type);
 						$(iFrameList).appendTo($('.iFrame-listing'));
 						//Auto load tabs (soon)
                         /*
@@ -2408,7 +2408,7 @@ function buildTabEditorItem(array){
 		var buttonDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : '';
         var typeDisabled = v.url.indexOf('/?v1/') > 0 ? 'disabled' : '';
 		tabList += `
-		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`">
+		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-local-url="`+v.url_local+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
 			<input type="hidden" class="form-control order" name="tab[`+v.id+`].order" value="`+v.order+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].originalOrder" value="`+v.order+`">

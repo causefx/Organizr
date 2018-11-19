@@ -820,6 +820,7 @@ $(document).on("click", ".deleteTab", function () {
 $(document).on("click", ".editTabButton", function () {
     $('#edit-tab-form [name=tabName]').val($(this).parent().parent().attr("data-name"));
     $('#edit-tab-form [name=tabURL]').val($(this).parent().parent().attr("data-url"));
+    $('#edit-tab-form [name=tabLocalURL]').val($(this).parent().parent().attr("data-local-url"));
     $('#edit-tab-form [name=pingURL]').val($(this).parent().parent().attr("data-ping-url"));
     $('#edit-tab-form [name=tabImage]').val($(this).parent().parent().attr("data-image"));
     $('#edit-tab-form [name=id]').val($(this).parent().parent().attr("data-id"));
@@ -839,6 +840,7 @@ $(document).on("click", ".editTab", function () {
         tabName:$('#edit-tab-form [name=tabName]').val(),
         tabImage:$('#edit-tab-form [name=tabImage]').val(),
         tabURL:$('#edit-tab-form [name=tabURL]').val(),
+        tabLocalURL:$('#edit-tab-form [name=tabLocalURL]').val(),
         pingURL:$('#edit-tab-form [name=pingURL]').val(),
         messageTitle:'',
         messageBody:'Edited Tab '+$('#edit-tab-form [name=tabName]').val(),
@@ -874,6 +876,7 @@ $(document).on("click", ".addNewTab", function () {
         tabName:$('#new-tab-form [name=tabName]').val(),
         tabImage:$('#new-tab-form [name=tabImage]').val(),
         tabURL:$('#new-tab-form [name=tabURL]').val(),
+        tabLocalURL:$('#new-tab-form [name=tabLocalURL]').val(),
         pingURL:$('#new-tab-form [name=pingURL]').val(),
         tabGroupID:1,
         tabEnabled:0,

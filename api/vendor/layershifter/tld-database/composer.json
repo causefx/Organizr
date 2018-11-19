@@ -1,0 +1,46 @@
+{
+  "name": "layershifter/tld-database",
+  "description": "Database abstraction for Public Suffix List",
+  "keywords": [
+    "PSL",
+    "Public Suffix List",
+    "domain database",
+    "tld database"
+  ],
+  "minimum-stability": "stable",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Alexander Fedyashov",
+      "email": "a@fedyashov.com"
+    }
+  ],
+  "require": {
+    "layershifter/tld-support": "^1.0.0",
+    "ext-curl": "*",
+    "php": "^5.5.0 || ^7.0"
+  },
+  "require-dev": {
+    "codeclimate/php-test-reporter": "dev-master",
+    "mikey179/vfsStream": "^1.6",
+    "phpmd/phpmd": "@stable",
+    "phpunit/phpunit": "^4.8 || ^5.0",
+    "squizlabs/php_codesniffer": "~2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "LayerShifter\\TLDDatabase\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "LayerShifter\\TLDDatabase\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "lint": "composer lint:cs && composer lint:md",
+    "lint:cs": "phpcs --standard=psr2 src/",
+    "lint:md": "phpmd src text codesize,controversial,design,naming,unusedcode",
+    "test": "phpunit"
+  }
+}

@@ -7,19 +7,26 @@ namespace Composer\Autoload;
 class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
 {
     public static $files = array (
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '3109cb1a231dcd04bee1f9f620d46975' => __DIR__ . '/..' . '/paragonie/sodium_compat/autoload.php',
         'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
         '0097ca414fcb37c7130ac24b05f485f8' => __DIR__ . '/..' . '/dibi/dibi/src/loader.php',
+        '98ac7ebbcd4b271b4f101d3af2543920' => __DIR__ . '/..' . '/layershifter/tld-extract/src/static.php',
     );
 
     public static $prefixLengthsPsr4 = array (
+        'T' => 
+        array (
+            'TrueBV\\' => 7,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Util\\' => 22,
             'Symfony\\Polyfill\\Php56\\' => 23,
+            'Symfony\\Polyfill\\Mbstring\\' => 26,
         ),
         'P' => 
         array (
@@ -34,6 +41,9 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'L' => 
         array (
             'Lcobucci\\JWT\\' => 13,
+            'LayerShifter\\TLDSupport\\' => 24,
+            'LayerShifter\\TLDExtract\\' => 24,
+            'LayerShifter\\TLDDatabase\\' => 25,
         ),
         'K' => 
         array (
@@ -54,6 +64,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
     );
 
     public static $prefixDirsPsr4 = array (
+        'TrueBV\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/true/punycode/src',
+        ),
         'Symfony\\Polyfill\\Util\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-util',
@@ -61,6 +75,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Symfony\\Polyfill\\Php56\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php56',
+        ),
+        'Symfony\\Polyfill\\Mbstring\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
         'Pusher\\' => 
         array (
@@ -93,6 +111,18 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Lcobucci\\JWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
+        ),
+        'LayerShifter\\TLDSupport\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/layershifter/tld-support/src',
+        ),
+        'LayerShifter\\TLDExtract\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/layershifter/tld-extract/src',
+        ),
+        'LayerShifter\\TLDDatabase\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/layershifter/tld-database/src',
         ),
         'Kryptonit3\\Sonarr\\' => 
         array (

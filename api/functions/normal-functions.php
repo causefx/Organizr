@@ -584,3 +584,40 @@ function dbExtension($string)
 {
 	return (substr($string, -3) == '.db') ? $string : $string . '.db';
 }
+
+function localIPRanges()
+{
+	return array(
+		array(
+			'from' => '10.0.0.0',
+			'to' => '10.255.255.255'
+		),
+		array(
+			'from' => '172.16.0.0',
+			'to' => '172.31.255.255'
+		),
+		array(
+			'from' => '192.168.0.0',
+			'to' => '192.168.255.255'
+		),
+		array(
+			'from' => '127.0.0.1',
+			'to' => '127.0.0.1'
+		),
+	);
+}
+
+function isLocal($checkIP = null)
+{
+	$isLocal = false;
+	$userIP = ($checkIP) ? ip2long($checkIP) : ip2long(userIP());
+	$range = localIPRanges();
+	foreach ($range as $ip) {
+		$low = ip2long($ip['from']);
+		$high = ip2long($ip['to']);
+		if ($userIP <= $high && $low <= $userIP) {
+			$isLocal = true;
+		}
+	}
+	return $isLocal;
+}

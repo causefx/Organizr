@@ -1,0 +1,32 @@
+{
+  "name": "layershifter/tld-support",
+  "description": "Support package for TLDDatabase and TLDExtract",
+  "minimum-stability": "stable",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Alexander Fedyashov",
+      "email": "a@fedyashov.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "LayerShifter\\TLDSupport\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "LayerShifter\\TLDSupport\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=5.5",
+    "symfony/polyfill-mbstring": "^1.2"
+  },
+  "require-dev": {
+    "codeclimate/php-test-reporter": "dev-master",
+    "phpmd/phpmd": "@stable",
+    "phpunit/phpunit": "4.8.*",
+    "squizlabs/php_codesniffer": "2.*"
+  }
+}

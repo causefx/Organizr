@@ -75,7 +75,8 @@ function organizrSpecialSettings()
 		),
 		'user' => array(
 			'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
-			'oAuthLogin' => isset($_COOKIE['oAuth']) ? true : false
+			'oAuthLogin' => isset($_COOKIE['oAuth']) ? true : false,
+			'local' => (isLocal()) ? true : false
 		),
 		'login' => array(
 			'rememberMe' => $GLOBALS['rememberMe'],

@@ -73,6 +73,10 @@ allIcons().success(function(data) {
             <input type="text" class="form-control" id="new-tab-form-inputURLNew" name="tabURL"  required="">
         </div>
         <div class="form-group">
+            <label class="control-label" for="new-tab-form-inputURLLocalNew" lang="en">Tab Local URL</label>
+            <input type="text" class="form-control" id="new-tab-form-inputURLLocalNew" name="tabLocalURL">
+        </div>
+        <div class="form-group">
             <label class="control-label" for="new-tab-form-inputPingURLNew" lang="en">Ping URL</label>
             <input type="text" class="form-control" id="new-tab-form-inputPingURLNew" name="pingURL"  placeholder="host/ip:port">
         </div>
@@ -114,6 +118,10 @@ allIcons().success(function(data) {
         <div class="form-group">
             <label class="control-label" for="edit-tab-form-inputURL" lang="en">Tab URL</label>
             <input type="text" class="form-control" id="edit-tab-form-inputURL" name="tabURL"  required="">
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="edit-tab-form-inputLocalURL" lang="en">Tab Local URL</label>
+            <input type="text" class="form-control" id="edit-tab-form-inputLocalURL" name="tabLocalURL">
         </div>
         <div class="form-group">
             <label class="control-label" for="edit-tab-form-pingURL" lang="en">Ping URL</label>

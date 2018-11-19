@@ -1138,5 +1138,265 @@
             "sqlite",
             "sqlsrv"
         ]
+    },
+    {
+        "name": "symfony/polyfill-mbstring",
+        "version": "v1.10.0",
+        "version_normalized": "1.10.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/polyfill-mbstring.git",
+            "reference": "c79c051f5b3a46be09205c73b80b346e4153e494"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/c79c051f5b3a46be09205c73b80b346e4153e494",
+            "reference": "c79c051f5b3a46be09205c73b80b346e4153e494",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "suggest": {
+            "ext-mbstring": "For best performance"
+        },
+        "time": "2018-09-21T13:07:52+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.9-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Polyfill\\Mbstring\\": ""
+            },
+            "files": [
+                "bootstrap.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Nicolas Grekas",
+                "email": "p@tchwork.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony polyfill for the Mbstring extension",
+        "homepage": "https://symfony.com",
+        "keywords": [
+            "compatibility",
+            "mbstring",
+            "polyfill",
+            "portable",
+            "shim"
+        ]
+    },
+    {
+        "name": "true/punycode",
+        "version": "v2.1.1",
+        "version_normalized": "2.1.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/true/php-punycode.git",
+            "reference": "a4d0c11a36dd7f4e7cd7096076cab6d3378a071e"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/true/php-punycode/zipball/a4d0c11a36dd7f4e7cd7096076cab6d3378a071e",
+            "reference": "a4d0c11a36dd7f4e7cd7096076cab6d3378a071e",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0",
+            "symfony/polyfill-mbstring": "^1.3"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~4.7",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "time": "2016-11-16T10:37:54+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "TrueBV\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Renan Gonçalves",
+                "email": "renan.saddam@gmail.com"
+            }
+        ],
+        "description": "A Bootstring encoding of Unicode for Internationalized Domain Names in Applications (IDNA)",
+        "homepage": "https://github.com/true/php-punycode",
+        "keywords": [
+            "idna",
+            "punycode"
+        ]
+    },
+    {
+        "name": "layershifter/tld-support",
+        "version": "1.1.1",
+        "version_normalized": "1.1.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/layershifter/TLDSupport.git",
+            "reference": "9b9eb2350db82239289f4e6eb250a2fe4865b0db"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/layershifter/TLDSupport/zipball/9b9eb2350db82239289f4e6eb250a2fe4865b0db",
+            "reference": "9b9eb2350db82239289f4e6eb250a2fe4865b0db",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.5",
+            "symfony/polyfill-mbstring": "^1.2"
+        },
+        "require-dev": {
+            "codeclimate/php-test-reporter": "dev-master",
+            "phpmd/phpmd": "@stable",
+            "phpunit/phpunit": "4.8.*",
+            "squizlabs/php_codesniffer": "2.*"
+        },
+        "time": "2016-06-18T12:28:04+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "LayerShifter\\TLDSupport\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Alexander Fedyashov",
+                "email": "a@fedyashov.com"
+            }
+        ],
+        "description": "Support package for TLDDatabase and TLDExtract"
+    },
+    {
+        "name": "layershifter/tld-database",
+        "version": "1.0.64",
+        "version_normalized": "1.0.64.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/layershifter/TLDDatabase.git",
+            "reference": "16d9b7cd195eda57c08c64f75e9dbc175320e0cc"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/layershifter/TLDDatabase/zipball/16d9b7cd195eda57c08c64f75e9dbc175320e0cc",
+            "reference": "16d9b7cd195eda57c08c64f75e9dbc175320e0cc",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "layershifter/tld-support": "^1.0.0",
+            "php": "^5.5.0 || ^7.0"
+        },
+        "require-dev": {
+            "codeclimate/php-test-reporter": "dev-master",
+            "mikey179/vfsstream": "^1.6",
+            "phpmd/phpmd": "@stable",
+            "phpunit/phpunit": "^4.8 || ^5.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "time": "2018-11-09T09:12:04+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "LayerShifter\\TLDDatabase\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Alexander Fedyashov",
+                "email": "a@fedyashov.com"
+            }
+        ],
+        "description": "Database abstraction for Public Suffix List",
+        "keywords": [
+            "PSL",
+            "Public Suffix List",
+            "domain database",
+            "tld database"
+        ]
+    },
+    {
+        "name": "layershifter/tld-extract",
+        "version": "2.0.0",
+        "version_normalized": "2.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/layershifter/TLDExtract.git",
+            "reference": "236bfa0fd253e70f8db10f896e788e12b58b4a41"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/layershifter/TLDExtract/zipball/236bfa0fd253e70f8db10f896e788e12b58b4a41",
+            "reference": "236bfa0fd253e70f8db10f896e788e12b58b4a41",
+            "shasum": ""
+        },
+        "require": {
+            "layershifter/tld-database": "^1.0",
+            "layershifter/tld-support": "^1.1",
+            "php": "^5.5.0 || ^7.0",
+            "true/punycode": "^2.1.1"
+        },
+        "require-dev": {
+            "phpmd/phpmd": "@stable",
+            "phpunit/phpunit": "^4.8 || ^5.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "time": "2018-09-28T11:11:20+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "src/static.php"
+            ],
+            "psr-4": {
+                "LayerShifter\\TLDExtract\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Alexander Fedyashov",
+                "email": "a@fedyashov.com"
+            }
+        ],
+        "description": "TLDExtract, library for extracting parts of domain, e.q. domain parser",
+        "keywords": [
+            "TLDExtract",
+            "domain parser"
+        ]
     }
 ]

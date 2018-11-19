@@ -769,6 +769,7 @@ function editTabs($array)
                     UPDATE tabs SET', [
 					'name' => $array['data']['tabName'],
 					'url' => $array['data']['tabURL'],
+					'url_local' => $array['data']['tabLocalURL'],
 					'ping_url' => $array['data']['pingURL'],
 					'image' => $array['data']['tabImage'],
 				], '
@@ -812,6 +813,7 @@ function editTabs($array)
 					'category_id' => $default,
 					'name' => $array['data']['tabName'],
 					'url' => $array['data']['tabURL'],
+					'url_local' => $array['data']['tabLocalURL'],
 					'ping_url' => $array['data']['pingURL'],
 					'default' => $array['data']['tabDefault'],
 					'enabled' => 1,
@@ -1091,7 +1093,7 @@ function loadTabs()
 			$categories = $connect->fetchAll('SELECT * FROM categories ORDER BY `order` ASC');
 			$all['tabs'] = $tabs;
 			foreach ($tabs as $k => $v) {
-				$v['access_url'] = isset($v['url_local']) && getenv('SERVER_ADDR') == userIP() ? $v['url_local'] : $v['url'];
+				$v['access_url'] = (!empty($v['url_local']) && ($v['url_local'] !== null) && ($v['url_local'] !== 'null') && isLocal() && $v['type'] !== 0) ? $v['url_local'] : $v['url'];
 			}
 			$count = array_map(function ($element) {
 				return $element['category_id'];

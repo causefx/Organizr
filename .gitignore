@@ -91,6 +91,7 @@ debug.php
 OrganizrV2/*
 orgv2/*
 test.php
+test/*
 organizrLoginLog.json
 organizrLog.json
 api/config/config*
