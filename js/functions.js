@@ -781,7 +781,8 @@ function buildPluginsItem(array){
             <div class="panel bg-org panel-info">
                 <div class="panel-heading">
                     <span lang="en">`+v.name+` Settings</span>
-                    <button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+                    <button type="button" class="pull-right mfp-close m-r-20 m-t-10">&#215;</button>
+                    <button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
                     <div class="panel-body bg-org">
@@ -1324,7 +1325,8 @@ function buildHomepageItem(array){
                         <div class="panel bg-org panel-info">
                             <div class="panel-heading">
                                 <span lang="en">`+v.name+`</span>
-                                <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+                                <button type="button" class="pull-right mfp-close m-r-20 m-t-10">&#215;</button>
+                                <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                             </div>
                             <div class="panel-wrapper collapse in" aria-expanded="true">
                                 <div class="panel-body bg-org">
