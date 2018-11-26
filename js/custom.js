@@ -1804,3 +1804,36 @@ $(document).on('click', ".sticon", function(){
         }
     }
 });
+// open help modal
+$(document).on('click', ".help-modal", function(){
+    var type = $(this).attr('data-modal');
+    var title = '';
+    var body = '';
+    //clear modal first
+    $('#help-modal-title').html('');
+    $('#help-modal-body').html('');
+    //alter info
+    switch (type) {
+        case 'tabs':
+            title = 'Tab Help';
+            var items = [
+                {title:"Name", body:"The text that will be displayed for that certain tab"},
+                {title:"Category", body:"Each Tab is assigned a Category, the default is unsorted.  You may create new categories on the Category settings tab"},
+                {title:"Group", body:"The lowest Group that will have access to this tab"},
+                {title:"Type", body:"Internal is for Organizr pages<br/>iFrame is for all others<br/>New Window is for items to open in a new window"},
+                {title:"Default", body:"You can choose one tab to be the first opened tab on page load"},
+                {title:"Active", body:"Either mark a tab as active or inactive"},
+                {title:"Splash", body:"Toggle this to add the tab to the Splash Page on page load"},
+                {title:"Ping", body:"Enable Organizr to ping the status of the local URL of this tab"},
+                {title:"Preload", body:"Toggle this tab to loaded in the background on page load"},
+            ];
+            body = buildAccordion(items);
+            break;
+        default:
+            return null;
+        
+    }
+    $('#help-modal-title').html(title);
+    $('#help-modal-body').html(body);
+    $('.help-modal-lg').modal('show');
+});

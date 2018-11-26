@@ -118,7 +118,7 @@
         <div class="internal-listing p-0 hidden"></div>
         <div class="iFrame-listing p-0 hidden"></div>
     </div>
-    <!-- sample modal content -->
+    <!-- debug modal content -->
     <div class="modal fade debugModal" tabindex="-1" role="dialog" aria-labelledby="debugModal"
          aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-lg">
@@ -175,13 +175,26 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Close
                     </button>
                 </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <!-- help modal content -->
+    <div class="modal fade help-modal-lg" tabindex="-1" role="dialog" aria-labelledby="help-modal-lg" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="help-modal-title">Large modal</h4></div>
+                <div class="modal-body" id="help-modal-body"></div>
             </div>
             <!-- /.modal-content -->
         </div>

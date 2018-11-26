@@ -685,6 +685,22 @@ function accordionOptions(options, parentID){
 	});
 	return accordionOptions;
 }
+function buildAccordion(array){
+    var items = '';
+    var mainId = createRandomString(10);
+    $.each(array, function(i,v) {
+        var id = mainId + '-' + i;
+        items += `
+        <div class="panel">
+            <div class="panel-heading bg-org" id="`+id+`-heading" role="tab"> <a class="panel-title collapsed" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+mainId+`" aria-expanded="false" aria-controls="`+id+`-collapse"> `+v.title+` </a> </div>
+            <div class="panel-collapse collapse" id="`+id+`-collapse" aria-labelledby="`+id+`-heading" role="tabpanel">
+                <div class="panel-body"> `+v.body+` </div>
+            </div>
+        </div>
+        `;
+    });
+    return '<div class="panel-group" id="'+mainId+'" aria-multiselectable="true" role="tablist">' + items + '</div>';
+}
 function buildFormItem(item){
 	var placeholder = (item.placeholder) ? ' placeholder="'+item.placeholder+'"' : '';
 	var id = (item.id) ? ' id="'+item.id+'"' : '';

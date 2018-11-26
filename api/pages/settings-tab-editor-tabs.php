@@ -29,6 +29,7 @@ allIcons().success(function(data) {
     <div class="panel-heading">
         <span lang="en">Tab Editor</span>
         <button type="button" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-tab-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
+        <button type="button" class="btn btn-info btn-circle pull-right m-r-5 help-modal" data-modal="tabs"><i class="fa fa-question-circle"></i> </button>
     </div>
     <div class="table-responsive">
         <form id="submit-tabs-form" onsubmit="return false;">
