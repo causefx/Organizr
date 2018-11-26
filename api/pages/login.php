@@ -52,7 +52,7 @@ if(activeInfo.settings.login.rememberMe){
             </div>
         	</div>
         </div>
-        <div class="form-group text-center m-t-20">
+        <div class="form-group text-center m-t-20 m-b-0">
           <div class="col-xs-12">
             <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light login-button" type="submit" lang="en">Login</button>
           </div>

@@ -607,7 +607,8 @@ function getSettingsMain()
 				'label' => 'Remember Me Length',
 				'help' => 'Number of days cookies and tokens will be valid for',
 				'value' => $GLOBALS['rememberMeDays'],
-				'placeholder' => ''
+				'placeholder' => '',
+				'attr' => 'min="1"'
 			),
 			array(
 				'type' => 'switch',
@@ -1351,7 +1352,7 @@ function showoAuth()
 {
 	$buttons = '';
 	if ($GLOBALS['plexoAuth']) {
-		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <i aria-hidden="true" class="mdi mdi-plex"></i> </a>';
+		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn btn-lg btn-block text-uppercase waves-effect waves-light bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <span>Login with Plex Account</span><i aria-hidden="true" class="mdi mdi-plex m-l-5"></i> </a>';
 	}
 	return ($buttons) ? '
 		<div class="row">
