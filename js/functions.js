@@ -106,43 +106,9 @@ function isHidden() {
     return document[prop];
 }
 function loadLanguageList(){
-	var languages = languageList();
-	$.each(languages, function(i,v) {
-		lang.dynamic(i, 'js/langpack/'+i+'.json');
+	$.each(languageList, function(i,v) {
+		lang.dynamic(v.code, 'js/langpack/'+v.filename);
 	});
-	lang.dynamic('strings', 'js/langpack/strings.json');
-}
-function languageList(){
-	return {
-		'en':{
-			'lang':'English',
-			'image':'plugins/images/languages/en.png'
-		},
-		'nb':{
-			'lang':'Bokmål',
-			'image':'plugins/images/languages/nb.png'
-		},
-		'nl':{
-			'lang':'Dutch',
-			'image':'plugins/images/languages/nl.png'
-		},
-		'fr':{
-			'lang':'French',
-			'image':'plugins/images/languages/fr.png'
-		},
-		'de':{
-			'lang':'German',
-			'image':'plugins/images/languages/de.png'
-		},
-		'de-ch':{
-			'lang':'German (Switzerland)',
-			'image':'plugins/images/languages/de-ch.png'
-		},
-		'it':{
-			'lang':'Italian',
-			'image':'plugins/images/languages/it.png'
-		}
-	};
 }
 function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
@@ -1574,14 +1540,13 @@ function settingsAPI(post, callbacks=null){
 }
 /* END ORGANIZR API FUNCTIONS */
 function buildLanguage(replace=false,newLang=null){
-	var languages = languageList();
 	var languageItems = '';
 	var currentLanguage = (getCookie('organizrLanguage')) ? getCookie('organizrLanguage') : window.lang.currentLang;
-	$.each(languages, function(i,v) {
-		var active = (i == currentLanguage) ? '' : '';
+	$.each(languageList, function(i,v) {
+		var active = (v.code == currentLanguage) ? '' : '';
 		languageItems += `
-			<a onclick="window.lang.change('`+i+`');buildLanguage(true,'`+v.lang+`')" href="javascript:void(0);" class="`+active+`">
-				<div class="mail-contnet"><h5>`+v.lang+`</h5><span class="mail-desc" lang="en">`+active+`</span></div>
+			<a onclick="window.lang.change('`+v.code+`');buildLanguage(true,'`+v.language+`')" href="javascript:void(0);" class="`+active+`">
+				<div class="mail-content"><h5 class="m-0">`+v.language+`</h5><span class="mail-desc" lang="en">`+active+`</span></div>
 			</a>
 		`;
 	});

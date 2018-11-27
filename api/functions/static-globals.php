@@ -69,3 +69,40 @@ function favIcons()
 	}
 	return $favicon;
 }
+
+function languagePacks($encode = false)
+{
+	$files = array();
+	foreach (glob(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'langpack' . DIRECTORY_SEPARATOR . "*.json") as $filename) {
+		if (strpos(basename($filename), '[') !== false) {
+			$explode = explode('[', basename($filename));
+			$files[] = array(
+				'filename' => basename($filename),
+				'code' => $explode[0],
+				'language' => matchBrackets(basename($filename))
+			);
+		}
+	}
+	usort($files, function ($a, $b) {
+		return $a['language'] <=> $b['language'];
+	});
+	return ($encode) ? json_encode($files) : $files;
+}
+
+function matchBrackets($text, $brackets = 's')
+{
+	switch ($brackets) {
+		case 's':
+		case 'square':
+			$pattern = '#\[(.*?)\]#';
+			break;
+		case 'c':
+		case 'curly':
+			$pattern = '#\((.*?)\)#';
+			break;
+		default:
+			return null;
+	}
+	preg_match($pattern, $text, $match);
+	return $match[1];
+}

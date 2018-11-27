@@ -210,6 +210,7 @@
 <!-- /#wrapper -->
 <!-- jQuery -->
 <!--<script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>-->
+<?php echo "<script>languageList = " . languagePacks(true) . ";\n</script>"; ?>
 <script src="js/jquery-2.2.4.min.js"></script>
 <script src="bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="plugins/bower_components/sidebar-nav/dist/sidebar-nav.js"></script>
