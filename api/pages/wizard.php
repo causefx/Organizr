@@ -236,7 +236,7 @@ $pageWizard = '
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="email lang="en"">Email</label>
+                                    <label for="email" lang="en">Email</label>
                                     <div class="input-group">
                                         <div class="input-group-addon"><i class="ti-email"></i></div>
                                         <input type="text" class="form-control wizardInput" name="email" id="form-email">
@@ -321,19 +321,19 @@ $pageWizard = '
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="control-label col-md-3 lang="en"">License:</label>
+                                            <label class="control-label col-md-3" lang="en">License:</label>
                                             <div class="col-md-9">
                                                 <p class="form-control-static" id="verify-license"></p>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label col-md-3 lang="en"">Username:</label>
+                                            <label class="control-label col-md-3" lang="en">Username:</label>
                                             <div class="col-md-9">
                                                 <p class="form-control-static" id="verify-username"></p>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label col-md-3 lang="en"">Email:</label>
+                                            <label class="control-label col-md-3" lang="en">Email:</label>
                                             <div class="col-md-9">
                                                 <p class="form-control-static" id="verify-email"></p>
                                             </div>
