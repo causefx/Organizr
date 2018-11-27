@@ -3,8 +3,8 @@ var lang = new Lang();
 var langStrings = { "token": {} };
 loadLanguageList();
 lang.init({
-	defaultLang: 'en',
-	currentLang: language(moment.locale(navigator.languages[0])),
+	//defaultLang: 'en',
+	currentLang: (getCookie('organizrLanguage')) ? getCookie('organizrLanguage') : language(moment.locale(navigator.languages[0])),
 	cookie: {
 		name: 'organizrLanguage',
 		expiry: 365,
@@ -18,6 +18,12 @@ $(document).ready(function () {
     launch();
 });
 /* NORMAL FUNCTIONS */
+function setLangCookie(lang){
+    Cookies.set('organizrLanguage',lang, {
+        expires: 365,
+        path: '/'
+    });
+}
 function toggleDebug(){
     $('.debugModal').modal('show')
 }
@@ -1565,6 +1571,7 @@ function buildLanguage(replace=false,newLang=null){
 		</li>
 	`;
 	if(replace == true){
+	    setLangCookie(newLang);
 		$('#languageDropdown').replaceWith(lang);
 		message("",window.lang.translate('Changed Language To')+": "+newLang,activeInfo.settings.notifications.position,"#FFF","success","3500");
 	}else if(replace == 'wizard'){
