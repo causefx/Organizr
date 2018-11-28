@@ -1192,6 +1192,19 @@ span.fc-title {
 .boolean { color: blue; }
 .null { color: magenta; }
 .key { color: #53e69d; }
+
+.splash-badge {
+    float: right;
+    width: 50px !important;
+    text-align: center;
+    vertical-align: middle;
+    height: 50px;
+    border-radius: 25px;
+    margin-top: 0px;
+    padding: 10px 11px 0px 5px;
+    font-size: 30px;
+}
+
 /*
 body,
 html {

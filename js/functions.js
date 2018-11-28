@@ -238,6 +238,28 @@ function iconPrefix(source){
 		return '<img class="fa-fw" src="'+source+'" alt="tabIcon" />';
 	}
 }
+function iconPrefixSplash(source){
+    var tabIcon = source.split("::");
+    var icons = {
+        "materialize":"mdi mdi-",
+        "fontawesome":"fa fa-",
+        "themify":"ti-",
+        "simpleline":"icon-",
+        "weathericon":"wi wi-",
+        "alphanumeric":"fa-fw",
+    };
+    if(Array.isArray(tabIcon) && tabIcon.length === 2){
+        if(tabIcon[0] !== 'url' && tabIcon[0] !== 'alphanumeric'){
+            return '<i class="'+icons[tabIcon[0]]+tabIcon[1]+' fa-fw"></i>';
+        }else if(tabIcon[0] == 'alphanumeric'){
+            return '<i class="fa-fw">'+tabIcon[1]+'</i>';
+        }else{
+            return tabIcon[1];
+        }
+    }else{
+        return source;
+    }
+}
 function cleanClass(string){
 	return string.replace(/ +/g, "-").replace(/\W+/g, "-");
 }
@@ -2183,17 +2205,22 @@ function buildSplashScreenItem(arrayItems){
         arrayItems['data']['tabs'].sort((a, b) => parseFloat(a.order) - parseFloat(b.order));
         $.each(arrayItems['data']['tabs'], function(i,v) {
             if(v.enabled === 1 && v.splash === 1){
+                var image = iconPrefixSplash(v.image);
+                if(image.indexOf('.') !== -1){
+                    var dataSrc = 'data-src="'+iconPrefixSplash(v.image)+'"';
+                    var nonImage = '';
+                }else{
+                    var dataSrc = '';
+                    var nonImage = '<span class="text-uppercase badge bg-org splash-badge">'+image+'</span>';
+                }
                 splashList += `
-                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 mouse" id="menu-`+cleanClass(v.name)+`" type="`+v.type+`" data-url="`+v.url+`" onclick="tabActions(event,'`+cleanClass(v.name)+`',`+v.type+`);">
-                    <div class="panel panel-default">
-                        <div class="panel-heading bg-info p-t-10 p-b-10">
-                            <span class="pull-left m-t-5 elip">`+iconPrefix(v.image)+` &nbsp; `+v.name+`</span>
-                            <div class="clearfix"></div>
-                        </div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 mouse hvr-grow m-b-20" id="menu-`+cleanClass(v.name)+`" type="`+v.type+`" data-url="`+v.url+`" onclick="tabActions(event,'`+cleanClass(v.name)+`',`+v.type+`);">
+                    <div class="homepage-drag fc-event bg-org lazyload"  `+ dataSrc +`>
+                        `+nonImage+`
+                        <span class="homepage-text">&nbsp; `+v.name+`</span>
                     </div>
                 </div>
                 `;
-
             }
         });
     }
@@ -2209,12 +2236,9 @@ function buildSplashScreen(json){
         <section id="splashScreen" class="lock-screen splash-screen fade in">
             <div class="row p-20 flexbox">`+items+`</div>
             <div class="row p-20 p-t-0 flexbox">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
-                    <div class="panel panel-default">
-                        <div class="panel-heading bg-info p-t-10 p-b-10">
-                            <span class="pull-left m-t-5 elip">`+iconPrefix('fontawesome::home')+` &nbsp; Close Splash</span>
-                            <div class="clearfix"></div>
-                        </div>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse hvr-wobble-bottom" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
+                    <div class="homepage-drag fc-event bg-danger lazyload"  data-src="">
+                        <span class="homepage-text">&nbsp; Close Splash</span>
                     </div>
                 </div>
             </div>
@@ -2222,7 +2246,6 @@ function buildSplashScreen(json){
         `;
         $(splash).appendTo($('body'));
         $('.append-menu').after(menu);
-
     }
 }
 function buildUserGroupSelect(array, userID, groupID){
