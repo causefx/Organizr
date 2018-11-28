@@ -1604,7 +1604,7 @@ function cacheImage($url, $name)
 		mkdir($cacheDirectory, 0777, true);
 	}
 	$cachefile = $cacheDirectory . $name . '.jpg';
-	copy($url, $cachefile);
+	@copy($url, $cachefile);
 }
 
 function downloader($array)

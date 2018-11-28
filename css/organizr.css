@@ -325,7 +325,9 @@ img.imageSourceBottom {
     filter: grayscale(100%);
 }
 
-td span.label.label-info {
+td span.label.label-info,
+td span.label.label-success,
+td span.label.label-warning {
     min-width: 80px !important;
     display: inline-block !important;
 }
