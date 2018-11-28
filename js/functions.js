@@ -2707,7 +2707,7 @@ function sponsorAbout(id,array){
 function buildSponsor(array){
     var sponsors = '';
     $.each(array, function(i,v) {
-        var sponsorAboutModal = (v.about) ? 'data-toggle="modal" data-target="#sponsor-'+i+'-modal"' : '';
+        var sponsorAboutModal = (v.about) ? 'data-toggle="modal" data-target="#sponsor-'+i+'-modal"' : 'onclick="window.open(\''+ v.website +'\', \'_blank\')"';
         sponsors += `
             <!-- /.usercard -->
             <div class="item lazyload recent-sponsor mouse imageSource mouse" `+sponsorAboutModal+` data-src="`+v.logo+`">
