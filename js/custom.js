@@ -873,10 +873,10 @@ $(document).on("click", ".editTab", function () {
     if (typeof post.tabImage == 'undefined' || post.tabImage == '') {
         message('Edit Tab Error',' Please set a Tab Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
-    if (typeof post.tabURL == 'undefined' || post.tabURL == '') {
-        message('Edit Tab Error',' Please set a Tab URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+    if ((typeof post.tabURL == 'undefined' || post.tabURL == '') && (typeof post.tabLocalURL == 'undefined' || post.tabLocalURL == '')) {
+        message('Edit Tab Error',' Please set a Tab URL or Local URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
-    if(post.id !== '' && post.tabName !== '' && post.tabImage !== '' && post.tabURL !== '' ){
+    if(post.id !== '' && post.tabName !== '' && post.tabImage !== ''){
         var callbacks = $.Callbacks();
         callbacks.add( buildTabEditor );
         settingsAPI(post,callbacks);
@@ -910,13 +910,13 @@ $(document).on("click", ".addNewTab", function () {
     if (typeof post.tabName == 'undefined' || post.tabName == '') {
         message('New Tab Error',' Please set a Tab Name',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }
-    if (typeof post.tabURL == 'undefined' || post.tabURL == '') {
-        message('New Tab Error',' Please set a Tab URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+    if ((typeof post.tabURL == 'undefined' || post.tabURL == '') && (typeof post.tabLocalURL == 'undefined' || post.tabLocalURL == '')) {
+        message('New Tab Error',' Please set a Tab URL or Local URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if (typeof post.tabImage == 'undefined' || post.tabImage == '') {
         message('New Tab Error',' Please set a Tab Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
-    if(post.tabOrder !== '' && post.tabName !== '' && post.tabURL !== '' && post.tabImage !== '' ){
+    if(post.tabOrder !== '' && post.tabName !== '' && (post.tabURL !== '' || post.tabLocalURL !== '') && post.tabImage !== '' ){
         var callbacks = $.Callbacks();
         callbacks.add( buildTabEditor );
         settingsAPI(post,callbacks);

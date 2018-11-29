@@ -2111,7 +2111,7 @@ function tabProcess(arrayItems) {
 	var defaultTabType = null;
 	if (Array.isArray(arrayItems['data']['tabs']) && arrayItems['data']['tabs'].length > 0) {
 		$.each(arrayItems['data']['tabs'], function(i,v) {
-			if(v.enabled === 1){
+			if(v.enabled === 1 && v.access_url){
                 if(v.default === 1){
                     defaultTabName = cleanClass(v.name);
                     defaultTabType = v.type;
@@ -2204,7 +2204,7 @@ function buildSplashScreenItem(arrayItems){
     if (Array.isArray(arrayItems['data']['tabs']) && arrayItems['data']['tabs'].length > 0) {
         arrayItems['data']['tabs'].sort((a, b) => parseFloat(a.order) - parseFloat(b.order));
         $.each(arrayItems['data']['tabs'], function(i,v) {
-            if(v.enabled === 1 && v.splash === 1){
+            if(v.enabled === 1 && v.splash === 1 && v.access_url){
                 var image = iconPrefixSplash(v.image);
                 if(image.indexOf('.') !== -1){
                     var dataSrc = 'data-src="'+iconPrefixSplash(v.image)+'"';
@@ -2214,7 +2214,7 @@ function buildSplashScreenItem(arrayItems){
                     var nonImage = '<span class="text-uppercase badge bg-org splash-badge">'+image+'</span>';
                 }
                 splashList += `
-                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 mouse hvr-grow m-b-20" id="menu-`+cleanClass(v.name)+`" type="`+v.type+`" data-url="`+v.url+`" onclick="tabActions(event,'`+cleanClass(v.name)+`',`+v.type+`);">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-2 mouse hvr-grow m-b-20" id="menu-`+cleanClass(v.name)+`" type="`+v.type+`" data-url="`+v.access_url+`" onclick="tabActions(event,'`+cleanClass(v.name)+`',`+v.type+`);">
                     <div class="homepage-drag fc-event bg-org lazyload"  `+ dataSrc +`>
                         `+nonImage+`
                         <span class="homepage-text">&nbsp; `+v.name+`</span>
