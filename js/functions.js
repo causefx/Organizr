@@ -1426,6 +1426,7 @@ function buildImageManagerViewItem(array){
 		$.each(array, function(i,v) {
 			var filepath = v.split("/");
 			var name = filepath[3].split(".");
+			var clipboardText = v.replace(/ /g,"%20");
 			imageListing += `
 			<div class="col-lg-1 col-md-1 col-sm-2 col-xs-4">
 				<div class="white-box bg-org m-0">
@@ -1433,7 +1434,7 @@ function buildImageManagerViewItem(array){
 						<div class="el-card-avatar el-overlay-1"> <img class="lazyload tabImages" data-src="`+v+`" width="22" height="22">
 							<div class="el-overlay">
 								<ul class="el-info">
-									<li><a class="btn default btn-outline clipboard p-5" data-clipboard-text="`+v+`" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
+									<li><a class="btn default btn-outline clipboard p-5" data-clipboard-text="`+clipboardText+`" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
 									<li><a class="btn default btn-outline deleteImage p-5" href="javascript:void(0);" data-image-path="`+v+`" data-image-name="`+name[0]+`"><i class="icon-trash"></i></a></li>
 								</ul>
 							</div>
