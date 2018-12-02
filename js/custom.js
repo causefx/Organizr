@@ -205,6 +205,7 @@ function pageLoad(){
         type: 'inline',
         preloader: true,
         removalDelay: 500,
+        showCloseBtn: false,
         // When elemened is focused, some mobile browsers in some cases zoom in
         // It looks not nice, so we disable it:
         callbacks: {
@@ -231,6 +232,7 @@ function pageLoad(){
     $('.inline-popups').magnificPopup({
       removalDelay: 500, //delay removal by X to allow out-animation
       closeOnBgClick: true,
+        showCloseBtn: false,
       //closeOnContentClick: true,
       callbacks: {
         beforeOpen: function() {
@@ -1836,4 +1838,7 @@ $(document).on('click', ".help-modal", function(){
     $('#help-modal-title').html(title);
     $('#help-modal-body').html(body);
     $('.help-modal-lg').modal('show');
+});
+$(document).on('click', ".close-popup", function(){
+    $.magnificPopup.close();
 });

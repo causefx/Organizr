@@ -775,7 +775,7 @@ function buildPluginsItem(array){
             <div class="panel bg-org panel-info">
                 <div class="panel-heading">
                     <span lang="en">`+v.name+` Settings</span>
-                    <button type="button" class="pull-right mfp-close m-r-20 m-t-10">&#215;</button>
+                    <button type="button" class="btn bg-org btn-circle close-popup pull-right"><i class="fa fa-times"></i> </button>
                     <button id="`+v.idPrefix+`-settings-page-save" onclick="submitSettingsForm('`+v.idPrefix+`-settings-page')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
@@ -1319,7 +1319,7 @@ function buildHomepageItem(array){
                         <div class="panel bg-org panel-info">
                             <div class="panel-heading">
                                 <span lang="en">`+v.name+`</span>
-                                <button type="button" class="pull-right mfp-close m-r-20 m-t-10">&#215;</button>
+                                <button type="button" class="btn bg-org btn-circle close-popup pull-right"><i class="fa fa-times"></i> </button>
                                 <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
                             </div>
                             <div class="panel-wrapper collapse in" aria-expanded="true">
@@ -3415,7 +3415,7 @@ function buildStreamItem(array,source){
 		<div id="`+v.session+`" class="white-popup mfp-with-anim mfp-hide">
 			<div class="col-md-6 col-md-offset-3">
 				<div class="white-box m-b-0 bg-info">
-					<h3 class="text-white box-title m-b-0">`+v.sessionType+`<span class="pull-right"><i class="mdi mdi-network-upload"></i> `+v.bandwidth+` kbps</span></h3>
+					<h3 class="text-white box-title m-b-0">`+v.sessionType+`<span class="pull-right"><i class="mdi mdi-network-upload"></i> `+v.bandwidth+` kbps <button type="button" class="btn bg-org btn-circle close-popup m-l-10"><i class="fa fa-times"></i> </button></span></h3>
 				</div>
 				<div class="white-box">
 					<div class="row">
@@ -3588,7 +3588,7 @@ function buildRequestItem(array, extra=null){
 									<div class="col-xs-2 p-10">`+adminFunctions+`</div>
 									<div class="col-xs-10">
 										<h2 class="m-b-0 font-medium pull-right text-right">
-											`+v.title+`<br>
+											`+v.title+`<button type="button" class="btn bg-org btn-circle close-popup m-l-10"><i class="fa fa-times"></i> </button><br>
 											<small class="m-t-0 text-white">`+user+`</small><br>
 											`+buildYoutubeLink(v.title+' '+v.type)+`
 										</h2>
@@ -4650,7 +4650,7 @@ function buildMetadata(array, source){
 				`+rating+`
 				<div class="col-xs-10">
 	                <h2 class="m-b-0 font-medium pull-right text-right">
-						`+v.title+`<br>
+						`+v.title+`<button type="button" class="btn bg-org btn-circle close-popup m-l-10"><i class="fa fa-times"></i> </button><br>
 						<small class="m-t-0 text-white">`+v.metadata.tagline+`</small><br>
 						<button class="btn waves-effect waves-light openTab bg-`+source+`" type="button" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> <i class="fa mdi mdi-`+source+` fa-2x"></i> </button>
 						`+buildYoutubeLink(v.title+' '+v.metadata.year+' '+v.type)+`
@@ -4709,7 +4709,7 @@ function buildCalendarMetadata(array){
 				`+rating+`
 				<div class="col-xs-10">
 	                <h2 class="m-b-0 font-medium pull-right text-right">
-						`+array.topTitle+`<br>
+						`+array.topTitle+`<button type="button" class="btn bg-org btn-circle close-popup m-l-10"><i class="fa fa-times"></i> </button><br>
 						<small class="m-t-0 text-white">`+array.bottomTitle+`</small><br>
 						`+buildYoutubeLink(array.topTitle)+`
 					</h2>
