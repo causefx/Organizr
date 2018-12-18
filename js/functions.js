@@ -4152,6 +4152,7 @@ function buildDownloaderItem(array, source, type='none'){
     //console.log(array);
     var queue = '';
     var history = '';
+    var count = 0;
 	switch (source) {
 		case 'sabnzbd':
             if(array.content.queueItems.queue.paused){
@@ -4167,6 +4168,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
             $.each(array.content.queueItems.queue.slots, function(i,v) {
+                count = count + 1;
                 var action = (v.status == "Downloading") ? 'pause' : 'resume';
                 var actionIcon = (v.status == "Downloading") ? 'pause' : 'play';
                 queue += `
@@ -4209,6 +4211,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
             $.each(array.content.queueItems.result, function(i,v) {
+                count = count + 1;
                 var action = (v.Status == "Downloading") ? 'pause' : 'resume';
                 var actionIcon = (v.Status == "Downloading") ? 'pause' : 'play';
                 var percent = Math.floor((v.FileSizeMB - v.RemainingSizeMB) * 100 / v.FileSizeMB);
@@ -4255,6 +4258,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
             $.each(array.content.queueItems.arguments.torrents, function(i,v) {
+                count = count + 1;
                 switch (v.status) {
                     case 7:
                     case '7':
@@ -4314,6 +4318,7 @@ function buildDownloaderItem(array, source, type='none'){
             }
             //console.log(array);
             $.each(array.content.queueItems, function(i,v) {
+                count = count + 1;
                 var percent = Math.floor((v.downloaded / v.size) * 100);
                 var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
                 var upload = v.seed !== '' ? humanFileSize(v.seed,true) : "0 B";
@@ -4345,6 +4350,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
             $.each(array.content.queueItems.arguments.torrents, function(i,v) {
+                count = count + 1;
                 switch (v.state) {
                     case 'stalledDL':
                         var status = 'No Peers';
@@ -4399,6 +4405,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
             $.each(array.content.queueItems, function(i,v) {
+                count = count + 1;
                 var percent = Math.floor(v.progress);
                 var size = v.total_size != -1 ? humanFileSize(v.total_size,true) : "?";
                 var upload = v.upload_payload_rate != -1 ? humanFileSize(v.upload_payload_rate,true) : "?";
@@ -4430,6 +4437,7 @@ function buildDownloaderItem(array, source, type='none'){
     if(history !== ''){
         $('.'+source+'-history').html(history);
     }
+    $('#count-'+source).html(count);
 }
 function buildDownloader(source){
     var queueButton = 'QUEUE';
@@ -4548,7 +4556,7 @@ function buildDownloaderCombined(source){
 
     }
     var mainMenu = `<ul class="nav customtab nav-tabs combinedMenuList" role="tablist">`;
-    var addToMainMenu = `<li role="presentation" class="`+active+`"><a onclick="homepageDownloader('`+source+`')" href="#combined-`+source+`" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class=""><img src="./plugins/images/tabs/`+source+`.png" class="homepageImageTitle"></span></a></li>`;
+    var addToMainMenu = `<li role="presentation" class="`+active+`"><a onclick="homepageDownloader('`+source+`')" href="#combined-`+source+`" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class=""><img src="./plugins/images/tabs/`+source+`.png" class="homepageImageTitle"><span class="badge bg-org downloaderCount" id="count-`+source+`"></span> </span></a></li>`;
     var listing = '';
     var headerAlt = '';
     var header = '';

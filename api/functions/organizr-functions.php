@@ -35,7 +35,7 @@ function organizrSpecialSettings()
 			'plex' => array(
 				'enabled' => ($GLOBALS['ssoPlex']) ? true : false,
 				'cookie' => isset($_COOKIE['mpt']) ? true : false,
-				'machineID' => $GLOBALS['plexID'],
+				'machineID' => (strlen($GLOBALS['plexID']) == 40) ? true : false,
 				'token' => ($GLOBALS['plexToken'] !== '') ? true : false,
 				'oAuthEnabled' => ($GLOBALS['plexoAuth']) ? true : false,
 				'backend' => ($GLOBALS['authBackend'] == 'plex') ? true : false,
@@ -43,13 +43,13 @@ function organizrSpecialSettings()
 			'ombi' => array(
 				'enabled' => ($GLOBALS['ssoOmbi']) ? true : false,
 				'cookie' => isset($_COOKIE['Auth']) ? true : false,
-				'url' => ($GLOBALS['ombiURL'] !== '') ? true : false,
+				'url' => ($GLOBALS['ombiURL'] !== '') ? $GLOBALS['ombiURL'] : false,
 				'api' => ($GLOBALS['ombiToken'] !== '') ? true : false,
 			),
 			'tautulli' => array(
 				'enabled' => ($GLOBALS['ssoTautulli']) ? true : false,
 				'cookie' => !empty($tautulli) ? true : false,
-				'url' => ($GLOBALS['tautulliURL'] !== '') ? true : false,
+				'url' => ($GLOBALS['tautulliURL'] !== '') ? $GLOBALS['tautulliURL'] : false,
 			),
 		),
 		'ping' => array(

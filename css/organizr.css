@@ -1204,7 +1204,10 @@ span.fc-title {
     padding: 10px 11px 0px 5px;
     font-size: 30px;
 }
-
+.downloaderCount {
+    margin-top: -45px;
+    margin-left: -45px;
+}
 /*
 body,
 html {
