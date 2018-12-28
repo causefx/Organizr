@@ -1266,6 +1266,7 @@ $(document).on("click", ".getPlexMachineSSO", function () {
                         if($(this).attr('owned') == 1){
                             var name = $(this).attr('name');
                             var machine = $(this).attr('machineIdentifier');
+                            name = name + ' [' + machine + ']';
                             machines += '<option value="'+machine+'">'+name+'</option>';
                         }
                     });
@@ -1351,6 +1352,7 @@ $(document).on("click", ".getPlexMachineAuth", function () {
                         if($(this).attr('owned') == 1){
                             var name = $(this).attr('name');
                             var machine = $(this).attr('machineIdentifier');
+                            name = name + ' [' + machine + ']';
                             machines += '<option value="'+machine+'">'+name+'</option>';
                         }
                     });
