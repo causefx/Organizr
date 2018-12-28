@@ -83,12 +83,12 @@ function checkPlexUser($username)
 								if ((string)$server['machineIdentifier'] == $GLOBALS['plexID']) {
 									$machineMatches = true;
 								}
-								if ($machineMatches) {
-									writeLog('success', 'Plex User Check - User Approved for Login', $username);
-									return true;
-								} else {
-									writeLog('error', 'Plex User Check - User not Approved User', $username);
-								}
+							}
+							if ($machineMatches) {
+								writeLog('success', 'Plex User Check - User Approved for Login', $username);
+								return true;
+							} else {
+								writeLog('error', 'Plex User Check - User not Approved User', $username);
 							}
 						}
 					}
