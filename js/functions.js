@@ -696,7 +696,7 @@ function buildAccordion(array){
     return '<div class="panel-group" id="'+mainId+'" aria-multiselectable="true" role="tablist">' + items + '</div>';
 }
 function buildFormItem(item){
-	var placeholder = (item.placeholder) ? ' placeholder="'+item.placeholder+'"' : '';
+    var placeholder = (item.placeholder) ? ' placeholder="'+item.placeholder+'"' : '';
 	var id = (item.id) ? ' id="'+item.id+'"' : '';
 	var type = (item.type) ? ' data-type="'+item.type+'"' : '';
 	var value = (item.value) ? ' value="'+item.value+'"' : '';
@@ -750,7 +750,7 @@ function buildFormItem(item){
 			return smallLabel+'<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
 			break;
 		case 'button':
-			return smallLabel+'<button class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none'+extraClass+'" '+href+attr+'type="button"><span class="btn-label"><i class="'+icon+'"></i></span><span lang="en">'+text+'</span></button>';
+			return smallLabel+'<button class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none'+extraClass+'" '+href+attr+' type="button"><span class="btn-label"><i class="'+icon+'"></i></span><span lang="en">'+text+'</span></button>';
 			break;
 		case 'blank':
 			return '';

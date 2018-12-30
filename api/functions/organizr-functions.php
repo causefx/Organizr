@@ -92,6 +92,7 @@ function organizrSpecialSettings()
 			'authBackend' => $GLOBALS['authBackend'],
 			'newMessageSound' => (isset($GLOBALS['CHAT-newMessageSound-include'])) ? $GLOBALS['CHAT-newMessageSound-include'] : '',
 			'uuid' => $GLOBALS['uuid'],
+			'docker' => $GLOBALS['docker']
 		)
 	);
 }
@@ -434,7 +435,9 @@ function getSettingsMain()
 				'label' => 'Force Install Branch',
 				'class' => 'updateNow',
 				'icon' => 'fa fa-download',
-				'text' => 'Retrieve'
+				'text' => 'Retrieve',
+				'attr' => ($GLOBALS['docker']) ? 'title="You can just restart your docker to update"' : '',
+				'help' => ($GLOBALS['docker']) ? 'Since you are using the Official Docker image, You can just restart your docker to update' : 'This will re-download all of the source files for Organizr'
 			)
 		),
 		'API' => array(
@@ -1950,4 +1953,10 @@ function importUserButtons()
 		$buttons .= '<button class="btn bg-plex text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'plex\')" type="button"><span class="btn-label"><i class="mdi mdi-plex"></i></span><span lang="en">Import Plex Users</span></button>';
 	}
 	return ($buttons !== '') ? $buttons : $emptyButtons;
+}
+
+function settingsDocker()
+{
+	$type = ($GLOBALS['docker']) ? 'Official Docker' : 'Native';
+	return '<li><div class="bg-info"><i class="mdi mdi-flag mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Install Type</span> ' . $type . '</li>';
 }

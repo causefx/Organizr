@@ -214,6 +214,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                                 <li><div class="bg-info"><i class="mdi mdi-webpack mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Organizr Version</span> ' . $GLOBALS['installedVersion'] . '</li>
                                                 <li><div class="bg-info"><i class="mdi mdi-github-box mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Organizr Branch</span> ' . $GLOBALS['branch'] . '</li>
                                                 <li><div class="bg-info"><i class="mdi mdi-database mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Database Location</span> ' . $GLOBALS['dbLocation'] . $GLOBALS['dbName'] . '</li>
+                                                ' . settingsDocker() . '
                                                 <hr class="m-t-10">
                                                 <li><div class="bg-info"><i class="mdi mdi-language-php mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">PHP Version</span> ' . phpversion() . '</li>
                                                 <li><div class="bg-info"><i class="mdi mdi-package-variant-closed mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Webserver Version</span> ' . $_SERVER['SERVER_SOFTWARE'] . '</li>
