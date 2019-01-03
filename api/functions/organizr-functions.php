@@ -515,6 +515,14 @@ function getSettingsMain()
 				'value' => $GLOBALS['plexoAuth']
 			),
 			array(
+				'type' => 'switch',
+				'name' => 'plexStrictFriends',
+				'label' => 'Strict Plex Friends ',
+				'class' => 'popup-with-form plexAuth switchAuth',
+				'value' => $GLOBALS['plexStrictFriends'],
+				'help' => 'Enabling this will only allow Friends that have shares to the Machine ID entered above to login, Having this disabled will allow all Friends on your Friends list to login'
+			),
+			array(
 				'type' => 'input',
 				'name' => 'authBackendHost',
 				'class' => 'ldapAuth ftpAuth switchAuth',

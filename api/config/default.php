@@ -200,5 +200,6 @@ return array(
 	'plexoAuth' => false,
 	'statusSounds' => false,
 	'rememberMeDays' => '7',
-	'rememberMe' => true
+	'rememberMe' => true,
+	'plexStrictFriends' => true
 );
