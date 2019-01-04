@@ -508,17 +508,25 @@ function getSettingsMain()
 				'attr' => 'data-effect="mfp-3d-unfold"'
 			),
 			array(
+				'type' => 'input',
+				'name' => 'plexAdmin',
+				'label' => 'Admin Username',
+				'class' => 'plexAuth switchAuth',
+				'value' => $GLOBALS['plexAdmin'],
+				'placeholder' => 'Admin username for Plex'
+			),
+			array(
 				'type' => 'switch',
 				'name' => 'plexoAuth',
 				'label' => 'Enable Plex oAuth',
-				'class' => 'popup-with-form plexAuth switchAuth',
+				'class' => 'plexAuth switchAuth',
 				'value' => $GLOBALS['plexoAuth']
 			),
 			array(
 				'type' => 'switch',
 				'name' => 'plexStrictFriends',
 				'label' => 'Strict Plex Friends ',
-				'class' => 'popup-with-form plexAuth switchAuth',
+				'class' => 'plexAuth switchAuth',
 				'value' => $GLOBALS['plexStrictFriends'],
 				'help' => 'Enabling this will only allow Friends that have shares to the Machine ID entered above to login, Having this disabled will allow all Friends on your Friends list to login'
 			),
