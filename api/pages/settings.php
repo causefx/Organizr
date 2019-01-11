@@ -259,6 +259,9 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                             <li class="tab">
                                                 <a href="#donate-patreon" data-toggle="tab" aria-expanded="false"> <span class=""><i class="fa mdi mdi-account-multiple mdi-18px text-danger"></i></span> <span class="hidden-xs" lang="en">Patreon</span> </a>
                                             </li>
+                                            <li class="tab">
+                                                <a href="#donate-ads" data-toggle="tab" aria-expanded="false"> <span class=""><i class="fa mdi mdi-google mdi-18px text-danger"></i></span> <span class="hidden-xs" lang="en">Google Ads</span> </a>
+                                            </li>
                                         </ul>
                                         <div class="tab-content">
                                         	<div class="tab-pane active" id="donate-beer">
@@ -295,6 +298,10 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                             <div class="tab-pane" id="donate-patreon">
                                                 <blockquote>Need specialized support or just want to support Organizr?  If so head to Patreon...<br/>Please click the button to continue.</blockquote>
                                                 <button onclick="window.open(\'https://www.patreon.com/bePatron?u=8370887\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
+                                            </div>
+                                            <div class="tab-pane" id="donate-ads">
+                                                <blockquote>Money not an option?  No problem.  Show some love to this Google Ad below:</blockquote>
+                                                 <button onclick="window.open(\'https://organizr.app/ads/google.html\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
                                             </div>
                                         </div>
                                     </div>
