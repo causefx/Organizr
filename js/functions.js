@@ -2,9 +2,10 @@
 var lang = new Lang();
 var langStrings = { "token": {} };
 loadLanguageList();
+var falbackLanguage = (languageList.filter(p => p.code == language(moment.locale(navigator.languages[0]))).length > 0 ? language(moment.locale(navigator.languages[0])) : 'en');
 lang.init({
 	//defaultLang: 'en',
-	currentLang: (getCookie('organizrLanguage')) ? getCookie('organizrLanguage') : language(moment.locale(navigator.languages[0])),
+	currentLang: (getCookie('organizrLanguage')) ? getCookie('organizrLanguage') : falbackLanguage,
 	cookie: {
 		name: 'organizrLanguage',
 		expiry: 365,
