@@ -552,6 +552,7 @@ function getSettingsMain()
 				'class' => 'embyAuth switchAuth',
 				'label' => 'Emby URL',
 				'value' => $GLOBALS['embyURL'],
+				'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 				'placeholder' => 'http(s)://hostname:port'
 			),
 			array(
@@ -792,6 +793,7 @@ function getSSO()
 				'name' => 'ombiURL',
 				'label' => 'Ombi URL',
 				'value' => $GLOBALS['ombiURL'],
+				'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 				'placeholder' => 'http(s)://hostname:port'
 			),
 			array(
@@ -813,6 +815,7 @@ function getSSO()
 				'name' => 'tautulliURL',
 				'label' => 'Tautulli URL',
 				'value' => $GLOBALS['tautulliURL'],
+				'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 				'placeholder' => 'http(s)://hostname:port'
 			),
 			array(

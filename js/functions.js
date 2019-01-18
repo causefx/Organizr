@@ -1561,7 +1561,7 @@ function buildCategoryEditor(){
 function settingsAPI(post, callbacks=null){
 	organizrAPI('POST',post.api,post).success(function(data) {
 		var response = JSON.parse(data);
-		console.log(response);
+		//console.log(response);
 		message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
@@ -2507,7 +2507,7 @@ function submitSettingsForm(form){
 
     }
     if(size > 0){
-        console.log(submit);
+        //console.log(submit);
         settingsAPI(post,callbacks);
         $("#"+form+" :input").each(function(){
             var input = $(this);

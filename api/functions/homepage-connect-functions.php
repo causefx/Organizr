@@ -2020,6 +2020,30 @@ function getOmbiRequests($type = "both")
 function testAPIConnection($array)
 {
 	switch ($array['data']['action']) {
+		case 'ombi':
+			if (!empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken'])) {
+				$url = qualifyURL($GLOBALS['ombiURL']);
+				$url = $url . "/api/v1/Status/info";
+				$headers = array(
+					"Accept" => "application/json",
+					"Content-Type" => "application/json",
+					"Apikey" => $GLOBALS['ombiToken']
+				);
+				try {
+					$options = (localURL($url)) ? array('verify' => false) : array();
+					$response = Requests::get($url, $headers, $options);
+					if ($response->success) {
+						return true;
+					} else {
+						return $response->body;
+					}
+				} catch (Requests_Exception $e) {
+					return $e->getMessage();
+				};
+			} else {
+				return 'URL and/or Token not setup';
+			}
+			break;
 		case 'plex':
 			if (!empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken'])) {
 				$url = qualifyURL($GLOBALS['plexURL']);

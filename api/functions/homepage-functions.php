@@ -648,6 +648,7 @@ function getHomepageList()
 						'name' => 'plexURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['plexURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -846,6 +847,7 @@ function getHomepageList()
 						'name' => 'embyURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['embyURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -987,6 +989,7 @@ function getHomepageList()
 						'name' => 'sabnzbdURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['sabnzbdURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1054,6 +1057,7 @@ function getHomepageList()
 						'name' => 'nzbgetURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['nzbgetURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1127,6 +1131,7 @@ function getHomepageList()
 						'name' => 'transmissionURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['transmissionURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1197,6 +1202,7 @@ function getHomepageList()
 						'name' => 'qBittorrentURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['qBittorrentURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1302,6 +1308,7 @@ function getHomepageList()
 						'name' => 'rTorrentURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['rTorrentURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1413,6 +1420,7 @@ function getHomepageList()
 						'name' => 'delugeURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['delugeURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1491,6 +1499,7 @@ function getHomepageList()
 						'name' => 'sonarrURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['sonarrURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1600,6 +1609,7 @@ function getHomepageList()
 						'name' => 'lidarrURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['lidarrURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1703,6 +1713,7 @@ function getHomepageList()
 						'name' => 'radarrURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['radarrURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1806,6 +1817,7 @@ function getHomepageList()
 						'name' => 'couchpotatoURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['couchpotatoURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1881,6 +1893,7 @@ function getHomepageList()
 						'name' => 'sickrageURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['sickrageURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1956,6 +1969,7 @@ function getHomepageList()
 						'name' => 'ombiURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['ombiURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1993,6 +2007,20 @@ function getHomepageList()
 						'value' => $GLOBALS['ombiRefresh'],
 						'options' => optionTime()
 					)
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'ombi\')"'
+					),
 				)
 			)
 		),
