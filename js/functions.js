@@ -3199,13 +3199,14 @@ function loadAppearance(appearance){
     if(appearance.customCss !== ''){
         $('#custom-css').html(appearance.customCss);
     }
+}
+function loadCustomJava(appearance){
     if(appearance.customThemeJava !== ''){
         $('#custom-theme-javascript').html(appearance.customThemeJava);
     }
     if(appearance.customJava !== ''){
         $('#custom-javascript').html(appearance.customJava);
     }
-
 }
 function clearForm(form){
 	$(form+" input[type=text]").each(function() {
@@ -5948,6 +5949,7 @@ function launch(){
                     organizrSpecialSettings(json);
                     getPingList(json);
                 }
+                loadCustomJava(json.appearance);
 				break;
 			default:
 				console.error('Organizr Function: Action not set or defined');
