@@ -310,7 +310,8 @@ function plugin_auth_emby_connect($username, $password)
 					$connectURL = 'https://connect.emby.media/service/user/authenticate';
 					$headers = array(
 						'Accept' => 'application/json',
-						'Content-Type' => 'application/x-www-form-urlencoded',
+						'Content-Type' => 'application/json',
+						'X-Application' => 'Organizr/2.0'
 					);
 					$data = array(
 						'nameOrEmail' => $username,
