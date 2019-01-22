@@ -5870,12 +5870,20 @@ function clickPath(type,path=null){
         case 'c':
         case 'custom':
             if(path !== null){
-
+                if(typeof path == 'object'){
+                    $.each(path, function(i,v) {
+                        $(v).trigger('click');
+                    });
+                }else{
+                    $(path).trigger('click');
+                }
             }else{
                 return null;
             }
             break;
         case 'sso':
+            $('#settings-main-system-settings-anchor').trigger('click');
+            $('#settings-settings-sso-anchor').trigger('click');
             break;
         default:
             return null;
