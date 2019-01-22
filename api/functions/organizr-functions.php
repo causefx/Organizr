@@ -613,12 +613,14 @@ function getSettingsMain()
 				'type' => 'password-alt',
 				'name' => 'registrationPassword',
 				'label' => 'Registration Password',
+				'help' => 'Sets the password for the Registration form on the login screen',
 				'value' => $GLOBALS['registrationPassword'],
 			),
 			array(
 				'type' => 'switch',
 				'name' => 'hideRegistration',
 				'label' => 'Hide Registration',
+				'help' => 'Enable this to hide the Registration button on the login screen',
 				'value' => $GLOBALS['hideRegistration'],
 			),
 			array(
