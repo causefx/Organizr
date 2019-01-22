@@ -307,6 +307,7 @@ function plugin_auth_emby_connect($username, $password)
 					}
 				}
 				if ($connectId) {
+					writeLog('success', 'Emby Connect Auth Function - Attempting to Login with Emby ID: ' . $connectId, $username);
 					$connectURL = 'https://connect.emby.media/service/user/authenticate';
 					$headers = array(
 						'Accept' => 'application/json',
@@ -325,7 +326,11 @@ function plugin_auth_emby_connect($username, $password)
 								'email' => $json['User']['Email'],
 								'image' => $json['User']['ImageUrl'],
 							);
+						} else {
+							writeLog('error', 'Emby Connect Auth Function - Bad Response', $username);
 						}
+					} else {
+						writeLog('error', 'Emby Connect Auth Function - 401 From Emby Connect', $username);
 					}
 				}
 			}
