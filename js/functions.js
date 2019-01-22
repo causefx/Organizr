@@ -5864,6 +5864,22 @@ function orgErrorCode(code){
 
     }
 }
+function clickPath(type,path=null){
+    switch(type){
+        case 'c':
+        case 'custom':
+            if(path !== null){
+
+            }else{
+                return null;
+            }
+            break;
+        case 'sso':
+            break;
+        default:
+            return null;
+    }
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
