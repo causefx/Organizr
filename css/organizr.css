@@ -843,6 +843,7 @@ input.has-success {
 .loginLogo {
     max-width: 350px;
     max-height: 225px;
+    width: 100%;
 }
 .recent-items .owl-item {
     height: 225px;
