@@ -166,7 +166,7 @@
                                 </div>
                             </div>
                             <div id="debugPreInfoBox" class="sl-item">
-                                <div class="sl-left bg-info"><i class="mdi mdi-receipt"></i></div>
+                                <div class="sl-left bg-info"><i class="mdi mdi-package-variant-closed"></i></div>
                                 <div class="sl-right">
                                     <div>
                                         <span lang="en">Organizr Information:</span>&nbsp;

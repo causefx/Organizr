@@ -1844,3 +1844,8 @@ $(document).on('click', ".help-modal", function(){
 $(document).on('click', ".close-popup", function(){
     $.magnificPopup.close();
 });
+// open help modal
+$(document).on('click', ".copyDebug", function(){
+    copyDebug();
+    $('#internal-clipboard').trigger('click');
+});

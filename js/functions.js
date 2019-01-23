@@ -59,15 +59,41 @@ function orgDebug(cmd) {
         $('#debugResultsBox').removeClass('hidden');
         $('#debugResults').html(formatDebug(result));
         $('.cmdName').text(cmd);
+        if(bowser.mobile !== true){
+            $('#debugResults > .whitebox').slimScroll();
+        }
     } else {
 
     }
+}
+function jsonToHTML(json){
+    var html = '';
+    $.each(json, function(i,v) {
+
+        if(typeof v === 'object'){
+            html += i + ': <br/>';
+                $.each(v, function(index,value) {
+                html += '&nbsp; &nbsp; &nbsp; &nbsp;' + index + ': ' + value + '<br/>';
+            });
+        }else{
+            html += i + ': ' + v + '<br/>';
+        }
+    });
+    return html;
+}
+function copyDebug(){
+    var pre = $('#debugPreInfo').find('.whitebox').text();
+    var debug = $('#debugResults').find('.whitebox').text();
+    clipboard(true, pre + debug);
+    console.log('copied');
+    console.log(pre + debug);
 }
 function formatDebug(result){
     var formatted = '';
     switch (typeof result) {
         case 'object':
-            formatted = highlightObject(result);
+            //formatted = highlightObject(result);
+            formatted = jsonToHTML(result);
             break;
         default:
             formatted = result;
@@ -78,14 +104,21 @@ function formatDebug(result){
 function getDebugPreInfo(){
     var formatted = 'Version: ' + activeInfo.version +
         '<br/>Branch: ' + activeInfo.branch +
+        '<br/>Server OS: ' + activeInfo.serverOS +
+        '<br/>PHP: ' + activeInfo.phpVersion +
         '<br/>Install Type: ' + ((activeInfo.settings.misc.docker) ? 'Official Docker' : 'Native') +
         '<br/>Backend: ' + activeInfo.settings.misc.authBackend +
+        '<br/>Installed Plugins: ' + activeInfo.settings.misc.installedPlugins +
+        '<br/>Installed Themes: ' + activeInfo.settings.misc.installedThemes +
         '<br/>Theme: ' + activeInfo.theme +
         '<br/>Local: ' + activeInfo.settings.user.local +
         '<br/>oAuth: ' + activeInfo.settings.user.oAuthLogin +
         '<br/>Agent: ' + activeInfo.settings.user.agent;
     formatted = '<pre class="whitebox bg-org text-success">' + formatted + '</pre>';
     $('#debugPreInfo').html(formatted);
+    if(bowser.mobile !== true){
+        $('#debugPreInfo > .whitebox').slimScroll();
+    }
 }
 function orgDebugList(cmd){
     if(cmd !== ''){
