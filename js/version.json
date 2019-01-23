@@ -103,5 +103,12 @@
     "new": "rTorrent HP Support|Plex OAuth|Tautulli SSO using Plex OAuth|Import Plex Users|Combined Downloaders on HP|Account Area Active Token Section|Alphanumberic tab icons|Debug Area WIP|Remember me length setting|Disable ping sound",
     "fixed": "NZBGet file size bug|Password Save bug|Auth issue if DB has wrong permissions|Ombi TV show issue|Scrollbars on FF|Token revoke on logout|BTC address|Homepage and Settings tab type non-change fix|Tab settings not reset (#942)|SSO code position (#946)|Gravatar email change fix (#951)",
     "notes": "Added plex token to db for plex users|Added SSL option to chat|Added Bazzrr logo|Disable username and email change if 2FA enabled|Misc UI changes"
+  },
+  "2.0.0-beta.950": {
+    "date": "2019-01-23 22:40",
+    "title": "The one before v2.0",
+    "new": "Ombi SSO with Plex Token|Default TV Request options for Ombi|Token Section in user settings|Local URL connection if on LAN|Added preload Tab options|Added downloader count to combined downloader|Added option to disable Strict Plex Friend",
+    "fixed": "Fixed Emby Connect|Disable lock function for oAuth users (#973)|Better error handling for the *arrs|make settings open first tab if not active already (#901)|make sure db ends with .db (#971)|Fix deluge hide seeding etc (#867)|fix downloaders showing blank if no permissions (#977)|Plex login button css (#985)|Add tab help (#987)|Fix close buttons (#883)|close buttons on popups fixed (#996)|fix clipboard with value with filename containing space (#994)|Move machine ID check outside of foreach (#1014)|Fixed language error if not langpack is installed for that lang (#1028)|undefined index on sickrage (#1038)|Fix iframe focus not shifting back (#1042)",
+    "notes": "Added more debug information|Reworked the way languages are loaded|Updated Language strings|Revamped Splash page"
   }
 }
