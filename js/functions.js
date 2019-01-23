@@ -75,6 +75,18 @@ function formatDebug(result){
     }
     return '<pre class="whitebox bg-org text-success">' + formatted + '</pre>';
 }
+function getDebugPreInfo(){
+    var formatted = 'Version: ' + activeInfo.version +
+        '<br/>Branch: ' + activeInfo.branch +
+        '<br/>Install Type: ' + ((activeInfo.settings.misc.docker) ? 'Official Docker' : 'Native') +
+        '<br/>Backend: ' + activeInfo.settings.misc.authBackend +
+        '<br/>Theme: ' + activeInfo.theme +
+        '<br/>Local: ' + activeInfo.settings.user.local +
+        '<br/>oAuth: ' + activeInfo.settings.user.oAuthLogin +
+        '<br/>Agent: ' + activeInfo.settings.user.agent;
+    formatted = '<pre class="whitebox bg-org text-success">' + formatted + '</pre>';
+    $('#debugPreInfo').html(formatted);
+}
 function orgDebugList(cmd){
     if(cmd !== ''){
         $('#debug-input').val(cmd);
@@ -2030,7 +2042,7 @@ function userMenu(user){
 					<li class="append-menu"><a class="inline-popups" href="#account-area" data-effect="mfp-zoom-out"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 					<li class="divider" role="separator"></li>
 					<li><a href="javascript:void(0)" onclick="lock();"><i class="ti-lock fa-fw"></i> <span lang="en">Lock Screen</span></a></li>
-					<li><a href="javascript:void(0)" onclick="toggleDebug();"><i class="mdi mdi-bug fa-fw"></i> <span lang="en">Debug Area</span></a></li>
+					<li><a href="javascript:void(0)" onclick="toggleDebug();getDebugPreInfo();"><i class="mdi mdi-bug fa-fw"></i> <span lang="en">Debug Area</span></a></li>
 					<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 				</ul><!-- /.dropdown-user -->
 			</li><!-- /.dropdown -->

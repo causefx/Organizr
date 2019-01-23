@@ -133,7 +133,7 @@
                             <div class="sl-item">
                                 <div class="sl-left bg-success"><i class="mdi mdi-code-tags"></i></div>
                                 <div class="sl-right">
-                                    <div class="form-group m-b-0">
+                                    <div class="form-group">
                                         <div id="" class="input-group">
                                             <input id="debug-input" lang="en" placeholder="Input Command" type="text"
                                                    class="form-control inline-focus">
@@ -163,6 +163,15 @@
                                         </div>
                                         <div class="clearfix"></div>
                                     </div>
+                                </div>
+                            </div>
+                            <div id="debugPreInfoBox" class="sl-item">
+                                <div class="sl-left bg-info"><i class="mdi mdi-receipt"></i></div>
+                                <div class="sl-right">
+                                    <div>
+                                        <span lang="en">Organizr Information:</span>&nbsp;
+                                    </div>
+                                    <div id="debugPreInfo" class="desc"></div>
                                 </div>
                             </div>
                             <div id="debugResultsBox" class="sl-item hidden">
