@@ -441,6 +441,7 @@ function switchTab(tab, type){
 				$(buildFrame(tab,tabURL)).appendTo(newTab);
 				$("#preloader").fadeOut();
 			}
+            $('#frame-'+tab).focus();
 			break;
 		case 2:
 		case 3:
