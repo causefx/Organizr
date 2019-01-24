@@ -1,6 +1,6 @@
 <?php
 return array(
-	'branch' => 'v2-develop',
+	'branch' => 'v2-master',
 	'authType' => 'internal',
 	'authBackend' => '',
 	'authBackendHost' => '',
