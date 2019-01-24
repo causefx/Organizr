@@ -126,6 +126,18 @@ function orgDebugList(cmd){
         orgDebug();
     }
 }
+function updateIssueLink(line){
+    var preNumber = line.match(/\((.*?)\)/g);
+    if(preNumber !== null){
+        preNumber = preNumber.toString();
+        var issueNumber = preNumber.substr(2, (preNumber.length - 3));
+        var issueLink = 'https://github.com/causefx/Organizr/issues/' + issueNumber;
+        issueLink = '<a href="' + issueLink + '" target="_blank">' + preNumber + '</a>';
+        return line.replace(preNumber, issueLink);
+    }else{
+        return line;
+    }
+}
 function clipboard(trigger = true, string = null){
     let clipboard = $('#internal-clipboard');
     if(string){
@@ -2627,7 +2639,7 @@ function buildTR(array,type,badge){
 			listing += `
 			<tr>
 				<td  width="70"><span class="label label-`+badge+`"><span lang="en">`+type+`</span></span></td>
-				<td>`+v+`</td>
+				<td>`+updateIssueLink(v)+`</td>
 			</tr>
 			`;
 		});
@@ -4950,6 +4962,7 @@ function homepageCalendar(timeout){
         $('#calendar').fullCalendar('removeEvents');
         $('#calendar').fullCalendar('addEventSource', response.data.events);
         $('#calendar').fullCalendar('addEventSource', response.data.ical);
+        $('#calendar').fullCalendar('today');
 		response = '';
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
