@@ -124,7 +124,7 @@ if (function_exists('ldap_connect')) :
 				writeLog("success", "LDAP authentication success");
 				return true;
 			} else {
-				writeLog("error", "LDPA could not authenticate");
+				writeLog("error", "LDAP could not authenticate");
 				return false;
 			}
 		}
