@@ -1,0 +1,28 @@
+{
+    "name": "jsgrid",
+    "version": "1.4.1",
+    "main": [
+        "dist/jsgrid.js",
+        "dist/jsgrid.css",
+        "dist/jsgrid-theme.css"
+    ],
+    "ignore": [
+        "demos",
+        "external",
+        "tests",
+        ".editorconfig",
+        ".gitignore",
+        ".travis.yml",
+        "bower.json",
+        "Gruntfile.js",
+        "LICENSE",
+        "package.json",
+        "README.md"
+    ],
+    "dependencies": {
+        "jquery": ">=1.8.3"
+    },
+    "devDependencies": {
+        "qunit": ">=1.10.0"
+    }
+}

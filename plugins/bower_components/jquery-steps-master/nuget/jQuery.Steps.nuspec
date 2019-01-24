@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>jQuery.Steps</id>
+        <version>$version$</version>
+        <title>jQuery Steps</title>
+        <authors>Rafael Staib</authors>
+        <owners>r_staib</owners>
+        <licenseUrl>https://github.com/rstaib/jquery-steps/blob/master/LICENSE.txt</licenseUrl>
+        <projectUrl>http://www.jquery-steps.com</projectUrl>
+		<iconUrl>http://www.jquery-steps.com/icon.png</iconUrl>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <description>An all-in-one wizard plugin that is extremely flexible, compact and feature-rich.</description>
+        <summary>An all-in-one wizard plugin that is extremely flexible, compact and feature-rich.</summary>
+        <copyright>� Copyright 2014, Rafael Staib</copyright>
+        <tags>jQuery, Accessibility, Forms, HTML5, Navigation, Steps, Tabs, UI, Validation, Wizard</tags>
+        <dependencies>
+            <dependency id="jQuery" version="1.10.2" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\build\*.js" target="Content\Scripts" />
+        <file src="..\demo\css\jquery.steps.css" target="Content\Content" />
+    </files>
+</package>

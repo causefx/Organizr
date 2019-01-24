@@ -1,0 +1,30 @@
+.tablesaw-advance {
+	float: right;
+}
+.tablesaw-advance.minimap {
+	margin-right: .4em;
+}
+.tablesaw-advance-dots {
+	float: left;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.tablesaw-advance-dots li {
+	display: table-cell;
+	margin: 0;
+	padding: .4em .2em;
+}
+.tablesaw-advance-dots li i {
+	width: .25em;
+	height: .25em;
+	background: #555;
+	border-radius: 100%;
+	display: inline-block;
+}
+.tablesaw-advance-dots-hide {
+	opacity: .25;
+	filter: alpha(opacity=25);
+	cursor: default;
+	pointer-events: none;
+}

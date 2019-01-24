@@ -1,0 +1,22 @@
+<!DOCTYPE html>  
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tablesaw Test Suite</title>
+  <link rel="stylesheet" href="../dist/dependencies/qunit.css">
+  <link rel="stylesheet" href="../dist/bare/tablesaw.bare.css">
+
+  <script src="../dist/dependencies/jquery.js"></script>
+  <script src="../dist/dependencies/qunit.js"></script>
+  <script src="../dist/tablesaw.js"></script>
+  <script src="tablesaw_test.js"></script>
+  <!-- Removing access to jQuery and $. But it'll still be available as _$, if
+       you REALLY want to mess around with jQuery in the console. REMEMBER WE
+       ARE TESTING A PLUGIN HERE, THIS HELPS ENSURE BEST PRACTICES. REALLY. -->
+  <script>window._$ = jQuery.noConflict(true);</script>
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+</body>
+</html>

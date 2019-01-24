@@ -1,0 +1,84 @@
+<!DOCTYPE html>  
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>jQuery Wizard</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width">
+
+<link rel="stylesheet" href="../libs/bootstrap/bootstrap.min.css">
+
+<style>
+.current {
+    color: blue !important;
+}
+.done {
+    color: green !important;
+}
+.error {
+    color: red !important;
+}
+.disabled {
+    cursor: not-allowed;
+}
+</style>
+</head>
+<body>
+<!--[if lt IE 7]>
+    <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+<![endif]-->
+<div class="container">
+    <div class="row">
+        <div class="wizard" role="tabpanel">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#first" aria-controls="first" role="tab" data-toggle="tab">First</a></li>
+                <li role="presentation"><a href="#second" aria-controls="second" role="tab" data-toggle="tab">Second</a></li>
+                <li role="presentation"><a href="#third" aria-controls="third" role="tab" data-toggle="tab">Third</a></li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active fade in" id="first">Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</div>
+                <div role="tabpanel" class="tab-pane fade" id="second">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</div>
+                <div role="tabpanel" class="tab-pane fade" id="third">Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth chambray yr.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../libs/jquery/jquery.js"></script>
+<script src="../libs/bootstrap/bootstrap.min.js"></script>
+<script src="../dist/jquery-wizard.js"></script>
+<script>
+(function(){
+    $('.wizard').wizard({
+        step: '> .nav > li > a',
+
+        templates: {
+            buttons: function(){
+                var options = this.options;
+                return '<div class="clearfix">' +
+                    '<button class="btn btn-default" data-target="#'+this.id+'" data-wizard="back">'+options.buttonLabels.back+'</button>' +
+                    '<button class="btn btn-primary pull-right" data-target="#'+this.id+'" data-wizard="next">'+options.buttonLabels.next+'</button>' +
+                    '<button class="btn btn-primary pull-right" data-target="#'+this.id+'" data-wizard="finish">'+options.buttonLabels.finish+'</button>' +
+                '</div>';
+            }
+        },
+
+        onBeforeShow: function(step){
+            step.$element.tab('show');
+        },
+
+        onFinish: function(){
+            alert('finish');
+        }
+    });
+})();
+</script>
+</body>
+</html>

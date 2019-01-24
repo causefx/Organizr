@@ -1,0 +1,114 @@
+{
+  "2.0.0-alpha.100": {
+    "date": "20180108",
+    "title": "First Public Alpha",
+    "new": "Everything is new",
+    "fixed": "API Calls in settings page being to fast for refresh|Sign-up form submit issue in Wizard",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.110": {
+    "date": "20180109",
+    "title": "Small Addition",
+    "new": "3 Options for appearance|Upgrade module completed",
+    "fixed": "More API lag times",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.115": {
+    "date": "20180109",
+    "title": "Updater Fix",
+    "new": "New Updater Progress Bar",
+    "fixed": "Lag Times on updater|Added longer timeouts",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.120": {
+    "date": "2018-01-10 20:00:00",
+    "title": "Color Picker Testing",
+    "new": "",
+    "fixed": "Attempt to fix color picker",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.125": {
+    "date": "2018-01-10 23:00",
+    "title": "Image Manager",
+    "new": "Added Image Manager",
+    "fixed": "Color Selector|Wizard Preloader",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.130": {
+    "date": "2018-01-10 23:00",
+    "title": "Plugin Framework",
+    "new": "Plugin Framework nearly complete|Added Mail Plugin",
+    "fixed": "",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.200": {
+    "date": "2018-02-04 21:00",
+    "title": "Homepage Work Started",
+    "new": "Plex Streams on homepage|Plex Recent Added on homepage|Emby Streams on homepage|Emby Recent Added on homepage|SabNZBd on homepage",
+    "fixed": "Multiple things for performance",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.250": {
+    "date": "2018-02-05 21:00",
+    "title": "NZBGet Homepage",
+    "new": "NZBGet on homepage - please check for bugs",
+    "fixed": "",
+    "notes": "This is alpha - expect bugs|Please report bugs in GitHub issues page"
+  },
+  "2.0.0-alpha.800": {
+    "date": "2018-04-20 19:25",
+    "title": "Update so heavy - is it Stoned?",
+    "new": "Homepage Items - see below:|Downloader: Deluge - Transmission - Qbit|Calendar: Sonarr - Radarr - CouchPotato - Sickrage/Beard/Medusa|Ombi requests and approvals|Custom HTML (2 blocks)|Custom CSS|Plex Invites|Mail Templates",
+    "fixed": "Lots of minor little things",
+    "notes": "Beta coming soon"
+  },
+  "2.0.0-alpha.815": {
+    "date": "2018-04-24 21:36",
+    "title": "Bug Fixes",
+    "new": "",
+    "fixed": "Plex Now Playing bug not showing items|Invite menu not loaded on initial load",
+    "notes": "Beta coming soon"
+  },
+  "2.0.0-beta.100": {
+    "date": "2018-05-04 19:00",
+    "title": "First Beta Release",
+    "new": "SpeedTest|Email templates",
+    "fixed": "",
+    "notes": "RC coming soon"
+  },
+  "2.0.0-beta.200": {
+    "date": "2018-05-17 18:00",
+    "title": "Second Beta Release",
+    "new": "Homepage Test Button on some modules|Smaller Nav bar|Recent Item Limits|Nav buttons on sliders|Settings save revamped|Ombi user import on register|Test iFrame buttons|Ombi auth for requesting|Favicon support|Ping Support|New Alert Styles|New Lockout Timeout system",
+    "fixed": "Calendar Alt Title|Deluge Hide/Seed|More DDNS workarounds|Homepage auth issues|Deluge no results|PHPMailer plugin fixes|Wizard auto login",
+    "notes": "Calendar has Today Button now"
+  },
+  "2.0.0-beta.500": {
+    "date": "2018-08-31 23:59",
+    "title": "A Bunch of things since last real release",
+    "new": "Chat System - Powered by Pusher|Keyboard Shortcuts|Fullscreen button|Icon and Image selector for tabs|Multiple Tautulli SSO|Pagination to search|Redirect added to error page|Auth Debug toggle|Custom CSS and JS for themes|Theme Marketplace|Plugin Marketplace|Calendar Sorting|Email user from user mgmt|Tab sort for unsorted|Cache image size option",
+    "fixed": "Deluge Test Button|PHP5.6 Error|Sonarr local cert|Plex Invite error codes|Email center fixes #891|Fixed log out issues|Fixed Cookie issues - Use any domain you want now",
+    "notes": "Lots of small fixes"
+  },
+  "2.0.0-beta.600": {
+    "date": "2018-09-02 02:00",
+    "title": "2FA - Finally",
+    "new": "Google 2FA - More services to come",
+    "fixed": "Small Chat dupe bug",
+    "notes": "More small fixes"
+  },
+  "2.0.0-beta.800": {
+    "date": "2018-10-25 22:40",
+    "title": "Closer to v2.0",
+    "new": "rTorrent HP Support|Plex OAuth|Tautulli SSO using Plex OAuth|Import Plex Users|Combined Downloaders on HP|Account Area Active Token Section|Alphanumberic tab icons|Debug Area WIP|Remember me length setting|Disable ping sound",
+    "fixed": "NZBGet file size bug|Password Save bug|Auth issue if DB has wrong permissions|Ombi TV show issue|Scrollbars on FF|Token revoke on logout|BTC address|Homepage and Settings tab type non-change fix|Tab settings not reset (#942)|SSO code position (#946)|Gravatar email change fix (#951)",
+    "notes": "Added plex token to db for plex users|Added SSL option to chat|Added Bazzrr logo|Disable username and email change if 2FA enabled|Misc UI changes"
+  },
+  "2.0.0-beta.950": {
+    "date": "2019-01-23 22:40",
+    "title": "The one before v2.0",
+    "new": "Ombi SSO with Plex Token|Default TV Request options for Ombi|Token Section in user settings|Local URL connection if on LAN|Added preload Tab options|Added downloader count to combined downloader|Added option to disable Strict Plex Friend",
+    "fixed": "Fixed Emby Connect|Disable lock function for oAuth users (#973)|Better error handling for the *arrs|make settings open first tab if not active already (#901)|make sure db ends with .db (#971)|Fix deluge hide seeding etc (#867)|fix downloaders showing blank if no permissions (#977)|Plex login button css (#985)|Add tab help (#987)|Fix close buttons (#883)|close buttons on popups fixed (#996)|fix clipboard with value with filename containing space (#994)|Move machine ID check outside of foreach (#1014)|Fixed language error if not langpack is installed for that lang (#1028)|undefined index on sickrage (#1038)|Fix iframe focus not shifting back (#1042)",
+    "notes": "Added more debug information|Reworked the way languages are loaded|Updated Language strings|Revamped Splash page"
+  }
+}

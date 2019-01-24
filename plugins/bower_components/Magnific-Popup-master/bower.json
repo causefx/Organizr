@@ -1,0 +1,16 @@
+{
+  "name": "magnific-popup",
+  "main": [
+    "dist/jquery.magnific-popup.js",
+    "dist/magnific-popup.css"
+  ],
+  "dependencies": {
+    "jquery": ">=1.8.0"
+  },
+  "ignore": [
+    "node_modules/",
+    "components/",
+    "website/",
+    "libs/"
+  ]
+}

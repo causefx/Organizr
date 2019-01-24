@@ -1,0 +1,10 @@
+.tablesaw-fix-persist {
+	table-layout: fixed;
+}
+@media only all {
+	/* Unchecked manually: Always hide */
+	.tablesaw-swipe th.tablesaw-cell-hidden,
+	.tablesaw-swipe td.tablesaw-cell-hidden {
+		display: none;
+	}
+}

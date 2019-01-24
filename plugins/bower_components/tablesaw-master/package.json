@@ -1,0 +1,47 @@
+{
+  "name": "tablesaw",
+  "title": "Tablesaw",
+  "description": "A set of plugins for responsive tables.",
+  "version": "2.0.3",
+  "homepage": "https://github.com/filamentgroup/tablesaw",
+  "author": {
+    "name": "Zach Leatherman",
+    "company": "Filament Group",
+    "email": "zach@filamentgroup.com",
+    "url": "http://filamentgroup.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/filamentgroup/tablesaw.git"
+  },
+  "bugs": "https://github.com/filamentgroup/tablesaw/issues",
+  "license": "MIT",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/grunt travis"
+  },
+  "dependencies": {
+    "jquery": "^2.2.3",
+    "respond.js": "^1.4.2",
+    "shoestring": "^1.0.3"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-bytesize": "~0.2.0",
+    "grunt-contrib-clean": "~1.0.0",
+    "grunt-contrib-compress": "~1.2.0",
+    "grunt-contrib-concat": "~1.0.1",
+    "grunt-contrib-copy": "~1.0.0",
+    "grunt-contrib-cssmin": "^1.0.1",
+    "grunt-contrib-jshint": "~1.0.0",
+    "grunt-contrib-qunit": "~1.2.0",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "~1.0.0",
+    "grunt-gh-pages": "~1.1.0",
+    "grunt-myth": "~1.1.0",
+    "matchdep": "~1.0.1",
+    "qunitjs": "^1.23.1"
+  }
+}

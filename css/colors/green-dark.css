@@ -1,0 +1,166 @@
+@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900);
+/*Theme Colors*/
+/*bootstrap Color*/
+/*Normal Color*/
+/*Border radius*/
+/*Preloader*/
+.preloader {
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  position: fixed;
+  z-index: 99999;
+  background: #fff;
+}
+.preloader .cssload-speeding-wheel {
+  position: absolute;
+  top: calc(50% - 3.5px);
+  left: calc(50% - 3.5px);
+}
+/*Just change your choise color here its theme Colors*/
+body {
+  background: #2f323e;
+}
+/*Top Header Part*/
+.logo i {
+  color: #ffffff;
+}
+.navbar-header {
+  background: #3cd0cc;
+}
+.navbar-top-links > li > a {
+  color: #ffffff;
+}
+/*Right panel*/
+.right-sidebar .rpanel-title {
+  background: #3cd0cc;
+}
+/*Bread Crumb*/
+.bg-title .breadcrumb .active {
+  color: #3cd0cc;
+}
+/*Sidebar*/
+.sidebar {
+  background: #2f323e;
+  box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.08);
+}
+.sidebar .label-custom {
+  background: #01c0c8;
+}
+#side-menu li a {
+  color: #97999f;
+}
+#side-menu li a {
+  color: #97999f;
+  border-left: 0px solid #2f323e;
+}
+#side-menu > li > a:hover,
+#side-menu > li > a:focus {
+  background: rgba(0, 0, 0, 0.07);
+}
+#side-menu > li > a.active {
+  background: #3cd0cc;
+  color: #ffffff;
+  font-weight: 500;
+}
+#side-menu ul > li > a:hover {
+  color: #ffffff;
+}
+#side-menu ul > li > a.active {
+  color: #ffffff;
+  font-weight: 500;
+}
+.user-profile .user-pro-body .u-dropdown {
+  color: #97999f;
+}
+/*themecolor*/
+.bg-theme {
+  background-color: #707cd2 !important;
+}
+.bg-theme-dark {
+  background-color: #3cd0cc !important;
+}
+/*Button*/
+.btn-custom {
+  background: #3cd0cc;
+  border: 1px solid #3cd0cc;
+  color: #ffffff;
+}
+.btn-custom:hover {
+  background: #3cd0cc;
+  opacity: 0.8;
+  color: #ffffff;
+  border: 1px solid #3cd0cc;
+}
+/*Custom tab*/
+.customtab li.active a,
+.customtab li.active a:hover,
+.customtab li.active a:focus {
+  border-bottom: 2px solid #3cd0cc;
+  color: #3cd0cc;
+}
+.tabs-vertical li.active a,
+.tabs-vertical li.active a:hover,
+.tabs-vertical li.active a:focus {
+  background: #3cd0cc;
+  border-right: 2px solid #3cd0cc;
+}
+/*Nav-pills*/
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:focus,
+.nav-pills > li.active > a:hover {
+  background: #3cd0cc;
+  color: #ffffff;
+}
+/*Extra css*/
+.bg-theme,
+.fc-toolbar,
+.fc th.fc-sun,
+.fc th.fc-tue,
+.fc th.fc-thu,
+.fc th.fc-sat,
+.fc th.fc-mon,
+.fc th.fc-wed,
+.fc th.fc-fri,
+.fc-button {
+  background-color: #3cd0cc !important;
+}
+.table tbody tr.advance-table-row.active,
+.fc-button {
+  border-color: #3cd0cc;
+}
+.manage-users .tabs-style-iconbox nav {
+  background: #3cd0cc;
+}
+.manage-users .tabs-style-iconbox nav li.tab-current a {
+  background: #3cd0cc;
+}
+.manage-users .tabs-style-iconbox nav li.tab-current a:after {
+  border-top-color: #3cd0cc;
+}
+.panel-themecolor,
+.panel-theme {
+  border-color: #3cd0cc;
+}
+.panel-themecolor .panel-heading,
+.panel-theme .panel-heading {
+  border-color: #3cd0cc;
+  color: white;
+  background-color: #3cd0cc;
+}
+.panel-themecolor .panel-heading a,
+.panel-theme .panel-heading a {
+  color: #ffffff;
+}
+.panel-themecolor .panel-heading a:hover,
+.panel-theme .panel-heading a:hover {
+  color: rgba(255, 255, 255, 0.5);
+}
+.panel-themecolor a,
+.panel-theme a {
+  color: #3cd0cc;
+}
+.panel-themecolor a:hover,
+.panel-theme a:hover {
+  color: #259a97;
+}

@@ -1,0 +1,291 @@
+/* General
+---------------------------------------- */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+}
+
+p, blockquote, q, pre, address, hr, code, samp,
+dl, ol, ul, form, table, fieldset, menu {
+	margin-bottom: 1.5em;
+}
+
+/* Structure
+---------------------------------------- */
+html {
+	font-size: 100%;
+}
+
+/*
+body {
+	font-family: arial, helvetica, sans-serif;
+	font-size: .875em;
+	
+}
+*/
+
+
+/* Text
+---------------------------------------- */
+h1, h2, h3, h4, h5, h6 {
+	font-weight: bold;
+}
+
+h1 {
+	font-size: 3em;
+	line-height: 1.1;
+	margin-bottom: .238em;
+}
+
+h2 {
+	font-size: 2em;
+	line-height: 1.15;
+	margin-bottom: .357em;
+}
+
+h3 {
+	font-size: 1.5em;
+	line-height: 1.2;
+	margin-bottom: .476em;
+}
+
+h4, h5, h6 {
+	margin-bottom: .571em;
+}
+
+h4 {
+	font-size: 1.25em;
+	line-height: 1.25;
+}
+
+h5 {
+	font-size: 1em;
+}
+
+h6 {
+	font-size: 1em;
+}
+
+em, i {
+	font-style: italic;
+}
+
+strong, b {
+	font-weight: bold;
+}
+
+blockquote, q, cite {
+	font-style: italic;
+}
+
+blockquote, q {
+	quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: "";
+	content: none;
+}
+
+code, kbd, pre, samp, tt {
+	font-family: "andale mono", consolas, monaco, "lucida console", "courier new", courier, monospace;
+	line-height: 1.3;
+}
+
+pre {
+	/* word-wrap: break-word; */
+	white-space: pre-wrap;
+}
+
+abbr, acronym, dfn {
+	border-bottom: 1px dotted;
+	cursor: help;
+	font-variant: normal;
+	font-style: normal;
+}
+
+var {
+	font-style: normal;
+}
+
+center {
+	text-align: center;
+}
+
+/* Hypertext
+---------------------------------------- */
+/*
+a:link {
+}
+
+a:visited {
+}
+
+a:hover {
+}
+
+a:active {
+}
+
+
+a:focus {
+	outline: 1px dotted;
+}
+*/
+/* Image
+---------------------------------------- */
+img {
+	border: 0;
+}
+
+/* List
+---------------------------------------- */
+
+ul {
+	list-style: disc outside none;
+}
+
+ol {
+	list-style: decimal outside none;
+}
+
+li {
+	margin-left: 2em;
+}
+
+li ul, li ol {
+	margin-bottom: 0;
+}
+
+dt {
+	font-weight: bold;
+}
+
+dd {
+	margin-bottom: 1em;
+}
+
+/* Presentation
+---------------------------------------- */
+hr {
+	border: 0;
+	border-bottom: 1px solid;
+}
+
+big {
+	font-size: 1.25em;
+}
+
+small, sub, sup {
+	font-size: .85em;
+}
+
+sub, sup {
+	line-height: 1;
+}
+
+sub {
+	vertical-align: bottom;
+}
+
+sup {
+	vertical-align: top;
+}
+
+del, s, strike {
+	text-decoration: line-through;
+}
+
+ins {
+	text-decoration: none;
+	border-bottom: 1px dotted;
+}
+
+bdo {
+	border-bottom: 1px dotted;
+}
+
+u {
+	text-decoration: underline;
+}
+
+/* Form
+---------------------------------------- */
+fieldset {
+	padding: 1em;
+}
+
+legend {
+	font-weight: bold;
+	padding: 0 .25em;
+}
+
+input, textarea, select, button {
+	font-family: inherit;
+	font-size: 1em;
+}
+
+input[type=button], input[type=file], input[type=image], input[type=reset], input[type=submit], 
+button[type=button], button[type=reset], button[type=submit] {
+	cursor: pointer;
+	line-height: 1;
+}
+/*
+input[type=text], input[type=password], textarea {
+	padding: 1px;
+}
+*/
+textarea {
+	text-align: left;
+	line-height: 1.25;
+}
+
+/* Table
+---------------------------------------- */
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	border: 0;
+	line-height: 1.3;
+}
+
+caption, th, td {
+	text-align: left;
+	vertical-align: top;
+}
+
+th, td {
+	padding: .5em 1em;
+	border: 1px solid;
+}
+
+caption {
+	padding-bottom: 1em;
+}
+
+th {
+	font-weight: bold;
+}
+
+/* Classes
+---------------------------------------- */
+
+ul.nolist, ul.nolist li {
+	display:block;
+	list-style:none;
+	padding:0;
+	margin:0;
+}
+
+.clear {
+	clear:both;
+}

@@ -1,3 +1,8 @@
+# PhpStorm Files
+.idea/*
+node_modules/*
+package-lock.json
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
@@ -49,6 +54,10 @@ Temporary Items
 # Files from my local computer
 php_errors.log
 
+# Backup Files
+.pydio_id
+
+.idea/*
 # =========================
 # Organizr files
 # =========================
@@ -63,6 +72,7 @@ test.php
 users.db
 speedtest.db
 chatpack.db
+Docker.txt
 config/cacert.pem
 config/config.php
 config/config*.bak.php
@@ -82,6 +92,54 @@ debug.php
 OrganizrV2/*
 orgv2/*
 test.php
+test/*
 organizrLoginLog.json
 organizrLog.json
 api/config/config*
+upgrade/*
+api/upgrade*
+api/functions/cert/cacert.pem
+wallpaper.jpg
+strings.json
+css/themes/*.css
+!css/themes/Organizr.css
+!css/themes/Blue.css
+*sonflix*
+plugins/images/cache/*.jpg
+testdata*
+strings.txt
+strings.php
+plugins/theme_files/*
+plugins/plugin_files/*
+!plugins/theme_files/index.html
+!plugins/plugin_files/index.html
+# =========================
+# Plugin files
+# =========================
+api/plugins/*
+!api/plugins/invites.php
+!api/plugins/api/invites.php
+!api/plugins/config/invites.php
+!api/plugins/js/invites.js
+!api/plugins/chat.php
+!api/plugins/api/chat.php
+!api/plugins/config/chat.php
+!api/plugins/js/chat.js
+!api/plugins/php-mailer.php
+!api/plugins/api/php-mailer.php
+!api/plugins/config/php-mailer.php
+!api/plugins/js/php-mailer.js
+!api/plugins/speedTest.php
+!api/plugins/api/speedTest.php
+!api/plugins/config/speedTest.php
+!api/plugins/js/speedTest.js
+!api/plugins/misc/emailTemplates/default.php
+!api/plugins/misc/emailTemplates/gray.php
+!api/plugins/misc/emailTemplates/light.php
+!api/plugins/misc/emailTemplates/plehex.php
+!api/plugins/misc/speedTest/empty.php
+!api/plugins/misc/speedTest/garbage.php
+!api/plugins/misc/speedTest/getIP.php
+!api/plugins/misc/speedTest/telemetry.php
+!api/plugins/misc/speedTest/telemetry_settings.php
+!api/plugins/misc/speedTest/speedtest_worker.min.js

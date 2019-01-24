@@ -1,0 +1,49 @@
+{
+    "name": "bootstrap.rtl",
+    "description": "Bootstrap RTL 3.3.6",
+    "version": "3.3.6",
+    "homepage": "https://github.com/mojtabakaviani/bootstrap-rtl",
+    "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
+    "keywords": [
+        "css",
+        "js",
+        "less",
+        "mobile-first",
+        "responsive",
+        "front-end",
+        "framework",
+        "web",
+        "rtl"
+    ],
+
+    "authors": [
+        "Mojtaba Kaviani"
+    ],
+    "main": [
+        "dist/css/bootstrap-rtl.css",
+        "dist/css/bootstrap-rtl.min.css",
+        "dist/css/bootstrap-theme-rtl.css",
+        "dist/css/bootstrap-theme-rtl.min.css",
+        "dist/js/bootstrap-rtl.js",
+        "dist/js/bootstrap-rtl.min.js",
+        "dist/fonts/glyphicons-halflings-regular.eot",
+        "dist/fonts/glyphicons-halflings-regular.svg",
+        "dist/fonts/glyphicons-halflings-regular.ttf",
+        "dist/fonts/glyphicons-halflings-regular.woff",
+        "dist/fonts/glyphicons-halflings-regular.woff2"
+
+    ],
+    "ignore": [
+        "**/.*",
+        "_config.yml",
+        "CNAME",
+        "composer.json",
+        "CONTRIBUTING.md",
+        "docs",
+        "js/tests"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "jquery": ">= 1.9.1"
+    }
+}

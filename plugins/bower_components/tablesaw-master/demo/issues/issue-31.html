@@ -1,0 +1,83 @@
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TableSaw Stack Table</title>
+
+	<link rel="stylesheet" href="../../dist/tablesaw.css">
+
+	<!--[if lt IE 9]><script src="../../dist/dependencies/respond.js"></script><![endif]-->
+	<script src="../../dist/dependencies/jquery.js"></script>
+	<script src="../../dist/tablesaw.js"></script>
+	<script src="../../dist/tablesaw-init.js"></script>
+</head>
+<body>
+	<div class="demo-header">
+		<div class="company">
+			<img src="http://filamentgroup.com/images/fg-logo-positive-sm-crop.png">
+		</div>
+		<div class="details">
+			<h1 class="description-container">Demo of <span class="repo-name">Tablesaw</span>
+				<span class="description">A group of plugins for responsive tables.</span>
+			</h1>
+			<ul class="outbound-links">
+				<li><a href="https://github.com/filamentgroup/tablesaw">Code</a></li>
+				<li><a href="https://github.com/filamentgroup/tablesaw/issues">Issues</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="nav-container">
+		<div class="docs-globalnav">
+			<nav class="docs-nav">
+			<a href="kitchensink.html">Kitchen Sink</a>
+			<a href="modeswitch.html">Mode Switch</a>
+			<a href="sort.html">Sortable</a>
+			<a href="stack.html" class="current">Stack</a>
+			<a href="stackonly.html">Stack Only</a>
+			<a href="swipe.html">Swipe Table</a>
+			<a href="toggle.html">Toggle</a>
+			<a href="bare.html">Bare</a>
+			</nav>
+		</div>
+	</div>
+	<div class="docs-main">
+		<h2>Stack Table</h2>
+		<p>The Stack Table stacks the table headers to a two column layout with headers on the left. Resize your viewport to across the 40em (640px) breakpoint to see the change.</p>
+		<table class="tablesaw" data-tablesaw-mode="stack">
+			<thead>
+				<tr>
+					<th>Skill</th>
+					<th>Last Entry</th>
+					<th>Alphabet</th>
+					<th>More Alphabet</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr data-tablesaw-no-labels>
+					<td>Footer</td>
+					<td>May 11, 12:45a</td>
+					<td>A, B, C, D</td>
+					<td>E, F, G, H</td>
+				</tr>
+			</tfoot>
+			<tbody>
+				<tr>
+					<td>Bartender</td>
+					<td>May 2, 1:34p John K.</td>
+					<td>A, B, C, D</td>
+					<td>E, F, G, H</td>
+				</tr>
+				<tr>
+					<td>Host</td>
+					<td>May 11, 12:45a</td>
+					<td>A, B, C, D</td>
+					<td>E, F, G, H</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+</body>
+</html>

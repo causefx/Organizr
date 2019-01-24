@@ -1,0 +1,67 @@
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TableSaw Sortable Table</title>
+
+	<link rel="stylesheet" href="../dist/tablesaw.css">
+	<link rel="stylesheet" href="demo.css">
+	<link rel="stylesheet" href="//filamentgroup.github.io/demo-head/demohead.css">
+
+	<!--[if lt IE 9]><script src="../dist/dependencies/respond.js"></script><![endif]-->
+	<script src="../dist/dependencies/jquery.js"></script>
+	<script src="../dist/tablesaw.js"></script>
+	<script src="../dist/tablesaw-init.js"></script>
+	<script src="//filamentgroup.github.io/demo-head/loadfont.js"></script>
+
+	<script>
+	$( document ).ready(function() {
+		var mydata = [
+			{"Name":"A", "P1":"1", "P2":"2", "P3":"3", "P4":"1", "P5":"2", "P6":"3"},
+			{"Name":"B", "P1":"4", "P2":"5", "P3":"6", "P4":"1", "P5":"2", "P6":"3"},
+			{"Name":"C", "P1":"7", "P2":"8", "P3":"9", "P4":"1", "P5":"2", "P6":"3"}
+		];
+
+		$( '#ajaxed' ).html( "<table class='tablesaw tablesaw-stack' data-tablesaw-mode='stack' id='mytable'><thead><tr><th scope='col' data-tablesaw-priority='persist'>Name</th><th scope='col'>P1</th><th scope='col'>P2</th><th scope='col'>P3</th><th scope='col'>P4</th><th scope='col'>P5</th><th scope='col'>P6</th></tr></thead><tbody id='place1'></tbody></table>" );
+
+		var tbody = $( '#mytable tbody' ), props = ["Name","P1","P2","P3","P4","P5","P6"];
+
+		$.each( mydata, function(i, value){
+			var tr = $('<tr>');
+
+			$.each(props, function(i, prop){
+				$('<td>').html(value[prop]).appendTo(tr); 
+			});
+
+			tbody.append(tr);
+		});
+
+		$('#mytable').table().data( "table" ).refresh();
+
+	});
+	</script>
+</head>
+<body>
+	<div class="demo-header">
+		<div class="company">
+			<img src="http://filamentgroup.com/images/fg-logo-positive-sm-crop.png">
+		</div>
+		<div class="details">
+			<h1 class="description-container">Demo of <span class="repo-name">Tablesaw</span>
+				<span class="description">A group of plugins for responsive tables.</span>
+			</h1>
+			<ul class="outbound-links">
+				<li><a href="https://github.com/filamentgroup/tablesaw">Code</a></li>
+				<li><a href="https://github.com/filamentgroup/tablesaw/issues">Issues</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="docs-main">
+		<h2>Swipe Table</h2>
+
+		<div id="ajaxed"></div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+table.tablesaw {
+	empty-cells: show;
+	max-width: 100%;
+	width: 100%;
+}
+.tablesaw {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+/* Structure */
+.tablesaw {
+	border: 0;
+	padding: 0;
+}
+.tablesaw th,
+.tablesaw td {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+
+	padding: .5em .7em;
+}
+.tablesaw thead tr:first-child th {
+	padding-top: .9em;
+	padding-bottom: .7em;
+}

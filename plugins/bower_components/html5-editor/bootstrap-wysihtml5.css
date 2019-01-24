@@ -1,0 +1,83 @@
+
+
+ul.wysihtml5-toolbar {
+	margin: 0;
+	padding: 0;
+	display: block;
+	border: 1px solid #e3e3e3;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	border-bottom:0px;
+	
+}
+
+ul.wysihtml5-toolbar::after {
+	clear: both;
+	display: table;
+	content: "";
+}
+
+ul.wysihtml5-toolbar > li {
+	float: left;
+	display: list-item;
+	list-style: none;
+	padding: 0;
+	margin: 0px 5px 0px 0px;
+}
+
+ul.wysihtml5-toolbar a{
+	margin: 0px;
+}
+
+
+ul.wysihtml5-toolbar a.btn{
+	padding: 12px 15px;
+	background: inherit;
+	font-size: inherit;
+	border-radius: 0;
+	color: inherit;
+}
+ul.wysihtml5-toolbar a:hover.btn{
+	color: #333;
+}
+
+ul.wysihtml5-toolbar a[data-wysihtml5-command=bold] {
+	font-weight: bold;
+}
+
+ul.wysihtml5-toolbar a[data-wysihtml5-command=italic] {
+	font-style: italic;
+}
+
+ul.wysihtml5-toolbar a[data-wysihtml5-command=underline] {
+	text-decoration: underline;
+}
+
+ul.wysihtml5-toolbar a.btn.wysihtml5-command-active {
+	background-image: none;
+	background: #f6f6f6;
+	box-shadow: none;
+	color: #333;
+	outline: 0;
+}
+
+ul.wysihtml5-commands-disabled .dropdown-menu {
+	display: none !important;
+}
+
+ul.wysihtml5-toolbar .fa{
+	margin: 0;
+	font-size: 14px;
+}
+.wysihtml5-textarea{
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	border-top: none;
+}
+.wysihtml5-textarea:focus{
+	border-top: none;
+	background: #fff;
+}
+
+
+

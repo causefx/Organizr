@@ -1,0 +1,9 @@
+dist
+jSteps
+docs
+downloads
+*~
+*.diff
+*.patch
+.DS_Store
+node_modules

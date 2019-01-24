@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Upgrading...</title>
+    <!-- Bootstrap Core CSS -->
+    <link href="../../bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- animation CSS -->
+    <link href="../../css/animate.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="../../css/dark.css" rel="stylesheet">
+    <!-- color CSS -->
+    <link href="../../css/colors/default.css" id="theme" rel="stylesheet">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+<!-- Preloader -->
+
+<section id="wrapper" class="error-page">
+    <div class="error-box">
+        <div class="error-body text-center">
+            <h1 class="text-info">Upgrading</h1>
+            <h3 class="text-uppercase">Please wait while we update Organizr for you...</h3>
+            <p class="text-muted m-t-30 m-b-30 text-uppercase">This page will auto-refresh in <span
+                    id="countdown"></span> second(s)</p>
+        </div>
+
+    </div>
+</section>
+<!-- jQuery -->
+<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="../../bootstrap/dist/js/bootstrap.min.js"></script>
+<script>
+    var time_left = 10;
+    var cinterval;
+
+    function time_dec() {
+        time_left--;
+        document.getElementById('countdown').innerHTML = time_left;
+        if (time_left == 0) {
+            local('s', 'message', 'Upgrade Complete|Thank you!');
+            document.getElementById('countdown').innerHTML = time_left;
+            window.location.replace("../../");
+            clearInterval(cinterval);
+        }
+    }
+
+    function localStorageSupport() {
+        return (('localStorage' in window) && window['localStorage'] !== null)
+    }
+
+    function local(type, key, value = null) {
+        if (localStorageSupport) {
+            switch (type) {
+                case 'set':
+                case 's':
+                    localStorage.setItem(key, value);
+                    break;
+                case 'get':
+                case 'g':
+                    return localStorage.getItem(key);
+                    break;
+                case 'remove':
+                case 'r':
+                    localStorage.removeItem(key);
+                    break;
+                default:
+                    console.warn('Organizr Function: localStorage action not defined');
+            }
+        }
+    }
+
+    cinterval = setInterval('time_dec()', 1000);
+
+
+</script>
+
+
+</body>
+</html>

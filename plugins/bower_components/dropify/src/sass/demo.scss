@@ -1,0 +1,101 @@
+@import "demo/reset";
+@import "demo/variables";
+@import "demo/helpers/mixins";
+@import "demo/helpers/grid";
+@import "demo/helpers/shortcuts";
+@import "demo/grid";
+@import "demo/typo";
+
+body {
+    background: $background-color;
+    font-family: $base-font-family;
+    font-size: $base-font-size;
+    line-height: $base-line-height;
+    color: $text-color;
+}
+
+header#header {
+    background: $main-color;
+    color: #FFD270;
+    font-family: $headings-font-family;
+    font-weight: 700;
+    letter-spacing: $headings-letter-spacing;
+    text-align: center;
+    font-size: 70px;
+    line-height: 60px;
+    padding: 50px 30px;
+    margin: 0 0 30px 0;
+
+    h1 {
+        color: #FFD270;
+        font-size: 70px;
+        line-height: 90px;
+        font-weight: 700;
+
+        &::after {
+            background: transparentize(#FFD270, 0.25);
+        }
+    }
+
+    h2 {
+        color: transparentize(#FFD270, 0.5);
+    }
+}
+
+footer#footer {
+    background: #DDD;
+    color: #888;
+    padding: 30px 0;
+    margin-top: 30px;
+
+    a {
+        &, &:visited {
+            color: #888;
+        }
+    }
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+p.help {
+    color: #999;
+}
+
+#toggleDropify {
+    font-size: 12px;
+    text-transform: uppercase;
+    background: #DDD;
+    color: #888;
+    font-weight: bold;
+    border: 0;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-left: 10px;
+    transition: background 0.1s linear;
+
+    &:hover {
+        background: #EEE;
+    }
+}
+
+@media (max-width: 480px) {
+    header#header {
+        padding: 30px 15px;
+
+        h1 {
+            font-size: 44px;
+            line-height: 70px;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+    }
+}
+

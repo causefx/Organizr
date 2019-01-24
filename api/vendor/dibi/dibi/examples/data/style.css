@@ -1,0 +1,64 @@
+body {
+	font: 15px/1.5 Tahoma, Verdana, Myriad Web, Syntax, sans-serif;
+	color: #333;
+	background: #fff url('dibi-powered.gif') no-repeat 99% 1em;
+	margin: 1.6em;
+	padding: 0;
+}
+
+h1, h2 {
+	font-size: 210%;
+	font-weight: normal;
+	color: #036;
+}
+
+h2 {
+	font-size: 150%;
+}
+
+a {
+	color: #000080;
+}
+
+table.dump {
+	padding: 0;
+	margin: 0;
+	border-collapse:collapse;
+}
+
+table.dump td, table.dump th {
+	color: #505767;
+	background: #fff;
+	border: 1px solid #d1cdab;
+	padding: 6px 6px 6px 12px;
+	text-align: left;
+}
+
+table.dump th {
+	font-size: 80%;
+	color: #525b37;
+	background: #e3e9ba;
+}
+
+/* dump() */
+pre.tracy-dump, pre.dump {
+	color: #444; background: white;
+	border: 1px solid silver;
+	padding: 1em;
+	margin: 1em 0;
+}
+pre.tracy-dump .php-array, pre.tracy-dump .php-object {
+	color: #C22;
+}
+pre.tracy-dump .php-string {
+	color: #080;
+}
+pre.tracy-dump .php-int, pre.tracy-dump .php-float {
+	color: #37D;
+}
+pre.tracy-dump .php-null, pre.tracy-dump .php-bool {
+	color: black;
+}
+pre.tracy-dump .php-visibility {
+	font-size: 85%; color: #999;
+}

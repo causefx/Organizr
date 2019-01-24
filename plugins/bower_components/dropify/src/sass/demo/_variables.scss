@@ -1,0 +1,58 @@
+$background-color: #F8F8F8 !default;
+$base-font-family: "Roboto", "Helvetica Neue", "Helvetica" !default;
+$base-font-size:   15px !default;
+$base-line-height: $base-font-size * 1.8 !default;
+$text-color:       #666 !default;
+$base-margin:      20px !default;
+$bold-font-weight: 700 !default;
+
+$main-color: #1C252C !default;
+
+$headings-font-family:    "Roboto Condensed", "Helvetica Neue", "Helvetica" !default;
+$headings-font-weight:    400 !default;
+$headings-line-height:    1.4 !default;
+$headings-letter-spacing: -0.04em !default;
+$headings-text-transform: uppercase !default;
+$headings-color:          #444 !default;
+$headings-small-color:    lighten($text-color, 30%) !default;
+$headings-margin:         $base-margin !default;
+
+$grid-columns:      12 !default;
+$grid-gutter-width: 30px !default;
+
+
+$font-size-h1: 30px !default;
+$font-size-h2: 26px !default;
+$font-size-h3: 24px !default;
+$font-size-h4: 20px !default;
+
+
+///////////////////////////
+/// MEDIA QUERIES
+///////////////////////////
+$screen-xs: 480px !default;
+$screen-sm: 768px !default;
+$screen-md: 992px !default;
+$screen-lg: 1140px !default;
+
+$screen-xs-min:              $screen-xs !default;
+$screen-phone:               $screen-xs-min !default;
+
+$screen-sm-min:              $screen-sm !default;
+$screen-tablet:              $screen-sm-min !default;
+
+$screen-md-min:              $screen-md !default;
+$screen-desktop:             $screen-md-min !default;
+
+$screen-lg-min:              $screen-lg !default;
+$screen-lg-desktop:          $screen-lg-min !default;
+
+$screen-xs-max:              ($screen-sm-min - 1) !default;
+$screen-sm-max:              ($screen-md-min - 1) !default;
+$screen-md-max:              ($screen-lg-min - 1) !default;
+
+$container-tablet:           ((720px + $grid-gutter-width)) !default;
+$container-desktop:          ((940px + $grid-gutter-width)) !default;
+$container-lg-desktop:       ((1140px + $grid-gutter-width)) !default;
+
+$container-max-width:        $screen-lg !default;

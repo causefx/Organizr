@@ -1,0 +1,140 @@
+@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900);
+/*Theme Colors*/
+/*bootstrap Color*/
+/*Normal Color*/
+/*Border radius*/
+/*Preloader*/
+.preloader {
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  position: fixed;
+  z-index: 99999;
+  background: #fff;
+}
+.preloader .cssload-speeding-wheel {
+  position: absolute;
+  top: calc(50% - 3.5px);
+  left: calc(50% - 3.5px);
+}
+/*Just change your choise color here its theme Colors*/
+body {
+  background: #3d3d3d;
+}
+/*Top Header Part*/
+.top-left-part {
+  background: #3d3d3d;
+}
+.nav-small-cap {
+  color: #cbcbcb;
+}
+.logo i {
+  color: #ffffff;
+}
+.navbar-header {
+  background: #e20b0b;
+}
+.navbar-top-links > li > a {
+  color: #ffffff;
+}
+/*Right panel*/
+.right-sidebar .rpanel-title {
+  background: #e20b0b;
+}
+/*Bread Crumb*/
+.bg-title .breadcrumb .active {
+  color: #e20b0b;
+}
+/*Sidebar*/
+.sidebar {
+  background: #3d3d3d;
+  box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.08);
+}
+.sidebar .label-custom {
+  background: #01c0c8;
+}
+#side-menu li a {
+  color: #cbcbcb;
+}
+#side-menu li a {
+  color: #cbcbcb;
+  border-left: 0px solid #3d3d3d;
+}
+#side-menu > li > a:hover,
+#side-menu > li > a:focus {
+  background: rgba(0, 0, 0, 0.07);
+}
+#side-menu > li > a.active {
+  border-left: 3px solid #e20b0b;
+  color: #ffffff;
+  font-weight: 500;
+}
+#side-menu > li > a.active i {
+  color: #ffffff;
+}
+#side-menu ul > li > a:hover {
+  color: #ffffff;
+}
+#side-menu ul > li > a.active {
+  color: #ffffff;
+  font-weight: 500;
+}
+.sidebar #side-menu .user-pro .nav-second-level a:hover {
+  color: #e20b0b;
+}
+.content-wrapper .sidebar .nav-second-level li {
+  background: #444859;
+}
+@media (min-width: 768px) {
+  .content-wrapper #side-menu ul,
+  .content-wrapper .sidebar #side-menu > li:hover,
+  .content-wrapper .sidebar .nav-second-level > li > a {
+    background: #444859;
+  }
+}
+.user-profile .user-pro-body .u-dropdown {
+  color: #cbcbcb;
+}
+/*themecolor*/
+.bg-theme {
+  background-color: #ff7676 !important;
+}
+.bg-theme-dark {
+  background-color: #01c0c8 !important;
+}
+/*Chat widget*/
+.chat-list .odd .chat-text {
+  background: #e20b0b;
+}
+/*Button*/
+.btn-custom {
+  background: #e20b0b;
+  border: 1px solid #e20b0b;
+  color: #ffffff;
+}
+.btn-custom:hover {
+  background: #e20b0b;
+  opacity: 0.8;
+  color: #ffffff;
+  border: 1px solid #e20b0b;
+}
+/*Custom tab*/
+.customtab li.active a,
+.customtab li.active a:hover,
+.customtab li.active a:focus {
+  border-bottom: 2px solid #e20b0b;
+  color: #e20b0b;
+}
+.tabs-vertical li.active a,
+.tabs-vertical li.active a:hover,
+.tabs-vertical li.active a:focus {
+  background: #e20b0b;
+  border-right: 2px solid #e20b0b;
+}
+/*Nav-pills*/
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:focus,
+.nav-pills > li.active > a:hover {
+  background: #e20b0b;
+  color: #ffffff;
+}

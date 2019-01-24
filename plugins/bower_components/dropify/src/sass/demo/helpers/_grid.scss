@@ -1,0 +1,24 @@
+@mixin row-sizes($preffix) {
+
+    @for $i from 1 through $grid-columns - 1 {
+        // Float
+        .col-#{ $preffix }-#{ $i } { float: left; }
+
+        // Size
+        .col-#{ $preffix }-#{ $i } { width: percentage(($i / $grid-columns)); }
+
+        // Push
+        .col-#{ $preffix }-push-#{ $i } { left: percentage(($i / $grid-columns)); }
+
+        // Pull
+        .col-#{ $preffix }-pull-#{ $i } { right: percentage(($i / $grid-columns)); }
+
+        // Offset
+        .col-#{ $preffix }-offset-#{ $i } { margin-left: percentage(($i / $grid-columns)); }
+    }
+
+    .col-#{ $preffix }-push-0 { left: auto; }
+    .col-#{ $preffix }-pull-0 { right: auto; }
+    .col-#{ $preffix }-offset-0 { margin-left: 0; }
+    .col-#{ $preffix }-12 { width: 100%; }
+}

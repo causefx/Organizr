@@ -1,0 +1,5 @@
+.idea
+node_modules
+_site
+.editorconfig
+.travis.yml
