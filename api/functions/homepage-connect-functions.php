@@ -1978,7 +1978,7 @@ function getOmbiRequests($type = "both")
 				if (isset($tv) && (is_array($tv) || is_object($tv))) {
 					$tv = json_decode($tv->body, true);
 					foreach ($tv as $key => $value) {
-						if (is_array($value['childRequests'][0])) {
+						if (count($value['childRequests']) > 0) {
 							$requests[] = array(
 								'test' => $value,
 								'id' => $value['tvDbId'],
