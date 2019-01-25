@@ -1372,16 +1372,28 @@ function showLogin()
 	}
 }
 
+function checkoAuth()
+{
+	return ($GLOBALS['plexoAuth']) ? true : false;
+}
+
 function showoAuth()
 {
 	$buttons = '';
 	if ($GLOBALS['plexoAuth']) {
-		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn btn-lg btn-block text-uppercase waves-effect waves-light bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <span>Login with Plex Account</span><i aria-hidden="true" class="mdi mdi-plex m-l-5"></i> </a>';
+		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn btn-lg btn-block text-uppercase waves-effect waves-light bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <span>Login</span><i aria-hidden="true" class="mdi mdi-plex m-l-5"></i> </a>';
 	}
 	return ($buttons) ? '
-		<div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 m-t-10 text-center">
-                <div class="social">' . $buttons . '</div>
+		<div class="panel">
+            <div class="panel-heading bg-org" id="plex-login-heading" role="tab"> <a class="panel-title" data-toggle="collapse" href="#plex-login-collapse" data-parent="#login-panels" aria-expanded="false" aria-controls="organizr-login-collapse"> Login With Plex </a> </div>
+            <div class="panel-collapse collapse in" id="plex-login-collapse" aria-labelledby="plex-login-heading" role="tabpanel">
+                <div class="panel-body">
+               		<div class="row">
+			            <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+			                <div class="social m-b-0">' . $buttons . '</div>
+			            </div>
+			        </div>
+               </div>
             </div>
         </div>
 	' : '';
