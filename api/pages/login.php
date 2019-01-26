@@ -31,6 +31,7 @@ if(activeInfo.settings.login.rememberMe){
 	                        <div class="input-group-addon hidden-xs"><i class="ti-lock"></i></div>
 	                        <input type="text" class="form-control tfa-input" name="tfaCode" placeholder="Code" autocomplete="off" autocorrect="off" autocapitalize="off" maxlength="6" spellcheck="false" autofocus="">
 	                    </div>
+	                    <button class="btn btn-warning btn-lg btn-block text-uppercase waves-effect waves-light login-button m-t-10" type="submit" lang="en">Login</button>
                     </div>
                 </div>
             </div>
