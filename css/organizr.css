@@ -1209,6 +1209,22 @@ span.fc-title {
     margin-top: -45px;
     margin-left: -45px;
 }
+.loginTitle {
+    height: 22px;
+    margin-top: -2px;
+}
+.fw300 {
+    font-weight: 300;
+}
+.fw400 {
+    font-weight: 400;
+}
+.fw500 {
+    font-weight: 500;
+}
+.fw600 {
+    font-weight: 600;
+}
 /*
 body,
 html {

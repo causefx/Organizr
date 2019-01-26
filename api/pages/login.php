@@ -39,7 +39,13 @@ if(activeInfo.settings.login.rememberMe){
         <div class="panel-group" id="login-panels" data-type="accordion" aria-multiselectable="true" role="tablist">
 	        <!-- ORGANIZR LOGIN -->
 	        <div class="panel">
-	            <div class="panel-heading bg-org" id="organizr-login-heading" role="tab"> <a class="panel-title collapsed" data-toggle="collapse" href="#organizr-login-collapse" data-parent="#login-panels" aria-expanded="false" aria-controls="organizr-login-collapse"> Login With Organizr </a> </div>
+	            <div class="panel-heading bg-org" id="organizr-login-heading" role="tab">
+	            	<a class="panel-title collapsed" data-toggle="collapse" href="#organizr-login-collapse" data-parent="#login-panels" aria-expanded="false" aria-controls="organizr-login-collapse">
+                        <img class="lazyload loginTitle" data-src="plugins/images/organizr/logo-no-border.png"> &nbsp;
+                        <span class="text-uppercase fw300" lang="en">Login with Organizr</span>
+	            	</a>
+	            	<div class="clearfix"></div>
+	            </div>
 	            <div class="panel-collapse ' . $hideOrganizrLogin . '" id="organizr-login-collapse" aria-labelledby="organizr-login-heading" role="tabpanel">
 	                <div class="panel-body">
 	                

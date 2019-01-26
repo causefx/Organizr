@@ -1385,7 +1385,12 @@ function showoAuth()
 	}
 	return ($buttons) ? '
 		<div class="panel">
-            <div class="panel-heading bg-org" id="plex-login-heading" role="tab"> <a class="panel-title" data-toggle="collapse" href="#plex-login-collapse" data-parent="#login-panels" aria-expanded="false" aria-controls="organizr-login-collapse"> Login With Plex </a> </div>
+            <div class="panel-heading bg-org" id="plex-login-heading" role="tab">
+            	<a class="panel-title" data-toggle="collapse" href="#plex-login-collapse" data-parent="#login-panels" aria-expanded="false" aria-controls="organizr-login-collapse">
+	                <img class="lazyload loginTitle" data-src="plugins/images/tabs/plex.png"> &nbsp;
+                    <span class="text-uppercase fw300" lang="en">Login with Plex</span>
+            	</a>
+            </div>
             <div class="panel-collapse collapse in" id="plex-login-collapse" aria-labelledby="plex-login-heading" role="tabpanel">
                 <div class="panel-body">
                		<div class="row">
