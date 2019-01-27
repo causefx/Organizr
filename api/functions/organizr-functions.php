@@ -89,6 +89,7 @@ function organizrSpecialSettings()
 			'authDebug' => $GLOBALS['authDebug'],
 			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen'],
 			'unsortedTabs' => $GLOBALS['unsortedTabs'],
+			'authType' => $GLOBALS['authType'],
 			'authBackend' => $GLOBALS['authBackend'],
 			'newMessageSound' => (isset($GLOBALS['CHAT-newMessageSound-include'])) ? $GLOBALS['CHAT-newMessageSound-include'] : '',
 			'uuid' => $GLOBALS['uuid'],
@@ -1374,13 +1375,13 @@ function showLogin()
 
 function checkoAuth()
 {
-	return ($GLOBALS['plexoAuth']) ? true : false;
+	return ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') ? true : false;
 }
 
 function showoAuth()
 {
 	$buttons = '';
-	if ($GLOBALS['plexoAuth']) {
+	if ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') {
 		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn btn-lg btn-block text-uppercase waves-effect waves-light bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <span>Login</span><i aria-hidden="true" class="mdi mdi-plex m-l-5"></i> </a>';
 	}
 	return ($buttons) ? '
@@ -1996,5 +1997,5 @@ function importUserButtons()
 function settingsDocker()
 {
 	$type = ($GLOBALS['docker']) ? 'Official Docker' : 'Native';
-	return '<li><div class="bg-info"><i class="mdi mdi-flag mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Install Type</span> ' . $type . '</li>';
+	return '<li><div class="bg-info"><i class="mdi mdi-flag mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Install Type</span> ' . $type . '</li>';
 }
