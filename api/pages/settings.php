@@ -211,15 +211,15 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                         <div class="white-box bg-org">
                                             <h3 class="box-title" lang="en">Information</h3>
                                             <ul class="feeds">
-                                                <li><div class="bg-info"><i class="mdi mdi-webpack mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Organizr Version</span> ' . $GLOBALS['installedVersion'] . '</li>
-                                                <li><div class="bg-info"><i class="mdi mdi-github-box mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Organizr Branch</span> ' . $GLOBALS['branch'] . '</li>
-                                                <li><div class="bg-info"><i class="mdi mdi-database mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Database Location</span> ' . $GLOBALS['dbLocation'] . $GLOBALS['dbName'] . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-webpack mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Version</span> ' . $GLOBALS['installedVersion'] . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-github-box mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Branch</span> ' . $GLOBALS['branch'] . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-database mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Database Location</span> ' . $GLOBALS['dbLocation'] . $GLOBALS['dbName'] . '</li>
                                                 ' . settingsDocker() . '
                                                 <hr class="m-t-10">
-                                                <li><div class="bg-info"><i class="mdi mdi-language-php mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">PHP Version</span> ' . phpversion() . '</li>
-                                                <li><div class="bg-info"><i class="mdi mdi-package-variant-closed mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Webserver Version</span> ' . $_SERVER['SERVER_SOFTWARE'] . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-language-php mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">PHP Version</span> ' . phpversion() . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-package-variant-closed mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Webserver Version</span> ' . $_SERVER['SERVER_SOFTWARE'] . '</li>
                                                 <hr class="m-t-10">
-                                                <li><div class="bg-info"><i class="mdi mdi-account-card-details mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">License</span> ' . ucwords($GLOBALS['license']) . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-account-card-details mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">License</span> ' . ucwords($GLOBALS['license']) . '</li>
                                             </ul>
                                         </div>
                                     </div>
