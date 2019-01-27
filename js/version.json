@@ -110,5 +110,12 @@
     "new": "Ombi SSO with Plex Token|Default TV Request options for Ombi|Token Section in user settings|Local URL connection if on LAN|Added preload Tab options|Added downloader count to combined downloader|Added option to disable Strict Plex Friend",
     "fixed": "Fixed Emby Connect|Disable lock function for oAuth users (#973)|Better error handling for the *arrs|make settings open first tab if not active already (#901)|make sure db ends with .db (#971)|Fix deluge hide seeding etc (#867)|fix downloaders showing blank if no permissions (#977)|Plex login button css (#985)|Add tab help (#987)|Fix close buttons (#883)|close buttons on popups fixed (#996)|fix clipboard with value with filename containing space (#994)|Move machine ID check outside of foreach (#1014)|Fixed language error if not langpack is installed for that lang (#1028)|undefined index on sickrage (#1038)|Fix iframe focus not shifting back (#1042)",
     "notes": "Added more debug information|Reworked the way languages are loaded|Updated Language strings|Revamped Splash page"
+  },
+  "2.0.0-beta.960": {
+    "date": "2019-01-27 00:20",
+    "title": "Some fixes before v.20",
+    "new": "Update page includes links to GH issues|Cleaner Login|Default to Plex Auth if enabled on login screen",
+    "fixed": "Fix Ombi if no TV Requests again|2FA box includes login button now",
+    "notes": "Hoping for a smooth release of 2.0 this coming week"
   }
 }
