@@ -107,7 +107,8 @@ function getDebugPreInfo(){
         '<br/>Server OS: ' + activeInfo.serverOS +
         '<br/>PHP: ' + activeInfo.phpVersion +
         '<br/>Install Type: ' + ((activeInfo.settings.misc.docker) ? 'Official Docker' : 'Native') +
-        '<br/>Backend: ' + activeInfo.settings.misc.authBackend +
+        '<br/>Auth Type: ' + activeInfo.settings.misc.authType +
+        '<br/>Auth Backend: ' + activeInfo.settings.misc.authBackend +
         '<br/>Installed Plugins: ' + activeInfo.settings.misc.installedPlugins +
         '<br/>Installed Themes: ' + activeInfo.settings.misc.installedThemes +
         '<br/>Theme: ' + activeInfo.theme +
