@@ -115,7 +115,7 @@
     "date": "2019-01-27 00:20",
     "title": "Some fixes before v.20",
     "new": "Update page includes links to GH issues|Cleaner Login|Default to Plex Auth if enabled on login screen",
-    "fixed": "Fix Ombi if no TV Requests again|2FA box includes login button now",
+    "fixed": "Fix Plex oAuth remains enabled when switching back to Organizr DB only (#1046)|Fix Ombi if no TV Requests again|2FA box includes login button now",
     "notes": "Hoping for a smooth release of 2.0 this coming week"
   }
 }
