@@ -337,37 +337,43 @@ function doneTypingMediaSearch () {
 }
 $(document).on("click", ".login-button", function(e) {
     e.preventDefault;
-    $('div.login-box').block({
-        message: '<h5><img width="20" src="plugins/images/busy.gif" /> Just a moment...</h4>',
-        css: {
-            color: '#fff',
-            border: '1px solid #2cabe3',
-            backgroundColor: '#2cabe3'
-        }
-    });
-    var post = $( '#loginform' ).serializeArray();
-    organizrAPI('POST','api/?v1/login',post).success(function(data) {
-        var html = JSON.parse(data);
-        if(html.data == true){
-            location.reload();
-        }else if(html.data == 'mismatch') {
+    var check = (local('g','loggingIn'));
+    if(check == null) {
+        local('s','loggingIn', true);
+        $('div.login-box').block({
+            message: '<h5><img width="20" src="plugins/images/busy.gif" /> Just a moment...</h4>',
+            css: {
+                color: '#fff',
+                border: '1px solid #2cabe3',
+                backgroundColor: '#2cabe3'
+            }
+        });
+        var post = $('#loginform').serializeArray();
+        organizrAPI('POST', 'api/?v1/login', post).success(function (data) {
+            var html = JSON.parse(data);
+            if (html.data == true) {
+                location.reload();
+            } else if (html.data == 'mismatch') {
+                $('div.login-box').unblock({});
+                message('Login Error', ' Wrong username/email/password combo', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+                console.error('Organizr Function: Login failed - wrong username/email/password');
+            } else if (html.data == '2FA') {
+                $('div.login-box').unblock({});
+                $('#tfa-div').removeClass('hidden');
+                $('#loginform [name=tfaCode]').focus()
+            } else {
+                $('div.login-box').unblock({});
+                message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+                console.error('Organizr Function: Login failed');
+            }
+            local('r','loggingIn');
+        }).fail(function (xhr) {
             $('div.login-box').unblock({});
-            message('Login Error', ' Wrong username/email/password combo', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
-            console.error('Organizr Function: Login failed - wrong username/email/password');
-        }else if(html.data == '2FA'){
-            $('div.login-box').unblock({});
-            $('#tfa-div').removeClass('hidden');
-            $('#loginform [name=tfaCode]').focus()
-        }else{
-            $('div.login-box').unblock({});
-            message('Login Error',html.data,activeInfo.settings.notifications.position,'#FFF','warning','10000');
-            console.error('Organizr Function: Login failed');
-        }
-    }).fail(function(xhr) {
-        $('div.login-box').unblock({});
-        message('Login Error','API Connection Failed',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-        console.error("Organizr Function: API Connection Failed");
-    });
+            message('Login Error', 'API Connection Failed', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+            console.error("Organizr Function: API Connection Failed");
+            local('r','loggingIn');
+        });
+    }
 });
 $(document).on("click", ".unlockButton", function(e) {
     e.preventDefault;

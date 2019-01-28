@@ -130,7 +130,7 @@ function login($array)
 					ssoCheck($username, $password, $token); //need to work on this
 					return true;
 				} else {
-					return 'error';
+					return 'Token Creation Error';
 				}
 			} else {
 				// Create User

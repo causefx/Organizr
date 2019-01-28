@@ -17,6 +17,7 @@ var timeouts = {};
 // Start Organizr
 $(document).ready(function () {
     launch();
+    local('r','loggingIn');
 });
 /* NORMAL FUNCTIONS */
 function setLangCookie(lang){

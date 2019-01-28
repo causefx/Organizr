@@ -94,7 +94,7 @@ function createToken($username, $email, $image, $group, $groupID, $key, $days = 
 		$database->query('INSERT INTO [tokens]', $addToken);
 		return $jwttoken;
 	} catch (Dibi\Exception $e) {
-		writeLog('error', $e, 'SYSTEM');
+		writeLog('error', 'Token Error: ' . $e, 'SYSTEM');
 		return false;
 	}
 }
