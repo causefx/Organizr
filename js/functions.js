@@ -5117,7 +5117,7 @@ function oAuthSuccess(type,token){
             $('#login-username-Input').addClass('hidden');
             $('#login-password-Input').addClass('hidden');
             $('#oAuth-div').removeClass('hidden');
-            $('.login-button').trigger('click');
+            $('.login-button').first().trigger('click');
             break;
         default:
             break;
