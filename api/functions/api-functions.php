@@ -66,7 +66,7 @@ function login($array)
 								'token' => $tokenInfo['user']['authToken']
 							);
 							coookie('set', 'oAuth', 'true', $GLOBALS['rememberMeDays']);
-							$authSuccess = ((!empty($GLOBALS['plexAdmin']) && strtolower($GLOBALS['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
+							$authSuccess = ((!empty($GLOBALS['plexAdmin']) && strtolower($GLOBALS['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || (!empty($GLOBALS['plexAdmin']) && strtolower($GLOBALS['plexAdmin']) == strtolower($tokenInfo['user']['email'])) || checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
 						}
 					}
 					break;
