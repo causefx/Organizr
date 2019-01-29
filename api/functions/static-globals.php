@@ -13,6 +13,10 @@ $GLOBALS['userConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config
 $GLOBALS['defaultConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';
 $GLOBALS['currentTime'] = gmdate("Y-m-d\TH:i:s\Z");
 $GLOBALS['docker'] = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Docker.txt')) ? true : false;
+$GLOBALS['paths'] = array(
+	'main' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR,
+	'api' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR
+);
 // Quick function for plugins
 function pluginFiles($type)
 {
