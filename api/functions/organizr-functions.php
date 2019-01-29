@@ -420,6 +420,15 @@ function organizrStatus()
 	return $status;
 }
 
+function pathsWritable($paths)
+{
+	$results = array();
+	foreach ($paths as $k => $v) {
+		$results[$k] = is_writable($v);
+	}
+	return $results;
+}
+
 function getSettingsMain()
 {
 	return array(
