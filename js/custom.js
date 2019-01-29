@@ -352,6 +352,7 @@ $(document).on("click", ".login-button", function(e) {
         organizrAPI('POST', 'api/?v1/login', post).success(function (data) {
             var html = JSON.parse(data);
             if (html.data == true) {
+                local('set','message','Welcome|Login Successful|success');
                 location.reload();
             } else if (html.data == 'mismatch') {
                 $('div.login-box').unblock({});

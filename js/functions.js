@@ -2113,7 +2113,7 @@ function userMenu(user){
 		`;
 	}
 	$(menuList).appendTo('.navbar-right').html;
-	message("",window.lang.translate('Welcome')+" "+user.data.user.username,activeInfo.settings.notifications.position,"#FFF","success","3500");
+	//message("",window.lang.translate('Welcome')+" "+user.data.user.username,activeInfo.settings.notifications.position,"#FFF","success","3500");
 	console.log(window.lang.translate('Welcome')+" "+user.data.user.username);
 }
 function menuExtras(active){
