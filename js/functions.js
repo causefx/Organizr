@@ -360,6 +360,7 @@ function logout(){
 	organizrAPI('GET','api/?v1/logout').success(function(data) {
 		var html = JSON.parse(data);
 		if(html.data == true){
+            local('set','message','Goodbye|Logout Successful|success');
 			location.reload();
 		}else{
 			message('Logout Error',' An Error Occured',activeInfo.settings.notifications.position,'#FFF','warning','10000');
@@ -5961,6 +5962,9 @@ function clickPath(type,path=null){
         default:
             return null;
     }
+}
+function toggleWritableFolders(){
+    $('.folders-writable').toggleClass('hidden');
 }
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {

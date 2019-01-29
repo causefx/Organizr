@@ -2008,3 +2008,14 @@ function settingsDocker()
 	$type = ($GLOBALS['docker']) ? 'Official Docker' : 'Native';
 	return '<li><div class="bg-info"><i class="mdi mdi-flag mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Install Type</span> ' . $type . '</li>';
 }
+
+function settingsPathChecks()
+{
+	$items = '';
+	$type = (array_search(false, pathsWritable($GLOBALS['paths']))) ? 'Not Writable' : 'Writable';
+	$result = '<li class="mouse" onclick="toggleWritableFolders();"><div class="bg-info"><i class="mdi mdi-folder mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Paths</span> ' . $type . '</li>';
+	foreach (pathsWritable($GLOBALS['paths']) as $k => $v) {
+		$items .= '<li class="folders-writable hidden"><div class="bg-info"><i class="mdi mdi-folder mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">' . $k . '</span> ' . (($v) ? 'Writable' : 'Not Writable') . '</li>';
+	}
+	return $result . $items;
+}
