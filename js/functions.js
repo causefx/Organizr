@@ -2859,42 +2859,50 @@ function updateNow(){
 	messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
 	organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:1}).success(function(data) {
 		var json = JSON.parse(data);
-		if(json.data == true){
-			updateUpdateBar('Starting Unzip','50%');
-			messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update File Downloaded'),activeInfo.settings.notifications.position,'#FFF','success','60000');
-			organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:2}).success(function(data) {
-				var json = JSON.parse(data);
-				if(json.data == true){
-					updateUpdateBar('Starting Copy','70%');
-					messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update File Unzipped'),activeInfo.settings.notifications.position,'#FFF','success','60000');
-					organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:3}).success(function(data) {
-						var json = JSON.parse(data);
-						if(json.data == true){
-							updateUpdateBar('Starting Cleanup','90%');
-							messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update Files Copied'),activeInfo.settings.notifications.position,'#FFF','success','60000');
-							organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:4}).success(function(data) {
-								var json = JSON.parse(data);
-								if(json.data == true){
-									updateUpdateBar('Restarting Organizr in','100%', true);
-									messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Update Cleanup Finished'),activeInfo.settings.notifications.position,'#FFF','success','60000');
-								}else{
-									message('',window.lang.translate('Update Cleanup Failed'),activeInfo.settings.notifications.position,'#FFF','error','10000');
-								}
-							}).fail(function(xhr) {
-								console.error("Organizr Function: API Connection Failed");
-							});
-						}else{
-							message('',window.lang.translate('Update File Copy Failed'),activeInfo.settings.notifications.position,'#FFF','error','10000');
-						}
-					}).fail(function(xhr) {
-						console.error("Organizr Function: API Connection Failed");
-					});
-				}else{
-					message('',window.lang.translate('Update File Unzip Failed'),activeInfo.settings.notifications.position,'#FFF','error','10000');
-				}
-			}).fail(function(xhr) {
-				console.error("Organizr Function: API Connection Failed");
-			});
+		if(json.data == true) {
+            updateUpdateBar('Starting Unzip', '50%');
+            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update File Downloaded'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
+            organizrAPI('POST', 'api/?v1/update', {branch: activeInfo.branch, stage: 2}).success(function (data) {
+                var json = JSON.parse(data);
+                if (json.data == true) {
+                    updateUpdateBar('Starting Copy', '70%');
+                    messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update File Unzipped'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
+                    organizrAPI('POST', 'api/?v1/update', {
+                        branch: activeInfo.branch,
+                        stage: 3
+                    }).success(function (data) {
+                        var json = JSON.parse(data);
+                        if (json.data == true) {
+                            updateUpdateBar('Starting Cleanup', '90%');
+                            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update Files Copied'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
+                            organizrAPI('POST', 'api/?v1/update', {
+                                branch: activeInfo.branch,
+                                stage: 4
+                            }).success(function (data) {
+                                var json = JSON.parse(data);
+                                if (json.data == true) {
+                                    updateUpdateBar('Restarting Organizr in', '100%', true);
+                                    messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update Cleanup Finished'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
+                                } else {
+                                    message('', window.lang.translate('Update Cleanup Failed'), activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+                                }
+                            }).fail(function (xhr) {
+                                console.error("Organizr Function: API Connection Failed");
+                            });
+                        } else {
+                            message('', window.lang.translate('Update File Copy Failed'), activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+                        }
+                    }).fail(function (xhr) {
+                        console.error("Organizr Function: API Connection Failed");
+                    });
+                } else {
+                    message('', window.lang.translate('Update File Unzip Failed'), activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+                }
+            }).fail(function (xhr) {
+                console.error("Organizr Function: API Connection Failed");
+            });
+        }else if(json.data == 'permissions'){
+            message('',window.lang.translate('Organizr does not have permissions to download the update'),activeInfo.settings.notifications.position,'#FFF','error','10000');
 		}else{
 			message('',window.lang.translate('Update File Download Failed'),activeInfo.settings.notifications.position,'#FFF','error','10000');
 		}
