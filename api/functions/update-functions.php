@@ -3,7 +3,7 @@
 function upgradeInstall($branch = 'v2-master', $stage)
 {
 	$notWritable = array_search(false, pathsWritable($GLOBALS['paths']));
-	if ($notWritable) {
+	if ($notWritable == false) {
 		ini_set('max_execution_time', 0);
 		set_time_limit(0);
 		$url = 'https://github.com/causefx/Organizr/archive/' . $branch . '.zip';
