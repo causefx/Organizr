@@ -21,6 +21,7 @@ function organizrSpecialSettings()
 				'authRequest' => (qualifyRequest($GLOBALS['homepageOmbiRequestAuth'])) ? true : false,
 				'sso' => ($GLOBALS['ssoOmbi']) ? true : false,
 				'cookie' => (isset($_COOKIE['Auth'])) ? true : false,
+				'alias' => ($GLOBALS['ombiAlias']) ? true : false,
 			),
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],

@@ -37,6 +37,7 @@ return array(
 	'tautulliURL' => '',
 	'ombiURL' => '',
 	'ombiToken' => '',
+	'ombiAlias' => false,
 	'ssoPlex' => false,
 	'ssoOmbi' => false,
 	'ssoTautulli' => false,
