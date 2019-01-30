@@ -910,7 +910,7 @@ $(document).on("click", ".addNewTab", function () {
         tabDefault:0,
         tabType:1,
         messageTitle:'Created Tab '+$('#new-tab-form [name=tabName]').val(),
-        messageBody:'Please <a href="javascript(\'window.location.reload(false);\');">RELOAD</a> page to update',
+        messageBody:'Please <a href="javascript:void(0)" onclick="window.location.reload(false);">RELOAD</a> page to update',
         error:'Organizr Function: Tab API Connection Failed'
     };
     if (typeof post.tabOrder == 'undefined' || post.tabOrder == '') {
