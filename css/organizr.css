@@ -1225,6 +1225,9 @@ span.fc-title {
 .fw600 {
     font-weight: 600;
 }
+.dropdown-menu {
+    width: 100%;
+}
 /*
 body,
 html {

@@ -88,6 +88,21 @@
         <!-- /.navbar-header -->
         <!-- /.navbar-top-links -->
         <!-- /.navbar-static-side -->
+        <div class="dropdown-menu animated bounceInDown" id="main-org-error-container">
+            <div class="mega-dropdown-menu row">
+                <div class="col-lg-12 mb-4">
+                    <h3 class="mb-3 pull-left"><i class="fa fa-close text-danger"></i>&nbsp; <span lang="en">An Error Occured</span>
+                    </h3>
+                    <h3 class="mb-3 pull-right mouse" onclick="closeOrgError();"><i
+                                class="fa fa-check text-success"></i>&nbsp;
+                        <span lang="en">Close Error</span>
+                    </h3>
+                    <br/>
+                    <br/>
+                    <div class="m-t-20" id="main-org-error"></div>
+                </div>
+            </div>
+        </div>
     </nav>
     <!-- End Top Navigation -->
     <!-- ============================================================== -->

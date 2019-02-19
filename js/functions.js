@@ -330,7 +330,7 @@ function noTabs(arrayItems){
                 var response = JSON.parse(data);
             }catch(e) {
                 console.log(e + ' error: ' + data);
-                alert(e + ' error: ' + data);
+                orgErrorAlert(data);
                 return false;
             }
 			console.log("Organizr Function: No Tabs Available");
@@ -368,7 +368,7 @@ function logout(){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		if(html.data == true){
@@ -969,7 +969,7 @@ function loadMarketplace(type){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         switch (type) {
@@ -1257,7 +1257,7 @@ function removePlugin(plugin=null){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         if(html.data.substr(0, 7) == 'Success'){
@@ -1284,7 +1284,7 @@ function removeTheme(theme=null){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         if(html.data.substr(0, 7) == 'Success'){
@@ -1311,7 +1311,7 @@ function installPlugin(plugin=null){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         if(html.data.substr(0, 7) == 'Success'){
@@ -1338,7 +1338,7 @@ function installTheme(theme=null){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         console.log(data);
@@ -1447,7 +1447,7 @@ function buildPlugins(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		$('#main-plugin-area').html(buildPluginsItem(response.data));
@@ -1461,7 +1461,7 @@ function buildHomepage(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		$('#settings-homepage-list').html(buildHomepageItem(response.data));
@@ -1572,7 +1572,7 @@ function buildImageManagerView(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		$('#settings-image-manager-list').html(buildImageManagerViewItem(response.data));
@@ -1586,7 +1586,7 @@ function buildCustomizeAppearance(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		$('#customize-appearance-form').html(buildFormGroup(response.data));
@@ -1642,7 +1642,7 @@ function buildSSO(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		$('#sso-form').html(buildFormGroup(response.data));
@@ -1656,7 +1656,7 @@ function buildSettingsMain(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		$('#settings-main-form').html(buildFormGroup(response.data));
@@ -1671,7 +1671,7 @@ function buildUserManagement(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		$('#manageUserTable').html(buildUserManagementItem(response.data));
@@ -1685,7 +1685,7 @@ function buildGroupManagement(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		$('#manageGroupTable').html(buildGroupManagementItem(response.data));
@@ -1699,7 +1699,7 @@ function buildTabEditor(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
@@ -1713,7 +1713,7 @@ function buildCategoryEditor(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		$('#categoryEditorTable').html(buildCategoryEditorItem(response.data));
@@ -1727,7 +1727,7 @@ function settingsAPI(post, callbacks=null){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		//console.log(response);
@@ -1785,7 +1785,7 @@ function removeFile(path,name){
                 var response = JSON.parse(data);
             }catch(e) {
                 console.log(e + ' error: ' + data);
-                alert(e + ' error: ' + data);
+                orgErrorAlert(data);
                 return false;
             }
 			if(response.data == true){
@@ -1821,7 +1821,7 @@ function updateUserInformation(){
                 var response = JSON.parse(data);
             }catch(e) {
                 console.log(e + ' error: ' + data);
-                alert(e + ' error: ' + data);
+                orgErrorAlert(data);
                 return false;
             }
 			if(response.data == true){
@@ -1844,7 +1844,7 @@ function twoFA(action, type, secret = null){
                     var html = JSON.parse(data);
                 }catch(e) {
                     console.log(e + ' error: ' + data);
-                    alert(e + ' error: ' + data);
+                    orgErrorAlert(data);
                     return false;
                 }
                 $('.twofa-modal-title').html(html.data.type);
@@ -1861,7 +1861,7 @@ function twoFA(action, type, secret = null){
                     var html = JSON.parse(data);
                 }catch(e) {
                     console.log(e + ' error: ' + data);
-                    alert(e + ' error: ' + data);
+                    orgErrorAlert(data);
                     return false;
                 }
                 $('.2fa-list').replaceWith(buildTwoFA('internal'));
@@ -1878,7 +1878,7 @@ function twoFA(action, type, secret = null){
                         var html = JSON.parse(data);
                     }catch(e) {
                         console.log(e + ' error: ' + data);
-                        alert(e + ' error: ' + data);
+                        orgErrorAlert(data);
                         return false;
                     }
                     if(html.data == true){
@@ -1901,7 +1901,7 @@ function twoFA(action, type, secret = null){
                     var html = JSON.parse(data);
                 }catch(e) {
                     console.log(e + ' error: ' + data);
-                    alert(e + ' error: ' + data);
+                    orgErrorAlert(data);
                     return false;
                 }
                 //console.log(html);
@@ -1986,7 +1986,7 @@ function revokeToken(token,id){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         if(response.data == true){
@@ -2396,7 +2396,7 @@ function buildLogin(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		console.log("Organizr Function: Opening Login Page");
@@ -2414,7 +2414,7 @@ function buildLockscreen(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		console.log("Organizr Function: Adding Lockscreen");
@@ -2862,7 +2862,7 @@ function loadInternal(url,tabName){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		$('#internal-'+tabName).html(html.data);
@@ -2876,7 +2876,7 @@ function loadSettingsPage(api,element,organizrFn){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		console.log('Organizr Function: Loading '+organizrFn);
@@ -2891,7 +2891,7 @@ function updateCheck(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		for (var a in reverseObject(response)){
@@ -2913,7 +2913,7 @@ function sponsorLoad(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         /*for (var a in reverseObject(json)){
@@ -3049,7 +3049,7 @@ function updateNow(){
             var json = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		if(json.data == true) {
@@ -3060,7 +3060,7 @@ function updateNow(){
                     var json = JSON.parse(data);
                 }catch(e) {
                     console.log(e + ' error: ' + data);
-                    alert(e + ' error: ' + data);
+                    orgErrorAlert(data);
                     return false;
                 }
                 if (json.data == true) {
@@ -3074,7 +3074,7 @@ function updateNow(){
                             var json = JSON.parse(data);
                         }catch(e) {
                             console.log(e + ' error: ' + data);
-                            alert(e + ' error: ' + data);
+                            orgErrorAlert(data);
                             return false;
                         }
                         if (json.data == true) {
@@ -3088,7 +3088,7 @@ function updateNow(){
                                     var json = JSON.parse(data);
                                 }catch(e) {
                                     console.log(e + ' error: ' + data);
-                                    alert(e + ' error: ' + data);
+                                    orgErrorAlert(data);
                                     return false;
                                 }
                                 if (json.data == true) {
@@ -3194,7 +3194,7 @@ function buildWizard(){
             var json = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		console.log("Organizr Function: Starting Install Wizard");
@@ -3210,7 +3210,7 @@ function buildDependencyCheck(orgdata){
             var json = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		console.log("Organizr Function: Starting Dependencies Check");
@@ -4360,7 +4360,7 @@ function ombiActions(id,action,type){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		//console.log(response.data);
@@ -4375,7 +4375,7 @@ function ombiActions(id,action,type){
                 var responseData = JSON.parse(response.data.bd);
             }catch(e) {
                 console.log(e + ' error: ' + response.data.bd);
-                alert(e + ' error: ' + response.data.bd);
+                orgErrorAlert(response.data.bd);
                 return false;
             }
             console.log(responseData);
@@ -5073,7 +5073,7 @@ function homepageDownloader(type, timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		//document.getElementById('homepageOrder'+type).innerHTML = '';
@@ -5104,7 +5104,7 @@ function homepageStream(type, timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		document.getElementById('homepageOrder'+type+'nowplaying').innerHTML = '';
@@ -5134,7 +5134,7 @@ function homepageRecent(type, timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		document.getElementById('homepageOrder'+type+'recent').innerHTML = '';
@@ -5168,7 +5168,7 @@ function homepagePlaylist(type, timeout=30000){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		document.getElementById('homepageOrder'+type+'playlist').innerHTML = '';
@@ -5192,7 +5192,7 @@ function homepageRequests(timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
 		document.getElementById('homepageOrderombi').innerHTML = '';
@@ -5220,7 +5220,7 @@ function testAPIConnection(service){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         if(response.data == true){
@@ -5244,7 +5244,7 @@ function homepageCalendar(timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         $('#calendar').fullCalendar('removeEvents');
@@ -5559,7 +5559,7 @@ function importUsers(type){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         if(response.data !== false){
@@ -5764,7 +5764,7 @@ function pingUpdate(pingList,timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         if (response.data !== false || response.data !== null) {
@@ -6175,7 +6175,7 @@ function lock(){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            alert(e + ' error: ' + data);
+            orgErrorAlert(data);
             return false;
         }
         console.log(html);
@@ -6276,6 +6276,14 @@ function checkIfTabNameExists(tabName){
     }else{
         return true;
     }
+}
+function orgErrorAlert(error){
+    $('#main-org-error-container').addClass('show');
+    $('#main-org-error').html(error);
+}
+function closeOrgError(){
+    $('#main-org-error-container').removeClass('show');
+    $('#main-org-error').html('');
 }
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
