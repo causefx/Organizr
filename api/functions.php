@@ -16,6 +16,11 @@ configLazy();
 if (isset($GLOBALS['dbLocation'])) {
 	$GLOBALS['organizrLog'] = $GLOBALS['dbLocation'] . 'organizrLog.json';
 	$GLOBALS['organizrLoginLog'] = $GLOBALS['dbLocation'] . 'organizrLoginLog.json';
+	$GLOBALS['paths'] = array(
+		'Root Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR,
+		'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR,
+		'DB Folder' => $GLOBALS['dbLocation']
+	);
 	if (($GLOBALS['uuid'] == '')) {
 		$uuid = gen_uuid();
 		$GLOBALS['uuid'] = $uuid;
