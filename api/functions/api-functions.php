@@ -20,7 +20,7 @@ function login($array)
 			}
 		}
 	}
-	$username = strtolower($username);
+	$username = (strpos($GLOBALS['authBackend'], 'emby') !== false) ? $username : strtolower($username);
 	$days = (isset($remember)) ? $GLOBALS['rememberMeDays'] : 1;
 	$oAuth = (isset($oAuth)) ? $oAuth : false;
 	try {
