@@ -885,6 +885,10 @@ $(document).on("click", ".editTab", function () {
     if ((typeof post.tabURL == 'undefined' || post.tabURL == '') && (typeof post.tabLocalURL == 'undefined' || post.tabLocalURL == '')) {
         message('Edit Tab Error',' Please set a Tab URL or Local URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
+    if(checkIfTabNameExists(post.tabName)){
+        message('New Tab Error',' Tab name already used',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+        return false;
+    }
     if(post.id !== '' && post.tabName !== '' && post.tabImage !== ''){
         var callbacks = $.Callbacks();
         callbacks.add( buildTabEditor );
@@ -924,6 +928,10 @@ $(document).on("click", ".addNewTab", function () {
     }
     if (typeof post.tabImage == 'undefined' || post.tabImage == '') {
         message('New Tab Error',' Please set a Tab Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+    }
+    if(checkIfTabNameExists(post.tabName)){
+        message('New Tab Error',' Tab name already used',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+        return false;
     }
     if(post.tabOrder !== '' && post.tabName !== '' && (post.tabURL !== '' || post.tabLocalURL !== '') && post.tabImage !== '' ){
         var callbacks = $.Callbacks();

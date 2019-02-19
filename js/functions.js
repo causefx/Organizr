@@ -2315,7 +2315,7 @@ function buildInternalContainer(name,url,type){
 function buildMenuList(name,url,type,icon,ping=null){
     var ping = (ping !== null) ? `<small class="menu-`+cleanClass(ping)+`-ping-ms hidden-xs label label-rouded label-inverse pull-right hidden">
 </small><div class="menu-`+cleanClass(ping)+`-ping" data-tab-name="`+name+`" data-previous-state=""></div>` : '';
-	return `<li id="menu-`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span>`+ping+`</a></li>`;
+	return `<li class="allTabsList" id="menu-`+cleanClass(name)+`" data-tab-name="`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span>`+ping+`</a></li>`;
 }
 function tabProcess(arrayItems) {
 	var iFrameList = '';
@@ -6260,6 +6260,22 @@ function clickPath(type,path=null){
 }
 function toggleWritableFolders(){
     $('.folders-writable').toggleClass('hidden');
+}
+function getAllTabNames(){
+    var allTabs = $('.allTabsList');
+    var tabList = [];
+    $.each(allTabs, function(i,v) {
+        console.log(v.getAttribute('data-tab-name'));
+        tabList[i] = v.getAttribute('data-tab-name').toLowerCase();
+    });
+    return tabList;
+}
+function checkIfTabNameExists(tabName){
+    if (getAllTabNames().indexOf(tabName.toLowerCase()) == -1) {
+        return false;
+    }else{
+        return true;
+    }
 }
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
