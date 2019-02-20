@@ -3040,6 +3040,10 @@ function countdown(remaining) {
     setTimeout(function(){ countdown(remaining - 1); }, 1000);
 }
 function updateNow(){
+    if(activeInfo.settings.misc.docker){
+        messageSingle(window.lang.translate('[Docker Container]'),window.lang.translate('Inline downloader disabled - Please restart container to update or download'),activeInfo.settings.notifications.position,'#FFF','success','60000');
+        return false;
+    }
 	console.log('Organizr Function: Starting Update Process');
 	$(updateBar()).appendTo('.organizr-area');
 	updateUpdateBar('Starting Download','5%');
