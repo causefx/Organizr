@@ -544,8 +544,47 @@ function popTab(tab, type){
 			console.error('Tab Function: Action not set');
 	}
 }
-function closeTab(tab, type){
+function closeTab(tab){
+    tab = cleanClass(tab);
+    // check if current tab?
+    if($('.active-tab-'+tab).length > 0){
+        closeCurrentTab();
+    }else{
+        if($('.frame-'+tab).hasClass('loaded')){
+            var type = $('#menu-'+tab).attr('type');
+           switch (type) {
+               case 0:
+               case '0':
+               case 'internal':
+                   console.log('Tab Function: Closing tab: '+tab);
+                   $('#internal-'+cleanClass(tab)).html('');
+                   $('#menu-'+cleanClass(tab)+' a').removeClass("active");
+                   $('#menu-'+tab+' a').children().removeClass('tabLoaded');
+                   $('#internal-'+cleanClass(tab)).removeClass("loaded show");
+                   $('#menu-'+cleanClass(tab)).removeClass("active");
+                   break;
+               case 1:
+               case '1':
+               case 'iframe':
+                   console.log('Tab Function: Closing tab: '+tab);
+                   $('#menu-'+cleanClass(tab)+' a').removeClass("active");
+                   $('#menu-'+tab+' a').children().removeClass('tabLoaded');
+                   $('#container-'+cleanClass(tab)).removeClass("loaded show");
+                   $('#frame-'+cleanClass(tab)).remove();
+                   break;
+               case 2:
+               case 3:
+               case '2':
+               case '3':
+               case '_blank':
+               case 'popout':
 
+                   break;
+               default:
+                   console.error('Tab Function: Action not set');
+           }
+        }
+    }
 }
 function reloadTab(tab, type){
 	$("#preloader").fadeIn();
@@ -673,7 +712,7 @@ function tabActions(event,name, type){
 	if(event.ctrlKey){
 		popTab(cleanClass(name), type);
 	}else if(event.altKey){
-		console.log('alt key');
+        closeTab(name);
 	}else if(event.shiftKey){
 		reloadTab(cleanClass(name), type);
 	}else{
