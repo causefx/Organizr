@@ -26,6 +26,11 @@ if (isset($GLOBALS['dbLocation'])) {
 		$GLOBALS['uuid'] = $uuid;
 		updateConfig(array('uuid' => $uuid));
 	}
+	if ($GLOBALS['docker']) {
+		$getBranch = file_get_contents(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'Docker.txt');
+		$getBranch = (empty($getBranch)) ? 'v2-master' : $getBranch;
+		$GLOBALS['branch'] = $getBranch;
+	}
 	//Upgrade Check
 	upgradeCheck();
 }
