@@ -6308,7 +6308,6 @@ function getAllTabNames(){
     var allTabs = $('.allTabsList');
     var tabList = [];
     $.each(allTabs, function(i,v) {
-        console.log(v.getAttribute('data-tab-name'));
         tabList[i] = v.getAttribute('data-tab-name').toLowerCase();
     });
     return tabList;

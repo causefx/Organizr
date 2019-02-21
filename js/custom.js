@@ -846,6 +846,7 @@ $(document).on("click", ".deleteTab", function () {
 //EDIT TAB GET ID
 $(document).on("click", ".editTabButton", function () {
     $('#edit-tab-form [name=tabName]').val($(this).parent().parent().attr("data-name"));
+    $('#originalTabName').html($(this).parent().parent().attr("data-name"));
     $('#edit-tab-form [name=tabURL]').val($(this).parent().parent().attr("data-url"));
     $('#edit-tab-form [name=tabLocalURL]').val($(this).parent().parent().attr("data-local-url"));
     $('#edit-tab-form [name=pingURL]').val($(this).parent().parent().attr("data-ping-url"));
@@ -859,6 +860,7 @@ $(document).on("click", ".editTabButton", function () {
 });
 //EDIT TAB
 $(document).on("click", ".editTab", function () {
+    var originalTabName = $('#originalTabName').html();
     //Create POST Array
     var post = {
         action:'editTab',
@@ -885,8 +887,8 @@ $(document).on("click", ".editTab", function () {
     if ((typeof post.tabURL == 'undefined' || post.tabURL == '') && (typeof post.tabLocalURL == 'undefined' || post.tabLocalURL == '')) {
         message('Edit Tab Error',' Please set a Tab URL or Local URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
-    if(checkIfTabNameExists(post.tabName)){
-        message('New Tab Error',' Tab name already used',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+    if(checkIfTabNameExists(post.tabName) && originalTabName !== post.tabName){
+        message('Edit Tab Error',' Tab name already used',activeInfo.settings.notifications.position,'#FFF','warning','5000');
         return false;
     }
     if(post.id !== '' && post.tabName !== '' && post.tabImage !== ''){
