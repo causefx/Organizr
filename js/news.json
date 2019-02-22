@@ -1,16 +1,9 @@
 [
   {
-    "title": "Preparing for v2.0 soon",
+    "title": "Testing out News Area",
     "subTitle": null,
-    "date": "2019-01-29 10:20",
-    "body": "Blah blah blah, you know us!",
-    "author": "CauseFX"
-  },
-  {
-    "title": "No, Really! Preparing for v2.0 soon",
-    "subTitle": "I know I have said it before",
-    "date": "2019-02-22 16:40",
-    "body": "This is just a test for now",
+    "date": "2019-02-22 21:40",
+    "body": "There will be news here in the future, thanks for bearing with me in the meantime throughout the v2 beta!",
     "author": "CauseFX"
   }
 ]
