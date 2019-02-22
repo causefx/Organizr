@@ -330,7 +330,7 @@ function noTabs(arrayItems){
                 var response = JSON.parse(data);
             }catch(e) {
                 console.log(e + ' error: ' + data);
-                orgErrorAlert(data);
+                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                 return false;
             }
 			console.log("Organizr Function: No Tabs Available");
@@ -368,7 +368,7 @@ function logout(){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		if(html.data == true){
@@ -1008,7 +1008,7 @@ function loadMarketplace(type){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         switch (type) {
@@ -1296,7 +1296,7 @@ function removePlugin(plugin=null){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         if(html.data.substr(0, 7) == 'Success'){
@@ -1323,7 +1323,7 @@ function removeTheme(theme=null){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         if(html.data.substr(0, 7) == 'Success'){
@@ -1350,7 +1350,7 @@ function installPlugin(plugin=null){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         if(html.data.substr(0, 7) == 'Success'){
@@ -1377,7 +1377,7 @@ function installTheme(theme=null){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         console.log(data);
@@ -1486,7 +1486,7 @@ function buildPlugins(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#main-plugin-area').html(buildPluginsItem(response.data));
@@ -1500,7 +1500,7 @@ function buildHomepage(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#settings-homepage-list').html(buildHomepageItem(response.data));
@@ -1611,7 +1611,7 @@ function buildImageManagerView(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#settings-image-manager-list').html(buildImageManagerViewItem(response.data));
@@ -1625,7 +1625,7 @@ function buildCustomizeAppearance(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#customize-appearance-form').html(buildFormGroup(response.data));
@@ -1681,7 +1681,7 @@ function buildSSO(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#sso-form').html(buildFormGroup(response.data));
@@ -1695,7 +1695,7 @@ function buildSettingsMain(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#settings-main-form').html(buildFormGroup(response.data));
@@ -1710,7 +1710,7 @@ function buildUserManagement(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#manageUserTable').html(buildUserManagementItem(response.data));
@@ -1724,7 +1724,7 @@ function buildGroupManagement(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#manageGroupTable').html(buildGroupManagementItem(response.data));
@@ -1738,7 +1738,7 @@ function buildTabEditor(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
@@ -1752,7 +1752,7 @@ function buildCategoryEditor(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#categoryEditorTable').html(buildCategoryEditorItem(response.data));
@@ -1766,7 +1766,7 @@ function settingsAPI(post, callbacks=null){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		//console.log(response);
@@ -1824,7 +1824,7 @@ function removeFile(path,name){
                 var response = JSON.parse(data);
             }catch(e) {
                 console.log(e + ' error: ' + data);
-                orgErrorAlert(data);
+                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                 return false;
             }
 			if(response.data == true){
@@ -1860,7 +1860,7 @@ function updateUserInformation(){
                 var response = JSON.parse(data);
             }catch(e) {
                 console.log(e + ' error: ' + data);
-                orgErrorAlert(data);
+                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                 return false;
             }
 			if(response.data == true){
@@ -1883,7 +1883,7 @@ function twoFA(action, type, secret = null){
                     var html = JSON.parse(data);
                 }catch(e) {
                     console.log(e + ' error: ' + data);
-                    orgErrorAlert(data);
+                    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                     return false;
                 }
                 $('.twofa-modal-title').html(html.data.type);
@@ -1900,7 +1900,7 @@ function twoFA(action, type, secret = null){
                     var html = JSON.parse(data);
                 }catch(e) {
                     console.log(e + ' error: ' + data);
-                    orgErrorAlert(data);
+                    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                     return false;
                 }
                 $('.2fa-list').replaceWith(buildTwoFA('internal'));
@@ -1917,7 +1917,7 @@ function twoFA(action, type, secret = null){
                         var html = JSON.parse(data);
                     }catch(e) {
                         console.log(e + ' error: ' + data);
-                        orgErrorAlert(data);
+                        orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                         return false;
                     }
                     if(html.data == true){
@@ -1940,7 +1940,7 @@ function twoFA(action, type, secret = null){
                     var html = JSON.parse(data);
                 }catch(e) {
                     console.log(e + ' error: ' + data);
-                    orgErrorAlert(data);
+                    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                     return false;
                 }
                 //console.log(html);
@@ -2025,7 +2025,7 @@ function revokeToken(token,id){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         if(response.data == true){
@@ -2435,7 +2435,7 @@ function buildLogin(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		console.log("Organizr Function: Opening Login Page");
@@ -2453,7 +2453,7 @@ function buildLockscreen(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		console.log("Organizr Function: Adding Lockscreen");
@@ -2901,7 +2901,7 @@ function loadInternal(url,tabName){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#internal-'+tabName).html(html.data);
@@ -2915,7 +2915,7 @@ function loadSettingsPage(api,element,organizrFn){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		console.log('Organizr Function: Loading '+organizrFn);
@@ -2930,7 +2930,7 @@ function updateCheck(){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		for (var a in reverseObject(response)){
@@ -2946,13 +2946,46 @@ function updateCheck(){
 		console.error("Organizr Function: Github Connection Failed");
 	});
 }
+function newsLoad(){
+    newsJSON().success(function(data) {
+        try {
+            var response = JSON.parse(data);
+            var items = [];
+            console.log(response);
+            console.log(reverseObject(response));
+            $.each(response, function(i,v) {
+                var newBody = `
+                <h5 class="pull-left">`+v.date+`</h5>
+                <h5 class="pull-right">`+v.author+`</h5>
+                <div class="clearfix"></div>
+                `+((v.subTitle) ? '<h5>' + v.subTitle + '</h5>' : '' )+`
+                <p>`+v.body+`</p>
+                `;
+                items[i] = {
+                    title:v.title,
+                    body:newBody
+                }
+            });
+            console.log(items);
+            console.log(reverseObject(items));
+            var body = buildAccordion(items);//
+            $('#organizrNewsPanel').html(body);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: Github Connection Failed");
+    });
+}
 function sponsorLoad(){
     sponsorsJSON().success(function(data) {
         try {
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         /*for (var a in reverseObject(json)){
@@ -3092,7 +3125,7 @@ function updateNow(){
             var json = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		if(json.data == true) {
@@ -3103,7 +3136,7 @@ function updateNow(){
                     var json = JSON.parse(data);
                 }catch(e) {
                     console.log(e + ' error: ' + data);
-                    orgErrorAlert(data);
+                    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                     return false;
                 }
                 if (json.data == true) {
@@ -3117,7 +3150,7 @@ function updateNow(){
                             var json = JSON.parse(data);
                         }catch(e) {
                             console.log(e + ' error: ' + data);
-                            orgErrorAlert(data);
+                            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                             return false;
                         }
                         if (json.data == true) {
@@ -3131,7 +3164,7 @@ function updateNow(){
                                     var json = JSON.parse(data);
                                 }catch(e) {
                                     console.log(e + ' error: ' + data);
-                                    orgErrorAlert(data);
+                                    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                                     return false;
                                 }
                                 if (json.data == true) {
@@ -3206,6 +3239,11 @@ function sponsorsJSON() {
         url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/sponsors.json",
     });
 }
+function newsJSON() {
+    return $.ajax({
+        url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/news.json",
+    });
+}
 function marketplaceJSON(type) {
     return $.ajax({
         url: "https://raw.githubusercontent.com/causefx/Organizr/v2-"+type+"/"+type+".json",
@@ -3237,7 +3275,7 @@ function buildWizard(){
             var json = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		console.log("Organizr Function: Starting Install Wizard");
@@ -3253,7 +3291,7 @@ function buildDependencyCheck(orgdata){
             var json = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		console.log("Organizr Function: Starting Dependencies Check");
@@ -4403,7 +4441,7 @@ function ombiActions(id,action,type){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		//console.log(response.data);
@@ -4418,7 +4456,7 @@ function ombiActions(id,action,type){
                 var responseData = JSON.parse(response.data.bd);
             }catch(e) {
                 console.log(e + ' error: ' + response.data.bd);
-                orgErrorAlert(response.data.bd);
+                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(response.data.bd));
                 return false;
             }
             console.log(responseData);
@@ -5116,7 +5154,7 @@ function homepageDownloader(type, timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		//document.getElementById('homepageOrder'+type).innerHTML = '';
@@ -5147,7 +5185,7 @@ function homepageStream(type, timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		document.getElementById('homepageOrder'+type+'nowplaying').innerHTML = '';
@@ -5177,7 +5215,7 @@ function homepageRecent(type, timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		document.getElementById('homepageOrder'+type+'recent').innerHTML = '';
@@ -5211,7 +5249,7 @@ function homepagePlaylist(type, timeout=30000){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		document.getElementById('homepageOrder'+type+'playlist').innerHTML = '';
@@ -5235,7 +5273,7 @@ function homepageRequests(timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		document.getElementById('homepageOrderombi').innerHTML = '';
@@ -5263,7 +5301,7 @@ function testAPIConnection(service){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         if(response.data == true){
@@ -5287,7 +5325,7 @@ function homepageCalendar(timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         $('#calendar').fullCalendar('removeEvents');
@@ -5602,7 +5640,7 @@ function importUsers(type){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         if(response.data !== false){
@@ -5807,7 +5845,7 @@ function pingUpdate(pingList,timeout){
             var response = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         if (response.data !== false || response.data !== null) {
@@ -6218,7 +6256,7 @@ function lock(){
             var html = JSON.parse(data);
         }catch(e) {
             console.log(e + ' error: ' + data);
-            orgErrorAlert(data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
         console.log(html);

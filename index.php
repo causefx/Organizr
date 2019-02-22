@@ -88,10 +88,10 @@
         <!-- /.navbar-header -->
         <!-- /.navbar-top-links -->
         <!-- /.navbar-static-side -->
-        <div class="dropdown-menu animated bounceInDown" id="main-org-error-container">
+        <div class="dropdown-menu animated bounceInDown bg-danger text-white" id="main-org-error-container">
             <div class="mega-dropdown-menu row">
                 <div class="col-lg-12 mb-4">
-                    <h3 class="mb-3 pull-left"><i class="fa fa-close text-danger"></i>&nbsp; <span lang="en">An Error Occured</span>
+                    <h3 class="mb-3 pull-left"><i class="fa fa-close text-white"></i>&nbsp; <span lang="en">An Error Occured</span>
                     </h3>
                     <h3 class="mb-3 pull-right mouse" onclick="closeOrgError();"><i
                                 class="fa fa-check text-success"></i>&nbsp;

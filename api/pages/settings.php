@@ -6,6 +6,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
         updateCheck();
         authDebugCheck();
         sponsorLoad();
+        newsLoad();
         [].slice.call(document.querySelectorAll(\'.sttabs\')).forEach(function(el) {
             new CBPFWTabs(el);
         });
@@ -180,6 +181,19 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade active in" id="settings-settings-about">
+                            	<div class="row">
+	                                <div class="col-lg-12">
+							            <div class="panel panel-default">
+											<div class="panel-heading bg-org p-t-10 p-b-10">
+												<span class="pull-left m-t-5"><span lang="en">Organizr News</span></span>
+												<div class="clearfix"></div>
+											</div>
+							                <div class="panel-wrapper p-b-0 collapse in bg-org">
+							        			<div id="organizrNewsPanel"></div>
+							                </div>
+							            </div>
+							        </div>
+    							</div>
     							<div class="row">
     								<div class="col-lg-6 col-sm-12 col-md-6">
     									<div class="panel bg-org">
