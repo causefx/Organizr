@@ -2951,11 +2951,9 @@ function newsLoad(){
         try {
             var response = JSON.parse(data);
             var items = [];
-            console.log(response);
-            console.log(reverseObject(response));
             $.each(response, function(i,v) {
                 var newBody = `
-                <h5 class="pull-left">`+v.date+`</h5>
+                <h5 class="pull-left">`+moment(v.date).format('LLL')+`</h5>
                 <h5 class="pull-right">`+v.author+`</h5>
                 <div class="clearfix"></div>
                 `+((v.subTitle) ? '<h5>' + v.subTitle + '</h5>' : '' )+`
@@ -2966,9 +2964,7 @@ function newsLoad(){
                     body:newBody
                 }
             });
-            console.log(items);
-            console.log(reverseObject(items));
-            var body = buildAccordion(items);//
+            var body = buildAccordion(items);
             $('#organizrNewsPanel').html(body);
         }catch(e) {
             console.log(e + ' error: ' + data);
