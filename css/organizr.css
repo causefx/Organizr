@@ -1228,6 +1228,9 @@ span.fc-title {
 .dropdown-menu {
     width: 100%;
 }
+#organizrNewsPanel .panel-body {
+    background: #2d2c2c;
+}
 /*
 body,
 html {
