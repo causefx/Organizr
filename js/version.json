@@ -121,7 +121,7 @@
   "2.0.0-beta.980": {
     "date": "2019-02-22 15:30",
     "title": "Little things here and there",
-    "new": "Add new pathsWritable function for multiple paths|Added global variable for main path and api path|Added update check for folder permissions|Added login with plex email and plex username for oauth|Added option for Ombi Homepage pulls Ombi Username instead of alias (#1052)|Added error catching on json parse for ajax calls|Add Pi-Hole image (#1060)|Added DB Path to folder check|Disable update and download if using docker container|Added Close Tab to Alt + Click|Disable branch change for docker users",
+    "new": "Added news section to settings page|Add new pathsWritable function for multiple paths|Added global variable for main path and api path|Added update check for folder permissions|Added login with plex email and plex username for oauth|Added option for Ombi Homepage pulls Ombi Username instead of alias (#1052)|Added error catching on json parse for ajax calls|Add Pi-Hole image (#1060)|Added DB Path to folder check|Disable update and download if using docker container|Added Close Tab to Alt + Click|Disable branch change for docker users",
     "fixed": "Fix update button on message not working if not on settings page (#1050)|Fix js reload button on new tab creation|Finally fix ombi limit to user|Fix tab edit/create when using same tab name already in use (#1066)|Embi local API requires exact case for username (#1061)|Fix edit tab name if exists",
     "notes": "Remove constant welcome message - Added welcome message only on login|Clean up org errors a little bit"
   }
