@@ -79,6 +79,7 @@ return array(
 	'qBittorrentReverseSorting' => false,
 	'qBittorrentCombine' => false,
 	'rTorrentURL' => '',
+	'rTorrentURLOverride' => '',
 	'rTorrentUsername' => '',
 	'rTorrentPassword' => '',
 	'rTorrentHideSeeding' => false,

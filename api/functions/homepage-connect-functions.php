@@ -796,6 +796,7 @@ function rTorrentConnect()
 			$digest = qualifyURL($GLOBALS['rTorrentURL'], true);
 			$passwordInclude = ($GLOBALS['rTorrentUsername'] != '' && $GLOBALS['rTorrentPassword'] != '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
 			$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
+			$extraPath = (empty($GLOBALS['rTorrentURLOverride'])) ? $extraPath : '';
 			$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
 			$options = (localURL($url)) ? array('verify' => false) : array();
 			$data = xmlrpc_encode_request("d.multicall2", array(
