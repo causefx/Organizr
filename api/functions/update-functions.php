@@ -2,61 +2,66 @@
 // Upgrade the installation
 function upgradeInstall($branch = 'v2-master', $stage)
 {
-	ini_set('max_execution_time', 0);
-	set_time_limit(0);
-	$url = 'https://github.com/causefx/Organizr/archive/' . $branch . '.zip';
-	$file = "upgrade.zip";
-	$source = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'upgrade' . DIRECTORY_SEPARATOR . 'Organizr-' . str_replace('v2', '2', $branch) . DIRECTORY_SEPARATOR;
-	$cleanup = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "upgrade" . DIRECTORY_SEPARATOR;
-	$destination = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR;
-	switch ($stage) {
-		case '1':
-			writeLog('success', 'Update Function -  Started Upgrade Process', $GLOBALS['organizrUser']['username']);
-			if (downloadFile($url, $file)) {
-				writeLog('success', 'Update Function -  Downloaded Update File for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
-				return true;
-			} else {
-				writeLog('error', 'Update Function -  Downloaded Update File Failed  for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
-				return false;
-			}
-			break;
-		case '2':
-			if (unzipFile($file)) {
-				writeLog('success', 'Update Function -  Unzipped Update File for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
-				return true;
-			} else {
-				writeLog('error', 'Update Function -  Unzip Failed for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
-				return false;
-			}
-			break;
-		case '3':
-			if (rcopy($source, $destination)) {
-				writeLog('success', 'Update Function -  Overwrited Files using Updated Files from Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
-				$updateComplete = $GLOBALS['dbLocation'] . 'completed.txt';
-				if (!file_exists($updateComplete)) {
-					touch($updateComplete);
+	$notWritable = array_search(false, pathsWritable($GLOBALS['paths']));
+	if ($notWritable == false) {
+		ini_set('max_execution_time', 0);
+		set_time_limit(0);
+		$url = 'https://github.com/causefx/Organizr/archive/' . $branch . '.zip';
+		$file = "upgrade.zip";
+		$source = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'upgrade' . DIRECTORY_SEPARATOR . 'Organizr-' . str_replace('v2', '2', $branch) . DIRECTORY_SEPARATOR;
+		$cleanup = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "upgrade" . DIRECTORY_SEPARATOR;
+		$destination = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR;
+		switch ($stage) {
+			case '1':
+				writeLog('success', 'Update Function -  Started Upgrade Process', $GLOBALS['organizrUser']['username']);
+				if (downloadFile($url, $file)) {
+					writeLog('success', 'Update Function -  Downloaded Update File for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
+					return true;
+				} else {
+					writeLog('error', 'Update Function -  Downloaded Update File Failed  for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
+					return false;
 				}
-				return true;
-			} else {
-				writeLog('error', 'Update Function -  Overwrite Failed for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
+				break;
+			case '2':
+				if (unzipFile($file)) {
+					writeLog('success', 'Update Function -  Unzipped Update File for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
+					return true;
+				} else {
+					writeLog('error', 'Update Function -  Unzip Failed for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
+					return false;
+				}
+				break;
+			case '3':
+				if (rcopy($source, $destination)) {
+					writeLog('success', 'Update Function -  Overwrited Files using Updated Files from Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
+					$updateComplete = $GLOBALS['dbLocation'] . 'completed.txt';
+					if (!file_exists($updateComplete)) {
+						touch($updateComplete);
+					}
+					return true;
+				} else {
+					writeLog('error', 'Update Function -  Overwrite Failed for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
+					return false;
+				}
+				break;
+			case '4':
+				if (rrmdir($cleanup)) {
+					writeLog('success', 'Update Function -  Deleted Update Files from Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
+					writeLog('success', 'Update Function -  Update Completed', $GLOBALS['organizrUser']['username']);
+					return true;
+				} else {
+					writeLog('error', 'Update Function -  Removal of Update Files Failed for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
+					return false;
+				}
+				break;
+			default:
 				return false;
-			}
-			break;
-		case '4':
-			if (rrmdir($cleanup)) {
-				writeLog('success', 'Update Function -  Deleted Update Files from Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
-				writeLog('success', 'Update Function -  Update Completed', $GLOBALS['organizrUser']['username']);
-				return true;
-			} else {
-				writeLog('error', 'Update Function -  Removal of Update Files Failed for Branch: ' . $branch, $GLOBALS['organizrUser']['username']);
-				return false;
-			}
-			break;
-		default:
-			return false;
-			break;
+				break;
+		}
+	} else {
+		return 'permissions';
 	}
-	return false;
+	
 }
 
 function downloadFile($url, $path)

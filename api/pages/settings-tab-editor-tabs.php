@@ -103,6 +103,7 @@ allIcons().success(function(data) {
 </form>
 <form id="edit-tab-form" class="mfp-hide white-popup-block mfp-with-anim">
     <input type="hidden" name="id" value="x">
+    <span class="hidden" id="originalTabName"></span>
     <h1 lang="en">Edit Tab</h1>
     <fieldset style="border:0;">
     	<div class="alert alert-success alert-dismissable tabEditTestMessage hidden">

@@ -337,37 +337,44 @@ function doneTypingMediaSearch () {
 }
 $(document).on("click", ".login-button", function(e) {
     e.preventDefault;
-    $('div.login-box').block({
-        message: '<h5><img width="20" src="plugins/images/busy.gif" /> Just a moment...</h4>',
-        css: {
-            color: '#fff',
-            border: '1px solid #2cabe3',
-            backgroundColor: '#2cabe3'
-        }
-    });
-    var post = $( '#loginform' ).serializeArray();
-    organizrAPI('POST','api/?v1/login',post).success(function(data) {
-        var html = JSON.parse(data);
-        if(html.data == true){
-            location.reload();
-        }else if(html.data == 'mismatch') {
+    var check = (local('g','loggingIn'));
+    if(check == null) {
+        local('s','loggingIn', true);
+        $('div.login-box').block({
+            message: '<h5><img width="20" src="plugins/images/busy.gif" /> Just a moment...</h4>',
+            css: {
+                color: '#fff',
+                border: '1px solid #2cabe3',
+                backgroundColor: '#2cabe3'
+            }
+        });
+        var post = $('#loginform').serializeArray();
+        organizrAPI('POST', 'api/?v1/login', post).success(function (data) {
+            var html = JSON.parse(data);
+            if (html.data == true) {
+                local('set','message','Welcome|Login Successful|success');
+                location.reload();
+            } else if (html.data == 'mismatch') {
+                $('div.login-box').unblock({});
+                message('Login Error', ' Wrong username/email/password combo', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+                console.error('Organizr Function: Login failed - wrong username/email/password');
+            } else if (html.data == '2FA') {
+                $('div.login-box').unblock({});
+                $('#tfa-div').removeClass('hidden');
+                $('#loginform [name=tfaCode]').focus()
+            } else {
+                $('div.login-box').unblock({});
+                message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+                console.error('Organizr Function: Login failed');
+            }
+            local('r','loggingIn');
+        }).fail(function (xhr) {
             $('div.login-box').unblock({});
-            message('Login Error', ' Wrong username/email/password combo', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
-            console.error('Organizr Function: Login failed - wrong username/email/password');
-        }else if(html.data == '2FA'){
-            $('div.login-box').unblock({});
-            $('#tfa-div').removeClass('hidden');
-            $('#loginform [name=tfaCode]').focus()
-        }else{
-            $('div.login-box').unblock({});
-            message('Login Error',html.data,activeInfo.settings.notifications.position,'#FFF','warning','10000');
-            console.error('Organizr Function: Login failed');
-        }
-    }).fail(function(xhr) {
-        $('div.login-box').unblock({});
-        message('Login Error','API Connection Failed',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-        console.error("Organizr Function: API Connection Failed");
-    });
+            message('Login Error', 'API Connection Failed', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+            console.error("Organizr Function: API Connection Failed");
+            local('r','loggingIn');
+        });
+    }
 });
 $(document).on("click", ".unlockButton", function(e) {
     e.preventDefault;
@@ -839,6 +846,7 @@ $(document).on("click", ".deleteTab", function () {
 //EDIT TAB GET ID
 $(document).on("click", ".editTabButton", function () {
     $('#edit-tab-form [name=tabName]').val($(this).parent().parent().attr("data-name"));
+    $('#originalTabName').html($(this).parent().parent().attr("data-name"));
     $('#edit-tab-form [name=tabURL]').val($(this).parent().parent().attr("data-url"));
     $('#edit-tab-form [name=tabLocalURL]').val($(this).parent().parent().attr("data-local-url"));
     $('#edit-tab-form [name=pingURL]').val($(this).parent().parent().attr("data-ping-url"));
@@ -852,6 +860,7 @@ $(document).on("click", ".editTabButton", function () {
 });
 //EDIT TAB
 $(document).on("click", ".editTab", function () {
+    var originalTabName = $('#originalTabName').html();
     //Create POST Array
     var post = {
         action:'editTab',
@@ -878,6 +887,10 @@ $(document).on("click", ".editTab", function () {
     if ((typeof post.tabURL == 'undefined' || post.tabURL == '') && (typeof post.tabLocalURL == 'undefined' || post.tabLocalURL == '')) {
         message('Edit Tab Error',' Please set a Tab URL or Local URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
+    if(checkIfTabNameExists(post.tabName) && originalTabName !== post.tabName){
+        message('Edit Tab Error',' Tab name already used',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+        return false;
+    }
     if(post.id !== '' && post.tabName !== '' && post.tabImage !== ''){
         var callbacks = $.Callbacks();
         callbacks.add( buildTabEditor );
@@ -903,7 +916,7 @@ $(document).on("click", ".addNewTab", function () {
         tabDefault:0,
         tabType:1,
         messageTitle:'Created Tab '+$('#new-tab-form [name=tabName]').val(),
-        messageBody:'Please <a href="javascript(\'window.location.reload(false);\');">RELOAD</a> page to update',
+        messageBody:'Please <a href="javascript:void(0)" onclick="window.location.reload(false);">RELOAD</a> page to update',
         error:'Organizr Function: Tab API Connection Failed'
     };
     if (typeof post.tabOrder == 'undefined' || post.tabOrder == '') {
@@ -917,6 +930,10 @@ $(document).on("click", ".addNewTab", function () {
     }
     if (typeof post.tabImage == 'undefined' || post.tabImage == '') {
         message('New Tab Error',' Please set a Tab Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+    }
+    if(checkIfTabNameExists(post.tabName)){
+        message('New Tab Error',' Tab name already used',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+        return false;
     }
     if(post.tabOrder !== '' && post.tabName !== '' && (post.tabURL !== '' || post.tabLocalURL !== '') && post.tabImage !== '' ){
         var callbacks = $.Callbacks();

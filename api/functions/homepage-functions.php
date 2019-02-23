@@ -2006,6 +2006,13 @@ function getHomepageList()
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['ombiRefresh'],
 						'options' => optionTime()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiAlias',
+						'label' => 'Use Ombi Alias Names',
+						'value' => $GLOBALS['ombiAlias'],
+						'help' => 'Use Ombi Alias Names instead of Usernames - If Alias is blank, Alias will fallback to Username'
 					)
 				),
 				'Test Connection' => array(

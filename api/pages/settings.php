@@ -6,6 +6,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
         updateCheck();
         authDebugCheck();
         sponsorLoad();
+        newsLoad();
         [].slice.call(document.querySelectorAll(\'.sttabs\')).forEach(function(el) {
             new CBPFWTabs(el);
         });
@@ -180,6 +181,19 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade active in" id="settings-settings-about">
+                            	<div class="row">
+	                                <div class="col-lg-12">
+							            <div class="panel panel-default">
+											<div class="panel-heading bg-org p-t-10 p-b-10">
+												<span class="pull-left m-t-5"><span lang="en">Organizr News</span></span>
+												<div class="clearfix"></div>
+											</div>
+							                <div class="panel-wrapper p-b-0 collapse in bg-org">
+							        			<div id="organizrNewsPanel"></div>
+							                </div>
+							            </div>
+							        </div>
+    							</div>
     							<div class="row">
     								<div class="col-lg-6 col-sm-12 col-md-6">
     									<div class="panel bg-org">
@@ -211,15 +225,15 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                         <div class="white-box bg-org">
                                             <h3 class="box-title" lang="en">Information</h3>
                                             <ul class="feeds">
-                                                <li><div class="bg-info"><i class="mdi mdi-webpack mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Organizr Version</span> ' . $GLOBALS['installedVersion'] . '</li>
-                                                <li><div class="bg-info"><i class="mdi mdi-github-box mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Organizr Branch</span> ' . $GLOBALS['branch'] . '</li>
-                                                <li><div class="bg-info"><i class="mdi mdi-database mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Database Location</span> ' . $GLOBALS['dbLocation'] . $GLOBALS['dbName'] . '</li>
-                                                ' . settingsDocker() . '
+                                                <li><div class="bg-info"><i class="mdi mdi-webpack mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Version</span> ' . $GLOBALS['installedVersion'] . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-github-box mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Branch</span> ' . $GLOBALS['branch'] . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-database mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Database Location</span> ' . $GLOBALS['dbLocation'] . $GLOBALS['dbName'] . '</li>
+                                                ' . settingsDocker() . settingsPathChecks() . '
                                                 <hr class="m-t-10">
-                                                <li><div class="bg-info"><i class="mdi mdi-language-php mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">PHP Version</span> ' . phpversion() . '</li>
-                                                <li><div class="bg-info"><i class="mdi mdi-package-variant-closed mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Webserver Version</span> ' . $_SERVER['SERVER_SOFTWARE'] . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-language-php mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">PHP Version</span> ' . phpversion() . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-package-variant-closed mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Webserver Version</span> ' . $_SERVER['SERVER_SOFTWARE'] . '</li>
                                                 <hr class="m-t-10">
-                                                <li><div class="bg-info"><i class="mdi mdi-account-card-details mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">License</span> ' . ucwords($GLOBALS['license']) . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-account-card-details mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">License</span> ' . ucwords($GLOBALS['license']) . '</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -297,7 +311,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                             </div>
                                             <div class="tab-pane" id="donate-patreon">
                                                 <blockquote>Need specialized support or just want to support Organizr?  If so head to Patreon...<br/>Please click the button to continue.</blockquote>
-                                                <button onclick="window.open(\'https://www.patreon.com/bePatron?u=8370887\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
+                                                <button onclick="window.open(\'https://www.patreon.com/join/organizr?\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
                                             </div>
                                             <div class="tab-pane" id="donate-ads">
                                                 <blockquote>Money not an option?  No problem.  Show some love to this Google Ad below:</blockquote>

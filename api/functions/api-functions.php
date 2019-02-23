@@ -20,7 +20,7 @@ function login($array)
 			}
 		}
 	}
-	$username = strtolower($username);
+	$username = (strpos($GLOBALS['authBackend'], 'emby') !== false) ? $username : strtolower($username);
 	$days = (isset($remember)) ? $GLOBALS['rememberMeDays'] : 1;
 	$oAuth = (isset($oAuth)) ? $oAuth : false;
 	try {
@@ -66,7 +66,7 @@ function login($array)
 								'token' => $tokenInfo['user']['authToken']
 							);
 							coookie('set', 'oAuth', 'true', $GLOBALS['rememberMeDays']);
-							$authSuccess = ((!empty($GLOBALS['plexAdmin']) && strtolower($GLOBALS['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
+							$authSuccess = ((!empty($GLOBALS['plexAdmin']) && strtolower($GLOBALS['plexAdmin']) == strtolower($tokenInfo['user']['username'])) || (!empty($GLOBALS['plexAdmin']) && strtolower($GLOBALS['plexAdmin']) == strtolower($tokenInfo['user']['email'])) || checkPlexUser($tokenInfo['user']['username'])) ? $authSuccess : false;
 						}
 					}
 					break;
@@ -130,7 +130,7 @@ function login($array)
 					ssoCheck($username, $password, $token); //need to work on this
 					return true;
 				} else {
-					return 'error';
+					return 'Token Creation Error';
 				}
 			} else {
 				// Create User

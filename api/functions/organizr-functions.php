@@ -21,6 +21,7 @@ function organizrSpecialSettings()
 				'authRequest' => (qualifyRequest($GLOBALS['homepageOmbiRequestAuth'])) ? true : false,
 				'sso' => ($GLOBALS['ssoOmbi']) ? true : false,
 				'cookie' => (isset($_COOKIE['Auth'])) ? true : false,
+				'alias' => ($GLOBALS['ombiAlias']) ? true : false,
 			),
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
@@ -89,6 +90,7 @@ function organizrSpecialSettings()
 			'authDebug' => $GLOBALS['authDebug'],
 			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen'],
 			'unsortedTabs' => $GLOBALS['unsortedTabs'],
+			'authType' => $GLOBALS['authType'],
 			'authBackend' => $GLOBALS['authBackend'],
 			'newMessageSound' => (isset($GLOBALS['CHAT-newMessageSound-include'])) ? $GLOBALS['CHAT-newMessageSound-include'] : '',
 			'uuid' => $GLOBALS['uuid'],
@@ -419,6 +421,15 @@ function organizrStatus()
 	return $status;
 }
 
+function pathsWritable($paths)
+{
+	$results = array();
+	foreach ($paths as $k => $v) {
+		$results[$k] = is_writable($v);
+	}
+	return $results;
+}
+
 function getSettingsMain()
 {
 	return array(
@@ -428,7 +439,9 @@ function getSettingsMain()
 				'name' => 'branch',
 				'label' => 'Branch',
 				'value' => $GLOBALS['branch'],
-				'options' => getBranches()
+				'options' => getBranches(),
+				'disabled' => $GLOBALS['branch'],
+				'help' => ($GLOBALS['docker']) ? 'Since you are using the Official Docker image, Change the image to change the branch' : 'Choose which branch to download from'
 			),
 			array(
 				'type' => 'button',
@@ -1372,16 +1385,33 @@ function showLogin()
 	}
 }
 
+function checkoAuth()
+{
+	return ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') ? true : false;
+}
+
 function showoAuth()
 {
 	$buttons = '';
-	if ($GLOBALS['plexoAuth']) {
-		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn btn-lg btn-block text-uppercase waves-effect waves-light bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <span>Login with Plex Account</span><i aria-hidden="true" class="mdi mdi-plex m-l-5"></i> </a>';
+	if ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') {
+		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn btn-lg btn-block text-uppercase waves-effect waves-light bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <span>Login</span><i aria-hidden="true" class="mdi mdi-plex m-l-5"></i> </a>';
 	}
 	return ($buttons) ? '
-		<div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 m-t-10 text-center">
-                <div class="social">' . $buttons . '</div>
+		<div class="panel">
+            <div class="panel-heading bg-org" id="plex-login-heading" role="tab">
+            	<a class="panel-title" data-toggle="collapse" href="#plex-login-collapse" data-parent="#login-panels" aria-expanded="false" aria-controls="organizr-login-collapse">
+	                <img class="lazyload loginTitle" data-src="plugins/images/tabs/plex.png"> &nbsp;
+                    <span class="text-uppercase fw300" lang="en">Login with Plex</span>
+            	</a>
+            </div>
+            <div class="panel-collapse collapse in" id="plex-login-collapse" aria-labelledby="plex-login-heading" role="tabpanel">
+                <div class="panel-body">
+               		<div class="row">
+			            <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+			                <div class="social m-b-0">' . $buttons . '</div>
+			            </div>
+			        </div>
+               </div>
             </div>
         </div>
 	' : '';
@@ -1979,5 +2009,16 @@ function importUserButtons()
 function settingsDocker()
 {
 	$type = ($GLOBALS['docker']) ? 'Official Docker' : 'Native';
-	return '<li><div class="bg-info"><i class="mdi mdi-flag mdi-24px text-white"></i></div><span class="text-muted hidden-xs" lang="en">Install Type</span> ' . $type . '</li>';
+	return '<li><div class="bg-info"><i class="mdi mdi-flag mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Install Type</span> ' . $type . '</li>';
+}
+
+function settingsPathChecks()
+{
+	$items = '';
+	$type = (array_search(false, pathsWritable($GLOBALS['paths']))) ? 'Not Writable' : 'Writable';
+	$result = '<li class="mouse" onclick="toggleWritableFolders();"><div class="bg-info"><i class="mdi mdi-folder mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Paths</span> ' . $type . '</li>';
+	foreach (pathsWritable($GLOBALS['paths']) as $k => $v) {
+		$items .= '<li class="folders-writable hidden"><div class="bg-info"><i class="mdi mdi-folder mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">' . $k . '</span> ' . (($v) ? 'Writable' : 'Not Writable') . '</li>';
+	}
+	return $result . $items;
 }

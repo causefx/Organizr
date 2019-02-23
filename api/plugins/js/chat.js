@@ -8,7 +8,7 @@ function chatLaunch(){
     }else{
         if(activeInfo.plugins["CHAT-enabled"] == true && activeInfo.plugins.includes["CHAT-authKey-include"] !== '' && activeInfo.plugins.includes["CHAT-appID-include"] !== '' && activeInfo.plugins.includes["CHAT-cluster-include"] !== ''){
             if (activeInfo.user.groupID <= activeInfo.plugins.includes["CHAT-Auth-include"]) {
-                var menuList = `<li><a class=""  onclick="tabActions(event,'chat','plugin');chatEntry();"><i class="fa fa-comments-o fa-fw"></i> <span lang="en">Chat</span><small class="chat-counter label label-rouded label-info pull-right hidden">0</small></a></li>`;
+                var menuList = `<li><a class=""  href="javascript:void(0)" onclick="tabActions(event,'chat','plugin');chatEntry();"><i class="fa fa-comments-o fa-fw"></i> <span lang="en">Chat</span><small class="chat-counter label label-rouded label-info pull-right hidden">0</small></a></li>`;
 				var htmlDOM = `
                 <div id="container-plugin-chat" class="plugin-container hidden">
                     <div class="chat-main-box bg-org">
