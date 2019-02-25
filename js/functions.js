@@ -3107,6 +3107,24 @@ function countdown(remaining) {
 	$('#update-seconds').text(remaining);
     setTimeout(function(){ countdown(remaining - 1); }, 1000);
 }
+function rebootDocker(){
+    if(activeInfo.settings.misc.docker){
+        messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
+        organizrAPI('GET','api/?v1/reboot/docker').success(function(data) {
+            try {
+                var json = JSON.parse(data);
+            }catch(e) {
+                console.log(e + ' error: ' + data);
+                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+                return false;
+            }
+            console.log(json);
+            local('set','message',json.data);
+        }).fail(function(xhr) {
+            console.error("Organizr Function: Reboot Failed");
+        });
+    }
+}
 function updateNow(){
     if(activeInfo.settings.misc.docker){
         messageSingle(window.lang.translate('[Docker Container]'),window.lang.translate('Inline downloader disabled - Please restart container to update or download'),activeInfo.settings.notifications.position,'#FFF','warning','60000');

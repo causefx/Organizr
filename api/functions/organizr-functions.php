@@ -2022,3 +2022,11 @@ function settingsPathChecks()
 	}
 	return $result . $items;
 }
+
+function rebootDocker()
+{
+	$output = '';
+	$return_var = '';
+	exec('reboot', $output, $return_var);
+	return $output . ' - ' . $return_var;
+}
