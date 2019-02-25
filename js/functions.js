@@ -3129,7 +3129,7 @@ function dockerUpdate(){
 }
 function updateNow(){
     if(activeInfo.settings.misc.docker){
-        messageSingle(window.lang.translate('[Docker Container]'),window.lang.translate('Inline downloader disabled - Please restart container to update or download'),activeInfo.settings.notifications.position,'#FFF','warning','60000');
+        dockerUpdate();
         return false;
     }
 	console.log('Organizr Function: Starting Update Process');
