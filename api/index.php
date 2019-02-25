@@ -1274,13 +1274,13 @@ switch ($function) {
 				break;
 		}
 		break;
-	case 'v1_reboot_docker':
+	case 'v1_docker_update':
 		switch ($method) {
 			case 'GET':
 				if (qualifyRequest(1)) {
 					$result['status'] = 'success';
 					$result['statusText'] = 'success';
-					$result['data'] = rebootDocker();
+					$result['data'] = dockerUpdate();
 				} else {
 					$result['status'] = 'error';
 					$result['statusText'] = 'API/Token invalid or not set';

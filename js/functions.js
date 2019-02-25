@@ -3107,10 +3107,10 @@ function countdown(remaining) {
 	$('#update-seconds').text(remaining);
     setTimeout(function(){ countdown(remaining - 1); }, 1000);
 }
-function rebootDocker(){
+function dockerUpdate(){
     if(activeInfo.settings.misc.docker){
         messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
-        organizrAPI('GET','api/?v1/reboot/docker').success(function(data) {
+        organizrAPI('GET','api/?v1/docker/update').success(function(data) {
             try {
                 var json = JSON.parse(data);
             }catch(e) {

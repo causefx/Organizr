@@ -2023,10 +2023,9 @@ function settingsPathChecks()
 	return $result . $items;
 }
 
-function rebootDocker()
+function dockerUpdate()
 {
-	$output = '';
-	$return_var = '';
-	exec('reboot', $output, $return_var);
-	return $output . ' - ' . $return_var;
+	chdir('/etc/cont-init.d/');
+	$dockerUpdate = shell_exec('./30-install');
+	return $dockerUpdate;
 }
