@@ -2376,7 +2376,11 @@ function tabProcess(arrayItems) {
                         $(menuList).appendTo($('#side-menu'));
                     }
                 }else{
-                    $(menuList).prependTo($('.category-'+v.category_id));
+                    if(activeInfo.settings.misc.unsortedTabs === 'top'){
+                        $(menuList).prependTo($('.category-'+v.category_id));
+                    }else if(activeInfo.settings.misc.unsortedTabs === 'bottom') {
+                        $(menuList).appendTo($('.category-'+v.category_id));
+                    }
                 }
                 $('#side-menu').metisMenu({ toggle: false });
 				switch (v.type) {
