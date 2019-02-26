@@ -2549,7 +2549,16 @@ function deleteDatabase() {
 }
 
 // Upgrade the installation
-function upgradeInstall($branch = 'master') {
+function upgradeInstall($branch = 'v1-master') {
+	if ($branch == 'master'){
+		$branch = 'v1-master';
+	}
+	if ($branch == 'develop'){
+		$branch = 'v1-develop';
+	}
+	if ($branch == 'cero-dev'){
+		$branch = 'v1-develop';
+	}
     function downloadFile($url, $path){
         ini_set('max_execution_time',0);
         $folderPath = "upgrade/";

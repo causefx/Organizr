@@ -819,9 +819,9 @@ $userTypes = array(
 	'Admin' => 'admin',
 );
 $branchTypes = array(
-	'Master' => 'master',
-	'Develop' => 'develop',
-	'Pre-Develop' => 'cero-dev',
+	'Master' => 'v1-master',
+	'Develop' => 'v1-develop',
+	'Pre-Develop' => 'v1-develop',
 );
 $refreshSeconds = array(
 	'1 sec' => '1000',
@@ -2733,7 +2733,7 @@ echo buildSettings(
 
                                                                 <div class="panel-body">
 
-                                                                    <p><?php echo $language->translate("TRANSLATIONS_ABOUT");?> <a href="https://github.com/causefx/Organizr/tree/develop/lang" target="_blank">Github Develop Branch</a></p>
+                                                                    <p><?php echo $language->translate("TRANSLATIONS_ABOUT");?> <a href="https://github.com/causefx/Organizr/tree/v1-develop/lang" target="_blank">Github Develop Branch</a></p>
 
                                                                 </div>
 
@@ -4115,10 +4115,10 @@ echo buildSettings(
 
                             $(infoTabNew).html("<br/><h4><strong><?php echo $language->translate("WHATS_NEW");?> " + githubVersion + "</strong></h4><strong><?php echo $language->translate("TITLE");?>: </strong>" + githubName + " <br/><strong><?php echo $language->translate("CHANGES");?>: </strong>" + githubDescription);
                             <?php if (extension_loaded("ZIP")){?>
-                            $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"upgradeOrg\" method=\"post\" onsubmit=\"performUpdate(); ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+                            $(infoTabDownload).html("<br/><form style=\"display:initial;\" id=\"upgradeOrg\" method=\"post\" onsubmit=\"performUpdate(); ajax_request(\'POST\', \'upgradeInstall\'); return false;\"><input type=\"hidden\" name=\"action\" value=\"upgrade\" /><button class=\"btn waves btn-labeled btn-success text-uppercase waves-effect waves-float\" type=\"submit\"><span class=\"btn-label\"><i class=\"fa fa-refresh\"></i></span><?php echo $language->translate("AUTO_UPGRADE");?></button></form> <a href='https://github.com/causefx/Organizr/archive/v1-master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
                             $( "p[id^='upgrade']" ).toggle();
                             <?php }else{ ?>
-                            $(infoTabDownload).html("<br/><a href='https://github.com/causefx/Organizr/archive/master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
+                            $(infoTabDownload).html("<br/><a href='https://github.com/causefx/Organizr/archive/v1-master.zip' target='_blank' type='button' class='btn waves btn-labeled btn-success text-uppercase waves-effect waves-float'><span class='btn-label'><i class='fa fa-download'></i></span>Organizr v." + githubVersion + "</a>");
                             $( "p[id^='upgrade']" ).toggle();
                             <?php } ?>
                         }else if(currentVersion === githubVersion){

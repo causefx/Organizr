@@ -92,7 +92,7 @@ return array(
 	"homePageAuthNeeded" => false,
 	"homepageCustomHTML1" => "",
 	"homepageCustomHTML1Auth" => false,
-	"git_branch" => "master",
+	"git_branch" => "v1-master",
 	"git_check" => true,
 	"speedTest" => false,
 	"smtpHostType" => "tls",
@@ -146,7 +146,7 @@ return array(
 	"homepageOrdertransmisson" => '15',
 	'requestedUserOnly' => 'true',
 	'emailTemplateCSS' => '',
-	'emailTempateLogo' => 'https://raw.githubusercontent.com/causefx/Organizr/master/images/organizr-logo-h.png',
+	'emailTempateLogo' => 'https://raw.githubusercontent.com/causefx/Organizr/v1-master/images/organizr-logo-h.png',
 	'emailTemplateResetPassword' => '
 	<h2>Hey there {user}!</h2><br />
 	Looks like you forgot your password.  Well, I got you...  Here is your new password: {password}<br />
