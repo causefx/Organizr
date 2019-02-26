@@ -1156,6 +1156,7 @@ function getCalendar()
 						$icalEvents[] = array(
 							'title' => $eventName,
 							'imagetype' => 'calendar-o text-warning text-custom-calendar ' . $extraClass,
+							'imagetypeFilter' => 'ical',
 							'className' => 'bg-calendar calendar-item bg-custom-calendar',
 							'start' => $startDate,
 							'end' => $endDate
@@ -1401,6 +1402,8 @@ function getRadarrCalendar($array, $number, $url)
 				"videoCodec" => $child["hasFile"] ? @$child['movieFile']['mediaInfo']['videoCodec'] : "unknown",
 				"size" => $child["hasFile"] ? @$child['movieFile']['size'] : "unknown",
 				"genres" => $child['genres'],
+				"year" => isset($child['year']) ? $child['year'] : '',
+				"studio" => isset($child['studio']) ? $child['studio'] : '',
 			);
 			array_push($gotCalendar, array(
 				"id" => "Radarr-" . $number . "-" . $i,
@@ -1484,6 +1487,8 @@ function getCouchCalendar($array, $number)
 				"audioCodec" => "",
 				"videoCodec" => "",
 				"genres" => $child['info']['genres'],
+				"year" => isset($child['info']['year']) ? $child['info']['year'] : '',
+				"studio" => isset($child['info']['year']) ? $child['info']['year'] : '',
 			);
 			array_push($gotCalendar, array(
 				"id" => "CouchPotato-" . $number . "-" . $i,
