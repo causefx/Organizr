@@ -792,15 +792,17 @@ function accordionOptions(options, parentID){
 	});
 	return accordionOptions;
 }
-function buildAccordion(array){
+function buildAccordion(array, open = false){
     var items = '';
     var mainId = createRandomString(10);
     $.each(array, function(i,v) {
+        var collapse = (open && i == 0) ? 'collapse in' : 'collapse';
+        var collapsed = (open && i == 0) ? '' : 'collapsed';
         var id = mainId + '-' + i;
         items += `
         <div class="panel">
-            <div class="panel-heading bg-org" id="`+id+`-heading" role="tab"> <a class="panel-title collapsed" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+mainId+`" aria-expanded="false" aria-controls="`+id+`-collapse"> `+v.title+` </a> </div>
-            <div class="panel-collapse collapse" id="`+id+`-collapse" aria-labelledby="`+id+`-heading" role="tabpanel">
+            <div class="panel-heading bg-org" id="`+id+`-heading" role="tab"> <a class="panel-title `+collapsed+`" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+mainId+`" aria-expanded="false" aria-controls="`+id+`-collapse"> `+v.title+` </a> </div>
+            <div class="panel-collapse `+collapse+`" id="`+id+`-collapse" aria-labelledby="`+id+`-heading" role="tabpanel">
                 <div class="panel-body"> `+v.body+` </div>
             </div>
         </div>
@@ -937,11 +939,11 @@ function buildPluginsItem(array){
 	inactivePlugins = (inactivePlugins.length !== 0) ? inactivePlugins : '<h2 class="text-center" lang="en">Everything Active</h2>';
 	var panes = `
 	<ul class="nav customtab2 nav-tabs" role="tablist">
-		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en">Active</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-file"></i></span><span class="hidden-xs" lang="en">Active</span></a>
 		</li>
-		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-zip"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
 		</li>
-		<li onclick="changeSettingsMenu('Settings::Plugins::Marketplace');loadMarketplace('plugins');" role="presentation" class=""><a href="#settings-plugins-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Marketplace');loadMarketplace('plugins');" role="presentation" class=""><a href="#settings-plugins-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-shopping-cart-full"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a>
 		</li>
 	</ul>
 	<!-- Tab panes -->
@@ -2968,7 +2970,7 @@ function newsLoad(){
                     body:newBody
                 }
             });
-            var body = buildAccordion(items);
+            var body = buildAccordion(items, true);
             $('#organizrNewsPanel').html(body);
         }catch(e) {
             console.log(e + ' error: ' + data);
