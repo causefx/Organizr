@@ -61,3 +61,8 @@ Special Shout-out to: [Cerothen](https://github.com/Cerothen) & [elmerfdz](https
 <p align="center"><a href="https://www.browserstack.com">BrowserStack</a> for allowing us to use their platform for testing</p>
 
 Theme Distributed with Extended License from Creative Market
+
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/causefx/Organizr/badge.svg?style=beer-square)](https://beerpay.io/causefx/Organizr)  [![Beerpay](https://beerpay.io/causefx/Organizr/make-wish.svg?style=flat-square)](https://beerpay.io/causefx/Organizr?focus=wish)
