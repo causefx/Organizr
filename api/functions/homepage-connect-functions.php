@@ -1829,6 +1829,7 @@ function ombiImport($type = null)
 					$response = Requests::post($url . "/api/v1/Job/plexuserimporter", $headers, $options);
 					break;
 				default:
+					return false;
 					break;
 			}
 			if ($response->success) {

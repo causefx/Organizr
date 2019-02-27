@@ -560,6 +560,23 @@ function getSettingsMain()
 				'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com'
 			),
 			array(
+				'type' => 'select',
+				'name' => 'ldapType',
+				'id' => 'ldapType',
+				'label' => 'LDAP Backend Type',
+				'class' => 'ldapAuth switchAuth',
+				'value' => $GLOBALS['ldapType'],
+				'options' => getLDAPOptions()
+			),
+			array(
+				'type' => 'input',
+				'name' => 'authBackendHostPrefix',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Host Prefix',
+				'value' => $GLOBALS['authBackendHostPrefix'],
+				'placeholder' => 'Domain prefix - i.e. Controller from Controller\Username'
+			),
+			array(
 				'type' => 'input',
 				'name' => 'embyURL',
 				'class' => 'embyAuth switchAuth',
@@ -1530,6 +1547,24 @@ function getAuthTypes()
 	);
 }
 
+function getLDAPOptions()
+{
+	return array(
+		array(
+			'name' => 'Active Directory',
+			'value' => '1'
+		),
+		array(
+			'name' => 'OpenLDAP',
+			'value' => '2'
+		),
+		array(
+			'name' => 'First IPA',
+			'value' => '3'
+		),
+	);
+}
+
 function getAuthBackends()
 {
 	$backendOptions = array();
@@ -2028,4 +2063,12 @@ function dockerUpdate()
 	chdir('/etc/cont-init.d/');
 	$dockerUpdate = shell_exec('./30-install');
 	return $dockerUpdate;
+}
+
+function checkHostPrefix($s)
+{
+	if (empty($s)) {
+		return $s;
+	}
+	return (substr($s, -1, 1) == '\\') ? $s : $s . '\\';
 }

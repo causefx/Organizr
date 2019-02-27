@@ -7,7 +7,7 @@ function authRegister($username, $password, $defaults, $email, $token = null)
 	ssoCheck($username, $password, $token);
 	if (createUser($username, $password, $defaults, $email)) {
 		writeLog('success', 'Registration Function - A User has registered', $username);
-		if ($GLOBALS['PHPMAILER-enabled']) {
+		if ($GLOBALS['PHPMAILER-enabled'] && $email !== '') {
 			$emailTemplate = array(
 				'type' => 'registration',
 				'body' => $GLOBALS['PHPMAILER-emailTemplateRegisterUser'],
@@ -194,7 +194,10 @@ if (function_exists('ldap_connect')) {
 	function plugin_auth_ldap($username, $password)
 	{
 		if (!empty($GLOBALS['authBaseDN']) && !empty($GLOBALS['authBackendHost'])) {
+			$ad = new \Adldap\Adldap();
+			// Create a configuration array.
 			$ldapServers = explode(',', $GLOBALS['authBackendHost']);
+			$i = 0;
 			foreach ($ldapServers as $key => $value) {
 				// Calculate parts
 				$digest = parse_url(trim($value));
@@ -202,12 +205,45 @@ if (function_exists('ldap_connect')) {
 				$host = (isset($digest['host']) ? $digest['host'] : (isset($digest['path']) ? $digest['path'] : ''));
 				$port = (isset($digest['port']) ? $digest['port'] : (strtolower($scheme) == 'ldap' ? 389 : 636));
 				// Reassign
-				$ldapServers[$key] = $scheme . '://' . $host . ':' . $port;
+				$ldapHosts[] = $host;
+				if ($i == 0) {
+					$ldapPort = $port;
+				}
+				$i++;
 			}
-			$ldap = ldap_connect(implode(' ', $ldapServers));
-			ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
-			ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
-			$bind = @ldap_bind($ldap, sprintf($GLOBALS['authBaseDN'], $username), $password);
+			$config = [
+				// Mandatory Configuration Options
+				'hosts' => $ldapHosts,
+				'base_dn' => $GLOBALS['authBaseDN'],
+				'username' => checkHostPrefix($GLOBALS['authBackendHostPrefix']) . $username,
+				'password' => $password,
+				// Optional Configuration Options
+				'schema' => (($GLOBALS['ldapType'] == 1) ? Adldap\Schemas\ActiveDirectory::class : (($GLOBALS['ldapType'] == 2) ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
+				'account_prefix' => '',
+				'account_suffix' => '',
+				'port' => $ldapPort,
+				'follow_referrals' => false,
+				'use_ssl' => false,
+				'use_tls' => false,
+				'version' => 3,
+				'timeout' => 5,
+				// Custom LDAP Options
+				'custom_options' => [
+					// See: http://php.net/ldap_set_option
+					//LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_HARD
+				]
+			];
+			// Add a connection provider to Adldap.
+			$ad->addProvider($config);
+			try {
+				// If a successful connection is made to your server, the provider will be returned.
+				$provider = $ad->connect();
+				$user = $provider->search()->find('causefx');
+				$bind = $user->exists;
+			} catch (\Adldap\Auth\BindException $e) {
+				prettyPrint($e->getMessage());
+				// There was an issue binding / connecting to the server.
+			}
 			return ($bind) ? true : false;
 		}
 		return false;
