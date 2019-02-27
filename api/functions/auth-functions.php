@@ -238,10 +238,10 @@ if (function_exists('ldap_connect')) {
 			try {
 				// If a successful connection is made to your server, the provider will be returned.
 				$provider = $ad->connect();
-				$user = $provider->search()->find('causefx');
+				$user = $provider->search()->find($username);
 				$bind = $user->exists;
 			} catch (\Adldap\Auth\BindException $e) {
-				prettyPrint($e->getMessage());
+				writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
 				// There was an issue binding / connecting to the server.
 			}
 			return ($bind) ? true : false;
