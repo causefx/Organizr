@@ -592,6 +592,14 @@ function getSettingsMain()
 				'value' => $GLOBALS['ldapBindPassword']
 			),
 			array(
+				'type' => 'button',
+				'label' => 'Test Connection',
+				'icon' => 'fa fa-flask',
+				'class' => 'ldapAuth switchAuth',
+				'text' => 'Test Connection',
+				'attr' => 'onclick="testAPIConnection(\'ldap\')"'
+			),
+			array(
 				'type' => 'input',
 				'name' => 'embyURL',
 				'class' => 'embyAuth switchAuth',

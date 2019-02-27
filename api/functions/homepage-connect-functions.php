@@ -2233,6 +2233,61 @@ function testAPIConnection($array)
 				};
 			}
 			break;
+		case 'ldap':
+			if (!empty($GLOBALS['authBaseDN']) && !empty($GLOBALS['authBackendHost'])) {
+				$ad = new \Adldap\Adldap();
+				// Create a configuration array.
+				$ldapServers = explode(',', $GLOBALS['authBackendHost']);
+				$i = 0;
+				foreach ($ldapServers as $key => $value) {
+					// Calculate parts
+					$digest = parse_url(trim($value));
+					$scheme = strtolower((isset($digest['scheme']) ? $digest['scheme'] : 'ldap'));
+					$host = (isset($digest['host']) ? $digest['host'] : (isset($digest['path']) ? $digest['path'] : ''));
+					$port = (isset($digest['port']) ? $digest['port'] : (strtolower($scheme) == 'ldap' ? 389 : 636));
+					// Reassign
+					$ldapHosts[] = $host;
+					if ($i == 0) {
+						$ldapPort = $port;
+					}
+					$i++;
+				}
+				$config = [
+					// Mandatory Configuration Options
+					'hosts' => $ldapHosts,
+					'base_dn' => $GLOBALS['authBaseDN'],
+					'username' => (empty($GLOBALS['ldapBindUsername'])) ? null : $GLOBALS['ldapBindUsername'],
+					'password' => (empty($GLOBALS['ldapBindPassword'])) ? null : decrypt($GLOBALS['ldapBindPassword']),
+					// Optional Configuration Options
+					'schema' => (($GLOBALS['ldapType'] == '1') ? Adldap\Schemas\ActiveDirectory::class : (($GLOBALS['ldapType'] == '2') ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
+					'account_prefix' => '',
+					'account_suffix' => '',
+					'port' => $ldapPort,
+					'follow_referrals' => false,
+					'use_ssl' => false,
+					'use_tls' => false,
+					'version' => 3,
+					'timeout' => 5,
+					// Custom LDAP Options
+					'custom_options' => [
+						// See: http://php.net/ldap_set_option
+						//LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_HARD
+					]
+				];
+				// Add a connection provider to Adldap.
+				$ad->addProvider($config);
+				try {
+					// If a successful connection is made to your server, the provider will be returned.
+					$provider = $ad->connect();
+				} catch (\Adldap\Auth\BindException $e) {
+					writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), 'SYSTEM');
+					return $e->getMessage();
+					// There was an issue binding / connecting to the server.
+				}
+				return ($provider) ? true : false;
+			}
+			return false;
+			break;
 		default :
 			return false;
 	}

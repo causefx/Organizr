@@ -218,7 +218,7 @@ if (function_exists('ldap_connect')) {
 				'username' => (empty($GLOBALS['ldapBindUsername'])) ? null : $GLOBALS['ldapBindUsername'],
 				'password' => (empty($GLOBALS['ldapBindPassword'])) ? null : decrypt($GLOBALS['ldapBindPassword']),
 				// Optional Configuration Options
-				'schema' => (($GLOBALS['ldapType'] == 1) ? Adldap\Schemas\ActiveDirectory::class : (($GLOBALS['ldapType'] == 2) ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
+				'schema' => (($GLOBALS['ldapType'] == '1') ? Adldap\Schemas\ActiveDirectory::class : (($GLOBALS['ldapType'] == '2') ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
 				'account_prefix' => '',
 				'account_suffix' => '',
 				'port' => $ldapPort,
