@@ -215,8 +215,8 @@ if (function_exists('ldap_connect')) {
 				// Mandatory Configuration Options
 				'hosts' => $ldapHosts,
 				'base_dn' => $GLOBALS['authBaseDN'],
-				'username' => checkHostPrefix($GLOBALS['authBackendHostPrefix']) . $username,
-				'password' => $password,
+				'username' => (empty($GLOBALS['ldapBindUsername'])) ? null : $GLOBALS['ldapBindUsername'],
+				'password' => (empty($GLOBALS['ldapBindPassword'])) ? null : decrypt($GLOBALS['ldapBindPassword']),
 				// Optional Configuration Options
 				'schema' => (($GLOBALS['ldapType'] == 1) ? Adldap\Schemas\ActiveDirectory::class : (($GLOBALS['ldapType'] == 2) ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
 				'account_prefix' => '',
@@ -238,11 +238,22 @@ if (function_exists('ldap_connect')) {
 			try {
 				// If a successful connection is made to your server, the provider will be returned.
 				$provider = $ad->connect();
-				$user = $provider->search()->find($username);
-				$bind = $user->exists;
+				if ($provider->auth()->attempt(checkHostPrefix($GLOBALS['authBackendHostPrefix']) . $username, $password)) {
+					// Passed.
+					return true;
+				} else {
+					// Failed.
+					return false;
+				}
 			} catch (\Adldap\Auth\BindException $e) {
 				writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
 				// There was an issue binding / connecting to the server.
+			} catch (Adldap\Auth\UsernameRequiredException $e) {
+				writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
+				// The user didn't supply a username.
+			} catch (Adldap\Auth\PasswordRequiredException $e) {
+				writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
+				// The user didn't supply a password.
 			}
 			return ($bind) ? true : false;
 		}

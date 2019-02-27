@@ -578,6 +578,21 @@ function getSettingsMain()
 			),
 			array(
 				'type' => 'input',
+				'name' => 'ldapBindUsername',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Bind Username',
+				'value' => $GLOBALS['ldapBindUsername'],
+				'placeholder' => ''
+			),
+			array(
+				'type' => 'password',
+				'name' => 'ldapBindPassword',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Password',
+				'value' => $GLOBALS['ldapBindPassword']
+			),
+			array(
+				'type' => 'input',
 				'name' => 'embyURL',
 				'class' => 'embyAuth switchAuth',
 				'label' => 'Emby URL',
