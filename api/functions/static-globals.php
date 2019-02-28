@@ -1,7 +1,7 @@
 <?php
 // ===================================
 // Organizr Version
-$GLOBALS['installedVersion'] = '2.0.0-beta.980';
+$GLOBALS['installedVersion'] = '2.0.0-beta.990';
 // ===================================
 // Quick php Version check
 $GLOBALS['minimumPHP'] = '7.0.0';
