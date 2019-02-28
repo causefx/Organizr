@@ -209,5 +209,6 @@ return array(
 	'rememberMeDays' => '7',
 	'rememberMe' => true,
 	'plexStrictFriends' => true,
-	'debugAreaAuth' => '1'
+	'debugAreaAuth' => '1',
+	'commit' => 'n/a'
 );

@@ -73,6 +73,7 @@ users.db
 speedtest.db
 chatpack.db
 Docker.txt
+Github.txt
 Demo.txt
 config/cacert.pem
 config/config.php

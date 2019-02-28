@@ -95,6 +95,7 @@ function organizrSpecialSettings()
 			'newMessageSound' => (isset($GLOBALS['CHAT-newMessageSound-include'])) ? $GLOBALS['CHAT-newMessageSound-include'] : '',
 			'uuid' => $GLOBALS['uuid'],
 			'docker' => $GLOBALS['docker'],
+			'githubCommit' => $GLOBALS['commit'],
 			'schema' => getSchema(),
 			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth'])
 		)

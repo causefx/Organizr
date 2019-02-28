@@ -7,6 +7,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
         authDebugCheck();
         sponsorLoad();
         newsLoad();
+        checkCommitLoad();
         [].slice.call(document.querySelectorAll(\'.sttabs\')).forEach(function(el) {
             new CBPFWTabs(el);
         });

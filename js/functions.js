@@ -2982,6 +2982,28 @@ function newsLoad(){
         console.error("Organizr Function: Github Connection Failed");
     });
 }
+function checkCommitLoad(){
+    if(activeInfo.settings.misc.docker && activeInfo.settings.misc.githubCommit !== 'n/a') {
+        getLatestCommitJSON().success(function (data) {
+            try {
+                var latest = data.sha.toString().trim();
+                var current = activeInfo.settings.misc.githubCommit.toString().trim();
+                var link = 'https://github.com/causefx/Organizr/compare/'+current+'...'+latest;
+                if(latest !== current) {
+                    message(window.lang.translate('Update Available'),' <a href="'+link+'" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
+                }else{
+                    console.log('Organizr Docker - Up to date');
+                }
+            } catch (e) {
+                console.log(e + ' error: ' + data);
+                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+                return false;
+            }
+        }).fail(function (xhr) {
+            console.error("Organizr Function: Github Connection Failed");
+        });
+    }
+}
 function sponsorLoad(){
     sponsorsJSON().success(function(data) {
         try {
@@ -3265,6 +3287,11 @@ function sponsorsJSON() {
 function newsJSON() {
     return $.ajax({
         url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/news.json",
+    });
+}
+function getLatestCommitJSON() {
+    return $.ajax({
+        url: "https://api.github.com/repos/causefx/Organizr/commits/"+activeInfo.branch,
     });
 }
 function marketplaceJSON(type) {
