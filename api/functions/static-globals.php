@@ -4,7 +4,7 @@
 $GLOBALS['installedVersion'] = '2.0.0-beta.990';
 // ===================================
 // Quick php Version check
-$GLOBALS['minimumPHP'] = '7.0.0';
+$GLOBALS['minimumPHP'] = '7.1.3';
 if (!(version_compare(PHP_VERSION, $GLOBALS['minimumPHP']) >= 0)) {
 	die('Organizr needs PHP Version: ' . $GLOBALS['minimumPHP'] . '<br/> You have PHP Version: ' . PHP_VERSION);
 }
