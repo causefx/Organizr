@@ -1158,3 +1158,17 @@ function revokeToken($array)
 		}
 	}
 }
+
+function getSchema()
+{
+	try {
+		$connect = new Dibi\Connection([
+			'driver' => 'sqlite3',
+			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+		]);
+		$result = $connect->fetchAll(' SELECT name, sql FROM sqlite_master WHERE type=\'table\' ORDER BY name');
+		return $result;
+	} catch (Dibi\Exception $e) {
+		return false;
+	}
+}

@@ -173,6 +173,9 @@
                                                     <li><a onclick="orgDebugList('activeInfo.settings.sso.misc');"
                                                            href="javascript:void(0)"
                                                            lang="en">Misc SSO</a></li>
+                                                    <li><a onclick="orgDebugList('activeInfo.settings.misc.schema');"
+                                                           href="javascript:void(0)"
+                                                           lang="en">DB Schema</a></li>
                                                 </ul>
                                             </div>
                                         </div>
