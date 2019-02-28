@@ -208,5 +208,6 @@ return array(
 	'statusSounds' => false,
 	'rememberMeDays' => '7',
 	'rememberMe' => true,
-	'plexStrictFriends' => true
+	'plexStrictFriends' => true,
+	'debugAreaAuth' => '1'
 );

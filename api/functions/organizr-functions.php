@@ -94,7 +94,9 @@ function organizrSpecialSettings()
 			'authBackend' => $GLOBALS['authBackend'],
 			'newMessageSound' => (isset($GLOBALS['CHAT-newMessageSound-include'])) ? $GLOBALS['CHAT-newMessageSound-include'] : '',
 			'uuid' => $GLOBALS['uuid'],
-			'docker' => $GLOBALS['docker']
+			'docker' => $GLOBALS['docker'],
+			'schema' => getSchema(),
+			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth'])
 		)
 	);
 }
@@ -669,6 +671,13 @@ function getSettingsMain()
 				'name' => 'lockoutSystem',
 				'label' => 'Inactivity Lock',
 				'value' => $GLOBALS['lockoutSystem']
+			),
+			array(
+				'type' => 'select',
+				'name' => 'debugAreaAuth',
+				'label' => 'Minimum Authentication for Debug Area',
+				'value' => $GLOBALS['debugAreaAuth'],
+				'options' => groupSelect()
 			),
 			array(
 				'type' => 'switch',

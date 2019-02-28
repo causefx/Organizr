@@ -2263,6 +2263,7 @@ function accountManager(user){
 }
 function userMenu(user){
 	var menuList = '<li class="hidden-xs" onclick="toggleFullScreen();"><a class="waves-effect waves-light"> <i class="ti-fullscreen fullscreen-icon"></i></a></li>';
+	var showDebug = (activeInfo.settings.misc.debugArea) ? '<li><a href="javascript:void(0)" onclick="toggleDebug();getDebugPreInfo();"><i class="mdi mdi-bug fa-fw"></i> <span lang="en">Debug Area</span></a></li>' : '';
 	menuList += buildLanguage();
 	if (user.data.user.loggedin === true) {
 		menuList += `
@@ -2282,7 +2283,7 @@ function userMenu(user){
 					<li class="append-menu"><a class="inline-popups" href="#account-area" data-effect="mfp-zoom-out"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 					<li class="divider" role="separator"></li>
 					<li><a href="javascript:void(0)" onclick="lock();"><i class="ti-lock fa-fw"></i> <span lang="en">Lock Screen</span></a></li>
-					<li><a href="javascript:void(0)" onclick="toggleDebug();getDebugPreInfo();"><i class="mdi mdi-bug fa-fw"></i> <span lang="en">Debug Area</span></a></li>
+					` + showDebug + `
 					<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 				</ul><!-- /.dropdown-user -->
 			</li><!-- /.dropdown -->
