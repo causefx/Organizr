@@ -360,7 +360,7 @@ $(document).on('click', '.inviteModal', function() {
                         <div class="form-group invite-step-3-plex-yes hidden">
                             <div class="input-group" style="width: 100%;">
                                 <div class="input-group-addon hidden-xs"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="inviteUsernameInvite" placeholder="Plex Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="" required="">
+                                <input type="text" class="form-control" id="inviteUsernameInvite" placeholder="Plex Username or Email" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="" required="">
                             </div>
                             <br />
                             <button class="btn btn-block btn-info" onclick="hasPlexUsername();">Submit</button>
