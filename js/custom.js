@@ -1866,3 +1866,8 @@ $(document).on('click', ".copyDebug", function(){
     copyDebug();
     $('#internal-clipboard').trigger('click');
 });
+// AccountDN change
+$(document).on("keyup", "#authBackendHostPrefix-input, #authBackendHostSuffix-input", function () {
+    var newDN = $('#authBackendHostPrefix-input').val() + 'TestAcct' + $('#authBackendHostSuffix-input').val();
+    $('#accountDN').html(newDN);
+});

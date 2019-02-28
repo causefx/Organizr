@@ -445,6 +445,7 @@ function getSettingsMain()
 			),
 			array(
 				'type' => 'button',
+				'name' => 'force-install-branch',
 				'label' => 'Force Install Branch',
 				'class' => 'updateNow',
 				'icon' => 'fa fa-download',
@@ -572,9 +573,19 @@ function getSettingsMain()
 				'type' => 'input',
 				'name' => 'authBackendHostPrefix',
 				'class' => 'ldapAuth switchAuth',
-				'label' => 'Host Prefix',
+				'label' => 'Account Prefix',
+				'id' => 'authBackendHostPrefix-input',
 				'value' => $GLOBALS['authBackendHostPrefix'],
-				'placeholder' => 'Domain prefix - i.e. Controller from Controller\Username'
+				'placeholder' => 'Account prefix - i.e. Controller\ from Controller\Username for AD - uid= for OpenLDAP'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'authBackendHostSuffix',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Account Suffix',
+				'id' => 'authBackendHostSuffix-input',
+				'value' => $GLOBALS['authBackendHostSuffix'],
+				'placeholder' => 'Account suffix - start with comma - ,ou=people,dc=domain,dc=tld'
 			),
 			array(
 				'type' => 'input',
@@ -592,12 +603,19 @@ function getSettingsMain()
 				'value' => $GLOBALS['ldapBindPassword']
 			),
 			array(
+				'type' => 'html',
+				'label' => 'Account DN',
+				'html' => '<span id="accountDN">' . $GLOBALS['authBackendHostPrefix'] . 'TestAcct' . $GLOBALS['authBackendHostSuffix'] . '</span>'
+			),
+			array(
 				'type' => 'button',
+				'name' => 'test-button-ldap',
 				'label' => 'Test Connection',
 				'icon' => 'fa fa-flask',
 				'class' => 'ldapAuth switchAuth',
 				'text' => 'Test Connection',
-				'attr' => 'onclick="testAPIConnection(\'ldap\')"'
+				'attr' => 'onclick="testAPIConnection(\'ldap\')"',
+				'help' => 'Remember! Please save before using the test button!'
 			),
 			array(
 				'type' => 'input',

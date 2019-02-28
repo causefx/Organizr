@@ -5,6 +5,7 @@ return array(
 	'authBackend' => '',
 	'authBackendHost' => '',
 	'authBackendHostPrefix' => '',
+	'authBackendHostSuffix' => '',
 	'ldapBindUsername' => '',
 	'ldapBindPassword' => '',
 	'authBaseDN' => '',

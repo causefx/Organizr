@@ -206,6 +206,7 @@ if (function_exists('ldap_connect')) {
 				$port = (isset($digest['port']) ? $digest['port'] : (strtolower($scheme) == 'ldap' ? 389 : 636));
 				// Reassign
 				$ldapHosts[] = $host;
+				$ldapServersNew[$key] = $scheme . '://' . $host . ':' . $port; // May use this later
 				if ($i == 0) {
 					$ldapPort = $port;
 				}
@@ -219,8 +220,8 @@ if (function_exists('ldap_connect')) {
 				'password' => (empty($GLOBALS['ldapBindPassword'])) ? null : decrypt($GLOBALS['ldapBindPassword']),
 				// Optional Configuration Options
 				'schema' => (($GLOBALS['ldapType'] == '1') ? Adldap\Schemas\ActiveDirectory::class : (($GLOBALS['ldapType'] == '2') ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
-				'account_prefix' => '',
-				'account_suffix' => '',
+				'account_prefix' => (empty($GLOBALS['authBackendHostPrefix'])) ? null : $GLOBALS['authBackendHostPrefix'],
+				'account_suffix' => (empty($GLOBALS['authBackendHostSuffix'])) ? null : $GLOBALS['authBackendHostSuffix'],
 				'port' => $ldapPort,
 				'follow_referrals' => false,
 				'use_ssl' => false,
@@ -238,7 +239,8 @@ if (function_exists('ldap_connect')) {
 			try {
 				// If a successful connection is made to your server, the provider will be returned.
 				$provider = $ad->connect();
-				if ($provider->auth()->attempt(checkHostPrefix($GLOBALS['authBackendHostPrefix']) . $username, $password)) {
+				//prettyPrint($provider);
+				if ($provider->auth()->attempt($username, $password)) {
 					// Passed.
 					return true;
 				} else {
@@ -255,7 +257,6 @@ if (function_exists('ldap_connect')) {
 				writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
 				// The user didn't supply a password.
 			}
-			return ($bind) ? true : false;
 		}
 		return false;
 	}
