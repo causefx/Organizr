@@ -3157,6 +3157,7 @@ function dockerUpdate(){
     }
 }
 function updateNow(){
+    clearAJAX();
     if(activeInfo.settings.misc.docker){
         dockerUpdate();
         return false;
