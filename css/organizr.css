@@ -1231,6 +1231,22 @@ span.fc-title {
 #organizrNewsPanel .panel-body {
     background: #2d2c2c;
 }
+.pingTime {
+    position: inherit;
+    right: -30px;
+}
+.nav-second-level .pingTime {
+    position: inherit;
+    right: -5px;
+}
+.sidebar-tabName {
+    position: absolute;
+    top: 15px;
+}
+.nav-second-level .sidebar-tabName {
+    position: absolute;
+    top: 20px;
+}
 /*
 body,
 html {

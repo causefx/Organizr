@@ -10,6 +10,8 @@
     "kryptonit3/sickrage": "^1.0",
     "pusher/pusher-php-server": "^3.2",
     "pragmarx/google2fa": "^3.0",
-    "layershifter/tld-extract": "^2.0"
+    "layershifter/tld-extract": "^2.0",
+    "psr/log": "^1.1",
+    "adldap2/adldap2": "^10.0"
   }
 }

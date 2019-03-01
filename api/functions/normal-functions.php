@@ -621,3 +621,12 @@ function isLocal($checkIP = null)
 	}
 	return $isLocal;
 }
+
+function checkOverrideURL($url, $override)
+{
+	if (strpos($override, $url) !== false) {
+		return $override;
+	} else {
+		return $url . $override;
+	}
+}

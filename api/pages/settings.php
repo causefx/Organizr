@@ -7,6 +7,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
         authDebugCheck();
         sponsorLoad();
         newsLoad();
+        checkCommitLoad();
         [].slice.call(document.querySelectorAll(\'.sttabs\')).forEach(function(el) {
             new CBPFWTabs(el);
         });
@@ -75,7 +76,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                         <ul class="nav customtab2 nav-tabs" role="tablist">
                             <li onclick="changeSettingsMenu(\'Settings::Customize::Appearance\');loadSettingsPage(\'api/?v1/settings/customize/appearance\',\'#settings-customize-appearance\',\'Customize Appearance\');" role="presentation" class=""><a id="settings-customize-appearance-anchor" href="#settings-customize-appearance" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-eye"></i></span><span class="hidden-xs" lang="en">Appearance</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::Customize::Marketplace\');loadMarketplace(\'themes\');" role="presentation" class=""><a id="settings-customize-marketplace-anchor" href="#settings-customize-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a></li>
+                            <li onclick="changeSettingsMenu(\'Settings::Customize::Marketplace\');loadMarketplace(\'themes\');" role="presentation" class=""><a id="settings-customize-marketplace-anchor" href="#settings-customize-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-shopping-cart-full"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a></li>
                         </ul>
                         <!-- Tab panes -->
                         <div class="tab-content">
@@ -117,7 +118,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::User Management::Manage Groups\');loadSettingsPage(\'api/?v1/settings/user/manage/groups\',\'#settings-user-manage-groups\',\'Group Management\');" role="presentation" class=""><a id="settings-user-manage-groups-anchor" href="#settings-user-manage-groups" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-briefcase"></i></span><span class="hidden-xs" lang="en">Groups</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::User Management::Import Users\');" role="presentation" class=""><a id="settings-user-import-users-anchor" href="#settings-user-import-users" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-briefcase"></i></span><span class="hidden-xs" lang="en">Import</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::User Management::Import Users\');" role="presentation" class=""><a id="settings-user-import-users-anchor" href="#settings-user-import-users" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-import"></i></span><span class="hidden-xs" lang="en">Import</span></a>
                             </li>
                         </ul>
                         <!-- Tab panes -->
@@ -157,7 +158,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Main\');loadSettingsPage(\'api/?v1/settings/settings/main\',\'#settings-settings-main\',\'Main Settings\');" role="presentation" class=""><a id="settings-settings-main-anchor" href="#settings-settings-main" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-settings"></i></span><span class="hidden-xs" lang="en">Main</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::System Settings::SSO\');loadSettingsPage(\'api/?v1/settings/settings/sso\',\'#settings-settings-sso\',\'SSO\');" role="presentation" class=""><a id="settings-settings-sso-anchor" href="#settings-settings-sso" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-receipt"></i></span><span class="hidden-xs" lang="en">Single Sign-On</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::System Settings::SSO\');loadSettingsPage(\'api/?v1/settings/settings/sso\',\'#settings-settings-sso\',\'SSO\');" role="presentation" class=""><a id="settings-settings-sso-anchor" href="#settings-settings-sso" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-key"></i></span><span class="hidden-xs" lang="en">Single Sign-On</span></a>
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Logs\');loadSettingsPage(\'api/?v1/settings/settings/logs\',\'#settings-settings-logs\',\'Log Viewer\');" role="presentation" class=""><a id="settings-settings-logs-anchor" href="#settings-settings-logs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-receipt"></i></span><span class="hidden-xs" lang="en">Logs</span></a>
                             </li>

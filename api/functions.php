@@ -30,6 +30,10 @@ if (isset($GLOBALS['dbLocation'])) {
 		$getBranch = file_get_contents(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'Docker.txt');
 		$getBranch = (empty($getBranch)) ? 'v2-master' : $getBranch;
 		$GLOBALS['branch'] = $getBranch;
+		$getCommit = file_get_contents(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'Github.txt');
+		$getCommit = (empty($getCommit)) ? 'n/a' : $getCommit;
+		$GLOBALS['commit'] = $getCommit;
+		
 	}
 	//Upgrade Check
 	upgradeCheck();

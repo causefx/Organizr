@@ -127,7 +127,8 @@ function login($array)
 				if (createToken($result['username'], $result['email'], $result['image'], $result['group'], $result['group_id'], $GLOBALS['organizrHash'], $days)) {
 					writeLoginLog($username, 'success');
 					writeLog('success', 'Login Function - A User has logged in', $username);
-					ssoCheck($username, $password, $token); //need to work on this
+					$ssoUser = (empty($result['email'])) ? $result['username'] : $result['email'];
+					ssoCheck($ssoUser, $password, $token); //need to work on this
 					return true;
 				} else {
 					return 'Token Creation Error';
@@ -1155,5 +1156,19 @@ function revokeToken($array)
 		} catch (Dibi\Exception $e) {
 			return false;
 		}
+	}
+}
+
+function getSchema()
+{
+	try {
+		$connect = new Dibi\Connection([
+			'driver' => 'sqlite3',
+			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+		]);
+		$result = $connect->fetchAll(' SELECT name, sql FROM sqlite_master WHERE type=\'table\' ORDER BY name');
+		return $result;
+	} catch (Dibi\Exception $e) {
+		return false;
 	}
 }

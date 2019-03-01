@@ -124,5 +124,19 @@
     "new": "Added news section to settings page|Add new pathsWritable function for multiple paths|Added global variable for main path and api path|Added update check for folder permissions|Added login with plex email and plex username for oauth|Added option for Ombi Homepage pulls Ombi Username instead of alias (#1052)|Added error catching on json parse for ajax calls|Add Pi-Hole image (#1060)|Added DB Path to folder check|Disable update and download if using docker container|Added Close Tab to Alt + Click|Disable branch change for docker users",
     "fixed": "Fix update button on message not working if not on settings page (#1050)|Fix js reload button on new tab creation|Finally fix ombi limit to user|Fix tab edit/create when using same tab name already in use (#1066)|Embi local API requires exact case for username (#1061)|Fix edit tab name if exists",
     "notes": "Remove constant welcome message - Added welcome message only on login|Clean up org errors a little bit"
+  },
+  "2.0.0-beta.990": {
+    "date": "2019-02-28 21:20",
+    "title": "Yes, this is the last beta",
+    "new": "Ability to update if using Docker|More Calendar info|Feature to disable/restrict debug area (#1080)|Added DB Schema to debug|Added docker commit info to see if new update is out",
+    "fixed": "rTorrent different endpoints (#1072)|Changing username breaks Tautulli SSO autologin for guest users (#1017)|Issue with menu CSS (#1075)|Unsorted Tab Placement option reverses sort for all tabs (#1037)|Work on LDAP, Should work with AD, OpenLDAP, FreeIPA (#1074)|Plex share invite placeholder (#1000)",
+    "notes": "Beta? What? No More?"
+  },
+  "2.0.0": {
+    "date": "2019-03-01 16:30",
+    "title": "Finally Version 2.0",
+    "new": "",
+    "fixed": "",
+    "notes": "Please report bugs in GitHub issues page"
   }
 }

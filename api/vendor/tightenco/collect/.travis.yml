@@ -1,0 +1,23 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+  - nightly
+
+matrix:
+  allow_failures:
+    - php: nightly
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+before_script:
+  - travis_retry composer self-update
+  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-dist
+
+script:
+  - bash upgrade.sh

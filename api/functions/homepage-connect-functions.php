@@ -793,9 +793,10 @@ function rTorrentConnect()
 	if ($GLOBALS['homepagerTorrentEnabled'] && !empty($GLOBALS['rTorrentURL']) && qualifyRequest($GLOBALS['homepagerTorrentAuth'])) {
 		try {
 			$torrents = array();
-			$digest = qualifyURL($GLOBALS['rTorrentURL'], true);
+			$digest = (empty($GLOBALS['rTorrentURLOverride'])) ? qualifyURL($GLOBALS['rTorrentURL'], true) : qualifyURL(checkOverrideURL($GLOBALS['rTorrentURL'], $GLOBALS['rTorrentURLOverride']), true);
 			$passwordInclude = ($GLOBALS['rTorrentUsername'] != '' && $GLOBALS['rTorrentPassword'] != '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
 			$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
+			$extraPath = (empty($GLOBALS['rTorrentURLOverride'])) ? $extraPath : '';
 			$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
 			$options = (localURL($url)) ? array('verify' => false) : array();
 			$data = xmlrpc_encode_request("d.multicall2", array(
@@ -1155,6 +1156,7 @@ function getCalendar()
 						$icalEvents[] = array(
 							'title' => $eventName,
 							'imagetype' => 'calendar-o text-warning text-custom-calendar ' . $extraClass,
+							'imagetypeFilter' => 'ical',
 							'className' => 'bg-calendar calendar-item bg-custom-calendar',
 							'start' => $startDate,
 							'end' => $endDate
@@ -1400,6 +1402,8 @@ function getRadarrCalendar($array, $number, $url)
 				"videoCodec" => $child["hasFile"] ? @$child['movieFile']['mediaInfo']['videoCodec'] : "unknown",
 				"size" => $child["hasFile"] ? @$child['movieFile']['size'] : "unknown",
 				"genres" => $child['genres'],
+				"year" => isset($child['year']) ? $child['year'] : '',
+				"studio" => isset($child['studio']) ? $child['studio'] : '',
 			);
 			array_push($gotCalendar, array(
 				"id" => "Radarr-" . $number . "-" . $i,
@@ -1483,6 +1487,8 @@ function getCouchCalendar($array, $number)
 				"audioCodec" => "",
 				"videoCodec" => "",
 				"genres" => $child['info']['genres'],
+				"year" => isset($child['info']['year']) ? $child['info']['year'] : '',
+				"studio" => isset($child['info']['year']) ? $child['info']['year'] : '',
 			);
 			array_push($gotCalendar, array(
 				"id" => "CouchPotato-" . $number . "-" . $i,
@@ -1823,6 +1829,7 @@ function ombiImport($type = null)
 					$response = Requests::post($url . "/api/v1/Job/plexuserimporter", $headers, $options);
 					break;
 				default:
+					return false;
 					break;
 			}
 			if ($response->success) {
@@ -2204,9 +2211,10 @@ function testAPIConnection($array)
 		case 'rtorrent':
 			if (!empty($GLOBALS['rTorrentURL'])) {
 				try {
-					$digest = qualifyURL($GLOBALS['rTorrentURL'], true);
+					$digest = (empty($GLOBALS['rTorrentURLOverride'])) ? qualifyURL($GLOBALS['rTorrentURL'], true) : qualifyURL(checkOverrideURL($GLOBALS['rTorrentURL'], $GLOBALS['rTorrentURLOverride']), true);
 					$passwordInclude = ($GLOBALS['rTorrentUsername'] != '' && $GLOBALS['rTorrentPassword'] != '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
 					$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
+					$extraPath = (empty($GLOBALS['rTorrentURLOverride'])) ? $extraPath : '';
 					$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
 					$options = (localURL($url)) ? array('verify' => false) : array();
 					$data = xmlrpc_encode_request("system.listMethods", null);
@@ -2224,6 +2232,61 @@ function testAPIConnection($array)
 					return $e->getMessage();
 				};
 			}
+			break;
+		case 'ldap':
+			if (!empty($GLOBALS['authBaseDN']) && !empty($GLOBALS['authBackendHost'])) {
+				$ad = new \Adldap\Adldap();
+				// Create a configuration array.
+				$ldapServers = explode(',', $GLOBALS['authBackendHost']);
+				$i = 0;
+				foreach ($ldapServers as $key => $value) {
+					// Calculate parts
+					$digest = parse_url(trim($value));
+					$scheme = strtolower((isset($digest['scheme']) ? $digest['scheme'] : 'ldap'));
+					$host = (isset($digest['host']) ? $digest['host'] : (isset($digest['path']) ? $digest['path'] : ''));
+					$port = (isset($digest['port']) ? $digest['port'] : (strtolower($scheme) == 'ldap' ? 389 : 636));
+					// Reassign
+					$ldapHosts[] = $host;
+					if ($i == 0) {
+						$ldapPort = $port;
+					}
+					$i++;
+				}
+				$config = [
+					// Mandatory Configuration Options
+					'hosts' => $ldapHosts,
+					'base_dn' => $GLOBALS['authBaseDN'],
+					'username' => (empty($GLOBALS['ldapBindUsername'])) ? null : $GLOBALS['ldapBindUsername'],
+					'password' => (empty($GLOBALS['ldapBindPassword'])) ? null : decrypt($GLOBALS['ldapBindPassword']),
+					// Optional Configuration Options
+					'schema' => (($GLOBALS['ldapType'] == '1') ? Adldap\Schemas\ActiveDirectory::class : (($GLOBALS['ldapType'] == '2') ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
+					'account_prefix' => '',
+					'account_suffix' => '',
+					'port' => $ldapPort,
+					'follow_referrals' => false,
+					'use_ssl' => false,
+					'use_tls' => false,
+					'version' => 3,
+					'timeout' => 5,
+					// Custom LDAP Options
+					'custom_options' => [
+						// See: http://php.net/ldap_set_option
+						//LDAP_OPT_X_TLS_REQUIRE_CERT => LDAP_OPT_X_TLS_HARD
+					]
+				];
+				// Add a connection provider to Adldap.
+				$ad->addProvider($config);
+				try {
+					// If a successful connection is made to your server, the provider will be returned.
+					$provider = $ad->connect();
+				} catch (\Adldap\Auth\BindException $e) {
+					writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), 'SYSTEM');
+					return $e->getMessage();
+					// There was an issue binding / connecting to the server.
+				}
+				return ($provider) ? true : false;
+			}
+			return false;
 			break;
 		default :
 			return false;

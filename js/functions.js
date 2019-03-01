@@ -792,15 +792,17 @@ function accordionOptions(options, parentID){
 	});
 	return accordionOptions;
 }
-function buildAccordion(array){
+function buildAccordion(array, open = false){
     var items = '';
     var mainId = createRandomString(10);
     $.each(array, function(i,v) {
+        var collapse = (open && i == 0) ? 'collapse in' : 'collapse';
+        var collapsed = (open && i == 0) ? '' : 'collapsed';
         var id = mainId + '-' + i;
         items += `
         <div class="panel">
-            <div class="panel-heading bg-org" id="`+id+`-heading" role="tab"> <a class="panel-title collapsed" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+mainId+`" aria-expanded="false" aria-controls="`+id+`-collapse"> `+v.title+` </a> </div>
-            <div class="panel-collapse collapse" id="`+id+`-collapse" aria-labelledby="`+id+`-heading" role="tabpanel">
+            <div class="panel-heading bg-org" id="`+id+`-heading" role="tab"> <a class="panel-title `+collapsed+`" data-toggle="collapse" href="#`+id+`-collapse" data-parent="#`+mainId+`" aria-expanded="false" aria-controls="`+id+`-collapse"> `+v.title+` </a> </div>
+            <div class="panel-collapse `+collapse+`" id="`+id+`-collapse" aria-labelledby="`+id+`-heading" role="tabpanel">
                 <div class="panel-body"> `+v.body+` </div>
             </div>
         </div>
@@ -937,11 +939,11 @@ function buildPluginsItem(array){
 	inactivePlugins = (inactivePlugins.length !== 0) ? inactivePlugins : '<h2 class="text-center" lang="en">Everything Active</h2>';
 	var panes = `
 	<ul class="nav customtab2 nav-tabs" role="tablist">
-		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en">Active</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Active')" role="presentation" class="active"><a href="#settings-plugins-active" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-file"></i></span><span class="hidden-xs" lang="en">Active</span></a>
 		</li>
-		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Inactive')" role="presentation" class=""><a href="#settings-plugins-inactive" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-zip"></i></span><span class="hidden-xs" lang="en">Inactive</span></a>
 		</li>
-		<li onclick="changeSettingsMenu('Settings::Plugins::Marketplace');loadMarketplace('plugins');" role="presentation" class=""><a href="#settings-plugins-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a>
+		<li onclick="changeSettingsMenu('Settings::Plugins::Marketplace');loadMarketplace('plugins');" role="presentation" class=""><a href="#settings-plugins-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-shopping-cart-full"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a>
 		</li>
 	</ul>
 	<!-- Tab panes -->
@@ -2261,6 +2263,7 @@ function accountManager(user){
 }
 function userMenu(user){
 	var menuList = '<li class="hidden-xs" onclick="toggleFullScreen();"><a class="waves-effect waves-light"> <i class="ti-fullscreen fullscreen-icon"></i></a></li>';
+	var showDebug = (activeInfo.settings.misc.debugArea) ? '<li><a href="javascript:void(0)" onclick="toggleDebug();getDebugPreInfo();"><i class="mdi mdi-bug fa-fw"></i> <span lang="en">Debug Area</span></a></li>' : '';
 	menuList += buildLanguage();
 	if (user.data.user.loggedin === true) {
 		menuList += `
@@ -2280,7 +2283,7 @@ function userMenu(user){
 					<li class="append-menu"><a class="inline-popups" href="#account-area" data-effect="mfp-zoom-out"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 					<li class="divider" role="separator"></li>
 					<li><a href="javascript:void(0)" onclick="lock();"><i class="ti-lock fa-fw"></i> <span lang="en">Lock Screen</span></a></li>
-					<li><a href="javascript:void(0)" onclick="toggleDebug();getDebugPreInfo();"><i class="mdi mdi-bug fa-fw"></i> <span lang="en">Debug Area</span></a></li>
+					` + showDebug + `
 					<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 				</ul><!-- /.dropdown-user -->
 			</li><!-- /.dropdown -->
@@ -2352,9 +2355,9 @@ function buildInternalContainer(name,url,type){
 	return `<div id="internal-`+cleanClass(name)+`" data-type="`+type+`" class="internal-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
 }
 function buildMenuList(name,url,type,icon,ping=null){
-    var ping = (ping !== null) ? `<small class="menu-`+cleanClass(ping)+`-ping-ms hidden-xs label label-rouded label-inverse pull-right hidden">
+    var ping = (ping !== null) ? `<small class="menu-`+cleanClass(ping)+`-ping-ms hidden-xs label label-rouded label-inverse pull-right pingTime hidden">
 </small><div class="menu-`+cleanClass(ping)+`-ping" data-tab-name="`+name+`" data-previous-state=""></div>` : '';
-	return `<li class="allTabsList" id="menu-`+cleanClass(name)+`" data-tab-name="`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu">`+name+`</span>`+ping+`</a></li>`;
+	return `<li class="allTabsList" id="menu-`+cleanClass(name)+`" data-tab-name="`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect" onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu elip sidebar-tabName">`+name+`</span>`+ping+`</a></li>`;
 }
 function tabProcess(arrayItems) {
 	var iFrameList = '';
@@ -2376,7 +2379,11 @@ function tabProcess(arrayItems) {
                         $(menuList).appendTo($('#side-menu'));
                     }
                 }else{
-                    $(menuList).prependTo($('.category-'+v.category_id));
+                    if(activeInfo.settings.misc.unsortedTabs === 'top'){
+                        $(menuList).prependTo($('.category-'+v.category_id));
+                    }else if(activeInfo.settings.misc.unsortedTabs === 'bottom') {
+                        $(menuList).appendTo($('.category-'+v.category_id));
+                    }
                 }
                 $('#side-menu').metisMenu({ toggle: false });
 				switch (v.type) {
@@ -2964,7 +2971,7 @@ function newsLoad(){
                     body:newBody
                 }
             });
-            var body = buildAccordion(items);
+            var body = buildAccordion(items, true);
             $('#organizrNewsPanel').html(body);
         }catch(e) {
             console.log(e + ' error: ' + data);
@@ -2974,6 +2981,28 @@ function newsLoad(){
     }).fail(function(xhr) {
         console.error("Organizr Function: Github Connection Failed");
     });
+}
+function checkCommitLoad(){
+    if(activeInfo.settings.misc.docker && activeInfo.settings.misc.githubCommit !== 'n/a') {
+        getLatestCommitJSON().success(function (data) {
+            try {
+                var latest = data.sha.toString().trim();
+                var current = activeInfo.settings.misc.githubCommit.toString().trim();
+                var link = 'https://github.com/causefx/Organizr/compare/'+current+'...'+latest;
+                if(latest !== current) {
+                    message(window.lang.translate('Update Available'),' <a href="'+link+'" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
+                }else{
+                    console.log('Organizr Docker - Up to date');
+                }
+            } catch (e) {
+                console.log(e + ' error: ' + data);
+                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+                return false;
+            }
+        }).fail(function (xhr) {
+            console.error("Organizr Function: Github Connection Failed");
+        });
+    }
 }
 function sponsorLoad(){
     sponsorsJSON().success(function(data) {
@@ -3107,9 +3136,29 @@ function countdown(remaining) {
 	$('#update-seconds').text(remaining);
     setTimeout(function(){ countdown(remaining - 1); }, 1000);
 }
+function dockerUpdate(){
+    if(activeInfo.settings.misc.docker){
+        $(updateBar()).appendTo('.organizr-area');
+        updateUpdateBar('Starting Download','20%');
+        messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
+        organizrAPI('GET','api/?v1/docker/update').success(function(data) {
+            try {
+                var json = JSON.parse(data);
+            }catch(e) {
+                console.log(e + ' error: ' + data);
+                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+                return false;
+            }
+            updateUpdateBar('Restarting Organizr in', '100%', true);
+            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),json.data,activeInfo.settings.notifications.position,'#FFF','success','60000');
+        }).fail(function(xhr) {
+            console.error("Organizr Function: Reboot Failed");
+        });
+    }
+}
 function updateNow(){
     if(activeInfo.settings.misc.docker){
-        messageSingle(window.lang.translate('[Docker Container]'),window.lang.translate('Inline downloader disabled - Please restart container to update or download'),activeInfo.settings.notifications.position,'#FFF','warning','60000');
+        dockerUpdate();
         return false;
     }
 	console.log('Organizr Function: Starting Update Process');
@@ -3238,6 +3287,11 @@ function sponsorsJSON() {
 function newsJSON() {
     return $.ajax({
         url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/news.json",
+    });
+}
+function getLatestCommitJSON() {
+    return $.ajax({
+        url: "https://api.github.com/repos/causefx/Organizr/commits/"+activeInfo.branch,
     });
 }
 function marketplaceJSON(type) {

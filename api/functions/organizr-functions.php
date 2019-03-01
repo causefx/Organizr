@@ -94,7 +94,10 @@ function organizrSpecialSettings()
 			'authBackend' => $GLOBALS['authBackend'],
 			'newMessageSound' => (isset($GLOBALS['CHAT-newMessageSound-include'])) ? $GLOBALS['CHAT-newMessageSound-include'] : '',
 			'uuid' => $GLOBALS['uuid'],
-			'docker' => $GLOBALS['docker']
+			'docker' => $GLOBALS['docker'],
+			'githubCommit' => $GLOBALS['commit'],
+			'schema' => getSchema(),
+			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth'])
 		)
 	);
 }
@@ -445,6 +448,7 @@ function getSettingsMain()
 			),
 			array(
 				'type' => 'button',
+				'name' => 'force-install-branch',
 				'label' => 'Force Install Branch',
 				'class' => 'updateNow',
 				'icon' => 'fa fa-download',
@@ -560,6 +564,64 @@ function getSettingsMain()
 				'placeholder' => 'cn=%s,dc=sub,dc=domain,dc=com'
 			),
 			array(
+				'type' => 'select',
+				'name' => 'ldapType',
+				'id' => 'ldapType',
+				'label' => 'LDAP Backend Type',
+				'class' => 'ldapAuth switchAuth',
+				'value' => $GLOBALS['ldapType'],
+				'options' => getLDAPOptions()
+			),
+			array(
+				'type' => 'input',
+				'name' => 'authBackendHostPrefix',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Account Prefix',
+				'id' => 'authBackendHostPrefix-input',
+				'value' => $GLOBALS['authBackendHostPrefix'],
+				'placeholder' => 'Account prefix - i.e. Controller\ from Controller\Username for AD - uid= for OpenLDAP'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'authBackendHostSuffix',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Account Suffix',
+				'id' => 'authBackendHostSuffix-input',
+				'value' => $GLOBALS['authBackendHostSuffix'],
+				'placeholder' => 'Account suffix - start with comma - ,ou=people,dc=domain,dc=tld'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'ldapBindUsername',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Bind Username',
+				'value' => $GLOBALS['ldapBindUsername'],
+				'placeholder' => ''
+			),
+			array(
+				'type' => 'password',
+				'name' => 'ldapBindPassword',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Password',
+				'value' => $GLOBALS['ldapBindPassword']
+			),
+			array(
+				'type' => 'html',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Account DN',
+				'html' => '<span id="accountDN" class="ldapAuth switchAuth">' . $GLOBALS['authBackendHostPrefix'] . 'TestAcct' . $GLOBALS['authBackendHostSuffix'] . '</span>'
+			),
+			array(
+				'type' => 'button',
+				'name' => 'test-button-ldap',
+				'label' => 'Test Connection',
+				'icon' => 'fa fa-flask',
+				'class' => 'ldapAuth switchAuth',
+				'text' => 'Test Connection',
+				'attr' => 'onclick="testAPIConnection(\'ldap\')"',
+				'help' => 'Remember! Please save before using the test button!'
+			),
+			array(
 				'type' => 'input',
 				'name' => 'embyURL',
 				'class' => 'embyAuth switchAuth',
@@ -611,6 +673,13 @@ function getSettingsMain()
 				'name' => 'lockoutSystem',
 				'label' => 'Inactivity Lock',
 				'value' => $GLOBALS['lockoutSystem']
+			),
+			array(
+				'type' => 'select',
+				'name' => 'debugAreaAuth',
+				'label' => 'Minimum Authentication for Debug Area',
+				'value' => $GLOBALS['debugAreaAuth'],
+				'options' => groupSelect()
 			),
 			array(
 				'type' => 'switch',
@@ -1530,6 +1599,24 @@ function getAuthTypes()
 	);
 }
 
+function getLDAPOptions()
+{
+	return array(
+		array(
+			'name' => 'Active Directory',
+			'value' => '1'
+		),
+		array(
+			'name' => 'OpenLDAP',
+			'value' => '2'
+		),
+		array(
+			'name' => 'First IPA',
+			'value' => '3'
+		),
+	);
+}
+
 function getAuthBackends()
 {
 	$backendOptions = array();
@@ -2021,4 +2108,19 @@ function settingsPathChecks()
 		$items .= '<li class="folders-writable hidden"><div class="bg-info"><i class="mdi mdi-folder mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">' . $k . '</span> ' . (($v) ? 'Writable' : 'Not Writable') . '</li>';
 	}
 	return $result . $items;
+}
+
+function dockerUpdate()
+{
+	chdir('/etc/cont-init.d/');
+	$dockerUpdate = shell_exec('./30-install');
+	return $dockerUpdate;
+}
+
+function checkHostPrefix($s)
+{
+	if (empty($s)) {
+		return $s;
+	}
+	return (substr($s, -1, 1) == '\\') ? $s : $s . '\\';
 }

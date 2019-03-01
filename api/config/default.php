@@ -4,8 +4,13 @@ return array(
 	'authType' => 'internal',
 	'authBackend' => '',
 	'authBackendHost' => '',
+	'authBackendHostPrefix' => '',
+	'authBackendHostSuffix' => '',
+	'ldapBindUsername' => '',
+	'ldapBindPassword' => '',
 	'authBaseDN' => '',
 	'authBackendDomain' => '',
+	'ldapType' => '1',
 	'logo' => 'plugins/images/organizr/logo-wide.png',
 	'loginWallpaper' => '',
 	'title' => 'Organizr V2',
@@ -79,6 +84,7 @@ return array(
 	'qBittorrentReverseSorting' => false,
 	'qBittorrentCombine' => false,
 	'rTorrentURL' => '',
+	'rTorrentURLOverride' => '',
 	'rTorrentUsername' => '',
 	'rTorrentPassword' => '',
 	'rTorrentHideSeeding' => false,
@@ -202,5 +208,7 @@ return array(
 	'statusSounds' => false,
 	'rememberMeDays' => '7',
 	'rememberMe' => true,
-	'plexStrictFriends' => true
+	'plexStrictFriends' => true,
+	'debugAreaAuth' => '1',
+	'commit' => 'n/a'
 );
