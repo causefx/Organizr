@@ -607,8 +607,9 @@ function getSettingsMain()
 			),
 			array(
 				'type' => 'html',
+				'class' => 'ldapAuth switchAuth',
 				'label' => 'Account DN',
-				'html' => '<span id="accountDN">' . $GLOBALS['authBackendHostPrefix'] . 'TestAcct' . $GLOBALS['authBackendHostSuffix'] . '</span>'
+				'html' => '<span id="accountDN" class="ldapAuth switchAuth">' . $GLOBALS['authBackendHostPrefix'] . 'TestAcct' . $GLOBALS['authBackendHostSuffix'] . '</span>'
 			),
 			array(
 				'type' => 'button',
