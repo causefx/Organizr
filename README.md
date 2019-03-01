@@ -24,7 +24,7 @@ Do you have quite a bit of services running on your computer or server?  Do you 
 
 <img src="https://user-images.githubusercontent.com/16184466/53615855-35cc5a80-3b9d-11e9-882b-f09f3eb18173.png" width="23%"></img> <img src="https://user-images.githubusercontent.com/16184466/53615856-35cc5a80-3b9d-11e9-8428-1f2ae05da2c9.png" width="23%"></img> <img src="https://user-images.githubusercontent.com/16184466/53615857-35cc5a80-3b9d-11e9-82bf-91987c529e72.png" width="23%"></img> <img src="https://user-images.githubusercontent.com/16184466/53615858-35cc5a80-3b9d-11e9-8149-01a7fcd9160a.png" width="23%"></img> 
 
-More coming soon.
+[![Organizr Overview](https://img.youtube.com/vi/LZL4smFB6wU/0.jpg)](https://www.youtube.com/watch?v=LZL4smFB6wU)
 
 <img src="https://user-images.githubusercontent.com/16184466/53614283-a9b73480-3b96-11e9-90ef-6e752e067884.png">
 
@@ -37,8 +37,8 @@ More coming soon.
 - Upload new icons with ease
 - Enable or disable iFrame for your tabs
 - User management support: Create, delete and promote users from the user management console
-- Unlimted User Groups
-- Themable
+- Unlimited User Groups
+- Theme-able
 - Personalise any theme: Customise the look and feel of Organizr with access to the colour palette
 - Organizr login log viewer 
 - Fail2ban support (see wiki)
