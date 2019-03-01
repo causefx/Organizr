@@ -131,5 +131,12 @@
     "new": "Ability to update if using Docker|More Calendar info|Feature to disable/restrict debug area (#1080)|Added DB Schema to debug|Added docker commit info to see if new update is out",
     "fixed": "rTorrent different endpoints (#1072)|Changing username breaks Tautulli SSO autologin for guest users (#1017)|Issue with menu CSS (#1075)|Unsorted Tab Placement option reverses sort for all tabs (#1037)|Work on LDAP, Should work with AD, OpenLDAP, FreeIPA (#1074)|Plex share invite placeholder (#1000)",
     "notes": "Beta? What? No More?"
+  },
+  "2.0.0": {
+    "date": "2019-03-01 16:30",
+    "title": "Finally Version 2.0",
+    "new": "",
+    "fixed": "",
+    "notes": "Please report bugs in GitHub issues page"
   }
 }
