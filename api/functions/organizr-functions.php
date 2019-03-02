@@ -77,15 +77,16 @@ function organizrSpecialSettings()
 		'user' => array(
 			'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
 			'oAuthLogin' => isset($_COOKIE['oAuth']) ? true : false,
-			'local' => (isLocal()) ? true : false
+			'local' => (isLocal()) ? true : false,
+			'ip' => userIP()
 		),
 		'login' => array(
 			'rememberMe' => $GLOBALS['rememberMe'],
 			'rememberMeDays' => $GLOBALS['rememberMeDays'],
 		),
 		'misc' => array(
-			'installedPlugins' => $GLOBALS['installedPlugins'],
-			'installedThemes' => $GLOBALS['installedThemes'],
+			'installedPlugins' => qualifyRequest(1) ? $GLOBALS['installedPlugins'] : '',
+			'installedThemes' => qualifyRequest(1) ? $GLOBALS['installedThemes'] : '',
 			'return' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false,
 			'authDebug' => $GLOBALS['authDebug'],
 			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen'],
@@ -94,9 +95,9 @@ function organizrSpecialSettings()
 			'authBackend' => $GLOBALS['authBackend'],
 			'newMessageSound' => (isset($GLOBALS['CHAT-newMessageSound-include'])) ? $GLOBALS['CHAT-newMessageSound-include'] : '',
 			'uuid' => $GLOBALS['uuid'],
-			'docker' => $GLOBALS['docker'],
-			'githubCommit' => $GLOBALS['commit'],
-			'schema' => getSchema(),
+			'docker' => qualifyRequest(1) ? $GLOBALS['docker'] : '',
+			'githubCommit' => qualifyRequest(1) ? $GLOBALS['commit'] : '',
+			'schema' => qualifyRequest(1) ? getSchema() : '',
 			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth'])
 		)
 	);
@@ -1526,15 +1527,30 @@ function editImages()
 			}
 		}
 	}
-	if (!empty($filesCheck)) {
+	if (!empty($filesCheck) && approvedFileExtension($_FILES['file']['name'])) {
 		ini_set('upload_max_filesize', '10M');
 		ini_set('post_max_size', '10M');
-		$tempFile = $_FILES['file']['tmp_name'];
+		writeLog('success', mime_content_type($tempFile), $GLOBALS['organizrUser']['username']);
 		$targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'tabs' . DIRECTORY_SEPARATOR;
 		$targetFile = $targetPath . $_FILES['file']['name'];
 		return (move_uploaded_file($tempFile, $targetFile)) ? true : false;
 	}
 	return false;
+}
+
+function approvedFileExtension($filename)
+{
+	$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+	switch ($ext) {
+		case 'gif':
+		case 'png':
+		case 'jpeg':
+		case 'jpg':
+			return true;
+			break;
+		default:
+			return false;
+	}
 }
 
 function getThemes()
