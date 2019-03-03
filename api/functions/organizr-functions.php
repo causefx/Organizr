@@ -466,7 +466,7 @@ function getSettingsMain()
 				'label' => 'Branch',
 				'value' => $GLOBALS['branch'],
 				'options' => getBranches(),
-				'disabled' => $GLOBALS['branch'],
+				'disabled' => $GLOBALS['docker'],
 				'help' => ($GLOBALS['docker']) ? 'Since you are using the Official Docker image, Change the image to change the branch' : 'Choose which branch to download from'
 			),
 			array(
