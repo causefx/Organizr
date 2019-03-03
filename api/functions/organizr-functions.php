@@ -1543,7 +1543,7 @@ function editImages()
 	$filesCheck = array_filter($_FILES);
 	$approvedPath = 'plugins/images/tabs';
 	if (!empty($postCheck)) {
-		if ($_POST['data']['action'] == 'deleteImage' && approvedFileExtension($_POST['data']['imagePath']) && strpos($_POST['data']['imagePath'], $approvedPath) !== false) {
+		if ($_POST['data']['action'] == 'deleteImage' && approvedFileExtension($_POST['data']['imagePath']) && strpos(str_replace('../', '', $_POST['data']['imagePath']), $approvedPath) !== false) {
 			if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $_POST['data']['imagePath'])) {
 				writeLog('success', 'Image Manager Function -  Deleted Image [' . $_POST['data']['imageName'] . ']', $GLOBALS['organizrUser']['username']);
 				return (unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $_POST['data']['imagePath'])) ? true : false;
