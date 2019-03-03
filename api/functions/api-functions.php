@@ -546,6 +546,9 @@ function adminEditUser($array)
 {
 	switch ($array['data']['action']) {
 		case 'changeGroup':
+			if ($array['data']['newGroupID'] == 0) {
+				return false;
+			}
 			try {
 				$connect = new Dibi\Connection([
 					'driver' => 'sqlite3',
