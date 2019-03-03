@@ -3261,6 +3261,7 @@ function organizrAPI(type,path,data=null){
 		case 'post':
 		case 'POST':
 		case 'p':
+		    data.formKey = local('g','formKey');
 			return $.ajax({
 				url:path,
 				method:"POST",

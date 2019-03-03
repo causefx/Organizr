@@ -370,7 +370,7 @@ function qualifyRequest($accessLevelNeeded)
 	}
 }
 
-function isApprovedRequest()
+function isApprovedRequest($method)
 {
 	$requesterToken = isset(getallheaders()['Token']) ? getallheaders()['Token'] : (isset($_GET['apikey']) ? $_GET['apikey'] : false);
 	// Check token or API key
@@ -387,7 +387,14 @@ function isApprovedRequest()
 			$referer = $_SERVER['HTTP_REFERER'];
 		}
 		if ($referer == getServerPath(false)) {
-			return true;
+			if ($method == 'POST') {
+				if (password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $_POST['data']['formKey'])) {
+					return true;
+				}
+			} else {
+				return true;
+			}
+			
 		}
 	}
 	return false;

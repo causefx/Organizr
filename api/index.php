@@ -15,9 +15,10 @@ if ($function === false) {
 	$result['statusText'] = "No API Path Supplied";
 	exit(json_encode($result));
 }
-if (isApprovedRequest() === false && $function !== 'v1_auth') {
+if (isApprovedRequest($method, $_POST) === false && $function !== 'v1_auth' && $function !== 'v1_wizard_config') {
 	$result['status'] = "error";
 	$result['statusText'] = "Not Authorized";
+	writeLog('success', 'Killed Attack From [' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'No Referer') . ']', $GLOBALS['organizrUser']['username']);
 	exit(json_encode($result));
 }
 $result['request'] = key($_GET);

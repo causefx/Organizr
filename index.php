@@ -291,7 +291,8 @@
 <script id="custom-theme-javascript"></script>
 <script id="custom-javascript"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
-<?php echo pluginFiles('js'); ?>
+<?php echo pluginFiles('js');
+echo formKey(); ?>
 </body>
 
 </html>
