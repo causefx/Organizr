@@ -388,7 +388,8 @@ function isApprovedRequest($method)
 		}
 		if ($referer == getServerPath(false)) {
 			if ($method == 'POST') {
-				if (password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $_POST['data']['formKey'])) {
+				$formKey = (isset($_POST['data']['formKey'])) ? $_POST['data']['formKey'] : '';
+				if (password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $formKey)) {
 					return true;
 				}
 			} else {
