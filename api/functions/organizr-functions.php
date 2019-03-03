@@ -379,7 +379,14 @@ function isApprovedRequest()
 		//DO API CHECK
 		return true;
 	} elseif (isset($_SERVER['HTTP_REFERER'])) {
-		if ($_SERVER['HTTP_REFERER'] == getServerPath(false)) {
+		if (strpos($_SERVER['HTTP_REFERER'], '?') !== false) {
+			$referer = explode('?', $_SERVER['HTTP_REFERER'])[0];
+		} elseif (strpos($_SERVER['HTTP_REFERER'], '#') !== false) {
+			$referer = explode('#', $_SERVER['HTTP_REFERER'])[0];
+		} else {
+			$referer = $_SERVER['HTTP_REFERER'];
+		}
+		if ($referer == getServerPath(false)) {
 			return true;
 		}
 	}
