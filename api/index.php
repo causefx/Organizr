@@ -15,6 +15,11 @@ if ($function === false) {
 	$result['statusText'] = "No API Path Supplied";
 	exit(json_encode($result));
 }
+if (isApprovedRequest() === false) {
+	$result['status'] = "error";
+	$result['statusText'] = "Not Authorized";
+	exit(json_encode($result));
+}
 $result['request'] = key($_GET);
 $result['params'] = $_POST;
 switch ($function) {

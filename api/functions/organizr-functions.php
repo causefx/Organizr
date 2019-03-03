@@ -370,6 +370,22 @@ function qualifyRequest($accessLevelNeeded)
 	}
 }
 
+function isApprovedRequest()
+{
+	$requesterToken = isset(getallheaders()['Token']) ? getallheaders()['Token'] : (isset($_GET['apikey']) ? $_GET['apikey'] : false);
+	// Check token or API key
+	// If API key, return 0 for admin
+	if (strlen($requesterToken) == 20 && $requesterToken == $GLOBALS['organizrAPI']) {
+		//DO API CHECK
+		return true;
+	} elseif (isset($_SERVER['HTTP_REFERER'])) {
+		if ($_SERVER['HTTP_REFERER'] == getServerPath(false)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 function getUserLevel()
 {
 	// Grab token
