@@ -1,10 +1,10 @@
 <?php
-
 $pageSettingsImageManager = '
 <script>
 	buildImageManagerView();
     var myDropzone = new Dropzone("#new-image-form", {
       url: "api/?v1/settings/image/manager/view",
+      headers:{ "formKey": local("g","formKey") },
       init: function() {
         this.on("complete", function(file) {
             buildImageManagerView();

@@ -373,6 +373,7 @@ function qualifyRequest($accessLevelNeeded)
 function isApprovedRequest($method)
 {
 	$requesterToken = isset(getallheaders()['Token']) ? getallheaders()['Token'] : (isset($_GET['apikey']) ? $_GET['apikey'] : false);
+	$requesterFormKeyHeader = isset(getallheaders()['Formkey']) ? getallheaders()['Formkey'] : false;
 	// Check token or API key
 	// If API key, return 0 for admin
 	if (strlen($requesterToken) == 20 && $requesterToken == $GLOBALS['organizrAPI']) {
@@ -381,6 +382,8 @@ function isApprovedRequest($method)
 	} elseif ($method == 'POST') {
 		$formKey = (isset($_POST['data']['formKey'])) ? $_POST['data']['formKey'] : '';
 		if (password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $formKey)) {
+			return true;
+		} elseif (($requesterFormKeyHeader) && password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $requesterFormKeyHeader)) {
 			return true;
 		}
 	} else {
@@ -1538,18 +1541,19 @@ function editImages()
 	$array = array();
 	$postCheck = array_filter($_POST);
 	$filesCheck = array_filter($_FILES);
+	$approvedPath = 'plugins/images/tabs';
 	if (!empty($postCheck)) {
-		if ($_POST['data']['action'] == 'deleteImage') {
+		if ($_POST['data']['action'] == 'deleteImage' && approvedFileExtension($_POST['data']['imagePath']) && strpos($_POST['data']['imagePath'], $approvedPath) !== false) {
 			if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $_POST['data']['imagePath'])) {
 				writeLog('success', 'Image Manager Function -  Deleted Image [' . $_POST['data']['imageName'] . ']', $GLOBALS['organizrUser']['username']);
 				return (unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $_POST['data']['imagePath'])) ? true : false;
 			}
 		}
 	}
-	if (!empty($filesCheck) && approvedFileExtension($_FILES['file']['name'])) {
+	if (!empty($filesCheck) && approvedFileExtension($_FILES['file']['name']) && strpos($_FILES['file']['type'], 'image/') !== false) {
 		ini_set('upload_max_filesize', '10M');
 		ini_set('post_max_size', '10M');
-		writeLog('success', mime_content_type($tempFile), $GLOBALS['organizrUser']['username']);
+		$tempFile = $_FILES['file']['tmp_name'];
 		$targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'tabs' . DIRECTORY_SEPARATOR;
 		$targetFile = $targetPath . $_FILES['file']['name'];
 		return (move_uploaded_file($tempFile, $targetFile)) ? true : false;
