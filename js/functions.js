@@ -3264,7 +3264,14 @@ function updateNow(){
 	});
 }
 function organizrAPI(type,path,data=null){
-	//console.log('Organizr API: Calling API: '+path);
+	var timeout = 10000;
+    switch(path){
+        case 'api/?v1/windows/update':
+            timeout = 120000;
+            break;
+        default:
+            timeout = 10000;
+    }
 	switch (type) {
 		case 'get':
 		case 'GET':
@@ -3275,7 +3282,7 @@ function organizrAPI(type,path,data=null){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 				},
-				timeout: 10000,
+				timeout: timeout,
 			});
 			break;
 		case 'post':

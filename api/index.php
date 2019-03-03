@@ -15,7 +15,7 @@ if ($function === false) {
 	$result['statusText'] = "No API Path Supplied";
 	exit(json_encode($result));
 }
-if ($function !== 'v1_auth' && $function !== 'v1_wizard_config' && $function !== 'v1_login') {
+if ($function !== 'v1_auth' && $function !== 'v1_wizard_config' && $function !== 'v1_login' && $function !== 'v1_wizard_path') {
 	if (isApprovedRequest($method, $_POST) === false) {
 		$result['status'] = "error";
 		$result['statusText'] = "Not Authorized";
