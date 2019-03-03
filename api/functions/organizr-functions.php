@@ -2156,6 +2156,16 @@ function dockerUpdate()
 	return $dockerUpdate;
 }
 
+function windowsUpdate()
+{
+	$branch = ($GLOBALS['branch'] == 'v2-master') ? '-m' : '-d';
+	ini_set('max_execution_time', 0);
+	set_time_limit(0);
+	$windowsScript = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'windows-update.bat ' . $branch;
+	$windowsUpdate = exec($windowsScript);
+	return $windowsUpdate;
+}
+
 function checkHostPrefix($s)
 {
 	if (empty($s)) {

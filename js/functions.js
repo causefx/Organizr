@@ -3156,6 +3156,26 @@ function dockerUpdate(){
         });
     }
 }
+function windowsUpdate(){
+    if(activeInfo.serverOS == 'win'){
+        $(updateBar()).appendTo('.organizr-area');
+        updateUpdateBar('Starting Download','20%');
+        messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
+        organizrAPI('GET','api/?v1/windows/update').success(function(data) {
+            try {
+                var json = JSON.parse(data);
+            }catch(e) {
+                console.log(e + ' error: ' + data);
+                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+                return false;
+            }
+            updateUpdateBar('Restarting Organizr in', '100%', true);
+            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),json.data,activeInfo.settings.notifications.position,'#FFF','success','60000');
+        }).fail(function(xhr) {
+            console.error("Organizr Function: Reboot Failed");
+        });
+    }
+}
 function updateNow(){
     clearAJAX();
     if(activeInfo.settings.misc.docker){
