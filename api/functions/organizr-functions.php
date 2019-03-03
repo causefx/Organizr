@@ -378,25 +378,13 @@ function isApprovedRequest($method)
 	if (strlen($requesterToken) == 20 && $requesterToken == $GLOBALS['organizrAPI']) {
 		//DO API CHECK
 		return true;
-	} elseif (isset($_SERVER['HTTP_REFERER'])) {
-		if (strpos($_SERVER['HTTP_REFERER'], '?') !== false) {
-			$referer = explode('?', $_SERVER['HTTP_REFERER'])[0];
-		} elseif (strpos($_SERVER['HTTP_REFERER'], '#') !== false) {
-			$referer = explode('#', $_SERVER['HTTP_REFERER'])[0];
-		} else {
-			$referer = $_SERVER['HTTP_REFERER'];
+	} elseif ($method == 'POST') {
+		$formKey = (isset($_POST['data']['formKey'])) ? $_POST['data']['formKey'] : '';
+		if (password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $formKey)) {
+			return true;
 		}
-		if ($referer == getServerPath(false)) {
-			if ($method == 'POST') {
-				$formKey = (isset($_POST['data']['formKey'])) ? $_POST['data']['formKey'] : '';
-				if (password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $formKey)) {
-					return true;
-				}
-			} else {
-				return true;
-			}
-			
-		}
+	} else {
+		return true;
 	}
 	return false;
 }
