@@ -3310,12 +3310,12 @@ function githubVersions() {
 }
 function sponsorsJSON() {
     return $.ajax({
-        url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/sponsors.json",
+        url: "https://raw.githubusercontent.com/causefx/Organizr/v2-develop/js/sponsors.json",
     });
 }
 function newsJSON() {
     return $.ajax({
-        url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/news.json",
+        url: "https://raw.githubusercontent.com/causefx/Organizr/v2-develop/js/news.json",
     });
 }
 function getLatestCommitJSON() {
