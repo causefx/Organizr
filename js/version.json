@@ -138,5 +138,13 @@
     "new": "",
     "fixed": "",
     "notes": "Please report bugs in GitHub issues page"
+  },
+  ,
+  "2.0.20": {
+    "date": "2019-03-04 23:00",
+    "title": "Security Fixes",
+    "new": "",
+    "fixed": "Security issue around CRFS and file upload and delete (#1086)|Clicking on iCal Calendar Item Locks Up GUI (#1092)|Custom js and css ace boxes not encoding correctly|Possibility for co-admin to become admin|Branch being disabled",
+    "notes": "Please report bugs in GitHub issues page"
   }
 }
