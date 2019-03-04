@@ -1541,10 +1541,10 @@ function editImages()
 	$array = array();
 	$postCheck = array_filter($_POST);
 	$filesCheck = array_filter($_FILES);
-	$approvedPath = 'plugins/images/tabs';
+	$approvedPath = 'plugins/images/tabs/';
 	if (!empty($postCheck)) {
-		$removeImage = str_replace('../', '', $_POST['data']['imagePath']);
-		if ($_POST['data']['action'] == 'deleteImage' && approvedFileExtension($_POST['data']['imagePath']) && strpos($removeImage, $approvedPath) !== false) {
+		$removeImage = $approvedPath . pathinfo($_POST['data']['imagePath'], PATHINFO_BASENAME);
+		if ($_POST['data']['action'] == 'deleteImage' && approvedFileExtension($removeImage)) {
 			if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $removeImage)) {
 				writeLog('success', 'Image Manager Function -  Deleted Image [' . $_POST['data']['imageName'] . ']', $GLOBALS['organizrUser']['username']);
 				return (unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $removeImage)) ? true : false;
