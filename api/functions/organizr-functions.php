@@ -2162,6 +2162,13 @@ function windowsUpdate()
 	$branch = ($GLOBALS['branch'] == 'v2-master') ? '-m' : '-d';
 	ini_set('max_execution_time', 0);
 	set_time_limit(0);
+	$logFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
+	if (!file_exists($logFile)) {
+		touch($logFile);
+	} else {
+		@unlink($logFile);
+		touch($logFile);
+	}
 	$windowsScript = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'windows-update.bat ' . $branch . ' > log.txt 2>&1';
 	$windowsUpdate = exec($windowsScript);
 	return ($windowsUpdate) ? $windowsUpdate : 'Update Complete - check log.txt for output';
