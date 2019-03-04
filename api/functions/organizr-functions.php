@@ -2162,9 +2162,9 @@ function windowsUpdate()
 	$branch = ($GLOBALS['branch'] == 'v2-master') ? '-m' : '-d';
 	ini_set('max_execution_time', 0);
 	set_time_limit(0);
-	$windowsScript = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'windows-update.bat ' . $branch;
+	$windowsScript = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'windows-update.bat ' . $branch . ' > log.txt 2>&1';
 	$windowsUpdate = exec($windowsScript);
-	return $windowsUpdate;
+	return ($windowsUpdate) ? $windowsUpdate : 'Update Complete - check log.txt for output';
 }
 
 function checkHostPrefix($s)

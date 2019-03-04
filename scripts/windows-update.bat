@@ -1,22 +1,23 @@
 @ECHO off
-SET ou_v=v2.5
-title Oraganizr v2 Updater for Win
+SET ou_v=v2.6
+TITLE Organizr v2 Updater
 COLOR 03
-ECHO      ___           ___                  
-ECHO     /  /\         /  /\           ___   
-ECHO    /  /::\       /  /:/_         /__/\  
-ECHO   /  /:/\:\     /  /:/ /\        \__\:\ 
+ECHO      ___           ___
+ECHO     /  /\         /  /\           ___
+ECHO    /  /::\       /  /:/_         /__/\
+ECHO   /  /:/\:\     /  /:/ /\        \__\:\
 ECHO  /  /:/  \:\   /  /:/ /:/_       /  /::\
 ECHO /__/:/ \__\:\ /__/:/ /:/ /\   __/  /:/\/
 ECHO \  \:\ /  /:/ \  \:\/:/ /:/  /__/\/:/
-ECHO  \  \:\  /:/   \  \::/ /:/   \  \::/    
-ECHO   \  \:\/:/     \  \:\/:/     \  \:\    
-ECHO    \  \::/       \  \::/       \__\/    
+ECHO  \  \:\  /:/   \  \::/ /:/   \  \::/
+ECHO   \  \:\/:/     \  \:\/:/     \  \:\
+ECHO    \  \::/       \  \::/       \__\/
 ECHO     \__\/         \__\/             ~~ %ou_v%
-ECHO.      
+ECHO.
 ECHO Organizr v2 Updater
 ECHO.
-echo Running from: %~dp0
+@ECHO Started: %date% %time%
+ECHO Running from: %~dp0
 ECHO.
 CD /d %~dp0
 
@@ -70,6 +71,7 @@ ECHO.
 MOVE %~dp0%orgzip_extract_name% organizr >nul 2>&1
 DEL /s /q %~dp0organizr.zip
 ROBOCOPY organizr ..\ /E /MOVE /NFL /NDL /NJH /nc /ns /np
+DEL /s /q windows-update.bat  >nul 2>&1
 
 IF NOT EXIST "%~dp0organizr" GOTO END
 ECHO ##############################
@@ -78,12 +80,12 @@ ECHO ##############################
 RMDIR /s /q %~dp0organizr
 ECHO.
 ECHO Deleted
+
 :END
+ECHO.
+ECHO %branch% Update Completed...
 
 ECHO.
-ECHO Update From Master Completed...
-
-ECHO.
-ECHO Done!
+@ECHO ENDED: %date% %time%
 ECHO.
 REM pause
