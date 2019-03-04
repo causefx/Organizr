@@ -71,7 +71,6 @@ ECHO.
 MOVE %~dp0%orgzip_extract_name% organizr >nul 2>&1
 DEL /s /q %~dp0organizr.zip
 ROBOCOPY organizr ..\ /E /MOVE /NFL /NDL /NJH /nc /ns /np
-DEL /s /q windows-update.bat  >nul 2>&1
 
 IF NOT EXIST "%~dp0organizr" GOTO END
 ECHO ##############################
