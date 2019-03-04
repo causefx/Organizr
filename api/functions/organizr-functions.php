@@ -1235,7 +1235,7 @@ function getCustomizeAppearance()
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Custom CSS [Can replace colors from above]',
-					'html' => '<button type="button" class="hidden saveCss btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customCSSEditor" style="height:300px">' . $GLOBALS['customCss'] . '</div>'
+					'html' => '<button type="button" class="hidden saveCss btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customCSSEditor" style="height:300px">' . htmlentities($GLOBALS['customCss']) . '</div>'
 				),
 				array(
 					'type' => 'textbox',
@@ -1252,7 +1252,7 @@ function getCustomizeAppearance()
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Theme CSS [Can replace colors from above]',
-					'html' => '<button type="button" class="hidden saveCssTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeCSSEditor" style="height:300px">' . $GLOBALS['customThemeCss'] . '</div>'
+					'html' => '<button type="button" class="hidden saveCssTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeCSSEditor" style="height:300px">' . htmlentities($GLOBALS['customThemeCss']) . '</div>'
 				),
 				array(
 					'type' => 'textbox',
@@ -1269,7 +1269,7 @@ function getCustomizeAppearance()
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Custom Javascript',
-					'html' => '<button type="button" class="hidden saveJava btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customJavaEditor" style="height:300px">' . $GLOBALS['customJava'] . '</div>'
+					'html' => '<button type="button" class="hidden saveJava btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customJavaEditor" style="height:300px">' . htmlentities($GLOBALS['customJava']) . '</div>'
 				),
 				array(
 					'type' => 'textbox',
@@ -1286,7 +1286,7 @@ function getCustomizeAppearance()
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Theme Javascript',
-					'html' => '<button type="button" class="hidden saveJavaTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeJavaEditor" style="height:300px">' . $GLOBALS['customThemeJava'] . '</div>'
+					'html' => '<button type="button" class="hidden saveJavaTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeJavaEditor" style="height:300px">' . htmlentities($GLOBALS['customThemeJava']) . '</div>'
 				),
 				array(
 					'type' => 'textbox',
