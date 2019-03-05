@@ -628,6 +628,11 @@ function closeTab(tab){
                case 0:
                case '0':
                case 'internal':
+                   // quick check if homepage
+                   if($('#menu-'+tab).attr('data-url') == 'api/?v1/homepage/page'){
+                       console.log('Organizr Function - Clearing All Homepage AJAX calls');
+                       clearAJAX('homepage');
+                   }
                    console.log('Tab Function: Closing tab: '+tab);
                    $('#internal-'+cleanClass(tab)).html('');
                    $('#menu-'+cleanClass(tab)+' a').removeClass("active");
@@ -750,6 +755,11 @@ function closeCurrentTab(){
 		case '0':
 		case 'internal':
 			var tab = $('.internal-listing').find('.show').attr('data-name');
+            // quick check if homepage
+            if($('#menu-'+cleanClass(tab)).attr('data-url') == 'api/?v1/homepage/page'){
+                console.log('Organizr Function - Clearing All Homepage AJAX calls');
+                clearAJAX('homepage');
+            }
 			console.log('Tab Function: Closing tab: '+tab);
 			$('#internal-'+cleanClass(tab)).html('');
 			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
@@ -5336,7 +5346,7 @@ function homepageDownloader(type, timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	var timeoutTitle = type+'-Downloader';
+	var timeoutTitle = type+'-Downloader-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
 	timeouts[timeoutTitle] = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
 }
@@ -5365,7 +5375,7 @@ function homepageStream(type, timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	var timeoutTitle = type+'-Stream';
+	var timeoutTitle = type+'-Stream-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
 	timeouts[timeoutTitle] = setTimeout(function(){ homepageStream(type,timeout); }, timeout);
 }
@@ -5403,7 +5413,7 @@ function homepageRecent(type, timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	var timeoutTitle = type+'-Recent';
+	var timeoutTitle = type+'-Recent-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
 	timeouts[timeoutTitle] = setTimeout(function(){ homepageRecent(type,timeout); }, timeout);
 }
@@ -5463,8 +5473,8 @@ function homepageRequests(timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	if(typeof timeouts['ombi'] !== 'undefined'){ clearTimeout(timeouts['ombi']); }
-	timeouts['ombi'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
+	if(typeof timeouts['ombi-Homepage'] !== 'undefined'){ clearTimeout(timeouts['ombi-Homepage']); }
+	timeouts['ombi-Homepage'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
 }
 function testAPIConnection(service){
     messageSingle('',' Testing now...',activeInfo.settings.notifications.position,'#FFF','info','10000');
@@ -5508,8 +5518,8 @@ function homepageCalendar(timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	if(typeof timeouts['calendar'] !== 'undefined'){ clearTimeout(timeouts['calendar']); }
-	timeouts['calendar'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
+	if(typeof timeouts['calendar-Homepage'] !== 'undefined'){ clearTimeout(timeouts['calendar-Homepage']); }
+	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
 // Thanks Swifty!
 function PopupCenter(url, title, w, h) {
@@ -5679,7 +5689,13 @@ function clearAJAX(id='all'){
 		$.each(timeouts, function(i,v) {
 			clearTimeout(timeouts[i]);
 		});
-	}else{
+	}else if(id == 'homepage'){
+        $.each(timeouts, function(i,v) {
+            if(i.indexOf('-Homepage') > 0 ){
+                clearTimeout(timeouts[i]);
+            }
+        })
+    }else{
 		clearTimeout(timeouts[id]);
 	}
 }
