@@ -3047,10 +3047,12 @@ function updateCheck(){
 			var latest = a;
 			break;
 		}
-		if(latest !== currentVersion){
-			console.log('Update Function: Update to '+latest+' is available');
-			message(window.lang.translate('Update Available'),latest+' '+window.lang.translate('is available, goto')+' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>',activeInfo.settings.notifications.position,'#FFF','update','60000');
-		}
+		if(latest !== currentVersion) {
+            console.log('Update Function: Update to ' + latest + ' is available');
+            if (activeInfo.settings.misc.docker === false) {
+                message(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
+            }
+        }
 		$('#githubVersions').html(buildVersion(reverseObject(response)));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Github Connection Failed");
