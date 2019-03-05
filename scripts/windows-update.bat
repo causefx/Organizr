@@ -56,7 +56,6 @@ ECHO #############################
 ECHO Updating OrganizrV2-(%branch%)
 ECHO #############################
 ECHO.
-REM cscript dl_config\5_orgdl.vbs //Nologo
 ECHO.
 ECHO Download In Progress...
 powershell -command "$clnt = new-object System.Net.WebClient; $clnt.DownloadFile(\"%org_url%\", \"organizr.zip\")"
