@@ -546,6 +546,9 @@ function adminEditUser($array)
 {
 	switch ($array['data']['action']) {
 		case 'changeGroup':
+			if ($array['data']['newGroupID'] == 0) {
+				return false;
+			}
 			try {
 				$connect = new Dibi\Connection([
 					'driver' => 'sqlite3',
@@ -790,6 +793,8 @@ function editTabs($array)
 					'url_local' => $array['data']['tabLocalURL'],
 					'ping_url' => $array['data']['pingURL'],
 					'image' => $array['data']['tabImage'],
+					'timeout' => $array['data']['tabActionType'],
+					'timeout_ms' => $array['data']['tabActionTime'],
 				], '
                     WHERE id=?', $array['data']['id']);
 				writeLog('success', 'Tab Editor Function -  Edited Tab Info for [' . $array['data']['tabName'] . ']', $GLOBALS['organizrUser']['username']);
@@ -837,7 +842,9 @@ function editTabs($array)
 					'enabled' => 1,
 					'group_id' => $array['data']['tabGroupID'],
 					'image' => $array['data']['tabImage'],
-					'type' => $array['data']['tabType']
+					'type' => $array['data']['tabType'],
+					'timeout' => $array['data']['tabActionType'],
+					'timeout_ms' => $array['data']['tabActionTime'],
 				];
 				$connect->query('INSERT INTO [tabs]', $newTab);
 				writeLog('success', 'Tab Editor Function - Created Tab for: ' . $array['data']['tabName'], $GLOBALS['organizrUser']['username']);
@@ -1161,14 +1168,18 @@ function revokeToken($array)
 
 function getSchema()
 {
-	try {
-		$connect = new Dibi\Connection([
-			'driver' => 'sqlite3',
-			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
-		]);
-		$result = $connect->fetchAll(' SELECT name, sql FROM sqlite_master WHERE type=\'table\' ORDER BY name');
-		return $result;
-	} catch (Dibi\Exception $e) {
-		return false;
+	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+		try {
+			$connect = new Dibi\Connection([
+				'driver' => 'sqlite3',
+				'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+			]);
+			$result = $connect->fetchAll(' SELECT name, sql FROM sqlite_master WHERE type=\'table\' ORDER BY name');
+			return $result;
+		} catch (Dibi\Exception $e) {
+			return false;
+		}
+	} else {
+		return 'DB not set yet...';
 	}
 }

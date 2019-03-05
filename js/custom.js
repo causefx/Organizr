@@ -843,8 +843,24 @@ $(document).on("click", ".deleteTab", function () {
         }
     });
 });
+function convertMsToMinutes(ms){
+    if(ms === false || ms === 0 || ms === "0"){
+        return 0;
+    }else{
+        return (ms / 1000) / 60;
+    }
+}
+function convertMinutesToMs(minutes){
+    if(minutes === false || minutes === 0 || minutes === "0"){
+        return 0;
+    }else{
+        return (minutes * 1000) * 60;
+    }
+}
 //EDIT TAB GET ID
 $(document).on("click", ".editTabButton", function () {
+    //tabActionTime
+    //tabActionType
     $('#edit-tab-form [name=tabName]').val($(this).parent().parent().attr("data-name"));
     $('#originalTabName').html($(this).parent().parent().attr("data-name"));
     $('#edit-tab-form [name=tabURL]').val($(this).parent().parent().attr("data-url"));
@@ -852,6 +868,8 @@ $(document).on("click", ".editTabButton", function () {
     $('#edit-tab-form [name=pingURL]').val($(this).parent().parent().attr("data-ping-url"));
     $('#edit-tab-form [name=tabImage]').val($(this).parent().parent().attr("data-image"));
     $('#edit-tab-form [name=id]').val($(this).parent().parent().attr("data-id"));
+    $('#edit-tab-form [name=tabActionTime]').val(convertMsToMinutes($(this).parent().parent().attr("data-tab-action-time")));
+    $('#edit-tab-form [name=tabActionType]').val($(this).parent().parent().attr("data-tab-action-type"));
     if( $(this).parent().parent().attr("data-url").indexOf('/?v') > 0){
         $('#edit-tab-form [name=tabURL]').prop('disabled', 'true');
     }else{
@@ -871,6 +889,8 @@ $(document).on("click", ".editTab", function () {
         tabURL:$('#edit-tab-form [name=tabURL]').val(),
         tabLocalURL:$('#edit-tab-form [name=tabLocalURL]').val(),
         pingURL:$('#edit-tab-form [name=pingURL]').val(),
+        tabActionTime:convertMinutesToMs($('#edit-tab-form [name=tabActionTime]').val()),
+        tabActionType:$('#edit-tab-form [name=tabActionType]').val(),
         messageTitle:'',
         messageBody:'Edited Tab '+$('#edit-tab-form [name=tabName]').val(),
         error:'Organizr Function: Tab Editor API Connection Failed'
@@ -911,6 +931,8 @@ $(document).on("click", ".addNewTab", function () {
         tabURL:$('#new-tab-form [name=tabURL]').val(),
         tabLocalURL:$('#new-tab-form [name=tabLocalURL]').val(),
         pingURL:$('#new-tab-form [name=pingURL]').val(),
+        tabActionTime:convertMinutesToMs($('#new-tab-form [name=tabActionTime]').val()),
+        tabActionType:$('#new-tab-form [name=tabActionType]').val(),
         tabGroupID:1,
         tabEnabled:0,
         tabDefault:0,

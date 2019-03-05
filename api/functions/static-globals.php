@@ -1,7 +1,7 @@
 <?php
 // ===================================
 // Organizr Version
-$GLOBALS['installedVersion'] = '2.0.0';
+$GLOBALS['installedVersion'] = '2.0.32';
 // ===================================
 // Quick php Version check
 $GLOBALS['minimumPHP'] = '7.1.3';
@@ -13,6 +13,7 @@ $GLOBALS['userConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config
 $GLOBALS['defaultConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';
 $GLOBALS['currentTime'] = gmdate("Y-m-d\TH:i:s\Z");
 $GLOBALS['docker'] = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Docker.txt')) ? true : false;
+$GLOBALS['quickConfig'] = (file_exists($GLOBALS['userConfigPath'])) ? loadConfigOnce($GLOBALS['userConfigPath']) : null;
 // Quick function for plugins
 function pluginFiles($type)
 {
@@ -46,6 +47,16 @@ function loadConfigOnce($path = null)
 	}
 }
 
+function formKey()
+{
+	if (isset($GLOBALS['quickConfig']['organizrAPI'])) {
+		if ($GLOBALS['quickConfig']['organizrAPI'] !== '') {
+			$hash = password_hash(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), PASSWORD_BCRYPT);
+			return '<script>local("s","formKey","' . $hash . '");</script>';
+		}
+	}
+}
+
 function favIcons()
 {
 	$favicon = '
@@ -60,12 +71,9 @@ function favIcons()
 	<meta name="msapplication-config" content="plugins/images/favicon/browserconfig.xml">
 	<meta name="theme-color" content="#ffffff">
 	';
-	if (file_exists($GLOBALS['userConfigPath'])) {
-		$config = loadConfigOnce($GLOBALS['userConfigPath']);
-		if (isset($config['favIcon'])) {
-			if ($config['favIcon'] !== '') {
-				$favicon = $config['favIcon'];
-			}
+	if (isset($GLOBALS['quickConfig']['favIcon'])) {
+		if ($GLOBALS['quickConfig']['favIcon'] !== '') {
+			$favicon = $GLOBALS['quickConfig']['favIcon'];
 		}
 	}
 	return $favicon;

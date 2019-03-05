@@ -14,6 +14,12 @@ lang.init({
 	allowCookieOverride: true
 });
 var timeouts = {};
+var increment = 0;
+var tabInformation = {};
+var tabActionsList = [];
+tabActionsList['refresh'] = [];
+tabActionsList['close'] = [];
+
 // Start Organizr
 $(document).ready(function () {
     launch();
@@ -192,7 +198,67 @@ function isNumberKey(evt) {
         return false;
     return true;
 }
+function setTabInfo(tab,action,value){
+    if(tab !== null && action !== null && value !== null){
+        switch(action){
+            case 'active':
+                $.each(tabInformation, function(i,v) {
+                    tabInformation[i]['active'] = false;
+                });
+                break;
+            default:
+            //nada
+        }
+        tabInformation[tab][action] = value;
+    }else{
+        return false;
+    }
+}
+function tabTimerAction(){
+    if(tabActionsList.close.length > 0){
+        $.each(tabActionsList.close, function(i,v) {
+            var tab = v.tab;
+            var minutes = (tabInformation[tab]['tabInfo']['timeout_ms'] / 1000) /60;
+            var process = false;
+            if(tabInformation[tab]['loaded']){
+                if(tabInformation[tab]['active'] && idleTime >= 1){
+                    process = true;
+                }
+                if(tabInformation[tab]['active'] === false){
+                    process = true;
+                }
+                if(process){
+                    tabInformation[tab]['increments'] = tabInformation[tab]['increments'] + 1;
+                    if(tabInformation[tab]['increments'] >= minutes){
+                        tabInformation[tab]['increments'] = 0;
+                        console.log('Tab Function: Auto Closing tab: '+tab);
+                        closeTab(tab);
+                    }
+                }
+
+            }
+        });
+    }
+    if(tabActionsList.refresh.length > 0){
+        $.each(tabActionsList.refresh, function(i,v) {
+            var tab = v.tab;
+            var minutes = (tabInformation[tab]['tabInfo']['timeout_ms'] / 1000) /60;
+            var process = false;
+            if(tabInformation[tab]['loaded']){
+                tabInformation[tab]['increments'] = tabInformation[tab]['increments'] + 1;
+                if(tabInformation[tab]['increments'] >= minutes){
+                    tabInformation[tab]['increments'] = 0;
+                    console.log('Tab Function: Auto Reloading tab: '+tab);
+                    reloadTab(tab, tabInformation[tab]['tabInfo']['type']);
+                }
+            }
+        });
+    }
+
+}
 function timerIncrement() {
+    increment = increment + 1;
+    tabTimerAction();
     //check for cookieExpiry
     if(hasCookie){
         if(getCookie('organizrToken')){
@@ -474,12 +540,15 @@ function switchTab(tab, type){
 			if(newTab.hasClass('loaded')){
 				console.log('Tab Function: Switching to tab: '+tab);
 				newTab.addClass("show").removeClass('hidden');
+                setTabInfo(cleanClass(tab),'active',true);
 			}else{
 				$("#preloader").fadeIn();
 				console.log('Tab Function: Loading new tab for: '+tab);
 				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
 				loadInternal(tabURL,cleanClass(tab));
+                setTabInfo(cleanClass(tab),'active',true);
+                setTabInfo(cleanClass(tab),'loaded',true);
 				$("#preloader").fadeOut();
 			}
 			break;
@@ -493,12 +562,15 @@ function switchTab(tab, type){
 			if(newTab.hasClass('loaded')){
 				console.log('Tab Function: Switching to tab: '+tab);
 				newTab.addClass("show").removeClass('hidden');
+                setTabInfo(cleanClass(tab),'active',true);
 			}else{
 				$("#preloader").fadeIn();
 				console.log('Tab Function: Loading new tab for: '+tab);
 				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
 				$(buildFrame(tab,tabURL)).appendTo(newTab);
+                setTabInfo(cleanClass(tab),'active',true);
+                setTabInfo(cleanClass(tab),'loaded',true);
 				$("#preloader").fadeOut();
 			}
             $('#frame-'+tab).focus();
@@ -556,12 +628,18 @@ function closeTab(tab){
                case 0:
                case '0':
                case 'internal':
+                   // quick check if homepage
+                   if($('#menu-'+tab).attr('data-url') == 'api/?v1/homepage/page'){
+                       console.log('Organizr Function - Clearing All Homepage AJAX calls');
+                       clearAJAX('homepage');
+                   }
                    console.log('Tab Function: Closing tab: '+tab);
                    $('#internal-'+cleanClass(tab)).html('');
                    $('#menu-'+cleanClass(tab)+' a').removeClass("active");
                    $('#menu-'+tab+' a').children().removeClass('tabLoaded');
                    $('#internal-'+cleanClass(tab)).removeClass("loaded show");
                    $('#menu-'+cleanClass(tab)).removeClass("active");
+                   setTabInfo(cleanClass(tab),'loaded',false);
                    break;
                case 1:
                case '1':
@@ -571,6 +649,7 @@ function closeTab(tab){
                    $('#menu-'+tab+' a').children().removeClass('tabLoaded');
                    $('#container-'+cleanClass(tab)).removeClass("loaded show");
                    $('#frame-'+cleanClass(tab)).remove();
+                   setTabInfo(cleanClass(tab),'loaded',false);
                    break;
                case 2:
                case 3:
@@ -676,12 +755,19 @@ function closeCurrentTab(){
 		case '0':
 		case 'internal':
 			var tab = $('.internal-listing').find('.show').attr('data-name');
+            // quick check if homepage
+            if($('#menu-'+cleanClass(tab)).attr('data-url') == 'api/?v1/homepage/page'){
+                console.log('Organizr Function - Clearing All Homepage AJAX calls');
+                clearAJAX('homepage');
+            }
 			console.log('Tab Function: Closing tab: '+tab);
 			$('#internal-'+cleanClass(tab)).html('');
 			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
 			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
 			$('#internal-'+cleanClass(tab)).removeClass("loaded show");
 			$('#menu-'+cleanClass(tab)).removeClass("active");
+            setTabInfo(cleanClass(tab),'loaded',false);
+            setTabInfo(cleanClass(tab),'active',false);
 			loadNextTab();
 			break;
 		case 1:
@@ -693,6 +779,8 @@ function closeCurrentTab(){
 			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
 			$('#container-'+cleanClass(tab)).removeClass("loaded show");
 			$('#frame-'+cleanClass(tab)).remove();
+            setTabInfo(cleanClass(tab),'loaded',false);
+            setTabInfo(cleanClass(tab),'active',false);
 			loadNextTab();
 			break;
 		case 2:
@@ -2367,6 +2455,19 @@ function tabProcess(arrayItems) {
 	if (Array.isArray(arrayItems['data']['tabs']) && arrayItems['data']['tabs'].length > 0) {
 		$.each(arrayItems['data']['tabs'], function(i,v) {
 			if(v.enabled === 1 && v.access_url){
+                tabInformation[cleanClass(v.name)] = {"active":false,"loaded":false,"increments":0,"tabInfo":v};
+                switch(v.timeout){
+                    case 1:
+                    case '1':
+                        tabActionsList['close'].push({"tab":cleanClass(v.name),"action_ms":v.timeout_ms});
+                        break;
+                    case 2:
+                    case '2':
+                        tabActionsList['refresh'].push({"tab":cleanClass(v.name),"action_ms":v.timeout_ms});
+                        break;
+                    default:
+                        //nada
+                }
                 if(v.default === 1){
                     defaultTabName = cleanClass(v.name);
                     defaultTabType = v.type;
@@ -2697,7 +2798,7 @@ function buildTabEditorItem(array){
 		var buttonDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : '';
         var typeDisabled = v.url.indexOf('/?v1/') > 0 ? 'disabled' : '';
 		tabList += `
-		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-local-url="`+v.url_local+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`">
+		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-local-url="`+v.url_local+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`" data-tab-action-type="`+v.timeout+`" data-tab-action-time="`+v.timeout_ms+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
 			<input type="hidden" class="form-control order" name="tab[`+v.id+`].order" value="`+v.order+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].originalOrder" value="`+v.order+`">
@@ -2706,6 +2807,8 @@ function buildTabEditorItem(array){
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].url" value="`+v.url+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].ping_url" value="`+v.ping_url+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].image" value="`+v.image+`">
+			<input type="hidden" class="form-control" name="tab[`+v.id+`].timeout" value="`+v.timeout+`">
+			<input type="hidden" class="form-control" name="tab[`+v.id+`].timeout_ms" value="`+v.timeout_ms+`">
 			<td style="text-align:center" class="text-center el-element-overlay">
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0">
@@ -2944,10 +3047,12 @@ function updateCheck(){
 			var latest = a;
 			break;
 		}
-		if(latest !== currentVersion){
-			console.log('Update Function: Update to '+latest+' is available');
-			message(window.lang.translate('Update Available'),latest+' '+window.lang.translate('is available, goto')+' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>',activeInfo.settings.notifications.position,'#FFF','update','60000');
-		}
+		if(latest !== currentVersion) {
+            console.log('Update Function: Update to ' + latest + ' is available');
+            if (activeInfo.settings.misc.docker === false) {
+                message(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
+            }
+        }
 		$('#githubVersions').html(buildVersion(reverseObject(response)));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Github Connection Failed");
@@ -3156,7 +3261,28 @@ function dockerUpdate(){
         });
     }
 }
+function windowsUpdate(){
+    if(activeInfo.serverOS == 'win'){
+        $(updateBar()).appendTo('.organizr-area');
+        updateUpdateBar('Starting Download','20%');
+        messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
+        organizrAPI('GET','api/?v1/windows/update').success(function(data) {
+            try {
+                var json = JSON.parse(data);
+            }catch(e) {
+                console.log(e + ' error: ' + data);
+                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+                return false;
+            }
+            updateUpdateBar('Restarting Organizr in', '100%', true);
+            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),json.data,activeInfo.settings.notifications.position,'#FFF','success','60000');
+        }).fail(function(xhr) {
+            console.error("Organizr Function: Reboot Failed");
+        });
+    }
+}
 function updateNow(){
+    clearAJAX();
     if(activeInfo.settings.misc.docker){
         dockerUpdate();
         return false;
@@ -3243,7 +3369,14 @@ function updateNow(){
 	});
 }
 function organizrAPI(type,path,data=null){
-	//console.log('Organizr API: Calling API: '+path);
+	var timeout = 10000;
+    switch(path){
+        case 'api/?v1/windows/update':
+            timeout = 120000;
+            break;
+        default:
+            timeout = 10000;
+    }
 	switch (type) {
 		case 'get':
 		case 'GET':
@@ -3254,12 +3387,13 @@ function organizrAPI(type,path,data=null){
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
 				},
-				timeout: 10000,
+				timeout: timeout,
 			});
 			break;
 		case 'post':
 		case 'POST':
 		case 'p':
+		    data.formKey = local('g','formKey');
 			return $.ajax({
 				url:path,
 				method:"POST",
@@ -3281,12 +3415,12 @@ function githubVersions() {
 }
 function sponsorsJSON() {
     return $.ajax({
-        url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/sponsors.json",
+        url: "https://raw.githubusercontent.com/causefx/Organizr/v2-develop/js/sponsors.json",
     });
 }
 function newsJSON() {
     return $.ajax({
-        url: "https://raw.githubusercontent.com/causefx/Organizr/"+activeInfo.branch+"/js/news.json",
+        url: "https://raw.githubusercontent.com/causefx/Organizr/v2-develop/js/news.json",
     });
 }
 function getLatestCommitJSON() {
@@ -5214,7 +5348,7 @@ function homepageDownloader(type, timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	var timeoutTitle = type+'-Downloader';
+	var timeoutTitle = type+'-Downloader-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
 	timeouts[timeoutTitle] = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
 }
@@ -5243,7 +5377,7 @@ function homepageStream(type, timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	var timeoutTitle = type+'-Stream';
+	var timeoutTitle = type+'-Stream-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
 	timeouts[timeoutTitle] = setTimeout(function(){ homepageStream(type,timeout); }, timeout);
 }
@@ -5281,7 +5415,7 @@ function homepageRecent(type, timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	var timeoutTitle = type+'-Recent';
+	var timeoutTitle = type+'-Recent-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
 	timeouts[timeoutTitle] = setTimeout(function(){ homepageRecent(type,timeout); }, timeout);
 }
@@ -5341,8 +5475,8 @@ function homepageRequests(timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	if(typeof timeouts['ombi'] !== 'undefined'){ clearTimeout(timeouts['ombi']); }
-	timeouts['ombi'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
+	if(typeof timeouts['ombi-Homepage'] !== 'undefined'){ clearTimeout(timeouts['ombi-Homepage']); }
+	timeouts['ombi-Homepage'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
 }
 function testAPIConnection(service){
     messageSingle('',' Testing now...',activeInfo.settings.notifications.position,'#FFF','info','10000');
@@ -5386,8 +5520,8 @@ function homepageCalendar(timeout){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
-	if(typeof timeouts['calendar'] !== 'undefined'){ clearTimeout(timeouts['calendar']); }
-	timeouts['calendar'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
+	if(typeof timeouts['calendar-Homepage'] !== 'undefined'){ clearTimeout(timeouts['calendar-Homepage']); }
+	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
 // Thanks Swifty!
 function PopupCenter(url, title, w, h) {
@@ -5557,7 +5691,13 @@ function clearAJAX(id='all'){
 		$.each(timeouts, function(i,v) {
 			clearTimeout(timeouts[i]);
 		});
-	}else{
+	}else if(id == 'homepage'){
+        $.each(timeouts, function(i,v) {
+            if(i.indexOf('-Homepage') > 0 ){
+                clearTimeout(timeouts[i]);
+            }
+        })
+    }else{
 		clearTimeout(timeouts[id]);
 	}
 }

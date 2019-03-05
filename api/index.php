@@ -15,6 +15,14 @@ if ($function === false) {
 	$result['statusText'] = "No API Path Supplied";
 	exit(json_encode($result));
 }
+if ($function !== 'v1_auth' && $function !== 'v1_wizard_config' && $function !== 'v1_login' && $function !== 'v1_wizard_path') {
+	if (isApprovedRequest($method, $_POST) === false) {
+		$result['status'] = "error";
+		$result['statusText'] = "Not Authorized";
+		writeLog('success', 'Killed Attack From [' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'No Referer') . ']', $GLOBALS['organizrUser']['username']);
+		exit(json_encode($result));
+	}
+}
 $result['request'] = key($_GET);
 $result['params'] = $_POST;
 switch ($function) {
@@ -1281,6 +1289,25 @@ switch ($function) {
 					$result['status'] = 'success';
 					$result['statusText'] = 'success';
 					$result['data'] = dockerUpdate();
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
+	case 'v1_windows_update':
+		switch ($method) {
+			case 'GET':
+				if (qualifyRequest(1)) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = windowsUpdate();
 				} else {
 					$result['status'] = 'error';
 					$result['statusText'] = 'API/Token invalid or not set';

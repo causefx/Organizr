@@ -138,5 +138,19 @@
     "new": "",
     "fixed": "",
     "notes": "Please report bugs in GitHub issues page"
+  },
+  "2.0.20": {
+    "date": "2019-03-04 23:00",
+    "title": "Security Fixes",
+    "new": "",
+    "fixed": "Security issue around CRFS and file upload and delete (#1086)|Clicking on iCal Calendar Item Locks Up GUI (#1092)|Custom js and css ace boxes not encoding correctly|Possibility for co-admin to become admin|Branch being disabled",
+    "notes": "Please report bugs in GitHub issues page"
+  },
+  "2.0.32": {
+    "date": "2019-03-05 19:50",
+    "title": "Auto-Reload and Auto-Close",
+    "new": "Auto Close and Auto reload feature (#1071)",
+    "fixed": "Undefined index dbLocation (#1093)|Disable show update to new version if on docker|Ombi sso only works with full email as user id (#1047)|Clear ajax calls if homepage is closed|Hardcoded news and sponsors branch",
+    "notes": "Please report bugs in GitHub issues page"
   }
 }

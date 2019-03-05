@@ -6696,7 +6696,7 @@ DayGrid.mixin({
 				(htmlEscape(event.imagetype || '') || '&nbsp;') + // we always want one line of height
 			'"></i></span>';
 
-		return '<a class="inline-popups ' + classes.join(' ') + '"' +
+		return '<a class=" ' + classes.join(' ') + '"' +
 				(event.id ?
 					' data-effect="mfp-zoom-out" data-target="'+ htmlEscape(event.id) +'" data-details="'+htmlEscape(detailsJSON) +'" data-mfp-src="#' + htmlEscape(event.id) + '"' :
 					''
@@ -14571,7 +14571,7 @@ var ListViewGrid = Grid.extend({
 				(htmlEscape(event.imagetype || '') || '&nbsp;') + // we always want one line of height
 			'"></i></span>';
 
-		return '<a class="inline-popups ' + classes.join(' ') + '"' +
+		return '<a class=" ' + classes.join(' ') + '"' +
 				(event.id ?
 					' data-effect="mfp-zoom-out" data-target="'+ htmlEscape(event.id) +'" data-details="'+htmlEscape(detailsJSON) +'" data-mfp-src="#' + htmlEscape(event.id) + '"' :
 					''

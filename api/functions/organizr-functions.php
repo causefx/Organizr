@@ -77,15 +77,16 @@ function organizrSpecialSettings()
 		'user' => array(
 			'agent' => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null,
 			'oAuthLogin' => isset($_COOKIE['oAuth']) ? true : false,
-			'local' => (isLocal()) ? true : false
+			'local' => (isLocal()) ? true : false,
+			'ip' => userIP()
 		),
 		'login' => array(
 			'rememberMe' => $GLOBALS['rememberMe'],
 			'rememberMeDays' => $GLOBALS['rememberMeDays'],
 		),
 		'misc' => array(
-			'installedPlugins' => $GLOBALS['installedPlugins'],
-			'installedThemes' => $GLOBALS['installedThemes'],
+			'installedPlugins' => qualifyRequest(1) ? $GLOBALS['installedPlugins'] : '',
+			'installedThemes' => qualifyRequest(1) ? $GLOBALS['installedThemes'] : '',
 			'return' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false,
 			'authDebug' => $GLOBALS['authDebug'],
 			'minimalLoginScreen' => $GLOBALS['minimalLoginScreen'],
@@ -94,9 +95,9 @@ function organizrSpecialSettings()
 			'authBackend' => $GLOBALS['authBackend'],
 			'newMessageSound' => (isset($GLOBALS['CHAT-newMessageSound-include'])) ? $GLOBALS['CHAT-newMessageSound-include'] : '',
 			'uuid' => $GLOBALS['uuid'],
-			'docker' => $GLOBALS['docker'],
-			'githubCommit' => $GLOBALS['commit'],
-			'schema' => getSchema(),
+			'docker' => qualifyRequest(1) ? $GLOBALS['docker'] : '',
+			'githubCommit' => qualifyRequest(1) ? $GLOBALS['commit'] : '',
+			'schema' => qualifyRequest(1) ? getSchema() : '',
 			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth'])
 		)
 	);
@@ -369,6 +370,28 @@ function qualifyRequest($accessLevelNeeded)
 	}
 }
 
+function isApprovedRequest($method)
+{
+	$requesterToken = isset(getallheaders()['Token']) ? getallheaders()['Token'] : (isset($_GET['apikey']) ? $_GET['apikey'] : false);
+	$requesterFormKeyHeader = isset(getallheaders()['Formkey']) ? getallheaders()['Formkey'] : false;
+	// Check token or API key
+	// If API key, return 0 for admin
+	if (strlen($requesterToken) == 20 && $requesterToken == $GLOBALS['organizrAPI']) {
+		//DO API CHECK
+		return true;
+	} elseif ($method == 'POST') {
+		$formKey = (isset($_POST['data']['formKey'])) ? $_POST['data']['formKey'] : '';
+		if (password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $formKey)) {
+			return true;
+		} elseif (($requesterFormKeyHeader) && password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $requesterFormKeyHeader)) {
+			return true;
+		}
+	} else {
+		return true;
+	}
+	return false;
+}
+
 function getUserLevel()
 {
 	// Grab token
@@ -443,7 +466,7 @@ function getSettingsMain()
 				'label' => 'Branch',
 				'value' => $GLOBALS['branch'],
 				'options' => getBranches(),
-				'disabled' => $GLOBALS['branch'],
+				'disabled' => $GLOBALS['docker'],
 				'help' => ($GLOBALS['docker']) ? 'Since you are using the Official Docker image, Change the image to change the branch' : 'Choose which branch to download from'
 			),
 			array(
@@ -1212,7 +1235,7 @@ function getCustomizeAppearance()
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Custom CSS [Can replace colors from above]',
-					'html' => '<button type="button" class="hidden saveCss btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customCSSEditor" style="height:300px">' . $GLOBALS['customCss'] . '</div>'
+					'html' => '<button type="button" class="hidden saveCss btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customCSSEditor" style="height:300px">' . htmlentities($GLOBALS['customCss']) . '</div>'
 				),
 				array(
 					'type' => 'textbox',
@@ -1229,7 +1252,7 @@ function getCustomizeAppearance()
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Theme CSS [Can replace colors from above]',
-					'html' => '<button type="button" class="hidden saveCssTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeCSSEditor" style="height:300px">' . $GLOBALS['customThemeCss'] . '</div>'
+					'html' => '<button type="button" class="hidden saveCssTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeCSSEditor" style="height:300px">' . htmlentities($GLOBALS['customThemeCss']) . '</div>'
 				),
 				array(
 					'type' => 'textbox',
@@ -1246,7 +1269,7 @@ function getCustomizeAppearance()
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Custom Javascript',
-					'html' => '<button type="button" class="hidden saveJava btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customJavaEditor" style="height:300px">' . $GLOBALS['customJava'] . '</div>'
+					'html' => '<button type="button" class="hidden saveJava btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customJavaEditor" style="height:300px">' . htmlentities($GLOBALS['customJava']) . '</div>'
 				),
 				array(
 					'type' => 'textbox',
@@ -1263,7 +1286,7 @@ function getCustomizeAppearance()
 					'type' => 'html',
 					'override' => 12,
 					'label' => 'Theme Javascript',
-					'html' => '<button type="button" class="hidden saveJavaTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeJavaEditor" style="height:300px">' . $GLOBALS['customThemeJava'] . '</div>'
+					'html' => '<button type="button" class="hidden saveJavaTheme btn btn-info btn-circle pull-right m-r-5 m-l-10"><i class="fa fa-save"></i> </button><div id="customThemeJavaEditor" style="height:300px">' . htmlentities($GLOBALS['customThemeJava']) . '</div>'
 				),
 				array(
 					'type' => 'textbox',
@@ -1518,15 +1541,17 @@ function editImages()
 	$array = array();
 	$postCheck = array_filter($_POST);
 	$filesCheck = array_filter($_FILES);
+	$approvedPath = 'plugins/images/tabs/';
 	if (!empty($postCheck)) {
-		if ($_POST['data']['action'] == 'deleteImage') {
-			if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $_POST['data']['imagePath'])) {
+		$removeImage = $approvedPath . pathinfo($_POST['data']['imagePath'], PATHINFO_BASENAME);
+		if ($_POST['data']['action'] == 'deleteImage' && approvedFileExtension($removeImage)) {
+			if (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $removeImage)) {
 				writeLog('success', 'Image Manager Function -  Deleted Image [' . $_POST['data']['imageName'] . ']', $GLOBALS['organizrUser']['username']);
-				return (unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $_POST['data']['imagePath'])) ? true : false;
+				return (unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . $removeImage)) ? true : false;
 			}
 		}
 	}
-	if (!empty($filesCheck)) {
+	if (!empty($filesCheck) && approvedFileExtension($_FILES['file']['name']) && strpos($_FILES['file']['type'], 'image/') !== false) {
 		ini_set('upload_max_filesize', '10M');
 		ini_set('post_max_size', '10M');
 		$tempFile = $_FILES['file']['tmp_name'];
@@ -1535,6 +1560,21 @@ function editImages()
 		return (move_uploaded_file($tempFile, $targetFile)) ? true : false;
 	}
 	return false;
+}
+
+function approvedFileExtension($filename)
+{
+	$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+	switch ($ext) {
+		case 'gif':
+		case 'png':
+		case 'jpeg':
+		case 'jpg':
+			return true;
+			break;
+		default:
+			return false;
+	}
 }
 
 function getThemes()
@@ -2115,6 +2155,17 @@ function dockerUpdate()
 	chdir('/etc/cont-init.d/');
 	$dockerUpdate = shell_exec('./30-install');
 	return $dockerUpdate;
+}
+
+function windowsUpdate()
+{
+	$branch = ($GLOBALS['branch'] == 'v2-master') ? '-m' : '-d';
+	ini_set('max_execution_time', 0);
+	set_time_limit(0);
+	$logFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'log.txt';
+	$windowsScript = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . 'windows-update.bat ' . $branch . ' > ' . $logFile . ' 2>&1';
+	$windowsUpdate = shell_exec($windowsScript);
+	return ($windowsUpdate) ? $windowsUpdate : 'Update Complete - check log.txt for output';
 }
 
 function checkHostPrefix($s)
