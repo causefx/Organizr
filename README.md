@@ -16,7 +16,7 @@ Do you have quite a bit of services running on your computer or server?  Do you 
 
 - PHP 7.1.3+
 - [Official Site](https://organizr.app) - Will be refreshed soon!
-- [Official Discord](https://organizr.app/chat)
+- [Official Discord](https://organizr.app/discord)
 - [See Wiki](https://github.com/causefx/Organizr/wiki) - Will be updated soon!
 - [Docker](https://hub.docker.com/r/organizrtools/organizr-v2/)
 
