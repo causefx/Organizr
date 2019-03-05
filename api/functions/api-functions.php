@@ -793,6 +793,8 @@ function editTabs($array)
 					'url_local' => $array['data']['tabLocalURL'],
 					'ping_url' => $array['data']['pingURL'],
 					'image' => $array['data']['tabImage'],
+					'timeout' => $array['data']['tabActionType'],
+					'timeout_ms' => $array['data']['tabActionTime'],
 				], '
                     WHERE id=?', $array['data']['id']);
 				writeLog('success', 'Tab Editor Function -  Edited Tab Info for [' . $array['data']['tabName'] . ']', $GLOBALS['organizrUser']['username']);
@@ -840,7 +842,9 @@ function editTabs($array)
 					'enabled' => 1,
 					'group_id' => $array['data']['tabGroupID'],
 					'image' => $array['data']['tabImage'],
-					'type' => $array['data']['tabType']
+					'type' => $array['data']['tabType'],
+					'timeout' => $array['data']['tabActionType'],
+					'timeout_ms' => $array['data']['tabActionTime'],
 				];
 				$connect->query('INSERT INTO [tabs]', $newTab);
 				writeLog('success', 'Tab Editor Function - Created Tab for: ' . $array['data']['tabName'], $GLOBALS['organizrUser']['username']);

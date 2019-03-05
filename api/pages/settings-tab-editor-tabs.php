@@ -84,6 +84,20 @@ allIcons().success(function(data) {
         </div>
         <div class="row">
 	        <div class="form-group col-lg-6">
+	            <label class="control-label" for="new-tab-form-inputTabActionTypeNew" lang="en">Tab Auto Action</label>
+	                <select class="form-control" id="new-tab-form-inputTabActionTypeNew" name="tabActionType">
+	                    <option value="null">None</option>
+	                    <option value="1">Auto Close</option>
+	                    <option value="2">Auto Reload</option>
+					</select>
+	        </div>
+	        <div class="form-group col-lg-6">
+	            <label class="control-label" for="new-tab-form-inputTabActionTimeNew" lang="en">Tab Auto Action Minutes</label>
+	                <input type="number" class="form-control" id="new-tab-form-inputTabActionTimeNew" name="tabActionTime"  placeholder="0">
+	        </div>
+	    </div>
+        <div class="row">
+	        <div class="form-group col-lg-6">
 	            <label class="control-label" for="new-tab-form-chooseImage" lang="en">Choose Image</label>
 	            ' . imageSelect("new-tab-form") . '
 	        </div>
@@ -130,6 +144,20 @@ allIcons().success(function(data) {
             <label class="control-label" for="edit-tab-form-pingURL" lang="en">Ping URL</label>
             <input type="text" class="form-control" id="edit-tab-form-pingURL" name="pingURL" placeholder="host/ip:port">
         </div>
+        <div class="row">
+	        <div class="form-group col-lg-6">
+	            <label class="control-label" for="edit-tab-form-inputTabActionTypeNew" lang="en">Tab Auto Action</label>
+	                <select class="form-control" id="edit-tab-form-inputTabActionTypeNew" name="tabActionType">
+	                    <option value="null">None</option>
+	                    <option value="1">Auto Close</option>
+	                    <option value="2">Auto Reload</option>
+					</select>
+	        </div>
+	        <div class="form-group col-lg-6">
+	            <label class="control-label" for="edit-tab-form-inputTabActionTimeNew" lang="en">Tab Auto Action Minutes</label>
+	                <input type="number" class="form-control" id="edit-tab-form-inputTabActionTimeNew" name="tabActionTime">
+	        </div>
+	    </div>
         <div class="row">
 	        <div class="form-group col-lg-6">
 	            <label class="control-label" for="edit-tab-form-chooseImage" lang="en">Choose Image</label>

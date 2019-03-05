@@ -14,6 +14,12 @@ lang.init({
 	allowCookieOverride: true
 });
 var timeouts = {};
+var increment = 0;
+var tabInformation = {};
+var tabActionsList = [];
+tabActionsList['refresh'] = [];
+tabActionsList['close'] = [];
+
 // Start Organizr
 $(document).ready(function () {
     launch();
@@ -192,7 +198,67 @@ function isNumberKey(evt) {
         return false;
     return true;
 }
+function setTabInfo(tab,action,value){
+    if(tab !== null && action !== null && value !== null){
+        switch(action){
+            case 'active':
+                $.each(tabInformation, function(i,v) {
+                    tabInformation[i]['active'] = false;
+                });
+                break;
+            default:
+            //nada
+        }
+        tabInformation[tab][action] = value;
+    }else{
+        return false;
+    }
+}
+function tabTimerAction(){
+    if(tabActionsList.close.length > 0){
+        $.each(tabActionsList.close, function(i,v) {
+            var tab = v.tab;
+            var minutes = (tabInformation[tab]['tabInfo']['timeout_ms'] / 1000) /60;
+            var process = false;
+            if(tabInformation[tab]['loaded']){
+                if(tabInformation[tab]['active'] && idleTime >= 1){
+                    process = true;
+                }
+                if(tabInformation[tab]['active'] === false){
+                    process = true;
+                }
+                if(process){
+                    tabInformation[tab]['increments'] = tabInformation[tab]['increments'] + 1;
+                    if(tabInformation[tab]['increments'] >= minutes){
+                        tabInformation[tab]['increments'] = 0;
+                        console.log('Tab Function: Auto Closing tab: '+tab);
+                        closeTab(tab);
+                    }
+                }
+
+            }
+        });
+    }
+    if(tabActionsList.refresh.length > 0){
+        $.each(tabActionsList.refresh, function(i,v) {
+            var tab = v.tab;
+            var minutes = (tabInformation[tab]['tabInfo']['timeout_ms'] / 1000) /60;
+            var process = false;
+            if(tabInformation[tab]['loaded']){
+                tabInformation[tab]['increments'] = tabInformation[tab]['increments'] + 1;
+                if(tabInformation[tab]['increments'] >= minutes){
+                    tabInformation[tab]['increments'] = 0;
+                    console.log('Tab Function: Auto Reloading tab: '+tab);
+                    reloadTab(tab, tabInformation[tab]['tabInfo']['type']);
+                }
+            }
+        });
+    }
+
+}
 function timerIncrement() {
+    increment = increment + 1;
+    tabTimerAction();
     //check for cookieExpiry
     if(hasCookie){
         if(getCookie('organizrToken')){
@@ -474,12 +540,15 @@ function switchTab(tab, type){
 			if(newTab.hasClass('loaded')){
 				console.log('Tab Function: Switching to tab: '+tab);
 				newTab.addClass("show").removeClass('hidden');
+                setTabInfo(cleanClass(tab),'active',true);
 			}else{
 				$("#preloader").fadeIn();
 				console.log('Tab Function: Loading new tab for: '+tab);
 				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
 				loadInternal(tabURL,cleanClass(tab));
+                setTabInfo(cleanClass(tab),'active',true);
+                setTabInfo(cleanClass(tab),'loaded',true);
 				$("#preloader").fadeOut();
 			}
 			break;
@@ -493,12 +562,15 @@ function switchTab(tab, type){
 			if(newTab.hasClass('loaded')){
 				console.log('Tab Function: Switching to tab: '+tab);
 				newTab.addClass("show").removeClass('hidden');
+                setTabInfo(cleanClass(tab),'active',true);
 			}else{
 				$("#preloader").fadeIn();
 				console.log('Tab Function: Loading new tab for: '+tab);
 				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
 				$(buildFrame(tab,tabURL)).appendTo(newTab);
+                setTabInfo(cleanClass(tab),'active',true);
+                setTabInfo(cleanClass(tab),'loaded',true);
 				$("#preloader").fadeOut();
 			}
             $('#frame-'+tab).focus();
@@ -562,6 +634,7 @@ function closeTab(tab){
                    $('#menu-'+tab+' a').children().removeClass('tabLoaded');
                    $('#internal-'+cleanClass(tab)).removeClass("loaded show");
                    $('#menu-'+cleanClass(tab)).removeClass("active");
+                   setTabInfo(cleanClass(tab),'loaded',false);
                    break;
                case 1:
                case '1':
@@ -571,6 +644,7 @@ function closeTab(tab){
                    $('#menu-'+tab+' a').children().removeClass('tabLoaded');
                    $('#container-'+cleanClass(tab)).removeClass("loaded show");
                    $('#frame-'+cleanClass(tab)).remove();
+                   setTabInfo(cleanClass(tab),'loaded',false);
                    break;
                case 2:
                case 3:
@@ -682,6 +756,8 @@ function closeCurrentTab(){
 			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
 			$('#internal-'+cleanClass(tab)).removeClass("loaded show");
 			$('#menu-'+cleanClass(tab)).removeClass("active");
+            setTabInfo(cleanClass(tab),'loaded',false);
+            setTabInfo(cleanClass(tab),'active',false);
 			loadNextTab();
 			break;
 		case 1:
@@ -693,6 +769,8 @@ function closeCurrentTab(){
 			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
 			$('#container-'+cleanClass(tab)).removeClass("loaded show");
 			$('#frame-'+cleanClass(tab)).remove();
+            setTabInfo(cleanClass(tab),'loaded',false);
+            setTabInfo(cleanClass(tab),'active',false);
 			loadNextTab();
 			break;
 		case 2:
@@ -2367,6 +2445,19 @@ function tabProcess(arrayItems) {
 	if (Array.isArray(arrayItems['data']['tabs']) && arrayItems['data']['tabs'].length > 0) {
 		$.each(arrayItems['data']['tabs'], function(i,v) {
 			if(v.enabled === 1 && v.access_url){
+                tabInformation[cleanClass(v.name)] = {"active":false,"loaded":false,"increments":0,"tabInfo":v};
+                switch(v.timeout){
+                    case 1:
+                    case '1':
+                        tabActionsList['close'].push({"tab":cleanClass(v.name),"action_ms":v.timeout_ms});
+                        break;
+                    case 2:
+                    case '2':
+                        tabActionsList['refresh'].push({"tab":cleanClass(v.name),"action_ms":v.timeout_ms});
+                        break;
+                    default:
+                        //nada
+                }
                 if(v.default === 1){
                     defaultTabName = cleanClass(v.name);
                     defaultTabType = v.type;
@@ -2697,7 +2788,7 @@ function buildTabEditorItem(array){
 		var buttonDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : '';
         var typeDisabled = v.url.indexOf('/?v1/') > 0 ? 'disabled' : '';
 		tabList += `
-		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-local-url="`+v.url_local+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`">
+		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-local-url="`+v.url_local+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`" data-tab-action-type="`+v.timeout+`" data-tab-action-time="`+v.timeout_ms+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
 			<input type="hidden" class="form-control order" name="tab[`+v.id+`].order" value="`+v.order+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].originalOrder" value="`+v.order+`">
@@ -2706,6 +2797,8 @@ function buildTabEditorItem(array){
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].url" value="`+v.url+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].ping_url" value="`+v.ping_url+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].image" value="`+v.image+`">
+			<input type="hidden" class="form-control" name="tab[`+v.id+`].timeout" value="`+v.timeout+`">
+			<input type="hidden" class="form-control" name="tab[`+v.id+`].timeout_ms" value="`+v.timeout_ms+`">
 			<td style="text-align:center" class="text-center el-element-overlay">
 				<div class="el-card-item p-0">
 					<div class="el-card-avatar el-overlay-1 m-0">
