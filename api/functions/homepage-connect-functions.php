@@ -1159,7 +1159,8 @@ function getCalendar()
 							'imagetypeFilter' => 'ical',
 							'className' => 'bg-calendar calendar-item bg-custom-calendar',
 							'start' => $startDate,
-							'end' => $endDate
+							'end' => $endDate,
+							'bgColor' => str_replace('text', 'bg', $extraClass),
 						);
 					}
 				}
