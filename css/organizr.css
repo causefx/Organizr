@@ -1251,23 +1251,27 @@ span.fc-title {
 .request-title-tv,
 .request-title-music {
     position: absolute;
-    bottom: 0;
+    top: -40px;
+    right: -40px;
     background: transparent;
     width: 25px;
     color: white;
     padding: 1px 0px;
     text-align: center;
     font-size: 15px;
-    border-radius: 0px 0px 0px 0px;
-    text-shadow: 1px 0px 0px #686868, 1px 1px 0px #686868, 0px 1px 0px #686868,
-    -1px 1px 0px #686868, -1px 0px 0px #686868, -1px -1px 0px #686868,
-    0px -1px 0px #686868, 1px -1px 0px #686868, 1px 4px 5px #aeaeae;
+    border-radius: 0px 0px 0px 0px;`
+    opacity: 0;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
 }
 .item:hover .request-title-movie,
 .item:hover .request-title-tv,
 .item:hover .request-title-music {
-    opacity: 0;
-    top: -60px;
+    opacity: 1;
+    top: 5px;
+    right: 5px;
+    -webkit-transition: all .4s ease;
+    transition: all .4s ease;
 }
 /*
 body,
