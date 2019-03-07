@@ -4106,6 +4106,7 @@ function buildRequestItem(array, extra=null){
 	$.each(array, function(i,v) {
 			if(extra == null){
                 var approveID = (v.type == 'tv') ? v.id : v.request_id;
+                var iconType = (v.type == 'tv') ? 'fa-tv ' : 'fa-film';
 				var badge = '';
 				var badge2 = '';
 				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/cache/no-np.png';
@@ -4143,6 +4144,7 @@ function buildRequestItem(array, extra=null){
 						<div class="inside-request-div `+badge+`"></div>
 					</div>
 					<div class="hover-homepage-item"></div>
+					<span class="elip request-title-`+v.type+`"><i class="fa `+iconType+`"></i></span>
 					<span class="elip recent-title">`+v.title+user2+`</span>
 					<div id="request-`+v.id+`" class="white-popup mfp-with-anim mfp-hide">
 						<div class="col-md-8 col-md-offset-2">

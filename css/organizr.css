@@ -1247,6 +1247,28 @@ span.fc-title {
     position: absolute;
     top: 20px;
 }
+.request-title-movie,
+.request-title-tv,
+.request-title-music {
+    position: absolute;
+    bottom: 0;
+    background: transparent;
+    width: 25px;
+    color: white;
+    padding: 1px 0px;
+    text-align: center;
+    font-size: 15px;
+    border-radius: 0px 0px 0px 0px;
+    text-shadow: 1px 0px 0px #686868, 1px 1px 0px #686868, 0px 1px 0px #686868,
+    -1px 1px 0px #686868, -1px 0px 0px #686868, -1px -1px 0px #686868,
+    0px -1px 0px #686868, 1px -1px 0px #686868, 1px 4px 5px #aeaeae;
+}
+.item:hover .request-title-movie,
+.item:hover .request-title-tv,
+.item:hover .request-title-music {
+    opacity: 0;
+    top: -60px;
+}
 /*
 body,
 html {
