@@ -33,10 +33,10 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/simplebar.css" rel="stylesheet">
     <link href="css/plyr.css" rel="stylesheet">
-    <link id="style" href="css/dark.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
-    <link href="css/organizr.min.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
+    <link id="style" href="css/dark.css?v=<?php echo $GLOBALS['fileHash']; ?>" rel="stylesheet">
+    <link href="css/organizr.min.css?v=<?php echo $GLOBALS['fileHash']; ?>" rel="stylesheet">
 	<?php echo pluginFiles('css'); ?>
-    <link id="theme" href="css/themes/Organizr.css?v=<?php echo $GLOBALS['installedVersion']; ?>" rel="stylesheet">
+    <link id="theme" href="css/themes/Organizr.css?v=<?php echo $GLOBALS['fileHash']; ?>" rel="stylesheet">
     <style id="user-appearance"></style>
     <style id="custom-theme-css"></style>
     <style id="custom-css"></style>
@@ -286,8 +286,8 @@
 <script src="js/plyr.js"></script>
 <script src="js/simplebar.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
-<script src="js/functions.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
-<script src="js/custom.min.js?v=<?php echo $GLOBALS['installedVersion']; ?>"></script>
+<script src="js/functions.js?v=<?php echo $GLOBALS['fileHash']; ?>"></script>
+<script src="js/custom.min.js?v=<?php echo $GLOBALS['fileHash']; ?>"></script>
 <script id="custom-theme-javascript"></script>
 <script id="custom-javascript"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
