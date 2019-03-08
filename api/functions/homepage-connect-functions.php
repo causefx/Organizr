@@ -386,6 +386,7 @@ function resolvePlexItem($item)
 	$plexItem['uid'] = (string)$item['ratingKey'];
 	$plexItem['elapsed'] = isset($item['viewOffset']) && $item['viewOffset'] !== '0' ? (int)$item['viewOffset'] : null;
 	$plexItem['duration'] = isset($item['duration']) ? (int)$item['duration'] : (int)$item->Media['duration'];
+	$plexItem['addedAt'] = isset($item['addedAt']) ? (int)$item['addedAt'] : null;
 	$plexItem['watched'] = ($plexItem['elapsed'] && $plexItem['duration'] ? floor(($plexItem['elapsed'] / $plexItem['duration']) * 100) : 0);
 	$plexItem['transcoded'] = isset($item->TranscodeSession['progress']) ? floor((int)$item->TranscodeSession['progress'] - $plexItem['watched']) : '';
 	$plexItem['stream'] = isset($item->Media->Part->Stream['decision']) ? (string)$item->Media->Part->Stream['decision'] : '';
@@ -483,6 +484,7 @@ function plexConnect($action, $key = null)
 {
 	if ($GLOBALS['homepagePlexEnabled'] && !empty($GLOBALS['plexURL']) && !empty($GLOBALS['plexToken']) && !empty($GLOBALS['plexID'] && qualifyRequest($GLOBALS['homepagePlexAuth']))) {
 		$url = qualifyURL($GLOBALS['plexURL']);
+		$multipleURL = false;
 		$ignore = array();
 		$resolve = true;
 		switch ($action) {
@@ -494,7 +496,11 @@ function plexConnect($action, $key = null)
 				$resolve = false;
 				break;
 			case 'recent':
-				$url = $url . "/library/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&limit=" . $GLOBALS['homepageRecentLimit'];
+				//$url = $url . "/library/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&limit=" . $GLOBALS['homepageRecentLimit'];
+				$urls['movie'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $GLOBALS['homepageRecentLimit'] . "&type=1";
+				$urls['tv'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $GLOBALS['homepageRecentLimit'] . "&type=2";
+				$urls['music'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $GLOBALS['homepageRecentLimit'] . "&type=8";
+				$multipleURL = true;
 				break;
 			case 'metadata':
 				$url = $url . "/library/metadata/" . $key . "?X-Plex-Token=" . $GLOBALS['plexToken'];
@@ -511,18 +517,49 @@ function plexConnect($action, $key = null)
 				break;
 		}
 		try {
-			$options = (localURL($url)) ? array('verify' => false) : array();
-			$response = Requests::get($url, array(), $options);
-			libxml_use_internal_errors(true);
-			if ($response->success) {
-				$items = array();
-				$plex = simplexml_load_string($response->body);
-				foreach ($plex as $child) {
-					if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
-						$items[] = resolvePlexItem($child);
+			if (!$multipleURL) {
+				$options = (localURL($url)) ? array('verify' => false) : array();
+				$response = Requests::get($url, array(), $options);
+				libxml_use_internal_errors(true);
+				if ($response->success) {
+					$items = array();
+					$plex = simplexml_load_string($response->body);
+					foreach ($plex as $child) {
+						if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
+							$items[] = resolvePlexItem($child);
+						}
+					}
+					$api['content'] = ($resolve) ? $items : $plex;
+					$api['plexID'] = $GLOBALS['plexID'];
+					$api['showNames'] = true;
+					$api['group'] = '1';
+					return $api;
+				}
+			} else {
+				foreach ($urls as $k => $v) {
+					$options = (localURL($v)) ? array('verify' => false) : array();
+					$response = Requests::get($v, array(), $options);
+					libxml_use_internal_errors(true);
+					if ($response->success) {
+						$items = array();
+						$plex = simplexml_load_string($response->body);
+						foreach ($plex as $child) {
+							if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
+								$items[] = resolvePlexItem($child);
+							}
+						}
+						if (isset($api)) {
+							$api['content'] = array_merge($api['content'], ($resolve) ? $items : $plex);
+						} else {
+							$api['content'] = ($resolve) ? $items : $plex;
+						}
 					}
 				}
-				$api['content'] = ($resolve) ? $items : $plex;
+				if (isset($api['content'])) {
+					usort($api['content'], function ($a, $b) {
+						return $b['addedAt'] <=> $a['addedAt'];
+					});
+				}
 				$api['plexID'] = $GLOBALS['plexID'];
 				$api['showNames'] = true;
 				$api['group'] = '1';
@@ -1159,7 +1196,8 @@ function getCalendar()
 							'imagetypeFilter' => 'ical',
 							'className' => 'bg-calendar calendar-item bg-custom-calendar',
 							'start' => $startDate,
-							'end' => $endDate
+							'end' => $endDate,
+							'bgColor' => str_replace('text', 'bg', $extraClass),
 						);
 					}
 				}

@@ -1247,6 +1247,32 @@ span.fc-title {
     position: absolute;
     top: 20px;
 }
+.request-title-movie,
+.request-title-tv,
+.request-title-music {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    background: transparent;
+    width: 25px;
+    color: white;
+    padding: 1px 0px;
+    text-align: center;
+    font-size: 15px;
+    border-radius: 0px 0px 0px 0px;
+    opacity: 0;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+.item:hover .request-title-movie,
+.item:hover .request-title-tv,
+.item:hover .request-title-music {
+    opacity: 1;
+    top: 5px;
+    right: 5px;
+    -webkit-transition: all .4s ease;
+    transition: all .4s ease;
+}
 /*
 body,
 html {

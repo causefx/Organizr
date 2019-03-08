@@ -219,6 +219,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	                                        <div class="white-box bg-org">
 	                                            <h4 lang="en">Want to help translate?</h4>
 	                                            <p lang="en">Head on over to POEditor and help us translate Organizr into your language</p>
+	                                            <p lang="en">I will try and import new strings every Friday</p>
 	                                        </div>
 	                                    </a>
     								</div>

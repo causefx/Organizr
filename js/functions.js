@@ -199,6 +199,9 @@ function isNumberKey(evt) {
     return true;
 }
 function setTabInfo(tab,action,value){
+    if(tab == 'Organizr-Support'){
+        return false;
+    }
     if(tab !== null && action !== null && value !== null){
         switch(action){
             case 'active':
@@ -4103,6 +4106,7 @@ function buildRequestItem(array, extra=null){
 	$.each(array, function(i,v) {
 			if(extra == null){
                 var approveID = (v.type == 'tv') ? v.id : v.request_id;
+                var iconType = (v.type == 'tv') ? 'fa-tv ' : 'fa-film';
 				var badge = '';
 				var badge2 = '';
 				var bg = (v.background.includes('.')) ? v.background : 'plugins/images/cache/no-np.png';
@@ -4140,6 +4144,7 @@ function buildRequestItem(array, extra=null){
 						<div class="inside-request-div `+badge+`"></div>
 					</div>
 					<div class="hover-homepage-item"></div>
+					<span class="elip request-title-`+v.type+`"><i class="fa `+iconType+`"></i></span>
 					<span class="elip recent-title">`+v.title+user2+`</span>
 					<div id="request-`+v.id+`" class="white-popup mfp-with-anim mfp-hide">
 						<div class="col-md-8 col-md-offset-2">
@@ -5232,7 +5237,7 @@ function buildMetadata(array, source){
 	                <h2 class="m-b-0 font-medium pull-right text-right">
 						`+v.title+`<button type="button" class="btn bg-org btn-circle close-popup m-l-10"><i class="fa fa-times"></i> </button><br>
 						<small class="m-t-0 text-white">`+v.metadata.tagline+`</small><br>
-						<button class="btn waves-effect waves-light openTab bg-`+source+`" type="button" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> <i class="fa mdi mdi-`+source+` fa-2x"></i> </button>
+						<button class="btn waves-effect waves-light openTab bg-`+source+`" type="button" data-tab-name="`+cleanClass(v.tabName)+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> <i class="fa mdi mdi-`+source+` fa-2x"></i> </button>
 						`+buildYoutubeLink(v.title+' '+v.metadata.year+' '+v.type)+`
 					</h2>
 	            </div>

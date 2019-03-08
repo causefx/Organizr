@@ -373,18 +373,29 @@ function qualifyRequest($accessLevelNeeded)
 function isApprovedRequest($method)
 {
 	$requesterToken = isset(getallheaders()['Token']) ? getallheaders()['Token'] : (isset($_GET['apikey']) ? $_GET['apikey'] : false);
-	$requesterFormKeyHeader = isset(getallheaders()['Formkey']) ? getallheaders()['Formkey'] : false;
+	if (isset($_POST['data']['formKey'])) {
+		$formKey = $_POST['data']['formKey'];
+	} elseif (isset(getallheaders()['Formkey'])) {
+		$formKey = getallheaders()['Formkey'];
+	} elseif (isset(getallheaders()['formkey'])) {
+		$formKey = getallheaders()['formkey'];
+	} elseif (isset(getallheaders()['formKey'])) {
+		$formKey = getallheaders()['formKey'];
+	} elseif (isset(getallheaders()['FormKey'])) {
+		$formKey = getallheaders()['FormKey'];
+	} else {
+		$formKey = false;
+	}
 	// Check token or API key
 	// If API key, return 0 for admin
 	if (strlen($requesterToken) == 20 && $requesterToken == $GLOBALS['organizrAPI']) {
 		//DO API CHECK
 		return true;
 	} elseif ($method == 'POST') {
-		$formKey = (isset($_POST['data']['formKey'])) ? $_POST['data']['formKey'] : '';
-		if (password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $formKey)) {
+		if (checkFormKey($formKey)) {
 			return true;
-		} elseif (($requesterFormKeyHeader) && password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $requesterFormKeyHeader)) {
-			return true;
+		} else {
+			writeLog('error', 'API ERROR: Unable to authenticate Form Key: ' . $formKey, $GLOBALS['organizrUser']['username']);
 		}
 	} else {
 		return true;

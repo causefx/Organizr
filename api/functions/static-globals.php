@@ -1,7 +1,7 @@
 <?php
 // ===================================
 // Organizr Version
-$GLOBALS['installedVersion'] = '2.0.32';
+$GLOBALS['installedVersion'] = '2.0.49';
 // ===================================
 // Quick php Version check
 $GLOBALS['minimumPHP'] = '7.1.3';
@@ -13,6 +13,12 @@ $GLOBALS['userConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config
 $GLOBALS['defaultConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';
 $GLOBALS['currentTime'] = gmdate("Y-m-d\TH:i:s\Z");
 $GLOBALS['docker'] = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Docker.txt')) ? true : false;
+if ($GLOBALS['docker']) {
+	$getCommit = file_get_contents(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Github.txt');
+	$getCommit = (empty($getCommit)) ? 'n/a' : $getCommit;
+	$GLOBALS['quickCommit'] = $getCommit;
+}
+$GLOBALS['fileHash'] = (isset($GLOBALS['quickCommit'])) ? $GLOBALS['quickCommit'] : $GLOBALS['installedVersion'];
 $GLOBALS['quickConfig'] = (file_exists($GLOBALS['userConfigPath'])) ? loadConfigOnce($GLOBALS['userConfigPath']) : null;
 // Quick function for plugins
 function pluginFiles($type)
@@ -21,12 +27,12 @@ function pluginFiles($type)
 	switch ($type) {
 		case 'js':
 			foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . "*.js") as $filename) {
-				$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $GLOBALS['installedVersion'] . '" defer="true"></script>';
+				$files .= '<script src="api/plugins/js/' . basename($filename) . '?v=' . $GLOBALS['fileHash'] . '" defer="true"></script>';
 			}
 			break;
 		case 'css':
 			foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . "*.js") as $filename) {
-				$files .= '<link href="api/plugins/css/' . basename($filename) . $GLOBALS['installedVersion'] . '" rel="stylesheet">';
+				$files .= '<link href="api/plugins/css/' . basename($filename) . $GLOBALS['fileHash'] . '" rel="stylesheet">';
 			}
 			break;
 		default:
@@ -47,14 +53,19 @@ function loadConfigOnce($path = null)
 	}
 }
 
-function formKey()
+function formKey($script = true)
 {
-	if (isset($GLOBALS['quickConfig']['organizrAPI'])) {
-		if ($GLOBALS['quickConfig']['organizrAPI'] !== '') {
+	if (isset($GLOBALS['quickConfig']['organizrHash'])) {
+		if ($GLOBALS['quickConfig']['organizrHash'] !== '') {
 			$hash = password_hash(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), PASSWORD_BCRYPT);
-			return '<script>local("s","formKey","' . $hash . '");</script>';
+			return ($script) ? '<script>local("s","formKey","' . $hash . '");</script>' : $hash;
 		}
 	}
+}
+
+function checkFormKey($formKey = '')
+{
+	return password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $formKey);
 }
 
 function favIcons()

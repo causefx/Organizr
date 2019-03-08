@@ -152,5 +152,12 @@
     "new": "Auto Close and Auto reload feature (#1071)",
     "fixed": "Undefined index dbLocation (#1093)|Disable show update to new version if on docker|Ombi sso only works with full email as user id (#1047)|Clear ajax calls if homepage is closed|Hardcoded news and sponsors branch",
     "notes": "Please report bugs in GitHub issues page"
+  },
+  "2.0.49": {
+    "date": "2019-03-08 19:00",
+    "title": "Plex Recent is back",
+    "new": "Requests now show type of request on hover",
+    "fixed": "Plex homepage items don't redirect to Plex when the tab name has special characters (#1096)|Work around for Plex recentlyAdded api call (#1069)|FormKey issues|Calendar misc text issue",
+    "notes": "Updated language translations|Please report bugs in GitHub issues page"
   }
 }
