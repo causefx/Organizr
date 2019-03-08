@@ -381,10 +381,12 @@ function isApprovedRequest($method)
 		return true;
 	} elseif ($method == 'POST') {
 		$formKey = (isset($_POST['data']['formKey'])) ? $_POST['data']['formKey'] : '';
-		if (password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $formKey)) {
+		if (checkFormKey($formKey)) {
 			return true;
-		} elseif (($requesterFormKeyHeader) && password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $requesterFormKeyHeader)) {
+		} elseif (($requesterFormKeyHeader) && checkFormKey($requesterFormKeyHeader)) {
 			return true;
+		} else {
+			writeLog('error', 'API ERROR: Unable to authenticate Form Key for this users action', $GLOBALS['organizrUser']['username']);
 		}
 	} else {
 		return true;

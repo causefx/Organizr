@@ -53,14 +53,19 @@ function loadConfigOnce($path = null)
 	}
 }
 
-function formKey()
+function formKey($script = true)
 {
-	if (isset($GLOBALS['quickConfig']['organizrAPI'])) {
-		if ($GLOBALS['quickConfig']['organizrAPI'] !== '') {
+	if (isset($GLOBALS['quickConfig']['organizrHash'])) {
+		if ($GLOBALS['quickConfig']['organizrHash'] !== '') {
 			$hash = password_hash(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), PASSWORD_BCRYPT);
-			return '<script>local("s","formKey","' . $hash . '");</script>';
+			return ($script) ? '<script>local("s","formKey","' . $hash . '");</script>' : $hash;
 		}
 	}
+}
+
+function checkFormKey($formKey = '')
+{
+	return password_verify(substr($GLOBALS['quickConfig']['organizrHash'], 2, 10), $formKey);
 }
 
 function favIcons()
