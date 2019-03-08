@@ -30,6 +30,9 @@ if (isset($GLOBALS['dbLocation'])) {
 		$getBranch = file_get_contents(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'Docker.txt');
 		$getBranch = (empty($getBranch)) ? 'v2-master' : trim($getBranch);
 		$GLOBALS['branch'] = $getBranch;
+		if (!isset($GLOBALS['commit']) || $GLOBALS['commit'] == 'n/a') {
+			$GLOBALS['commit'] = $GLOBALS['quickCommit'];
+		}
 	}
 	//Upgrade Check
 	upgradeCheck();

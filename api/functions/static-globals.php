@@ -16,9 +16,9 @@ $GLOBALS['docker'] = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'D
 if ($GLOBALS['docker']) {
 	$getCommit = file_get_contents(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Github.txt');
 	$getCommit = (empty($getCommit)) ? 'n/a' : $getCommit;
-	$GLOBALS['commit'] = $getCommit;
+	$GLOBALS['quickCommit'] = $getCommit;
 }
-$GLOBALS['fileHash'] = (isset($GLOBALS['commit'])) ? $GLOBALS['commit'] : $GLOBALS['installedVersion'];
+$GLOBALS['fileHash'] = (isset($GLOBALS['quickCommit'])) ? $GLOBALS['quickCommit'] : $GLOBALS['installedVersion'];
 $GLOBALS['quickConfig'] = (file_exists($GLOBALS['userConfigPath'])) ? loadConfigOnce($GLOBALS['userConfigPath']) : null;
 // Quick function for plugins
 function pluginFiles($type)
