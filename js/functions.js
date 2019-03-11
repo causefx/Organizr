@@ -3388,7 +3388,8 @@ function organizrAPI(type,path,data=null){
 				url:path,
 				method:"GET",
 				beforeSend: function(request) {
-					request.setRequestHeader("Token", activeInfo.token);
+                    request.setRequestHeader("Token", activeInfo.token);
+                    request.setRequestHeader("formKey", local('g','formKey'));
 				},
 				timeout: timeout,
 			});
@@ -3402,6 +3403,7 @@ function organizrAPI(type,path,data=null){
 				method:"POST",
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
+                    request.setRequestHeader("formKey", local('g','formKey'));
 				},
 				data:{
 					data: data,
@@ -6560,6 +6562,17 @@ function closeOrgError(){
     $('#main-org-error-container').removeClass('show');
     $('#main-org-error').html('');
 }
+function isJSON(data) {
+    if (typeof data != 'string'){
+        data = JSON.stringify(data);
+    }
+    try {
+        JSON.parse(data);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
@@ -6633,5 +6646,6 @@ function launch(){
 			default:
 				console.error('Organizr Function: Action not set or defined');
 		}
+		console.log('Organizr DOM Fully loaded');
 	});
 }

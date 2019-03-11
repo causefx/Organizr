@@ -15,8 +15,17 @@ if ($function === false) {
 	$result['statusText'] = "No API Path Supplied";
 	exit(json_encode($result));
 }
-if ($function !== 'v1_auth' && $function !== 'v1_wizard_config' && $function !== 'v1_login' && $function !== 'v1_wizard_path') {
-	if (isApprovedRequest($method, $_POST) === false) {
+$approvedFunctionsBypass = array(
+	'v1_upgrade',
+	'v1_update',
+	'v1_force',
+	'v1_auth',
+	'v1_wizard_config',
+	'v1_login',
+	'v1_wizard_path',
+);
+if (!in_array($function, $approvedFunctionsBypass)) {
+	if (isApprovedRequest($method) === false) {
 		$result['status'] = "error";
 		$result['statusText'] = "Not Authorized";
 		writeLog('success', 'Killed Attack From [' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'No Referer') . ']', $GLOBALS['organizrUser']['username']);
