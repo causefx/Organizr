@@ -1273,6 +1273,16 @@ span.fc-title {
     -webkit-transition: all .4s ease;
     transition: all .4s ease;
 }
+/* Fix for bootstrap screen width bug */
+@media (min-width: 992px) and (max-width: 1200px) {
+    .col-lg-12 {
+        float: left;
+        width: 100%;
+    }
+    .col-md-12 {
+        float: none;
+    }
+}
 /*
 body,
 html {
