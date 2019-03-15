@@ -802,15 +802,17 @@ function closeCurrentTab(){
 	}
 }
 function tabActions(event,name, type){
-    $('.splash-screen').removeClass('in').addClass('hidden');
-	if(event.ctrlKey){
+	if(event.ctrlKey && !event.shiftKey && !event.altKey){
 		popTab(cleanClass(name), type);
-	}else if(event.altKey){
+	}else if(event.altKey && !event.shiftKey && !event.ctrlKey){
         closeTab(name);
-	}else if(event.shiftKey){
+	}else if(event.shiftKey && !event.ctrlKey && !event.altKey){
 		reloadTab(cleanClass(name), type);
-	}else{
+	}else if(event.ctrlKey && event.shiftKey && !event.altKey){
+        switchTab(cleanClass(name), type);
+    }else{
 		switchTab(cleanClass(name), type);
+        $('.splash-screen').removeClass('in').addClass('hidden');
 	}
 }
 function reverseObject(object) {
