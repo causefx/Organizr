@@ -159,5 +159,12 @@
     "new": "Requests now show type of request on hover",
     "fixed": "Plex homepage items don't redirect to Plex when the tab name has special characters (#1096)|Work around for Plex recentlyAdded api call (#1069)|FormKey issues|Calendar misc text issue",
     "notes": "Updated language translations|Please report bugs in GitHub issues page"
+  },
+  "2.0.70": {
+    "date": "2019-03-15 23:40",
+    "title": "Weekly Update",
+    "new": "Radarr 4k Image|SRI Hash for External JS (#1055)|Limit for Ombi items (#1107)|CTRL + SHIFT on splash page to not close it after click",
+    "fixed": "Fix for bootstrap screen width bug @leram84|Ombi on homepage causes site to hang (#1107)|Fix SSO if user is LDAP user|Auto reload on internal tabs|Request button border-radius",
+    "notes": "Updated language translations|Please report bugs in GitHub issues page"
   }
 }
