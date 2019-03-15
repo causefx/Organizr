@@ -905,6 +905,22 @@ function getSSO()
 				'value' => $GLOBALS['ssoPlex']
 			)
 		),
+		'Tautulli' => array(
+			array(
+				'type' => 'input',
+				'name' => 'tautulliURL',
+				'label' => 'Tautulli URL',
+				'value' => $GLOBALS['tautulliURL'],
+				'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+				'placeholder' => 'http(s)://hostname:port'
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'ssoTautulli',
+				'label' => 'Enable',
+				'value' => $GLOBALS['ssoTautulli']
+			)
+		),
 		'Ombi' => array(
 			array(
 				'type' => 'input',
@@ -925,22 +941,6 @@ function getSSO()
 				'name' => 'ssoOmbi',
 				'label' => 'Enable',
 				'value' => $GLOBALS['ssoOmbi']
-			)
-		),
-		'Tautulli' => array(
-			array(
-				'type' => 'input',
-				'name' => 'tautulliURL',
-				'label' => 'Tautulli URL',
-				'value' => $GLOBALS['tautulliURL'],
-				'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-				'placeholder' => 'http(s)://hostname:port'
-			),
-			array(
-				'type' => 'switch',
-				'name' => 'ssoTautulli',
-				'label' => 'Enable',
-				'value' => $GLOBALS['ssoTautulli']
 			)
 		)
 	);
