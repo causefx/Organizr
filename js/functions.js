@@ -675,7 +675,10 @@ function reloadTab(tab, type){
 		case 0:
 		case '0':
 		case 'internal':
-
+		    var dataURL = $('.frame-'+cleanClass(tab)).attr('data-url');
+		    var dataName = $('.frame-'+cleanClass(tab)).attr('data-name');
+            $('#frame-'+cleanClass(tab)).html('');
+            loadInternal(dataURL,dataName);
 			break;
 		case 1:
 		case '1':
@@ -799,15 +802,17 @@ function closeCurrentTab(){
 	}
 }
 function tabActions(event,name, type){
-    $('.splash-screen').removeClass('in').addClass('hidden');
-	if(event.ctrlKey){
+	if(event.ctrlKey && !event.shiftKey && !event.altKey){
 		popTab(cleanClass(name), type);
-	}else if(event.altKey){
+	}else if(event.altKey && !event.shiftKey && !event.ctrlKey){
         closeTab(name);
-	}else if(event.shiftKey){
+	}else if(event.shiftKey && !event.ctrlKey && !event.altKey){
 		reloadTab(cleanClass(name), type);
-	}else{
+	}else if(event.ctrlKey && event.shiftKey && !event.altKey){
+        switchTab(cleanClass(name), type);
+    }else{
 		switchTab(cleanClass(name), type);
+        $('.splash-screen').removeClass('in').addClass('hidden');
 	}
 }
 function reverseObject(object) {
@@ -3388,7 +3393,8 @@ function organizrAPI(type,path,data=null){
 				url:path,
 				method:"GET",
 				beforeSend: function(request) {
-					request.setRequestHeader("Token", activeInfo.token);
+                    request.setRequestHeader("Token", activeInfo.token);
+                    request.setRequestHeader("formKey", local('g','formKey'));
 				},
 				timeout: timeout,
 			});
@@ -3402,6 +3408,7 @@ function organizrAPI(type,path,data=null){
 				method:"POST",
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
+                    request.setRequestHeader("formKey", local('g','formKey'));
 				},
 				data:{
 					data: data,
@@ -6560,6 +6567,17 @@ function closeOrgError(){
     $('#main-org-error-container').removeClass('show');
     $('#main-org-error').html('');
 }
+function isJSON(data) {
+    if (typeof data != 'string'){
+        data = JSON.stringify(data);
+    }
+    try {
+        JSON.parse(data);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
@@ -6633,5 +6651,6 @@ function launch(){
 			default:
 				console.error('Organizr Function: Action not set or defined');
 		}
+		console.log('Organizr DOM Fully loaded');
 	});
 }

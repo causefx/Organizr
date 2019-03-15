@@ -127,7 +127,7 @@ function login($array)
 				if (createToken($result['username'], $result['email'], $result['image'], $result['group'], $result['group_id'], $GLOBALS['organizrHash'], $days)) {
 					writeLoginLog($username, 'success');
 					writeLog('success', 'Login Function - A User has logged in', $username);
-					$ssoUser = (empty($result['email'])) ? $result['username'] : $result['email'];
+					$ssoUser = (empty($result['email'])) ? $result['username'] : (strpos($result['email'], 'placeholder') !== false) ? $result['username'] : $result['email'];
 					ssoCheck($ssoUser, $password, $token); //need to work on this
 					return true;
 				} else {

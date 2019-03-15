@@ -210,5 +210,6 @@ return array(
 	'rememberMe' => true,
 	'plexStrictFriends' => true,
 	'debugAreaAuth' => '1',
-	'commit' => 'n/a'
+	'commit' => 'n/a',
+	'ombiLimit' => '50'
 );

@@ -2009,6 +2009,12 @@ function getHomepageList()
 						'value' => $GLOBALS['ombiLimitUser']
 					),
 					array(
+						'type' => 'number',
+						'name' => 'ombiLimit',
+						'label' => 'Item Limit',
+						'value' => $GLOBALS['ombiLimit'],
+					),
+					array(
 						'type' => 'select',
 						'name' => 'ombiRefresh',
 						'label' => 'Refresh Seconds',

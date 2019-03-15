@@ -10,6 +10,7 @@ foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR 
 // Set Root Directory
 $GLOBALS['root'] = dirname(__DIR__, 1);
 $GLOBALS['uuid'] = '';
+$GLOBALS['rememberMeDays'] = '99';
 // Add in default and custom settings
 configLazy();
 // Define Logs and files after db location is set
@@ -37,6 +38,8 @@ if (isset($GLOBALS['dbLocation'])) {
 	//Upgrade Check
 	upgradeCheck();
 }
+// Reset RememberMe if zero
+$GLOBALS['rememberMeDays'] = ($GLOBALS['rememberMeDays'] == '0') ? '99' : $GLOBALS['rememberMeDays'];
 // Cookie name
 $GLOBALS['cookieName'] = $GLOBALS['uuid'] !== '' ? 'organizr_token_' . $GLOBALS['uuid'] : 'organizr_token_temp';
 // Validate Token if set and set guest if not - sets GLOBALS

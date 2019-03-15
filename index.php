@@ -41,8 +41,12 @@
     <style id="custom-theme-css"></style>
     <style id="custom-css"></style>
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"
+            integrity="sha384-0s5Pv64cNZJieYFkXYOTId2HMA2Lfb6q2nAcx2n0RTLUnCAoTTsS0nKEO27XyKcY"
+            crossorigin="anonymous"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"
+            integrity="sha384-ZoaMbDF+4LeFxg6WdScQ9nnR1QC2MIRxA1O9KWEXQwns1G8UNyIEZIQidzb0T1fo"
+            crossorigin="anonymous"></script>
     <![endif]-->
 </head>
 
@@ -290,7 +294,9 @@
 <script src="js/custom.min.js?v=<?php echo $GLOBALS['fileHash']; ?>"></script>
 <script id="custom-theme-javascript"></script>
 <script id="custom-javascript"></script>
-<script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+<script src="https://js.pusher.com/4.1/pusher.min.js"
+        integrity="sha384-e9MoFh6Cw/uluf+NZ6MJwfJ1Dm7UOvJf9oTBxxCYDyStJeeAF0q53ztnEbLLDSQP"
+        crossorigin="anonymous"></script>
 <?php echo pluginFiles('js');
 echo formKey(); ?>
 </body>

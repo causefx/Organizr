@@ -1259,7 +1259,6 @@ span.fc-title {
     padding: 1px 0px;
     text-align: center;
     font-size: 15px;
-    border-radius: 0px 0px 0px 0px;
     opacity: 0;
     -webkit-transition: all .4s ease-in-out;
     transition: all .4s ease-in-out;
@@ -1272,6 +1271,20 @@ span.fc-title {
     right: 5px;
     -webkit-transition: all .4s ease;
     transition: all .4s ease;
+}
+/* Fix for bootstrap screen width bug */
+@media (min-width: 992px) and (max-width: 1200px) {
+    .col-lg-12 {
+        float: left;
+        width: 100%;
+    }
+    .col-md-12 {
+        float: none;
+    }
+}
+#newRequestButton {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 /*
 body,

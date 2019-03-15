@@ -49,7 +49,7 @@ function homepageConnect($array)
 			return getCalendar();
 			break;
 		case 'getRequests':
-			return getOmbiRequests();
+			return getOmbiRequests($GLOBALS['ombiLimit']);
 			break;
 		default:
 			# code...
@@ -1971,7 +1971,7 @@ function ombiAction($id, $action, $type, $fullArray = null)
 	return isset($success['ok']) ? $success : false;
 }
 
-function getOmbiRequests($type = "both")
+function getOmbiRequests($type = "both", $limit = 50)
 {
 	if ($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest($GLOBALS['homepageOmbiAuth'])) {
 		$url = qualifyURL($GLOBALS['ombiURL']);
@@ -2066,7 +2066,7 @@ function getOmbiRequests($type = "both")
 			writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		};
 	}
-	$api['content'] = isset($requests) ? $requests : false;
+	$api['content'] = isset($requests) ? array_slice($requests, 0, $limit) : false;
 	return $api;
 }
 
