@@ -675,7 +675,10 @@ function reloadTab(tab, type){
 		case 0:
 		case '0':
 		case 'internal':
-
+		    var dataURL = $('.frame-'+cleanClass(tab)).attr('data-url');
+		    var dataName = $('.frame-'+cleanClass(tab)).attr('data-name');
+            $('#frame-'+cleanClass(tab)).html('');
+            loadInternal(dataURL,dataName);
 			break;
 		case 1:
 		case '1':
