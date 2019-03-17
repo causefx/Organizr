@@ -392,7 +392,7 @@ function qualifyURL($url, $return = false)
 		$url = $protocol . getServer() . $url;
 	}
 	// Get Digest
-	$digest = parse_url($url);
+	$digest = parse_url(preg_replace('/\s+/', '', $url));
 	// http/https
 	if (!isset($digest['scheme'])) {
 		if (isset($digest['port']) && in_array($digest['port'], array(80, 8080, 8096, 32400, 7878, 8989, 8182, 8081, 6789))) {
