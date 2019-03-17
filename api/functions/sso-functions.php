@@ -39,6 +39,7 @@ function getOmbiToken($username, $password, $oAuthToken = null)
 		);
 		$endpoint = ($oAuthToken) ? '/api/v1/Token/plextoken' : '/api/v1/Token';
 		$options = (localURL($url)) ? array('verify' => false) : array();
+		$url = rtrim($url, '/');
 		$response = Requests::post($url . $endpoint, $headers, json_encode($data), $options);
 		if ($response->success) {
 			$token = json_decode($response->body, true)['access_token'];
@@ -72,6 +73,7 @@ function getTautulliToken($username, $password, $plexToken = null)
 					"remember_me" => 1,
 				);
 				$options = (localURL($url)) ? array('verify' => false) : array();
+				$url = rtrim($url, '/');
 				$response = Requests::post($url . '/auth/signin', $headers, $data, $options);
 				if ($response->success) {
 					$token[$key]['token'] = json_decode($response->body, true)['token'];
