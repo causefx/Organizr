@@ -1687,8 +1687,8 @@ function buildImageManagerViewItem(array){
 						<div class="el-card-avatar el-overlay-1"> <img class="lazyload tabImages" data-src="`+v+`" width="22" height="22">
 							<div class="el-overlay">
 								<ul class="el-info">
-									<li><a class="btn default btn-outline clipboard p-5" data-clipboard-text="`+clipboardText+`" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
-									<li><a class="btn default btn-outline deleteImage p-5" href="javascript:void(0);" data-image-path="`+v+`" data-image-name="`+name[0]+`"><i class="icon-trash"></i></a></li>
+									<li><a class="btn default btn-outline clipboard p-a-5" data-clipboard-text="`+clipboardText+`" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
+									<li><a class="btn default btn-outline deleteImage p-a-5" href="javascript:void(0);" data-image-path="`+v+`" data-image-name="`+name[0]+`"><i class="icon-trash"></i></a></li>
 								</ul>
 							</div>
 						</div>
@@ -4553,7 +4553,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 	                <div class="el-card-item p-b-0">
 	                    <div class="el-card-avatar el-overlay-1 m-b-5 preloader-`+v.id+`"> <img class="lazyload resultImages" data-src="`+bg+`">
 	                        <div class="el-overlay">
-								<span class="text-info p-5 font-normal">`+comment+`</span>
+								<span class="text-info p-a-5 font-normal">`+comment+`</span>
 	                            <ul class="el-info">
 	                                <li><a class="btn default btn-outline" href="javascript:void(0);" onclick="processRequest('`+v.id+`','`+media_type+`');"><i class="icon-link"></i>&nbsp; <span lang="en">Request</span></a></li>
 	                                <li><a class="btn default btn-outline" href="https://www.themoviedb.org/`+media_type+`/`+v.id+`" target="_blank"><i class="icon-info"></i></a></li>
@@ -5225,7 +5225,7 @@ function buildMetadata(array, source){
 		var hasGenre = (typeof v.metadata.genres !== 'string') ? true : false;
 		if(hasActor){
 			$.each(v.metadata.actors, function(i,v) {
-				actors += '<div class="item lazyload recent-poster" data-src="'+(v.thumb.replace("http://", "https://"))+'" alt="'+v.name+'" ><span class="elip recent-title p-5">'+v.name+'<br><small class="font-light">'+v.role+'</small></span></div>';
+				actors += '<div class="item lazyload recent-poster" data-src="'+(v.thumb.replace("http://", "https://"))+'" alt="'+v.name+'" ><span class="elip recent-title p-a-5">'+v.name+'<br><small class="font-light">'+v.role+'</small></span></div>';
 			});
 		}
 		if(hasGenre){
@@ -5373,7 +5373,7 @@ function buildHealthChecksItem(array){
                 var lastPing = moment.utc(v.last_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
                 break;
             case 'down':
-                var statusColor = 'danger';
+                var statusColor = 'danger animated-3 loop-animation flash';
                 var statusIcon = 'ti-unlink text-danger';
                 var nextPing = 'Service Down';
                 var lastPing = moment.utc(v.last_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
@@ -5389,6 +5389,12 @@ function buildHealthChecksItem(array){
                 var statusIcon = 'ti-alert text-warning';
                 var nextPing = moment.utc(v.next_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
                 var lastPing = 'Missed';
+                break;
+            case 'paused':
+                var statusColor = 'primary';
+                var statusIcon = 'ti-control-pause text-primary';
+                var nextPing = 'Paused';
+                var lastPing = moment.utc(v.last_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
                 break;
             default:
                 var statusColor = 'warning';
