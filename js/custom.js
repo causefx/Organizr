@@ -1893,3 +1893,8 @@ $(document).on("keyup", "#authBackendHostPrefix-input, #authBackendHostSuffix-in
     var newDN = $('#authBackendHostPrefix-input').val() + 'TestAcct' + $('#authBackendHostSuffix-input').val();
     $('#accountDN').html(newDN);
 });
+
+// homepage healthchecks
+$(document).on('click', ".good-health-checks", function(){
+    homepageHealthChecks();
+});

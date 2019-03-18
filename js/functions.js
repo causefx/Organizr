@@ -5330,7 +5330,7 @@ function buildHealthChecks(array){
 	<div id="allHealthChecks">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left"><span lang="en">Health Checks</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-health-checks">`+checks+`</span></h4>
+		        <h4 class="pull-left"><span lang="en">Health Checks</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-health-checks mouse">`+checks+`</span></h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -5367,22 +5367,28 @@ function buildHealthChecksItem(array){
         v.name = (v.name) ? v.name : 'New Item';
         switch(v.status){
             case 'up':
-                var statusColor = 'info';
-                var statusIcon = 'icon-check text-info';
+                var statusColor = 'success';
+                var statusIcon = 'ti-link text-success';
                 var nextPing = moment.utc(v.next_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
                 var lastPing = moment.utc(v.last_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
                 break;
             case 'down':
                 var statusColor = 'danger';
-                var statusIcon = 'icon-close taxt-danger';
-                var nextPing = moment.utc(v.next_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
+                var statusIcon = 'ti-unlink text-danger';
+                var nextPing = 'Service Down';
                 var lastPing = moment.utc(v.last_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
                 break;
             case 'new':
-                var statusColor = 'warning';
-                var statusIcon = 'ti-timer text-warning';
+                var statusColor = 'info';
+                var statusIcon = 'ti-time text-info';
                 var nextPing = 'Waiting...';
                 var lastPing = 'n/a';
+                break;
+            case 'grace':
+                var statusColor = 'warning';
+                var statusIcon = 'ti-alert text-warning';
+                var nextPing = moment.utc(v.next_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
+                var lastPing = 'Missed';
                 break;
             default:
                 var statusColor = 'warning';
@@ -5393,7 +5399,7 @@ function buildHealthChecksItem(array){
         checks += `
             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
                 <div class="card bg-inverse text-white">
-                    <div class="card-body bg-org-alt">
+                    <div class="card-body bg-org-alt pt-1 pb-1">
                         <div class="d-flex no-block align-items-center">
                             <div class="left-health bg-`+statusColor+`"></div>
                             <div class="ml-4 mt-2 w-100">
