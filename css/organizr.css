@@ -1290,6 +1290,12 @@ span.fc-title {
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
 }
+.left-health {
+    width: 20px;
+    height: 100%;
+    position: absolute;
+    left: 0;
+}
 /*
 body,
 html {

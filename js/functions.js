@@ -5326,7 +5326,6 @@ function buildCalendarMetadata(array){
 }
 function buildHealthChecks(array){
     var checks = (typeof array.content.checks !== 'undefined') ? array.content.checks.length : false;
-    console.log(checks);
     return (checks) ? `
 	<div id="allHealthChecks">
 		<div class="el-element-overlay row">
@@ -5346,7 +5345,6 @@ function buildHealthChecks(array){
 function healthCheckIcon(tags){
     var allTags = tags.split(' ');
     var useIcon = '';
-    console.log(allTags);
     $.each(allTags, function(i,v) {
         //check for image
         var file =  v.substring(v.lastIndexOf('.')+1, v.length).toLowerCase() || v.toLowerCase();
@@ -5364,62 +5362,46 @@ function healthCheckIcon(tags){
 }
 function buildHealthChecksItem(array){
     var checks = '';
-    console.log(array);
     $.each(array, function(i,v) {
         var hasIcon = healthCheckIcon(v.tags);
         v.name = (v.name) ? v.name : 'New Item';
         switch(v.status){
             case 'up':
                 var statusColor = 'info';
-                var statusIcon = 'ti-cloud-up';
+                var statusIcon = 'icon-check text-info';
                 var nextPing = moment.utc(v.next_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
                 var lastPing = moment.utc(v.last_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
                 break;
             case 'down':
                 var statusColor = 'danger';
-                var statusIcon = 'ti-cloud-down';
+                var statusIcon = 'icon-close taxt-danger';
                 var nextPing = moment.utc(v.next_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
                 var lastPing = moment.utc(v.last_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
                 break;
             case 'new':
                 var statusColor = 'warning';
-                var statusIcon = 'ti-timer';
+                var statusIcon = 'ti-timer text-warning';
                 var nextPing = 'Waiting...';
                 var lastPing = 'n/a';
                 break;
             default:
                 var statusColor = 'warning';
-                var statusIcon = 'ti-timer';
+                var statusIcon = 'ti-timer text-warning';
                 var nextPing = 'Waiting...';
                 var lastPing = 'n/a';
         }
         checks += `
             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                <div class="card">
-                        <div class="col-12">
-                            <div class="bg-`+statusColor+` p-2">
-                                <div class="text-center text-white display-6">
-                                    <i class="`+statusIcon+`"></i>
-                                </div>
-                            </div>
-                            <div class="card-body bg-org-alt">
-                                <div class="d-flex no-block align-items-center">
-                                    <div>
-                                        <h5 class="font-medium">`+lastPing+`</h5>
-                                        <h5 class="pull-left mb-0" lang="en">Last</h5>
-                                    </div>
-                                    <div class="ml-auto">
-                                        <h5 class="font-medium">`+nextPing+`</h5>
-                                        <h5 class="pull-right mb-0" lang="en">Next</h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-info p-2">
-                                <div class="text-center text-white display-6">
-                                    `+hasIcon+`<span>`+v.name+`</span>
-                                </div>
+                <div class="card bg-inverse text-white">
+                    <div class="card-body bg-org-alt">
+                        <div class="d-flex no-block align-items-center">
+                            <div class="left-health bg-`+statusColor+`"></div>
+                            <div class="ml-4 mt-2 w-100">
+                                <i class="`+statusIcon+` font-20 pull-right"></i>
+                                <h3 class="d-flex no-block align-items-center m-0">`+hasIcon+v.name+`</h3><h5>Last: `+lastPing+`</h5><h5>Next: `+nextPing+`</h5>
                             </div>
                         </div>
+                    </div>
                 </div>
             </div>
         `
