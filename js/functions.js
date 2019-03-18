@@ -5320,6 +5320,130 @@ function buildCalendarMetadata(array){
 		`;
 	return metadata;
 }
+function buildHealthChecks(array){
+    var checks = (typeof array.content.checks !== 'undefined') ? array.content.checks.length : false;
+    console.log(checks);
+    return (checks) ? `
+	<div id="allHealthChecks">
+		<div class="el-element-overlay row">
+		    <div class="col-md-12">
+		        <h4 class="pull-left"><span lang="en">Health Checks</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-health-checks">`+checks+`</span></h4>
+		        <hr class="hidden-xs">
+		    </div>
+			<div class="clearfix"></div>
+		    <!-- .cards -->
+			`+buildHealthChecksItem(array.content.checks)+`
+		    <!-- /.cards-->
+		</div>
+	</div>
+	<div class="clearfix"></div>
+	` : '';
+}
+function healthCheckIcon(tags){
+    var allTags = tags.split(' ');
+    var useIcon = '';
+    console.log(allTags);
+    $.each(allTags, function(i,v) {
+        //check for image
+        var file =  v.substring(v.lastIndexOf('.')+1, v.length).toLowerCase() || v.toLowerCase();
+        switch (file) {
+            case 'png':
+            case 'jpg':
+            case 'jpeg':
+            case 'gif':
+                useIcon = '<img class="lazyload loginTitle" data-src="'+v+'">&nbsp;';
+                break;
+            default:
+        }
+    });
+    return useIcon;
+}
+function buildHealthChecksItem(array){
+    var checks = '';
+    console.log(array);
+    $.each(array, function(i,v) {
+        var hasIcon = healthCheckIcon(v.tags);
+        v.name = (v.name) ? v.name : 'New Item';
+        switch(v.status){
+            case 'up':
+                var statusColor = 'info';
+                var statusIcon = 'ti-cloud-up';
+                var nextPing = moment.utc(v.next_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
+                var lastPing = moment.utc(v.last_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
+                break;
+            case 'down':
+                var statusColor = 'danger';
+                var statusIcon = 'ti-cloud-down';
+                var nextPing = moment.utc(v.next_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
+                var lastPing = moment.utc(v.last_ping, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
+                break;
+            case 'new':
+                var statusColor = 'warning';
+                var statusIcon = 'ti-timer';
+                var nextPing = 'Waiting...';
+                var lastPing = 'n/a';
+                break;
+            default:
+                var statusColor = 'warning';
+                var statusIcon = 'ti-timer';
+                var nextPing = 'Waiting...';
+                var lastPing = 'n/a';
+        }
+        checks += `
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="card">
+                        <div class="col-12">
+                            <div class="bg-`+statusColor+` p-2">
+                                <div class="text-center text-white display-6">
+                                    <i class="`+statusIcon+`"></i>
+                                </div>
+                            </div>
+                            <div class="card-body bg-org-alt">
+                                <div class="d-flex no-block align-items-center">
+                                    <div>
+                                        <h5 class="font-medium">`+lastPing+`</h5>
+                                        <h5 class="pull-left mb-0" lang="en">Last</h5>
+                                    </div>
+                                    <div class="ml-auto">
+                                        <h5 class="font-medium">`+nextPing+`</h5>
+                                        <h5 class="pull-right mb-0" lang="en">Next</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-info p-2">
+                                <div class="text-center text-white display-6">
+                                    `+hasIcon+`<span>`+v.name+`</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        `
+    });
+    return checks;
+}
+function homepageHealthChecks(tags, timeout){
+    var tags = (typeof tags !== 'undefined') ? tags : activeInfo.settings.homepage.options.healthChecksTags;
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageHealthChecksRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getHealthChecks',tags:tags}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderhealthchecks').innerHTML = '';
+        if(response.data !== null){
+            $('#homepageOrderhealthchecks').html(buildHealthChecks(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'HealthChecks-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageHealthChecks(tags,timeout); }, timeout);
+}
 function homepageDownloader(type, timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageDownloadRefresh;
 	//if(isHidden()){ return; }

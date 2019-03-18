@@ -25,6 +25,7 @@ function organizrSpecialSettings()
 			),
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
+				'healthChecksTags' => $GLOBALS['healthChecksTags'],
 			)
 		),
 		'sso' => array(

@@ -51,9 +51,50 @@ function homepageConnect($array)
 		case 'getRequests':
 			return getOmbiRequests($GLOBALS['ombiLimit']);
 			break;
+		case 'getHealthChecks':
+			return (qualifyRequest($GLOBALS['homepageHealthChecksAuth'])) ? getHealthChecks($array['data']['tags']) : false;
+			break;
 		default:
 			# code...
 			break;
+	}
+	return false;
+}
+
+function healthChecksTags($tags)
+{
+	$return = 'tag=';
+	if (!$tags) {
+		return '';
+	} elseif ($tags == '*') {
+		return '';
+	} else {
+		if (strpos($tags, ',') !== false) {
+			$list = explode(',', $tags);
+			return $return . implode("&tag=", $list);
+		} else {
+			return $return . $tags;
+		}
+	}
+}
+
+function getHealthChecks($tags = null)
+{
+	if ($GLOBALS['homepageHealthChecksEnabled'] && !empty($GLOBALS['healthChecksToken']) && qualifyRequest($GLOBALS['homepageHealthChecksAuth'])) {
+		$tags = ($tags) ? healthChecksTags($tags) : '';
+		$url = 'https://healthchecks.io/api/v1/checks/' . $tags;
+		try {
+			$headers = array('X-Api-Key' => $GLOBALS['healthChecksToken']);
+			$options = (localURL($url)) ? array('verify' => false) : array();
+			$response = Requests::get($url, $headers, $options);
+			if ($response->success) {
+				$api['content'] = json_decode($response->body, true);
+			}
+		} catch (Requests_Exception $e) {
+			writeLog('error', 'HealthChecks Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		};
+		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		return $api;
 	}
 	return false;
 }
