@@ -3058,7 +3058,7 @@ function updateCheck(){
 		if(latest !== currentVersion) {
             console.log('Update Function: Update to ' + latest + ' is available');
             if (activeInfo.settings.misc.docker === false) {
-                message(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
+                messageSingle(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
             }
         }
 		$('#githubVersions').html(buildVersion(reverseObject(response)));
@@ -3103,7 +3103,7 @@ function checkCommitLoad(){
                 var current = activeInfo.settings.misc.githubCommit.toString().trim();
                 var link = 'https://github.com/causefx/Organizr/compare/'+current+'...'+latest;
                 if(latest !== current) {
-                    message(window.lang.translate('Update Available'),' <a href="'+link+'" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
+                    messageSingle(window.lang.translate('Update Available'),' <a href="'+link+'" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
                 }else{
                     console.log('Organizr Docker - Up to date');
                 }
