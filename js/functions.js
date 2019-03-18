@@ -3295,6 +3295,10 @@ function updateNow(){
         dockerUpdate();
         return false;
     }
+    if(activeInfo.serverOS === 'win'){
+        windowsUpdate();
+        return false;
+    }
 	console.log('Organizr Function: Starting Update Process');
 	$(updateBar()).appendTo('.organizr-area');
 	updateUpdateBar('Starting Download','5%');
