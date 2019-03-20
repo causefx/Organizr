@@ -756,6 +756,22 @@ function getSettingsMain()
 				'help' => 'Default status of Remember Me button on login screen',
 				'value' => $GLOBALS['rememberMe'],
 			),
+			array(
+				'type' => 'input',
+				'name' => 'localIPFrom',
+				'label' => 'Override Local IP From',
+				'value' => $GLOBALS['localIPFrom'],
+				'placeholder' => 'i.e. 123.123.123.123',
+				'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'localIPTo',
+				'label' => 'Override Local IP To',
+				'value' => $GLOBALS['localIPTo'],
+				'placeholder' => 'i.e. 123.123.123.123',
+				'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
+			),
 		),
 		'Ping' => array(
 			array(

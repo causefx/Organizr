@@ -587,7 +587,7 @@ function dbExtension($string)
 
 function localIPRanges()
 {
-	return array(
+	$mainArray = array(
 		array(
 			'from' => '10.0.0.0',
 			'to' => '10.255.255.255'
@@ -605,6 +605,22 @@ function localIPRanges()
 			'to' => '127.255.255.255'
 		),
 	);
+	$override = false;
+	if ($GLOBALS['localIPFrom']) {
+		$from = trim($GLOBALS['localIPFrom']);
+		$override = true;
+	}
+	if ($GLOBALS['localIPTo']) {
+		$to = trim($GLOBALS['localIPTo']);
+	}
+	if ($override) {
+		$newArray = array(
+			'from' => $from,
+			'to' => (isset($to)) ? $to : $from
+		);
+		array_push($mainArray, $newArray);
+	}
+	return $mainArray;
 }
 
 function isLocal($checkIP = null)

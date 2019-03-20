@@ -217,5 +217,7 @@ return array(
 	'plexStrictFriends' => true,
 	'debugAreaAuth' => '1',
 	'commit' => 'n/a',
-	'ombiLimit' => '50'
+	'ombiLimit' => '50',
+	'localIPFrom' => '',
+	'localIPTo' => ''
 );
