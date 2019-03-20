@@ -17,7 +17,7 @@
     <link href="plugins/bower_components/jquery-wizard-master/libs/formvalidation/formValidation.min.css"
           rel="stylesheet">
     <link href="plugins/bower_components/Magnific-Popup-master/dist/magnific-popup.css" rel="stylesheet">
-    <link href="plugins/bower_components/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
+    <!--<link href="plugins/bower_components/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">-->
     <link href="plugins/bower_components/switchery/dist/switchery.min.css" rel="stylesheet"/>
     <link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/css-chart/css-chart.css" rel="stylesheet">
@@ -272,7 +272,7 @@
 <script src="plugins/bower_components/datatables/jquery.dataTables.min.js"></script>
 <script src="plugins/bower_components/datatables-plugins/sorting/datetime-moment.js"></script>
 <script src="plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min.js"></script>
-<script src="plugins/bower_components/sweetalert/sweetalert.min.js"></script>
+<script src="plugins/bower_components/sweetalert/sweetalert.min.js?v=<?php echo $GLOBALS['fileHash']; ?>"></script>
 <script src="plugins/bower_components/switchery/dist/switchery.min.js"></script>
 <script src="js/tinycolor.min.js"></script>
 <script src="plugins/bower_components/bootstrap-colorpicker-sliders/bootstrap.colorpickersliders.min.js"></script>
