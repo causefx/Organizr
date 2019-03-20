@@ -81,19 +81,27 @@ function healthChecksTags($tags)
 function getHealthChecks($tags = null)
 {
 	if ($GLOBALS['homepageHealthChecksEnabled'] && !empty($GLOBALS['healthChecksToken']) && qualifyRequest($GLOBALS['homepageHealthChecksAuth'])) {
+		$api['content']['checks'] = array();
 		$tags = ($tags) ? healthChecksTags($tags) : '';
-		$url = 'https://healthchecks.io/api/v1/checks/' . $tags;
-		try {
-			$headers = array('X-Api-Key' => $GLOBALS['healthChecksToken']);
-			$options = (localURL($url)) ? array('verify' => false) : array();
-			$response = Requests::get($url, $headers, $options);
-			if ($response->success) {
-				$api['content'] = json_decode($response->body, true);
-			}
-		} catch (Requests_Exception $e) {
-			writeLog('error', 'HealthChecks Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-		};
-		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		$healthChecks = explode(',', $GLOBALS['healthChecksToken']);
+		foreach ($healthChecks as $token) {
+			$url = 'https://healthchecks.io/api/v1/checks/' . $tags;
+			try {
+				$headers = array('X-Api-Key' => $token);
+				$options = (localURL($url)) ? array('verify' => false) : array();
+				$response = Requests::get($url, $headers, $options);
+				if ($response->success) {
+					$healthResults = json_decode($response->body, true);
+					$api['content']['checks'] = array_merge($api['content']['checks'], $healthResults['checks']);
+				}
+			} catch (Requests_Exception $e) {
+				writeLog('error', 'HealthChecks Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			};
+		}
+		usort($api['content']['checks'], function ($a, $b) {
+			return $a['status'] <=> $b['status'];
+		});
+		$api['content']['checks'] = isset($api['content']['checks']) ? $api['content']['checks'] : false;
 		return $api;
 	}
 	return false;

@@ -5325,6 +5325,7 @@ function buildCalendarMetadata(array){
 	return metadata;
 }
 function buildHealthChecks(array){
+    if(array === false){ return ''; }
     var checks = (typeof array.content.checks !== 'undefined') ? array.content.checks.length : false;
     return (checks) ? `
 	<div id="allHealthChecks">
