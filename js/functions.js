@@ -5613,9 +5613,9 @@ function homepageRequests(timeout){
 	if(typeof timeouts['ombi-Homepage'] !== 'undefined'){ clearTimeout(timeouts['ombi-Homepage']); }
 	timeouts['ombi-Homepage'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
 }
-function testAPIConnection(service){
+function testAPIConnection(service, data = ''){
     messageSingle('',' Testing now...',activeInfo.settings.notifications.position,'#FFF','info','10000');
-    organizrAPI('POST','api/?v1/test/api/connection',{action:service}).success(function(data) {
+    organizrAPI('POST','api/?v1/test/api/connection',{action:service, data:data}).success(function(data) {
         try {
             var response = JSON.parse(data);
         }catch(e) {
@@ -6700,6 +6700,44 @@ function isJSON(data) {
     } catch (e) {
         return false;
     }
+}
+function createElementFromHTML(htmlString) {
+    var div = document.createElement('div');
+    div.innerHTML = htmlString.trim();
+    return div.firstChild;
+}
+function showLDAPLoginTest(){
+    var div = `
+        <div class="row">
+            <div class="col-12">
+                <div class="card m-b-0">
+                    <div class="form-horizontal">
+                        <div class="card-body">
+                            <h4 class="card-title" lang="en">LDAP User Info</h4>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <input type="text" class="form-control" id="ldapUsernameTest" placeholder="Username">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <input type="password" class="form-control" id="ldapPasswordTest" placeholder="Password">
+                                </div>
+                            </div>
+                            <div class="form-group mb-0 p-r-10 text-right">
+                                <button type="submit" onclick="testAPIConnection('ldap_login', {'username':$('#ldapUsernameTest').val(),'password':$('#ldapPasswordTest').val()})" class="btn btn-info waves-effect waves-light">Test Login</button>
+                            </div>
+                        </div>				
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    swal({
+        content: createElementFromHTML(div),
+        buttons: false,
+        className: 'bg-org'
+    })
 }
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {

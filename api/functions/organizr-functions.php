@@ -657,6 +657,15 @@ function getSettingsMain()
 				'help' => 'Remember! Please save before using the test button!'
 			),
 			array(
+				'type' => 'button',
+				'name' => 'test-button-ldap-login',
+				'label' => 'Test Login',
+				'icon' => 'fa fa-flask',
+				'class' => 'ldapAuth switchAuth',
+				'text' => 'Test Login',
+				'attr' => 'onclick="showLDAPLoginTest()"'
+			),
+			array(
 				'type' => 'input',
 				'name' => 'embyURL',
 				'class' => 'embyAuth switchAuth',
