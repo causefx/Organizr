@@ -1,5 +1,4 @@
 <?php
-$generationTime = -microtime(true);
 //include functions
 require_once 'functions.php';
 //Set result array
@@ -1341,8 +1340,7 @@ if (!$result) {
 	$result['error'] = "An error has occurred";
 }
 $result['generationDate'] = $GLOBALS['currentTime'];
-$generationTime += microtime(true);
-$result['generationTime'] = (sprintf('%f', $generationTime) * 1000) . 'ms';
+$result['generationTime'] = formatSeconds(timeExecution());
 //return JSON array
 if ($pretty) {
 	echo '<pre>' . safe_json_encode($result, JSON_PRETTY_PRINT) . '</pre>';

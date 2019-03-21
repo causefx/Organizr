@@ -18,6 +18,8 @@ function writeLoginLog($username, $authType)
 
 function writeLog($type = 'error', $message, $username = null)
 {
+	$GLOBALS['timeExecution'] = timeExecution($GLOBALS['timeExecution']);
+	$message = $message . ' [Execution Time: ' . formatSeconds($GLOBALS['timeExecution']) . ']';
 	$username = ($username) ? $username : $GLOBALS['organizrUser']['username'];
 	if (file_exists($GLOBALS['organizrLog'])) {
 		$getLog = str_replace("\r\ndate", "date", file_get_contents($GLOBALS['organizrLog']));

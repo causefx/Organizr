@@ -2375,7 +2375,10 @@ function testAPIConnection($array)
 					//prettyPrint($provider);
 					if ($provider->auth()->attempt($username, $password, true)) {
 						// Passed.
-						//$user = $provider->search()->find($username);
+						$user = $provider->search()->find($username);
+						//return $user->getFirstAttribute('cn');
+						//return $user->getGroups(['cn']);
+						//return $user;
 						//return $user->getUserPrincipalName();
 						//return $user->getGroups(['cn']);
 						return true;

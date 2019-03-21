@@ -11,6 +11,7 @@ foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR 
 $GLOBALS['root'] = dirname(__DIR__, 1);
 $GLOBALS['uuid'] = '';
 $GLOBALS['rememberMeDays'] = '99';
+$GLOBALS['timeExecution'] = timeExecution();
 // Add in default and custom settings
 configLazy();
 // Define Logs and files after db location is set
