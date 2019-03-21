@@ -32,8 +32,8 @@ function getOmbiToken($username, $password, $oAuthToken = null)
 			"Content-Type" => "application/json"
 		);
 		$data = array(
-			"username" => $username,
-			"password" => $password,
+			"username" => ($oAuthToken ? "" : $username),
+			"password" => ($oAuthToken ? "" : $password),
 			"rememberMe" => "true",
 			"plexToken" => $oAuthToken
 		);
@@ -66,8 +66,8 @@ function getTautulliToken($username, $password, $plexToken = null)
 					"User-Agent" => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null
 				);
 				$data = array(
-					"username" => $username,
-					"password" => $password,
+			                "username" => ($plexToken ? "" : $username),
+			                "password" => ($plexToken ? "" : $password),
 					"token" => $plexToken,
 					"remember_me" => 1,
 				);
