@@ -99,7 +99,8 @@ function organizrSpecialSettings()
 			'docker' => qualifyRequest(1) ? $GLOBALS['docker'] : '',
 			'githubCommit' => qualifyRequest(1) ? $GLOBALS['commit'] : '',
 			'schema' => qualifyRequest(1) ? getSchema() : '',
-			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth'])
+			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth']),
+			'sandbox' => $GLOBALS['sandbox'],
 		)
 	);
 }
@@ -732,6 +733,48 @@ function getSettingsMain()
 				'help' => 'Important! Do not keep this enabled for too long as this opens up Authentication while testing.',
 				'value' => $GLOBALS['authDebug'],
 				'class' => 'authDebug'
+			),
+			array(
+				'type' => 'select2',
+				'class' => 'select2-multiple',
+				'id' => 'sandbox-select',
+				'name' => 'sandbox',
+				'label' => 'iFrame Sandbox',
+				'value' => $GLOBALS['sandbox'],
+				'help' => 'WARNING! This can potentially mess up your iFrames',
+				'options' => array(
+					array(
+						'name' => 'Allow Presentation',
+						'value' => 'allow-presentation'
+					),
+					array(
+						'name' => 'Allow Forms',
+						'value' => 'allow-forms'
+					),
+					array(
+						'name' => 'Allow Same Origin',
+						'value' => 'allow-same-origin'
+					),
+					array(
+						'name' => 'Allow Pointer Lock',
+						'value' => 'allow-pointer-lock'
+					),
+					array(
+						'name' => 'Allow Scripts',
+						'value' => 'allow-scripts'
+					), array(
+						'name' => 'Allow Popups',
+						'value' => 'allow-popups'
+					),
+					array(
+						'name' => 'Allow Modals',
+						'value' => 'allow-modals'
+					),
+					array(
+						'name' => 'Allow Top Navigation',
+						'value' => 'allow-top-navigation'
+					),
+				)
 			)
 		),
 		'Login' => array(

@@ -219,5 +219,6 @@ return array(
 	'commit' => 'n/a',
 	'ombiLimit' => '50',
 	'localIPFrom' => '',
-	'localIPTo' => ''
+	'localIPTo' => '',
+	'sandbox' => 'allow-presentation,allow-forms,allow-same-origin,allow-pointer-lock,allow-scripts,allow-popups,allow-modals,allow-top-navigation'
 );
