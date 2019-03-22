@@ -1134,7 +1134,6 @@ img.dark-logo-side {
 span.select2-selection.select2-selection--single,
 span.select2-selection.select2-selection--multiple{
     background: inherit;
-    height: 38px;
 }
 img.img-chooser {
     width: 20px;
@@ -1160,6 +1159,17 @@ img.img-chooser {
     left: -100000px;
     width: 100%;
     z-index: 1051;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #2babe3;
+    border: 1px solid #1b1a1a;
+    color: #1b1a1a;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #1f1f1f;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: #f96262;
 }
 .fc-scroller .simplebar-track.horizontal {
     display: none;
@@ -1308,7 +1318,9 @@ span.fc-title {
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }
-
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    height: 100%;
+}
 /*
 body,
 html {
