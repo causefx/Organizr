@@ -265,14 +265,14 @@ function resolveEmbyItem($itemDetails)
 		'audioChannels' => @$itemDetails['TranscodingInfo']['AudioChannels']
 	);
 	// Genre catch all
-	if ($item['Genres']) {
+	if (isset($item['Genres'])) {
 		$genres = array();
 		foreach ($item['Genres'] as $genre) {
 			$genres[] = $genre;
 		}
 	}
 	// Actor catch all
-	if ($item['People']) {
+	if (isset($item['People'])) {
 		$actors = array();
 		foreach ($item['People'] as $key => $value) {
 			if (@$value['PrimaryImageTag'] && @$value['Role']) {
@@ -300,8 +300,8 @@ function resolveEmbyItem($itemDetails)
 		'year' => (string)isset($item['ProductionYear']) ? $item['ProductionYear'] : '',
 		//'studio' => (string)$item['studio'],
 		'tagline' => @(string)$item['Taglines'][0],
-		'genres' => ($item['Genres']) ? $genres : '',
-		'actors' => ($item['People']) ? $actors : ''
+		'genres' => (isset($item['Genres'])) ? $genres : '',
+		'actors' => (isset($item['People'])) ? $actors : ''
 	);
 	if (file_exists($cacheDirectory . $embyItem['nowPlayingKey'] . '.jpg')) {
 		$embyItem['nowPlayingImageURL'] = $cacheDirectoryWeb . $embyItem['nowPlayingKey'] . '.jpg';
