@@ -228,21 +228,21 @@ function invitesGetSettings()
 		'Emby Settings' => array(
 			array(
 				'type' => 'password-alt',
-				'name' => 'EmbyAPIKEY',
+				'name' => 'INVITES-embyApiKey',
 				'label' => 'Emby API key',
 				'value' => $GLOBALS['INVITES-embyApiKey'],
 				'placeholder' => 'enter key from emby'
 			),
 			array(
 				'type' => 'text',
-				'name' => 'EmbyAddress',
+				'name' => 'INVITES-EmbyAddress',
 				'label' => 'Emby server adress',
 				'value' => $GLOBALS['INVITES-EmbyAddress'],
 				'placeholder' => 'localhost:8086'
 			),
 			array(
 				'type' => 'text',
-				'name' => 'EmbyDefaultUserConfig',
+				'name' => 'INVITES-EmbyDefaultUserConfig',
 				'label' => 'Emby Default User Config JSON',
 				'value' => $GLOBALS['INVITES-EmbyDefaultUserConfig'],
 				'placeholder' => '{...}'
@@ -331,13 +331,7 @@ function inviteAction($username, $action = null, $type = null)
 			}
 			break;
 		case 'emby':
-			try {
-				#createUser
-
-			} catch (Requests_Exception $e) {
-				writeLog('error', 'Emby Invite Error: ' . $e->getMessage(), 'SYSTEM');
-				return false;
-			}
+			#emby code
 			break;
 		default:
 			return false;
