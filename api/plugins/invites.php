@@ -194,7 +194,7 @@ function invitesGetSettings()
 						'value' => 'plex'
 					),
 					array(
-						'name' => 'Emby [Not Ready]',
+						'name' => 'Emby',
 						'value' => 'emby'
 					)
 				)
@@ -225,7 +225,29 @@ function invitesGetSettings()
 				'options' => $libraryList
 			)
 		),
-		'Emby Settings' => array(),
+		'Emby Settings' => array(
+			array(
+				'type' => 'password-alt',
+				'name' => 'EmbyAPIKEY',
+				'label' => 'Emby API key',
+				'value' => $GLOBALS['INVITES-embyApiKey'],
+				'placeholder' => 'enter key from emby'
+			),
+			array(
+				'type' => 'text',
+				'name' => 'EmbyAddress',
+				'label' => 'Emby server adress',
+				'value' => $GLOBALS['INVITES-EmbyAddress'],
+				'placeholder' => 'localhost:8086'
+			),
+			array(
+				'type' => 'text',
+				'name' => 'EmbyDefaultUserConfig',
+				'label' => 'Emby Default User Config JSON',
+				'value' => $GLOBALS['INVITES-EmbyDefaultUserConfig'],
+				'placeholder' => '{...}'
+			)
+		),
 		'FYI' => array(
 			array(
 				'type' => 'html',
@@ -309,7 +331,13 @@ function inviteAction($username, $action = null, $type = null)
 			}
 			break;
 		case 'emby':
-			# code...
+			try {
+				#createUser
+
+			} catch (Requests_Exception $e) {
+				writeLog('error', 'Emby Invite Error: ' . $e->getMessage(), 'SYSTEM');
+				return false;
+			}
 			break;
 		default:
 			return false;
