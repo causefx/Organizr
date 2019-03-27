@@ -2121,7 +2121,7 @@ function embyJoin($username, $email, $password)
 		);
 		$data = array ();
 		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/New?name=' . $username . '&api_key=' . $GLOBALS['INVITES-embyApiKey'];
-		$response = Request::Post($url, $headers, json_encode($data), array());
+		$response = Requests::Post($url, $headers, json_encode($data), array());
 		$response = json_decode($response);
 		$userID = $response["Id"];
 
@@ -2134,14 +2134,14 @@ function embyJoin($username, $email, $password)
 			"Pw" => $password
 		);
 		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Password?api_key=' . $GLOBALS['INVITES-embyApiKey'];
-		Request::Post($url, $headers, json_encode($data), array());
+		Requests::Post($url, $headers, json_encode($data), array());
 
 		#update config
 		$headers = array(
 			"Accept" => "application/json"
 		);
 		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Policy?api_key=' . $GLOBALS['INVITES-embyApiKey'];
-		$response = Request::Post($url, $headers, $GLOBALS['INVITES-EmbyDefaultUserConfig'], array());
+		$response = Requests::Post($url, $headers, $GLOBALS['INVITES-EmbyDefaultUserConfig'], array());
 
 		#add emby.media
 		#$headers = array(
