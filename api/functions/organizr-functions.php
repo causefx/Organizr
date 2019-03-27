@@ -2064,6 +2064,11 @@ function plexJoinAPI($array)
 	return plexJoin($array['data']['username'], $array['data']['email'], $array['data']['password']);
 }
 
+function embyJoinAPI($array)
+{
+	return embyJoin($array['data']['username'], $array['data']['email'], $array['data']['password']);
+}
+
 function plexJoin($username, $email, $password)
 {
 	try {
@@ -2103,6 +2108,93 @@ function plexJoin($username, $email, $password)
 		return (!empty($success) && empty($errors) ? true : $errorMessage);
 	} catch (Requests_Exception $e) {
 		writeLog('error', 'Plex.TV Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+	};
+	return false;
+}
+
+function embyJoin($username, $email, $password)
+{
+	try {
+		#create user in emby.
+		$headers = array(
+			"Accept" => "application/json"
+		);
+		$data = array ();
+		$url =  $GLOBALS['embyURL'] . '/emby/Users/New?name=' . $username . '&api_key=' . $GLOBALS['embyToken'];
+		$response = Requests::Post($url, $headers, json_encode($data), array());
+		$response = $response->body;
+		//return($response);
+		$response = json_decode($response, true);
+		//return($response);
+		$userID = $response["Id"];
+		//return($userID);
+
+		#authenticate as user to update password.
+
+		//randomizer four digits of DeviceId
+		// I dont think ther would be security problems with hardcoding deviceID but randomizing it would mitigate any issue.
+		$deviceIdSeceret = rand(0, 9)."".rand(0, 9)."".rand(0,9)."".rand(0,9);
+
+		//hardcoded device id with the first three digits random 0-9,0-9,0-9,0-9
+		$embyAuthHeader = 'MediaBrowser Client="Emby Mobile", Device="Firefox", DeviceId="'.$deviceIdSeceret.'aWxssS81LgAggFdpbmRvd3MgTlQgMTAuMDsgV2luNjxx7IHf2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzcyLjAuMzYyNi4xMTkgU2FmYXJpLzUzNy4zNnwxNTUxNTczMTAyNDI4", Version="4.0.2.0"';
+		$headers = array(
+			"Accept" => "application/json",
+			"Content-Type" => "application/json",
+			"X-Emby-Authorization" => $embyAuthHeader
+		);
+		$data = array (
+			"Pw" => "",
+			"Username" => $username
+		);
+		$url =  $GLOBALS['embyURL'] . '/emby/Users/AuthenticateByName';
+		$response = Requests::Post($url, $headers, json_encode($data), array());
+		$response = $response->body;
+		$response = json_decode($response, true);
+		$userToken = $response["AccessToken"];
+
+		#update password
+		$embyAuthHeader = 'MediaBrowser Client="Emby Mobile", Device="Firefox", Token="'.$userToken.'", DeviceId="'.$deviceIdSeceret.'aWxssS81LgAggFdpbmRvd3MgTlQgMTAuMDsgV2luNjxx7IHf2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzcyLjAuMzYyNi4xMTkgU2FmYXJpLzUzNy4zNnwxNTUxNTczMTAyNDI4", Version="4.0.2.0"';
+
+		$headers = array(
+			"Accept" => "application/json",
+			"Content-Type" => "application/json",
+			"X-Emby-Authorization" => $embyAuthHeader
+		);
+		$data = array (
+			"CurrentPw" => "",
+			"NewPw" => $password,
+			"Id" => $userID
+		);
+		$url =  $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Password';
+		Requests::Post($url, $headers, json_encode($data), array());
+
+		#update config
+		$headers = array(
+			"Accept" => "application/json",
+			"Content-Type" => "application/json"
+		);
+		$url =  $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Policy?api_key=' . $GLOBALS['embyToken'];
+		$response = Requests::Post($url, $headers, $GLOBALS['INVITES-EmbyDefaultUserConfig'], array());
+
+		#add emby.media
+		try {
+			#seperate because this is not required
+			$headers = array(
+				"Accept" => "application/json",
+				"X-Emby-Authorization" => $embyAuthHeader
+			);
+			$data = array (
+				"ConnectUsername " => $email
+			);
+			$url =  $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Connect/Link';
+			Requests::Post($url, $headers, json_encode($data), array());
+		} catch (Requests_Exception $e)	{
+			writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		}
+		return(true);
+		//return( "USERID:".$userID);
+	} catch (Requests_Exception $e) {
+		writeLog('error', 'Emby create Function - Error: ' . $e->getMessage(), 'SYSTEM');
 	};
 	return false;
 }
