@@ -1223,31 +1223,63 @@ function getCalendar()
 				foreach ($icsEvents as $icsEvent) {
 					if ((isset($icsEvent['DTSTART']) || isset($icsEvent['DTSTART;VALUE=DATE'])) && (isset($icsEvent['DTEND']) || isset($icsEvent['DTEND;VALUE=DATE'])) && isset($icsEvent['SUMMARY'])) {
 						/* Getting start date and time */
+						$repeat = isset($icsEvent ['RRULE']) ? $icsEvent ['RRULE'] : false;
 						$start = isset($icsEvent ['DTSTART;VALUE=DATE']) ? $icsEvent ['DTSTART;VALUE=DATE'] : $icsEvent ['DTSTART'];
-						/* Converting to datetime and apply the timezone to get proper date time */
-						$startDt = new DateTime ($start);
-						$startDt->setTimeZone(new DateTimezone ($timeZone));
-						$startDate = $startDt->format(DateTime::ATOM);
-						/* Getting end date with time */
-						$end = isset($icsEvent ['DTEND;VALUE=DATE']) ? $icsEvent ['DTEND;VALUE=DATE'] : $icsEvent ['DTEND'];
-						$endDt = new DateTime ($end);
-						$endDate = $endDt->format(DateTime::ATOM);
-						if (new DateTime() < $endDt) {
-							$extraClass = 'text-info';
+						$totalDays = $GLOBALS['calendarStart'] + $GLOBALS['calendarEnd'];
+						if ($repeat) {
+							switch (trim(strtolower(getCalenderRepeat($repeat)))) {
+								case 'daily':
+									$repeat = $totalDays;
+									$term = 'day';
+									break;
+								case 'weekly':
+									$repeat = round($totalDays / 7);
+									$term = 'week';
+									break;
+								case 'monthly':
+									$repeat = round($totalDays / 30);
+									$term = 'month';
+									break;
+								default:
+									$repeat = $totalDays;
+									$term = 'day';
+									break;
+							}
 						} else {
-							$extraClass = 'text-success';
+							$repeat = 1;
+							$term = 'day';
 						}
-						/* Getting the name of event */
-						$eventName = $icsEvent['SUMMARY'];
-						$icalEvents[] = array(
-							'title' => $eventName,
-							'imagetype' => 'calendar-o text-warning text-custom-calendar ' . $extraClass,
-							'imagetypeFilter' => 'ical',
-							'className' => 'bg-calendar calendar-item bg-custom-calendar',
-							'start' => $startDate,
-							'end' => $endDate,
-							'bgColor' => str_replace('text', 'bg', $extraClass),
-						);
+						$calendarTimes = 0;
+						while ($calendarTimes < $repeat) {
+							/* Converting to datetime and apply the timezone to get proper date time */
+							$startDt = new DateTime ($start);
+							if ($calendarTimes !== 0) {
+								$startDt->modify('+' . $calendarTimes . ' ' . $term);
+							}
+							$startDt->setTimeZone(new DateTimezone ($timeZone));
+							$startDate = $startDt->format(DateTime::ATOM);
+							/* Getting end date with time */
+							$end = isset($icsEvent ['DTEND;VALUE=DATE']) ? $icsEvent ['DTEND;VALUE=DATE'] : $icsEvent ['DTEND'];
+							$endDt = new DateTime ($end);
+							$endDate = $endDt->format(DateTime::ATOM);
+							if (new DateTime() < $endDt) {
+								$extraClass = 'text-info';
+							} else {
+								$extraClass = 'text-success';
+							}
+							/* Getting the name of event */
+							$eventName = $icsEvent['SUMMARY'];
+							$icalEvents[] = array(
+								'title' => $eventName,
+								'imagetype' => 'calendar-o text-warning text-custom-calendar ' . $extraClass,
+								'imagetypeFilter' => 'ical',
+								'className' => 'bg-calendar calendar-item bg-custom-calendar',
+								'start' => $startDate,
+								'end' => $endDate,
+								'bgColor' => str_replace('text', 'bg', $extraClass)
+							);
+							$calendarTimes = $calendarTimes + 1;
+						}
 					}
 				}
 			}
@@ -1256,6 +1288,23 @@ function getCalendar()
 	}
 	$calendarSources['events'] = $calendarItems;
 	return ($calendarSources) ? $calendarSources : false;
+}
+
+function getCalenderRepeat($value)
+{
+	//FREQ=DAILY
+	//RRULE:FREQ=WEEKLY;BYDAY=TH
+	$first = explode('=', $value);
+	if (count($first) > 1) {
+		$second = explode(';', $first[1]);
+	} else {
+		return $value;
+	}
+	if ($second) {
+		return $second[0];
+	} else {
+		return $first[1];
+	}
 }
 
 function getSonarrCalendar($array, $number)
