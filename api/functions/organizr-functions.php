@@ -2064,6 +2064,11 @@ function plexJoinAPI($array)
 	return plexJoin($array['data']['username'], $array['data']['email'], $array['data']['password']);
 }
 
+function embyJoinAPI($array)
+{
+	return embyJoin($array['data']['username'], $array['data']['email'], $array['data']['password']);
+}
+
 function plexJoin($username, $email, $password)
 {
 	try {
@@ -2103,6 +2108,54 @@ function plexJoin($username, $email, $password)
 		return (!empty($success) && empty($errors) ? true : $errorMessage);
 	} catch (Requests_Exception $e) {
 		writeLog('error', 'Plex.TV Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+	};
+	return false;
+}
+
+function embyJoin($username, $email, $password)
+{
+	try {
+		#create user in emby.
+		$headers = array(
+			"Accept" => "application/json"
+		);
+		$data = array ();
+		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/New?name=' . $username . '&api_key=' . $GLOBALS['INVITES-embyApiKey'];
+		$response = Request::Post($url, $headers, json_encode($data), array());
+		$response = json_decode($response);
+		$userID = $response["Id"];
+
+		#update password
+		$headers = array(
+			"Accept" => "application/json"
+		);
+		$data = array (
+			"CurrentPw" => "",
+			"Pw" => $password
+		);
+		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Password?api_key=' . $GLOBALS['INVITES-embyApiKey'];
+		Request::Post($url, $headers, json_encode($data), array());
+
+		#update config
+		$headers = array(
+			"Accept" => "application/json"
+		);
+		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Policy?api_key=' . $GLOBALS['INVITES-embyApiKey'];
+		$response = Request::Post($url, $headers, $GLOBALS['INVITES-EmbyDefaultUserConfig'], array());
+
+		#add emby.media
+		#$headers = array(
+		#	"Accept" => "application/json"
+		#);
+		#$data = array (
+		#	"CurrentPw" => "",
+		#	"Pw" => "abc"
+		#);
+		#$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Connect/Link?api_key=' . $GLOBALS['INVITES-embyApiKey'];
+		#Request::Post($url, $headers, json_encode($data), array());
+
+	} catch (Requests_Exception $e) {
+		writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 	};
 	return false;
 }
