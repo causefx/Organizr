@@ -122,6 +122,15 @@ function inviteHasAccount(type,value){
                 $('.invite-step-3-plex-no').toggleClass('hidden');
             }
             break;
+        case 'emby' :
+        if(value){
+            $('.invite-step-2').toggleClass('hidden');
+            $('.invite-step-3-plex-yes').toggleClass('hidden');
+        }else{
+            $('.invite-step-2').toggleClass('hidden');
+            $('.invite-step-3-plex-no').toggleClass('hidden');
+        }
+          break;
         default:
         alert(type+' is not set up yet');
     }
