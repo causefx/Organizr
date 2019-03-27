@@ -2122,23 +2122,56 @@ function embyJoin($username, $email, $password)
 		$data = array ();
 		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/New?name=' . $username . '&api_key=' . $GLOBALS['INVITES-embyApiKey'];
 		$response = Requests::Post($url, $headers, json_encode($data), array());
-		$response = json_decode($response);
+		$response = $response->body;
+		//return($response);
+		$response = json_decode($response, true);
+		//return($response);
 		$userID = $response["Id"];
+		//return($userID);
+
+		#authenticate as user to update password.
+
+		//randomizer four digits of DeviceId
+		// I dont think ther would be security problems with hardcoding deviceID but randomizing it would mitigate any issue.
+		$deviceIdSeceret = rand(0, 9)."".rand(0, 9)."".rand(0,9)."".rand(0,9);
+
+		//hardcoded device id with the first three digits random 0-9,0-9,0-9,0-9
+		$embyAuthHeader = 'MediaBrowser Client="Emby Mobile", Device="Firefox", DeviceId="'.$deviceIdSeceret.'aWxssS81LgAggFdpbmRvd3MgTlQgMTAuMDsgV2luNjxx7IHf2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzcyLjAuMzYyNi4xMTkgU2FmYXJpLzUzNy4zNnwxNTUxNTczMTAyNDI4", Version="4.0.2.0"';
+		$headers = array(
+			"Accept" => "application/json",
+			"Content-Type" => "application/json",
+			"X-Emby-Authorization" => $embyAuthHeader
+		);
+		$data = array (
+			"Pw" => "",
+			"Username" => $username
+		);
+		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/AuthenticateByName';
+		$response = Requests::Post($url, $headers, json_encode($data), array());
+		$response = $response->body;
+		$response = json_decode($response, true);
+		$userToken = $response["AccessToken"];
 
 		#update password
+		$embyAuthHeader = 'MediaBrowser Client="Emby Mobile", Device="Firefox", Token="'.$userToken.'", DeviceId="'.$deviceIdSeceret.'aWxssS81LgAggFdpbmRvd3MgTlQgMTAuMDsgV2luNjxx7IHf2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzcyLjAuMzYyNi4xMTkgU2FmYXJpLzUzNy4zNnwxNTUxNTczMTAyNDI4", Version="4.0.2.0"';
+
 		$headers = array(
-			"Accept" => "application/json"
+			"Accept" => "application/json",
+			"Content-Type" => "application/json",
+			"X-Emby-Authorization" => $embyAuthHeader
 		);
 		$data = array (
 			"CurrentPw" => "",
-			"Pw" => $password
+			"NewPw" => $password,
+			"Id" => $userID
 		);
-		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Password?api_key=' . $GLOBALS['INVITES-embyApiKey'];
+		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Password';
 		Requests::Post($url, $headers, json_encode($data), array());
 
 		#update config
 		$headers = array(
-			"Accept" => "application/json"
+			"Accept" => "application/json",
+			"Content-Type" => "application/json"
 		);
 		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Policy?api_key=' . $GLOBALS['INVITES-embyApiKey'];
 		$response = Requests::Post($url, $headers, $GLOBALS['INVITES-EmbyDefaultUserConfig'], array());
@@ -2153,7 +2186,6 @@ function embyJoin($username, $email, $password)
 		#);
 		#$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Connect/Link?api_key=' . $GLOBALS['INVITES-embyApiKey'];
 		#Request::Post($url, $headers, json_encode($data), array());
-
 	} catch (Requests_Exception $e) {
 		writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 	};

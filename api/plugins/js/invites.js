@@ -437,12 +437,12 @@ $(document).on('click', '.inviteModal', function() {
                                 <input type="text" class="form-control" id="inviteUsernameInvite" placeholder="Emby Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="" required="">
                             </div>
                             <br />
-                            <button class="btn btn-block btn-info" onclick="hasEmbyUsername();">Submit</button>
+                            <button class="btn btn-block btn-info" onclick="hasPlexUsername();">Submit</button>
                         </div>
                         <div class="form-group invite-step-3-emby-no hidden">
                             <div class="input-group" style="width: 100%;">
                                 <div class="input-group-addon hidden-xs"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="invitePlexEmbyUsername" lang="en" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="" required="">
+                                <input type="text" class="form-control" id="inviteEmbyJoinUsername" lang="en" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="" required="">
                             </div>
                             <div class="input-group" style="width: 100%;">
                                 <div class="input-group-addon hidden-xs"><i class="ti-email"></i></div>
