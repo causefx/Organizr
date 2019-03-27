@@ -228,16 +228,16 @@ function invitesGetSettings()
 		'Emby Settings' => array(
 			array(
 				'type' => 'password-alt',
-				'name' => 'INVITES-embyApiKey',
+				'name' => 'embyToken',
 				'label' => 'Emby API key',
-				'value' => $GLOBALS['INVITES-embyApiKey'],
+				'value' => $GLOBALS['embyToken'],
 				'placeholder' => 'enter key from emby'
 			),
 			array(
 				'type' => 'text',
-				'name' => 'INVITES-EmbyAddress',
+				'name' => 'embyURL',
 				'label' => 'Emby server adress',
-				'value' => $GLOBALS['INVITES-EmbyAddress'],
+				'value' =>  $GLOBALS['embyURL'],
 				'placeholder' => 'localhost:8086'
 			),
 			array(

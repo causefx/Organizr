@@ -2120,7 +2120,7 @@ function embyJoin($username, $email, $password)
 			"Accept" => "application/json"
 		);
 		$data = array ();
-		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/New?name=' . $username . '&api_key=' . $GLOBALS['INVITES-embyApiKey'];
+		$url =  $GLOBALS['embyURL'] . '/emby/Users/New?name=' . $username . '&api_key=' . $GLOBALS['embyToken'];
 		$response = Requests::Post($url, $headers, json_encode($data), array());
 		$response = $response->body;
 		//return($response);
@@ -2146,7 +2146,7 @@ function embyJoin($username, $email, $password)
 			"Pw" => "",
 			"Username" => $username
 		);
-		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/AuthenticateByName';
+		$url =  $GLOBALS['embyURL'] . '/emby/Users/AuthenticateByName';
 		$response = Requests::Post($url, $headers, json_encode($data), array());
 		$response = $response->body;
 		$response = json_decode($response, true);
@@ -2165,7 +2165,7 @@ function embyJoin($username, $email, $password)
 			"NewPw" => $password,
 			"Id" => $userID
 		);
-		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Password';
+		$url =  $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Password';
 		Requests::Post($url, $headers, json_encode($data), array());
 
 		#update config
@@ -2173,7 +2173,7 @@ function embyJoin($username, $email, $password)
 			"Accept" => "application/json",
 			"Content-Type" => "application/json"
 		);
-		$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Policy?api_key=' . $GLOBALS['INVITES-embyApiKey'];
+		$url =  $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Policy?api_key=' . $GLOBALS['embyToken'];
 		$response = Requests::Post($url, $headers, $GLOBALS['INVITES-EmbyDefaultUserConfig'], array());
 
 		#add emby.media
@@ -2186,7 +2186,7 @@ function embyJoin($username, $email, $password)
 			$data = array (
 				"ConnectUsername " => $email
 			);
-			$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Connect/Link';
+			$url =  $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Connect/Link';
 			Requests::Post($url, $headers, json_encode($data), array());
 		} catch (Requests_Exception $e)	{
 			writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
