@@ -134,7 +134,7 @@ function joinEmby(){
                 $('.invite-step-3-emby-yes').toggleClass('hidden');
                 message('Invite Function',' User Created',activeInfo.settings.notifications.position,'#FFF','success','5000');
                 $('#inviteUsernameInvite').val(username.val());
-                hasPlexUsername();
+                hasEmbyUsername();
             }else{
                 message('Invite Error',' '+response.data,activeInfo.settings.notifications.position,'#FFF','warning','5000');
             }
@@ -187,6 +187,38 @@ function hasPlexUsername(){
             if(response.data === true){
                 $('.invite-step-3-plex-yes').toggleClass('hidden');
                 $('.invite-step-4-plex-accept').toggleClass('hidden');
+                if(local('get', 'invite')){
+            		local('remove', 'invite');
+            	}
+            }else{
+                message('Invite Error',' Code Incorrect',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+            }
+            ajaxloader();;
+        }).fail(function(xhr) {
+            console.error("Organizr Function: API Connection Failed");
+            ajaxloader();
+        });
+    }
+}
+function hasEmbyUsername(){
+    var code = $('#inviteCodeInput').val().toUpperCase();
+    var username = $('#inviteUsernameInvite');
+    if(username.val() == ''){
+        username.focus();
+        message('Invite Error',' Please Enter Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+    }else{
+        var post = {
+            plugin:'Invites/codes',
+            action:'use',
+            code:code,
+            usedby:username.val()
+        };
+        ajaxloader(".content-wrap","in");
+        organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
+            var response = JSON.parse(data);
+            if(response.data === true){
+                $('.invite-step-3-emby-yes').toggleClass('hidden');
+                $('.invite-step-4-emby-accept').toggleClass('hidden');
                 if(local('get', 'invite')){
             		local('remove', 'invite');
             	}
@@ -437,7 +469,7 @@ $(document).on('click', '.inviteModal', function() {
                                 <input type="text" class="form-control" id="inviteUsernameInvite" placeholder="Emby Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="" required="">
                             </div>
                             <br />
-                            <button class="btn btn-block btn-info" onclick="hasPlexUsername();">Submit</button>
+                            <button class="btn btn-block btn-info" onclick="hasEmbyUsername();">Submit</button>
                         </div>
                         <div class="form-group invite-step-3-emby-no hidden">
                             <div class="input-group" style="width: 100%;">

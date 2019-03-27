@@ -2177,17 +2177,24 @@ function embyJoin($username, $email, $password)
 		$response = Requests::Post($url, $headers, $GLOBALS['INVITES-EmbyDefaultUserConfig'], array());
 
 		#add emby.media
-		#$headers = array(
-		#	"Accept" => "application/json"
-		#);
-		#$data = array (
-		#	"CurrentPw" => "",
-		#	"Pw" => "abc"
-		#);
-		#$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Connect/Link?api_key=' . $GLOBALS['INVITES-embyApiKey'];
-		#Request::Post($url, $headers, json_encode($data), array());
+		try {
+			#seperate because this is not required
+			$headers = array(
+				"Accept" => "application/json",
+				"X-Emby-Authorization" => $embyAuthHeader
+			);
+			$data = array (
+				"ConnectUsername " => $email
+			);
+			$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Connect/Link';
+			Requests::Post($url, $headers, json_encode($data), array());
+		} catch (Requests_Exception $e)	{
+			writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		}
+		return(true);
+		//return( "USERID:".$userID);
 	} catch (Requests_Exception $e) {
-		writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		writeLog('error', 'Emby create Function - Error: ' . $e->getMessage(), 'SYSTEM');
 	};
 	return false;
 }

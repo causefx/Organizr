@@ -332,35 +332,8 @@ function inviteAction($username, $action = null, $type = null)
 			break;
 		case 'emby':
 			try {
-				#create user in emby.
-				$headers = array(
-					"Accept" => "application/json"
-				);
-				$data = array ();
-				$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/New?name=' . $username . '&api_key=' . $GLOBALS['INVITES-embyApiKey'];
-				$response = Request::Post($url, $headers, json_encode($data), array());
-				$response = json_decode($response);
-				$userID = $response["Id"];
-
-				#update password
-				$headers = array(
-					"Accept" => "application/json"
-				);
-				$data = array (
-					"CurrentPw" => "",
-					"Pw" => "abc"
-				);
-				$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Password?api_key=' . $GLOBALS['INVITES-embyApiKey'];
-				Request::Post($url, $headers, json_encode($data), array());
-
-				#update config
-				$headers = array(
-					"Accept" => "application/json"
-				);
-				$url = $GLOBALS['INVITES-EmbyAddress'] . '/emby/Users/' . $userID . '/Policy?api_key=' . $GLOBALS['INVITES-embyApiKey'];
-				$response = Request::Post($url, $headers, $GLOBALS['INVITES-EmbyDefaultUserConfig'], array());
-
-				#attempt to add emby.media login. Catch this error and do not warn if it fails.
+				#add emby user to sytem
+				return true;
 			} catch (Requests_Exception $e){
 				writeLog('error', 'Emby Invite Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				return false;
