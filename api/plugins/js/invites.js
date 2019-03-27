@@ -133,7 +133,7 @@ function joinEmby(){
                 $('.invite-step-3-emby-no').toggleClass('hidden');
                 $('.invite-step-3-emby-yes').toggleClass('hidden');
                 message('Invite Function',' User Created',activeInfo.settings.notifications.position,'#FFF','success','5000');
-                $('#inviteUsernameInvite').val(username.val());
+                $('#inviteUsernameInviteEmby').val(username.val());
                 hasEmbyUsername();
             }else{
                 message('Invite Error',' '+response.data,activeInfo.settings.notifications.position,'#FFF','warning','5000');
@@ -202,7 +202,7 @@ function hasPlexUsername(){
 }
 function hasEmbyUsername(){
     var code = $('#inviteCodeInput').val().toUpperCase();
-    var username = $('#inviteUsernameInvite');
+    var username = $('#inviteUsernameInviteEmby');
     if(username.val() == ''){
         username.focus();
         message('Invite Error',' Please Enter Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
@@ -455,7 +455,7 @@ $(document).on('click', '.inviteModal', function() {
                             <br />
                             <button class="btn btn-block btn-info" onclick="joinPlex();">Submit</button>
                         </div>
-                        <div class="form-group invite-step-3-emby-yes hidden">
+                        <div class="form-group invite-step-3-plex-yes hidden">
                         </div>
                         <div class="form-group invite-step-3-emby-no hidden">
                         </div>
@@ -466,7 +466,7 @@ $(document).on('click', '.inviteModal', function() {
                         <div class="form-group invite-step-3-emby-yes hidden">
                             <div class="input-group" style="width: 100%;">
                                 <div class="input-group-addon hidden-xs"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="inviteUsernameInvite" placeholder="Emby Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="" required="">
+                                <input type="text" class="form-control" id="inviteUsernameInviteEmby" placeholder="Emby Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="" required="">
                             </div>
                             <br />
                             <button class="btn btn-block btn-info" onclick="hasEmbyUsername();">Submit</button>
