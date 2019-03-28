@@ -1231,6 +1231,7 @@ function getCalendar()
 						/* Getting start date and time */
 						$repeat = isset($icsEvent ['RRULE']) ? $icsEvent ['RRULE'] : false;
 						$start = reset($startKeys);
+						$end = reset($endKeys);
 						$totalDays = $GLOBALS['calendarStart'] + $GLOBALS['calendarEnd'];
 						if ($repeat) {
 							switch (trim(strtolower(getCalenderRepeat($repeat)))) {
@@ -1257,24 +1258,28 @@ function getCalendar()
 						}
 						$calendarTimes = 0;
 						while ($calendarTimes < $repeat) {
+							$currentDate = new DateTime ($GLOBALS['currentTime']);
+							$oldestDay = new DateTime ($GLOBALS['currentTime']);
+							$oldestDay->modify('-' . $GLOBALS['calendarStart'] . ' days');
+							$newestDay = new DateTime ($GLOBALS['currentTime']);
+							$newestDay->modify('+' . $GLOBALS['calendarEnd'] . ' days');
 							/* Converting to datetime and apply the timezone to get proper date time */
 							$startDt = new DateTime ($start);
 							/* Getting end date with time */
-							$end = reset($endKeys);
 							$endDt = new DateTime ($end);
 							if ($calendarTimes !== 0) {
-								$currentDate = new DateTime ($GLOBALS['currentTime']);
 								$dateDiff = date_diff($startDt, $currentDate);
 								$startDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
 								$startDt->modify('+' . $calendarTimes . ' ' . $term);
 								$endDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
 								$endDt->modify('+' . $calendarTimes . ' ' . $term);
 							} elseif ($calendarTimes == 0 && $repeat !== 1) {
-								$currentDate = new DateTime ($GLOBALS['currentTime']);
 								$dateDiff = date_diff($startDt, $currentDate);
 								$startDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
 								$endDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
 							}
+							$calendarStartDiff = date_diff($startDt, $newestDay);
+							$calendarEndDiff = date_diff($startDt, $oldestDay);
 							$startDt->setTimeZone(new DateTimezone ($timeZone));
 							$endDt->setTimeZone(new DateTimezone ($timeZone));
 							$startDate = $startDt->format(DateTime::ATOM);
@@ -1286,6 +1291,9 @@ function getCalendar()
 							}
 							/* Getting the name of event */
 							$eventName = $icsEvent['SUMMARY'];
+							if (!calendarDaysCheck($calendarStartDiff->format('%R') . $calendarStartDiff->days, $calendarEndDiff->format('%R') . $calendarEndDiff->days)) {
+								break;
+							}
 							$icalEvents[] = array(
 								'title' => $eventName,
 								'imagetype' => 'calendar-o text-warning text-custom-calendar ' . $extraClass,
@@ -1293,7 +1301,7 @@ function getCalendar()
 								'className' => 'bg-calendar calendar-item bg-custom-calendar',
 								'start' => $startDate,
 								'end' => $endDate,
-								'bgColor' => str_replace('text', 'bg', $extraClass)
+								'bgColor' => str_replace('text', 'bg', $extraClass),
 							);
 							$calendarTimes = $calendarTimes + 1;
 						}
@@ -1305,6 +1313,17 @@ function getCalendar()
 	}
 	$calendarSources['events'] = $calendarItems;
 	return ($calendarSources) ? $calendarSources : false;
+}
+
+function calendarDaysCheck($entryStart, $entryEnd)
+{
+	$success = false;
+	$entryStart = intval($entryStart);
+	$entryEnd = intval($entryEnd);
+	if ($entryStart >= 0 && $entryEnd <= 0) {
+		$success = true;
+	}
+	return $success;
 }
 
 function getCalenderRepeat($value)
