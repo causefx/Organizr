@@ -2174,7 +2174,7 @@ function embyJoin($username, $email, $password)
 			"Content-Type" => "application/json"
 		);
 		$url =  $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Policy?api_key=' . $GLOBALS['embyToken'];
-		$response = Requests::Post($url, $headers, $GLOBALS['INVITES-EmbyDefaultUserConfig'], array());
+		$response = Requests::Post($url, $headers, getEmbyTemplateUserJson(), array());
 
 		#add emby.media
 		try {
@@ -2219,6 +2219,52 @@ function checkFrame($array, $url)
 		}
 		return true;
 	}
+}
+
+/*loads users from emby and returns a correctly formated policy for a new user.
+*/
+function getEmbyTemplateUserJson()
+{
+	$headers = array(
+		"Accept" => "application/json"
+	);
+	$data = array ();
+	$url =  $GLOBALS['embyURL'] . '/emby/Users?api_key=' . $GLOBALS['embyToken'];
+	$response = Requests::Get($url, $headers, array());
+	$response = $response->body;
+	$response = json_decode($response, true);
+
+	//error_Log("response ".json_encode($response));
+	writeLog('error', 'userList:'.json_encode($response), 'SYSTEM');
+	//$correct stores the template users object
+	$correct = null;
+
+	foreach($response as $element)
+	{
+		if($element['Name'] == $GLOBALS['INVITES-EmbyTemplate'])
+		{
+			$correct = $element;
+		}
+	}
+	writeLog('error', 'Correct user:'.json_encode($correct), 'SYSTEM');
+	if($correct == null)
+	{
+		//return empty JSON if user incorectly configured template
+		return "{}";
+	}
+
+	//select policy section and remove possibly dangeours rows.
+
+
+	$policy = $correct['Policy'];
+
+	//writeLog('error', 'policy update'.$policy, 'SYSTEM');
+	unset($policy['AuthenticationProviderId']);
+	unset($policy['InvalidLoginAttemptCount']);
+	unset($policy['DisablePremiumFeatures']);
+	unset($policy['DisablePremiumFeatures']);
+
+	return(json_encode($policy));
 }
 
 function frameTest($url)
