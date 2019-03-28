@@ -1237,19 +1237,23 @@ function getCalendar()
 							switch (trim(strtolower(getCalenderRepeat($repeat)))) {
 								case 'daily':
 									$repeat = $totalDays;
-									$term = 'day';
+									$term = 'days';
 									break;
 								case 'weekly':
 									$repeat = round($totalDays / 7);
-									$term = 'week';
+									$term = 'weeks';
 									break;
 								case 'monthly':
 									$repeat = round($totalDays / 30);
-									$term = 'month';
+									$term = 'months';
+									break;
+								case 'yearly':
+									$repeat = round($totalDays / 365);
+									$term = 'years';
 									break;
 								default:
 									$repeat = $totalDays;
-									$term = 'day';
+									$term = 'days';
 									break;
 							}
 						} else {
@@ -1293,6 +1297,13 @@ function getCalendar()
 							$eventName = $icsEvent['SUMMARY'];
 							if (!calendarDaysCheck($calendarStartDiff->format('%R') . $calendarStartDiff->days, $calendarEndDiff->format('%R') . $calendarEndDiff->days)) {
 								break;
+							}
+							if (getCalenderRepeatUntil(trim($repeat))) {
+								$untilDate = new DateTime (getCalenderRepeatUntil(trim($repeat)));
+								$untilDiff = date_diff($currentDate, $untilDate);
+								if ($untilDiff->days > 0) {
+									break;
+								}
 							}
 							$icalEvents[] = array(
 								'title' => $eventName,
@@ -1340,6 +1351,16 @@ function getCalenderRepeat($value)
 		return $second[0];
 	} else {
 		return $first[1];
+	}
+}
+
+function getCalenderRepeatUntil($value)
+{
+	$first = explode('UNTIL=', $value);
+	if (count($first) > 1) {
+		return $first[1];
+	} else {
+		return false;
 	}
 }
 
