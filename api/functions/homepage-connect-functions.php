@@ -1298,8 +1298,8 @@ function getCalendar()
 							if (!calendarDaysCheck($calendarStartDiff->format('%R') . $calendarStartDiff->days, $calendarEndDiff->format('%R') . $calendarEndDiff->days)) {
 								break;
 							}
-							if (getCalenderRepeatUntil(trim($repeat))) {
-								$untilDate = new DateTime (getCalenderRepeatUntil(trim($repeat)));
+							if (getCalenderRepeatUntil(trim($icsEvent["RRULE"]))) {
+								$untilDate = new DateTime (getCalenderRepeatUntil(trim($icsEvent["RRULE"])));
 								$untilDiff = date_diff($currentDate, $untilDate);
 								if ($untilDiff->days > 0) {
 									break;
