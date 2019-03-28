@@ -242,10 +242,10 @@ function invitesGetSettings()
 			),
 			array(
 				'type' => 'text',
-				'name' => 'INVITES-EmbyDefaultUserConfig',
-				'label' => 'Emby Default User Config JSON',
-				'value' => $GLOBALS['INVITES-EmbyDefaultUserConfig'],
-				'placeholder' => '{...}'
+				'name' => 'INVITES-EmbyTemplate',
+				'label' => 'Emby User to be used as template for new users',
+				'value' => $GLOBALS['INVITES-EmbyTemplate'],
+				'placeholder' => 'AdamSmith'
 			)
 		),
 		'FYI' => array(
