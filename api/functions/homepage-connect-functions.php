@@ -1253,14 +1253,25 @@ function getCalendar()
 						while ($calendarTimes < $repeat) {
 							/* Converting to datetime and apply the timezone to get proper date time */
 							$startDt = new DateTime ($start);
-							if ($calendarTimes !== 0) {
-								$startDt->modify('+' . $calendarTimes . ' ' . $term);
-							}
-							$startDt->setTimeZone(new DateTimezone ($timeZone));
-							$startDate = $startDt->format(DateTime::ATOM);
 							/* Getting end date with time */
 							$end = isset($icsEvent ['DTEND;VALUE=DATE']) ? $icsEvent ['DTEND;VALUE=DATE'] : $icsEvent ['DTEND'];
 							$endDt = new DateTime ($end);
+							if ($calendarTimes !== 0) {
+								$currentDate = new DateTime ($GLOBALS['currentTime']);
+								$dateDiff = date_diff($startDt, $currentDate);
+								$startDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
+								$startDt->modify('+' . $calendarTimes . ' ' . $term);
+								$endDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
+								$endDt->modify('+' . $calendarTimes . ' ' . $term);
+							} elseif ($calendarTimes == 0 && $repeat !== 1) {
+								$currentDate = new DateTime ($GLOBALS['currentTime']);
+								$dateDiff = date_diff($startDt, $currentDate);
+								$startDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
+								$endDt->modify($dateDiff->format('%R') . (round(($dateDiff->days) / 7)) . ' weeks');
+							}
+							$startDt->setTimeZone(new DateTimezone ($timeZone));
+							$endDt->setTimeZone(new DateTimezone ($timeZone));
+							$startDate = $startDt->format(DateTime::ATOM);
 							$endDate = $endDt->format(DateTime::ATOM);
 							if (new DateTime() < $endDt) {
 								$extraClass = 'text-info';
