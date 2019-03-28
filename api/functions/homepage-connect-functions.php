@@ -1221,10 +1221,16 @@ function getCalendar()
 				$timeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : date_default_timezone_get();
 				unset($icsEvents [1]);
 				foreach ($icsEvents as $icsEvent) {
-					if ((isset($icsEvent['DTSTART']) || isset($icsEvent['DTSTART;VALUE=DATE'])) && (isset($icsEvent['DTEND']) || isset($icsEvent['DTEND;VALUE=DATE'])) && isset($icsEvent['SUMMARY'])) {
+					$startKeys = array_filter_key($icsEvent, function ($key) {
+						return strpos($key, 'DTSTART') === 0;
+					});
+					$endKeys = array_filter_key($icsEvent, function ($key) {
+						return strpos($key, 'DTEND') === 0;
+					});
+					if (!empty($startKeys) && !empty($endKeys) && isset($icsEvent['SUMMARY'])) {
 						/* Getting start date and time */
 						$repeat = isset($icsEvent ['RRULE']) ? $icsEvent ['RRULE'] : false;
-						$start = isset($icsEvent ['DTSTART;VALUE=DATE']) ? $icsEvent ['DTSTART;VALUE=DATE'] : $icsEvent ['DTSTART'];
+						$start = reset($startKeys);
 						$totalDays = $GLOBALS['calendarStart'] + $GLOBALS['calendarEnd'];
 						if ($repeat) {
 							switch (trim(strtolower(getCalenderRepeat($repeat)))) {
@@ -1254,7 +1260,7 @@ function getCalendar()
 							/* Converting to datetime and apply the timezone to get proper date time */
 							$startDt = new DateTime ($start);
 							/* Getting end date with time */
-							$end = isset($icsEvent ['DTEND;VALUE=DATE']) ? $icsEvent ['DTEND;VALUE=DATE'] : $icsEvent ['DTEND'];
+							$end = reset($endKeys);
 							$endDt = new DateTime ($end);
 							if ($calendarTimes !== 0) {
 								$currentDate = new DateTime ($GLOBALS['currentTime']);
