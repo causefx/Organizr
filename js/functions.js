@@ -3863,6 +3863,15 @@ function errorPage(error=null,uri=null){
         local('set','uri',$.urlParam('return'));
     }
 	if ( window.location !== window.parent.location ) {
+        var count = 0;
+        for (var k in window.parent.location) {
+            if (window.parent.location.hasOwnProperty(k)) {
+                ++count;
+            }
+        }
+        if(count == 0 || count == 'undefined'){
+            return false;
+        }
 		var iframeError = local('get', 'error');
 		parent.errorPage(iframeError);
         local('remove', 'uri');
@@ -4050,7 +4059,9 @@ function buildRecentItem(array, type, extra=null){
 			<div class="item lazyload `+className+` metadata-get mouse imageSource" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
 				`+extraImg+`
 				<div class="hover-homepage-item">
-					<a class="btn default refreshImage" data-type="recent-item" data-image="`+v.originalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a>
+				    <span class="elip request-title-movie">
+					    <a class="text-white refreshImage" data-type="recent-item" data-image="`+v.originalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a>
+					</span>
 				</div>
 				<span class="elip recent-title">`+v.title+`<br/>`+v.secondaryTitle+`</span>
 				<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
@@ -4075,7 +4086,9 @@ function buildPlaylistItem(array, type, extra=null){
 				items += `
 				<div class="item lazyload recent-poster metadata-get mouse imageSource" data-source="`+type+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`" data-src="`+v.imageURL+`">
 					<div class="hover-homepage-item">
-						<a class="btn default refreshImage" data-type="recent-item" data-image="`+v.originalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a>
+					    <span class="elip request-title-movie">
+						    <a class="text-white refreshImage" data-type="recent-item" data-image="`+v.originalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a>
+						</span>
 					</div>
 					<span class="elip recent-title">`+v.title+`</span>
 					<div id="`+v.uid+`-metadata-div" class="white-popup mfp-with-anim mfp-hide">
@@ -4252,7 +4265,7 @@ function buildRecent(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left"><span lang="en">Recently Added</span></h4>
+			<h4 class="pull-left"><span onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span></h4>
 			`+dropdownMenu+`
 			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
@@ -4260,7 +4273,7 @@ function buildRecent(array, type){
 	}else{
 		var header = `
 		<div class="panel-heading bg-info p-t-10 p-b-10">
-			<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span lang="en">Recently Added</span></span>
+			<span onclick="homepageRecent('`+type+`')" class="pull-left m-t-5 mouse"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span lang="en">Recently Added</span></span>
 			`+dropdownMenu+`
 			<div class="clearfix"></div>
 		</div>
