@@ -1240,7 +1240,7 @@ span.fc-title {
     font-weight: 600;
 }
 .dropdown-menu {
-    width: 100%;
+    width: inherit;
 }
 #organizrNewsPanel .panel-body {
     background: #2d2c2c;
