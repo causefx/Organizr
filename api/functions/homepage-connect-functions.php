@@ -1234,25 +1234,26 @@ function getCalendar()
 						$end = reset($endKeys);
 						$totalDays = $GLOBALS['calendarStart'] + $GLOBALS['calendarEnd'];
 						if ($repeat) {
+							$repeatOverride = getCalenderRepeatCount(trim($icsEvent["RRULE"]));
 							switch (trim(strtolower(getCalenderRepeat($repeat)))) {
 								case 'daily':
-									$repeat = $totalDays;
+									$repeat = ($repeatOverride) ? $repeatOverride : $totalDays;
 									$term = 'days';
 									break;
 								case 'weekly':
-									$repeat = round($totalDays / 7);
+									$repeat = ($repeatOverride) ? $repeatOverride : round($totalDays / 7);
 									$term = 'weeks';
 									break;
 								case 'monthly':
-									$repeat = round($totalDays / 30);
+									$repeat = ($repeatOverride) ? $repeatOverride : round($totalDays / 30);
 									$term = 'months';
 									break;
 								case 'yearly':
-									$repeat = round($totalDays / 365);
+									$repeat = ($repeatOverride) ? $repeatOverride : round($totalDays / 365);
 									$term = 'years';
 									break;
 								default:
-									$repeat = $totalDays;
+									$repeat = ($repeatOverride) ? $repeatOverride : $totalDays;
 									$term = 'days';
 									break;
 							}
@@ -1357,6 +1358,16 @@ function getCalenderRepeat($value)
 function getCalenderRepeatUntil($value)
 {
 	$first = explode('UNTIL=', $value);
+	if (count($first) > 1) {
+		return $first[1];
+	} else {
+		return false;
+	}
+}
+
+function getCalenderRepeatCount($value)
+{
+	$first = explode('COUNT=', $value);
 	if (count($first) > 1) {
 		return $first[1];
 	} else {
