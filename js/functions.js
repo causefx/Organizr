@@ -4265,7 +4265,7 @@ function buildRecent(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left"><span onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span></h4>
+			<h4 class="pull-left"><span class="mouse" onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span></h4>
 			`+dropdownMenu+`
 			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
@@ -4441,7 +4441,7 @@ function buildRequest(array){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left"><span onclick="homepageRequests()" lang="en">Requests</span></h4>
+			<h4 class="pull-left"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span></h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
