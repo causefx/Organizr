@@ -1092,7 +1092,11 @@ function getCalendar()
 					$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
 					$sonarr = $sonarr->getCalendar($startDate, $endDate, $GLOBALS['sonarrUnmonitored']);
 					$result = json_decode($sonarr, true);
-					$sonarrCalendar = (array_key_exists('error', $result)) ? '' : getSonarrCalendar($sonarr, $key);;
+					if (is_array($result) || is_object($result)) {
+						$sonarrCalendar = (array_key_exists('error', $result)) ? '' : getSonarrCalendar($sonarr, $key);
+					} else {
+						$sonarrCalendar = '';
+					}
 				} catch (Exception $e) {
 					writeLog('error', 'Sonarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				}
@@ -1119,7 +1123,11 @@ function getCalendar()
 					$lidarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], true);
 					$lidarr = $lidarr->getCalendar($startDate, $endDate);
 					$result = json_decode($lidarr, true);
-					$lidarrCalendar = (array_key_exists('error', $result)) ? '' : getLidarrCalendar($lidarr, $key);;
+					if (is_array($result) || is_object($result)) {
+						$lidarrCalendar = (array_key_exists('error', $result)) ? '' : getLidarrCalendar($lidarr, $key);
+					} else {
+						$lidarrCalendar = '';
+					}
 				} catch (Exception $e) {
 					writeLog('error', 'Lidarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				}
@@ -1146,7 +1154,11 @@ function getCalendar()
 					$radarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
 					$radarr = $radarr->getCalendar($startDate, $endDate);
 					$result = json_decode($radarr, true);
-					$radarrCalendar = (array_key_exists('error', $result)) ? '' : getRadarrCalendar($radarr, $key, $value['url']);
+					if (is_array($result) || is_object($result)) {
+						$radarrCalendar = (array_key_exists('error', $result)) ? '' : getRadarrCalendar($radarr, $key, $value['url']);
+					} else {
+						$radarrCalendar = '';
+					}
 				} catch (Exception $e) {
 					writeLog('error', 'Radarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				}
