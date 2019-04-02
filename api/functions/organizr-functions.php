@@ -1061,8 +1061,16 @@ function getCustomizeAppearance()
 					'type' => 'switch',
 					'name' => 'useLogo',
 					'label' => 'Use Logo instead of Title',
-					'value' => $GLOBALS['useLogo']
-				)
+					'value' => $GLOBALS['useLogo'],
+					'help' => 'Also sets the title of your site'
+				),
+				array(
+					'type' => 'input',
+					'name' => 'description',
+					'label' => 'Meta Description',
+					'value' => $GLOBALS['description'],
+					'help' => 'Used to set the description for SEO meta tags'
+				),
 			),
 			'Login Page' => array(
 				array(
@@ -2119,8 +2127,8 @@ function embyJoin($username, $email, $password)
 		$headers = array(
 			"Accept" => "application/json"
 		);
-		$data = array ();
-		$url =  $GLOBALS['embyURL'] . '/emby/Users/New?name=' . $username . '&api_key=' . $GLOBALS['embyToken'];
+		$data = array();
+		$url = $GLOBALS['embyURL'] . '/emby/Users/New?name=' . $username . '&api_key=' . $GLOBALS['embyToken'];
 		$response = Requests::Post($url, $headers, json_encode($data), array());
 		$response = $response->body;
 		//return($response);
@@ -2128,54 +2136,47 @@ function embyJoin($username, $email, $password)
 		//return($response);
 		$userID = $response["Id"];
 		//return($userID);
-
 		#authenticate as user to update password.
-
 		//randomizer four digits of DeviceId
 		// I dont think ther would be security problems with hardcoding deviceID but randomizing it would mitigate any issue.
-		$deviceIdSeceret = rand(0, 9)."".rand(0, 9)."".rand(0,9)."".rand(0,9);
-
+		$deviceIdSeceret = rand(0, 9) . "" . rand(0, 9) . "" . rand(0, 9) . "" . rand(0, 9);
 		//hardcoded device id with the first three digits random 0-9,0-9,0-9,0-9
-		$embyAuthHeader = 'MediaBrowser Client="Emby Mobile", Device="Firefox", DeviceId="'.$deviceIdSeceret.'aWxssS81LgAggFdpbmRvd3MgTlQgMTAuMDsgV2luNjxx7IHf2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzcyLjAuMzYyNi4xMTkgU2FmYXJpLzUzNy4zNnwxNTUxNTczMTAyNDI4", Version="4.0.2.0"';
+		$embyAuthHeader = 'MediaBrowser Client="Emby Mobile", Device="Firefox", DeviceId="' . $deviceIdSeceret . 'aWxssS81LgAggFdpbmRvd3MgTlQgMTAuMDsgV2luNjxx7IHf2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzcyLjAuMzYyNi4xMTkgU2FmYXJpLzUzNy4zNnwxNTUxNTczMTAyNDI4", Version="4.0.2.0"';
 		$headers = array(
 			"Accept" => "application/json",
 			"Content-Type" => "application/json",
 			"X-Emby-Authorization" => $embyAuthHeader
 		);
-		$data = array (
+		$data = array(
 			"Pw" => "",
 			"Username" => $username
 		);
-		$url =  $GLOBALS['embyURL'] . '/emby/Users/AuthenticateByName';
+		$url = $GLOBALS['embyURL'] . '/emby/Users/AuthenticateByName';
 		$response = Requests::Post($url, $headers, json_encode($data), array());
 		$response = $response->body;
 		$response = json_decode($response, true);
 		$userToken = $response["AccessToken"];
-
 		#update password
-		$embyAuthHeader = 'MediaBrowser Client="Emby Mobile", Device="Firefox", Token="'.$userToken.'", DeviceId="'.$deviceIdSeceret.'aWxssS81LgAggFdpbmRvd3MgTlQgMTAuMDsgV2luNjxx7IHf2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzcyLjAuMzYyNi4xMTkgU2FmYXJpLzUzNy4zNnwxNTUxNTczMTAyNDI4", Version="4.0.2.0"';
-
+		$embyAuthHeader = 'MediaBrowser Client="Emby Mobile", Device="Firefox", Token="' . $userToken . '", DeviceId="' . $deviceIdSeceret . 'aWxssS81LgAggFdpbmRvd3MgTlQgMTAuMDsgV2luNjxx7IHf2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzcyLjAuMzYyNi4xMTkgU2FmYXJpLzUzNy4zNnwxNTUxNTczMTAyNDI4", Version="4.0.2.0"';
 		$headers = array(
 			"Accept" => "application/json",
 			"Content-Type" => "application/json",
 			"X-Emby-Authorization" => $embyAuthHeader
 		);
-		$data = array (
+		$data = array(
 			"CurrentPw" => "",
 			"NewPw" => $password,
 			"Id" => $userID
 		);
-		$url =  $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Password';
+		$url = $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Password';
 		Requests::Post($url, $headers, json_encode($data), array());
-
 		#update config
 		$headers = array(
 			"Accept" => "application/json",
 			"Content-Type" => "application/json"
 		);
-		$url =  $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Policy?api_key=' . $GLOBALS['embyToken'];
+		$url = $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Policy?api_key=' . $GLOBALS['embyToken'];
 		$response = Requests::Post($url, $headers, getEmbyTemplateUserJson(), array());
-
 		#add emby.media
 		try {
 			#seperate because this is not required
@@ -2183,15 +2184,15 @@ function embyJoin($username, $email, $password)
 				"Accept" => "application/json",
 				"X-Emby-Authorization" => $embyAuthHeader
 			);
-			$data = array (
+			$data = array(
 				"ConnectUsername " => $email
 			);
-			$url =  $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Connect/Link';
+			$url = $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Connect/Link';
 			Requests::Post($url, $headers, json_encode($data), array());
-		} catch (Requests_Exception $e)	{
+		} catch (Requests_Exception $e) {
 			writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		}
-		return(true);
+		return (true);
 		//return( "USERID:".$userID);
 	} catch (Requests_Exception $e) {
 		writeLog('error', 'Emby create Function - Error: ' . $e->getMessage(), 'SYSTEM');
@@ -2228,43 +2229,33 @@ function getEmbyTemplateUserJson()
 	$headers = array(
 		"Accept" => "application/json"
 	);
-	$data = array ();
-	$url =  $GLOBALS['embyURL'] . '/emby/Users?api_key=' . $GLOBALS['embyToken'];
+	$data = array();
+	$url = $GLOBALS['embyURL'] . '/emby/Users?api_key=' . $GLOBALS['embyToken'];
 	$response = Requests::Get($url, $headers, array());
 	$response = $response->body;
 	$response = json_decode($response, true);
-
 	//error_Log("response ".json_encode($response));
-	writeLog('error', 'userList:'.json_encode($response), 'SYSTEM');
+	writeLog('error', 'userList:' . json_encode($response), 'SYSTEM');
 	//$correct stores the template users object
 	$correct = null;
-
-	foreach($response as $element)
-	{
-		if($element['Name'] == $GLOBALS['INVITES-EmbyTemplate'])
-		{
+	foreach ($response as $element) {
+		if ($element['Name'] == $GLOBALS['INVITES-EmbyTemplate']) {
 			$correct = $element;
 		}
 	}
-	writeLog('error', 'Correct user:'.json_encode($correct), 'SYSTEM');
-	if($correct == null)
-	{
+	writeLog('error', 'Correct user:' . json_encode($correct), 'SYSTEM');
+	if ($correct == null) {
 		//return empty JSON if user incorectly configured template
 		return "{}";
 	}
-
 	//select policy section and remove possibly dangeours rows.
-
-
 	$policy = $correct['Policy'];
-
 	//writeLog('error', 'policy update'.$policy, 'SYSTEM');
 	unset($policy['AuthenticationProviderId']);
 	unset($policy['InvalidLoginAttemptCount']);
 	unset($policy['DisablePremiumFeatures']);
 	unset($policy['DisablePremiumFeatures']);
-
-	return(json_encode($policy));
+	return (json_encode($policy));
 }
 
 function frameTest($url)
