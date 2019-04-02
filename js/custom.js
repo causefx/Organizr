@@ -1797,6 +1797,19 @@ Mousetrap.bind("d d", function() { toggleDebug() });
 Mousetrap.bind("esc", function () {
     $('.splash-screen').removeClass('in').addClass('hidden')
 });
+Mousetrap.bind('ctrl+shift+up', function(e) {
+    var getCurrentTab = $('.allTabsList a.active').parent();
+    var previousTab = getCurrentTab.prev().children();
+    previousTab.trigger("click");
+    parent.focus();
+    return false;
+});
+Mousetrap.bind('ctrl+shift+down', function(e) {
+    var getCurrentTab = $('.allTabsList a.active').parent();
+    var nextTab = getCurrentTab.next().children();
+    nextTab.trigger("click");
+    return false;
+});
 $(document).on('change', "#new-tab-form-chooseImage", function (e) {
     var newIcon = $('#new-tab-form-chooseImage').val();
     if(newIcon !== 'Select or type Icon'){
