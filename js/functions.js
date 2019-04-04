@@ -4763,6 +4763,10 @@ function buildDownloaderItem(array, source, type='none'){
     var count = 0;
 	switch (source) {
 		case 'sabnzbd':
+            if(array.content === false){
+                queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+                break;
+            }
             if(array.content.queueItems.queue.paused){
                 var state = `<a href="#"><span class="downloader mouse" data-source="sabnzbd" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a>`;
                 var active = 'grayscale';
@@ -4815,6 +4819,10 @@ function buildDownloaderItem(array, source, type='none'){
             });
 			break;
 		case 'nzbget':
+            if(array.content === false){
+                queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+                break;
+            }
             if(array.content.queueItems.result.length == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
@@ -4862,6 +4870,10 @@ function buildDownloaderItem(array, source, type='none'){
             });
 			break;
 		case 'transmission':
+            if(array.content === false){
+                queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+                break;
+            }
             if(array.content.queueItems.arguments.torrents == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
@@ -4921,6 +4933,10 @@ function buildDownloaderItem(array, source, type='none'){
             });
 			break;
         case 'rTorrent':
+            if(array.content === false){
+                queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+                break;
+            }
             if(array.content.queueItems == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
@@ -4954,6 +4970,10 @@ function buildDownloaderItem(array, source, type='none'){
             });
             break;
 		case 'qBittorrent':
+		    if(array.content === false){
+                queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+                break;
+            }
             if(array.content.queueItems.arguments.torrents == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
@@ -5009,6 +5029,10 @@ function buildDownloaderItem(array, source, type='none'){
             });
 			break;
 		case 'deluge':
+            if(array.content === false){
+                queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+                break;
+            }
             if(array.content.queueItems.length == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
