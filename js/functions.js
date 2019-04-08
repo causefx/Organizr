@@ -6728,8 +6728,10 @@ function checkIfTabNameExists(tabName){
     }
 }
 function orgErrorAlert(error){
-    $('#main-org-error-container').addClass('show');
-    $('#main-org-error').html(error);
+    if(activeInfo.settings.misc.debugErrors) {
+        $('#main-org-error-container').addClass('show');
+        $('#main-org-error').html(error);
+    }
 }
 function closeOrgError(){
     $('#main-org-error-container').removeClass('show');

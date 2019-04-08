@@ -100,6 +100,7 @@ function organizrSpecialSettings()
 			'githubCommit' => qualifyRequest(1) ? $GLOBALS['commit'] : '',
 			'schema' => qualifyRequest(1) ? getSchema() : '',
 			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth']),
+			'debugErrors' => $GLOBALS['debugErrors'],
 			'sandbox' => $GLOBALS['sandbox'],
 		)
 	);
@@ -1092,6 +1093,12 @@ function getCustomizeAppearance()
 					'name' => 'alternateHomepageHeaders',
 					'label' => 'Alternate Homepage Titles',
 					'value' => $GLOBALS['alternateHomepageHeaders']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'debugErrors',
+					'label' => 'Show Debug Errors',
+					'value' => $GLOBALS['debugErrors']
 				),
 				array(
 					'type' => 'select',
