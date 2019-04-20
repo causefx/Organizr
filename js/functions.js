@@ -5450,13 +5450,16 @@ function buildHealthChecksItem(array){
         }
         checks += `
             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                <div class="card bg-inverse text-white">
+                <div class="card bg-inverse text-white mb-3 showMoreHealth mouse" data-id="`+i+`">
                     <div class="card-body bg-org-alt pt-1 pb-1">
                         <div class="d-flex no-block align-items-center">
                             <div class="left-health bg-`+statusColor+`"></div>
-                            <div class="ml-4 mt-2 w-100">
-                                <i class="`+statusIcon+` font-20 pull-right"></i>
-                                <h3 class="d-flex no-block align-items-center m-0">`+hasIcon+v.name+`</h3><h5>Last: `+lastPing+`</h5><h5>Next: `+nextPing+`</h5>
+                            <div class="ml-1 w-100">
+                                <i class="`+statusIcon+` font-20 pull-right mt-3 mb-2"></i>
+                                <h3 class="d-flex no-block align-items-center mt-2 mb-2">`+hasIcon+v.name+`</h3>
+                                <div class="clearfix"></div>
+                                <div class="d-none showMoreHealthDiv-`+i+`"><h5>Last: `+lastPing+`</h5><h5>Next: `+nextPing+`</h5></div>
+                                <div class="clearfix"></div>
                             </div>
                         </div>
                     </div>

@@ -1301,7 +1301,7 @@ span.fc-title {
     border-bottom-right-radius: 3px;
 }
 .left-health {
-    width: 15px;
+    width: 5px;
     height: 100%;
     position: absolute;
     left: 0;
@@ -1320,6 +1320,11 @@ span.fc-title {
 }
 .select2-container--default.select2-container--focus .select2-selection--multiple {
     height: 100%;
+}
+.healthPosition {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
 }
 /*
 body,
