@@ -3,6 +3,56 @@
 /** @noinspection SqlResolve */
 /** @noinspection SqlResolve */
 /** @noinspection SyntaxError */
+function apiLogin()
+{
+	$array = array(
+		'data' => array(
+			array(
+				'name' => 'username',
+				'value' => (isset($_POST['username'])) ? $_POST['username'] : false
+			),
+			array(
+				'name' => 'password',
+				'value' => (isset($_POST['password'])) ? $_POST['password'] : false
+			),
+			array(
+				'name' => 'remember',
+				'value' => (isset($_POST['remember'])) ? true : false
+			),
+			array(
+				'name' => 'oAuth',
+				'value' => (isset($_POST['oAuth'])) ? $_POST['oAuth'] : false
+			),
+			array(
+				'name' => 'oAuthType',
+				'value' => (isset($_POST['oAuthType'])) ? $_POST['oAuthType'] : false
+			),
+			array(
+				'name' => 'tfaCode',
+				'value' => (isset($_POST['tfaCode'])) ? $_POST['tfaCode'] : false
+			),
+			array(
+				'name' => 'output',
+				'value' => true
+			),
+		)
+	);
+	foreach ($array['data'] as $items) {
+		foreach ($items as $key => $value) {
+			if ($key == 'name') {
+				$newKey = $value;
+			}
+			if ($key == 'value') {
+				$newValue = $value;
+			}
+			if (isset($newKey) && isset($newValue)) {
+				$$newKey = $newValue;
+			}
+		}
+	}
+	return login($array);
+}
+
 function login($array)
 {
 	// Grab username and Password from login form
@@ -23,6 +73,7 @@ function login($array)
 	$username = (strpos($GLOBALS['authBackend'], 'emby') !== false) ? $username : strtolower($username);
 	$days = (isset($remember)) ? $GLOBALS['rememberMeDays'] : 1;
 	$oAuth = (isset($oAuth)) ? $oAuth : false;
+	$output = (isset($output)) ? $output : false;
 	try {
 		$database = new Dibi\Connection([
 			'driver' => 'sqlite3',
@@ -71,7 +122,7 @@ function login($array)
 					}
 					break;
 				default:
-					return 'error';
+					return ($output) ? 'No oAuthType defined' : 'error';
 					break;
 			}
 			$result = ($authSuccess) ? $database->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE', $authSuccess['username'], $authSuccess['email']) : '';
@@ -124,12 +175,13 @@ function login($array)
 				}
 				// End 2FA
 				// authentication passed - 1) mark active and update token
-				if (createToken($result['username'], $result['email'], $result['image'], $result['group'], $result['group_id'], $GLOBALS['organizrHash'], $days)) {
+				$createToken = createToken($result['username'], $result['email'], $result['image'], $result['group'], $result['group_id'], $GLOBALS['organizrHash'], $days);
+				if ($createToken) {
 					writeLoginLog($username, 'success');
 					writeLog('success', 'Login Function - A User has logged in', $username);
 					$ssoUser = (empty($result['email'])) ? $result['username'] : (strpos($result['email'], 'placeholder') !== false) ? $result['username'] : $result['email'];
 					ssoCheck($ssoUser, $password, $token); //need to work on this
-					return true;
+					return ($output) ? array('name' => $GLOBALS['cookieName'], 'token' => (string)$createToken) : true;
 				} else {
 					return 'Token Creation Error';
 				}

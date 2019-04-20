@@ -22,6 +22,7 @@ $approvedFunctionsBypass = array(
 	'v1_wizard_config',
 	'v1_login',
 	'v1_wizard_path',
+	'v1_login_api'
 );
 if (!in_array($function, $approvedFunctionsBypass)) {
 	if (isApprovedRequest($method) === false) {
@@ -649,6 +650,19 @@ switch ($function) {
 				break;
 		}
 		break;
+	case 'v1_login_api':
+		switch ($method) {
+			case 'POST':
+				$result['status'] = 'success';
+				$result['statusText'] = 'success';
+				$result['data'] = apiLogin();
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
 	case 'v1_register':
 		switch ($method) {
 			case 'POST':
@@ -1232,19 +1246,19 @@ switch ($function) {
 				break;
 		}
 		break;
-		case 'v1_emby_join':
-			switch ($method) {
-				case 'POST':
-					$result['status'] = 'success';
-					$result['statusText'] = 'success';
-					$result['data'] = embyJoinAPI($_POST);
-					break;
-				default:
-					$result['status'] = 'error';
-					$result['statusText'] = 'The function requested is not defined for method: ' . $method;
-					break;
-			}
-			break;
+	case 'v1_emby_join':
+		switch ($method) {
+			case 'POST':
+				$result['status'] = 'success';
+				$result['statusText'] = 'success';
+				$result['data'] = embyJoinAPI($_POST);
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
 	case 'v1_token_revoke':
 		switch ($method) {
 			case 'POST':
