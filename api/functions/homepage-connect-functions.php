@@ -1497,7 +1497,15 @@ function getLidarrCalendar($array, $number)
 		if (new DateTime() < new DateTime($releaseDate)) {
 			$unaired = true;
 		}
-		$downloaded = (isset($child['statistics']['percentOfEpisodes']) && $child['statistics']['percentOfEpisodes'] !== '100.0') ? '0' : '1';
+		if (isset($child['statistics']['percentOfTracks'])) {
+			if ($child['statistics']['percentOfTracks'] == '100.0') {
+				$downloaded = '1';
+			} else {
+				$downloaded = '0';
+			}
+		} else {
+			$downloaded = '0';
+		}
 		if ($downloaded == "0" && isset($unaired)) {
 			$downloaded = "text-info";
 		} elseif ($downloaded == "1") {
@@ -1536,7 +1544,8 @@ function getLidarrCalendar($array, $number)
 			"imagetypeFilter" => "music",
 			"downloadFilter" => $downloaded,
 			"bgColor" => str_replace('text', 'bg', $downloaded),
-			"details" => $details
+			"details" => $details,
+			"data" => $child
 		));
 	}
 	if ($i != 0) {
