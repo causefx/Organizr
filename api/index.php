@@ -1157,9 +1157,7 @@ switch ($function) {
 				auth();
 				break;
 			default:
-				$result['status'] = 'error';
-				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
-				break;
+				exit(http_response_code(401));
 		}
 		break;
 	case 'v1_plugin':
