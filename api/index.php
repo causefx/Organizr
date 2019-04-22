@@ -1157,7 +1157,9 @@ switch ($function) {
 				auth();
 				break;
 			default:
-				exit(http_response_code(401));
+				//exit(http_response_code(401));
+				auth();
+				break;
 		}
 		break;
 	case 'v1_plugin':
