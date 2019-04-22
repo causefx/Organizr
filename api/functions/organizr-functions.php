@@ -1547,6 +1547,7 @@ function auth()
 	}
 	if ($group !== null) {
 		if (qualifyRequest($group) && $unlocked) {
+			header("X-Organizr-User: $currentUser");
 			!$debug ? exit(http_response_code(200)) : die("$userInfo Authorized");
 		} else {
 			!$debug ? exit(http_response_code(401)) : die("$userInfo Not Authorized");
