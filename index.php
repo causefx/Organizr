@@ -6,11 +6,11 @@
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <meta content="<?php echo ($GLOBALS['quickConfig']) ? $GLOBALS['quickConfig']['description'] : 'Organizr v2'; ?>"
+    <meta content="<?php echo $GLOBALS['organizrIndexDescription']; ?>"
           name="description">
     <meta content="CauseFX" name="author">
 	<?php echo favIcons(); ?>
-    <title><?php echo ($GLOBALS['quickConfig']) ? $GLOBALS['quickConfig']['title'] : 'Organizr v2'; ?></title>
+    <title><?php echo $GLOBALS['organizrIndexTitle']; ?></title>
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css" rel="stylesheet">
     <link href="plugins/bower_components/jquery-wizard-master/css/wizard.css" rel="stylesheet">
