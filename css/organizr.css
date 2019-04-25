@@ -1343,6 +1343,9 @@ span.fc-title {
     z-index: 10;
     width: 100%;
 }
+.btn-danger i.ti-trash {
+    margin-left: -1.5px;
+}
 /*
 body,
 html {
