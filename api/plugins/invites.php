@@ -160,7 +160,7 @@ function inviteCodes($array)
 /* GET PHPMAILER SETTINGS */
 function invitesGetSettings()
 {
-	if ($GLOBALS['plexID'] !== '' && $GLOBALS['plexToken'] !== '' && $GLOBALS['INVITES-type-include'] !== '') {
+	if ($GLOBALS['plexID'] !== '' && $GLOBALS['plexToken'] !== '' && $GLOBALS['INVITES-type-include'] == 'plex') {
 		$loop = libraryList($GLOBALS['INVITES-type-include'])['libraries'];
 		foreach ($loop as $key => $value) {
 			$libraryList[] = array(
@@ -237,7 +237,7 @@ function invitesGetSettings()
 				'type' => 'text',
 				'name' => 'embyURL',
 				'label' => 'Emby server adress',
-				'value' =>  $GLOBALS['embyURL'],
+				'value' => $GLOBALS['embyURL'],
 				'placeholder' => 'localhost:8086'
 			),
 			array(
@@ -334,7 +334,7 @@ function inviteAction($username, $action = null, $type = null)
 			try {
 				#add emby user to sytem
 				return true;
-			} catch (Requests_Exception $e){
+			} catch (Requests_Exception $e) {
 				writeLog('error', 'Emby Invite Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				return false;
 			}

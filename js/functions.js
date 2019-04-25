@@ -2869,7 +2869,7 @@ function submitSettingsForm(form){
                     var value = input.prop("checked") ? true : false;
                     break;
 				case 'select2':
-                    var value = input.val().toString();
+                    var value = (input.val() !== null) ? input.val().toString() : '';
                     break;
                 default:
                     var value = input.val();
