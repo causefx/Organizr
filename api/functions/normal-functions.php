@@ -82,7 +82,7 @@ function coookie($type, $name, $value = '', $days = -1, $http = true)
 	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https") {
 		$Secure = true;
 		$HTTPOnly = true;
-	} elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+	} elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' && $_SERVER['HTTPS'] !== '') {
 		$Secure = true;
 		$HTTPOnly = true;
 	} else {
