@@ -1138,9 +1138,26 @@ span.select2-selection.select2-selection--multiple{
 img.img-chooser {
     width: 20px;
 }
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #888 transparent transparent transparent;
+    border-style: solid;
+    border-width: 5px 4px 0 4px;
+    height: 0;
+    left: 50%;
+    margin-left: -4px;
+    margin-top: -2px;
+    position: absolute;
+    top: 38%;
+    width: 0;
+}
+.select2-search--dropdown {
+    display: block;
+    padding: 4px;
+    background-color: #1f1f1f;
+}
 .select2-container--default .select2-selection--single .select2-selection__rendered {
     color: inherit;
-    line-height: 38px;
+    /*line-height: 38px;*/
 }
 .select2-container--default .select2-selection--single .select2-selection__arrow {
     height: 38px;
