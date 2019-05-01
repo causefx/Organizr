@@ -1845,9 +1845,89 @@ function buildTabEditor(){
             return false;
         }
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
+        loadSettingsPage('api/?v1/settings/tab/editor/homepage','#settings-tab-editor-homepage','Homepage Items');
+        setTimeout(function(){ sortHomepageItemHrefs() }, 1000);
+        setTimeout(function(){ console.log(window.hrefList); }, 1500);
+        setTimeout(function(){ checkTabHomepageItems(); }, 1500);
+
+
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
+}
+function checkTabHomepageItems(){
+    var tabList = $('.checkTabHomepageItem');
+    $.each(tabList, function(i,v) {
+        var el = $(v);
+        var id = el.attr('id');
+        var name = el.attr('data-name');
+        var url = el.attr('data-url');
+        var urlLocal = el.attr('data-url-local');
+        checkTabHomepageItem(id, name, url, urlLocal);
+    });
+}
+function sortHomepageItemHrefs(){
+    var hrefList = $('.popup-with-form');
+    window.hrefList = new Array();
+    $.each(hrefList, function(i,v) {
+        var el = $(v);
+        var href = el.attr('href');
+        if(href.includes('#homepage-')){
+            var splitHref = href.split("-");
+            window.hrefList[splitHref[1]] = i;
+        }
+    });
+}
+function checkTabHomepageItem(id, name, url, urlLocal){
+    name = name.toLowerCase();
+    url = url.toLowerCase();
+    urlLocal = urlLocal.toLowerCase();
+    if(name.includes('sonarr') || url.includes('sonarr') || urlLocal.includes('sonarr')){
+        addEditHomepageItem(id,'Sonarr');
+    }else if(name.includes('radarr') || url.includes('radarr') || urlLocal.includes('radarr')){
+        addEditHomepageItem(id,'Radarr');
+    }else if(name.includes('lidarr') || url.includes('lidarr') || urlLocal.includes('lidarr')){
+        addEditHomepageItem(id,'Lidarr');
+    }else if(name.includes('couchpotato') || url.includes('couchpotato') || urlLocal.includes('couchpotato')){
+        addEditHomepageItem(id,'CouchPotato');
+    }else if(name.includes('sick') || url.includes('sick') || urlLocal.includes('sick')){
+        addEditHomepageItem(id,'SickRage');
+    }else if((name.includes('plex') || url.includes('plex') || urlLocal.includes('plex')) && !name.includes('plexpy')){
+        addEditHomepageItem(id,'Plex');
+    }else if(name.includes('emby') || url.includes('emby') || urlLocal.includes('emby')){
+        addEditHomepageItem(id,'Emby');
+    }else if(name.includes('sab') || url.includes('sab') || urlLocal.includes('sab')){
+        addEditHomepageItem(id,'SabNZBD');
+    }else if(name.includes('nzbget') || url.includes('nzbget') || urlLocal.includes('nzbget')){
+        addEditHomepageItem(id,'NZBGet');
+    }else if(name.includes('transmission') || url.includes('transmission') || urlLocal.includes('transmission')){
+        addEditHomepageItem(id,'Transmission');
+    }else if(name.includes('qbit') || url.includes('qbit') || urlLocal.includes('qbit')){
+        addEditHomepageItem(id,'qBittorrent');
+    }else if(name.includes('rtorrent') || url.includes('rtorrent') || urlLocal.includes('rtorrent')){
+        addEditHomepageItem(id,'rTorrent');
+    }else if(name.includes('deluge') || url.includes('deluge') || urlLocal.includes('deluge')){
+        addEditHomepageItem(id,'Deluge');
+    }else if(name.includes('ombi') || url.includes('ombi') || urlLocal.includes('ombi')){
+        addEditHomepageItem(id,'Ombi');
+    }else if(name.includes('healthcheck') || url.includes('healthcheck') || urlLocal.includes('healthcheck')){
+        addEditHomepageItem(id,'HealthChecks');
+    }
+}
+function addEditHomepageItem(id, type){
+    var html = '';
+    var process = false;
+    if(type in window.hrefList){
+        html = 'Edit Homepage';
+        process = true;
+    }
+    if(html !== ''){
+        $('#'+id).html(html);
+    }
+    if(process){
+        $('#'+id).attr('onclick', "$('.popup-with-form').magnificPopup('open',"+window.hrefList[type]+")");
+    }
+    return false;
 }
 function buildCategoryEditor(){
 	organizrAPI('GET','api/?v1/tab/list').success(function(data) {
@@ -2837,7 +2917,7 @@ function buildTabEditorItem(array){
 					</div>
 				</div>
 			</td>
-			<td><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+v.url+`">`+v.name+`</span></td>
+			<td><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+v.url+`">`+v.name+`</span><span id="checkTabHomepageItem-`+v.id+`" data-url="`+v.url+`" data-url-local="`+v.url_local+`" data-name="`+v.name+`" lang="en" class="checkTabHomepageItem mouse label label-rouded label-inverse pull-right"></span></td>
 			`+buildTabCategorySelect(array.categories,v.id, v.category_id)+`
 			`+buildTabGroupSelect(array.groups,v.id, v.group_id)+`
 			`+buildTabTypeSelect(v.id, v.type, typeDisabled)+`
