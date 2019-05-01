@@ -80,12 +80,12 @@ function healthChecksTags($tags)
 
 function getHealthChecks($tags = null)
 {
-	if ($GLOBALS['homepageHealthChecksEnabled'] && !empty($GLOBALS['healthChecksToken']) && qualifyRequest($GLOBALS['homepageHealthChecksAuth'])) {
+	if ($GLOBALS['homepageHealthChecksEnabled'] && !empty($GLOBALS['healthChecksToken']) && !empty($GLOBALS['healthChecksURL']) && qualifyRequest($GLOBALS['homepageHealthChecksAuth'])) {
 		$api['content']['checks'] = array();
 		$tags = ($tags) ? healthChecksTags($tags) : '';
 		$healthChecks = explode(',', $GLOBALS['healthChecksToken']);
 		foreach ($healthChecks as $token) {
-			$url = 'https://healthchecks.io/api/v1/checks/' . $tags;
+			$url = qualifyURL($GLOBALS['healthChecksURL']) . '/' . $tags;
 			try {
 				$headers = array('X-Api-Key' => $token);
 				$options = (localURL($url)) ? array('verify' => false) : array();

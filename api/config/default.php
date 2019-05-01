@@ -222,5 +222,6 @@ return array(
 	'localIPTo' => '',
 	'sandbox' => 'allow-presentation,allow-forms,allow-same-origin,allow-pointer-lock,allow-scripts,allow-popups,allow-modals,allow-top-navigation',
 	'description' => 'Organizr - Accept no others',
-	'debugErrors' => true
+	'debugErrors' => true,
+	'healthChecksURL' => 'https://healthchecks.io/api/v1/checks/'
 );

@@ -2081,6 +2081,14 @@ function getHomepageList()
 				),
 				'Connection' => array(
 					array(
+						'type' => 'input',
+						'name' => 'healthChecksURL',
+						'label' => 'URL',
+						'value' => $GLOBALS['healthChecksURL'],
+						'help' => 'URL for HealthChecks API',
+						'placeholder' => 'HealthChecks API URL'
+					),
+					array(
 						'type' => 'password-alt',
 						'name' => 'healthChecksToken',
 						'label' => 'Token',
