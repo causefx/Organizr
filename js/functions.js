@@ -1847,7 +1847,6 @@ function buildTabEditor(){
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
         loadSettingsPage('api/?v1/settings/tab/editor/homepage','#settings-tab-editor-homepage','Homepage Items');
         setTimeout(function(){ sortHomepageItemHrefs() }, 1000);
-        setTimeout(function(){ console.log(window.hrefList); }, 1500);
         setTimeout(function(){ checkTabHomepageItems(); }, 1500);
 
 
@@ -1918,7 +1917,7 @@ function addEditHomepageItem(id, type){
     var html = '';
     var process = false;
     if(type in window.hrefList){
-        html = 'Edit Homepage';
+        html = '<i class="ti-home"></i>';
         process = true;
     }
     if(html !== ''){
@@ -2917,7 +2916,7 @@ function buildTabEditorItem(array){
 					</div>
 				</div>
 			</td>
-			<td><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+v.url+`">`+v.name+`</span><span id="checkTabHomepageItem-`+v.id+`" data-url="`+v.url+`" data-url-local="`+v.url_local+`" data-name="`+v.name+`" lang="en" class="checkTabHomepageItem mouse label label-rouded label-inverse pull-right"></span></td>
+			<td><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+v.url+`">`+v.name+`</span><span id="checkTabHomepageItem-`+v.id+`" data-url="`+v.url+`" data-url-local="`+v.url_local+`" data-name="`+v.name+`" class="checkTabHomepageItem mouse label label-rouded label-inverse pull-right"></span></td>
 			`+buildTabCategorySelect(array.categories,v.id, v.category_id)+`
 			`+buildTabGroupSelect(array.groups,v.id, v.group_id)+`
 			`+buildTabTypeSelect(v.id, v.type, typeDisabled)+`
