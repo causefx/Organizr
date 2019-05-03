@@ -295,9 +295,9 @@ $pageWizard = '
                                     <div class="panel-wrapper collapse in" aria-expanded="true">
                                         <div class="panel-body">
                                             <p lang="en">The Database will contain sensitive information.  Please place in directory outside of root Web Directory.</p>
-                                            <p lang="en">Suggested Directory: <code>' . dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'db</code> <a class="btn default btn-outline clipboard p-5" data-clipboard-text="' . dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'db" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
-                                            <p lang="en">Current Directory: <code>' . dirname(__DIR__, 2) . '</code> <a class="btn default btn-outline clipboard p-5" data-clipboard-text="' . dirname(__DIR__, 2) . '" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
-                                            <p lang="en">Parent Directory: <code>' . dirname(__DIR__, 3) . '</code> <a class="btn default btn-outline clipboard p-5" data-clipboard-text="' . dirname(__DIR__, 3) . '" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
+                                            <p lang="en">Suggested Directory: <code>' . dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'db</code> <a class="btn default btn-outline clipboard p-a-5" data-clipboard-text="' . dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'db" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
+                                            <p lang="en">Current Directory: <code>' . dirname(__DIR__, 2) . '</code> <a class="btn default btn-outline clipboard p-a-5" data-clipboard-text="' . dirname(__DIR__, 2) . '" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
+                                            <p lang="en">Parent Directory: <code>' . dirname(__DIR__, 3) . '</code> <a class="btn default btn-outline clipboard p-a-5" data-clipboard-text="' . dirname(__DIR__, 3) . '" href="javascript:void(0);"><i class="ti-clipboard"></i></a></p>
                                         </div>
                                     </div>
                                 </div>

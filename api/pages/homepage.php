@@ -31,6 +31,13 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 			      text: \'Filter\',
 			      click: function() {
 			        $(\'#calendar-filter-modal\').modal(\'show\');
+			      },
+			      //icon: \'x\'
+			    },
+			    refreshCalendar: {
+			      text: \'Refresh\',
+			      click: function() {
+			        homepageCalendar();
 			      }
 			    }
 			  },
@@ -41,7 +48,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
             header: {
                left: "prev,next,today",
                center: "title",
-               right: (activeInfo.mobile) ? "filterCalendar" : "filterCalendar,month,basicWeek,basicDay,list",
+               right: (activeInfo.mobile) ? "refreshCalendar,filterCalendar" : "refreshCalendar,filterCalendar,month,basicWeek,basicDay,list",
             },
             views: {
                basicDay: { buttonText: window.lang.translate("Day"), eventLimit: ' . $GLOBALS['calendarLimit'] . ' },

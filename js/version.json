@@ -166,5 +166,12 @@
     "new": "Radarr 4k Image|SRI Hash for External JS (#1055)|Limit for Ombi items (#1107)|CTRL + SHIFT on splash page to not close it after click",
     "fixed": "Fix for bootstrap screen width bug @leram84|Ombi on homepage causes site to hang (#1107)|Fix SSO if user is LDAP user|Auto reload on internal tabs|Request button border-radius",
     "notes": "Updated language translations|Please report bugs in GitHub issues page"
+  },
+  "2.0.180": {
+    "date": "2019-05-03 18:00",
+    "title": "Long Overdue Update",
+    "new": "Emby Invites|HealthChecks.io to homepage|Added ability to have more than one api token for healthchecks.io|Updated SweetAlert to new version|Option to define local IP override|LDAP login test|iFrame sandbox options|Refreshes to plex and emby recent|OPNsense to Default Icon Library (#1131)|Added refresh to calendar|Added refresh to Streams|Added keybinding for next and previous tabs|Toggle to turn of organizr debug errors|Added method to login with API|Add header to auth line for current user - used for Grafana SSO|Shortcut to edit homepage item on tab page|Allow custom URL for selfhosted version of healthchecks (#1161)",
+    "fixed": "Ombi SSO error (#1117)|Changed Windows update method|Multiple CSS fixes|Invite select2 box code|V2 emby unexpected token (#1121)|Fix Menu overlapping (#1122)|Calendar does not show recurring events (#1104)|Fix big log files (#990)|Ignore js error for downloader (#1133)|Make all urls without scheme http (#1133)|Mobile login form autocapitalises and auto-corrects (#1138)|Undefined index: description (#1154)|http and https check (#1154)|Tab Url choose image text/image is misaligned (#1146)|invite settings box|Misaligned trashcan icon in Tab Editor menu (#1147)",
+    "notes": "Updated language translations|Added more default tab images|Please report bugs in GitHub issues page"
   }
 }

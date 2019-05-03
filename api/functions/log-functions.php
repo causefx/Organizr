@@ -1,7 +1,20 @@
 <?php
+function checkLog($path)
+{
+	if (file_exists($path)) {
+		if (filesize($path) > 500000) {
+			rename($path, $path . '[' . date('Y-m-d') . '].json');
+			return false;
+		}
+		return true;
+	} else {
+		return false;
+	}
+}
+
 function writeLoginLog($username, $authType)
 {
-	if (file_exists($GLOBALS['organizrLoginLog'])) {
+	if (checkLog($GLOBALS['organizrLoginLog'])) {
 		$getLog = str_replace("\r\ndate", "date", file_get_contents($GLOBALS['organizrLoginLog']));
 		$gotLog = json_decode($getLog, true);
 	}
@@ -18,8 +31,10 @@ function writeLoginLog($username, $authType)
 
 function writeLog($type = 'error', $message, $username = null)
 {
+	$GLOBALS['timeExecution'] = timeExecution($GLOBALS['timeExecution']);
+	$message = $message . ' [Execution Time: ' . formatSeconds($GLOBALS['timeExecution']) . ']';
 	$username = ($username) ? $username : $GLOBALS['organizrUser']['username'];
-	if (file_exists($GLOBALS['organizrLog'])) {
+	if (checkLog($GLOBALS['organizrLog'])) {
 		$getLog = str_replace("\r\ndate", "date", file_get_contents($GLOBALS['organizrLog']));
 		$gotLog = json_decode($getLog, true);
 	}

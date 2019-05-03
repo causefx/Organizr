@@ -111,6 +111,39 @@ function joinPlex(){
     	});
     }
 }
+
+function joinEmby(){
+    var username = $('#inviteEmbyJoinUsername');
+    var email = $('#inviteEmbyJoinEmail');
+    var password = $('#inviteEmbyJoinPassword');
+    if(username.val() == ''){
+        username.focus();
+        message('Invite Error',' Please Enter Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+    }else if(email.val() == ''){
+        email.focus();
+        message('Invite Error',' Please Enter Email',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+    }else if(password.val() == ''){
+        password.focus();
+        message('Invite Error',' Please Enter Passowrd',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+    }
+    if(email.val() !== '' && username.val() !== '' && password.val() !== ''){
+        organizrAPI('POST','api/?v1/emby/join',{username:username.val(), email:email.val(), password:password.val()}).success(function(data) {
+    		var response = JSON.parse(data);
+            if(response.data === true){
+                $('.invite-step-3-emby-no').toggleClass('hidden');
+                $('.invite-step-3-emby-yes').toggleClass('hidden');
+                message('Invite Function',' User Created',activeInfo.settings.notifications.position,'#FFF','success','5000');
+                $('#inviteUsernameInviteEmby').val(username.val());
+                hasEmbyUsername();
+            }else{
+                message('Invite Error',' '+response.data,activeInfo.settings.notifications.position,'#FFF','warning','5000');
+            }
+    	}).fail(function(xhr) {
+    		console.error("Organizr Function: API Connection Failed");
+    	});
+    }
+}
+
 function inviteHasAccount(type,value){
     switch (type) {
         case 'plex':
@@ -122,6 +155,15 @@ function inviteHasAccount(type,value){
                 $('.invite-step-3-plex-no').toggleClass('hidden');
             }
             break;
+        case 'emby' :
+          if(value){
+            $('.invite-step-2').toggleClass('hidden');
+            $('.invite-step-3-emby-yes').toggleClass('hidden');
+          }else{
+            $('.invite-step-2').toggleClass('hidden');
+            $('.invite-step-3-emby-no').toggleClass('hidden');
+          }
+          break;
         default:
         alert(type+' is not set up yet');
     }
@@ -145,6 +187,38 @@ function hasPlexUsername(){
             if(response.data === true){
                 $('.invite-step-3-plex-yes').toggleClass('hidden');
                 $('.invite-step-4-plex-accept').toggleClass('hidden');
+                if(local('get', 'invite')){
+            		local('remove', 'invite');
+            	}
+            }else{
+                message('Invite Error',' Code Incorrect',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+            }
+            ajaxloader();;
+        }).fail(function(xhr) {
+            console.error("Organizr Function: API Connection Failed");
+            ajaxloader();
+        });
+    }
+}
+function hasEmbyUsername(){
+    var code = $('#inviteCodeInput').val().toUpperCase();
+    var username = $('#inviteUsernameInviteEmby');
+    if(username.val() == ''){
+        username.focus();
+        message('Invite Error',' Please Enter Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+    }else{
+        var post = {
+            plugin:'Invites/codes',
+            action:'use',
+            code:code,
+            usedby:username.val()
+        };
+        ajaxloader(".content-wrap","in");
+        organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
+            var response = JSON.parse(data);
+            if(response.data === true){
+                $('.invite-step-3-emby-yes').toggleClass('hidden');
+                $('.invite-step-4-emby-accept').toggleClass('hidden');
                 if(local('get', 'invite')){
             		local('remove', 'invite');
             	}
@@ -381,12 +455,36 @@ $(document).on('click', '.inviteModal', function() {
                             <br />
                             <button class="btn btn-block btn-info" onclick="joinPlex();">Submit</button>
                         </div>
-                        <div class="form-group invite-step-3-emby-yes hidden">
-                        </div>
-                        <div class="form-group invite-step-3-emby-no hidden">
-                        </div>
                         <div class="form-group invite-step-4-plex-accept hidden">
                             <h4 class="" lang="en">You have been invited.  Please goto <a href="https://plex.tv" target="_blank">PLEX.TV</a> and login to accept the invite.  Once you have done that, you may head back here and login with your credentials.</h4>
+                        </div>
+                        <!-- Begin Emby Invites -->
+                        <div class="form-group invite-step-3-emby-yes hidden">
+                            <div class="input-group" style="width: 100%;">
+                                <div class="input-group-addon hidden-xs"><i class="ti-user"></i></div>
+                                <input type="text" class="form-control" id="inviteUsernameInviteEmby" placeholder="Emby Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="" required="">
+                            </div>
+                            <br />
+                            <button class="btn btn-block btn-info" onclick="hasEmbyUsername();">Submit</button>
+                        </div>
+                        <div class="form-group invite-step-3-emby-no hidden">
+                            <div class="input-group" style="width: 100%;">
+                                <div class="input-group-addon hidden-xs"><i class="ti-user"></i></div>
+                                <input type="text" class="form-control" id="inviteEmbyJoinUsername" lang="en" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="" required="">
+                            </div>
+                            <div class="input-group" style="width: 100%;">
+                                <div class="input-group-addon hidden-xs"><i class="ti-email"></i></div>
+                                <input type="text" class="form-control" id="inviteEmbyJoinEmail" lang="en" placeholder="E-Mail" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required="">
+                            </div>
+                            <div class="input-group" style="width: 100%;">
+                                <div class="input-group-addon hidden-xs"><i class="ti-user"></i></div>
+                                <input type="password" class="form-control" id="inviteEmbyJoinPassword" lang="en" placeholder="Password" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"  required="">
+                            </div>
+                            <br />
+                            <button class="btn btn-block btn-info" onclick="joinEmby();">Submit</button>
+                        </div>
+                        <div class="form-group invite-step-4-emby-accept hidden">
+                            <h4 class="" lang="en">You Have been added to emby!</h4>
                         </div>
                     </div>
                 </div>
@@ -440,7 +538,6 @@ $(document).on('click', '#INVITES-settings-button', function() {
     organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
         var response = JSON.parse(data);
         $('#INVITES-settings-items').html(buildFormGroup(response.data));
-        $(".invite-select").select2();
         $('.selectpicker').selectpicker();
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");

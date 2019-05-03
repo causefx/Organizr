@@ -1,7 +1,7 @@
 <?php
 // ===================================
 // Organizr Version
-$GLOBALS['installedVersion'] = '2.0.70';
+$GLOBALS['installedVersion'] = '2.0.180';
 // ===================================
 // Quick php Version check
 $GLOBALS['minimumPHP'] = '7.1.3';
@@ -20,6 +20,8 @@ if ($GLOBALS['docker']) {
 }
 $GLOBALS['fileHash'] = (isset($GLOBALS['quickCommit'])) ? $GLOBALS['quickCommit'] : $GLOBALS['installedVersion'];
 $GLOBALS['quickConfig'] = (file_exists($GLOBALS['userConfigPath'])) ? loadConfigOnce($GLOBALS['userConfigPath']) : null;
+$GLOBALS['organizrIndexTitle'] = (isset($GLOBALS['quickConfig']['title'])) ? $GLOBALS['quickConfig']['title'] : 'Organizr v2';
+$GLOBALS['organizrIndexDescription'] = (isset($GLOBALS['quickConfig']['description'])) ? $GLOBALS['quickConfig']['description'] : 'Organizr v2';
 // Quick function for plugins
 function pluginFiles($type)
 {

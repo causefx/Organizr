@@ -186,7 +186,10 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	                                <div class="col-lg-12">
 							            <div class="panel panel-default">
 											<div class="panel-heading bg-org p-t-10 p-b-10">
-												<span class="pull-left m-t-5"><span lang="en">Organizr News</span></span>
+												<span class="pull-left m-t-5">
+													<img class="lazyload loginTitle" data-src="plugins/images/organizr/logo-no-border.png"> &nbsp;
+													<span class="text-uppercase fw300" lang="en">Organizr News</span>
+												</span>
 												<div class="clearfix"></div>
 											</div>
 							                <div class="panel-wrapper p-b-0 collapse in bg-org">

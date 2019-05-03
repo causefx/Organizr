@@ -504,20 +504,33 @@ $(document).on("click", ".changeDefaultGroup", function () {
 });
 //DELETE GROUP
 $(document).on("click", ".deleteUserGroup", function () {
-    //Create POST Array
-    var post = {
-        action:'deleteUserGroup',
-        api:'api/?v1/settings/user/manage/groups',
-        id:$(this).parent().parent().attr("data-id"),
-        groupID:$(this).parent().parent().attr("data-group-id"),
-        groupName:$(this).parent().parent().attr("data-group"),
-        messageTitle:'',
-        messageBody:'Deleted User Group '+$(this).parent().parent().attr("data-group"),
-        error:'Organizr Function: User Group API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildGroupManagement );
-    settingsAPI(post,callbacks);
+    var group = $(this);
+    swal({
+        title: window.lang.translate('Delete ')+group.parent().parent().attr("data-group")+'?',
+        icon: "warning",
+        buttons: {
+            cancel: window.lang.translate('No'),
+            confirm: window.lang.translate('Yes'),
+        },
+        dangerMode: true,
+        confirmButtonColor: "#DD6B55"
+    }).then(function(willDelete) {
+        if (willDelete) {
+            var post = {
+                action:'deleteUserGroup',
+                api:'api/?v1/settings/user/manage/groups',
+                id:group.parent().parent().attr("data-id"),
+                groupID:group.parent().parent().attr("data-group-id"),
+                groupName:group.parent().parent().attr("data-group"),
+                messageTitle:'',
+                messageBody:'Deleted User Group '+group.parent().parent().attr("data-group"),
+                error:'Organizr Function: User Group API Connection Failed'
+            };
+            var callbacks = $.Callbacks();
+            callbacks.add( buildGroupManagement );
+            settingsAPI(post,callbacks);
+        }
+    });
 });
 //ADD GROUP
 $(document).on("click", ".addNewGroup", function () {
@@ -644,16 +657,15 @@ $(document).on("click", ".deleteUser", function () {
     var user = $(this);
     swal({
         title: window.lang.translate('Delete ')+user.parent().parent().attr("data-username")+'?',
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
-        confirmButtonText: window.lang.translate('Yes'),
-        cancelButtonText: window.lang.translate('No'),
-        closeOnConfirm: true,
-        closeOnCancel: true
-    }, function(isConfirm){
-        if (isConfirm) {
-            //Create POST Array
+        icon: "warning",
+        buttons: {
+            cancel: window.lang.translate('No'),
+            confirm: window.lang.translate('Yes'),
+        },
+        dangerMode: true,
+        confirmButtonColor: "#DD6B55"
+    }).then(function(willDelete) {
+        if (willDelete) {
             var post = {
                 action:'deleteUser',
                 api:'api/?v1/settings/user/manage/users',
@@ -668,7 +680,6 @@ $(document).on("click", ".deleteUser", function () {
             settingsAPI(post,callbacks);
         }
     });
-
 });
 // CHANGE TAB GROUP
 $(document).on("change", ".tabGroupSelect", function () {
@@ -817,17 +828,16 @@ $(document).on("change", ".defaultSwitch", function () {
 $(document).on("click", ".deleteTab", function () {
     var user = $(this);
     swal({
-        title: window.lang.translate('Delete ')+user.parent().parent().attr("data-name")+'?',
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
-        confirmButtonText: window.lang.translate('Yes'),
-        cancelButtonText: window.lang.translate('No'),
-        closeOnConfirm: true,
-        closeOnCancel: true
-    }, function(isConfirm){
-        if (isConfirm) {
-            //Create POST Array
+        title: window.lang.translate('Delete ') + user.parent().parent().attr("data-name") + '?',
+        icon: "warning",
+        buttons: {
+            cancel: window.lang.translate('No'),
+            confirm: window.lang.translate('Yes'),
+        },
+        dangerMode: true,
+        confirmButtonColor: "#DD6B55"
+    }).then(function(willDelete) {
+        if (willDelete) {
             var post = {
                 action:'deleteTab',
                 api:'api/?v1/settings/tab/editor/tabs',
@@ -1010,16 +1020,15 @@ $(document).on("click", ".deleteCategory", function () {
     var category = $(this);
     swal({
         title: window.lang.translate('Delete ')+category.parent().parent().attr("data-name")+'?',
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
-        confirmButtonText: window.lang.translate('Yes'),
-        cancelButtonText: window.lang.translate('No'),
-        closeOnConfirm: true,
-        closeOnCancel: true
-    }, function(isConfirm){
-        if (isConfirm) {
-            //Create POST Array
+        icon: "warning",
+        buttons: {
+            cancel: window.lang.translate('No'),
+            confirm: window.lang.translate('Yes'),
+        },
+        dangerMode: true,
+        confirmButtonColor: "#DD6B55"
+    }).then(function(willDelete) {
+        if (willDelete) {
             var post = {
                 action:'deleteCategory',
                 api:'api/?v1/settings/tab/editor/categories',
@@ -1154,16 +1163,15 @@ $(document).on("click", ".deleteImage", function () {
     var image = $(this);
     swal({
         title: window.lang.translate('Delete ')+image.attr("data-image-name")+'?',
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
-        confirmButtonText: window.lang.translate('Yes'),
-        cancelButtonText: window.lang.translate('No'),
-        closeOnConfirm: true,
-        closeOnCancel: true
-    }, function(isConfirm){
-        if (isConfirm) {
-            //Create POST Array
+        icon: "warning",
+        buttons: {
+            cancel: window.lang.translate('No'),
+            confirm: window.lang.translate('Yes'),
+        },
+        dangerMode: true,
+        confirmButtonColor: "#DD6B55"
+    }).then(function(willDelete) {
+        if (willDelete) {
             var post = {
                 action:'deleteImage',
                 api:'api/?v1/settings/image/manager/view',
@@ -1207,16 +1215,15 @@ $(document).on('click', '.disablePlugin', function() {
     var plugin = $(this);
     swal({
         title: window.lang.translate('Disable')+' '+plugin.attr("data-plugin-name")+'?',
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
-        confirmButtonText: window.lang.translate('Yes'),
-        cancelButtonText: window.lang.translate('No'),
-        closeOnConfirm: true,
-        closeOnCancel: true
-    }, function(isConfirm){
-        if (isConfirm) {
-            //Create POST Array
+        icon: "warning",
+        buttons: {
+            cancel: window.lang.translate('No'),
+            confirm: window.lang.translate('Yes'),
+        },
+        dangerMode: true,
+        confirmButtonColor: "#DD6B55"
+    }).then(function(willDelete) {
+        if (willDelete) {
             var post = {
                 action:'disable',
                 api:'api/?v1/settings/plugins/list',
@@ -1234,7 +1241,6 @@ $(document).on('click', '.disablePlugin', function() {
             setTimeout(function(){ buildPlugins();ajaxloader(); }, 3000);
         }
     });
-
 });
 // AUTH BACKEND HIDE SHOW
 $(document).on('change', '#authSelect, #authBackendSelect', function(e) {
@@ -1791,6 +1797,19 @@ Mousetrap.bind("d d", function() { toggleDebug() });
 Mousetrap.bind("esc", function () {
     $('.splash-screen').removeClass('in').addClass('hidden')
 });
+Mousetrap.bind('ctrl+shift+up', function(e) {
+    var getCurrentTab = $('.allTabsList a.active').parent();
+    var previousTab = getCurrentTab.prev().children();
+    previousTab.trigger("click");
+    parent.focus();
+    return false;
+});
+Mousetrap.bind('ctrl+shift+down', function(e) {
+    var getCurrentTab = $('.allTabsList a.active').parent();
+    var nextTab = getCurrentTab.next().children();
+    nextTab.trigger("click");
+    return false;
+});
 $(document).on('change', "#new-tab-form-chooseImage", function (e) {
     var newIcon = $('#new-tab-form-chooseImage').val();
     if(newIcon !== 'Select or type Icon'){
@@ -1892,4 +1911,14 @@ $(document).on('click', ".copyDebug", function(){
 $(document).on("keyup", "#authBackendHostPrefix-input, #authBackendHostSuffix-input", function () {
     var newDN = $('#authBackendHostPrefix-input').val() + 'TestAcct' + $('#authBackendHostSuffix-input').val();
     $('#accountDN').html(newDN);
+});
+
+// homepage healthchecks
+$(document).on('click', ".good-health-checks", function(){
+    homepageHealthChecks();
+});
+$(document).on('click', ".showMoreHealth", function(){
+   var id = $(this).attr('data-id');
+    $('.showMoreHealthDiv-'+id).toggleClass('d-none');
+    $(this).find('.card-body').toggleClass('healthPosition');
 });

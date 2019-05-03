@@ -160,7 +160,7 @@ function inviteCodes($array)
 /* GET PHPMAILER SETTINGS */
 function invitesGetSettings()
 {
-	if ($GLOBALS['plexID'] !== '' && $GLOBALS['plexToken'] !== '' && $GLOBALS['INVITES-type-include'] !== '') {
+	if ($GLOBALS['plexID'] !== '' && $GLOBALS['plexToken'] !== '' && $GLOBALS['INVITES-type-include'] == 'plex') {
 		$loop = libraryList($GLOBALS['INVITES-type-include'])['libraries'];
 		foreach ($loop as $key => $value) {
 			$libraryList[] = array(
@@ -194,7 +194,7 @@ function invitesGetSettings()
 						'value' => 'plex'
 					),
 					array(
-						'name' => 'Emby [Not Ready]',
+						'name' => 'Emby',
 						'value' => 'emby'
 					)
 				)
@@ -217,14 +217,37 @@ function invitesGetSettings()
 			),
 			array(
 				'type' => 'select2',
-				'class' => 'select2-multiple invite-select',
+				'class' => 'select2-multiple',
+				'id' => 'invite-select',
 				'name' => 'INVITES-plexLibraries',
 				'label' => 'Libraries',
 				'value' => $GLOBALS['INVITES-plexLibraries'],
 				'options' => $libraryList
 			)
 		),
-		'Emby Settings' => array(),
+		'Emby Settings' => array(
+			array(
+				'type' => 'password-alt',
+				'name' => 'embyToken',
+				'label' => 'Emby API key',
+				'value' => $GLOBALS['embyToken'],
+				'placeholder' => 'enter key from emby'
+			),
+			array(
+				'type' => 'text',
+				'name' => 'embyURL',
+				'label' => 'Emby server adress',
+				'value' => $GLOBALS['embyURL'],
+				'placeholder' => 'localhost:8086'
+			),
+			array(
+				'type' => 'text',
+				'name' => 'INVITES-EmbyTemplate',
+				'label' => 'Emby User to be used as template for new users',
+				'value' => $GLOBALS['INVITES-EmbyTemplate'],
+				'placeholder' => 'AdamSmith'
+			)
+		),
 		'FYI' => array(
 			array(
 				'type' => 'html',
@@ -308,7 +331,13 @@ function inviteAction($username, $action = null, $type = null)
 			}
 			break;
 		case 'emby':
-			# code...
+			try {
+				#add emby user to sytem
+				return true;
+			} catch (Requests_Exception $e) {
+				writeLog('error', 'Emby Invite Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				return false;
+			}
 			break;
 		default:
 			return false;

@@ -53,7 +53,7 @@ if(activeInfo.settings.login.rememberMe){
 	                
 	                	<div class="form-group">
 				          <div class="col-xs-12">
-				            <input id="login-username-Input" class="form-control" name="username" type="text" required="" placeholder="Username" lang="en" autofocus>
+				            <input id="login-username-Input" class="form-control" name="username" type="text" required="" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" lang="en" autofocus>
 				          </div>
 				        </div>
 				        <div class="form-group">

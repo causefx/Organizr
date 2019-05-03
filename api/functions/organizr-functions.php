@@ -25,6 +25,7 @@ function organizrSpecialSettings()
 			),
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
+				'healthChecksTags' => $GLOBALS['healthChecksTags'],
 			)
 		),
 		'sso' => array(
@@ -98,7 +99,9 @@ function organizrSpecialSettings()
 			'docker' => qualifyRequest(1) ? $GLOBALS['docker'] : '',
 			'githubCommit' => qualifyRequest(1) ? $GLOBALS['commit'] : '',
 			'schema' => qualifyRequest(1) ? getSchema() : '',
-			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth'])
+			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth']),
+			'debugErrors' => $GLOBALS['debugErrors'],
+			'sandbox' => $GLOBALS['sandbox'],
 		)
 	);
 }
@@ -656,6 +659,15 @@ function getSettingsMain()
 				'help' => 'Remember! Please save before using the test button!'
 			),
 			array(
+				'type' => 'button',
+				'name' => 'test-button-ldap-login',
+				'label' => 'Test Login',
+				'icon' => 'fa fa-flask',
+				'class' => 'ldapAuth switchAuth',
+				'text' => 'Test Login',
+				'attr' => 'onclick="showLDAPLoginTest()"'
+			),
+			array(
 				'type' => 'input',
 				'name' => 'embyURL',
 				'class' => 'embyAuth switchAuth',
@@ -722,6 +734,48 @@ function getSettingsMain()
 				'help' => 'Important! Do not keep this enabled for too long as this opens up Authentication while testing.',
 				'value' => $GLOBALS['authDebug'],
 				'class' => 'authDebug'
+			),
+			array(
+				'type' => 'select2',
+				'class' => 'select2-multiple',
+				'id' => 'sandbox-select',
+				'name' => 'sandbox',
+				'label' => 'iFrame Sandbox',
+				'value' => $GLOBALS['sandbox'],
+				'help' => 'WARNING! This can potentially mess up your iFrames',
+				'options' => array(
+					array(
+						'name' => 'Allow Presentation',
+						'value' => 'allow-presentation'
+					),
+					array(
+						'name' => 'Allow Forms',
+						'value' => 'allow-forms'
+					),
+					array(
+						'name' => 'Allow Same Origin',
+						'value' => 'allow-same-origin'
+					),
+					array(
+						'name' => 'Allow Pointer Lock',
+						'value' => 'allow-pointer-lock'
+					),
+					array(
+						'name' => 'Allow Scripts',
+						'value' => 'allow-scripts'
+					), array(
+						'name' => 'Allow Popups',
+						'value' => 'allow-popups'
+					),
+					array(
+						'name' => 'Allow Modals',
+						'value' => 'allow-modals'
+					),
+					array(
+						'name' => 'Allow Top Navigation',
+						'value' => 'allow-top-navigation'
+					),
+				)
 			)
 		),
 		'Login' => array(
@@ -754,6 +808,22 @@ function getSettingsMain()
 				'label' => 'Remember Me',
 				'help' => 'Default status of Remember Me button on login screen',
 				'value' => $GLOBALS['rememberMe'],
+			),
+			array(
+				'type' => 'input',
+				'name' => 'localIPFrom',
+				'label' => 'Override Local IP From',
+				'value' => $GLOBALS['localIPFrom'],
+				'placeholder' => 'i.e. 123.123.123.123',
+				'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'localIPTo',
+				'label' => 'Override Local IP To',
+				'value' => $GLOBALS['localIPTo'],
+				'placeholder' => 'i.e. 123.123.123.123',
+				'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
 			),
 		),
 		'Ping' => array(
@@ -992,8 +1062,16 @@ function getCustomizeAppearance()
 					'type' => 'switch',
 					'name' => 'useLogo',
 					'label' => 'Use Logo instead of Title',
-					'value' => $GLOBALS['useLogo']
-				)
+					'value' => $GLOBALS['useLogo'],
+					'help' => 'Also sets the title of your site'
+				),
+				array(
+					'type' => 'input',
+					'name' => 'description',
+					'label' => 'Meta Description',
+					'value' => $GLOBALS['description'],
+					'help' => 'Used to set the description for SEO meta tags'
+				),
 			),
 			'Login Page' => array(
 				array(
@@ -1015,6 +1093,12 @@ function getCustomizeAppearance()
 					'name' => 'alternateHomepageHeaders',
 					'label' => 'Alternate Homepage Titles',
 					'value' => $GLOBALS['alternateHomepageHeaders']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'debugErrors',
+					'label' => 'Show Debug Errors',
+					'value' => $GLOBALS['debugErrors']
 				),
 				array(
 					'type' => 'select',
@@ -1463,6 +1547,7 @@ function auth()
 	}
 	if ($group !== null) {
 		if (qualifyRequest($group) && $unlocked) {
+			header("X-Organizr-User: $currentUser");
 			!$debug ? exit(http_response_code(200)) : die("$userInfo Authorized");
 		} else {
 			!$debug ? exit(http_response_code(401)) : die("$userInfo Not Authorized");
@@ -1995,6 +2080,11 @@ function plexJoinAPI($array)
 	return plexJoin($array['data']['username'], $array['data']['email'], $array['data']['password']);
 }
 
+function embyJoinAPI($array)
+{
+	return embyJoin($array['data']['username'], $array['data']['email'], $array['data']['password']);
+}
+
 function plexJoin($username, $email, $password)
 {
 	try {
@@ -2038,6 +2128,86 @@ function plexJoin($username, $email, $password)
 	return false;
 }
 
+function embyJoin($username, $email, $password)
+{
+	try {
+		#create user in emby.
+		$headers = array(
+			"Accept" => "application/json"
+		);
+		$data = array();
+		$url = $GLOBALS['embyURL'] . '/emby/Users/New?name=' . $username . '&api_key=' . $GLOBALS['embyToken'];
+		$response = Requests::Post($url, $headers, json_encode($data), array());
+		$response = $response->body;
+		//return($response);
+		$response = json_decode($response, true);
+		//return($response);
+		$userID = $response["Id"];
+		//return($userID);
+		#authenticate as user to update password.
+		//randomizer four digits of DeviceId
+		// I dont think ther would be security problems with hardcoding deviceID but randomizing it would mitigate any issue.
+		$deviceIdSeceret = rand(0, 9) . "" . rand(0, 9) . "" . rand(0, 9) . "" . rand(0, 9);
+		//hardcoded device id with the first three digits random 0-9,0-9,0-9,0-9
+		$embyAuthHeader = 'MediaBrowser Client="Emby Mobile", Device="Firefox", DeviceId="' . $deviceIdSeceret . 'aWxssS81LgAggFdpbmRvd3MgTlQgMTAuMDsgV2luNjxx7IHf2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzcyLjAuMzYyNi4xMTkgU2FmYXJpLzUzNy4zNnwxNTUxNTczMTAyNDI4", Version="4.0.2.0"';
+		$headers = array(
+			"Accept" => "application/json",
+			"Content-Type" => "application/json",
+			"X-Emby-Authorization" => $embyAuthHeader
+		);
+		$data = array(
+			"Pw" => "",
+			"Username" => $username
+		);
+		$url = $GLOBALS['embyURL'] . '/emby/Users/AuthenticateByName';
+		$response = Requests::Post($url, $headers, json_encode($data), array());
+		$response = $response->body;
+		$response = json_decode($response, true);
+		$userToken = $response["AccessToken"];
+		#update password
+		$embyAuthHeader = 'MediaBrowser Client="Emby Mobile", Device="Firefox", Token="' . $userToken . '", DeviceId="' . $deviceIdSeceret . 'aWxssS81LgAggFdpbmRvd3MgTlQgMTAuMDsgV2luNjxx7IHf2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzcyLjAuMzYyNi4xMTkgU2FmYXJpLzUzNy4zNnwxNTUxNTczMTAyNDI4", Version="4.0.2.0"';
+		$headers = array(
+			"Accept" => "application/json",
+			"Content-Type" => "application/json",
+			"X-Emby-Authorization" => $embyAuthHeader
+		);
+		$data = array(
+			"CurrentPw" => "",
+			"NewPw" => $password,
+			"Id" => $userID
+		);
+		$url = $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Password';
+		Requests::Post($url, $headers, json_encode($data), array());
+		#update config
+		$headers = array(
+			"Accept" => "application/json",
+			"Content-Type" => "application/json"
+		);
+		$url = $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Policy?api_key=' . $GLOBALS['embyToken'];
+		$response = Requests::Post($url, $headers, getEmbyTemplateUserJson(), array());
+		#add emby.media
+		try {
+			#seperate because this is not required
+			$headers = array(
+				"Accept" => "application/json",
+				"X-Emby-Authorization" => $embyAuthHeader
+			);
+			$data = array(
+				"ConnectUsername " => $email
+			);
+			$url = $GLOBALS['embyURL'] . '/emby/Users/' . $userID . '/Connect/Link';
+			Requests::Post($url, $headers, json_encode($data), array());
+		} catch (Requests_Exception $e) {
+			writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		}
+		return (true);
+		//return( "USERID:".$userID);
+	} catch (Requests_Exception $e) {
+		writeLog('error', 'Emby create Function - Error: ' . $e->getMessage(), 'SYSTEM');
+	};
+	return false;
+}
+
 function checkFrame($array, $url)
 {
 	if (array_key_exists("x-frame-options", $array)) {
@@ -2058,6 +2228,42 @@ function checkFrame($array, $url)
 		}
 		return true;
 	}
+}
+
+/*loads users from emby and returns a correctly formated policy for a new user.
+*/
+function getEmbyTemplateUserJson()
+{
+	$headers = array(
+		"Accept" => "application/json"
+	);
+	$data = array();
+	$url = $GLOBALS['embyURL'] . '/emby/Users?api_key=' . $GLOBALS['embyToken'];
+	$response = Requests::Get($url, $headers, array());
+	$response = $response->body;
+	$response = json_decode($response, true);
+	//error_Log("response ".json_encode($response));
+	writeLog('error', 'userList:' . json_encode($response), 'SYSTEM');
+	//$correct stores the template users object
+	$correct = null;
+	foreach ($response as $element) {
+		if ($element['Name'] == $GLOBALS['INVITES-EmbyTemplate']) {
+			$correct = $element;
+		}
+	}
+	writeLog('error', 'Correct user:' . json_encode($correct), 'SYSTEM');
+	if ($correct == null) {
+		//return empty JSON if user incorectly configured template
+		return "{}";
+	}
+	//select policy section and remove possibly dangeours rows.
+	$policy = $correct['Policy'];
+	//writeLog('error', 'policy update'.$policy, 'SYSTEM');
+	unset($policy['AuthenticationProviderId']);
+	unset($policy['InvalidLoginAttemptCount']);
+	unset($policy['DisablePremiumFeatures']);
+	unset($policy['DisablePremiumFeatures']);
+	return (json_encode($policy));
 }
 
 function frameTest($url)
