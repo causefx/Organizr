@@ -1243,6 +1243,13 @@ function getCalendar()
 					if (!empty($startKeys) && !empty($endKeys) && isset($icsEvent['SUMMARY'])) {
 						/* Getting start date and time */
 						$repeat = isset($icsEvent ['RRULE']) ? $icsEvent ['RRULE'] : false;
+						if (!$originalTimeZone) {
+							$tzKey = array_keys($startKeys);
+							if (strpos($tzKey[0], 'TZID=') !== false) {
+								$originalTimeZone = explode('TZID=', (string)$tzKey[0]);
+								$originalTimeZone = (count($originalTimeZone) >= 2) ? $originalTimeZone[1] : false;
+							}
+						}
 						$start = reset($startKeys);
 						$end = reset($endKeys);
 						$totalDays = $GLOBALS['calendarStart'] + $GLOBALS['calendarEnd'];
