@@ -1231,6 +1231,7 @@ function getCalendar()
 			$icsEvents = getIcsEventsAsArray($value);
 			if (isset($icsEvents) && !empty($icsEvents)) {
 				$timeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : date_default_timezone_get();
+				$originalTimeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : false;
 				unset($icsEvents [1]);
 				foreach ($icsEvents as $icsEvent) {
 					$startKeys = array_filter_key($icsEvent, function ($key) {
@@ -1297,6 +1298,17 @@ function getCalendar()
 							}
 							$calendarStartDiff = date_diff($startDt, $newestDay);
 							$calendarEndDiff = date_diff($startDt, $oldestDay);
+							if ($originalTimeZone && $originalTimeZone !== 'UTC' && (strpos($start, 'Z') == false)) {
+								$dateTimeOriginalTZ = new DateTimeZone($originalTimeZone);
+								$dateTimeOriginal = new DateTime('now', $dateTimeOriginalTZ);
+								$dateTimeUTCTZ = new DateTimeZone(date_default_timezone_get());
+								$dateTimeUTC = new DateTime('now', $dateTimeUTCTZ);
+								$dateTimeOriginalOffset = $dateTimeOriginal->getOffset() / 3600;
+								$dateTimeUTCOffset = $dateTimeUTC->getOffset() / 3600;
+								$diff = $dateTimeUTCOffset - $dateTimeOriginalOffset;
+								$startDt->modify('+ ' . $diff . ' hour');
+								$endDt->modify('+ ' . $diff . ' hour');
+							}
 							$startDt->setTimeZone(new DateTimezone ($timeZone));
 							$endDt->setTimeZone(new DateTimezone ($timeZone));
 							$startDate = $startDt->format(DateTime::ATOM);
