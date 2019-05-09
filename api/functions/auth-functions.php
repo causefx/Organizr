@@ -321,6 +321,7 @@ function plugin_auth_emby_local($username, $password)
 				// Login Success - Now Logout Emby Session As We No Longer Need It
 				$headers = array(
 					'X-Emby-Token' => $json['AccessToken'],
+					'X-Mediabrowser-Token' => $json['AccessToken'],
 				);
 				$response = Requests::post(qualifyURL($GLOBALS['embyURL']) . '/Sessions/Logout', $headers, array());
 				if ($response->success) {
