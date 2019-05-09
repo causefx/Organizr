@@ -298,6 +298,7 @@
 <script src="https://js.pusher.com/4.1/pusher.min.js"
         integrity="sha384-e9MoFh6Cw/uluf+NZ6MJwfJ1Dm7UOvJf9oTBxxCYDyStJeeAF0q53ztnEbLLDSQP"
         crossorigin="anonymous"></script>
+<?php echo googleTracking(); ?>
 <?php echo pluginFiles('js');
 echo formKey(); ?>
 </body>
