@@ -128,3 +128,21 @@ function matchBrackets($text, $brackets = 's')
 	preg_match($pattern, $text, $match);
 	return $match[1];
 }
+
+function googleTracking()
+{
+	if (isset($GLOBALS['quickConfig']['gaTrackingID'])) {
+		if ($GLOBALS['quickConfig']['gaTrackingID'] !== '') {
+			return '
+				<script async src="https://www.googletagmanager.com/gtag/js?id=' . $GLOBALS['quickConfig']['gaTrackingID'] . '"></script>
+    			<script>
+				    window.dataLayer = window.dataLayer || [];
+				    function gtag(){dataLayer.push(arguments);}
+				    gtag("js", new Date());
+				    gtag("config","' . $GLOBALS['quickConfig']['gaTrackingID'] . '");
+    			</script>
+			';
+		}
+	}
+	return null;
+}
