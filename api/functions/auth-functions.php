@@ -339,6 +339,10 @@ function plugin_auth_emby_local($username, $password)
 // Authenticate against emby connect
 function plugin_auth_emby_connect($username, $password)
 {
+	// Emby disabled EmbyConnect on their API
+	// https://github.com/MediaBrowser/Emby/issues/3553
+	return plugin_auth_emby_local($username, $password);
+	/*
 	try {
 		// Get A User
 		$connectId = '';
@@ -389,15 +393,21 @@ function plugin_auth_emby_connect($username, $password)
 		writeLog('error', 'Emby Connect Auth Function - Error: ' . $e->getMessage(), $username);
 		return false;
 	}
+	*/
 }
 
 // Authenticate Against Emby Local (first) and Emby Connect
 function plugin_auth_emby_all($username, $password)
 {
+	// Emby disabled EmbyConnect on their API
+	// https://github.com/MediaBrowser/Emby/issues/3553
 	$localResult = plugin_auth_emby_local($username, $password);
+	return $localResult;
+	/*
 	if ($localResult) {
 		return $localResult;
 	} else {
 		return plugin_auth_emby_connect($username, $password);
 	}
+	*/
 }
