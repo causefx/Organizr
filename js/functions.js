@@ -3058,7 +3058,7 @@ function buildTR(array,type,badge){
 }
 function buildVersion(array){
 	var x = 0;
-	var versions = '<h3 class="p-l-10 m-b-0 box-title" lang="en">Organizr Versions</h3>';
+	var versions = '<div class="col-md-3 col-sm-4 col-xs-6 m-b-10 pull-right"><button onclick="manualUpdateCheck()" class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right row b-none buttonManualUpdateCheck" type="button"><span class="btn-label"><i class="fa fa-globe"></i></span><span lang="en">Check For New Version</span></button></div><div class="clearfix"></div>';
 	var listing = '';
 	var currentV = currentVersion;
 	var installed = '';
@@ -3128,6 +3128,16 @@ function loadSettingsPage(api,element,organizrFn){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
+}
+function manualUpdateCheck(){
+    $('.buttonManualUpdateCheck').addClass('disabled');
+    $('.buttonManualUpdateCheck i').removeClass('fa-globe').addClass('fa-refresh fa-spin');
+    setTimeout(function(){ updateCheck(); checkCommitLoad(); }, 1000);
+    setTimeout(function(){
+        $('.buttonManualUpdateCheck').removeClass('disabled');
+        $('.buttonManualUpdateCheck i').removeClass('fa-refresh fa-spin fa-globe').addClass('fa-check');
+     }, 1500);
+    return true;
 }
 function updateCheck(){
 	githubVersions().success(function(data) {
