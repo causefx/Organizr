@@ -3058,7 +3058,7 @@ function buildTR(array,type,badge){
 }
 function buildVersion(array){
 	var x = 0;
-	var versions = '<div class="col-md-3 col-sm-4 col-xs-6 m-b-10 pull-right"><button onclick="manualUpdateCheck()" class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right row b-none buttonManualUpdateCheck" type="button"><span class="btn-label"><i class="fa fa-globe"></i></span><span lang="en">Check For New Version</span></button></div><div class="clearfix"></div>';
+	var versions = '<div class="col-md-3 col-sm-4 col-xs-6 m-b-10 pull-right"><button onclick="manualUpdateCheck()" class="btn btn-sm btn-primary btn-rounded waves-effect waves-light pull-right row b-none buttonManualUpdateCheck" type="button"><span class="btn-label"><i class="fa fa-globe"></i></span><span lang="en">Check For Updates</span></button></div><div class="clearfix"></div>';
 	var listing = '';
 	var currentV = currentVersion;
 	var installed = '';
