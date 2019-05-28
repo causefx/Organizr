@@ -1,7 +1,7 @@
 <!-- Please Fill out as much information as possible, Thanks! -->
 ###### Organizr Version: V 1.x
 ###### Branch: Master/Develop
-###### WebSever: Nginx/Apache
+###### WebServer: Nginx/Apache
 ###### Operating System: Windows/MacOS/Ubuntu
 <hr>
 
