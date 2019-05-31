@@ -428,7 +428,7 @@ function organizrStatus()
 	$status = array();
 	$dependenciesActive = array();
 	$dependenciesInactive = array();
-	$extensions = array("PDO_SQLITE", "PDO", "SQLITE3", "zip", "cURL", "openssl", "simplexml", "json", "session");
+	$extensions = array("PDO_SQLITE", "PDO", "SQLITE3", "zip", "cURL", "openssl", "simplexml", "json", "session", "filter");
 	$functions = array("hash", "fopen", "fsockopen", "fwrite", "fclose", "readfile");
 	foreach ($extensions as $check) {
 		if (extension_loaded($check)) {
@@ -1115,6 +1115,13 @@ function getCustomizeAppearance()
 							'value' => 'bottom'
 						)
 					)
+				),
+				array(
+					'type' => 'input',
+					'name' => 'gaTrackingID',
+					'label' => 'Google Analytics Tracking ID',
+					'placeholder' => 'e.g. UA-XXXXXXXXX-X',
+					'value' => $GLOBALS['gaTrackingID']
 				)
 			),
 			'Colors & Themes' => array(

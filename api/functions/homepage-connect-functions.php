@@ -1231,6 +1231,7 @@ function getCalendar()
 			$icsEvents = getIcsEventsAsArray($value);
 			if (isset($icsEvents) && !empty($icsEvents)) {
 				$timeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : date_default_timezone_get();
+				$originalTimeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : false;
 				unset($icsEvents [1]);
 				foreach ($icsEvents as $icsEvent) {
 					$startKeys = array_filter_key($icsEvent, function ($key) {
@@ -1242,6 +1243,13 @@ function getCalendar()
 					if (!empty($startKeys) && !empty($endKeys) && isset($icsEvent['SUMMARY'])) {
 						/* Getting start date and time */
 						$repeat = isset($icsEvent ['RRULE']) ? $icsEvent ['RRULE'] : false;
+						if (!$originalTimeZone) {
+							$tzKey = array_keys($startKeys);
+							if (strpos($tzKey[0], 'TZID=') !== false) {
+								$originalTimeZone = explode('TZID=', (string)$tzKey[0]);
+								$originalTimeZone = (count($originalTimeZone) >= 2) ? $originalTimeZone[1] : false;
+							}
+						}
 						$start = reset($startKeys);
 						$end = reset($endKeys);
 						$totalDays = $GLOBALS['calendarStart'] + $GLOBALS['calendarEnd'];
@@ -1297,6 +1305,17 @@ function getCalendar()
 							}
 							$calendarStartDiff = date_diff($startDt, $newestDay);
 							$calendarEndDiff = date_diff($startDt, $oldestDay);
+							if ($originalTimeZone && $originalTimeZone !== 'UTC' && (strpos($start, 'Z') == false)) {
+								$dateTimeOriginalTZ = new DateTimeZone($originalTimeZone);
+								$dateTimeOriginal = new DateTime('now', $dateTimeOriginalTZ);
+								$dateTimeUTCTZ = new DateTimeZone(date_default_timezone_get());
+								$dateTimeUTC = new DateTime('now', $dateTimeUTCTZ);
+								$dateTimeOriginalOffset = $dateTimeOriginal->getOffset() / 3600;
+								$dateTimeUTCOffset = $dateTimeUTC->getOffset() / 3600;
+								$diff = $dateTimeUTCOffset - $dateTimeOriginalOffset;
+								$startDt->modify('+ ' . $diff . ' hour');
+								$endDt->modify('+ ' . $diff . ' hour');
+							}
 							$startDt->setTimeZone(new DateTimezone ($timeZone));
 							$endDt->setTimeZone(new DateTimezone ($timeZone));
 							$startDate = $startDt->format(DateTime::ATOM);
@@ -1456,11 +1475,11 @@ function getSonarrCalendar($array, $number)
 			"runtime" => $child['series']['runtime'],
 			"image" => $fanart,
 			"ratings" => $child['series']['ratings']['value'],
-			"videoQuality" => $child["hasFile"] ? $child['episodeFile']['quality']['quality']['name'] : "unknown",
+			"videoQuality" => $child["hasFile"] && isset($child['episodeFile']['quality']['quality']['name']) ? $child['episodeFile']['quality']['quality']['name'] : "unknown",
 			"audioChannels" => $child["hasFile"] && isset($child['episodeFile']['mediaInfo']) ? $child['episodeFile']['mediaInfo']['audioChannels'] : "unknown",
 			"audioCodec" => $child["hasFile"] && isset($child['episodeFile']['mediaInfo']) ? $child['episodeFile']['mediaInfo']['audioCodec'] : "unknown",
 			"videoCodec" => $child["hasFile"] && isset($child['episodeFile']['mediaInfo']) ? $child['episodeFile']['mediaInfo']['videoCodec'] : "unknown",
-			"size" => $child["hasFile"] ? $child['episodeFile']['size'] : "unknown",
+			"size" => $child["hasFile"] && isset($child['episodeFile']['size']) ? $child['episodeFile']['size'] : "unknown",
 			"genres" => $child['series']['genres'],
 		);
 		array_push($gotCalendar, array(

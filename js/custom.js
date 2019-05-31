@@ -361,7 +361,12 @@ $(document).on("click", ".login-button", function(e) {
             } else if (html.data == '2FA') {
                 $('div.login-box').unblock({});
                 $('#tfa-div').removeClass('hidden');
-                $('#loginform [name=tfaCode]').focus()
+                $('#loginform [name=tfaCode]').focus();
+            } else if (html.data == '2FA-incorrect') {
+                $('div.login-box').unblock({});
+                $('#tfa-div').removeClass('hidden');
+                $('#loginform [name=tfaCode]').focus();
+                message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
             } else {
                 $('div.login-box').unblock({});
                 message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');

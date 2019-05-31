@@ -305,11 +305,12 @@ function plugin_auth_emby_local($username, $password)
 	try {
 		$url = qualifyURL($GLOBALS['embyURL']) . '/Users/AuthenticateByName';
 		$headers = array(
-			'Authorization' => 'MediaBrowser UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
+			'Authorization' => 'Emby UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
 			'Content-Type' => 'application/json',
 		);
 		$data = array(
 			'Username' => $username,
+			'pw' => $password,
 			'Password' => sha1($password),
 			'PasswordMd5' => md5($password),
 		);
@@ -319,6 +320,7 @@ function plugin_auth_emby_local($username, $password)
 			if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
 				// Login Success - Now Logout Emby Session As We No Longer Need It
 				$headers = array(
+					'X-Emby-Token' => $json['AccessToken'],
 					'X-Mediabrowser-Token' => $json['AccessToken'],
 				);
 				$response = Requests::post(qualifyURL($GLOBALS['embyURL']) . '/Sessions/Logout', $headers, array());
@@ -337,6 +339,10 @@ function plugin_auth_emby_local($username, $password)
 // Authenticate against emby connect
 function plugin_auth_emby_connect($username, $password)
 {
+	// Emby disabled EmbyConnect on their API
+	// https://github.com/MediaBrowser/Emby/issues/3553
+	return plugin_auth_emby_local($username, $password);
+	/*
 	try {
 		// Get A User
 		$connectId = '';
@@ -387,15 +393,21 @@ function plugin_auth_emby_connect($username, $password)
 		writeLog('error', 'Emby Connect Auth Function - Error: ' . $e->getMessage(), $username);
 		return false;
 	}
+	*/
 }
 
 // Authenticate Against Emby Local (first) and Emby Connect
 function plugin_auth_emby_all($username, $password)
 {
+	// Emby disabled EmbyConnect on their API
+	// https://github.com/MediaBrowser/Emby/issues/3553
 	$localResult = plugin_auth_emby_local($username, $password);
+	return $localResult;
+	/*
 	if ($localResult) {
 		return $localResult;
 	} else {
 		return plugin_auth_emby_connect($username, $password);
 	}
+	*/
 }

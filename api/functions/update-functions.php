@@ -69,8 +69,11 @@ function downloadFile($url, $path)
 	ini_set('max_execution_time', 0);
 	set_time_limit(0);
 	$folderPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "upgrade" . DIRECTORY_SEPARATOR;
-	if (!mkdir($folderPath)) {
-		//writeLog("error", "organizr could not create upgrade folder");
+	if (!file_exists($folderPath)) {
+		if (@!mkdir($folderPath)) {
+			writeLog('error', 'Update Function -  Folder Creation failed', $GLOBALS['organizrUser']['username']);
+			return false;
+		}
 	}
 	$newfname = $folderPath . $path;
 	$file = fopen($url, 'rb');

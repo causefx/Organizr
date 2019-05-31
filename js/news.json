@@ -1,5 +1,12 @@
 [
   {
+    "title": "Emby Discontinued Support",
+    "subTitle": "Emby API - EmbyConnect Deprecated",
+    "date": "2019-05-14 19:15",
+    "body": "Emby has discontinued support for matching users against Emby Connect via API.  Therefore, we will no longer be supporting this method of Authentication for Organizr.  If Emby decides to support this again, I will re-enable it once more.  You can find more information here: <a href=\"https:\/\/github.com\/MediaBrowser\/Emby\/issues\/3553\" target=\"_blank\">Emby API Discussion<\/a>",
+    "author": "CauseFX"
+  },
+  {
     "title": "Welcome to Version 2.0",
     "subTitle": "We finally made it...",
     "date": "2019-03-01 16:30",
