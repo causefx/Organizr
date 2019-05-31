@@ -4,12 +4,11 @@ $pageSettingsTabEditorTabs = '
 buildTabEditor();
 $( \'#tabEditorTable\' ).sortable({
     stop: function () {
-        var inputs = $(\'input.order\');
-        var nbElems = inputs.length;
         $(\'input.order\').each(function(idx) {
             $(this).val(idx + 1);
         });
-        submitTabOrder();
+        var newTabs = $( "#submit-tabs-form" ).serializeToJSON();
+        submitTabOrder(newTabs);
     }
 });
 $(".tabIconImageList").select2({

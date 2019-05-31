@@ -3014,11 +3014,11 @@ function submitHomepageOrder(){
 	    console.log('add error');
 	}
 }
-function submitTabOrder(){
+function submitTabOrder(newTabs){
 	var post = {
 		action:'changeOrder',
 		api:'api/?v1/settings/tab/editor/tabs',
-		tabs:$( "#submit-tabs-form" ).serializeToJSON(),
+		tabs:newTabs,
 		messageTitle:'',
 		messageBody:window.lang.translate('Tab Order Saved'),
 		error:'Organizr Function: API Connection Failed'
