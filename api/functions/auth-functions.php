@@ -172,7 +172,7 @@ function plugin_auth_plex($username, $password)
 			$json = json_decode($response->body, true);
 			if ((is_array($json) && isset($json['user']) && isset($json['user']['username'])) && strtolower($json['user']['username']) == $usernameLower || strtolower($json['user']['email']) == $usernameLower) {
 				//writeLog("success", $json['user']['username']." was logged into organizr using plex credentials");
-				if ((!empty($GLOBALS['plexAdmin']) && (strtolower($GLOBALS['plexAdmin']) == strtolower($json['user']['username'])) || (strtolower($GLOBALS['plexAdmin']) == strtolower($json['user']['email']))) || checkPlexUser($json['user']['username'])) {
+				if ((!empty($GLOBALS['plexAdmin']) && (strtolower($GLOBALS['plexAdmin']) == strtolower($json['user']['username']) || strtolower($GLOBALS['plexAdmin']) == strtolower($json['user']['email']))) || checkPlexUser($json['user']['username'])) {
 					return array(
 						'username' => $json['user']['username'],
 						'email' => $json['user']['email'],
