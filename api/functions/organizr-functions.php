@@ -1,4 +1,17 @@
 <?php
+function checkPlexAdminFilled()
+{
+	if ($GLOBALS['plexAdmin'] == '') {
+		return false;
+	} else {
+		if ((strpos($GLOBALS['plexAdmin'], '@') !== false)) {
+			return 'email';
+		} else {
+			return 'username';
+		}
+	}
+}
+
 function organizrSpecialSettings()
 {
 	$refreshSearch = "Refresh";
@@ -39,6 +52,8 @@ function organizrSpecialSettings()
 				'cookie' => isset($_COOKIE['mpt']) ? true : false,
 				'machineID' => (strlen($GLOBALS['plexID']) == 40) ? true : false,
 				'token' => ($GLOBALS['plexToken'] !== '') ? true : false,
+				'plexAdmin' => checkPlexAdminFilled(),
+				'strict' => ($GLOBALS['plexStrictFriends']) ? true : false,
 				'oAuthEnabled' => ($GLOBALS['plexoAuth']) ? true : false,
 				'backend' => ($GLOBALS['authBackend'] == 'plex') ? true : false,
 			),
