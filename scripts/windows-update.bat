@@ -58,7 +58,7 @@ ECHO #############################
 ECHO.
 ECHO.
 ECHO Download In Progress...
-powershell -command "$clnt = new-object System.Net.WebClient; $clnt.DownloadFile(\"%org_url%\", \"organizr.zip\")"
+powershell -command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $clnt = new-object System.Net.WebClient; $clnt.DownloadFile(\"%org_url%\", \"organizr.zip\")"
 ECHO.
 
 ECHO Extraction In Progress...
