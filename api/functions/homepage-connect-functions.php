@@ -1606,6 +1606,7 @@ function getRadarrCalendar($array, $number, $url)
 			foreach ($child['images'] as $image) {
 				if ($image['coverType'] == "banner" || $image['coverType'] == "fanart") {
 					$url = rtrim($url, '/'); //remove trailing slash
+					$url = $url . '/api';
 					$imageUrl = $image['url'];
 					$urlParts = explode("/", $url);
 					$imageParts = explode("/", $image['url']);
@@ -1613,7 +1614,7 @@ function getRadarrCalendar($array, $number, $url)
 						unset($imageParts[1]);
 						$imageUrl = implode("/", $imageParts);
 					}
-					$banner = $url . $imageUrl;
+					$banner = $url . $imageUrl . '?apikey=' . $GLOBALS['radarrToken'];
 				}
 			}
 			if ($banner !== "/plugins/images/cache/no-np.png") {
