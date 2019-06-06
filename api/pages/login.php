@@ -1,7 +1,7 @@
 <?php
 if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	$hideOrganizrLogin = (checkoAuth()) ? 'collapse' : 'collapse in';
-	$hideOrganizrLoginHeader = (checkoAuth()) ? '' : 'hidden';
+	$hideOrganizrLoginHeader = (checkoAuthOnly()) ? 'hidden' : '';
 	$pageLogin = '
 <script>
 if(activeInfo.settings.login.rememberMe){

@@ -1600,6 +1600,11 @@ function checkoAuth()
 	return ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') ? true : false;
 }
 
+function checkoAuthOnly()
+{
+	return ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] == 'external') ? true : false;
+}
+
 function showoAuth()
 {
 	$buttons = '';
