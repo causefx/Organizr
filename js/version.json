@@ -180,5 +180,12 @@
     "new": "Support for custom GA Tracking code|Manual update checker",
     "fixed": "Download file function|2FA if using Password Manager|Calendar Localization|Emby local Auth|Sonarr JSON issue|Typos",
     "notes": "Disabled Emby Connect due to Emby|Made Debug error false by default|Updated language translations|Added more default tab images|Please report bugs in GitHub issues page"
+  },
+  "2.0.235": {
+    "date": "2019-06-07 19:30",
+    "title": "Small Weekly Update",
+    "new": "Plex Admin and Strict info to debug area",
+    "fixed": "Radarr image problem if Radarr Auth is on|Plex login for admin using username and pass for SSO|Powershell update script|Login screen for oAuth only as backend",
+    "notes": "Please report bugs in GitHub issues page|Updated language translations|Added more default tab images"
   }
 }
