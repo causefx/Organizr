@@ -3249,8 +3249,9 @@ function sponsorAbout(id,array){
     var coupon = (array.coupon == null) ? false : true;
     var couponAbout = (array.coupon_about == null) ? false : true;
     var extraInfo = (coupon && couponAbout) ? `
-        <br><span class="label label-rouded label-info pull-right">`+array.coupon+`</span>
-        <br><span class="mail-desc">`+array.coupon_about+`</span>
+        <h3>Coupon Code:</h3>
+        <p><span class="label label-rouded label-info pull-right">`+array.coupon+`</span>
+        <span class=" pull-left">`+array.coupon_about+`</span></p>
     ` : '';
     return `
         <!--  modal content -->
