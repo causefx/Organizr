@@ -63,7 +63,7 @@ function homepageConnect($array)
 
 function healthChecksTags($tags)
 {
-	$return = 'tag=';
+	$return = '?tag=';
 	if (!$tags) {
 		return '';
 	} elseif ($tags == '*') {
