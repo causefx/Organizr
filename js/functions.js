@@ -3287,7 +3287,7 @@ function sponsorAbout(id,array){
 function buildSponsor(array){
     var sponsors = '';
     $.each(array, function(i,v) {
-        var sponsorAboutModal = (v.about) ? 'data-toggle="modal" data-target="#sponsor-'+i+'-modal"' : 'onclick="window.open(\''+ v.website +'\', \'_blank\')"';
+        var sponsorAboutModal = (v.about) ? 'data-toggle="modal" data-target="#sponsor-'+i+'-modal" onclick="sponsorAnalytics(\''+v.company_name+'\');"' : 'onclick="window.open(\''+ v.website +'\', \'_blank\');sponsorAnalytics(\''+v.company_name+'\');"';
         sponsors += `
             <!-- /.usercard -->
             <div class="item lazyload recent-sponsor mouse imageSource mouse" `+sponsorAboutModal+` data-src="`+v.logo+`">
@@ -3314,6 +3314,26 @@ function buildSponsorModal(array){
 
     });
     return sponsors;
+}
+function sponsorAnalytics(sponsor_name){
+    var uuid = activeInfo.settings.misc.uuid;
+    $.ajax({
+        type: 'POST',
+        url: 'https://api.organizr.app/',
+        data: {
+            'sponsor_name': sponsor_name,
+            'user_uuid': uuid,
+            'cmd': 'sponsor'
+        },
+        cache: false,
+        async: true,
+        complete: function(xhr, status) {
+            if (xhr.status === 200) {
+                var result = $.parseJSON(xhr.responseText);
+                console.log(result.response.message);
+            }
+        }
+    });
 }
 function updateBar(){
 	return `
