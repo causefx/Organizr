@@ -5491,7 +5491,9 @@ function buildHealthChecks(array){
 		    </div>
 			<div class="clearfix"></div>
 		    <!-- .cards -->
-			`+buildHealthChecksItem(array.content.checks)+`
+		    <div class="healthCheckCards">
+			    `+buildHealthChecksItem(array.content.checks)+`
+			</div>
 		    <!-- /.cards-->
 		</div>
 	</div>
