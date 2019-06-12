@@ -4379,6 +4379,7 @@ function buildRecent(array, type){
 			`+dropdownMenu+`
 			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
+		<div class="clearfix"></div>
 		`;
 	}else{
 		var header = `
@@ -4475,6 +4476,7 @@ function buildPlaylist(array, type){
 			</div>
 			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
+		<div class="clearfix"></div>
 		`;
 	}else{
 		var header = `
@@ -4557,6 +4559,7 @@ function buildRequest(array){
 			</div>
 			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
+		<div class="clearfix"></div>
 		`;
 	}else{
 		var header = `
@@ -5251,6 +5254,7 @@ function buildDownloader(source){
 			`+menu+`
 			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
+		<div class="clearfix"></div>
 		`;
 	}else{
 		var header = `
@@ -5344,6 +5348,7 @@ function buildDownloaderCombined(source){
                 `+mainMenu+`
                 <div class="clearfix"></div>
             </div>
+            <div class="clearfix"></div>
             `;
         }else{
             var header = `

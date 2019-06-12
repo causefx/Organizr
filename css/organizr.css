@@ -1313,6 +1313,11 @@ span.fc-title {
         float: none;
     }
 }
+.col-lg-12,
+.col-md-12 {
+    float: left;
+    width: 100%;
+}
 #newRequestButton {
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
