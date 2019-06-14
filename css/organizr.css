@@ -1351,6 +1351,26 @@ span.fc-title {
 .btn-danger i.ti-trash {
     margin-left: -1.5px;
 }
+.has-coupon-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(108, 169, 76, 0.73);
+    width: inherit;
+    color: white;
+    display: none;
+}
+.item:hover .has-coupon-text {
+    display: block;
+}
+span.has-coupon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(108, 169, 76, 0.73);
+    width: 23px;
+    color: white;
+}
 /*
 body,
 html {

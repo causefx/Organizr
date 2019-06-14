@@ -3287,15 +3287,24 @@ function sponsorAbout(id,array){
 function buildSponsor(array){
     var sponsors = '';
     $.each(array, function(i,v) {
+        var hasCoupon = '';
+        if(v.about){
+            if(v.coupon){
+                hasCoupon = `
+                    <span class="text-center has-coupon-text">Has Coupon</span>
+                    <span class="text-center has-coupon"><i class="fa fa-ticket" aria-hidden="true"></i></span>
+                `;
+            }
+        }
         var sponsorAboutModal = (v.about) ? 'data-toggle="modal" data-target="#sponsor-'+i+'-modal" onclick="sponsorAnalytics(\''+v.company_name+'\');"' : 'onclick="window.open(\''+ v.website +'\', \'_blank\');sponsorAnalytics(\''+v.company_name+'\');"';
         sponsors += `
             <!-- /.usercard -->
             <div class="item lazyload recent-sponsor mouse imageSource mouse" `+sponsorAboutModal+` data-src="`+v.logo+`">
                 <span class="elip recent-title">`+v.company_name+`</span>
+                `+ hasCoupon +`
             </div>
             <!-- /.usercard-->
         `;
-
     });
     sponsors += `
         <!-- /.usercard -->
