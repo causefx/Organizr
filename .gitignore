@@ -145,3 +145,8 @@ api/plugins/*
 !api/plugins/misc/speedTest/telemetry.php
 !api/plugins/misc/speedTest/telemetry_settings.php
 !api/plugins/misc/speedTest/speedtest_worker.min.js
+
+# =========================
+# Custom files
+# =========================
+api/pages/custom/*.php
