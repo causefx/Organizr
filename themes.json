@@ -1,15 +1,15 @@
 {
     "Plex Theme": {
         "author": "Grant Burry",
-        "category": "Testing",
+        "category": "Community",
         "description": "A theme for Organizr that emulates the style of Plex",
         "icon":
-            "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/icon.png",
+            "https://raw.githubusercontent.com/Burry/Organizr-Plex-Theme/master/doc/icon.png",
         "contact": null,
-        "website": "https://github.com/Burry/organizr-v2-plex-theme",
-        "version": "2.8.0",
+        "website": "https://burry.dev/Organizr-Plex-Theme",
+        "version": "3.0.0",
         "release_date": "2018-07-31",
-        "last_updated": "2018-12-1",
+        "last_updated": "2019-06-15",
         "github_folder": "plex_theme",
         "license": "personal,business",
         "files": {
@@ -17,7 +17,7 @@
             "/plugins/theme_files/plex_theme/images": "rotten.svg",
             "/plugins/theme_files/plex_theme/images": "times.svg",
             "/plugins/theme_files/plex_theme/images/background":
-                "blur-dark.png|blur-light.png|noise.png",
+                "blur-dark.png|blur-dark-login.png|blur-light.png|noise.png",
             "/plugins/theme_files/plex_theme/images/cache":
                 "no-request.svg|not-found.svg",
             "/plugins/theme_files/plex_theme/images/groups":
@@ -26,13 +26,13 @@
         },
         "images": {
             "Login":
-                "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/1.png",
+                "https://raw.githubusercontent.com/Burry/Organizr-Plex-Theme/master/doc/screenshots/1.png",
             "Splash":
-                "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/2.png",
+                "https://raw.githubusercontent.com/Burry/Organizr-Plex-Theme/master/doc/screenshots/2.png",
             "Homepage":
-                "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/3.png",
+                "https://raw.githubusercontent.com/Burry/Organizr-Plex-Theme/master/doc/screenshots/3.png",
             "Search":
-                "https://raw.githubusercontent.com/Burry/organizr-v2-plex-theme/master/screenshots/4.png"
+                "https://raw.githubusercontent.com/Burry/Organizr-Plex-Theme/master/doc/screenshots/4.png"
         },
         "css": {},
         "javascript": {}
