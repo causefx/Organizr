@@ -36,5 +36,63 @@
         },
         "css": {},
         "javascript": {}
+    },
+        "Hotline Theme": {
+        "author": "GilbN",
+        "category": "Community",
+        "description": "A red and blue colored theme for Organizr ",
+        "icon":
+            "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/theme-park-organizr-hotline-logo.png",
+        "contact": null,
+        "website": "https://github.com/gilbN/theme.park",
+        "version": "1.0.0",
+        "release_date": "2019-06-16",
+        "last_updated": "2019-06-16",
+        "github_folder": "Hotline_theme",
+        "license": "personal,business",
+        "files": {
+            "/css/themes": "Hotline.css",
+        },
+        "images": {
+            "Login":
+                "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/hotline_login.png",
+            "Splash":
+                "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/hotline_splash.png",
+            "Homepage":
+                "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/hotline_homepage.jpg",
+            "Search":
+                "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/hotline/hotline_search.jpg"
+        },
+        "css": {},
+        "javascript": {}
+    },
+        "Aquamarine Theme": {
+        "author": "GilbN",
+        "category": "Community",
+        "description": "An aquamarine colored theme for Organizr ",
+        "icon":
+            "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/theme-park-organizr-aquamarine-logo.png",
+        "contact": null,
+        "website": "https://github.com/gilbN/theme.park",
+        "version": "1.0.0",
+        "release_date": "2019-06-16",
+        "last_updated": "2019-06-16",
+        "github_folder": "Aquamarine_theme",
+        "license": "personal,business",
+        "files": {
+            "/css/themes": "Aquamarine.css",
+        },
+        "images": {
+            "Login":
+                "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/aquamarine_login.png",
+            "Splash":
+                "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/aquamarine_splash.png",
+            "Homepage":
+                "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/aquamarine_homepage.jpg",
+            "Search":
+                "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/aquamarine_search.png"
+        },
+        "css": {},
+        "javascript": {}
     }
 }
