@@ -1237,8 +1237,9 @@ span.fc-title {
     font-size: 30px;
 }
 .downloaderCount {
-    margin-top: -45px;
+    margin-top: -15px;
     margin-left: -45px;
+    position: absolute;
 }
 .loginTitle {
     height: 22px;
