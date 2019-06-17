@@ -1183,7 +1183,7 @@ function loadMarketplaceThemesItems(themes){
                 <td>`+v.category+`</td>
                 <td>`+v.status+`</td>
                 <td style="text-align:center"><button type="button" onclick='aboutTheme(`+JSON.stringify(v)+`);' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-theme-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
-                <td style="text-align:center"><button type="button" onclick='installTheme(`+JSON.stringify(v)+`);' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='installTheme(`+JSON.stringify(v)+`);themeAnalytics("`+ v.name +`");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
                 <td style="text-align:center"><button type="button" onclick='removeTheme(`+JSON.stringify(v)+`);' class="btn btn-danger btn-outline btn-circle btn-lg" `+removeButton+`><i class="fa fa-trash"></i></button></td>
             </tr>
         `;
@@ -1483,7 +1483,6 @@ function installTheme(theme=null){
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        console.log(data);
         if(html.data.substr(0, 7) == 'Success'){
             var newThemes = html.data.split('!@!');
             activeInfo.settings.misc.installedThemes = newThemes[1];
@@ -3333,6 +3332,26 @@ function sponsorAnalytics(sponsor_name){
             'sponsor_name': sponsor_name,
             'user_uuid': uuid,
             'cmd': 'sponsor'
+        },
+        cache: false,
+        async: true,
+        complete: function(xhr, status) {
+            if (xhr.status === 200) {
+                var result = $.parseJSON(xhr.responseText);
+                console.log(result.response.message);
+            }
+        }
+    });
+}
+function themeAnalytics(theme_name){
+    var uuid = activeInfo.settings.misc.uuid;
+    $.ajax({
+        type: 'POST',
+        url: 'https://api.organizr.app/',
+        data: {
+            'theme_name': theme_name,
+            'user_uuid': uuid,
+            'cmd': 'theme'
         },
         cache: false,
         async: true,
