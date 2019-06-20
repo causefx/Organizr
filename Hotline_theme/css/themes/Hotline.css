@@ -19,5 +19,13 @@
     --link-color: #FFEB3B; 
     --custom-buttons-color: radial-gradient(ellipse at center, #F44336 0%, #3F51B5 100%) center center/cover no-repeat fixed;
     --hompage-item-hover: radial-gradient(ellipse at center, rgba(0, 150, 136, 0.33) 0%, #b53f3f73 100%) center center/cover no-repeat fixed; 
-    --notification-box-line: #F44336;  
+    --notification-box-line: #F44336;
+    
+    --calendar-tv-premier: #FFEB3B;
+    --calendar-tv-missing: #ff7676;
+    --calendar-tv-available: #53e69d;
+    --calendar-tv-unreleased: #eeeeee;
+    --calendar-movie-missing: #ff7676;
+    --calendar-movie-available: #53e69d;
+    --calendar-movie-unreleased: #eeeeee;
   }
