@@ -1510,15 +1510,13 @@ $(document).on("click", ".refreshImage", function(e) {
             break;
         case 'recent-item':
             var orginalElementAlt = $(this).parent().parent().parent().find('.imageSourceAlt');
-            var orginalElement = $(this).parent().parent().parent().find('.imageSource');
+            var orginalElement = $(this).parent().parent().parent().parent().find('.imageSource');
             orginalElement.attr('style', 'background-image: url("'+original+'");');
             orginalElementAlt.attr('src', original);
             break;
         default:
 
     }
-    //console.log(orginalElement)
-    //console.log('replaced image with : '+original);
     setTimeout(function(){
         message('Image Refreshed ',' Clear Cache Please',activeInfo.settings.notifications.position,'#FFF','success','3000');
     }, 1000);
