@@ -1693,6 +1693,7 @@ function approvedFileExtension($filename)
 		case 'png':
 		case 'jpeg':
 		case 'jpg':
+		case 'svg':
 			return true;
 			break;
 		default:
