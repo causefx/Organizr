@@ -19,13 +19,13 @@ function homepageConnect($array)
 			return (qualifyRequest($GLOBALS['homepagePlexPlaylistAuth'])) ? getPlexPlaylists() : false;
 			break;
 		case 'getEmbyStreams':
-			return (qualifyRequest($GLOBALS['homepageEmbyStreamsAuth'])) ? embyConnect('streams') : false;
+			return (qualifyRequest($GLOBALS['homepageEmbyStreamsAuth']) && $GLOBALS['homepageEmbyEnabled']) ? embyConnect('streams') : false;
 			break;
 		case 'getEmbyRecent':
-			return (qualifyRequest($GLOBALS['homepageEmbyRecentAuth'])) ? embyConnect('recent') : false;
+			return (qualifyRequest($GLOBALS['homepageEmbyRecentAuth']) && $GLOBALS['homepageEmbyEnabled']) ? embyConnect('recent') : false;
 			break;
 		case 'getEmbyMetadata':
-			return (qualifyRequest($GLOBALS['homepageEmbyAuth'])) ? embyConnect('metadata', $array['data']['key'], true) : false;
+			return (qualifyRequest($GLOBALS['homepageEmbyAuth']) && $GLOBALS['homepageEmbyEnabled']) ? embyConnect('metadata', $array['data']['key'], true) : false;
 			break;
 		case 'getSabnzbd':
 			return sabnzbdConnect();
