@@ -234,7 +234,7 @@ function buildHomepageItem($homepageItem)
 			}
 			break;
 		case 'homepageOrderembynowplaying':
-			if ($GLOBALS['homepageEmbyStreams']) {
+			if ($GLOBALS['homepageEmbyStreams'] && $GLOBALS['homepageEmbyEnabled']) {
 				$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Now Playing...</h2></div>';
 				$item .= '
 				<script>
@@ -246,7 +246,7 @@ function buildHomepageItem($homepageItem)
 			}
 			break;
 		case 'homepageOrderembyrecent':
-			if ($GLOBALS['homepageEmbyRecent']) {
+			if ($GLOBALS['homepageEmbyRecent'] && $GLOBALS['homepageEmbyEnabled']) {
 				$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Recent...</h2></div>';
 				$item .= '
 				<script>
