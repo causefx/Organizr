@@ -203,7 +203,12 @@ function login($array)
 			// authentication failed
 			writeLoginLog($username, 'error');
 			writeLog('error', 'Login Function - Wrong Password', $username);
-			return 'mismatch';
+			if($loginAttempts >= $GLOBALS['loginAttempts']){
+				coookieSeconds('set', 'lockout', $GLOBALS['loginLockout'], $GLOBALS['loginLockout']);
+				return 'lockout';
+			}else{
+				return 'mismatch';
+			}
 		}
 	} catch (Dibi\Exception $e) {
 		return $e;
