@@ -79,7 +79,7 @@ function login($array)
 	$oAuth = (isset($oAuth)) ? $oAuth : false;
 	$output = (isset($output)) ? $output : false;
 	$loginAttempts = (isset($loginAttempts)) ? $loginAttempts : false;
-	if($loginAttempts > $GLOBALS['loginAttempts']){
+	if($loginAttempts > $GLOBALS['loginAttempts'] || isset($_COOKIE['lockout'])){
 		coookieSeconds('set', 'lockout', $GLOBALS['loginLockout'], $GLOBALS['loginLockout']);
 		return 'lockout';
 	}

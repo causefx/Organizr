@@ -7004,6 +7004,7 @@ function launch(){
                 }
                 loadCustomJava(json.appearance);
                 if(getCookie('lockout')){
+                    $('.show-login').click();
                     setTimeout(function(){
                         $('div.login-box').block({
                             message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
