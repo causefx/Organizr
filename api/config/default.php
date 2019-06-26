@@ -224,5 +224,7 @@ return array(
 	'description' => 'Organizr - Accept no others',
 	'debugErrors' => false,
 	'healthChecksURL' => 'https://healthchecks.io/api/v1/checks/',
-	'gaTrackingID' => ''
+	'gaTrackingID' => '',
+	'loginAttempts' => '3',
+	'loginLockout' => '60000'
 );

@@ -7003,6 +7003,19 @@ function launch(){
                     getPingList(json);
                 }
                 loadCustomJava(json.appearance);
+                if(getCookie('lockout')){
+                    setTimeout(function(){
+                        $('div.login-box').block({
+                            message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
+                            css: {
+                                color: '#fff',
+                                border: '1px solid #e91e63',
+                                backgroundColor: '#f44336'
+                            }
+                        });
+                    }, 1000);
+                    setTimeout(function(){ location.reload() }, 60000);
+                }
 				break;
 			default:
 				console.error('Organizr Function: Action not set or defined');

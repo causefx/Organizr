@@ -126,6 +126,55 @@ function coookie($type, $name, $value = '', $days = -1, $http = true)
 	}
 }
 
+function coookieSeconds($type, $name, $value = '', $ms, $http = true)
+{
+	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https") {
+		$Secure = true;
+		$HTTPOnly = true;
+	} elseif (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' && $_SERVER['HTTPS'] !== '') {
+		$Secure = true;
+		$HTTPOnly = true;
+	} else {
+		$Secure = false;
+		$HTTPOnly = false;
+	}
+	if (!$http) {
+		$HTTPOnly = false;
+	}
+	$Path = '/';
+	$Domain = parseDomain($_SERVER['HTTP_HOST']);
+	$DomainTest = parseDomain($_SERVER['HTTP_HOST'], true);
+	if ($type == 'set') {
+		$_COOKIE[$name] = $value;
+		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
+			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + ($ms / 1000)) . ' GMT')
+			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($Domain) ? '' : '; domain=' . $Domain)
+			. (!$Secure ? '' : '; secure')
+			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
+		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
+			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + ($ms / 1000)) . ' GMT')
+			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
+			. (!$Secure ? '' : '; secure')
+			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
+	} elseif ($type == 'delete') {
+		unset($_COOKIE[$name]);
+		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
+			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
+			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($Domain) ? '' : '; domain=' . $Domain)
+			. (!$Secure ? '' : '; secure')
+			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
+		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
+			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
+			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
+			. (!$Secure ? '' : '; secure')
+			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
+	}
+}
+
 function getOS()
 {
 	if (PHP_SHLIB_SUFFIX == "dll") {
