@@ -4851,7 +4851,7 @@ function requestList (list, type, page=1) {
 function buildDownloaderItem(array, source, type='none'){
     //console.log(array);
     var queue = '';
-    var grabber = '';
+    var history = '';
     var count = 0;
 	switch (source) {
         case 'jdownloader':
@@ -4888,10 +4888,10 @@ function buildDownloaderItem(array, source, type='none'){
                 `;
             });
             if(array.content.grabberItems.length == 0){
-                grabber = '<tr><td class="max-texts" lang="en">Nothing in Linkgrabbber</td></tr>';
+                history = '<tr><td class="max-texts" lang="en">Nothing in Linkgrabbber</td></tr>';
             }
             $.each(array.content.grabberItems, function(i,v) {
-                grabber += `
+                history += `
                 <tr>
                     <td class="max-texts">`+ v.name+`</td>
                 </tr>
@@ -5211,6 +5211,7 @@ function buildDownloader(source){
     var queueButton = 'QUEUE';
     var historyButton = 'HISTORY';
     switch (source) {
+        case 'jdownloader':
         case 'sabnzbd':
         case 'nzbget':
             var queue = true;
