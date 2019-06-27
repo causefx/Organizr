@@ -744,18 +744,28 @@ function jdownloaderConnect()
             $options = (localURL($url)) ? array('verify' => false) : array();
             $response = Requests::get($url, array(), $options);
             if ($response->success) {
-                $api['content']['queueItems'] = json_decode($response->body, true);
-            }
-        } catch (Requests_Exception $e) {
-            writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-        };
-        $url = qualifyURL($GLOBALS['jdownloaderURL']);
-        $url = $url . '/';
-        try {
-            $options = (localURL($url)) ? array('verify' => false) : array();
-            $response = Requests::get($url, array(), $options);
-            if ($response->success) {
-                $api['content']['historyItems'] = json_decode($response->body, true);
+                $temp = json_decode($response->body, true);
+                $packages = $temp['packages'];
+                if ($packages['downloader']) {
+                    $api['content']['queueItems'] = $packages['downloader'];
+                } else {
+                    $api['content']['queueItems'] = [];
+                }
+
+                $grabbed = array();
+                if ($packages['linkgrabber_decrypted']) {
+                    $grabbed = array_merge($grabbed, $packages['linkgrabber_decrypted']);
+                }
+                if ($packages['linkgrabber_failed']) {
+                    $grabbed = array_merge($grabbed, $packages['linkgrabber_failed']);
+                }
+                if ($packages['linkgrabber_offline']) {
+                    $grabbed = array_merge($grabbed, $packages['linkgrabber_offline']);
+                }
+                $api['content']['historyItems'] = $grabbed;
+
+                $status = array($temp['downloader_state'], $temp['grabber_collecting'], $temp['update_ready']);
+                $api['content']['$status'] = $status;
             }
         } catch (Requests_Exception $e) {
             writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
