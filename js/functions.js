@@ -5306,6 +5306,7 @@ function buildDownloaderCombined(source){
     var queueButton = 'QUEUE';
     var historyButton = 'HISTORY';
     switch (source) {
+        case 'jdownloader':
         case 'sabnzbd':
         case 'nzbget':
             var queue = true;
