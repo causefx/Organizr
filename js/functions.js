@@ -5585,6 +5585,9 @@ function homepageDownloader(type, timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageDownloadRefresh;
 	//if(isHidden()){ return; }
 	switch (type) {
+        case 'jdownloader':
+            var action = 'getJdownloader';
+            break;
 		case 'sabnzbd':
 			var action = 'getSabnzbd';
 			break;

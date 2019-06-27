@@ -6,6 +6,7 @@ function homepageOrder()
 		"homepageOrdercustomhtml" => $GLOBALS['homepageOrdercustomhtml'],
 		"homepageOrdercustomhtmlTwo" => $GLOBALS['homepageOrdercustomhtmlTwo'],
 		"homepageOrdernzbget" => $GLOBALS['homepageOrdernzbget'],
+        "homepageOrderjdownloader" => $GLOBALS['homepageOrderjdownloader'],
 		"homepageOrdersabnzbd" => $GLOBALS['homepageOrdersabnzbd'],
 		"homepageOrderplexnowplaying" => $GLOBALS['homepageOrderplexnowplaying'],
 		"homepageOrderplexrecent" => $GLOBALS['homepageOrderplexrecent'],
@@ -173,6 +174,30 @@ function buildHomepageItem($homepageItem)
 				}
 			}
 			break;
+        case 'homepageOrderjdownloader':
+            if ($GLOBALS['homepageJdownloaderEnabled'] && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
+                if ($GLOBALS['jdownloaderCombine']) {
+                    $item .= '
+					<script>
+					// JDownloader
+					buildDownloaderCombined(\'jdownloader\');
+					homepageDownloader("jdownloader", "' . $GLOBALS['homepageDownloadRefresh'] . '");
+					// End JDownloader
+					</script>
+					';
+                } else {
+                    $item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+                    $item .= '
+					<script>
+					// JDownloader
+					$("#' . $homepageItem . '").html(buildDownloader("jdownloader"));
+					homepageDownloader("jdownloader", "' . $GLOBALS['homepageDownloadRefresh'] . '");
+					// End JDownloader
+					</script>
+					';
+                }
+            }
+            break;
 		case 'homepageOrdersabnzbd':
 			if ($GLOBALS['homepageSabnzbdEnabled'] && qualifyRequest($GLOBALS['homepageSabnzbdAuth'])) {
 				if ($GLOBALS['sabnzbdCombine']) {
@@ -975,6 +1000,68 @@ function getHomepageList()
 				)
 			)
 		),
+        array(
+            'name' => 'JDownloader',
+            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
+            'image' => 'plugins/images/tabs/jdownloader.png',
+            'category' => 'Downloader',
+            'settings' => array(
+                'Enable' => array(
+                    array(
+                        'type' => 'switch',
+                        'name' => 'homepageJdownloaderEnabled',
+                        'label' => 'Enable',
+                        'value' => $GLOBALS['homepageJdownloaderEnabled']
+                    ),
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageJdownloaderAuth',
+                        'label' => 'Minimum Authentication',
+                        'value' => $GLOBALS['homepageJdownloaderAuth'],
+                        'options' => $groups
+                    )
+                ),
+                'Connection' => array(
+                    array(
+                        'type' => 'input',
+                        'name' => 'jdownloaderURL',
+                        'label' => 'URL',
+                        'value' => $GLOBALS['jdownloaderURL'],
+                        'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+                        'placeholder' => 'http(s)://hostname:port'
+                    )
+                ),
+                'Misc Options' => array(
+                    array(
+                        'type' => 'select',
+                        'name' => 'homepageDownloadRefresh',
+                        'label' => 'Refresh Seconds',
+                        'value' => $GLOBALS['homepageDownloadRefresh'],
+                        'options' => optionTime()
+                    ),
+                    array(
+                        'type' => 'switch',
+                        'name' => 'jdownloaderCombine',
+                        'label' => 'Add to Combined Downloader',
+                        'value' => $GLOBALS['jdownloaderCombine']
+                    ),
+                ),
+                'Test Connection' => array(
+                    array(
+                        'type' => 'blank',
+                        'label' => 'Please Save before Testing'
+                    ),
+                    array(
+                        'type' => 'button',
+                        'label' => '',
+                        'icon' => 'fa fa-flask',
+                        'class' => 'pull-right',
+                        'text' => 'Test Connection',
+                        'attr' => 'onclick="testAPIConnection(\'jdownloader\')"'
+                    ),
+                )
+            )
+        ),
 		array(
 			'name' => 'SabNZBD',
 			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
@@ -2228,6 +2315,13 @@ function buildHomepageSettings()
 					$class .= ' faded';
 				}
 				break;
+            case 'homepageOrderjdownloader':
+                $class = 'bg-sab';
+                $image = 'plugins/images/tabs/jdownloader.png';
+                if (!$GLOBALS['homepageJdownloaderEnabled']) {
+                    $class .= ' faded';
+                }
+                break;
 			case 'homepageOrdersabnzbd':
 				$class = 'bg-sab';
 				$image = 'plugins/images/tabs/sabnzbd.png';
@@ -2290,7 +2384,7 @@ function buildHomepageSettings()
 			case 'homepageOrderdownloader':
 				$class = 'bg-inverse';
 				$image = 'plugins/images/tabs/downloader.png';
-				if (!$GLOBALS['sabnzbdCombine'] && !$GLOBALS['nzbgetCombine'] && !$GLOBALS['rTorrentCombine'] && !$GLOBALS['delugeCombine'] && !$GLOBALS['transmissionCombine'] && !$GLOBALS['qBittorrentCombine']) {
+				if (!$GLOBALS['jdownloaderCombine'] && !$GLOBALS['sabnzbdCombine'] && !$GLOBALS['nzbgetCombine'] && !$GLOBALS['rTorrentCombine'] && !$GLOBALS['delugeCombine'] && !$GLOBALS['transmissionCombine'] && !$GLOBALS['qBittorrentCombine']) {
 					$class .= ' faded';
 				}
 				break;

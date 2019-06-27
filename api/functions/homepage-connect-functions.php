@@ -27,6 +27,9 @@ function homepageConnect($array)
 		case 'getEmbyMetadata':
 			return (qualifyRequest($GLOBALS['homepageEmbyAuth'])) ? embyConnect('metadata', $array['data']['key'], true) : false;
 			break;
+        case 'getJdownloader':
+            return jdownloaderConnect();
+            break;
 		case 'getSabnzbd':
 			return sabnzbdConnect();
 			break;
@@ -730,6 +733,37 @@ function embyConnect($action, $key = null, $skip = false)
 		};
 	}
 	return false;
+}
+
+function jdownloaderConnect()
+{
+    if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
+        $url = qualifyURL($GLOBALS['jdownloaderURL']);
+        $url = $url . '/';
+        try {
+            $options = (localURL($url)) ? array('verify' => false) : array();
+            $response = Requests::get($url, array(), $options);
+            if ($response->success) {
+                $api['content']['queueItems'] = json_decode($response->body, true);
+            }
+        } catch (Requests_Exception $e) {
+            writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+        };
+        $url = qualifyURL($GLOBALS['jdownloaderURL']);
+        $url = $url . '/';
+        try {
+            $options = (localURL($url)) ? array('verify' => false) : array();
+            $response = Requests::get($url, array(), $options);
+            if ($response->success) {
+                $api['content']['historyItems'] = json_decode($response->body, true);
+            }
+        } catch (Requests_Exception $e) {
+            writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+        };
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
+    return false;
 }
 
 function sabnzbdConnect()
