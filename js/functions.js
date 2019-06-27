@@ -1894,6 +1894,8 @@ function checkTabHomepageItem(id, name, url, urlLocal){
         addEditHomepageItem(id,'Plex');
     }else if(name.includes('emby') || url.includes('emby') || urlLocal.includes('emby')){
         addEditHomepageItem(id,'Emby');
+    }else if(name.includes('jdownloader') || url.includes('jdownloader') || urlLocal.includes('jdownloader')){
+        addEditHomepageItem(id,'jDownloader');
     }else if(name.includes('sab') || url.includes('sab') || urlLocal.includes('sab')){
         addEditHomepageItem(id,'SabNZBD');
     }else if(name.includes('nzbget') || url.includes('nzbget') || urlLocal.includes('nzbget')){
@@ -4903,6 +4905,53 @@ function buildDownloaderItem(array, source, type='none'){
     var history = '';
     var count = 0;
 	switch (source) {
+        case 'jdownloader':
+            if(array.content === false){
+                queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+                break;
+            }
+
+            /*
+            if(array.content.$status[0] != 'RUNNING'){
+                var state = `<a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a>`;
+                var active = 'grayscale';
+            }else{
+                var state = `<a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>`;
+                var active = '';
+            }
+            $('.jdownloader-downloader-action').html(state);
+            */
+
+            if(array.content.queueItems.length == 0){
+                queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+            }
+            $.each(array.content.queueItems, function(i,v) {
+                count = count + 1;
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td class="hidden-xs">`+v.speed+`</td>
+                    <td class="hidden-xs" alt="`+v.done+`">`+v.size+`</td>
+                    <td class="hidden-xs">`+v.eta+`</td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+v.percentage+`%;" role="progressbar">`+v.percentage+`%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            if(array.content.grabberItems.length == 0){
+                history = '<tr><td class="max-texts" lang="en">Nothing in Linkgrabbber</td></tr>';
+            }
+            $.each(array.content.grabberItems, function(i,v) {
+                history += `
+                <tr>
+                    <td class="max-texts">`+ v.name+`</td>
+                </tr>
+                `;
+            });
+            break;
 		case 'sabnzbd':
             if(array.content === false){
                 queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
@@ -5216,6 +5265,7 @@ function buildDownloader(source){
     var queueButton = 'QUEUE';
     var historyButton = 'HISTORY';
     switch (source) {
+        case 'jdownloader':
         case 'sabnzbd':
         case 'nzbget':
             var queue = true;
@@ -5311,6 +5361,7 @@ function buildDownloaderCombined(source){
     var queueButton = 'QUEUE';
     var historyButton = 'HISTORY';
     switch (source) {
+        case 'jdownloader':
         case 'sabnzbd':
         case 'nzbget':
             var queue = true;
@@ -5640,6 +5691,9 @@ function homepageDownloader(type, timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageDownloadRefresh;
 	//if(isHidden()){ return; }
 	switch (type) {
+        case 'jdownloader':
+            var action = 'getJdownloader';
+            break;
 		case 'sabnzbd':
 			var action = 'getSabnzbd';
 			break;

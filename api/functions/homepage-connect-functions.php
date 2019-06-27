@@ -27,6 +27,9 @@ function homepageConnect($array)
 		case 'getEmbyMetadata':
 			return (qualifyRequest($GLOBALS['homepageEmbyAuth']) && $GLOBALS['homepageEmbyEnabled']) ? embyConnect('metadata', $array['data']['key'], true) : false;
 			break;
+		case 'getJdownloader':
+			return jdownloaderConnect();
+			break;
 		case 'getSabnzbd':
 			return sabnzbdConnect();
 			break;
@@ -730,6 +733,47 @@ function embyConnect($action, $key = null, $skip = false)
 		};
 	}
 	return false;
+}
+
+function jdownloaderConnect()
+{
+    if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
+        $url = qualifyURL($GLOBALS['jdownloaderURL']);
+        $url = $url . '/';
+        try {
+            $options = (localURL($url)) ? array('verify' => false) : array();
+            $response = Requests::get($url, array(), $options);
+            if ($response->success) {
+                $temp = json_decode($response->body, true);
+                $packages = $temp['packages'];
+                if ($packages['downloader']) {
+                    $api['content']['queueItems'] = $packages['downloader'];
+                } else {
+                    $api['content']['queueItems'] = [];
+                }
+
+                $grabbed = array();
+                if ($packages['linkgrabber_decrypted']) {
+                    $grabbed = array_merge($grabbed, $packages['linkgrabber_decrypted']);
+                }
+                if ($packages['linkgrabber_failed']) {
+                    $grabbed = array_merge($grabbed, $packages['linkgrabber_failed']);
+                }
+                if ($packages['linkgrabber_offline']) {
+                    $grabbed = array_merge($grabbed, $packages['linkgrabber_offline']);
+                }
+                $api['content']['grabberItems'] = $grabbed;
+
+                $status = array($temp['downloader_state'], $temp['grabber_collecting'], $temp['update_ready']);
+                $api['content']['$status'] = $status;
+            }
+        } catch (Requests_Exception $e) {
+            writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+        };
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
+    return false;
 }
 
 function sabnzbdConnect()
@@ -2402,6 +2446,22 @@ function testAPIConnection($array)
 				return 'URL/s and/or Token/s not setup';
 			}
 			break;
+        case 'jdownloader':
+            if (!empty($GLOBALS['jdownloaderURL'])) {
+                $url = qualifyURL($GLOBALS['jdownloaderURL']);
+                try {
+                    $options = (localURL($url)) ? array('verify' => false) : array();
+                    $response = Requests::get($url, array(), $options);
+                    if ($response->success) {
+                        return true;
+                    }
+                } catch (Requests_Exception $e) {
+                    return $e->getMessage();
+                };
+            } else {
+                return 'URL and/or Token not setup';
+            }
+            break;
 		case 'sabnzbd':
 			if (!empty($GLOBALS['sabnzbdURL']) && !empty($GLOBALS['sabnzbdToken'])) {
 				$url = qualifyURL($GLOBALS['sabnzbdURL']);
