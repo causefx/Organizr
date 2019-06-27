@@ -751,7 +751,6 @@ function jdownloaderConnect()
                 } else {
                     $api['content']['queueItems'] = [];
                 }
-
                 $grabbed = array();
                 if ($packages['linkgrabber_decrypted']) {
                     $grabbed = array_merge($grabbed, $packages['linkgrabber_decrypted']);

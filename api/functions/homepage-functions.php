@@ -1006,6 +1006,24 @@ function getHomepageList()
             'image' => 'plugins/images/tabs/jdownloader.png',
             'category' => 'Downloader',
             'settings' => array(
+	            'custom' => '
+				<div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+								<span lang="en">Notice</span>
+                            </div>
+                            <div class="panel-wrapper collapse in" aria-expanded="true">
+                                <div class="panel-body">
+									<ul class="list-icons">
+                                        <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://pypi.org/project/myjd-api/" target="_blank">Download [myjd-api] Module</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+				</div>
+				',
                 'Enable' => array(
                     array(
                         'type' => 'switch',
