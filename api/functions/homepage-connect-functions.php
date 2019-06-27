@@ -27,9 +27,9 @@ function homepageConnect($array)
 		case 'getEmbyMetadata':
 			return (qualifyRequest($GLOBALS['homepageEmbyAuth'])) ? embyConnect('metadata', $array['data']['key'], true) : false;
 			break;
-        case 'getJdownloader':
-            return jdownloaderConnect();
-            break;
+		case 'getJdownloader':
+			return jdownloaderConnect();
+			break;
 		case 'getSabnzbd':
 			return sabnzbdConnect();
 			break;

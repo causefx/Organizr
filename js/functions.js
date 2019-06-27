@@ -4859,6 +4859,8 @@ function buildDownloaderItem(array, source, type='none'){
                 queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
                 break;
             }
+
+            /*
             if(array.content.$status[0] != 'RUNNING'){
                 var state = `<a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a>`;
                 var active = 'grayscale';
@@ -4867,6 +4869,7 @@ function buildDownloaderItem(array, source, type='none'){
                 var active = '';
             }
             $('.jdownloader-downloader-action').html(state);
+            */
 
             if(array.content.queueItems.length == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';

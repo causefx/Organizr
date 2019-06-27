@@ -6,7 +6,7 @@ function homepageOrder()
 		"homepageOrdercustomhtml" => $GLOBALS['homepageOrdercustomhtml'],
 		"homepageOrdercustomhtmlTwo" => $GLOBALS['homepageOrdercustomhtmlTwo'],
 		"homepageOrdernzbget" => $GLOBALS['homepageOrdernzbget'],
-        "homepageOrderjdownloader" => $GLOBALS['homepageOrderjdownloader'],
+		"homepageOrderjdownloader" => $GLOBALS['homepageOrderjdownloader'],
 		"homepageOrdersabnzbd" => $GLOBALS['homepageOrdersabnzbd'],
 		"homepageOrderplexnowplaying" => $GLOBALS['homepageOrderplexnowplaying'],
 		"homepageOrderplexrecent" => $GLOBALS['homepageOrderplexrecent'],
