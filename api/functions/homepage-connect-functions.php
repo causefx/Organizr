@@ -762,7 +762,7 @@ function jdownloaderConnect()
                 if ($packages['linkgrabber_offline']) {
                     $grabbed = array_merge($grabbed, $packages['linkgrabber_offline']);
                 }
-                $api['content']['historyItems'] = $grabbed;
+                $api['content']['grabberItems'] = $grabbed;
 
                 $status = array($temp['downloader_state'], $temp['grabber_collecting'], $temp['update_ready']);
                 $api['content']['$status'] = $status;
