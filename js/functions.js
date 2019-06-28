@@ -4927,6 +4927,8 @@ function buildDownloaderItem(array, source, type='none'){
             }
             $.each(array.content.queueItems, function(i,v) {
                 count = count + 1;
+                v.speed = (v.speed == null) ? '--' : v.speed;
+                v.eta = (v.eta == null) ? '--' : v.eta;
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
