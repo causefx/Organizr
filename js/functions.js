@@ -4927,8 +4927,20 @@ function buildDownloaderItem(array, source, type='none'){
             }
             $.each(array.content.queueItems, function(i,v) {
                 count = count + 1;
-                v.speed = (v.speed == null) ? '--' : v.speed;
-                v.eta = (v.eta == null) ? '--' : v.eta;
+                if(v.speed == null){
+                    if(v.percentage == '100'){
+                        v.speed = '--';
+                    }else{
+                        v.speed = 'Stopped';
+                    }
+                }
+                if(v.eta == null){
+                    if(v.percentage == '100'){
+                        v.eta = 'Complete';
+                    }else{
+                        v.eta = '--';
+                    }
+                }
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
