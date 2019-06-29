@@ -187,5 +187,12 @@
     "new": "Plex Admin and Strict info to debug area",
     "fixed": "Radarr image problem if Radarr Auth is on|Plex login for admin using username and pass for SSO|Powershell update script|Login screen for oAuth only as backend",
     "notes": "Please report bugs in GitHub issues page|Updated language translations|Added more default tab images"
+  },
+  "2.0.270": {
+    "date": "2019-06-29 00:35",
+    "title": "Small Weekly Update",
+    "new": "Login lockout feature|JDownloader HP Support - rix|Coupon indicator on sponsor section|Sponsor API call|Custom Pages API endpoint|Theme analytics|SVG added to whitelist",
+    "fixed": "Homepage Loading Sections Displaying for Disabled Items (#1204)|Healthchecks tag issue|Updated Evo logo|Updated Netdata logo|Updated Nextcloud logo|CSS fix for alt headers on HP|HP Downloader counter on MS Edge|Cache image button on recent items",
+    "notes": "Please report bugs in GitHub issues page|Updated language translations"
   }
 }
