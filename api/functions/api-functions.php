@@ -32,6 +32,10 @@ function apiLogin()
 				'value' => (isset($_POST['tfaCode'])) ? $_POST['tfaCode'] : false
 			),
 			array(
+				'name' => 'loginAttempts',
+				'value' => (isset($_POST['loginAttempts'])) ? $_POST['loginAttempts'] : false
+			),
+			array(
 				'name' => 'output',
 				'value' => true
 			),
@@ -74,6 +78,11 @@ function login($array)
 	$days = (isset($remember)) ? $GLOBALS['rememberMeDays'] : 1;
 	$oAuth = (isset($oAuth)) ? $oAuth : false;
 	$output = (isset($output)) ? $output : false;
+	$loginAttempts = (isset($loginAttempts)) ? $loginAttempts : false;
+	if($loginAttempts > $GLOBALS['loginAttempts'] || isset($_COOKIE['lockout'])){
+		coookieSeconds('set', 'lockout', $GLOBALS['loginLockout'], $GLOBALS['loginLockout']);
+		return 'lockout';
+	}
 	try {
 		$database = new Dibi\Connection([
 			'driver' => 'sqlite3',
@@ -194,7 +203,12 @@ function login($array)
 			// authentication failed
 			writeLoginLog($username, 'error');
 			writeLog('error', 'Login Function - Wrong Password', $username);
-			return 'mismatch';
+			if($loginAttempts >= $GLOBALS['loginAttempts']){
+				coookieSeconds('set', 'lockout', $GLOBALS['loginLockout'], $GLOBALS['loginLockout']);
+				return 'lockout';
+			}else{
+				return 'mismatch';
+			}
 		}
 	} catch (Dibi\Exception $e) {
 		return $e;

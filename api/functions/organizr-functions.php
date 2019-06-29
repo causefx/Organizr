@@ -710,6 +710,20 @@ function getSettingsMain()
 		'Security' => array(
 			array(
 				'type' => 'number',
+				'name' => 'loginAttempts',
+				'label' => 'Max Login Attempts',
+				'value' => $GLOBALS['loginAttempts'],
+				'placeholder' => ''
+			),
+			array(
+				'type' => 'select',
+				'name' => 'loginLockout',
+				'label' => 'Login Lockout Seconds',
+				'value' => $GLOBALS['loginLockout'],
+				'options' => optionTime()
+			),
+			array(
+				'type' => 'number',
 				'name' => 'lockoutTimeout',
 				'label' => 'Inactivity Timer [Minutes]',
 				'value' => $GLOBALS['lockoutTimeout'],
@@ -1693,6 +1707,7 @@ function approvedFileExtension($filename)
 		case 'png':
 		case 'jpeg':
 		case 'jpg':
+		case 'svg':
 			return true;
 			break;
 		default:

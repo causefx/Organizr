@@ -2,6 +2,7 @@
 /*global $, jQuery, alert*/
 var idleTime = 0;
 var hasCookie = false;
+var loginAttempts = 0;
 $(document).ajaxComplete(function () {
     pageLoad();
     //new SimpleBar($('.internal-listing')[0]);
@@ -337,6 +338,8 @@ function doneTypingMediaSearch () {
 }
 $(document).on("click", ".login-button", function(e) {
     e.preventDefault;
+    loginAttempts = loginAttempts + 1;
+    $('#login-attempts').val(loginAttempts);
     var check = (local('g','loggingIn'));
     if(check == null) {
         local('s','loggingIn', true);
@@ -358,6 +361,18 @@ $(document).on("click", ".login-button", function(e) {
                 $('div.login-box').unblock({});
                 message('Login Error', ' Wrong username/email/password combo', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
                 console.error('Organizr Function: Login failed - wrong username/email/password');
+            } else if (html.data == 'lockout') {
+                $('div.login-box').block({
+                    message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
+                    css: {
+                        color: '#fff',
+                        border: '1px solid #e91e63',
+                        backgroundColor: '#f44336'
+                    }
+                });
+                message('Login Error', ' You have been Locked out', activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+                console.error('Organizr Function: Login failed - User has been locked out');
+                setTimeout(function(){ local('r','loggingIn'); location.reload() }, 10000);
             } else if (html.data == '2FA') {
                 $('div.login-box').unblock({});
                 $('#tfa-div').removeClass('hidden');
@@ -1510,15 +1525,13 @@ $(document).on("click", ".refreshImage", function(e) {
             break;
         case 'recent-item':
             var orginalElementAlt = $(this).parent().parent().parent().find('.imageSourceAlt');
-            var orginalElement = $(this).parent().parent().parent().find('.imageSource');
+            var orginalElement = $(this).parent().parent().parent().parent().find('.imageSource');
             orginalElement.attr('style', 'background-image: url("'+original+'");');
             orginalElementAlt.attr('src', original);
             break;
         default:
 
     }
-    //console.log(orginalElement)
-    //console.log('replaced image with : '+original);
     setTimeout(function(){
         message('Image Refreshed ',' Clear Cache Please',activeInfo.settings.notifications.position,'#FFF','success','3000');
     }, 1000);

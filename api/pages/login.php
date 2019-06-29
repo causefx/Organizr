@@ -13,6 +13,7 @@ if(activeInfo.settings.login.rememberMe){
   <div class="login-box login-sidebar animated slideInRight">
     <div class="white-box">
       <form class="form-horizontal" id="loginform" onsubmit="return false;">
+      	<input id="login-attempts" class="form-control" name="loginAttempts" type="hidden">
         <a href="javascript:void(0)" class="text-center db visible-xs" id="login-logo">' . logoOrText() . '</a>
         <div id="oAuth-div" class="form-group hidden">
           <div class="col-xs-12">

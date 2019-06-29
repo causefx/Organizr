@@ -1237,8 +1237,9 @@ span.fc-title {
     font-size: 30px;
 }
 .downloaderCount {
-    margin-top: -45px;
+    margin-top: -15px;
     margin-left: -45px;
+    position: absolute;
 }
 .loginTitle {
     height: 22px;
@@ -1313,6 +1314,11 @@ span.fc-title {
         float: none;
     }
 }
+.col-lg-12,
+.col-md-12 {
+    float: left;
+    width: 100%;
+}
 #newRequestButton {
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
@@ -1345,6 +1351,26 @@ span.fc-title {
 }
 .btn-danger i.ti-trash {
     margin-left: -1.5px;
+}
+.has-coupon-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(108, 169, 76, 0.73);
+    width: inherit;
+    color: white;
+    display: none;
+}
+.item:hover .has-coupon-text {
+    display: block;
+}
+span.has-coupon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(108, 169, 76, 0.73);
+    width: 23px;
+    color: white;
 }
 /*
 body,

@@ -34,6 +34,12 @@ if (!in_array($function, $approvedFunctionsBypass)) {
 }
 $result['request'] = key($_GET);
 $result['params'] = $_POST;
+
+//Custom Page Check
+if(strpos($function,'v1_custom_page_') !== false){
+	$endpoint = explode('v1_custom_page_', $function)[1];
+	$function = 'v1_custom_page';
+}
 switch ($function) {
 	case 'v1_settings_page':
 		switch ($method) {
@@ -1348,6 +1354,20 @@ switch ($function) {
 					$result['statusText'] = 'API/Token invalid or not set';
 					$result['data'] = null;
 				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
+	case 'v1_custom_page':
+		switch ($method) {
+			case 'GET':
+				$customPage = 'customPage'.ucwords($endpoint);
+				$result['status'] = 'success';
+				$result['statusText'] = 'success';
+				$result['data'] = $$customPage;
 				break;
 			default:
 				$result['status'] = 'error';
