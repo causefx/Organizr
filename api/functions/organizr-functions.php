@@ -1940,12 +1940,80 @@ function downloader($array)
 					break;
 			}
 			break;
+        case 'jdownloader':
+            switch ($array['data']['action']) {
+                case 'resume':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'pause':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'stop':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'update':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'retry':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'remove':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+            break;
 		case 'nzbget':
 			break;
 		default:
 			# code...
 			break;
 	}
+}
+
+function jdownloaderAction($action = null, $target = null)
+{
+    if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && !empty($GLOBALS['jdownloaderToken']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
+        $url = qualifyURL($GLOBALS['jdownloaderURL']);
+        switch ($action) {
+            case 'resume':
+                # TODO: fix this for unique packages (start online, delete offline ones)
+                $id = ($target !== '' && $target !== 'main' && isset($target)) ? 'mode=queue&name=pause&value=' . $target . '&' : 'mode=pause';
+                $url = $url . '/api?' . $id . '&output=json&apikey=' . $GLOBALS['jdownloaderToken'];
+                break;
+            case 'pause':
+                # code...
+                break;
+            case 'stop':
+                # code...
+                break;
+            case 'update':
+                # code...
+                break;
+            case 'retry':
+                # code...
+                break;
+            case 'remove':
+                # code...
+                break;
+            default:
+                # code...
+                break;
+        }
+        try {
+            $options = (localURL($url)) ? array('verify' => false) : array();
+            $response = Requests::get($url, array(), $options);
+            if ($response->success) {
+                $api['content'] = json_decode($response->body, true);
+            }
+        } catch (Requests_Exception $e) {
+            writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+        };
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
 }
 
 function sabnzbdAction($action = null, $target = null)

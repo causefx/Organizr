@@ -748,15 +748,23 @@ function jdownloaderConnect()
                 $packages = $temp['packages'];
                 if ($packages['downloader']) {
                     $api['content']['queueItems'] = $packages['downloader'];
+                }else{
+                    $api['content']['queueItems'] = [];
                 }
                 if ($packages['linkgrabber_decrypted']) {
                     $api['content']['grabberItems'] = $packages['linkgrabber_decrypted'];
+                }else{
+                    $api['content']['grabberItems'] = [];
                 }
                 if ($packages['linkgrabber_failed']) {
                     $api['content']['encryptedItems'] = $packages['linkgrabber_failed'];
+                }else{
+                    $api['content']['encryptedItems'] = [];
                 }
                 if ($packages['linkgrabber_offline']) {
                     $api['content']['offlineItems'] = $packages['linkgrabber_offline'];
+                }else{
+                    $api['content']['offlineItems'] = [];
                 }
 
                 $api['content']['$status'] = array($temp['downloader_state'], $temp['grabber_collecting'], $temp['update_ready']);

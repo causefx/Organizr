@@ -4914,19 +4914,21 @@ function buildDownloaderItem(array, source, type='none'){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }else{
                 if(array.content.$status[0] == 'RUNNING') {
-                    var queue = `
+                    queue += `
                         <tr><td>
                             <a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>
                             <a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="stop" data-target="main"><i class="fa fa-stop"></i></span></a>
                         </td></tr>
                         `;
                 }else if(array.content.$status[0] == 'PAUSE'){
-                    var queue = `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-fast-forward"></i></span></a></td></tr>`;
+                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-fast-forward"></i></span></a></td></tr>`;
                 }else{
-                    var queue = `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a></td></tr>`;
+                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a></td></tr>`;
+                }
+                if(array.content.$status[1]) {
+                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="update" data-target="main"><i class="fa fa-globe"></i></span></a></td></tr>`;
                 }
             }
-
             $.each(array.content.queueItems, function(i,v) {
                 count = count + 1;
                 if(v.speed == null){
