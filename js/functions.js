@@ -1894,7 +1894,7 @@ function checkTabHomepageItem(id, name, url, urlLocal){
         addEditHomepageItem(id,'Plex');
     }else if(name.includes('emby') || url.includes('emby') || urlLocal.includes('emby')){
         addEditHomepageItem(id,'Emby');
-    }else if(name.includes('jdownloader') || url.includes('jdownloader') || urlLocal.includes('jdownloader')){
+    }else if(name.includes('jdownloader') || url.includes('jdownloader') || urlLocal.includes('jdownloader') || name.includes('rsscrawler') || url.includes('rsscrawler') || urlLocal.includes('rsscrawler')){
         addEditHomepageItem(id,'jDownloader');
     }else if(name.includes('sab') || url.includes('sab') || urlLocal.includes('sab')){
         addEditHomepageItem(id,'SabNZBD');
@@ -4902,7 +4902,6 @@ function requestList (list, type, page=1) {
 function buildDownloaderItem(array, source, type='none'){
     //console.log(array);
     var queue = '';
-    var history = '';
     var count = 0;
 	switch (source) {
         case 'jdownloader':
@@ -4922,24 +4921,24 @@ function buildDownloaderItem(array, source, type='none'){
             $('.jdownloader-downloader-action').html(state);
             */
 
-            if(array.content.queueItems.length == 0){
+            if(array.content.queueItems.length == 0 && array.content.encryptedItems.length == 0 && array.content.offlineItems.length == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
             $.each(array.content.queueItems, function(i,v) {
                 count = count + 1;
                 if(v.speed == null){
-                    if(v.percentage == '100'){
-                        v.speed = '--';
-                    }else{
-                        v.speed = 'Stopped';
-                    }
+                    v.speed = 'Stopped';
                 }
                 if(v.eta == null){
                     if(v.percentage == '100'){
-                        v.eta = 'Complete';
+                        v.speed = 'Complete';
+                        v.eta = '--';
                     }else{
                         v.eta = '--';
                     }
+                }
+                if(v.enabled == null){
+                    v.speed = 'Disabled';
                 }
                 queue += `
                 <tr>
@@ -4955,13 +4954,51 @@ function buildDownloaderItem(array, source, type='none'){
                 </tr>
                 `;
             });
-            if(array.content.grabberItems.length == 0){
-                history = '<tr><td class="max-texts" lang="en">Nothing in Linkgrabbber</td></tr>';
-            }
             $.each(array.content.grabberItems, function(i,v) {
-                history += `
+                count = count + 1;
+                queue += `
                 <tr>
-                    <td class="max-texts">`+ v.name+`</td>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td class="hidden-xs"> Online </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: 0%;" role="progressbar">0%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            $.each(array.content.encryptedItems, function(i,v) {
+                count = count + 1;
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td class="hidden-xs"> Encrypted </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: 0%;" role="progressbar">0%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            $.each(array.content.offlineItems, function(i,v) {
+                count = count + 1;
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td class="hidden-xs"> Offline </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: 0%;" role="progressbar">0%</div>
+                        </div>
+                    </td>
                 </tr>
                 `;
             });

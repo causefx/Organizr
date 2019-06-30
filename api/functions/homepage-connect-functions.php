@@ -748,23 +748,18 @@ function jdownloaderConnect()
                 $packages = $temp['packages'];
                 if ($packages['downloader']) {
                     $api['content']['queueItems'] = $packages['downloader'];
-                } else {
-                    $api['content']['queueItems'] = [];
                 }
-                $grabbed = array();
                 if ($packages['linkgrabber_decrypted']) {
-                    $grabbed = array_merge($grabbed, $packages['linkgrabber_decrypted']);
+                    $api['content']['grabberItems'] = $packages['linkgrabber_decrypted'];
                 }
                 if ($packages['linkgrabber_failed']) {
-                    $grabbed = array_merge($grabbed, $packages['linkgrabber_failed']);
+                    $api['content']['encryptedItems'] = $packages['linkgrabber_failed'];
                 }
                 if ($packages['linkgrabber_offline']) {
-                    $grabbed = array_merge($grabbed, $packages['linkgrabber_offline']);
+                    $api['content']['offlineItems'] = $packages['linkgrabber_offline'];
                 }
-                $api['content']['grabberItems'] = $grabbed;
 
-                $status = array($temp['downloader_state'], $temp['grabber_collecting'], $temp['update_ready']);
-                $api['content']['$status'] = $status;
+                $api['content']['$status'] = array($temp['downloader_state'], $temp['grabber_collecting'], $temp['update_ready']);
             }
         } catch (Requests_Exception $e) {
             writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
