@@ -4910,20 +4910,23 @@ function buildDownloaderItem(array, source, type='none'){
                 break;
             }
 
-            /*
-            if(array.content.$status[0] != 'RUNNING'){
-                var state = `<a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a>`;
-                var active = 'grayscale';
-            }else{
-                var state = `<a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>`;
-                var active = '';
-            }
-            $('.jdownloader-downloader-action').html(state);
-            */
-
-            if(array.content.queueItems.length == 0 && array.content.encryptedItems.length == 0 && array.content.offlineItems.length == 0){
+            if(array.content.queueItems.length == 0 && array.content.grabberItems.length == 0 && array.content.encryptedItems.length == 0 && array.content.offlineItems.length == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+            }else{
+                if(array.content.$status[0] == 'RUNNING') {
+                    var queue = `
+                        <tr><td>
+                            <a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>
+                            <a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="stop" data-target="main"><i class="fa fa-stop"></i></span></a>
+                        </td></tr>
+                        `;
+                }else if(array.content.$status[0] == 'PAUSE'){
+                    var queue = `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-fast-forward"></i></span></a></td></tr>`;
+                }else{
+                    var queue = `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a></td></tr>`;
+                }
             }
+
             $.each(array.content.queueItems, function(i,v) {
                 count = count + 1;
                 if(v.speed == null){
@@ -4943,7 +4946,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs">`+v.speed+`</td>
+                    <td>`+v.speed+`</td>
                     <td class="hidden-xs" alt="`+v.done+`">`+v.size+`</td>
                     <td class="hidden-xs">`+v.eta+`</td>
                     <td class="text-right">
@@ -4959,7 +4962,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs"> Online </td>
+                    <td>Online</td>
                     <td class="hidden-xs"> -- </td>
                     <td class="hidden-xs"> -- </td>
                     <td class="text-right">
@@ -4975,7 +4978,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs"> Encrypted </td>
+                    <td>Encrypted</td>
                     <td class="hidden-xs"> -- </td>
                     <td class="hidden-xs"> -- </td>
                     <td class="text-right">
@@ -4991,7 +4994,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs"> Offline </td>
+                    <td>Offline</td>
                     <td class="hidden-xs"> -- </td>
                     <td class="hidden-xs"> -- </td>
                     <td class="text-right">
@@ -5317,6 +5320,10 @@ function buildDownloader(source){
     var historyButton = 'HISTORY';
     switch (source) {
         case 'jdownloader':
+            var queue = true;
+            var history = false;
+            queueButton = 'REFRESH';
+            break;
         case 'sabnzbd':
         case 'nzbget':
             var queue = true;
@@ -5413,6 +5420,10 @@ function buildDownloaderCombined(source){
     var historyButton = 'HISTORY';
     switch (source) {
         case 'jdownloader':
+            var queue = true;
+            var history = false;
+            queueButton = 'REFRESH';
+            break;
         case 'sabnzbd':
         case 'nzbget':
             var queue = true;
