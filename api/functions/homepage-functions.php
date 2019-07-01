@@ -2147,6 +2147,43 @@ function getHomepageList()
 						'help' => 'Use Ombi Alias Names instead of Usernames - If Alias is blank, Alias will fallback to Username'
 					)
 				),
+				'Default Filter' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterAvailable',
+						'label' => 'Show Available',
+						'value' => $GLOBALS['ombiDefaultFilterAvailable'],
+						'help' => 'Show All Available Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterUnavailable',
+						'label' => 'Show Unavailable',
+						'value' => $GLOBALS['ombiDefaultFilterUnavailable'],
+						'help' => 'Show All Unavailable Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterApproved',
+						'label' => 'Show Approved',
+						'value' => $GLOBALS['ombiDefaultFilterApproved'],
+						'help' => 'Show All Approved Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterUnapproved',
+						'label' => 'Show Unapproved',
+						'value' => $GLOBALS['ombiDefaultFilterUnapproved'],
+						'help' => 'Show All Unapproved Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterDenied',
+						'label' => 'Show Denied',
+						'value' => $GLOBALS['ombiDefaultFilterDenied'],
+						'help' => 'Show All Denied Ombi Requests'
+					)
+				),
 				'Test Connection' => array(
 					array(
 						'type' => 'blank',

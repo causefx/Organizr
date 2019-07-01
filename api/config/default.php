@@ -231,5 +231,10 @@ return array(
 	'healthChecksURL' => 'https://healthchecks.io/api/v1/checks/',
 	'gaTrackingID' => '',
 	'loginAttempts' => '3',
-	'loginLockout' => '60000'
+	'loginLockout' => '60000',
+	'ombiDefaultFilterAvailable' => true,
+	'ombiDefaultFilterUnavailable' => true,
+	'ombiDefaultFilterApproved' => true,
+	'ombiDefaultFilterUnapproved' => true,
+	'ombiDefaultFilterDenied' => true
 );

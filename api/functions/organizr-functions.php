@@ -35,6 +35,11 @@ function organizrSpecialSettings()
 				'sso' => ($GLOBALS['ssoOmbi']) ? true : false,
 				'cookie' => (isset($_COOKIE['Auth'])) ? true : false,
 				'alias' => ($GLOBALS['ombiAlias']) ? true : false,
+				'ombiDefaultFilterAvailable' => $GLOBALS['ombiDefaultFilterAvailable'] ? true : false,
+				'ombiDefaultFilterUnavailable' => $GLOBALS['ombiDefaultFilterUnavailable'] ? true : false,
+				'ombiDefaultFilterApproved' => $GLOBALS['ombiDefaultFilterApproved'] ? true : false,
+				'ombiDefaultFilterUnapproved' => $GLOBALS['ombiDefaultFilterUnapproved'] ? true : false,
+				'ombiDefaultFilterDenied' => $GLOBALS['ombiDefaultFilterDenied'] ? true : false
 			),
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],

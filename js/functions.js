@@ -521,6 +521,9 @@ function swapBodyClass(tab){
     $('body').attr('data-active-tab', tab);
     $('body').addClass('active-tab-'+tab);
 }
+function editPageTitle(title){
+    document.title =  title + ' - ' + activeInfo.appearance.title;
+}
 function switchTab(tab, type){
     if(type !== 2){
         hideFrames();
@@ -540,6 +543,7 @@ function switchTab(tab, type){
 			var newTab = $('#internal-'+tab);
 			var tabURL = newTab.attr('data-url');
 			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
+            editPageTitle(tab);
 			if(newTab.hasClass('loaded')){
 				console.log('Tab Function: Switching to tab: '+tab);
 				newTab.addClass("show").removeClass('hidden');
@@ -562,6 +566,7 @@ function switchTab(tab, type){
 			var newTab = $('#container-'+tab);
 			var tabURL = newTab.attr('data-url');
 			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
+            editPageTitle(tab);
 			if(newTab.hasClass('loaded')){
 				console.log('Tab Function: Switching to tab: '+tab);
 				newTab.addClass("show").removeClass('hidden');
@@ -5846,6 +5851,20 @@ function homepagePlaylist(type, timeout=30000){
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
+function defaultOmbiFilter(){
+    var defaultFilter = {
+        "request-filter-approved" : activeInfo.settings.homepage.ombi.ombiDefaultFilterApproved,
+        "request-filter-unapproved" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnapproved,
+        "request-filter-available" : activeInfo.settings.homepage.ombi.ombiDefaultFilterAvailable,
+        "request-filter-unavailable" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnavailable,
+        "request-filter-denied" : activeInfo.settings.homepage.ombi.ombiDefaultFilterDenied
+    };
+    $.each(defaultFilter, function(i,v) {
+        if(v == false){
+            $('#'+i).click();
+        }
+    });
+}
 function homepageRequests(timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.ombiRefresh;
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getRequests'}).success(function(data) {
@@ -5868,6 +5887,8 @@ function homepageRequests(timeout){
 			autoWidth:true,
 			items:4
     	})
+        // Default Ombi Filter
+        defaultOmbiFilter();
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
