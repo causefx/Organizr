@@ -1942,13 +1942,16 @@ function downloader($array)
 			break;
         case 'jdownloader':
             switch ($array['data']['action']) {
+                case 'start':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'stop':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
                 case 'resume':
                     jdownloaderAction($array['data']['action'], $array['data']['target']);
                     break;
                 case 'pause':
-                    jdownloaderAction($array['data']['action'], $array['data']['target']);
-                    break;
-                case 'stop':
                     jdownloaderAction($array['data']['action'], $array['data']['target']);
                     break;
                 case 'update':
@@ -1975,22 +1978,30 @@ function downloader($array)
 
 function jdownloaderAction($action = null, $target = null)
 {
-    if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && !empty($GLOBALS['jdownloaderToken']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
+    if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
         $url = qualifyURL($GLOBALS['jdownloaderURL']);
+
+        # This ensures compatibility with RSScrawler
+        $url = str_replace('/myjd', '', $url);
+        if(substr($url , -1)=='/') {
+            $url = substr_replace($url ,"",-1);
+        }
+
         switch ($action) {
-            case 'resume':
-                # TODO: fix this for unique packages (start online, delete offline ones)
-                $id = ($target !== '' && $target !== 'main' && isset($target)) ? 'mode=queue&name=pause&value=' . $target . '&' : 'mode=pause';
-                $url = $url . '/api?' . $id . '&output=json&apikey=' . $GLOBALS['jdownloaderToken'];
-                break;
-            case 'pause':
-                # code...
+            case 'start':
+                $url = $url . '/myjd_start/';
                 break;
             case 'stop':
-                # code...
+                $url = $url . '/myjd_stop/';
+                break;
+            case 'resume':
+                $url = $url . '/myjd_pause/false';
+                break;
+            case 'pause':
+                $url = $url . '/myjd_pause/true';
                 break;
             case 'update':
-                # code...
+                $url = $url . '/myjd_update';
                 break;
             case 'retry':
                 # code...
@@ -2004,7 +2015,7 @@ function jdownloaderAction($action = null, $target = null)
         }
         try {
             $options = (localURL($url)) ? array('verify' => false) : array();
-            $response = Requests::get($url, array(), $options);
+            $response = Requests::post($url, array(), $options);
             if ($response->success) {
                 $api['content'] = json_decode($response->body, true);
             }

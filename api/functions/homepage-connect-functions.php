@@ -739,7 +739,7 @@ function jdownloaderConnect()
 {
     if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
         $url = qualifyURL($GLOBALS['jdownloaderURL']);
-        $url = $url . '/';
+
         try {
             $options = (localURL($url)) ? array('verify' => false) : array();
             $response = Requests::get($url, array(), $options);
