@@ -1112,7 +1112,8 @@ function getCustomizeAppearance()
 					'type' => 'input',
 					'name' => 'loginWallpaper',
 					'label' => 'Login Wallpaper',
-					'value' => $GLOBALS['loginWallpaper']
+					'value' => $GLOBALS['loginWallpaper'],
+					'help' => 'You may enter multiple URL\'s using the CSV format.  i.e. link#1,link#2,link#3'
 				),
 				array(
 					'type' => 'switch',
