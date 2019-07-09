@@ -5267,7 +5267,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs">`+status+`</td>
+                    <td class="hidden-xs qbit-`+status+`">`+status+`</td>
                     <td class="hidden-xs">`+v.save_path+`</td>
                     <td class="hidden-xs">`+size+`</td>
                     <td class="text-right">
