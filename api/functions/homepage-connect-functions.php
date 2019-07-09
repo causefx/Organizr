@@ -739,7 +739,7 @@ function jdownloaderConnect()
 {
     if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
         $url = qualifyURL($GLOBALS['jdownloaderURL']);
-        $url = $url . '/';
+
         try {
             $options = (localURL($url)) ? array('verify' => false) : array();
             $response = Requests::get($url, array(), $options);
@@ -748,23 +748,26 @@ function jdownloaderConnect()
                 $packages = $temp['packages'];
                 if ($packages['downloader']) {
                     $api['content']['queueItems'] = $packages['downloader'];
-                } else {
+                }else{
                     $api['content']['queueItems'] = [];
                 }
-                $grabbed = array();
                 if ($packages['linkgrabber_decrypted']) {
-                    $grabbed = array_merge($grabbed, $packages['linkgrabber_decrypted']);
+                    $api['content']['grabberItems'] = $packages['linkgrabber_decrypted'];
+                }else{
+                    $api['content']['grabberItems'] = [];
                 }
                 if ($packages['linkgrabber_failed']) {
-                    $grabbed = array_merge($grabbed, $packages['linkgrabber_failed']);
+                    $api['content']['encryptedItems'] = $packages['linkgrabber_failed'];
+                }else{
+                    $api['content']['encryptedItems'] = [];
                 }
                 if ($packages['linkgrabber_offline']) {
-                    $grabbed = array_merge($grabbed, $packages['linkgrabber_offline']);
+                    $api['content']['offlineItems'] = $packages['linkgrabber_offline'];
+                }else{
+                    $api['content']['offlineItems'] = [];
                 }
-                $api['content']['grabberItems'] = $grabbed;
 
-                $status = array($temp['downloader_state'], $temp['grabber_collecting'], $temp['update_ready']);
-                $api['content']['$status'] = $status;
+                $api['content']['$status'] = array($temp['downloader_state'], $temp['grabber_collecting'], $temp['update_ready']);
             }
         } catch (Requests_Exception $e) {
             writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');

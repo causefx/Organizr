@@ -1899,7 +1899,7 @@ function checkTabHomepageItem(id, name, url, urlLocal){
         addEditHomepageItem(id,'Plex');
     }else if(name.includes('emby') || url.includes('emby') || urlLocal.includes('emby')){
         addEditHomepageItem(id,'Emby');
-    }else if(name.includes('jdownloader') || url.includes('jdownloader') || urlLocal.includes('jdownloader')){
+    }else if(name.includes('jdownloader') || url.includes('jdownloader') || urlLocal.includes('jdownloader') || name.includes('rsscrawler') || url.includes('rsscrawler') || urlLocal.includes('rsscrawler')){
         addEditHomepageItem(id,'jDownloader');
     }else if(name.includes('sab') || url.includes('sab') || urlLocal.includes('sab')){
         addEditHomepageItem(id,'SabNZBD');
@@ -4907,7 +4907,6 @@ function requestList (list, type, page=1) {
 function buildDownloaderItem(array, source, type='none'){
     //console.log(array);
     var queue = '';
-    var history = '';
     var count = 0;
 	switch (source) {
         case 'jdownloader':
@@ -4916,40 +4915,45 @@ function buildDownloaderItem(array, source, type='none'){
                 break;
             }
 
-            /*
-            if(array.content.$status[0] != 'RUNNING'){
-                var state = `<a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a>`;
-                var active = 'grayscale';
-            }else{
-                var state = `<a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>`;
-                var active = '';
-            }
-            $('.jdownloader-downloader-action').html(state);
-            */
-
-            if(array.content.queueItems.length == 0){
+            if(array.content.queueItems.length == 0 && array.content.grabberItems.length == 0 && array.content.encryptedItems.length == 0 && array.content.offlineItems.length == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+            }else{
+                if(array.content.$status[0] == 'RUNNING') {
+                    queue += `
+                        <tr><td>
+                            <a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>
+                            <a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="stop" data-target="main"><i class="fa fa-stop"></i></span></a>
+                        </td></tr>
+                        `;
+                }else if(array.content.$status[0] == 'PAUSE'){
+                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-fast-forward"></i></span></a></td></tr>`;
+                }else{
+                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="start" data-target="main"><i class="fa fa-play"></i></span></a></td></tr>`;
+                }
+                if(array.content.$status[1]) {
+                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="update" data-target="main"><i class="fa fa-globe"></i></span></a></td></tr>`;
+                }
             }
             $.each(array.content.queueItems, function(i,v) {
                 count = count + 1;
                 if(v.speed == null){
-                    if(v.percentage == '100'){
-                        v.speed = '--';
-                    }else{
-                        v.speed = 'Stopped';
-                    }
+                    v.speed = 'Stopped';
                 }
                 if(v.eta == null){
                     if(v.percentage == '100'){
-                        v.eta = 'Complete';
+                        v.speed = 'Complete';
+                        v.eta = '--';
                     }else{
                         v.eta = '--';
                     }
                 }
+                if(v.enabled == null){
+                    v.speed = 'Disabled';
+                }
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs">`+v.speed+`</td>
+                    <td>`+v.speed+`</td>
                     <td class="hidden-xs" alt="`+v.done+`">`+v.size+`</td>
                     <td class="hidden-xs">`+v.eta+`</td>
                     <td class="text-right">
@@ -4960,13 +4964,51 @@ function buildDownloaderItem(array, source, type='none'){
                 </tr>
                 `;
             });
-            if(array.content.grabberItems.length == 0){
-                history = '<tr><td class="max-texts" lang="en">Nothing in Linkgrabbber</td></tr>';
-            }
             $.each(array.content.grabberItems, function(i,v) {
-                history += `
+                count = count + 1;
+                queue += `
                 <tr>
-                    <td class="max-texts">`+ v.name+`</td>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td>Online</td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: 0%;" role="progressbar">0%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            $.each(array.content.encryptedItems, function(i,v) {
+                count = count + 1;
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td>Encrypted</td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: 0%;" role="progressbar">0%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            $.each(array.content.offlineItems, function(i,v) {
+                count = count + 1;
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td>Offline</td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: 0%;" role="progressbar">0%</div>
+                        </div>
+                    </td>
                 </tr>
                 `;
             });
@@ -5285,6 +5327,10 @@ function buildDownloader(source){
     var historyButton = 'HISTORY';
     switch (source) {
         case 'jdownloader':
+            var queue = true;
+            var history = false;
+            queueButton = 'REFRESH';
+            break;
         case 'sabnzbd':
         case 'nzbget':
             var queue = true;
@@ -5381,6 +5427,10 @@ function buildDownloaderCombined(source){
     var historyButton = 'HISTORY';
     switch (source) {
         case 'jdownloader':
+            var queue = true;
+            var history = false;
+            queueButton = 'REFRESH';
+            break;
         case 'sabnzbd':
         case 'nzbget':
             var queue = true;
