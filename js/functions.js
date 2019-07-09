@@ -3894,12 +3894,12 @@ function loadAppearance(appearance){
 	if(appearance.loginWallpaper !== ''){
 		cssSettings += `
 		    .login-register {
-			    background: url(`+appearance.loginWallpaper+`) center center/cover no-repeat!important;
+			    background: url(`+randomCSV(appearance.loginWallpaper)+`) center center/cover no-repeat!important;
 			    height: 100%;
 			    position: fixed;
 		    }
 			.lock-screen {
-				background: url(`+appearance.loginWallpaper+`) center center/cover no-repeat!important;
+				background: url(`+randomCSV(appearance.loginWallpaper)+`) center center/cover no-repeat!important;
 			    height: 100%;
 			    position: fixed;
 			    z-index: 1001;
@@ -3922,6 +3922,18 @@ function loadAppearance(appearance){
     if(appearance.customCss !== ''){
         $('#custom-css').html(appearance.customCss);
     }
+}
+function randomCSV(values){
+    if(typeof values == 'string'){
+        if(values.includes(',')){
+            var csv = values.split(',');
+            var luckyNumber = Math.floor(Math.random() * csv.length);
+            return csv[luckyNumber];
+        }else{
+            return values;
+        }
+    }
+    return false;
 }
 function loadCustomJava(appearance){
     if(appearance.customThemeJava !== ''){
