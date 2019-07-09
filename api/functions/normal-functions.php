@@ -311,6 +311,11 @@ function getCert()
 {
 	$url = 'http://curl.haxx.se/ca/cacert.pem';
 	$file = __DIR__ . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'cacert.pem';
+	if($GLOBALS['selfSignedCert'] !== ''){
+		if(file_exists($GLOBALS['selfSignedCert'])){
+			return $GLOBALS['selfSignedCert'];
+		}
+	}
 	if (!file_exists($file)) {
 		file_put_contents($file, fopen($url, 'r'));
 	} elseif (file_exists($file) && time() - 2592000 > filemtime($file)) {
