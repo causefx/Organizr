@@ -4955,7 +4955,7 @@ function buildDownloaderItem(array, source, type='none'){
                 }
                 if(v.eta == null){
                     if(v.percentage == '100'){
-                        v.speed = 'Complete';
+                        v.speed = 'Completed';
                         v.eta = '--';
                     }else{
                         v.eta = '--';
