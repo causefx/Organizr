@@ -3537,6 +3537,7 @@ function organizrAPI(type,path,data=null){
 	var timeout = 10000;
     switch(path){
         case 'api/?v1/windows/update':
+        case 'api/?v1/docker/update':
             timeout = 120000;
             break;
         default:
