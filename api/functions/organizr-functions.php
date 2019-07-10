@@ -511,7 +511,7 @@ function getSettingsMain()
 				'icon' => 'fa fa-download',
 				'text' => 'Retrieve',
 				'attr' => ($GLOBALS['docker']) ? 'title="You can just restart your docker to update"' : '',
-				'help' => ($GLOBALS['docker']) ? 'Since you are using the Official Docker image, You can just restart your docker to update' : 'This will re-download all of the source files for Organizr'
+				'help' => ($GLOBALS['docker']) ? 'Since you are using the official Docker image, you can just restart your Docker container to update Organizr' : 'This will re-download all of the source files for Organizr'
 			)
 		),
 		'API' => array(
