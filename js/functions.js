@@ -4920,6 +4920,7 @@ function buildDownloaderItem(array, source, type='none'){
     //console.log(array);
     var queue = '';
     var count = 0;
+    var history = '';
 	switch (source) {
         case 'jdownloader':
             if(array.content === false){
