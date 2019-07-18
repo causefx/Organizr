@@ -237,5 +237,6 @@ return array(
 	'ombiDefaultFilterApproved' => true,
 	'ombiDefaultFilterUnapproved' => true,
 	'ombiDefaultFilterDenied' => true,
-	'selfSignedCert' => ''
+	'selfSignedCert' => '',
+	'homepagePlexRecentlyAddedMethod' => 'legacy'
 );
