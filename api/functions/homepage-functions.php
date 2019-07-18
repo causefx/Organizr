@@ -746,23 +746,6 @@ function getHomepageList()
 					),
 					array(
 						'type' => 'select',
-						'name' => 'homepagePlexRecentlyAddedMethod',
-						'label' => 'API Method',
-						'value' => $GLOBALS['homepagePlexRecentlyAddedMethod'],
-						'help' => 'Legacy - 1 API Call, will grab as many items as you specify below | Separate - 3 API Calls, will grab the below amount per item category',
-						'options' => array(
-							array(
-								'name' => 'Legacy',
-								'value' => 'legacy'
-							),
-							array(
-								'name' => 'Separate',
-								'value' => 'separate'
-							),
-						)
-					),
-					array(
-						'type' => 'select',
 						'name' => 'homepagePlexRecentAuth',
 						'label' => 'Minimum Authorization',
 						'value' => $GLOBALS['homepagePlexRecentAuth'],
