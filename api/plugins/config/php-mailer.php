@@ -1,6 +1,7 @@
 <?php
 return array(
 	'PHPMAILER-enabled' => false,
+	'PHPMAILER-debugTesting' => false,
 	'PHPMAILER-smtpHost' => '',
 	'PHPMAILER-smtpHostPort' => '',
 	'PHPMAILER-smtpHostAuth' => true,
