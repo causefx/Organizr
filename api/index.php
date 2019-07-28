@@ -28,6 +28,7 @@ if (!in_array($function, $approvedFunctionsBypass)) {
 	if (isApprovedRequest($method) === false) {
 		$result['status'] = "error";
 		$result['statusText'] = "Not Authorized";
+		http_response_code(401);
 		writeLog('success', 'Killed Attack From [' . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'No Referer') . ']', $GLOBALS['organizrUser']['username']);
 		exit(json_encode($result));
 	}
