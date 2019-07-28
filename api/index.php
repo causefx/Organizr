@@ -1388,6 +1388,12 @@ if (!$result) {
 }
 $result['generationDate'] = $GLOBALS['currentTime'];
 $result['generationTime'] = formatSeconds(timeExecution());
+//Set HTTP Code
+if($result['statusText'] == "API/Token invalid or not set"){
+	http_response_code(401);
+}else{
+	http_response_code(200);
+}
 //return JSON array
 if ($pretty) {
 	echo '<pre>' . safe_json_encode($result, JSON_PRETTY_PRINT) . '</pre>';
