@@ -91,13 +91,20 @@ function login($array)
 		$authSuccess = false;
 		$authProxy = false;
 		if($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== ''){
-
-			$whitelistRange = analyzeIP($GLOBALS['authProxyWhitelist']);
-			$from = $whitelistRange['from'];
-			$to = $whitelistRange['to'];
-			$authProxy = authProxyRangeCheck($from,$to);
-			$usernameHeader = isset(getallheaders()[$GLOBALS['authProxyHeaderName']]) ? getallheaders()[$GLOBALS['authProxyHeaderName']] : $username;
-			$username = ($authProxy) ? $usernameHeader : $username;
+			if(isset(getallheaders()[$GLOBALS['authProxyHeaderName']])){
+				$usernameHeader = isset(getallheaders()[$GLOBALS['authProxyHeaderName']]) ? getallheaders()[$GLOBALS['authProxyHeaderName']] : $username;
+				writeLog('success', 'Auth Proxy Function - Starting Verification for IP: ' . userIP() . ' against IP/Subnet: ' . $GLOBALS['authProxyWhitelist'], $usernameHeader);
+				$whitelistRange = analyzeIP($GLOBALS['authProxyWhitelist']);
+				$from = $whitelistRange['from'];
+				$to = $whitelistRange['to'];
+				$authProxy = authProxyRangeCheck($from,$to);
+				$username = ($authProxy) ? $usernameHeader : $username;
+				if($authProxy){
+					writeLog('success', 'Auth Proxy Function - IP: ' . userIP() . ' has been verified', $usernameHeader);
+				}else{
+					writeLog('error', 'Auth Proxy Function - IP: ' . userIP() . ' has failed verification', $usernameHeader);
+				}
+			}
 		}
 		$function = 'plugin_auth_' . $GLOBALS['authBackend'];
 		if (!$oAuth) {
