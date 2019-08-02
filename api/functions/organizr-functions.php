@@ -860,6 +860,31 @@ function getSettingsMain()
 				'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
 			),
 		),
+		'Auth Proxy' => array(
+			array(
+				'type' => 'switch',
+				'name' => 'authProxyEnabled',
+				'label' => 'Auth Proxy',
+				'help' => 'Enable option to set Auth Poxy Header Login',
+				'value' => $GLOBALS['authProxyEnabled'],
+			),
+			array(
+				'type' => 'input',
+				'name' => 'authProxyHeaderName',
+				'label' => 'Auth Proxy Header Name',
+				'value' => $GLOBALS['authProxyHeaderName'],
+				'placeholder' => 'i.e. X-Forwarded-User',
+				'help' => 'Please choose a unique value for added security'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'authProxyWhitelist',
+				'label' => 'Auth Proxy Whitelist',
+				'value' => $GLOBALS['authProxyWhitelist'],
+				'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20',
+				'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address'
+			),
+		),
 		'Ping' => array(
 			array(
 				'type' => 'select',
@@ -2518,4 +2543,30 @@ function checkHostPrefix($s)
 		return $s;
 	}
 	return (substr($s, -1, 1) == '\\') ? $s : $s . '\\';
+}
+function analyzeIP($ip)
+{
+	if(strpos($ip,'/') !== false){
+		$explodeIP = explode('/', $ip);
+		$prefix = $explodeIP[1];
+		$start_ip = $explodeIP[0];
+		$ip_count = 1 << (32 - $prefix);
+		$start_ip_long = ip2long($start_ip);
+		$last_ip_long = ip2long($start_ip) + $ip_count - 1;
+	}elseif(substr_count($ip, '.') == 3){
+		$start_ip_long = ip2long($ip);
+		$last_ip_long = ip2long($ip);
+	}
+	return (isset($start_ip_long) && isset($last_ip_long)) ? array('from' => $start_ip_long, 'to' => $last_ip_long) : false;
+}
+function authProxyRangeCheck($from, $to)
+{
+	$approved = false;
+	$userIP = ip2long(userIP());
+	$low = $from;
+	$high = $to;
+	if ($userIP <= $high && $low <= $userIP) {
+		$approved = true;
+	}
+	return $approved;
 }

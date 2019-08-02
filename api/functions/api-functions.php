@@ -89,6 +89,16 @@ function login($array)
 			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
 		]);
 		$authSuccess = false;
+		$authProxy = false;
+		if($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== ''){
+
+			$whitelistRange = analyzeIP($GLOBALS['authProxyWhitelist']);
+			$from = $whitelistRange['from'];
+			$to = $whitelistRange['to'];
+			$authProxy = authProxyRangeCheck($from,$to);
+			$usernameHeader = isset(getallheaders()[$GLOBALS['authProxyHeaderName']]) ? getallheaders()[$GLOBALS['authProxyHeaderName']] : $username;
+			$username = ($authProxy) ? $usernameHeader : $username;
+		}
 		$function = 'plugin_auth_' . $GLOBALS['authBackend'];
 		if (!$oAuth) {
 			$result = $database->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE', $username, $username);
@@ -112,6 +122,7 @@ function login($array)
 						}
 					}
 			}
+			$authSuccess = ($authProxy) ? true : $authSuccess;
 		} else {
 			// Has oAuth Token!
 			switch ($oAuthType) {
@@ -139,7 +150,7 @@ function login($array)
 		if ($authSuccess) {
 			// Make sure user exists in database
 			$userExists = false;
-			$passwordMatches = ($oAuth) ? true : false;
+			$passwordMatches = ($oAuth || $authProxy) ? true : false;
 			$token = (is_array($authSuccess) && isset($authSuccess['token']) ? $authSuccess['token'] : '');
 			if ($result['username']) {
 				$userExists = true;

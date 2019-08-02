@@ -238,5 +238,8 @@ return array(
 	'ombiDefaultFilterUnapproved' => true,
 	'ombiDefaultFilterDenied' => true,
 	'selfSignedCert' => '',
-	'homepagePlexRecentlyAddedMethod' => 'legacy'
+	'homepagePlexRecentlyAddedMethod' => 'legacy',
+	'authProxyEnabled' => false,
+	'authProxyHeaderName' => '',
+	'authProxyWhitelist' => ''
 );
