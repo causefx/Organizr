@@ -2562,7 +2562,7 @@ function analyzeIP($ip)
 function authProxyRangeCheck($from, $to)
 {
 	$approved = false;
-	$userIP = ip2long(userIP());
+	$userIP = ip2long($_SERVER['REMOTE_ADDR']);
 	$low = $from;
 	$high = $to;
 	if ($userIP <= $high && $low <= $userIP) {

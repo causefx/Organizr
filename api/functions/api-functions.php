@@ -93,7 +93,7 @@ function login($array)
 		if($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== ''){
 			if(isset(getallheaders()[$GLOBALS['authProxyHeaderName']])){
 				$usernameHeader = isset(getallheaders()[$GLOBALS['authProxyHeaderName']]) ? getallheaders()[$GLOBALS['authProxyHeaderName']] : $username;
-				writeLog('success', 'Auth Proxy Function - Starting Verification for IP: ' . userIP() . ' against IP/Subnet: ' . $GLOBALS['authProxyWhitelist'], $usernameHeader);
+				writeLog('success', 'Auth Proxy Function - Starting Verification for IP: ' . userIP() . ' for request on: ' . $_SERVER['REMOTE_ADDR'] . 'against IP/Subnet: ' . $GLOBALS['authProxyWhitelist'], $usernameHeader);
 				$whitelistRange = analyzeIP($GLOBALS['authProxyWhitelist']);
 				$from = $whitelistRange['from'];
 				$to = $whitelistRange['to'];

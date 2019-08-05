@@ -13,6 +13,7 @@ lang.init({
 	},
 	allowCookieOverride: true
 });
+var OAuthLoginNeeded = false;
 var timeouts = {};
 var increment = 0;
 var tabInformation = {};
@@ -22,6 +23,9 @@ tabActionsList['close'] = [];
 
 // Start Organizr
 $(document).ready(function () {
+    if(getCookie('organizrOAuth')){
+        OAuthLoginNeeded = true
+    }
     launch();
     local('r','loggingIn');
 });
@@ -3541,7 +3545,7 @@ function organizrAPI(type,path,data=null){
             timeout = 120000;
             break;
         default:
-            timeout = 10000;
+            timeout = 60000;
     }
 	switch (type) {
 		case 'get':
@@ -7087,6 +7091,60 @@ function showLDAPLoginTest(){
         className: 'bg-org'
     })
 }
+function oAuthLoginNeededCheck() {
+    if(OAuthLoginNeeded == false){
+        return false;
+    }else{
+        if(activeInfo.user.loggedin == true){
+            return false;
+        }
+    }
+    organizrAPI('POST', 'api/?v1/login', '').success(function (data) {
+        var html = JSON.parse(data);
+        if (html.data == true) {
+            local('set', 'message', 'Welcome|Login Successful|success');
+            location.reload();
+        } else if (html.data == 'mismatch') {
+            $('div.login-box').unblock({});
+            message('Login Error', ' Wrong username/email/password combo', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+            console.error('Organizr Function: Login failed - wrong username/email/password');
+        } else if (html.data == 'lockout') {
+            $('div.login-box').block({
+                message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
+                css: {
+                    color: '#fff',
+                    border: '1px solid #e91e63',
+                    backgroundColor: '#f44336'
+                }
+            });
+            message('Login Error', ' You have been Locked out', activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+            console.error('Organizr Function: Login failed - User has been locked out');
+            setTimeout(function () {
+                local('r', 'loggingIn');
+                location.reload()
+            }, 10000);
+        } else if (html.data == '2FA') {
+            $('div.login-box').unblock({});
+            $('#tfa-div').removeClass('hidden');
+            $('#loginform [name=tfaCode]').focus();
+        } else if (html.data == '2FA-incorrect') {
+            $('div.login-box').unblock({});
+            $('#tfa-div').removeClass('hidden');
+            $('#loginform [name=tfaCode]').focus();
+            message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+        } else {
+            $('div.login-box').unblock({});
+            message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+            console.error('Organizr Function: Login failed');
+        }
+        local('r', 'loggingIn');
+    }).fail(function (xhr) {
+        $('div.login-box').unblock({});
+        message('Login Error', 'API Connection Failed', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+        console.error("Organizr Function: API Connection Failed");
+        local('r', 'loggingIn');
+    });
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
@@ -7175,5 +7233,6 @@ function launch(){
 				console.error('Organizr Function: Action not set or defined');
 		}
 		console.log('Organizr DOM Fully loaded');
+        oAuthLoginNeededCheck();
 	});
 }
