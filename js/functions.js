@@ -7099,6 +7099,7 @@ function oAuthLoginNeededCheck() {
             return false;
         }
     }
+    message('OAuth', ' Proceeding to login', activeInfo.settings.notifications.position, '#FFF', 'info', '10000');
     organizrAPI('POST', 'api/?v1/login', '').success(function (data) {
         var html = JSON.parse(data);
         if (html.data == true) {
