@@ -39,11 +39,7 @@ if (isset($GLOBALS['dbLocation'])) {
 	// Oauth?
 	if($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== ''){
 		if(isset(getallheaders()[$GLOBALS['authProxyHeaderName']])){
-			if(isset($_COOKIE['organizrOAuth'])){
-				coookie('delete','organizrOAuth');
-			}else{
-				coookieSeconds('set', 'organizrOAuth', 'true', 60000);
-			}
+			coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
 		}
 	}
 	//Upgrade Check
