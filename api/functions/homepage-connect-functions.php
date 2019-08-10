@@ -1618,6 +1618,8 @@ function getLidarrCalendar($array, $number)
 
 function getRadarrCalendar($array, $number, $url)
 {
+	$url = rtrim($url, '/'); //remove trailing slash
+	$url = $url . '/api';
 	$array = json_decode($array, true);
 	$gotCalendar = array();
 	$i = 0;
@@ -1648,8 +1650,6 @@ function getRadarrCalendar($array, $number, $url)
 			$banner = "/plugins/images/cache/no-np.png";
 			foreach ($child['images'] as $image) {
 				if ($image['coverType'] == "banner" || $image['coverType'] == "fanart") {
-					$url = rtrim($url, '/'); //remove trailing slash
-					$url = $url . '/api';
 					$imageUrl = $image['url'];
 					$urlParts = explode("/", $url);
 					$imageParts = explode("/", $image['url']);
