@@ -1277,7 +1277,7 @@ function getCalendar()
 			$icsEvents = getIcsEventsAsArray($value);
 			if (isset($icsEvents) && !empty($icsEvents)) {
 				$timeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : date_default_timezone_get();
-				$originalTimeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : false;
+				$originalTimeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? str_replace('"', '', trim($icsEvents[1]['X-WR-TIMEZONE'])) : false;
 				unset($icsEvents [1]);
 				foreach ($icsEvents as $icsEvent) {
 					$startKeys = array_filter_key($icsEvent, function ($key) {
@@ -1293,7 +1293,7 @@ function getCalendar()
 							$tzKey = array_keys($startKeys);
 							if (strpos($tzKey[0], 'TZID=') !== false) {
 								$originalTimeZone = explode('TZID=', (string)$tzKey[0]);
-								$originalTimeZone = (count($originalTimeZone) >= 2) ? $originalTimeZone[1] : false;
+								$originalTimeZone = (count($originalTimeZone) >= 2) ? str_replace('"', '', $originalTimeZone[1]) : false;
 							}
 						}
 						$start = reset($startKeys);
