@@ -7146,6 +7146,9 @@ function oAuthLoginNeededCheck() {
         local('r', 'loggingIn');
     });
 }
+function ipInfoSpan(ip){
+    return '<span class="ipInfo mouse">'+ip+'</span>';
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
