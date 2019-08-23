@@ -241,5 +241,6 @@ return array(
 	'homepagePlexRecentlyAddedMethod' => 'legacy',
 	'authProxyEnabled' => false,
 	'authProxyHeaderName' => '',
-	'authProxyWhitelist' => ''
+	'authProxyWhitelist' => '',
+	'ignoreTFALocal' => false
 );

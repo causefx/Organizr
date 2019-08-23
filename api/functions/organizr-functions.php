@@ -605,6 +605,13 @@ function getSettingsMain()
 				'help' => 'Enabling this will only allow Friends that have shares to the Machine ID entered above to login, Having this disabled will allow all Friends on your Friends list to login'
 			),
 			array(
+				'type' => 'switch',
+				'name' => 'ignoreTFALocal',
+				'label' => 'Ignore External 2FA on Local Subnet',
+				'value' => $GLOBALS['ignoreTFALocal'],
+				'help' => 'Enabling this will bypass external 2FA security if user is on local Subnet'
+			),
+			array(
 				'type' => 'input',
 				'name' => 'authBackendHost',
 				'class' => 'ldapAuth ftpAuth switchAuth',

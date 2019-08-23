@@ -188,15 +188,22 @@ function login($array)
 				}
 				// 2FA might go here
 				if ($result['auth_service'] !== 'internal' && strpos($result['auth_service'], '::') !== false) {
-					$TFA = explode('::', $result['auth_service']);
-					// Is code with login info?
-					if ($tfaCode == '') {
-						return '2FA';
-					} else {
-						if (!verify2FA($TFA[1], $tfaCode, $TFA[0])) {
-							writeLoginLog($username, 'error');
-							writeLog('error', 'Login Function - Wrong 2FA', $username);
-							return '2FA-incorrect';
+					$tfaProceed = true;
+					// Add check for local or not
+					if($GLOBALS['ignoreTFALocal'] !== false) {
+						$tfaProceed = (isLocal()) ? false : true;
+					}
+					if($tfaProceed) {
+						$TFA = explode('::', $result['auth_service']);
+						// Is code with login info?
+						if ($tfaCode == '') {
+							return '2FA';
+						} else {
+							if (!verify2FA($TFA[1], $tfaCode, $TFA[0])) {
+								writeLoginLog($username, 'error');
+								writeLog('error', 'Login Function - Wrong 2FA', $username);
+								return '2FA-incorrect';
+							}
 						}
 					}
 				}
