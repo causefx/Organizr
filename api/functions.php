@@ -36,6 +36,12 @@ if (isset($GLOBALS['dbLocation'])) {
 			$GLOBALS['commit'] = $GLOBALS['quickCommit'];
 		}
 	}
+	// Oauth?
+	if($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== ''){
+		if(isset(getallheaders()[$GLOBALS['authProxyHeaderName']])){
+			coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
+		}
+	}
 	//Upgrade Check
 	upgradeCheck();
 }

@@ -1,5 +1,12 @@
 [
   {
+    "title": "Plex Oauth Issues - RESOLVED!",
+    "subTitle": "Let's make them bring back support correctly",
+    "date": "2019-07-17 15:20",
+    "body": "It seems like Plex has broken support for us using Oauth.  Currently there is a workaround but we would rather they fix the issue.  Please share your feedback in this thread: <a href=\"https:\/\/forums.plex.tv\/t\/plex-oauth-not-working-with-tautulli-ombi-etc\/433945\" target=\"_blank\">Plex Oauth Discussion<\/a>",
+    "author": "CauseFX"
+  },
+  {
     "title": "Emby Discontinued Support",
     "subTitle": "Emby API - EmbyConnect Deprecated",
     "date": "2019-05-14 19:15",

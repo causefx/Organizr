@@ -1017,6 +1017,7 @@ function getHomepageList()
                                 <div class="panel-body">
 									<ul class="list-icons">
                                         <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://pypi.org/project/myjd-api/" target="_blank">Download [myjd-api] Module</a></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> Add <b>/api/myjd</b> to the URL if you are using <a href="https://pypi.org/project/RSScrawler/" target="_blank">RSScrawler</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -2145,6 +2146,43 @@ function getHomepageList()
 						'label' => 'Use Ombi Alias Names',
 						'value' => $GLOBALS['ombiAlias'],
 						'help' => 'Use Ombi Alias Names instead of Usernames - If Alias is blank, Alias will fallback to Username'
+					)
+				),
+				'Default Filter' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterAvailable',
+						'label' => 'Show Available',
+						'value' => $GLOBALS['ombiDefaultFilterAvailable'],
+						'help' => 'Show All Available Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterUnavailable',
+						'label' => 'Show Unavailable',
+						'value' => $GLOBALS['ombiDefaultFilterUnavailable'],
+						'help' => 'Show All Unavailable Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterApproved',
+						'label' => 'Show Approved',
+						'value' => $GLOBALS['ombiDefaultFilterApproved'],
+						'help' => 'Show All Approved Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterUnapproved',
+						'label' => 'Show Unapproved',
+						'value' => $GLOBALS['ombiDefaultFilterUnapproved'],
+						'help' => 'Show All Unapproved Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterDenied',
+						'label' => 'Show Denied',
+						'value' => $GLOBALS['ombiDefaultFilterDenied'],
+						'help' => 'Show All Denied Ombi Requests'
 					)
 				),
 				'Test Connection' => array(

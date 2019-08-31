@@ -1940,3 +1940,41 @@ $(document).on('click', ".showMoreHealth", function(){
     $('.showMoreHealthDiv-'+id).toggleClass('d-none');
     $(this).find('.card-body').toggleClass('healthPosition');
 });
+//IP INFO
+$(document).on('click', ".ipInfo", function(){
+    $.getJSON("https://ipinfo.io/"+$(this).text()+"/?token=ddd0c072ad5021", function (response) {
+        var region = (typeof response.region == 'undefined') ? ' N/A' : response.region;
+        var ip = (typeof response.ip == 'undefined') ? ' N/A' : response.ip;
+        var hostname = (typeof response.hostname == 'undefined') ? ' N/A' : response.hostname;
+        var loc = (typeof response.loc == 'undefined') ? ' N/A' : response.loc;
+        var org = (typeof response.org == 'undefined') ? ' N/A' : response.org;
+        var city = (typeof response.city == 'undefined') ? ' N/A' : response.city;
+        var country = (typeof response.country == 'undefined') ? ' N/A' : response.country;
+        var phone = (typeof response.phone == 'undefined') ? ' N/A' : response.phone;
+        var div = '<div class="row">' +
+            '<div class="col-lg-12">' +
+            '<div class="white-box">' +
+            '<h3 class="box-title">'+ip+'</h3>' +
+            '<div class="table-responsive">' +
+            '<table class="table">' +
+            '<tbody>' +
+            '<tr><td class="text-left">Hostname</td><td class="txt-oflo text-right">'+hostname+'</td></tr>' +
+            '<tr><td class="text-left">Location</td><td class="txt-oflo text-right">'+loc+'</td></tr>' +
+            '<tr><td class="text-left">Org</td><td class="txt-oflo text-right">'+org+'</td></tr>' +
+            '<tr><td class="text-left">City</td><td class="txt-oflo text-right">'+city+'</td></tr>' +
+            '<tr><td class="text-left">Country</td><td class="txt-oflo text-right">'+country+'</td></tr>' +
+            '<tr><td class="text-left">Phone</td><td class="txt-oflo text-right">'+phone+'</td></tr>' +
+            '<tr><td class="text-left">Region</td><td class="txt-oflo text-right">'+region+'</td></tr>' +
+            '</tbody>' +
+            '</table>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+        swal({
+            content: createElementFromHTML(div),
+            buttons: false,
+            className: 'bg-org'
+        });
+    });
+});

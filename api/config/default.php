@@ -230,6 +230,17 @@ return array(
 	'debugErrors' => false,
 	'healthChecksURL' => 'https://healthchecks.io/api/v1/checks/',
 	'gaTrackingID' => '',
-	'loginAttempts' => '3',
-	'loginLockout' => '60000'
+	'loginAttempts' => '5',
+	'loginLockout' => '60000',
+	'ombiDefaultFilterAvailable' => true,
+	'ombiDefaultFilterUnavailable' => true,
+	'ombiDefaultFilterApproved' => true,
+	'ombiDefaultFilterUnapproved' => true,
+	'ombiDefaultFilterDenied' => true,
+	'selfSignedCert' => '',
+	'homepagePlexRecentlyAddedMethod' => 'legacy',
+	'authProxyEnabled' => false,
+	'authProxyHeaderName' => '',
+	'authProxyWhitelist' => '',
+	'ignoreTFALocal' => false
 );

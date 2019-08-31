@@ -548,11 +548,11 @@ function plexConnect($action, $key = null)
 				$resolve = false;
 				break;
 			case 'recent':
-				//$url = $url . "/library/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&limit=" . $GLOBALS['homepageRecentLimit'];
-				$urls['movie'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $GLOBALS['homepageRecentLimit'] . "&type=1";
-				$urls['tv'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $GLOBALS['homepageRecentLimit'] . "&type=2";
-				$urls['music'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $GLOBALS['homepageRecentLimit'] . "&type=8";
-				$multipleURL = true;
+					//$url = $url . "/library/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&limit=" . $GLOBALS['homepageRecentLimit'];
+					$urls['movie'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $GLOBALS['homepageRecentLimit'] . "&type=1";
+					$urls['tv'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $GLOBALS['homepageRecentLimit'] . "&type=2";
+					$urls['music'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $GLOBALS['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $GLOBALS['homepageRecentLimit'] . "&type=8";
+					$multipleURL = true;
 				break;
 			case 'metadata':
 				$url = $url . "/library/metadata/" . $key . "?X-Plex-Token=" . $GLOBALS['plexToken'];
@@ -739,7 +739,7 @@ function jdownloaderConnect()
 {
     if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
         $url = qualifyURL($GLOBALS['jdownloaderURL']);
-        $url = $url . '/';
+
         try {
             $options = (localURL($url)) ? array('verify' => false) : array();
             $response = Requests::get($url, array(), $options);
@@ -748,23 +748,26 @@ function jdownloaderConnect()
                 $packages = $temp['packages'];
                 if ($packages['downloader']) {
                     $api['content']['queueItems'] = $packages['downloader'];
-                } else {
+                }else{
                     $api['content']['queueItems'] = [];
                 }
-                $grabbed = array();
                 if ($packages['linkgrabber_decrypted']) {
-                    $grabbed = array_merge($grabbed, $packages['linkgrabber_decrypted']);
+                    $api['content']['grabberItems'] = $packages['linkgrabber_decrypted'];
+                }else{
+                    $api['content']['grabberItems'] = [];
                 }
                 if ($packages['linkgrabber_failed']) {
-                    $grabbed = array_merge($grabbed, $packages['linkgrabber_failed']);
+                    $api['content']['encryptedItems'] = $packages['linkgrabber_failed'];
+                }else{
+                    $api['content']['encryptedItems'] = [];
                 }
                 if ($packages['linkgrabber_offline']) {
-                    $grabbed = array_merge($grabbed, $packages['linkgrabber_offline']);
+                    $api['content']['offlineItems'] = $packages['linkgrabber_offline'];
+                }else{
+                    $api['content']['offlineItems'] = [];
                 }
-                $api['content']['grabberItems'] = $grabbed;
 
-                $status = array($temp['downloader_state'], $temp['grabber_collecting'], $temp['update_ready']);
-                $api['content']['$status'] = $status;
+                $api['content']['$status'] = array($temp['downloader_state'], $temp['grabber_collecting'], $temp['update_ready']);
             }
         } catch (Requests_Exception $e) {
             writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
@@ -1274,7 +1277,7 @@ function getCalendar()
 			$icsEvents = getIcsEventsAsArray($value);
 			if (isset($icsEvents) && !empty($icsEvents)) {
 				$timeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : date_default_timezone_get();
-				$originalTimeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? trim($icsEvents[1]['X-WR-TIMEZONE']) : false;
+				$originalTimeZone = isset($icsEvents [1] ['X-WR-TIMEZONE']) ? str_replace('"', '', trim($icsEvents[1]['X-WR-TIMEZONE'])) : false;
 				unset($icsEvents [1]);
 				foreach ($icsEvents as $icsEvent) {
 					$startKeys = array_filter_key($icsEvent, function ($key) {
@@ -1290,7 +1293,7 @@ function getCalendar()
 							$tzKey = array_keys($startKeys);
 							if (strpos($tzKey[0], 'TZID=') !== false) {
 								$originalTimeZone = explode('TZID=', (string)$tzKey[0]);
-								$originalTimeZone = (count($originalTimeZone) >= 2) ? $originalTimeZone[1] : false;
+								$originalTimeZone = (count($originalTimeZone) >= 2) ? str_replace('"', '', $originalTimeZone[1]) : false;
 							}
 						}
 						$start = reset($startKeys);
@@ -1618,6 +1621,8 @@ function getLidarrCalendar($array, $number)
 
 function getRadarrCalendar($array, $number, $url)
 {
+	$url = rtrim($url, '/'); //remove trailing slash
+	$url = $url . '/api';
 	$array = json_decode($array, true);
 	$gotCalendar = array();
 	$i = 0;
@@ -1648,8 +1653,6 @@ function getRadarrCalendar($array, $number, $url)
 			$banner = "/plugins/images/cache/no-np.png";
 			foreach ($child['images'] as $image) {
 				if ($image['coverType'] == "banner" || $image['coverType'] == "fanart") {
-					$url = rtrim($url, '/'); //remove trailing slash
-					$url = $url . '/api';
 					$imageUrl = $image['url'];
 					$urlParts = explode("/", $url);
 					$imageParts = explode("/", $image['url']);

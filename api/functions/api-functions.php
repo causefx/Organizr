@@ -89,6 +89,23 @@ function login($array)
 			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
 		]);
 		$authSuccess = false;
+		$authProxy = false;
+		if($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== ''){
+			if(isset(getallheaders()[$GLOBALS['authProxyHeaderName']])){
+				$usernameHeader = isset(getallheaders()[$GLOBALS['authProxyHeaderName']]) ? getallheaders()[$GLOBALS['authProxyHeaderName']] : $username;
+				writeLog('success', 'Auth Proxy Function - Starting Verification for IP: ' . userIP() . ' for request on: ' . $_SERVER['REMOTE_ADDR'] . ' against IP/Subnet: ' . $GLOBALS['authProxyWhitelist'], $usernameHeader);
+				$whitelistRange = analyzeIP($GLOBALS['authProxyWhitelist']);
+				$from = $whitelistRange['from'];
+				$to = $whitelistRange['to'];
+				$authProxy = authProxyRangeCheck($from,$to);
+				$username = ($authProxy) ? $usernameHeader : $username;
+				if($authProxy){
+					writeLog('success', 'Auth Proxy Function - IP: ' . userIP() . ' has been verified', $usernameHeader);
+				}else{
+					writeLog('error', 'Auth Proxy Function - IP: ' . userIP() . ' has failed verification', $usernameHeader);
+				}
+			}
+		}
 		$function = 'plugin_auth_' . $GLOBALS['authBackend'];
 		if (!$oAuth) {
 			$result = $database->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE', $username, $username);
@@ -112,6 +129,7 @@ function login($array)
 						}
 					}
 			}
+			$authSuccess = ($authProxy) ? true : $authSuccess;
 		} else {
 			// Has oAuth Token!
 			switch ($oAuthType) {
@@ -139,7 +157,7 @@ function login($array)
 		if ($authSuccess) {
 			// Make sure user exists in database
 			$userExists = false;
-			$passwordMatches = ($oAuth) ? true : false;
+			$passwordMatches = ($oAuth || $authProxy) ? true : false;
 			$token = (is_array($authSuccess) && isset($authSuccess['token']) ? $authSuccess['token'] : '');
 			if ($result['username']) {
 				$userExists = true;
@@ -170,15 +188,22 @@ function login($array)
 				}
 				// 2FA might go here
 				if ($result['auth_service'] !== 'internal' && strpos($result['auth_service'], '::') !== false) {
-					$TFA = explode('::', $result['auth_service']);
-					// Is code with login info?
-					if ($tfaCode == '') {
-						return '2FA';
-					} else {
-						if (!verify2FA($TFA[1], $tfaCode, $TFA[0])) {
-							writeLoginLog($username, 'error');
-							writeLog('error', 'Login Function - Wrong 2FA', $username);
-							return '2FA-incorrect';
+					$tfaProceed = true;
+					// Add check for local or not
+					if($GLOBALS['ignoreTFALocal'] !== false) {
+						$tfaProceed = (isLocal()) ? false : true;
+					}
+					if($tfaProceed) {
+						$TFA = explode('::', $result['auth_service']);
+						// Is code with login info?
+						if ($tfaCode == '') {
+							return '2FA';
+						} else {
+							if (!verify2FA($TFA[1], $tfaCode, $TFA[0])) {
+								writeLoginLog($username, 'error');
+								writeLog('error', 'Login Function - Wrong 2FA', $username);
+								return '2FA-incorrect';
+							}
 						}
 					}
 				}

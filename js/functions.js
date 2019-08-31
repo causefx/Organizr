@@ -13,6 +13,7 @@ lang.init({
 	},
 	allowCookieOverride: true
 });
+var OAuthLoginNeeded = false;
 var timeouts = {};
 var increment = 0;
 var tabInformation = {};
@@ -22,6 +23,9 @@ tabActionsList['close'] = [];
 
 // Start Organizr
 $(document).ready(function () {
+    if(getCookie('organizrOAuth')){
+        OAuthLoginNeeded = true
+    }
     launch();
     local('r','loggingIn');
 });
@@ -521,6 +525,9 @@ function swapBodyClass(tab){
     $('body').attr('data-active-tab', tab);
     $('body').addClass('active-tab-'+tab);
 }
+function editPageTitle(title){
+    document.title =  title + ' - ' + activeInfo.appearance.title;
+}
 function switchTab(tab, type){
     if(type !== 2){
         hideFrames();
@@ -540,6 +547,7 @@ function switchTab(tab, type){
 			var newTab = $('#internal-'+tab);
 			var tabURL = newTab.attr('data-url');
 			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
+            editPageTitle(tab);
 			if(newTab.hasClass('loaded')){
 				console.log('Tab Function: Switching to tab: '+tab);
 				newTab.addClass("show").removeClass('hidden');
@@ -562,6 +570,7 @@ function switchTab(tab, type){
 			var newTab = $('#container-'+tab);
 			var tabURL = newTab.attr('data-url');
 			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
+            editPageTitle(tab);
 			if(newTab.hasClass('loaded')){
 				console.log('Tab Function: Switching to tab: '+tab);
 				newTab.addClass("show").removeClass('hidden');
@@ -1894,7 +1903,7 @@ function checkTabHomepageItem(id, name, url, urlLocal){
         addEditHomepageItem(id,'Plex');
     }else if(name.includes('emby') || url.includes('emby') || urlLocal.includes('emby')){
         addEditHomepageItem(id,'Emby');
-    }else if(name.includes('jdownloader') || url.includes('jdownloader') || urlLocal.includes('jdownloader')){
+    }else if(name.includes('jdownloader') || url.includes('jdownloader') || urlLocal.includes('jdownloader') || name.includes('rsscrawler') || url.includes('rsscrawler') || urlLocal.includes('rsscrawler')){
         addEditHomepageItem(id,'jDownloader');
     }else if(name.includes('sab') || url.includes('sab') || urlLocal.includes('sab')){
         addEditHomepageItem(id,'SabNZBD');
@@ -3532,10 +3541,11 @@ function organizrAPI(type,path,data=null){
 	var timeout = 10000;
     switch(path){
         case 'api/?v1/windows/update':
+        case 'api/?v1/docker/update':
             timeout = 120000;
             break;
         default:
-            timeout = 10000;
+            timeout = 60000;
     }
 	switch (type) {
 		case 'get':
@@ -3889,12 +3899,12 @@ function loadAppearance(appearance){
 	if(appearance.loginWallpaper !== ''){
 		cssSettings += `
 		    .login-register {
-			    background: url(`+appearance.loginWallpaper+`) center center/cover no-repeat!important;
+			    background: url(`+randomCSV(appearance.loginWallpaper)+`) center center/cover no-repeat!important;
 			    height: 100%;
 			    position: fixed;
 		    }
 			.lock-screen {
-				background: url(`+appearance.loginWallpaper+`) center center/cover no-repeat!important;
+				background: url(`+randomCSV(appearance.loginWallpaper)+`) center center/cover no-repeat!important;
 			    height: 100%;
 			    position: fixed;
 			    z-index: 1001;
@@ -3917,6 +3927,18 @@ function loadAppearance(appearance){
     if(appearance.customCss !== ''){
         $('#custom-css').html(appearance.customCss);
     }
+}
+function randomCSV(values){
+    if(typeof values == 'string'){
+        if(values.includes(',')){
+            var csv = values.split(',');
+            var luckyNumber = Math.floor(Math.random() * csv.length);
+            return csv[luckyNumber];
+        }else{
+            return values;
+        }
+    }
+    return false;
 }
 function loadCustomJava(appearance){
     if(appearance.customThemeJava !== ''){
@@ -4902,8 +4924,8 @@ function requestList (list, type, page=1) {
 function buildDownloaderItem(array, source, type='none'){
     //console.log(array);
     var queue = '';
-    var history = '';
     var count = 0;
+    var history = '';
 	switch (source) {
         case 'jdownloader':
             if(array.content === false){
@@ -4911,40 +4933,45 @@ function buildDownloaderItem(array, source, type='none'){
                 break;
             }
 
-            /*
-            if(array.content.$status[0] != 'RUNNING'){
-                var state = `<a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a>`;
-                var active = 'grayscale';
-            }else{
-                var state = `<a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>`;
-                var active = '';
-            }
-            $('.jdownloader-downloader-action').html(state);
-            */
-
-            if(array.content.queueItems.length == 0){
+            if(array.content.queueItems.length == 0 && array.content.grabberItems.length == 0 && array.content.encryptedItems.length == 0 && array.content.offlineItems.length == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+            }else{
+                if(array.content.$status[0] == 'RUNNING') {
+                    queue += `
+                        <tr><td>
+                            <a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>
+                            <a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="stop" data-target="main"><i class="fa fa-stop"></i></span></a>
+                        </td></tr>
+                        `;
+                }else if(array.content.$status[0] == 'PAUSE'){
+                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-fast-forward"></i></span></a></td></tr>`;
+                }else{
+                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="start" data-target="main"><i class="fa fa-play"></i></span></a></td></tr>`;
+                }
+                if(array.content.$status[1]) {
+                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="update" data-target="main"><i class="fa fa-globe"></i></span></a></td></tr>`;
+                }
             }
             $.each(array.content.queueItems, function(i,v) {
                 count = count + 1;
                 if(v.speed == null){
-                    if(v.percentage == '100'){
-                        v.speed = '--';
-                    }else{
-                        v.speed = 'Stopped';
-                    }
+                    v.speed = 'Stopped';
                 }
                 if(v.eta == null){
                     if(v.percentage == '100'){
-                        v.eta = 'Complete';
+                        v.speed = 'Completed';
+                        v.eta = '--';
                     }else{
                         v.eta = '--';
                     }
                 }
+                if(v.enabled == null){
+                    v.speed = 'Disabled';
+                }
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs">`+v.speed+`</td>
+                    <td>`+v.speed+`</td>
                     <td class="hidden-xs" alt="`+v.done+`">`+v.size+`</td>
                     <td class="hidden-xs">`+v.eta+`</td>
                     <td class="text-right">
@@ -4955,13 +4982,51 @@ function buildDownloaderItem(array, source, type='none'){
                 </tr>
                 `;
             });
-            if(array.content.grabberItems.length == 0){
-                history = '<tr><td class="max-texts" lang="en">Nothing in Linkgrabbber</td></tr>';
-            }
             $.each(array.content.grabberItems, function(i,v) {
-                history += `
+                count = count + 1;
+                queue += `
                 <tr>
-                    <td class="max-texts">`+ v.name+`</td>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td>Online</td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: 0%;" role="progressbar">0%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            $.each(array.content.encryptedItems, function(i,v) {
+                count = count + 1;
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td>Encrypted</td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: 0%;" role="progressbar">0%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            $.each(array.content.offlineItems, function(i,v) {
+                count = count + 1;
+                queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td>Offline</td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="hidden-xs"> -- </td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: 0%;" role="progressbar">0%</div>
+                        </div>
+                    </td>
                 </tr>
                 `;
             });
@@ -5220,7 +5285,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs">`+status+`</td>
+                    <td class="hidden-xs qbit-`+status+`">`+status+`</td>
                     <td class="hidden-xs">`+v.save_path+`</td>
                     <td class="hidden-xs">`+size+`</td>
                     <td class="text-right">
@@ -5280,6 +5345,10 @@ function buildDownloader(source){
     var historyButton = 'HISTORY';
     switch (source) {
         case 'jdownloader':
+            var queue = true;
+            var history = false;
+            queueButton = 'REFRESH';
+            break;
         case 'sabnzbd':
         case 'nzbget':
             var queue = true;
@@ -5376,6 +5445,10 @@ function buildDownloaderCombined(source){
     var historyButton = 'HISTORY';
     switch (source) {
         case 'jdownloader':
+            var queue = true;
+            var history = false;
+            queueButton = 'REFRESH';
+            break;
         case 'sabnzbd':
         case 'nzbget':
             var queue = true;
@@ -5846,6 +5919,20 @@ function homepagePlaylist(type, timeout=30000){
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
+function defaultOmbiFilter(){
+    var defaultFilter = {
+        "request-filter-approved" : activeInfo.settings.homepage.ombi.ombiDefaultFilterApproved,
+        "request-filter-unapproved" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnapproved,
+        "request-filter-available" : activeInfo.settings.homepage.ombi.ombiDefaultFilterAvailable,
+        "request-filter-unavailable" : activeInfo.settings.homepage.ombi.ombiDefaultFilterUnavailable,
+        "request-filter-denied" : activeInfo.settings.homepage.ombi.ombiDefaultFilterDenied
+    };
+    $.each(defaultFilter, function(i,v) {
+        if(v == false){
+            $('#'+i).click();
+        }
+    });
+}
 function homepageRequests(timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.ombiRefresh;
 	organizrAPI('POST','api/?v1/homepage/connect',{action:'getRequests'}).success(function(data) {
@@ -5868,6 +5955,8 @@ function homepageRequests(timeout){
 			autoWidth:true,
 			items:4
     	})
+        // Default Ombi Filter
+        defaultOmbiFilter();
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
@@ -5941,6 +6030,13 @@ function getPlexHeaders(){
         'X-Plex-Product': activeInfo.appearance.title,
         'X-Plex-Version': '2.0',
         'X-Plex-Client-Identifier': activeInfo.settings.misc.uuid,
+        'X-Plex-Model': 'Plex OAuth',
+        'X-Plex-Platform': activeInfo.osName,
+        'X-Plex-Platform-Version': activeInfo.osVersion,
+        'X-Plex-Device': activeInfo.browserName,
+        'X-Plex-Device-Name': activeInfo.browserVersion,
+        'X-Plex-Device-Screen-Resolution': window.screen.width + 'x' + window.screen.height,
+        'X-Plex-Language': 'en'
     };
 }
 var plex_oauth_window = null;
@@ -6018,7 +6114,20 @@ function PlexOAuth(success, error, pre) {
         var x_plex_headers = getPlexHeaders();
         const pin = data.pin;
         const code = data.code;
-        plex_oauth_window.location = 'https://app.plex.tv/auth/#!?clientID=' + x_plex_headers['X-Plex-Client-Identifier'] + '&code=' + code;
+        var oauth_params = {
+            'clientID': x_plex_headers['X-Plex-Client-Identifier'],
+            'context[device][product]': x_plex_headers['X-Plex-Product'],
+            'context[device][version]': x_plex_headers['X-Plex-Version'],
+            'context[device][platform]': x_plex_headers['X-Plex-Platform'],
+            'context[device][platformVersion]': x_plex_headers['X-Plex-Platform-Version'],
+            'context[device][device]': x_plex_headers['X-Plex-Device'],
+            'context[device][deviceName]': x_plex_headers['X-Plex-Device-Name'],
+            'context[device][model]': x_plex_headers['X-Plex-Model'],
+            'context[device][screenResolution]': x_plex_headers['X-Plex-Device-Screen-Resolution'],
+            'context[device][layout]': 'desktop',
+            'code': code
+        };
+        plex_oauth_window.location = 'https://app.plex.tv/auth/#!?' + encodeData(oauth_params);
         polling = pin;
         (function poll() {
             $.ajax({
@@ -6055,6 +6164,11 @@ function PlexOAuth(success, error, pre) {
             error()
         }
     });
+}
+function encodeData(data) {
+    return Object.keys(data).map(function(key) {
+        return [key, data[key]].map(encodeURIComponent).join("=");
+    }).join("&");
 }
 function oAuthSuccess(type,token){
     switch(type) {
@@ -7002,6 +7116,64 @@ function showLDAPLoginTest(){
         className: 'bg-org'
     })
 }
+function oAuthLoginNeededCheck() {
+    if(OAuthLoginNeeded == false){
+        return false;
+    }else{
+        if(activeInfo.user.loggedin == true){
+            return false;
+        }
+    }
+    message('OAuth', ' Proceeding to login', activeInfo.settings.notifications.position, '#FFF', 'info', '10000');
+    organizrAPI('POST', 'api/?v1/login', '').success(function (data) {
+        var html = JSON.parse(data);
+        if (html.data == true) {
+            local('set', 'message', 'Welcome|Login Successful|success');
+            location.reload();
+        } else if (html.data == 'mismatch') {
+            $('div.login-box').unblock({});
+            message('Login Error', ' Wrong username/email/password combo', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+            console.error('Organizr Function: Login failed - wrong username/email/password');
+        } else if (html.data == 'lockout') {
+            $('div.login-box').block({
+                message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
+                css: {
+                    color: '#fff',
+                    border: '1px solid #e91e63',
+                    backgroundColor: '#f44336'
+                }
+            });
+            message('Login Error', ' You have been Locked out', activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+            console.error('Organizr Function: Login failed - User has been locked out');
+            setTimeout(function () {
+                local('r', 'loggingIn');
+                location.reload()
+            }, 10000);
+        } else if (html.data == '2FA') {
+            $('div.login-box').unblock({});
+            $('#tfa-div').removeClass('hidden');
+            $('#loginform [name=tfaCode]').focus();
+        } else if (html.data == '2FA-incorrect') {
+            $('div.login-box').unblock({});
+            $('#tfa-div').removeClass('hidden');
+            $('#loginform [name=tfaCode]').focus();
+            message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+        } else {
+            $('div.login-box').unblock({});
+            message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+            console.error('Organizr Function: Login failed');
+        }
+        local('r', 'loggingIn');
+    }).fail(function (xhr) {
+        $('div.login-box').unblock({});
+        message('Login Error', 'API Connection Failed', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+        console.error("Organizr Function: API Connection Failed");
+        local('r', 'loggingIn');
+    });
+}
+function ipInfoSpan(ip){
+    return '<span class="ipInfo mouse">'+ip+'</span>';
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
@@ -7090,5 +7262,6 @@ function launch(){
 				console.error('Organizr Function: Action not set or defined');
 		}
 		console.log('Organizr DOM Fully loaded');
+        oAuthLoginNeededCheck();
 	});
 }

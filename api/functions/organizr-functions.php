@@ -35,6 +35,11 @@ function organizrSpecialSettings()
 				'sso' => ($GLOBALS['ssoOmbi']) ? true : false,
 				'cookie' => (isset($_COOKIE['Auth'])) ? true : false,
 				'alias' => ($GLOBALS['ombiAlias']) ? true : false,
+				'ombiDefaultFilterAvailable' => $GLOBALS['ombiDefaultFilterAvailable'] ? true : false,
+				'ombiDefaultFilterUnavailable' => $GLOBALS['ombiDefaultFilterUnavailable'] ? true : false,
+				'ombiDefaultFilterApproved' => $GLOBALS['ombiDefaultFilterApproved'] ? true : false,
+				'ombiDefaultFilterUnapproved' => $GLOBALS['ombiDefaultFilterUnapproved'] ? true : false,
+				'ombiDefaultFilterDenied' => $GLOBALS['ombiDefaultFilterDenied'] ? true : false
 			),
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
@@ -506,7 +511,7 @@ function getSettingsMain()
 				'icon' => 'fa fa-download',
 				'text' => 'Retrieve',
 				'attr' => ($GLOBALS['docker']) ? 'title="You can just restart your docker to update"' : '',
-				'help' => ($GLOBALS['docker']) ? 'Since you are using the Official Docker image, You can just restart your docker to update' : 'This will re-download all of the source files for Organizr'
+				'help' => ($GLOBALS['docker']) ? 'Since you are using the official Docker image, you can just restart your Docker container to update Organizr' : 'This will re-download all of the source files for Organizr'
 			)
 		),
 		'API' => array(
@@ -598,6 +603,13 @@ function getSettingsMain()
 				'class' => 'plexAuth switchAuth',
 				'value' => $GLOBALS['plexStrictFriends'],
 				'help' => 'Enabling this will only allow Friends that have shares to the Machine ID entered above to login, Having this disabled will allow all Friends on your Friends list to login'
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'ignoreTFALocal',
+				'label' => 'Ignore External 2FA on Local Subnet',
+				'value' => $GLOBALS['ignoreTFALocal'],
+				'help' => 'Enabling this will bypass external 2FA security if user is on local Subnet'
 			),
 			array(
 				'type' => 'input',
@@ -855,6 +867,31 @@ function getSettingsMain()
 				'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
 			),
 		),
+		'Auth Proxy' => array(
+			array(
+				'type' => 'switch',
+				'name' => 'authProxyEnabled',
+				'label' => 'Auth Proxy',
+				'help' => 'Enable option to set Auth Poxy Header Login',
+				'value' => $GLOBALS['authProxyEnabled'],
+			),
+			array(
+				'type' => 'input',
+				'name' => 'authProxyHeaderName',
+				'label' => 'Auth Proxy Header Name',
+				'value' => $GLOBALS['authProxyHeaderName'],
+				'placeholder' => 'i.e. X-Forwarded-User',
+				'help' => 'Please choose a unique value for added security'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'authProxyWhitelist',
+				'label' => 'Auth Proxy Whitelist',
+				'value' => $GLOBALS['authProxyWhitelist'],
+				'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20',
+				'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address'
+			),
+		),
 		'Ping' => array(
 			array(
 				'type' => 'select',
@@ -1107,7 +1144,8 @@ function getCustomizeAppearance()
 					'type' => 'input',
 					'name' => 'loginWallpaper',
 					'label' => 'Login Wallpaper',
-					'value' => $GLOBALS['loginWallpaper']
+					'value' => $GLOBALS['loginWallpaper'],
+					'help' => 'You may enter multiple URL\'s using the CSV format.  i.e. link#1,link#2,link#3'
 				),
 				array(
 					'type' => 'switch',
@@ -1940,12 +1978,91 @@ function downloader($array)
 					break;
 			}
 			break;
+        case 'jdownloader':
+            switch ($array['data']['action']) {
+                case 'start':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'stop':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'resume':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'pause':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'update':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'retry':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                case 'remove':
+                    jdownloaderAction($array['data']['action'], $array['data']['target']);
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+            break;
 		case 'nzbget':
 			break;
 		default:
 			# code...
 			break;
 	}
+}
+
+function jdownloaderAction($action = null, $target = null)
+{
+    if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
+        $url = qualifyURL($GLOBALS['jdownloaderURL']);
+
+        # This ensures compatibility with RSScrawler
+        $url = str_replace('/myjd', '', $url);
+        if(substr($url , -1)=='/') {
+            $url = substr_replace($url ,"",-1);
+        }
+
+        switch ($action) {
+            case 'start':
+                $url = $url . '/myjd_start/';
+                break;
+            case 'stop':
+                $url = $url . '/myjd_stop/';
+                break;
+            case 'resume':
+                $url = $url . '/myjd_pause/false';
+                break;
+            case 'pause':
+                $url = $url . '/myjd_pause/true';
+                break;
+            case 'update':
+                $url = $url . '/myjd_update';
+                break;
+            case 'retry':
+                # code...
+                break;
+            case 'remove':
+                # code...
+                break;
+            default:
+                # code...
+                break;
+        }
+        try {
+            $options = (localURL($url)) ? array('verify' => false) : array();
+            $response = Requests::post($url, array(), $options);
+            if ($response->success) {
+                $api['content'] = json_decode($response->body, true);
+            }
+        } catch (Requests_Exception $e) {
+            writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+        };
+        $api['content'] = isset($api['content']) ? $api['content'] : false;
+        return $api;
+    }
 }
 
 function sabnzbdAction($action = null, $target = null)
@@ -2433,4 +2550,30 @@ function checkHostPrefix($s)
 		return $s;
 	}
 	return (substr($s, -1, 1) == '\\') ? $s : $s . '\\';
+}
+function analyzeIP($ip)
+{
+	if(strpos($ip,'/') !== false){
+		$explodeIP = explode('/', $ip);
+		$prefix = $explodeIP[1];
+		$start_ip = $explodeIP[0];
+		$ip_count = 1 << (32 - $prefix);
+		$start_ip_long = ip2long($start_ip);
+		$last_ip_long = ip2long($start_ip) + $ip_count - 1;
+	}elseif(substr_count($ip, '.') == 3){
+		$start_ip_long = ip2long($ip);
+		$last_ip_long = ip2long($ip);
+	}
+	return (isset($start_ip_long) && isset($last_ip_long)) ? array('from' => $start_ip_long, 'to' => $last_ip_long) : false;
+}
+function authProxyRangeCheck($from, $to)
+{
+	$approved = false;
+	$userIP = ip2long($_SERVER['REMOTE_ADDR']);
+	$low = $from;
+	$high = $to;
+	if ($userIP <= $high && $low <= $userIP) {
+		$approved = true;
+	}
+	return $approved;
 }

@@ -106,7 +106,10 @@ function phpmAdminSendEmail()
 	}
 	return false;
 }
-
+function phpmGetDebug($str, $level){
+	$GLOBALS['phpmOriginalDebug'] = $GLOBALS['phpmOriginalDebug'] . $str;
+	return $GLOBALS['phpmOriginalDebug'];
+}
 function phpmSendTestEmail()
 {
 	$emailTemplate = array(
@@ -118,10 +121,12 @@ function phpmSendTestEmail()
 		'inviteCode' => null,
 	);
 	$emailTemplate = phpmEmailTemplate($emailTemplate);
+	$GLOBALS['phpmOriginalDebug'] = '|||DEBUG|||';
 	try {
 		$mail = new PHPMailer\PHPMailer\PHPMailer(true);
+		$mail->SMTPDebug = 2;
 		$mail->isSMTP();
-		//$mail->SMTPDebug = 3;
+		$mail->Debugoutput = function($str, $level) {phpmGetDebug($str, $level);};
 		$mail->Host = $GLOBALS['PHPMAILER-smtpHost'];
 		$mail->Port = $GLOBALS['PHPMAILER-smtpHostPort'];
 		if ($GLOBALS['PHPMAILER-smtpHostType'] !== 'n/a') {
@@ -147,10 +152,10 @@ function phpmSendTestEmail()
 		$mail->Body = phpmBuildEmail($emailTemplate);
 		$mail->send();
 		writeLog('success', 'Mail Function -  E-Mail Test Sent', $GLOBALS['organizrUser']['username']);
-		return true;
+		return ($GLOBALS['PHPMAILER-debugTesting']) ? $GLOBALS['phpmOriginalDebug'] : true;
 	} catch (PHPMailer\PHPMailer\Exception $e) {
 		writeLog('error', 'Mail Function -  E-Mail Test Failed[' . $mail->ErrorInfo . ']', $GLOBALS['organizrUser']['username']);
-		return $e->errorMessage();
+		return ($GLOBALS['PHPMAILER-debugTesting']) ? $GLOBALS['phpmOriginalDebug'] : $e->errorMessage();
 	}
 	return false;
 }
@@ -301,6 +306,12 @@ function phpmGetSettings()
 				'class' => 'phpmSendTestEmail',
 				'icon' => 'fa fa-paper-plane',
 				'text' => 'Send'
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'PHPMAILER-debugTesting',
+				'label' => 'Enable Debug Output on Email Test',
+				'value' => $GLOBALS['PHPMAILER-debugTesting'],
 			),
 			array(
 				'type' => 'input',
