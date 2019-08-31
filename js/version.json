@@ -194,5 +194,12 @@
     "new": "Login lockout feature|JDownloader HP Support - rix|Coupon indicator on sponsor section|Sponsor API call|Custom Pages API endpoint|Theme analytics|SVG added to whitelist",
     "fixed": "Homepage Loading Sections Displaying for Disabled Items (#1204)|Healthchecks tag issue|Updated Evo logo|Updated Netdata logo|Updated Nextcloud logo|CSS fix for alt headers on HP|HP Downloader counter on MS Edge|Cache image button on recent items",
     "notes": "Please report bugs in GitHub issues page|Updated language translations"
+  },
+  "2.0.291": {
+    "date": "2019-08-31 16:40",
+    "title": "Sorry for late update",
+    "new": "Added Auth Proxy - Accept X-Forwarded-User (#1215)|Ombi default sort option|JDownloader Actions|Set of wallpapers for login page (#1214)|Logging to help with email debug|HTTP codes to API|IPInfo in settings logs|Plex oauth update - thanks swifty|Disable Google Authenticator for Local Access (#1232)",
+    "fixed": "Upgraded Simplebar|Homepage downloader variable being overwritten|Timeout on Docker update|Radarr Calendar Image URL",
+    "notes": "Please report bugs in GitHub issues page|Updated language translations"
   }
 }
