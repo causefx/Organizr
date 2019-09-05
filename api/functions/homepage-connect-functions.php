@@ -1436,7 +1436,12 @@ function getCalenderRepeatUntil($value)
 {
 	$first = explode('UNTIL=', $value);
 	if (count($first) > 1) {
-		return $first[1];
+		if(strpos($first[1], ';') !== false){
+			$check = explode(';', $first[1]);
+			return $check[0];
+		}else{
+			return $first[1];
+		}
 	} else {
 		return false;
 	}
