@@ -2418,12 +2418,12 @@ function accountManager(user){
                                                                     <label class="control-label" lang="en">Email</label>
                                                                     <input `+twoFADisable+` type="text" id="accountEmail" class="form-control" value="`+activeInfo.user.email+`"></div>
                                                             </div>
-                                                            <div class="col-md-6">
+                                                            <div class="col-md-6 userManagementPassword">
                                                                 <div class="form-group">
                                                                     <label class="control-label" lang="en">Password</label>
                                                                     <input type="password" id="accountPassword1" class="form-control"></div>
                                                             </div>
-                                                            <div class="col-md-6">
+                                                            <div class="col-md-6 userManagementPassword">
                                                                 <div class="form-group">
                                                                     <label class="control-label" lang="en">Verify Password</label>
                                                                     <input type="password" id="accountPassword2" class="form-control"></div>
@@ -2523,7 +2523,7 @@ function categoryProcess(arrayItems){
 		$.each(arrayItems['data']['categories'], function(i,v) {
 			if(v.count !== 0 && v.category_id !== 0){
 				menuList += `
-					<li>
+					<li class="allGroupsList" data-group-name="`+cleanClass(v.category)+`">
 						<a class="waves-effect" href="javascript:void(0)">`+iconPrefix(v.image)+`<span class="hide-menu">`+v.category+` <span class="fa arrow"></span> <span class="label label-rouded label-inverse pull-right">`+v.count+`</span></span><div class="menu-category-ping" data-good="0" data-bad="0"></div></a>
 						<ul class="nav nav-second-level category-`+v.category_id+` collapse"></ul>
 					</li>
