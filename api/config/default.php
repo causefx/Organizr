@@ -12,6 +12,7 @@ return array(
 	'authBackendDomain' => '',
 	'ldapType' => '1',
 	'logo' => 'plugins/images/organizr/logo-wide.png',
+	'loginLogo' => 'plugins/images/organizr/logo-wide.png',
 	'loginWallpaper' => '',
 	'title' => 'Organizr V2',
 	'useLogo' => false,

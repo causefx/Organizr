@@ -1100,6 +1100,7 @@ function loadAppearance()
 	$appearance['buttonTextHoverColor'] = $GLOBALS['buttonTextHoverColor'];
 	$appearance['buttonHoverColor'] = $GLOBALS['buttonHoverColor'];
 	$appearance['loginWallpaper'] = $GLOBALS['loginWallpaper'];
+	$appearance['loginLogo'] = $GLOBALS['loginLogo'];
 	$appearance['customCss'] = $GLOBALS['customCss'];
 	$appearance['customThemeCss'] = $GLOBALS['customThemeCss'];
 	$appearance['customJava'] = $GLOBALS['customJava'];
@@ -1140,6 +1141,12 @@ function getCustomizeAppearance()
 				),
 			),
 			'Login Page' => array(
+				array(
+					'type' => 'input',
+					'name' => 'loginLogo',
+					'label' => 'Login Logo',
+					'value' => $GLOBALS['loginLogo'],
+				),
 				array(
 					'type' => 'input',
 					'name' => 'loginWallpaper',
@@ -1636,7 +1643,7 @@ function logoOrText()
 	if ($GLOBALS['useLogo'] == false) {
 		return '<h1>' . $GLOBALS['title'] . '</h1>';
 	} else {
-		return '<img class="loginLogo" src="' . $GLOBALS['logo'] . '" alt="Home" />';
+		return '<img class="loginLogo" src="' . $GLOBALS['loginLogo'] . '" alt="Home" />';
 	}
 }
 
