@@ -525,7 +525,7 @@ function resolvePlexItem($item)
 		$plexItem['nowPlayingOriginalImage'] = $plexItem['nowPlayingImageURL'] = "plugins/images/cache/no-np.png";
 		$plexItem['nowPlayingKey'] = "no-np";
 	}
-	if (!$plexItem['thumb']) {
+	if (!$plexItem['thumb'] || $plexItem['addedAt'] >= (time() - 300)) {
 		$plexItem['originalImage'] = $plexItem['imageURL'] = "plugins/images/cache/no-list.png";
 		$plexItem['key'] = "no-list";
 	}
