@@ -5753,7 +5753,7 @@ function buildUnifiItem(array){
                     </div>
                 </div>
             </div>-->
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 col-center">
                 <div class="panel panel-`+panelColor+`">
                     <div class="panel-heading"> <span class="text-uppercase">`+name+`</span>
                         <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
@@ -6095,32 +6095,6 @@ function testAPIConnection(service, data = ''){
         }
         if(response.data == true){
             messageSingle('',' API Connection Success',activeInfo.settings.notifications.position,'#FFF','success','10000');
-        }else{
-            messageSingle('API Connection Failed',response.data,activeInfo.settings.notifications.position,'#FFF','error','10000');
-        }
-        console.log(response);
-    }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
-        message('',' Organizr Error',activeInfo.settings.notifications.position,'#FFF','error','10000');
-    });
-}
-function getUnifiCookie(service, data = ''){
-    messageSingle('',' Grabbing now...',activeInfo.settings.notifications.position,'#FFF','info','10000');
-    organizrAPI('POST','api/?v1/test/api/connection',{action:service, data:data}).success(function(data) {
-        try {
-            var response = JSON.parse(data);
-        }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
-        }
-        if(response.data !== false){
-            var unifises = response.data.unifises;
-            var csrf_token = response.data.csrf_token;
-            var cookie = 'unifises=' + unifises + ';' + 'csrf_token=' + csrf_token + ';';
-            $('#homepage-Unifi-form [name=unifiCookie]').val(cookie);
-            $('#homepage-Unifi-form [name=unifiCookie]').change();
-            messageSingle('', ' Grabbed Cookie - Please Save Now',activeInfo.settings.notifications.position,'#FFF','success','10000');
         }else{
             messageSingle('API Connection Failed',response.data,activeInfo.settings.notifications.position,'#FFF','error','10000');
         }

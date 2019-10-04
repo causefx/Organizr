@@ -2336,13 +2336,26 @@ function unifiConnect()
 	if ($GLOBALS['homepageUnifiEnabled'] && !empty($GLOBALS['unifiURL']) && !empty($GLOBALS['unifiSiteName']) && !empty($GLOBALS['unifiCookie']) && !empty($GLOBALS['unifiUsername']) && !empty($GLOBALS['unifiPassword']) && qualifyRequest($GLOBALS['homepageUnifiAuth'])) {
 		$api['content']['unifi'] = array();
 		$url = qualifyURL($GLOBALS['unifiURL']);
-		$url = $url . '/api/s/' . $GLOBALS['unifiSiteName'] . '/stat/health';
+		$urlStat = $url . '/api/s/' . $GLOBALS['unifiSiteName'] . '/stat/health';
 		try {
 			$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => false);
-			$headers = array(
-				'cookie' => $GLOBALS['unifiCookie']
+			$data = array(
+				'username' => $GLOBALS['unifiUsername'],
+				'password' => decrypt($GLOBALS['unifiPassword']),
+				'remember' => true,
+				'strict' => true
 			);
-			$response = Requests::get($url, $headers, $options);
+			$response = Requests::post($url . '/api/login', array(), json_encode($data), $options);
+			if ($response->success) {
+				$cookie['unifises'] = ($response->cookies['unifises']->value) ?? false;
+				$cookie['csrf_token'] = ($response->cookies['csrf_token']->value) ?? false;
+			}else{
+				return false;
+			}
+			$headers = array(
+				'cookie' => 'unifises=' . $cookie['unifises'] . ';' . 'csrf_token=' . $cookie['csrf_token'] . ';'
+			);
+			$response = Requests::get($urlStat, $headers, $options);
 			if ($response->success) {
 				$api['content']['unifi'] = json_decode($response->body, true);
 			}
@@ -2358,8 +2371,8 @@ function unifiConnect()
 function testAPIConnection($array)
 {
 	switch ($array['data']['action']) {
-		case 'unifiCookie':
-			if (!empty($GLOBALS['unifiURL'])  && !empty($GLOBALS['unifiUsername'])  && !empty($GLOBALS['unifiPassword'])) {
+		case 'unifiSite':
+			if (!empty($GLOBALS['unifiURL'])  && !empty($GLOBALS['unifiCookie']) && !empty($GLOBALS['unifiUsername'])  && !empty($GLOBALS['unifiPassword'])) {
 				$url = qualifyURL($GLOBALS['unifiURL']);
 				try {
 					$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => false);
@@ -2373,22 +2386,11 @@ function testAPIConnection($array)
 					if ($response->success) {
 						$cookie['unifises'] = ($response->cookies['unifises']->value) ?? false;
 						$cookie['csrf_token'] = ($response->cookies['csrf_token']->value) ?? false;
-						return $cookie;
 					}else{
 						return false;
 					}
-				} catch (Requests_Exception $e) {
-					writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-				};
-			}
-			break;
-		case 'unifiSite':
-			if (!empty($GLOBALS['unifiURL'])  && !empty($GLOBALS['unifiCookie']) && !empty($GLOBALS['unifiUsername'])  && !empty($GLOBALS['unifiPassword'])) {
-				$url = qualifyURL($GLOBALS['unifiURL']);
-				try {
-					$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => false);
 					$headers = array(
-						'cookie' => $GLOBALS['unifiCookie']
+						'cookie' => 'unifises=' . $cookie['unifises'] . ';' . 'csrf_token=' . $cookie['csrf_token'] . ';'
 					);
 					$response = Requests::get($url . '/api/self/sites', $headers, $options);
 					if ($response->success) {

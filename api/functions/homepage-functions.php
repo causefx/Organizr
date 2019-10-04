@@ -2262,21 +2262,6 @@ function getHomepageList()
 					),
 					array(
 						'type' => 'input',
-						'name' => 'unifiCookie',
-						'label' => 'Cookie',
-						'value' => $GLOBALS['unifiCookie'],
-						'help' => 'Cookie for Unifi - Save username and password before clicking get cookie button',
-						'placeholder' => 'Click help button'
-					),
-					array(
-						'type' => 'button',
-						'label' => 'Grab Unifi Cookie',
-						'icon' => 'fa fa-globe',
-						'text' => 'Get Unifi Cookie',
-						'attr' => 'onclick="getUnifiCookie(\'unifiCookie\')"'
-					),
-					array(
-						'type' => 'input',
 						'name' => 'unifiSiteName',
 						'label' => 'Site Name',
 						'value' => $GLOBALS['unifiSiteName'],
