@@ -21,6 +21,7 @@ function homepageOrder()
 		"homepageOrderrTorrent" => $GLOBALS['homepageOrderrTorrent'],
 		"homepageOrderdownloader" => $GLOBALS['homepageOrderdownloader'],
 		"homepageOrderhealthchecks" => $GLOBALS['homepageOrderhealthchecks'],
+		"homepageOrderunifi" => $GLOBALS['homepageOrderunifi'],
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -314,6 +315,18 @@ function buildHomepageItem($homepageItem)
 				// Health Checks
 				homepageHealthChecks("' . $GLOBALS['healthChecksTags'] . '","' . $GLOBALS['homepageHealthChecksRefresh'] . '");
 				// End Health Checks
+				</script>
+				';
+			}
+			break;
+		case 'homepageOrderunifi':
+			if ($GLOBALS['homepageUnifiEnabled'] && qualifyRequest($GLOBALS['homepageUnifiAuth'])) {
+				$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Unifi...</h2></div>';
+				$item .= '
+				<script>
+				// Unifi
+				homepageUnifi("' . $GLOBALS['homepageHealthChecksRefresh'] . '");
+				// End Unifi
 				</script>
 				';
 			}
@@ -2202,6 +2215,92 @@ function getHomepageList()
 			)
 		),
 		array(
+			'name' => 'Unifi',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/ubnt.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageUnifiEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepageUnifiEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageUnifiAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageUnifiAuth'],
+						'options' => $groups
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'unifiURL',
+						'label' => 'URL',
+						'value' => $GLOBALS['unifiURL'],
+						'help' => 'URL for Unifi',
+						'placeholder' => 'Unifi API URL'
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'input',
+						'name' => 'unifiUsername',
+						'label' => 'Username',
+						'value' => $GLOBALS['unifiUsername']
+					),
+					array(
+						'type' => 'password',
+						'name' => 'unifiPassword',
+						'label' => 'Password',
+						'value' => $GLOBALS['unifiPassword']
+					),
+					array(
+						'type' => 'input',
+						'name' => 'unifiSiteName',
+						'label' => 'Site Name',
+						'value' => $GLOBALS['unifiSiteName'],
+						'help' => 'Site Name - not Site ID nor Site Description',
+					),
+					array(
+						'type' => 'button',
+						'label' => 'Grab Unifi Site',
+						'icon' => 'fa fa-building',
+						'text' => 'Get Unifi Site',
+						'attr' => 'onclick="getUnifiSite(\'unifiSite\')"'
+					),
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'homepageUnifiRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageUnifiRefresh'],
+						'options' => optionTime()
+					),
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'unifi\')"'
+					),
+				)
+			)
+		),
+		array(
 			'name' => 'HealthChecks',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/healthchecks.png',
@@ -2448,6 +2547,13 @@ function buildHomepageSettings()
 				$class = 'bg-healthchecks';
 				$image = 'plugins/images/tabs/healthchecks.png';
 				if (!$GLOBALS['homepageHealthChecksEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderunifi':
+				$class = 'bg-info';
+				$image = 'plugins/images/tabs/ubnt.png';
+				if (!$GLOBALS['homepageUnifiEnabled']) {
 					$class .= ' faded';
 				}
 				break;

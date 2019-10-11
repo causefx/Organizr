@@ -1005,7 +1005,7 @@ function buildPluginsItem(array){
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
                     <div class="panel-body bg-org">
-                    <fieldset id="`+v.idPrefix+`-settings-items" style="border:0;" class=""></fieldset>
+                        <fieldset id="`+v.idPrefix+`-settings-items" style="border:0;" class=""><h2>Loading...</h2></fieldset>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -2418,12 +2418,12 @@ function accountManager(user){
                                                                     <label class="control-label" lang="en">Email</label>
                                                                     <input `+twoFADisable+` type="text" id="accountEmail" class="form-control" value="`+activeInfo.user.email+`"></div>
                                                             </div>
-                                                            <div class="col-md-6">
+                                                            <div class="col-md-6 userManagementPassword">
                                                                 <div class="form-group">
                                                                     <label class="control-label" lang="en">Password</label>
                                                                     <input type="password" id="accountPassword1" class="form-control"></div>
                                                             </div>
-                                                            <div class="col-md-6">
+                                                            <div class="col-md-6 userManagementPassword">
                                                                 <div class="form-group">
                                                                     <label class="control-label" lang="en">Verify Password</label>
                                                                     <input type="password" id="accountPassword2" class="form-control"></div>
@@ -2523,7 +2523,7 @@ function categoryProcess(arrayItems){
 		$.each(arrayItems['data']['categories'], function(i,v) {
 			if(v.count !== 0 && v.category_id !== 0){
 				menuList += `
-					<li>
+					<li class="allGroupsList" data-group-name="`+cleanClass(v.category)+`">
 						<a class="waves-effect" href="javascript:void(0)">`+iconPrefix(v.image)+`<span class="hide-menu">`+v.category+` <span class="fa arrow"></span> <span class="label label-rouded label-inverse pull-right">`+v.count+`</span></span><div class="menu-category-ping" data-good="0" data-bad="0"></div></a>
 						<ul class="nav nav-second-level category-`+v.category_id+` collapse"></ul>
 					</li>
@@ -2547,10 +2547,10 @@ function buildFrameContainer(name,url,type){
 function buildInternalContainer(name,url,type){
 	return `<div id="internal-`+cleanClass(name)+`" data-type="`+type+`" class="internal-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
 }
-function buildMenuList(name,url,type,icon,ping=null){
+function buildMenuList(name,url,type,icon,ping=null,category_id = null,group_id = null){
     var ping = (ping !== null) ? `<small class="menu-`+cleanClass(ping)+`-ping-ms hidden-xs label label-rouded label-inverse pull-right pingTime hidden">
 </small><div class="menu-`+cleanClass(ping)+`-ping" data-tab-name="`+name+`" data-previous-state=""></div>` : '';
-	return `<li class="allTabsList" id="menu-`+cleanClass(name)+`" data-tab-name="`+cleanClass(name)+`" type="`+type+`" data-url="`+url+`"><a class="waves-effect"  onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu elip sidebar-tabName">`+name+`</span>`+ping+`</a></li>`;
+	return `<li class="allTabsList" id="menu-`+cleanClass(name)+`" data-tab-name="`+cleanClass(name)+`" type="`+type+`" data-group-id="`+group_id+`" data-category-id="`+category_id+`" data-url="`+url+`"><a class="waves-effect"  onclick="tabActions(event,'`+cleanClass(name)+`',`+type+`);">`+iconPrefix(icon)+`<span class="hide-menu elip sidebar-tabName">`+name+`</span>`+ping+`</a></li>`;
 }
 function tabProcess(arrayItems) {
 	var iFrameList = '';
@@ -2577,7 +2577,7 @@ function tabProcess(arrayItems) {
                     defaultTabName = cleanClass(v.name);
                     defaultTabType = v.type;
                 }
-                var menuList = buildMenuList(v.name,v.access_url,v.type,v.image,v.ping_url);
+                var menuList = buildMenuList(v.name,v.access_url,v.type,v.image,v.ping_url, v.category_id, v.group_id);
                 if(v.category_id === 0){
                     if(activeInfo.settings.misc.unsortedTabs === 'top'){
                         $(menuList).prependTo($('#side-menu'));
@@ -5671,6 +5671,104 @@ function buildHealthChecks(array){
 	<div class="clearfix"></div>
 	` : '';
 }
+function buildUnifi(array){
+    if(array === false){ return ''; }
+    var items = (typeof array.content.unifi.data !== 'undefined') ? array.content.unifi.data.length : false;
+    return (items) ? `
+	<div id="allUnifi">
+		<div class="row">
+		    <div class="col-md-12">
+		        <h4 class="pull-left"><span lang="en">Unifi</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+		        <hr class="hidden-xs">
+		    </div>
+			<div class="clearfix"></div>
+		    <!-- .cards -->
+		    <div class="unifiCards">
+		        `+buildUnifiItem(array.content.unifi.data)+`
+			</div>
+		    <!-- /.cards-->
+		</div>
+	</div>
+	<div class="clearfix"></div>
+	` : '';
+}
+function buildUnifiItem(array){
+    var items = '';
+    $.each(array, function(i,v) {
+        console.log(v);
+        var name = (typeof v.subsystem !== 'undefined') ? v.subsystem : '';
+        var stats = {};
+        var panelColor = '';
+        switch (name) {
+            case 'wlan':
+                panelColor = 'info';
+                stats['clients'] = v.num_user;
+                stats['tx'] = v['tx_bytes-r'];
+                stats['rx'] = v['rx_bytes-r'];
+                break;
+            case 'wan':
+                panelColor = 'success';
+                stats['IP'] = v.wan_ip;
+                stats['tx'] = v['tx_bytes-r'];
+                stats['rx'] = v['rx_bytes-r'];
+                break;
+            case 'lan':
+                panelColor = 'primary';
+                stats['clients'] = v.num_user;
+                stats['tx'] = v['tx_bytes-r'];
+                stats['rx'] = v['rx_bytes-r'];
+                break;
+            case 'www':
+                panelColor = 'warning';
+                stats['drops'] = v.drops;
+                stats['latency'] = v.latency;
+                stats['uptime'] = v.uptime;
+                stats['tx'] = v['tx_bytes-r'];
+                stats['rx'] = v['rx_bytes-r'];
+                break;
+            case 'vpn':
+                panelColor = 'inverse';
+                stats['clients'] = v.remote_user_num_active;
+                stats['tx'] = v.remote_user_tx_bytes;
+                stats['rx'] = v.remote_user_rx_bytes;
+                break;
+            default:
+        }
+        var statItems = '';
+       console.log(statItems);
+        $.each(stats, function(istat,vstat) {
+            statItems += `
+                <div class="stat-item">
+                    <h6 class="text-uppercase">`+istat+`</h6>
+                    <b>`+vstat+`</b>
+                </div>
+                `;
+        });
+        items += `
+            <!--<div class="col-lg-4 col-md-6">
+                <div class="white-box">
+                    <h3 class="box-title">`+name+`</h3>
+                    <div class="stats-row">
+                        `+statItems+`
+                    </div>
+                </div>
+            </div>-->
+            <div class="col-lg-4 col-md-6 col-center">
+                <div class="panel panel-`+panelColor+`">
+                    <div class="panel-heading"> <span class="text-uppercase">`+name+`</span>
+                        <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                    </div>
+                    <div class="panel-wrapper collapse in" aria-expanded="true">
+                        <div class="panel-body">
+                           `+statItems+`
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    return items;
+}
 function healthCheckIcon(tags){
     var allTags = tags.split(' ');
     var useIcon = '';
@@ -5773,6 +5871,28 @@ function homepageHealthChecks(tags, timeout){
     var timeoutTitle = 'HealthChecks-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageHealthChecks(tags,timeout); }, timeout);
+}
+function homepageUnifi(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageUnifiRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getUnifi'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderunifi').innerHTML = '';
+        console.log(response.data);
+        if(response.data !== null){
+            $('#homepageOrderunifi').html(buildUnifi(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Unifi-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageUnifi(timeout); }, timeout);
 }
 function homepageDownloader(type, timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageDownloadRefresh;
@@ -5983,6 +6103,59 @@ function testAPIConnection(service, data = ''){
         console.error("Organizr Function: API Connection Failed");
         message('',' Organizr Error',activeInfo.settings.notifications.position,'#FFF','error','10000');
     });
+}
+function getUnifiSite(service, data = ''){
+    messageSingle('',' Grabbing now...',activeInfo.settings.notifications.position,'#FFF','info','10000');
+    organizrAPI('POST','api/?v1/test/api/connection',{action:service, data:data}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        if(response.data !== false){
+            var sites = '';
+            if(response.data.data){
+                $.each(response.data.data, function(i,v) {
+                    sites += '<div class="form-group row"><div class="col-sm-12"><h4 class="mouse" onclick="unifiSiteApply(\''+v.name+'\')">'+v.desc+'</h4></div></div>';
+                });
+            }else{
+                console.log('no');
+            }
+            var div = `
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card m-b-0">
+                            <div class="form-horizontal">
+                                <div class="card-body">
+                                    <h4 class="card-title" lang="en">Choose Unifi Site</h4>
+                                    `+sites+`
+                                </div>				
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            swal({
+                content: createElementFromHTML(div),
+                buttons: false,
+                className: 'bg-org'
+            })
+        }else{
+            messageSingle('API Connection Failed',response.data,activeInfo.settings.notifications.position,'#FFF','error','10000');
+        }
+        console.log(response);
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+        message('',' Organizr Error',activeInfo.settings.notifications.position,'#FFF','error','10000');
+    });
+}
+function unifiSiteApply(name){
+    $('#homepage-Unifi-form [name=unifiSiteName]').val(name);
+    $('#homepage-Unifi-form [name=unifiSiteName]').change();
+    swal.close();
+    messageSingle('', ' Grabbed Site - Please Save Now',activeInfo.settings.notifications.position,'#FFF','success','10000');
 }
 function homepageCalendar(timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.calendarRefresh;

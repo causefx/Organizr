@@ -12,6 +12,7 @@ return array(
 	'authBackendDomain' => '',
 	'ldapType' => '1',
 	'logo' => 'plugins/images/organizr/logo-wide.png',
+	'loginLogo' => 'plugins/images/organizr/logo-wide.png',
 	'loginWallpaper' => '',
 	'title' => 'Organizr V2',
 	'useLogo' => false,
@@ -156,7 +157,8 @@ return array(
 	'homepageOrderrTorrent' => '15',
 	'homepageOrderdownloader' => '16',
 	'homepageOrderhealthchecks' => '17',
-    "homepageOrderjdownloader" => '18',
+	'homepageOrderjdownloader' => '18',
+	'homepageOrderunifi' => '19',
 	'homepageShowStreamNames' => false,
 	'homepageShowStreamNamesAuth' => '1',
 	'homepageStreamRefresh' => '60000',
@@ -242,5 +244,13 @@ return array(
 	'authProxyEnabled' => false,
 	'authProxyHeaderName' => '',
 	'authProxyWhitelist' => '',
-	'ignoreTFALocal' => false
+	'ignoreTFALocal' => false,
+	'unifiURL' => '',
+	'unifiUsername' => '',
+	'unifiPassword' => '',
+	'unifiSiteName' => '',
+	'unifiCookie' => '',
+	'homepageUnifiEnabled' => 'false',
+	'homepageUnifiAuth' => '1',
+	'homepageUnifiRefresh' => '600000'
 );

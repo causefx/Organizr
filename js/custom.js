@@ -1978,3 +1978,8 @@ $(document).on('click', ".ipInfo", function(){
         });
     });
 });
+
+$(document).on('click', '.allGroupsList', function() {
+    console.log($(this));
+    $(this).toggleClass('active');
+});

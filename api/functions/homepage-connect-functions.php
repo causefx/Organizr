@@ -57,6 +57,9 @@ function homepageConnect($array)
 		case 'getHealthChecks':
 			return (qualifyRequest($GLOBALS['homepageHealthChecksAuth'])) ? getHealthChecks($array['data']['tags']) : false;
 			break;
+		case 'getUnifi':
+			return unifiConnect();
+			break;
 		default:
 			# code...
 			break;
@@ -522,7 +525,7 @@ function resolvePlexItem($item)
 		$plexItem['nowPlayingOriginalImage'] = $plexItem['nowPlayingImageURL'] = "plugins/images/cache/no-np.png";
 		$plexItem['nowPlayingKey'] = "no-np";
 	}
-	if (!$plexItem['thumb']) {
+	if (!$plexItem['thumb'] || $plexItem['addedAt'] >= (time() - 300)) {
 		$plexItem['originalImage'] = $plexItem['imageURL'] = "plugins/images/cache/no-list.png";
 		$plexItem['key'] = "no-list";
 	}
@@ -1436,7 +1439,12 @@ function getCalenderRepeatUntil($value)
 {
 	$first = explode('UNTIL=', $value);
 	if (count($first) > 1) {
-		return $first[1];
+		if(strpos($first[1], ';') !== false){
+			$check = explode(';', $first[1]);
+			return $check[0];
+		}else{
+			return $first[1];
+		}
 	} else {
 		return false;
 	}
@@ -2323,9 +2331,79 @@ function getOmbiRequests($type = "both", $limit = 50)
 	return $api;
 }
 
+function unifiConnect()
+{
+	if ($GLOBALS['homepageUnifiEnabled'] && !empty($GLOBALS['unifiURL']) && !empty($GLOBALS['unifiSiteName']) && !empty($GLOBALS['unifiCookie']) && !empty($GLOBALS['unifiUsername']) && !empty($GLOBALS['unifiPassword']) && qualifyRequest($GLOBALS['homepageUnifiAuth'])) {
+		$api['content']['unifi'] = array();
+		$url = qualifyURL($GLOBALS['unifiURL']);
+		$urlStat = $url . '/api/s/' . $GLOBALS['unifiSiteName'] . '/stat/health';
+		try {
+			$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => false);
+			$data = array(
+				'username' => $GLOBALS['unifiUsername'],
+				'password' => decrypt($GLOBALS['unifiPassword']),
+				'remember' => true,
+				'strict' => true
+			);
+			$response = Requests::post($url . '/api/login', array(), json_encode($data), $options);
+			if ($response->success) {
+				$cookie['unifises'] = ($response->cookies['unifises']->value) ?? false;
+				$cookie['csrf_token'] = ($response->cookies['csrf_token']->value) ?? false;
+			}else{
+				return false;
+			}
+			$headers = array(
+				'cookie' => 'unifises=' . $cookie['unifises'] . ';' . 'csrf_token=' . $cookie['csrf_token'] . ';'
+			);
+			$response = Requests::get($urlStat, $headers, $options);
+			if ($response->success) {
+				$api['content']['unifi'] = json_decode($response->body, true);
+			}
+		} catch (Requests_Exception $e) {
+			writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		};
+		$api['content']['unifi'] = isset($api['content']['unifi']) ? $api['content']['unifi'] : false;
+		return $api;
+	}
+	return false;
+}
+
 function testAPIConnection($array)
 {
 	switch ($array['data']['action']) {
+		case 'unifiSite':
+			if (!empty($GLOBALS['unifiURL'])  && !empty($GLOBALS['unifiCookie']) && !empty($GLOBALS['unifiUsername'])  && !empty($GLOBALS['unifiPassword'])) {
+				$url = qualifyURL($GLOBALS['unifiURL']);
+				try {
+					$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => false);
+					$data = array(
+						'username' => $GLOBALS['unifiUsername'],
+						'password' => decrypt($GLOBALS['unifiPassword']),
+						'remember' => true,
+						'strict' => true
+					);
+					$response = Requests::post($url . '/api/login', array(), json_encode($data), $options);
+					if ($response->success) {
+						$cookie['unifises'] = ($response->cookies['unifises']->value) ?? false;
+						$cookie['csrf_token'] = ($response->cookies['csrf_token']->value) ?? false;
+					}else{
+						return false;
+					}
+					$headers = array(
+						'cookie' => 'unifises=' . $cookie['unifises'] . ';' . 'csrf_token=' . $cookie['csrf_token'] . ';'
+					);
+					$response = Requests::get($url . '/api/self/sites', $headers, $options);
+					if ($response->success) {
+						$body = json_decode($response->body, true);
+						return $body;
+					}else{
+						return false;
+					}
+				} catch (Requests_Exception $e) {
+					writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				};
+			}
+			break;
 		case 'ombi':
 			if (!empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken'])) {
 				$url = qualifyURL($GLOBALS['ombiURL']);
