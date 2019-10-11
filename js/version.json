@@ -201,5 +201,12 @@
     "new": "Added Auth Proxy - Accept X-Forwarded-User (#1215)|Ombi default sort option|JDownloader Actions|Set of wallpapers for login page (#1214)|Logging to help with email debug|HTTP codes to API|IPInfo in settings logs|Plex oauth update - thanks swifty|Disable Google Authenticator for Local Access (#1232)",
     "fixed": "Upgraded Simplebar|Homepage downloader variable being overwritten|Timeout on Docker update|Radarr Calendar Image URL",
     "notes": "Please report bugs in GitHub issues page|Updated language translations"
+  },
+  "2.0.320": {
+    "date": "2019-10-11 16:25",
+    "title": "Super small update",
+    "new": "Unifi Homepage Item|Login and Top Bar Logo (#1029)|Add 5 minute buffer to plex thumbs",
+    "fixed": "Quick and dirty fix for Google iCal Not working (#1233)|Forgot to add License back (#1247)|Fix context menu disabled on lock screen (#1243)|Dropdown arrows on Tab Groups not animating (#1239)|Fix Unifi cookie to be loaded on first api call|Cannot re-order new tabs from bottom upwards in Settings after adding many (#1175)",
+    "notes": "Add a class and data-tab-name to sidenav groups (#1249)|Please report bugs in GitHub issues page|Updated language translations"
   }
 }
