@@ -2404,6 +2404,37 @@ function testAPIConnection($array)
 				};
 			}
 			break;
+		case 'unifi':
+			if (!empty($GLOBALS['unifiURL'])  && !empty($GLOBALS['unifiCookie']) && !empty($GLOBALS['unifiUsername'])  && !empty($GLOBALS['unifiPassword']) && !empty($GLOBALS['unifiSiteName'])) {
+				$url = qualifyURL($GLOBALS['unifiURL']);
+				try {
+					$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => false);
+					$data = array(
+						'username' => $GLOBALS['unifiUsername'],
+						'password' => decrypt($GLOBALS['unifiPassword']),
+						'remember' => true,
+						'strict' => true
+					);
+					$response = Requests::post($url . '/api/login', array(), json_encode($data), $options);
+					if ($response->success) {
+						$cookie['unifises'] = ($response->cookies['unifises']->value) ?? false;
+						$cookie['csrf_token'] = ($response->cookies['csrf_token']->value) ?? false;
+					}else{
+						return 'Failed to Login';
+					}
+					$headers = array(
+						'cookie' => 'unifises=' . $cookie['unifises'] . ';' . 'csrf_token=' . $cookie['csrf_token'] . ';'
+					);
+					$response = Requests::get($url . '/api/s/'.$GLOBALS['unifiSiteName'].'/self', $headers, $options);
+					$body = json_decode($response->body, true);
+					return ($body['meta']['rc'] == 'ok') ? true : $body['meta']['msg'];
+				} catch (Requests_Exception $e) {
+					writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				};
+			}else{
+				return 'Not all data is filled in...';
+			}
+			break;
 		case 'ombi':
 			if (!empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken'])) {
 				$url = qualifyURL($GLOBALS['ombiURL']);
