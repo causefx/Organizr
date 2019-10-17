@@ -2333,7 +2333,7 @@ function getOmbiRequests($type = "both", $limit = 50)
 
 function unifiConnect()
 {
-	if ($GLOBALS['homepageUnifiEnabled'] && !empty($GLOBALS['unifiURL']) && !empty($GLOBALS['unifiSiteName']) && !empty($GLOBALS['unifiCookie']) && !empty($GLOBALS['unifiUsername']) && !empty($GLOBALS['unifiPassword']) && qualifyRequest($GLOBALS['homepageUnifiAuth'])) {
+	if ($GLOBALS['homepageUnifiEnabled'] && !empty($GLOBALS['unifiURL']) && !empty($GLOBALS['unifiSiteName']) && !empty($GLOBALS['unifiUsername']) && !empty($GLOBALS['unifiPassword']) && qualifyRequest($GLOBALS['homepageUnifiAuth'])) {
 		$api['content']['unifi'] = array();
 		$url = qualifyURL($GLOBALS['unifiURL']);
 		$urlStat = $url . '/api/s/' . $GLOBALS['unifiSiteName'] . '/stat/health';
@@ -2372,7 +2372,7 @@ function testAPIConnection($array)
 {
 	switch ($array['data']['action']) {
 		case 'unifiSite':
-			if (!empty($GLOBALS['unifiURL'])  && !empty($GLOBALS['unifiCookie']) && !empty($GLOBALS['unifiUsername'])  && !empty($GLOBALS['unifiPassword'])) {
+			if (!empty($GLOBALS['unifiURL']) && !empty($GLOBALS['unifiUsername'])  && !empty($GLOBALS['unifiPassword'])) {
 				$url = qualifyURL($GLOBALS['unifiURL']);
 				try {
 					$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => false);
@@ -2405,7 +2405,7 @@ function testAPIConnection($array)
 			}
 			break;
 		case 'unifi':
-			if (!empty($GLOBALS['unifiURL'])  && !empty($GLOBALS['unifiCookie']) && !empty($GLOBALS['unifiUsername'])  && !empty($GLOBALS['unifiPassword']) && !empty($GLOBALS['unifiSiteName'])) {
+			if (!empty($GLOBALS['unifiURL']) && !empty($GLOBALS['unifiUsername'])  && !empty($GLOBALS['unifiPassword']) && !empty($GLOBALS['unifiSiteName'])) {
 				$url = qualifyURL($GLOBALS['unifiURL']);
 				try {
 					$options = array('verify' => false, 'verifyname' => false, 'follow_redirects' => false);
