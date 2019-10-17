@@ -33,8 +33,8 @@ function pluginFiles($type)
 			}
 			break;
 		case 'css':
-			foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . "*.js") as $filename) {
-				$files .= '<link href="api/plugins/css/' . basename($filename) . $GLOBALS['fileHash'] . '" rel="stylesheet">';
+			foreach (glob(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . "*.css") as $filename) {
+				$files .= '<link href="api/plugins/css/' . basename($filename) . '?v=' . $GLOBALS['fileHash'] . '" rel="stylesheet">';
 			}
 			break;
 		default:
