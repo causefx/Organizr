@@ -208,5 +208,12 @@
     "new": "Unifi Homepage Item|Login and Top Bar Logo (#1029)|Add 5 minute buffer to plex thumbs",
     "fixed": "Quick and dirty fix for Google iCal Not working (#1233)|Forgot to add License back (#1247)|Fix context menu disabled on lock screen (#1243)|Dropdown arrows on Tab Groups not animating (#1239)|Fix Unifi cookie to be loaded on first api call|Cannot re-order new tabs from bottom upwards in Settings after adding many (#1175)",
     "notes": "Add a class and data-tab-name to sidenav groups (#1249)|Please report bugs in GitHub issues page|Updated language translations"
+  },
+  "2.0.325": {
+    "date": "2019-10-18 20:20",
+    "title": "Fix Unifi Homepage",
+    "new": "",
+    "fixed": "Plugin Files not loading css files|Remove unifiCookie from unif homepage check",
+    "notes": "Please report bugs in GitHub issues page|Updated language translations"
   }
 }
