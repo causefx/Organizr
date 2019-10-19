@@ -5695,10 +5695,11 @@ function buildUnifi(array){
 function buildUnifiItem(array){
     var items = '';
     $.each(array, function(i,v) {
-        console.log(v);
+        //console.log(v);
         var name = (typeof v.subsystem !== 'undefined') ? v.subsystem : '';
         var stats = {};
         var panelColor = '';
+        var proceed = (v.status == 'ok');
         switch (name) {
             case 'wlan':
                 panelColor = 'info';
@@ -5735,37 +5736,38 @@ function buildUnifiItem(array){
             default:
         }
         var statItems = '';
-       console.log(statItems);
-        $.each(stats, function(istat,vstat) {
-            statItems += `
-                <div class="stat-item">
-                    <h6 class="text-uppercase">`+istat+`</h6>
-                    <b>`+vstat+`</b>
-                </div>
-                `;
-        });
-        items += `
-            <!--<div class="col-lg-4 col-md-6">
-                <div class="white-box">
-                    <h3 class="box-title">`+name+`</h3>
-                    <div class="stats-row">
-                        `+statItems+`
+        if(proceed) {
+            $.each(stats, function (istat, vstat) {
+                statItems += `
+                    <div class="stat-item">
+                        <h6 class="text-uppercase">` + istat + `</h6>
+                        <b>` + vstat + `</b>
                     </div>
-                </div>
-            </div>-->
-            <div class="col-lg-4 col-md-6 col-center">
-                <div class="panel panel-`+panelColor+`">
-                    <div class="panel-heading"> <span class="text-uppercase">`+name+`</span>
-                        <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                    `;
+            });
+            items += `
+                <!--<div class="col-lg-4 col-md-6">
+                    <div class="white-box">
+                        <h3 class="box-title">` + name + `</h3>
+                        <div class="stats-row">
+                            ` + statItems + `
+                        </div>
                     </div>
-                    <div class="panel-wrapper collapse in" aria-expanded="true">
-                        <div class="panel-body">
-                           `+statItems+`
+                </div>-->
+                <div class="col-lg-4 col-md-6 col-center">
+                    <div class="panel panel-` + panelColor + `">
+                        <div class="panel-heading"> <span class="text-uppercase">` + name + `</span>
+                            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                        </div>
+                        <div class="panel-wrapper collapse in" aria-expanded="true">
+                            <div class="panel-body">
+                               ` + statItems + `
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
     });
     return items;
 }
@@ -5883,7 +5885,7 @@ function homepageUnifi(timeout){
             return false;
         }
         document.getElementById('homepageOrderunifi').innerHTML = '';
-        console.log(response.data);
+        //console.log(response.data);
         if(response.data !== null){
             $('#homepageOrderunifi').html(buildUnifi(response.data));
         }
