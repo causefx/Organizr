@@ -751,7 +751,7 @@ function loadNextTab(){
 	if (typeof next !== 'undefined') {
 		var type = $('#page-wrapper').find('.loaded').attr('data-type');
         var parent = $('#menu-'+next).parent();
-        if(parent.hasClass('in') === false){
+        if(parent.hasClass('in') === false && parent.hasClass('nav-second-level')){
             parent.parent().find('a').first().trigger('click')
         }
 		switchTab(next,type);
