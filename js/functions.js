@@ -3277,8 +3277,8 @@ function sponsorAbout(id,array){
                                 <div class="comment-center p-t-10">
                                     <div class="comment-body b-none">
                                         <div class="user-img"> <img src="`+array.logo+`" alt="user" class="img-circle"> </div>
-                                        <div class="mail-contnet">
-                                            <h5><a href="`+array.website+`" target="_blank">`+array.company_name+`</a></h5> 
+                                        <div class="mail-content">
+                                            <h5><a href="`+array.website+`" target="_blank">`+array.company_name+`</a></h5>
                                             `+array.about+extraInfo+`
                                          </div>
                                     </div>
