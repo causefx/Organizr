@@ -996,7 +996,7 @@ function buildPluginsItem(array){
 	$.each(array, function(i,v) {
 		var settingsPage = (v.settings == true) ? `
 		<!-- Plugin Settings Page -->
-		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup mfp-with-anim addFormTick col-md-10 col-md-offset-1" autocomplete="off">                			
+		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup mfp-with-anim addFormTick col-md-10 col-md-offset-1" autocomplete="off">
             <div class="panel bg-org panel-info">
                 <div class="panel-heading">
                     <span lang="en">`+v.name+` Settings</span>
@@ -3277,8 +3277,8 @@ function sponsorAbout(id,array){
                                 <div class="comment-center p-t-10">
                                     <div class="comment-body b-none">
                                         <div class="user-img"> <img src="`+array.logo+`" alt="user" class="img-circle"> </div>
-                                        <div class="mail-contnet">
-                                            <h5><a href="`+array.website+`" target="_blank">`+array.company_name+`</a></h5> 
+                                        <div class="mail-content">
+                                            <h5><a href="`+array.website+`" target="_blank">`+array.company_name+`</a></h5>
                                             `+array.about+extraInfo+`
                                          </div>
                                     </div>
@@ -4387,7 +4387,7 @@ function buildStream(array, type){
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span>: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+type+`')">`+streams+`</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span>: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+type+`')">`+streams+`</span></h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -4430,7 +4430,7 @@ function buildRecent(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left"><span class="mouse" onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span></h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span></h4>
 			`+dropdownMenu+`
 			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
@@ -4525,7 +4525,7 @@ function buildPlaylist(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left"><span onclick="homepagePlaylist('`+type+`')" class="`+type+`-playlistTitle mouse">`+first+`</span></h4>
+			<h4 class="pull-left homepage-element-title"><span onclick="homepagePlaylist('`+type+`')" class="`+type+`-playlistTitle mouse">`+first+`</span></h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -4536,7 +4536,7 @@ function buildPlaylist(array, type){
 	}else{
 		var header = `
 		<div class="panel-heading bg-info p-t-10 p-b-10">
-			<span class="pull-left m-t-5 mouse" onclick="homepagePlaylist('`+type+`')"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span class="`+type+`-playlistTitle">`+first+`</span></span>
+			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepagePlaylist('`+type+`')"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span class="`+type+`-playlistTitle">`+first+`</span></span>
 			<div class="btn-group pull-right">
 					`+builtDropdown+`
 			</div>
@@ -4608,7 +4608,7 @@ function buildRequest(array){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span></h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span></h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -4619,7 +4619,7 @@ function buildRequest(array){
 	}else{
 		var header = `
 		<div class="panel-heading bg-info p-t-10 p-b-10">
-			<span class="pull-left m-t-5 mouse" onclick="homepageRequests()"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; Requests</span>
+			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepageRequests()"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; Requests</span>
 			<div class="btn-group pull-right">
 					`+builtDropdown+`
 			</div>
@@ -4773,7 +4773,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 		<div class="button-box text-center p-b-0">
             <ul class="pagination m-b-0">
                 <li class="`+previousHidden+`"> <a href="javascript:void(0)" onclick="requestList('`+list+`', '`+media_type+`', '`+pagePrevious+`');"><i class="fa fa-angle-left"></i></a> </li>
- 
+
                 `+pageList+`
                 <li class="`+nextHidden+`"> <a href="javascript:void(0)" onclick="requestList('`+list+`', '`+media_type+`', '`+pageNext+`');"><i class="fa fa-angle-right"></i></a> </li>
             </ul>
@@ -5661,7 +5661,7 @@ function buildHealthChecks(array){
 	<div id="allHealthChecks">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left"><span lang="en">Health Checks</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-health-checks mouse">`+checks+`</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Health Checks</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-health-checks mouse">`+checks+`</span></h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -5682,7 +5682,7 @@ function buildUnifi(array){
 	<div id="allUnifi">
 		<div class="row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left"><span lang="en">Unifi</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Unifi</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -6137,7 +6137,7 @@ function getUnifiSite(service, data = ''){
                                 <div class="card-body">
                                     <h4 class="card-title" lang="en">Choose Unifi Site</h4>
                                     `+sites+`
-                                </div>				
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -7283,7 +7283,7 @@ function showLDAPLoginTest(){
                             <div class="form-group mb-0 p-r-10 text-right">
                                 <button type="submit" onclick="testAPIConnection('ldap_login', {'username':$('#ldapUsernameTest').val(),'password':$('#ldapPasswordTest').val()})" class="btn btn-info waves-effect waves-light">Test Login</button>
                             </div>
-                        </div>				
+                        </div>
                     </div>
                 </div>
             </div>
