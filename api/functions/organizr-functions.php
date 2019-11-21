@@ -44,6 +44,9 @@ function organizrSpecialSettings()
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
 				'healthChecksTags' => $GLOBALS['healthChecksTags'],
+			),
+			'media' => array(
+				'jellyfin' => (strpos($GLOBALS['embyURL'], 'jellyfin') !== false) ? true : false
 			)
 		),
 		'sso' => array(

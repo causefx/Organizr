@@ -501,6 +501,9 @@ input#inviteCodeInput {
 .bg-emby {
     background: #4CAF50;
 }
+.bg-jellyfin {
+    background: #a15dc3;
+}
 .bg-healthchecks {
     background: #56b059;
 }

@@ -66,8 +66,8 @@ function getTautulliToken($username, $password, $plexToken = null)
 					"User-Agent" => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null
 				);
 				$data = array(
-			                "username" => ($plexToken ? "" : $username),
-			                "password" => ($plexToken ? "" : $password),
+	                "username" => ($plexToken ? "" : $username),
+	                "password" => ($plexToken ? "" : $password),
 					"token" => $plexToken,
 					"remember_me" => 1,
 				);

@@ -128,6 +128,7 @@ function streamType($value)
 
 function resolveEmbyItem($itemDetails)
 {
+	/*
 	// Grab Each item info from Emby (extra call)
 	$id = isset($itemDetails['NowPlayingItem']['Id']) ? $itemDetails['NowPlayingItem']['Id'] : $itemDetails['Id'];
 	$url = qualifyURL($GLOBALS['embyURL']);
@@ -141,6 +142,8 @@ function resolveEmbyItem($itemDetails)
 	} catch (Requests_Exception $e) {
 		return false;
 	};
+	*/
+	$item = isset($itemDetails['NowPlayingItem']['Id']) ? $itemDetails['NowPlayingItem'] : $itemDetails;
 	// Static Height & Width
 	$height = getCacheImageSize('h');
 	$width = getCacheImageSize('w');
@@ -248,7 +251,8 @@ function resolveEmbyItem($itemDetails)
 	$embyItem['user'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth'])) ? @(string)$itemDetails['UserName'] : "";
 	$embyItem['userThumb'] = '';
 	$embyItem['userAddress'] = (isset($itemDetails['RemoteEndPoint']) ? $itemDetails['RemoteEndPoint'] : "x.x.x.x");
-	$embyItem['address'] = $GLOBALS['embyTabURL'] ? rtrim($GLOBALS['embyTabURL'], '/') . "/web/#!/itemdetails.html?id=" . $embyItem['uid'] : "https://app.emby.media/#!/itemdetails.html?id=" . $embyItem['uid'] . "&serverId=" . $embyItem['id'];
+	$embyURL = (strpos($GLOBALS['embyURL'], 'jellyfin') !== false) ? $GLOBALS['embyURL'] . '/web/index.html#!/itemdetails.html?id=' : 'https://app.emby.media/#!/itemdetails.html?id=';
+	$embyItem['address'] = $GLOBALS['embyTabURL'] ? rtrim($GLOBALS['embyTabURL'], '/') . "/web/#!/itemdetails.html?id=" . $embyItem['uid'] : $embyURL . $embyItem['uid'] . "&serverId=" . $embyItem['id'];
 	$embyItem['nowPlayingOriginalImage'] = 'api/?v1/image&source=emby&type=' . $embyItem['nowPlayingImageType'] . '&img=' . $embyItem['nowPlayingThumb'] . '&height=' . $nowPlayingHeight . '&width=' . $nowPlayingWidth . '&key=' . $embyItem['nowPlayingKey'] . '$' . randString();
 	$embyItem['originalImage'] = 'api/?v1/image&source=emby&type=' . $embyItem['imageType'] . '&img=' . $embyItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $embyItem['key'] . '$' . randString();
 	$embyItem['openTab'] = $GLOBALS['embyTabURL'] && $GLOBALS['embyTabName'] ? true : false;
@@ -668,15 +672,16 @@ function getPlexPlaylists()
 	return false;
 }
 
-function embyConnect($action, $key = null, $skip = false)
+function embyConnect($action, $key = 'Latest', $skip = false)
 {
 	if ($GLOBALS['homepageEmbyEnabled'] && !empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken']) && qualifyRequest($GLOBALS['homepageEmbyAuth'])) {
 		$url = qualifyURL($GLOBALS['embyURL']);
 		switch ($action) {
 			case 'streams':
-				$url = $url . '/Sessions?api_key=' . $GLOBALS['embyToken'];
+				$url = $url . '/Sessions?api_key=' . $GLOBALS['embyToken'] . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
 				break;
 			case 'recent':
+			case 'metadata':
 				$username = false;
 				if (isset($GLOBALS['organizrUser']['username'])) {
 					$username = strtolower($GLOBALS['organizrUser']['username']);
@@ -699,23 +704,15 @@ function embyConnect($action, $key = null, $skip = false)
 								break;
 							}
 						}
-						$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=false&Limit=' . $GLOBALS['homepageRecentLimit'] . '&api_key=' . $GLOBALS['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false');
+						$url = $url . '/Users/' . $userId . '/Items/' . $key . '?EnableImages=true&Limit=' . $GLOBALS['homepageRecentLimit'] . '&api_key=' . $GLOBALS['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
 					}
 				} catch (Requests_Exception $e) {
 					writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				};
 				break;
-			case 'metadata':
-				$skip = true;
-				break;
 			default:
 				# code...
 				break;
-		}
-		if ($skip && $key) {
-			$items[] = resolveEmbyItem(array('Id' => $key));
-			$api['content'] = $items;
-			return $api;
 		}
 		try {
 			$options = (localURL($url)) ? array('verify' => false) : array();
@@ -723,11 +720,18 @@ function embyConnect($action, $key = null, $skip = false)
 			if ($response->success) {
 				$items = array();
 				$emby = json_decode($response->body, true);
-				foreach ($emby as $child) {
-					if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
-						$items[] = resolveEmbyItem($child);
+				if($key !== 'Latest'){
+					if (isset($emby['NowPlayingItem']) || isset($emby['Name'])) {
+						$items[] = resolveEmbyItem($emby);
+					}
+				}else{
+					foreach ($emby as $child) {
+						if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
+							$items[] = resolveEmbyItem($child);
+						}
 					}
 				}
+				
 				$api['content'] = array_filter($items);
 				return $api;
 			}

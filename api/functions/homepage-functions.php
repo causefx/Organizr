@@ -872,7 +872,7 @@ function getHomepageList()
 			)
 		),
 		array(
-			'name' => 'Emby',
+			'name' => 'Emby-Jellyfin',
 			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
 			'image' => 'plugins/images/tabs/emby.png',
 			'category' => 'Media Server',
@@ -898,8 +898,8 @@ function getHomepageList()
 						'name' => 'embyURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['embyURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-						'placeholder' => 'http(s)://hostname:port'
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too. Make sure if Jelly fin to end url with /jellyfin',
+						'placeholder' => 'http(s)://hostname:port - make sure if Jelly fin to end url with /jellyfin'
 					),
 					array(
 						'type' => 'password-alt',
