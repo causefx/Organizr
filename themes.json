@@ -80,7 +80,7 @@
 		"author": "GilbN",
 		"category": "Community",
 		"description": "A space gray colored theme for Organizr ",
-		"icon": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/aquamarine/theme-park-organizr-spacegray-logo.png",
+		"icon": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/spacegray/theme-park-organizr-spacegray-logo.png",
 		"contact": null,
 		"website": "https://github.com/gilbN/theme.park",
 		"version": "1.0.1",
@@ -92,10 +92,10 @@
 			"/css/themes": "Space Gray.css"
 		},
 		"images": {
-			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/spacegray/spacegray_login.png",
-			"Splash": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/spacegray/spacegray_splash.png",
+			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/spacegray/spacegray_login.jpg",
+			"Splash": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/spacegray/spacegray_splash.jpg",
 			"Homepage": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/spacegray/spacegray_homepage.jpg",
-			"Search": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/spacegray/spacegray_search.png"
+			"Search": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/spacegray/spacegray_search.jpg"
 		},
 		"css": {},
 		"javascript": {}
