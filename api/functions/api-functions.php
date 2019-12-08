@@ -1196,9 +1196,9 @@ function allGroups()
 	return false;
 }
 
-function loadTabs()
+function loadTabs($type = null)
 {
-	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php') && $type) {
 		try {
 			$connect = new Dibi\Connection([
 				'driver' => 'sqlite3',
@@ -1219,7 +1219,14 @@ function loadTabs()
 				$v['count'] = isset($count[$v['category_id']]) ? $count[$v['category_id']] : 0;
 			}
 			$all['categories'] = $categories;
-			return $all;
+			switch ($type){
+				case 'categories':
+					return $all['categories'];
+				case 'tabs':
+					return $all['tabs'];
+				default:
+					return $all;
+			}
 		} catch (Dibi\Exception $e) {
 			return false;
 		}
