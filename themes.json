@@ -86,10 +86,10 @@
 		"version": "1.0.1",
 		"release_date": "2019-11-27",
 		"last_updated": "2019-11-27",
-		"github_folder": "Space Gray_theme",
+		"github_folder": "Space_Gray_theme",
 		"license": "personal,business",
 		"files": {
-			"/css/themes": "Space Gray.css"
+			"/css/themes": "Space_Gray.css"
 		},
 		"images": {
 			"Login": "https://raw.githubusercontent.com/gilbN/theme.park/master/Resources/organizr/spacegray/spacegray_login.jpg",
