@@ -86,6 +86,7 @@ return array(
 	'qBittorrentSortOrder' => 'eta',
 	'qBittorrentReverseSorting' => false,
 	'qBittorrentCombine' => false,
+	'qBittorrentApiVersion' => '1',
 	'rTorrentURL' => '',
 	'rTorrentURLOverride' => '',
 	'rTorrentUsername' => '',

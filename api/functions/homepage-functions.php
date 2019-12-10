@@ -527,6 +527,16 @@ function getHomepageList()
 			'value' => 'statusa'
 		),
 	);
+	$qBittorrentApiOptions = array(
+		array(
+			'name' => 'V1',
+			'value' => '1'
+		),
+		array(
+			'name' => 'V2',
+			'value' => '2'
+		),
+	);
 	$qBittorrentSortOptions = array(
 		array(
 			'name' => 'Hash',
@@ -1338,6 +1348,13 @@ function getHomepageList()
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
+						'type' => 'select',
+						'name' => 'qBittorrentApiVersion',
+						'label' => 'API Version',
+						'value' => $GLOBALS['qBittorrentApiVersion'],
+						'options' => $qBittorrentApiOptions
+					),
+					array(
 						'type' => 'input',
 						'name' => 'qBittorrentUsername',
 						'label' => 'Username',
@@ -1356,7 +1373,8 @@ function getHomepageList()
 						'name' => 'qBittorrentHideSeeding',
 						'label' => 'Hide Seeding',
 						'value' => $GLOBALS['qBittorrentHideSeeding']
-					), array(
+					),
+					array(
 						'type' => 'switch',
 						'name' => 'qBittorrentHideCompleted',
 						'label' => 'Hide Completed',

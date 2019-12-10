@@ -1035,7 +1035,9 @@ function qBittorrentConnect()
 	if ($GLOBALS['homepageqBittorrentEnabled'] && !empty($GLOBALS['qBittorrentURL']) && qualifyRequest($GLOBALS['homepageqBittorrentAuth'])) {
 		$digest = qualifyURL($GLOBALS['qBittorrentURL'], true);
 		$data = array('username' => $GLOBALS['qBittorrentUsername'], 'password' => decrypt($GLOBALS['qBittorrentPassword']));
-		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . '/login';
+		$apiVersionLogin = ($GLOBALS['qBittorrentApiVersion'] == '1') ? '/login' : '/api/v2/auth/login';
+		$apiVersionQuery = ($GLOBALS['qBittorrentApiVersion'] == '1') ? '/query/torrents?sort=' : '/api/v2/torrents/info?sort=';
+		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionLogin;
 		try {
 			$options = (localURL($GLOBALS['qBittorrentURL'])) ? array('verify' => false) : array();
 			$response = Requests::post($url, array(), $data, $options);
@@ -1048,7 +1050,7 @@ function qBittorrentConnect()
 					'Cookie' => 'SID=' . $cookie['SID']->value
 				);
 				$reverse = $GLOBALS['qBittorrentReverseSorting'] ? 'true' : 'false';
-				$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . '/query/torrents?sort=' . $GLOBALS['qBittorrentSortOrder'] . '&reverse=' . $reverse;
+				$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionQuery . $GLOBALS['qBittorrentSortOrder'] . '&reverse=' . $reverse;
 				$response = Requests::get($url, $headers, $options);
 				if ($response) {
 					$torrentList = json_decode($response->body, true);
