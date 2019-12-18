@@ -4018,10 +4018,9 @@ function errorPage(error=null,uri=null){
         local('set','uri',uri);
     }
 	//var urlParams = new URLSearchParams(window.location.search);
-	if($.urlParam('error') !== null && typeof $.urlParam('error') === 'string'){
-	    if($.urlParam('error').length === 3){
-            local('set','error',$.urlParam('error'));
-        }
+
+	if($.urlParam('error') !== null && !isNaN(Number($.urlParam('error')))){
+        local('set','error',$.urlParam('error'));
 	}
     if($.urlParam('return') !== null && activeInfo.user.loggedin !== true){
         local('set','uri',$.urlParam('return'));
