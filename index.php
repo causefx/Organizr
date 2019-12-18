@@ -1,4 +1,4 @@
-<?php include 'api/functions/static-globals.php'; ?>
+<?php include 'api/functions/static-globals.php';?>
 <!DOCTYPE html>
 <html lang="en">
 
