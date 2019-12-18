@@ -213,7 +213,7 @@ function login($array)
 				if ($createToken) {
 					writeLoginLog($username, 'success');
 					writeLog('success', 'Login Function - A User has logged in', $username);
-					$ssoUser = (empty($result['email'])) ? $result['username'] : (strpos($result['email'], 'placeholder') !== false) ? $result['username'] : $result['email'];
+					$ssoUser = ((empty($result['email'])) ? $result['username'] : (strpos($result['email'], 'placeholder') !== false)) ? $result['username'] : $result['email'];
 					ssoCheck($ssoUser, $password, $token); //need to work on this
 					return ($output) ? array('name' => $GLOBALS['cookieName'], 'token' => (string)$createToken) : true;
 				} else {
