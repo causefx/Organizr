@@ -1656,7 +1656,7 @@ function auth()
 			    'driver' => 'sqlite3',
 			    'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
 		    ]);
-            $row = $connect->fetch('SELECT group_id FROM tabs WHERE name = %~like~', $tab);
+            $row = $connect->fetch('SELECT group_id FROM tabs WHERE name LIKE %~like~', $tab);
             return $row ? $row['group_id'] : 0;
         } catch (\Dibi\Exception $e) {
             writeLog('error', 'Tab Group Function - Error Fetching Tab Group', $tab);
