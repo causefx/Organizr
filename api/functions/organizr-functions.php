@@ -1649,21 +1649,19 @@ function auth()
 	}
 }
 
-    function getTabGroup ($tab)
-    {
-        try {
-            $connect = new Dibi\Connection([
-			    'driver' => 'sqlite3',
-			    'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
-		    ]);
-            $row = $connect->fetch('SELECT group_id FROM tabs WHERE name LIKE %~like~', $tab);
-            return $row ? $row['group_id'] : 0;
-        } catch (\Dibi\Exception $e) {
-            writeLog('error', 'Tab Group Function - Error Fetching Tab Group', $tab);
-            return 0;
-        }
-
+function getTabGroup ($tab)
+{
+    try {
+        $connect = new Dibi\Connection([
+            'driver' => 'sqlite3',
+            'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],]);
+        $row = $connect->fetch('SELECT group_id FROM tabs WHERE name LIKE %~like~', $tab);
+        return $row ? $row['group_id'] : 0;
+    } catch (\Dibi\Exception $e) {
+        writeLog('error', 'Tab Group Function - Error Fetching Tab Group', $tab);
+        return 0;
     }
+}
 
 function logoOrText()
 {
