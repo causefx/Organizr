@@ -875,7 +875,7 @@ function getSettingsMain()
 				'type' => 'switch',
 				'name' => 'authProxyEnabled',
 				'label' => 'Auth Proxy',
-				'help' => 'Enable option to set Auth Poxy Header Login',
+				'help' => 'Enable option to set Auth Proxy Header Login',
 				'value' => $GLOBALS['authProxyEnabled'],
 			),
 			array(
