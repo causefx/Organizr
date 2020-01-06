@@ -1626,6 +1626,7 @@ function auth()
 	} else {
 		$currentUser = 'Guest';
 		$currentGroup = getUserLevel();
+		$currentEmail = 'guest@guest.com';
 	}
 	$userInfo = "User: $currentUser | Group: $currentGroup | IP: $currentIP | Requesting Access to Group $group | Result: ";
 	if ($whitelist) {
