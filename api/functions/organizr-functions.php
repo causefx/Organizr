@@ -1622,6 +1622,7 @@ function auth()
 	if (isset($GLOBALS['organizrUser'])) {
 		$currentUser = $GLOBALS['organizrUser']['username'];
 		$currentGroup = $GLOBALS['organizrUser']['groupID'];
+		$currentEmail = $GLOBALS['organizrUser']['email'];
 	} else {
 		$currentUser = 'Guest';
 		$currentGroup = getUserLevel();
@@ -1640,6 +1641,7 @@ function auth()
 	if ($group !== null) {
 		if (qualifyRequest($group) && $unlocked) {
 			header("X-Organizr-User: $currentUser");
+			header("X-Organizr-Email: $currentEmail");
 			!$debug ? exit(http_response_code(200)) : die("$userInfo Authorized");
 		} else {
 			!$debug ? exit(http_response_code(401)) : die("$userInfo Not Authorized");
