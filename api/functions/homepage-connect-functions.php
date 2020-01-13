@@ -373,6 +373,20 @@ function resolvePlexItem($item)
 	$cacheDirectoryWeb = 'plugins/images/cache/';
 	// Types
 	switch ($item['type']) {
+		case 'show':
+			$plexItem['type'] = 'tv';
+			$plexItem['title'] = (string)$item['title'];
+			$plexItem['secondaryTitle'] = (string)$item['year'];
+			$plexItem['summary'] = (string)$item['summary'];
+			$plexItem['ratingKey'] = (string)$item['ratingKey'];
+			$plexItem['thumb'] = (string)$item['thumb'];
+			$plexItem['key'] = (string)$item['ratingKey'] . "-list";
+			$plexItem['nowPlayingThumb'] = (string)$item['art'];
+			$plexItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
+			$plexItem['nowPlayingTitle'] = (string)$item['title'];
+			$plexItem['nowPlayingBottom'] = (string)$item['year'];
+			$plexItem['metadataKey'] = (string)$item['ratingKey'];
+			break;
 		case 'season':
 			$plexItem['type'] = 'tv';
 			$plexItem['title'] = (string)$item['parentTitle'];
@@ -442,6 +456,7 @@ function resolvePlexItem($item)
 			$plexItem['nowPlayingBottom'] = (string)$item['year'];
 			$plexItem['metadataKey'] = (string)$item['ratingKey'];
 	}
+	$plexItem['originalType'] = $item['type'];
 	$plexItem['uid'] = (string)$item['ratingKey'];
 	$plexItem['elapsed'] = isset($item['viewOffset']) && $item['viewOffset'] !== '0' ? (int)$item['viewOffset'] : null;
 	$plexItem['duration'] = isset($item['duration']) ? (int)$item['duration'] : (int)$item->Media['duration'];
@@ -937,7 +952,7 @@ function rTorrentConnect()
 			$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 			$extraPath = (empty($GLOBALS['rTorrentURLOverride'])) ? $extraPath : '';
 			$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
-			$options = (localURL($url)) ? array('verify' => false) : array();
+			$options = (localURL($url, $GLOBALS['rTorrentDisableCertCheck'])) ? array('verify' => false) : array();
 			$data = xmlrpc_encode_request("d.multicall2", array(
 				"",
 				"main",
@@ -2638,7 +2653,7 @@ function testAPIConnection($array)
 					$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 					$extraPath = (empty($GLOBALS['rTorrentURLOverride'])) ? $extraPath : '';
 					$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
-					$options = (localURL($url)) ? array('verify' => false) : array();
+					$options = (localURL($url, $GLOBALS['rTorrentDisableCertCheck'])) ? array('verify' => false) : array();
 					$data = xmlrpc_encode_request("system.listMethods", null);
 					$response = Requests::post($url, array(), $data, $options);
 					if ($response->success) {
