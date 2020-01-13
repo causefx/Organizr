@@ -254,5 +254,6 @@ return array(
 	'unifiCookie' => '',
 	'homepageUnifiEnabled' => 'false',
 	'homepageUnifiAuth' => '1',
-	'homepageUnifiRefresh' => '600000'
+	'homepageUnifiRefresh' => '600000',
+	'youtubeAPI' => ''
 );

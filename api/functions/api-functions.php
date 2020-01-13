@@ -1281,3 +1281,20 @@ function getSchema()
 		return 'DB not set yet...';
 	}
 }
+
+function youtubeSearch($query){
+	if(!$query){
+		return 'no query provided!';
+	}
+	$keys = array('AIzaSyBsdt8nLJRMTwOq5PY5A5GLZ2q7scgn01w','AIzaSyD-8SHutB60GCcSM8q_Fle38rJUV7ujd8k','AIzaSyBzOpVBT6VII-b-8gWD0MOEosGg4hyhCsQ');
+	$randomKeyIndex = array_rand($keys);
+	$key = $keys[$randomKeyIndex];
+	$apikey = ($GLOBALS['youtubeAPI'] !== '') ? $GLOBALS['youtubeAPI'] : $key;
+	$results = false;
+	$url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=$query+official+trailer&part=snippet&maxResults=1&type=video&videoDuration=short&key=$apikey";
+	$response = Requests::get($url);
+	if ($response->success) {
+		$results = json_decode($response->body, true);
+	}
+	return ($results) ? $results : false;
+}
