@@ -1480,7 +1480,13 @@ function getHomepageList()
 						'name' => 'rTorrentPassword',
 						'label' => 'Password',
 						'value' => $GLOBALS['rTorrentPassword']
-					)
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'rTorrentDisableCertCheck',
+						'label' => 'Disable Certificate Check',
+						'value' => $GLOBALS['rTorrentDisableCertCheck']
+					),
 				),
 				'Misc Options' => array(
 					array(

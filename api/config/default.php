@@ -96,6 +96,7 @@ return array(
 	'rTorrentSortOrder' => 'datea',
 	'rTorrentReverseSorting' => false,
 	'rTorrentCombine' => false,
+	'rTorrentDisableCertCheck' => false,
 	'homepageCalendarEnabled' => 'true',
 	'homepageCalendarAuth' => '4',
 	'calendariCal' => '',
