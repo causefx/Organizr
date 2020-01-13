@@ -751,7 +751,7 @@ function loadNextTab(){
 	if (typeof next !== 'undefined') {
 		var type = $('#page-wrapper').find('.loaded').attr('data-type');
         var parent = $('#menu-'+next).parent();
-        if(parent.hasClass('in') === false){
+        if(parent.hasClass('in') === false && parent.hasClass('nav-second-level')){
             parent.parent().find('a').first().trigger('click')
         }
 		switchTab(next,type);
@@ -996,7 +996,7 @@ function buildPluginsItem(array){
 	$.each(array, function(i,v) {
 		var settingsPage = (v.settings == true) ? `
 		<!-- Plugin Settings Page -->
-		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup mfp-with-anim addFormTick col-md-10 col-md-offset-1" autocomplete="off">                			
+		<form id="`+v.idPrefix+`-settings-page" class="mfp-hide white-popup mfp-with-anim addFormTick col-md-10 col-md-offset-1" autocomplete="off">
             <div class="panel bg-org panel-info">
                 <div class="panel-heading">
                     <span lang="en">`+v.name+` Settings</span>
@@ -3277,8 +3277,8 @@ function sponsorAbout(id,array){
                                 <div class="comment-center p-t-10">
                                     <div class="comment-body b-none">
                                         <div class="user-img"> <img src="`+array.logo+`" alt="user" class="img-circle"> </div>
-                                        <div class="mail-contnet">
-                                            <h5><a href="`+array.website+`" target="_blank">`+array.company_name+`</a></h5> 
+                                        <div class="mail-content">
+                                            <h5><a href="`+array.website+`" target="_blank">`+array.company_name+`</a></h5>
                                             `+array.about+extraInfo+`
                                          </div>
                                     </div>
@@ -4018,8 +4018,9 @@ function errorPage(error=null,uri=null){
         local('set','uri',uri);
     }
 	//var urlParams = new URLSearchParams(window.location.search);
-	if($.urlParam('error') !== null){
-		local('set','error',$.urlParam('error'));
+
+	if($.urlParam('error') !== null && !isNaN(Number($.urlParam('error')))){
+        local('set','error',$.urlParam('error'));
 	}
     if($.urlParam('return') !== null && activeInfo.user.loggedin !== true){
         local('set','uri',$.urlParam('return'));
@@ -4090,6 +4091,7 @@ function buildStreamItem(array,source){
 	var cards = '';
 	var count = 0;
 	var total = array.length;
+    var sourceIcon = (source === 'jellyfin' && activeInfo.settings.homepage.media.jellyfin) ? 'play' : source;
 	cards += '<div class="flexbox">';
 	$.each(array, function(i,v) {
 		var icon = '';
@@ -4143,7 +4145,7 @@ function buildStreamItem(array,source){
 							<ul class="el-info p-t-20 m-t-20">
 								<li><a class="btn b-none inline-popups" href="#`+v.session+`" data-effect="mfp-zoom-out"><i class="mdi mdi-server-network mdi-24px"></i></a></li>
 								<li><a class="btn b-none metadata-get" data-source="`+source+`" data-key="`+v.metadataKey+`" data-uid="`+v.uid+`"><i class="mdi mdi-information mdi-24px"></i></a></li>
-								<li><a class="btn b-none openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class=" mdi mdi-`+source+` mdi-24px"></i></a></li>
+								<li><a class="btn b-none openTab" data-tab-name="`+v.tabName+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"><i class=" mdi mdi-`+sourceIcon+` mdi-24px"></i></a></li>
 								<li><a class="btn b-none refreshImage" data-type="nowPlaying" data-image="`+v.nowPlayingOriginalImage+`" href="javascript:void(0);"><i class="mdi mdi-refresh mdi-24px"></i></a></li>
 								<a class="inline-popups `+v.uid+` hidden" href="#`+v.uid+`-metadata-div" data-effect="mfp-zoom-out"></a>
 							</ul>
@@ -4381,11 +4383,12 @@ function buildRequestItem(array, extra=null){
 }
 function buildStream(array, type){
 	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
+    type = (type === 'emby' && activeInfo.settings.homepage.media.jellyfin) ? 'jellyfin' : type;
 	return (streams) ? `
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span>: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+type+`')">`+streams+`</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span>: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+type+`')">`+streams+`</span></h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -4407,6 +4410,7 @@ function buildRecent(array, type){
 	var dropdown = '';
 	var header = '';
 	var headerAlt = '';
+	type = (type === 'emby' && activeInfo.settings.homepage.media.jellyfin) ? 'jellyfin' : type;
 	dropdown += (recent && movie) ? `<li><a data-filter="recent-movie" server-filter="`+type+`" href="javascript:void(0);">Movies</a></li>` : '';
 	dropdown += (recent && tv) ? `<li><a data-filter="recent-tv" server-filter="`+type+`" href="javascript:void(0);">Shows</a></li>` : '';
 	dropdown += (recent && video) ? `<li><a data-filter="recent-video" server-filter="`+type+`" href="javascript:void(0);">Videos</a></li>` : '';
@@ -4427,7 +4431,7 @@ function buildRecent(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left"><span class="mouse" onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span></h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span></h4>
 			`+dropdownMenu+`
 			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
@@ -4522,7 +4526,7 @@ function buildPlaylist(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left"><span onclick="homepagePlaylist('`+type+`')" class="`+type+`-playlistTitle mouse">`+first+`</span></h4>
+			<h4 class="pull-left homepage-element-title"><span onclick="homepagePlaylist('`+type+`')" class="`+type+`-playlistTitle mouse">`+first+`</span></h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -4533,7 +4537,7 @@ function buildPlaylist(array, type){
 	}else{
 		var header = `
 		<div class="panel-heading bg-info p-t-10 p-b-10">
-			<span class="pull-left m-t-5 mouse" onclick="homepagePlaylist('`+type+`')"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span class="`+type+`-playlistTitle">`+first+`</span></span>
+			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepagePlaylist('`+type+`')"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/`+type+`.png"> &nbsp; <span class="`+type+`-playlistTitle">`+first+`</span></span>
 			<div class="btn-group pull-right">
 					`+builtDropdown+`
 			</div>
@@ -4605,7 +4609,7 @@ function buildRequest(array){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span></h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span></h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -4616,7 +4620,7 @@ function buildRequest(array){
 	}else{
 		var header = `
 		<div class="panel-heading bg-info p-t-10 p-b-10">
-			<span class="pull-left m-t-5 mouse" onclick="homepageRequests()"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; Requests</span>
+			<span class="pull-left m-t-5 mouse homepage-element-title" onclick="homepageRequests()"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/ombi.png"> &nbsp; Requests</span>
 			<div class="btn-group pull-right">
 					`+builtDropdown+`
 			</div>
@@ -4770,7 +4774,7 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 		<div class="button-box text-center p-b-0">
             <ul class="pagination m-b-0">
                 <li class="`+previousHidden+`"> <a href="javascript:void(0)" onclick="requestList('`+list+`', '`+media_type+`', '`+pagePrevious+`');"><i class="fa fa-angle-left"></i></a> </li>
- 
+
                 `+pageList+`
                 <li class="`+nextHidden+`"> <a href="javascript:void(0)" onclick="requestList('`+list+`', '`+media_type+`', '`+pageNext+`');"><i class="fa fa-angle-right"></i></a> </li>
             </ul>
@@ -5546,6 +5550,7 @@ function buildMetadata(array, source){
 	var genres = '';
 	var actors = '';
 	var rating = '<div class="col-xs-2 p-10"></div>';
+    var sourceIcon = (source === 'jellyfin' && activeInfo.settings.homepage.media.jellyfin) ? 'play' : source;
 	$.each(array.content, function(i,v) {
 		var hasActor = (typeof v.metadata.actors !== 'string') ? true : false;
 		var hasGenre = (typeof v.metadata.genres !== 'string') ? true : false;
@@ -5574,7 +5579,7 @@ function buildMetadata(array, source){
 	                <h2 class="m-b-0 font-medium pull-right text-right">
 						`+v.title+`<button type="button" class="btn bg-org btn-circle close-popup m-l-10"><i class="fa fa-times"></i> </button><br>
 						<small class="m-t-0 text-white">`+v.metadata.tagline+`</small><br>
-						<button class="btn waves-effect waves-light openTab bg-`+source+`" type="button" data-tab-name="`+cleanClass(v.tabName)+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> <i class="fa mdi mdi-`+source+` fa-2x"></i> </button>
+						<button class="btn waves-effect waves-light openTab bg-`+source+`" type="button" data-tab-name="`+cleanClass(v.tabName)+`" data-type="`+v.type+`" data-open-tab="`+v.openTab+`" data-url="`+v.address+`" href="javascript:void(0);"> <i class="fa mdi mdi-`+sourceIcon+` fa-2x"></i> </button>
 						`+buildYoutubeLink(v.title+' '+v.metadata.year+' '+v.type)+`
 					</h2>
 	            </div>
@@ -5657,7 +5662,7 @@ function buildHealthChecks(array){
 	<div id="allHealthChecks">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left"><span lang="en">Health Checks</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-health-checks mouse">`+checks+`</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Health Checks</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-health-checks mouse">`+checks+`</span></h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -5678,7 +5683,7 @@ function buildUnifi(array){
 	<div id="allUnifi">
 		<div class="row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left"><span lang="en">Unifi</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Unifi</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -5695,10 +5700,11 @@ function buildUnifi(array){
 function buildUnifiItem(array){
     var items = '';
     $.each(array, function(i,v) {
-        console.log(v);
+        //console.log(v);
         var name = (typeof v.subsystem !== 'undefined') ? v.subsystem : '';
         var stats = {};
         var panelColor = '';
+        var proceed = (v.status == 'ok');
         switch (name) {
             case 'wlan':
                 panelColor = 'info';
@@ -5735,37 +5741,38 @@ function buildUnifiItem(array){
             default:
         }
         var statItems = '';
-       console.log(statItems);
-        $.each(stats, function(istat,vstat) {
-            statItems += `
-                <div class="stat-item">
-                    <h6 class="text-uppercase">`+istat+`</h6>
-                    <b>`+vstat+`</b>
-                </div>
-                `;
-        });
-        items += `
-            <!--<div class="col-lg-4 col-md-6">
-                <div class="white-box">
-                    <h3 class="box-title">`+name+`</h3>
-                    <div class="stats-row">
-                        `+statItems+`
+        if(proceed) {
+            $.each(stats, function (istat, vstat) {
+                statItems += `
+                    <div class="stat-item">
+                        <h6 class="text-uppercase">` + istat + `</h6>
+                        <b>` + vstat + `</b>
                     </div>
-                </div>
-            </div>-->
-            <div class="col-lg-4 col-md-6 col-center">
-                <div class="panel panel-`+panelColor+`">
-                    <div class="panel-heading"> <span class="text-uppercase">`+name+`</span>
-                        <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                    `;
+            });
+            items += `
+                <!--<div class="col-lg-4 col-md-6">
+                    <div class="white-box">
+                        <h3 class="box-title">` + name + `</h3>
+                        <div class="stats-row">
+                            ` + statItems + `
+                        </div>
                     </div>
-                    <div class="panel-wrapper collapse in" aria-expanded="true">
-                        <div class="panel-body">
-                           `+statItems+`
+                </div>-->
+                <div class="col-lg-4 col-md-6 col-center">
+                    <div class="panel panel-` + panelColor + `">
+                        <div class="panel-heading"> <span class="text-uppercase">` + name + `</span>
+                            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                        </div>
+                        <div class="panel-wrapper collapse in" aria-expanded="true">
+                            <div class="panel-body">
+                               ` + statItems + `
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
     });
     return items;
 }
@@ -5883,7 +5890,7 @@ function homepageUnifi(timeout){
             return false;
         }
         document.getElementById('homepageOrderunifi').innerHTML = '';
-        console.log(response.data);
+        //console.log(response.data);
         if(response.data !== null){
             $('#homepageOrderunifi').html(buildUnifi(response.data));
         }
@@ -6131,7 +6138,7 @@ function getUnifiSite(service, data = ''){
                                 <div class="card-body">
                                     <h4 class="card-title" lang="en">Choose Unifi Site</h4>
                                     `+sites+`
-                                </div>				
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -7277,7 +7284,7 @@ function showLDAPLoginTest(){
                             <div class="form-group mb-0 p-r-10 text-right">
                                 <button type="submit" onclick="testAPIConnection('ldap_login', {'username':$('#ldapUsernameTest').val(),'password':$('#ldapPasswordTest').val()})" class="btn btn-info waves-effect waves-light">Test Login</button>
                             </div>
-                        </div>				
+                        </div>
                     </div>
                 </div>
             </div>

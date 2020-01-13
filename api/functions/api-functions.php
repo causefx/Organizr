@@ -213,7 +213,7 @@ function login($array)
 				if ($createToken) {
 					writeLoginLog($username, 'success');
 					writeLog('success', 'Login Function - A User has logged in', $username);
-					$ssoUser = (empty($result['email'])) ? $result['username'] : (strpos($result['email'], 'placeholder') !== false) ? $result['username'] : $result['email'];
+					$ssoUser = ((empty($result['email'])) ? $result['username'] : (strpos($result['email'], 'placeholder') !== false)) ? $result['username'] : $result['email'];
 					ssoCheck($ssoUser, $password, $token); //need to work on this
 					return ($output) ? array('name' => $GLOBALS['cookieName'], 'token' => (string)$createToken) : true;
 				} else {
@@ -1196,9 +1196,9 @@ function allGroups()
 	return false;
 }
 
-function loadTabs()
+function loadTabs($type = null)
 {
-	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php') && $type) {
 		try {
 			$connect = new Dibi\Connection([
 				'driver' => 'sqlite3',
@@ -1219,7 +1219,14 @@ function loadTabs()
 				$v['count'] = isset($count[$v['category_id']]) ? $count[$v['category_id']] : 0;
 			}
 			$all['categories'] = $categories;
-			return $all;
+			switch ($type){
+				case 'categories':
+					return $all['categories'];
+				case 'tabs':
+					return $all['tabs'];
+				default:
+					return $all;
+			}
 		} catch (Dibi\Exception $e) {
 			return false;
 		}

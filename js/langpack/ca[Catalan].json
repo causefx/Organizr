@@ -290,7 +290,7 @@
         "Choose Media Type": "Trieu el tipus de suport",
         "PHP Version Check": "Verificació de la versió PHP",
         "Don\\'t have an account?": "No tens un compte?",
-        "The value of #987654 is just a placeholder, you can change to any value you like.": "El valor de # 987654 és només un espai reservat, podeu canviar a qualsevol valor que vulgueu.",
+        "The value of #987654 is just a placeholder, you can change to any value you like.": "El valor de #987654 és només un espai reservat, podeu canviar a qualsevol valor que vulgueu.",
         "This is not the same as database authentication - i.e. Plex Authentication | Emby Authentication | FTP Authentication": "Això no és el mateix que l’autenticació de la base de dades: és a dir, l’autenticació de Plex | Autenticació Emby | Autenticació FTP",
         "Status: [ ": "Estat: [ ",
         "This module requires XMLRPC": "Aquest mòdul requereix XMLRPC",

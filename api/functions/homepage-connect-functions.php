@@ -128,6 +128,7 @@ function streamType($value)
 
 function resolveEmbyItem($itemDetails)
 {
+	/*
 	// Grab Each item info from Emby (extra call)
 	$id = isset($itemDetails['NowPlayingItem']['Id']) ? $itemDetails['NowPlayingItem']['Id'] : $itemDetails['Id'];
 	$url = qualifyURL($GLOBALS['embyURL']);
@@ -141,6 +142,8 @@ function resolveEmbyItem($itemDetails)
 	} catch (Requests_Exception $e) {
 		return false;
 	};
+	*/
+	$item = isset($itemDetails['NowPlayingItem']['Id']) ? $itemDetails['NowPlayingItem'] : $itemDetails;
 	// Static Height & Width
 	$height = getCacheImageSize('h');
 	$width = getCacheImageSize('w');
@@ -248,7 +251,8 @@ function resolveEmbyItem($itemDetails)
 	$embyItem['user'] = ($GLOBALS['homepageShowStreamNames'] && qualifyRequest($GLOBALS['homepageShowStreamNamesAuth'])) ? @(string)$itemDetails['UserName'] : "";
 	$embyItem['userThumb'] = '';
 	$embyItem['userAddress'] = (isset($itemDetails['RemoteEndPoint']) ? $itemDetails['RemoteEndPoint'] : "x.x.x.x");
-	$embyItem['address'] = $GLOBALS['embyTabURL'] ? rtrim($GLOBALS['embyTabURL'], '/') . "/web/#!/itemdetails.html?id=" . $embyItem['uid'] : "https://app.emby.media/#!/itemdetails.html?id=" . $embyItem['uid'] . "&serverId=" . $embyItem['id'];
+	$embyURL = (strpos($GLOBALS['embyURL'], 'jellyfin') !== false) ? $GLOBALS['embyURL'] . '/web/index.html#!/itemdetails.html?id=' : 'https://app.emby.media/#!/itemdetails.html?id=';
+	$embyItem['address'] = $GLOBALS['embyTabURL'] ? rtrim($GLOBALS['embyTabURL'], '/') . "/web/#!/itemdetails.html?id=" . $embyItem['uid'] : $embyURL . $embyItem['uid'] . "&serverId=" . $embyItem['id'];
 	$embyItem['nowPlayingOriginalImage'] = 'api/?v1/image&source=emby&type=' . $embyItem['nowPlayingImageType'] . '&img=' . $embyItem['nowPlayingThumb'] . '&height=' . $nowPlayingHeight . '&width=' . $nowPlayingWidth . '&key=' . $embyItem['nowPlayingKey'] . '$' . randString();
 	$embyItem['originalImage'] = 'api/?v1/image&source=emby&type=' . $embyItem['imageType'] . '&img=' . $embyItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $embyItem['key'] . '$' . randString();
 	$embyItem['openTab'] = $GLOBALS['embyTabURL'] && $GLOBALS['embyTabName'] ? true : false;
@@ -369,6 +373,20 @@ function resolvePlexItem($item)
 	$cacheDirectoryWeb = 'plugins/images/cache/';
 	// Types
 	switch ($item['type']) {
+		case 'show':
+			$plexItem['type'] = 'tv';
+			$plexItem['title'] = (string)$item['title'];
+			$plexItem['secondaryTitle'] = (string)$item['year'];
+			$plexItem['summary'] = (string)$item['summary'];
+			$plexItem['ratingKey'] = (string)$item['ratingKey'];
+			$plexItem['thumb'] = (string)$item['thumb'];
+			$plexItem['key'] = (string)$item['ratingKey'] . "-list";
+			$plexItem['nowPlayingThumb'] = (string)$item['art'];
+			$plexItem['nowPlayingKey'] = (string)$item['ratingKey'] . "-np";
+			$plexItem['nowPlayingTitle'] = (string)$item['title'];
+			$plexItem['nowPlayingBottom'] = (string)$item['year'];
+			$plexItem['metadataKey'] = (string)$item['ratingKey'];
+			break;
 		case 'season':
 			$plexItem['type'] = 'tv';
 			$plexItem['title'] = (string)$item['parentTitle'];
@@ -438,6 +456,7 @@ function resolvePlexItem($item)
 			$plexItem['nowPlayingBottom'] = (string)$item['year'];
 			$plexItem['metadataKey'] = (string)$item['ratingKey'];
 	}
+	$plexItem['originalType'] = $item['type'];
 	$plexItem['uid'] = (string)$item['ratingKey'];
 	$plexItem['elapsed'] = isset($item['viewOffset']) && $item['viewOffset'] !== '0' ? (int)$item['viewOffset'] : null;
 	$plexItem['duration'] = isset($item['duration']) ? (int)$item['duration'] : (int)$item->Media['duration'];
@@ -464,7 +483,7 @@ function resolvePlexItem($item)
 		'platform' => (string)$item->Player['platform'],
 		'product' => (string)$item->Player['product'],
 		'device' => (string)$item->Player['device'],
-		'stream' => (string)$item->Media->Part['decision'] . ($item->TranscodeSession['throttled'] == '1' ? ' (Throttled)' : ''),
+		'stream' => isset($item->Media) ? (string)$item->Media->Part['decision'] . ($item->TranscodeSession['throttled'] == '1' ? ' (Throttled)' : '') : '',
 		'videoResolution' => (string)$item->Media['videoResolution'],
 		'throttled' => ($item->TranscodeSession['throttled'] == 1) ? true : false,
 		'sourceVideoCodec' => (string)$item->TranscodeSession['sourceVideoCodec'],
@@ -668,15 +687,16 @@ function getPlexPlaylists()
 	return false;
 }
 
-function embyConnect($action, $key = null, $skip = false)
+function embyConnect($action, $key = 'Latest', $skip = false)
 {
 	if ($GLOBALS['homepageEmbyEnabled'] && !empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken']) && qualifyRequest($GLOBALS['homepageEmbyAuth'])) {
 		$url = qualifyURL($GLOBALS['embyURL']);
 		switch ($action) {
 			case 'streams':
-				$url = $url . '/Sessions?api_key=' . $GLOBALS['embyToken'];
+				$url = $url . '/Sessions?api_key=' . $GLOBALS['embyToken'] . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
 				break;
 			case 'recent':
+			case 'metadata':
 				$username = false;
 				if (isset($GLOBALS['organizrUser']['username'])) {
 					$username = strtolower($GLOBALS['organizrUser']['username']);
@@ -699,23 +719,15 @@ function embyConnect($action, $key = null, $skip = false)
 								break;
 							}
 						}
-						$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=false&Limit=' . $GLOBALS['homepageRecentLimit'] . '&api_key=' . $GLOBALS['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false');
+						$url = $url . '/Users/' . $userId . '/Items/' . $key . '?EnableImages=true&Limit=' . $GLOBALS['homepageRecentLimit'] . '&api_key=' . $GLOBALS['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
 					}
 				} catch (Requests_Exception $e) {
 					writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 				};
 				break;
-			case 'metadata':
-				$skip = true;
-				break;
 			default:
 				# code...
 				break;
-		}
-		if ($skip && $key) {
-			$items[] = resolveEmbyItem(array('Id' => $key));
-			$api['content'] = $items;
-			return $api;
 		}
 		try {
 			$options = (localURL($url)) ? array('verify' => false) : array();
@@ -723,11 +735,18 @@ function embyConnect($action, $key = null, $skip = false)
 			if ($response->success) {
 				$items = array();
 				$emby = json_decode($response->body, true);
-				foreach ($emby as $child) {
-					if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
-						$items[] = resolveEmbyItem($child);
+				if($key !== 'Latest'){
+					if (isset($emby['NowPlayingItem']) || isset($emby['Name'])) {
+						$items[] = resolveEmbyItem($emby);
+					}
+				}else{
+					foreach ($emby as $child) {
+						if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
+							$items[] = resolveEmbyItem($child);
+						}
 					}
 				}
+				
 				$api['content'] = array_filter($items);
 				return $api;
 			}
@@ -933,7 +952,7 @@ function rTorrentConnect()
 			$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 			$extraPath = (empty($GLOBALS['rTorrentURLOverride'])) ? $extraPath : '';
 			$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
-			$options = (localURL($url)) ? array('verify' => false) : array();
+			$options = (localURL($url, $GLOBALS['rTorrentDisableCertCheck'])) ? array('verify' => false) : array();
 			$data = xmlrpc_encode_request("d.multicall2", array(
 				"",
 				"main",
@@ -1031,7 +1050,9 @@ function qBittorrentConnect()
 	if ($GLOBALS['homepageqBittorrentEnabled'] && !empty($GLOBALS['qBittorrentURL']) && qualifyRequest($GLOBALS['homepageqBittorrentAuth'])) {
 		$digest = qualifyURL($GLOBALS['qBittorrentURL'], true);
 		$data = array('username' => $GLOBALS['qBittorrentUsername'], 'password' => decrypt($GLOBALS['qBittorrentPassword']));
-		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . '/login';
+		$apiVersionLogin = ($GLOBALS['qBittorrentApiVersion'] == '1') ? '/login' : '/api/v2/auth/login';
+		$apiVersionQuery = ($GLOBALS['qBittorrentApiVersion'] == '1') ? '/query/torrents?sort=' : '/api/v2/torrents/info?sort=';
+		$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionLogin;
 		try {
 			$options = (localURL($GLOBALS['qBittorrentURL'])) ? array('verify' => false) : array();
 			$response = Requests::post($url, array(), $data, $options);
@@ -1044,7 +1065,7 @@ function qBittorrentConnect()
 					'Cookie' => 'SID=' . $cookie['SID']->value
 				);
 				$reverse = $GLOBALS['qBittorrentReverseSorting'] ? 'true' : 'false';
-				$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . '/query/torrents?sort=' . $GLOBALS['qBittorrentSortOrder'] . '&reverse=' . $reverse;
+				$url = $digest['scheme'] . '://' . $digest['host'] . $digest['port'] . $digest['path'] . $apiVersionQuery . $GLOBALS['qBittorrentSortOrder'] . '&reverse=' . $reverse;
 				$response = Requests::get($url, $headers, $options);
 				if ($response) {
 					$torrentList = json_decode($response->body, true);
@@ -2632,7 +2653,7 @@ function testAPIConnection($array)
 					$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 					$extraPath = (empty($GLOBALS['rTorrentURLOverride'])) ? $extraPath : '';
 					$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
-					$options = (localURL($url)) ? array('verify' => false) : array();
+					$options = (localURL($url, $GLOBALS['rTorrentDisableCertCheck'])) ? array('verify' => false) : array();
 					$data = xmlrpc_encode_request("system.listMethods", null);
 					$response = Requests::post($url, array(), $data, $options);
 					if ($response->success) {

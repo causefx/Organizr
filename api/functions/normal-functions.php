@@ -408,8 +408,11 @@ function download($url, $path)
 	return (filesize($path) > 0) ? true : false;
 }
 
-function localURL($url)
+function localURL($url, $force = false)
 {
+	if($force){
+		return true;
+	}
 	if (strpos($url, 'https') !== false) {
 		preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $url, $result);
 		$result = (!empty($result) ? true : false);

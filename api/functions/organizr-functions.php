@@ -44,6 +44,9 @@ function organizrSpecialSettings()
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
 				'healthChecksTags' => $GLOBALS['healthChecksTags'],
+			),
+			'media' => array(
+				'jellyfin' => (strpos($GLOBALS['embyURL'], 'jellyfin') !== false) ? true : false
 			)
 		),
 		'sso' => array(
@@ -872,7 +875,7 @@ function getSettingsMain()
 				'type' => 'switch',
 				'name' => 'authProxyEnabled',
 				'label' => 'Auth Proxy',
-				'help' => 'Enable option to set Auth Poxy Header Login',
+				'help' => 'Enable option to set Auth Proxy Header Login',
 				'value' => $GLOBALS['authProxyEnabled'],
 			),
 			array(
@@ -1605,15 +1608,25 @@ function auth()
 	$ban = isset($_GET['ban']) ? strtoupper($_GET['ban']) : "";
 	$whitelist = isset($_GET['whitelist']) ? $_GET['whitelist'] : false;
 	$blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
-	$group = isset($_GET['group']) ? (int)$_GET['group'] : (int)0;
+    $group = 0;
+    $groupParam = $_GET['group'];
+    if(isset($groupParam)) {
+        if (is_numeric($groupParam)) {
+            $group = (int)$groupParam;
+        } else {
+            $group = getTabGroup($groupParam);
+        }
+    }
 	$currentIP = userIP();
 	$unlocked = ($GLOBALS['organizrUser']['locked'] == '1') ? false : true;
 	if (isset($GLOBALS['organizrUser'])) {
 		$currentUser = $GLOBALS['organizrUser']['username'];
 		$currentGroup = $GLOBALS['organizrUser']['groupID'];
+		$currentEmail = $GLOBALS['organizrUser']['email'];
 	} else {
 		$currentUser = 'Guest';
 		$currentGroup = getUserLevel();
+		$currentEmail = 'guest@guest.com';
 	}
 	$userInfo = "User: $currentUser | Group: $currentGroup | IP: $currentIP | Requesting Access to Group $group | Result: ";
 	if ($whitelist) {
@@ -1629,6 +1642,7 @@ function auth()
 	if ($group !== null) {
 		if (qualifyRequest($group) && $unlocked) {
 			header("X-Organizr-User: $currentUser");
+			header("X-Organizr-Email: $currentEmail");
 			!$debug ? exit(http_response_code(200)) : die("$userInfo Authorized");
 		} else {
 			!$debug ? exit(http_response_code(401)) : die("$userInfo Not Authorized");
@@ -1636,6 +1650,20 @@ function auth()
 	} else {
 		!$debug ? exit(http_response_code(401)) : die("Not Authorized Due To No Parameters Set");
 	}
+}
+
+function getTabGroup ($tab)
+{
+    try {
+        $connect = new Dibi\Connection([
+            'driver' => 'sqlite3',
+            'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],]);
+        $row = $connect->fetch('SELECT group_id FROM tabs WHERE name LIKE %~like~', $tab);
+        return $row ? $row['group_id'] : 0;
+    } catch (\Dibi\Exception $e) {
+        writeLog('error', 'Tab Group Function - Error Fetching Tab Group', $tab);
+        return 0;
+    }
 }
 
 function logoOrText()

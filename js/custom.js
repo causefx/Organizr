@@ -1572,6 +1572,7 @@ $(document).on("click", ".metadata-get", function(e) {
             var action = 'getPlexMetadata';
             break;
         case 'emby':
+        case 'jellyfin':
             var action = 'getEmbyMetadata';
             break;
         default:

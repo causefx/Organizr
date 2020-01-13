@@ -1133,8 +1133,8 @@ switch ($function) {
 				$status['status'] = organizrStatus();
 				$result['appearance'] = loadAppearance();
 				$status['user'] = $GLOBALS['organizrUser'];
-				$status['categories'] = loadTabs()['categories'];
-				$status['tabs'] = loadTabs()['tabs'];
+				$status['categories'] = loadTabs('categories');
+				$status['tabs'] = loadTabs('tabs');
 				$status['plugins'] = array_filter($GLOBALS, function ($k) use ($pluginSearch) {
 					return stripos($k, $pluginSearch) !== false;
 				}, ARRAY_FILTER_USE_KEY);
