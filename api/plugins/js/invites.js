@@ -344,6 +344,7 @@ function buildInvites(array){
             <td>`+v.username+`</td>
             <td>`+v.email+`</td>
             <td>`+v.code+`</td>
+            <td>`+v.sentby+`</td>
             <td>`+v.date+`</td>
             <td>`+v.dateused+`</td>
             <td>`+v.usedby+`</td>
