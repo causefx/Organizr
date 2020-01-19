@@ -27,6 +27,7 @@ function inviteCodes($array)
 	$email = isset($array['data']['email']) ? $array['data']['email'] : null;
 	$id = isset($array['data']['id']) ? $array['data']['id'] : null;
 	$now = date("Y-m-d H:i:s");
+	$sentby = isset($array['data']['sentby']) ? $array['data']['sentby'] : null;
 	$currentIP = userIP();
 	switch ($action) {
 		case "check":
@@ -98,6 +99,7 @@ function inviteCodes($array)
 								'username' => $username,
 								'valid' => 'Yes',
 								'type' => $GLOBALS['INVITES-type-include'],
+								'sentby' => $sentby,
 							];
 							$connect->query('INSERT INTO [invites]', $newCode);
 							writeLog('success', 'Invite Management Function -  Added Invite [' . $code . ']', $GLOBALS['organizrUser']['username']);

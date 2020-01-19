@@ -335,7 +335,8 @@ function createDB($path, $filename)
     		`usedby`	TEXT,
     		`ip`	TEXT,
     		`valid`	TEXT,
-            `type` TEXT
+            `type` TEXT,
+			`sentby` TEXT
     	);');
 		return true;
 	} catch (Dibi\Exception $e) {
