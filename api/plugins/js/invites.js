@@ -35,7 +35,7 @@ function inviteLaunch(){
     	</div>
     	`;
         if(activeInfo.plugins["INVITES-enabled"] == true){
-            if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
+            if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 2) {
                 menuList = `<li><a class="inline-popups inviteModal" href="#invite-area" data-effect="mfp-zoom-out"><i class="fa fa-ticket fa-fw"></i> <span lang="en">Manage Invites</span></a></li>`;
                 htmlDOM += `
             	<div id="new-invite-area" class="white-popup mfp-with-anim mfp-hide">
@@ -355,7 +355,7 @@ function buildInvites(array){
 }
 $(document).on('click', '.inviteModal', function() {
     var htmlDOM = '';
-    if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
+    if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 2) {
         var post = {
             plugin:'Invites/codes',
             action:'get',
