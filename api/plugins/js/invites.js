@@ -368,7 +368,7 @@ $(document).on('click', '.inviteModal', function() {
             var response = JSON.parse(data);
             var htmlDOM = '';
             htmlDOM = `
-            <div class="col-md-12">
+            <div class="col-md-16">
                 <div class="panel bg-org panel-info">
                     <div class="panel-heading">
                         <span lang="en">Manage Invites</span>
