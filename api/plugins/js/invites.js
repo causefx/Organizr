@@ -276,7 +276,7 @@ function getInvite(invite=null){
 function createNewInvite(){
     var username = $('#new-invite-form-inputUsername');
     var email = $('#new-invite-form-inputEmail');
-    var sentby = activeinfo.user.username;
+    var sentby = activeInfo.user.username;
     if(username.val() == ''){
         username.focus();
         message('Invite Error',' Please Enter Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
@@ -292,7 +292,7 @@ function createNewInvite(){
             code:createRandomString(6).toUpperCase(),
             email:email.val(),
             username:username.val(),
-            sentby:sentby.val(),
+            sentby:sentby,
         };
         ajaxloader(".content-wrap","in");
         organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
