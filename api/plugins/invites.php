@@ -85,7 +85,7 @@ function inviteCodes($array)
             }*/
 			break;
 		default:
-			if (qualifyRequest(1)) {
+			if (qualifyRequest(2)) {
 				switch ($action) {
 					case "create":
 						try {
