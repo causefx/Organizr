@@ -29,7 +29,7 @@ function inviteLaunch(){
         var menuList = '';
     	var htmlDOM = `
     	<div id="invite-area" class="white-popup mfp-with-anim mfp-hide">
-    		<div class="col-md-10 col-md-offset-1">
+    		<div class="col-md-16 col-md-offset-1">
     			<div class="invite-div"></div>
     		</div>
     	</div>
@@ -40,7 +40,7 @@ function inviteLaunch(){
                 htmlDOM += `
             	<div id="new-invite-area" class="white-popup mfp-with-anim mfp-hide">
             		<div class="col-md-10 col-md-offset-1">
-                        <div class="col-md-12">
+                        <div class="col-md-16">
                             <div class="panel panel-info m-b-0">
                                 <div class="panel-heading" lang="en">New Invite</div>
                                 <div class="panel-wrapper collapse in" aria-expanded="true">
