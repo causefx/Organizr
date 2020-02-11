@@ -255,5 +255,8 @@ return array(
 	'homepageUnifiEnabled' => 'false',
 	'homepageUnifiAuth' => '1',
 	'homepageUnifiRefresh' => '600000',
-	'youtubeAPI' => ''
+	'youtubeAPI' => '',
+	'wanDomain' => '',
+	'localAddress' => '',
+	'enableLocalAddressForward' => false
 );

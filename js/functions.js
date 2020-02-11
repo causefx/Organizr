@@ -6592,6 +6592,28 @@ function organizrSpecialSettings(array){
 		$(searchBoxResults).appendTo($('.organizr-area'));
 	}
 }
+function checkLocalForwardStatus(array){
+    if(array.settings.login.enableLocalAddressForward == true && typeof array.settings.login.enableLocalAddressForward !== 'undefined'){
+        if(array.setting.login.wanDomain !== '' && array.setting.login.localAddress !== ''){
+            console.log('Local Login Enabled');
+            console.log('Local Login Testing...');
+            let remoteSite = array.setting.login.wanDomain;
+            let localSite = array.setting.login.localAddress;
+            try {
+                let currentURL = decodeURI(window.location.href)
+                let currentSite = window.location.host;
+                if(activeInfo.settings.user.local && currentSite.indexOf(remoteSite) !== -1 && currentURL.indexOf('override') === -1){
+                    console.log('Local Login Status: Local | Forwarding Now');
+                    window.location = localSite;
+                }
+            } catch(e) {
+                console.error(e);
+            }
+            console.log('Local Login Status: Not Local');
+
+        }
+    }
+}
 function forceSearch(term){
     $.magnificPopup.close();
     var tabName = $("li[data-url^='api/?v1/homepage/page']").find('span').html();
@@ -7422,6 +7444,7 @@ function launch(){
                     accountManager(json);
                     organizrSpecialSettings(json);
                     getPingList(json);
+                    checkLocalForwardStatus(json);
                 }
                 loadCustomJava(json.appearance);
                 if(getCookie('lockout')){

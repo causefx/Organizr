@@ -107,6 +107,9 @@ function organizrSpecialSettings()
 		'login' => array(
 			'rememberMe' => $GLOBALS['rememberMe'],
 			'rememberMeDays' => $GLOBALS['rememberMeDays'],
+			'wanDomain' => $GLOBALS['wanDomain'],
+			'localAddress' => $GLOBALS['localAddress'],
+			'enableLocalAddressForward' => $GLOBALS['enableLocalAddressForward'],
 		),
 		'misc' => array(
 			'installedPlugins' => qualifyRequest(1) ? $GLOBALS['installedPlugins'] : '',
@@ -868,6 +871,29 @@ function getSettingsMain()
 				'value' => $GLOBALS['localIPTo'],
 				'placeholder' => 'i.e. 123.123.123.123',
 				'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'wanDomain',
+				'label' => 'WAN Domain',
+				'value' => $GLOBALS['wanDomain'],
+				'placeholder' => 'only domain and tld - i.e. domain.com',
+				'help' => 'Enter domain if you wish to be forwarded to a local address - Local Address filled out on next item'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'localAddress',
+				'label' => 'Local Address',
+				'value' => $GLOBALS['localAddress'],
+				'placeholder' => 'http://home.local',
+				'help' => 'Full local address of organizr install - i.e. http://home.local or http://192.168.0.100'
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'enableLocalAddressForward',
+				'label' => 'Enable Local Address Forward',
+				'help' => 'Enables the local address forward if on local address and accessed from WAN Domain',
+				'value' => $GLOBALS['enableLocalAddressForward'],
 			),
 		),
 		'Auth Proxy' => array(
