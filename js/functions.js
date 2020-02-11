@@ -6594,11 +6594,11 @@ function organizrSpecialSettings(array){
 }
 function checkLocalForwardStatus(array){
     if(array.settings.login.enableLocalAddressForward == true && typeof array.settings.login.enableLocalAddressForward !== 'undefined'){
-        if(array.setting.login.wanDomain !== '' && array.setting.login.localAddress !== ''){
+        if(array.settings.login.wanDomain !== '' && array.settings.login.localAddress !== ''){
             console.log('Local Login Enabled');
             console.log('Local Login Testing...');
-            let remoteSite = array.setting.login.wanDomain;
-            let localSite = array.setting.login.localAddress;
+            let remoteSite = array.settings.login.wanDomain;
+            let localSite = array.settings.login.localAddress;
             try {
                 let currentURL = decodeURI(window.location.href)
                 let currentSite = window.location.host;
