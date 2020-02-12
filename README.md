@@ -86,3 +86,9 @@ The parameters are split into two halves, separated by a colon, the left hand si
 
 <p align="center"><a href="https://www.browserstack.com"><img src="https://avatars2.githubusercontent.com/u/1119453?s=200&v=4g"></a></p>
 <p align="center"><a href="https://www.browserstack.com">BrowserStack</a> for allowing us to use their platform for testing</p>
+<p>This project is supported by:</p>
+<p>
+  <a href="https://www.digitalocean.com/">
+    <img src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg" width="201px">
+  </a>
+</p>
