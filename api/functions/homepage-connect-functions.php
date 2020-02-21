@@ -1529,7 +1529,7 @@ function getSonarrCalendar($array, $number)
 				$fanart = $image['url'];
 			}
 		}
-		if ($fanart !== "/plugins/images/cache/no-np.png") {
+		if ($fanart !== "/plugins/images/cache/no-np.png" || (strpos($fanart, '://') === false)) {
 			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 			$imageURL = $fanart;
 			$cacheFile = $cacheDirectory . $seriesID . '.jpg';
@@ -1682,17 +1682,22 @@ function getRadarrCalendar($array, $number, $url)
 			$banner = "/plugins/images/cache/no-np.png";
 			foreach ($child['images'] as $image) {
 				if ($image['coverType'] == "banner" || $image['coverType'] == "fanart") {
-					$imageUrl = $image['url'];
-					$urlParts = explode("/", $url);
-					$imageParts = explode("/", $image['url']);
-					if ($imageParts[1] == end($urlParts)) {
-						unset($imageParts[1]);
-						$imageUrl = implode("/", $imageParts);
+					if (strpos($banner, '://') === false) {
+						$imageUrl = $image['url'];
+						$urlParts = explode("/", $url);
+						$imageParts = explode("/", $image['url']);
+						if ($imageParts[1] == end($urlParts)) {
+							unset($imageParts[1]);
+							$imageUrl = implode("/", $imageParts);
+						}
+						$banner = $url . $imageUrl . '?apikey=' . $GLOBALS['radarrToken'];
+					}else{
+						$banner = $image['url'];
 					}
-					$banner = $url . $imageUrl . '?apikey=' . $GLOBALS['radarrToken'];
+					
 				}
 			}
-			if ($banner !== "/plugins/images/cache/no-np.png") {
+			if ($banner !== "/plugins/images/cache/no-np.png" || (strpos($banner, 'apikey') !== false)) {
 				$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 				$imageURL = $banner;
 				$cacheFile = $cacheDirectory . $movieID . '.jpg';
