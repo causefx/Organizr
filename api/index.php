@@ -1376,6 +1376,20 @@ switch ($function) {
 				break;
 		}
 		break;
+	case 'v1_youtube_search':
+		switch ($method) {
+			case 'GET':
+				$query = isset($_GET['q']) ? $_GET['q'] : false;
+				$result['status'] = isset($_GET['q']) ? 'success' : 'error';
+				$result['statusText'] = isset($_GET['q']) ? 'success' : 'missing query';
+				$result['data'] = youtubeSearch($query);
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
 	default:
 		//No Function Available
 		$result['status'] = 'error';

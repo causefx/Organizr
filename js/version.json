@@ -222,5 +222,12 @@
     "new": "Added Jellyfin support - uses same HP Modal as Emby|Added new tab images for Fritzbox, Kodi, OpenHAB and Calibre-Web|Added nginx auth_request dynamic endpoints to allow permission management on organizr front end|Add email header for Auth Proxy use (#1298)|Add another Variable to PR (#1298)|Update local function to take force variable|Added rtorrent bypass cert check",
     "fixed": "qBittorrent Workaround for v2 API (#1287)|Dependency check fails incorrectly on PHP 7.4 (#1288)|Fix depreciated item on PHP 7.4 (#1288)|7.4 work on array check|XSS Vulnerability (#1291)|Cleaner XSS Vulnerability (#1291)|Closing tabs open up top tab (#1266)|more clean up on unifi homepage item|fix typ-os|Add homepage-element-title class to left-aligned homepage element names|Fix plex show on homepage",
     "notes": "Please report bugs in GitHub issues page|Updated language translations"
+  },
+  "2.0.370": {
+    "date": "2020-02-21 14:55",
+    "title": "YouTube Homepage Fix",
+    "new": "Added option to forward to local instance if detected",
+    "fixed": "Fix for YouTube daily query quota is too low (#1297)",
+    "notes": "Please report bugs in GitHub issues page|Updated language translations"
   }
 }

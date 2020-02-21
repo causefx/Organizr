@@ -6428,13 +6428,14 @@ function humanFileSize(bytes, si) {
 //youtube search
 function youtubeSearch(searchQuery) {
 	return $.ajax({
-		url: "https://www.googleapis.com/youtube/v3/search?part=snippet&q="+searchQuery+"+official+trailer&part=snippet&maxResults=1&type=video&videoDuration=short&key=AIzaSyD-8SHutB60GCcSM8q_Fle38rJUV7ujd8k",
+		url: "api/?v1/youtube/search&q="+searchQuery,
 	});
 }
 function youtubeCheck(title,link){
 	youtubeSearch(title).success(function(data) {
+        var response = JSON.parse(data);
 		inlineLoad();
-		var id = data.items["0"].id.videoId;
+		var id = response.data.items["0"].id.videoId;
 		var div = `
 		<div id="player-`+link+`" data-plyr-provider="youtube" data-plyr-embed-id="`+id+`"></div>
 		<div class="clearfix"></div>
@@ -6590,6 +6591,28 @@ function organizrSpecialSettings(array){
 		$(htmlDOM).prependTo('.navbar-right');
 		$(searchBoxResults).appendTo($('.organizr-area'));
 	}
+}
+function checkLocalForwardStatus(array){
+    if(array.settings.login.enableLocalAddressForward == true && typeof array.settings.login.enableLocalAddressForward !== 'undefined'){
+        if(array.settings.login.wanDomain !== '' && array.settings.login.localAddress !== ''){
+            console.log('Local Login Enabled');
+            console.log('Local Login Testing...');
+            let remoteSite = array.settings.login.wanDomain;
+            let localSite = array.settings.login.localAddress;
+            try {
+                let currentURL = decodeURI(window.location.href)
+                let currentSite = window.location.host;
+                if(activeInfo.settings.user.local && currentSite.indexOf(remoteSite) !== -1 && currentURL.indexOf('override') === -1){
+                    console.log('Local Login Status: Local | Forwarding Now');
+                    window.location = localSite;
+                }
+            } catch(e) {
+                console.error(e);
+            }
+            console.log('Local Login Status: Not Local');
+
+        }
+    }
 }
 function forceSearch(term){
     $.magnificPopup.close();
@@ -7421,6 +7444,7 @@ function launch(){
                     accountManager(json);
                     organizrSpecialSettings(json);
                     getPingList(json);
+                    checkLocalForwardStatus(json);
                 }
                 loadCustomJava(json.appearance);
                 if(getCookie('lockout')){
