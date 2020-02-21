@@ -1682,7 +1682,7 @@ function getRadarrCalendar($array, $number, $url)
 			$banner = "/plugins/images/cache/no-np.png";
 			foreach ($child['images'] as $image) {
 				if ($image['coverType'] == "banner" || $image['coverType'] == "fanart") {
-					if (strpos($banner, '://') === false) {
+					if (strpos($image['url'], '://') === false) {
 						$imageUrl = $image['url'];
 						$urlParts = explode("/", $url);
 						$imageParts = explode("/", $image['url']);
