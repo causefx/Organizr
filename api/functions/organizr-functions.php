@@ -1666,15 +1666,19 @@ function auth()
 		}
 	}
 	if ($group !== null) {
+		if ($_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik' && $_SERVER['HTTP_X_FORWARDED_PROTO'] && $_SERVER['HTTP_X_FORWARDED_HOST']) {
+			$redirect_header = 'Location: ' . $_SERVER['HTTP_X_FORWARDED_PROTO'] . '://' . $_SERVER['HTTP_X_FORWARDED_HOST'] . $_SERVER['HTTP_X_FORWARDED_PREFIX'] . '/';
+		}
+
 		if (qualifyRequest($group) && $unlocked) {
 			header("X-Organizr-User: $currentUser");
 			header("X-Organizr-Email: $currentEmail");
 			!$debug ? exit(http_response_code(200)) : die("$userInfo Authorized");
 		} else {
-			!$debug ? exit(http_response_code(401)) : die("$userInfo Not Authorized");
+			!$debug ? exit(http_response_code(401) . header($redirect_header)) : die("$userInfo Not Authorized");
 		}
 	} else {
-		!$debug ? exit(http_response_code(401)) : die("Not Authorized Due To No Parameters Set");
+		!$debug ? exit(http_response_code(401). header($redirect_header)) : die("Not Authorized Due To No Parameters Set");
 	}
 }
 
