@@ -823,7 +823,14 @@ function getSettingsMain()
 						'value' => 'allow-top-navigation'
 					),
 				)
-			)
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'traefikAuthEnable',
+				'label' => 'Enable Traefik Auth Redirect',
+				'help' => 'This will enable the webserver to forward errors so traefik will accept them',
+				'value' => $GLOBALS['traefikAuthEnable']
+			),
 		),
 		'Performance' => array(
 			array(
@@ -1684,7 +1691,7 @@ function auth()
 		}
 	}
 	if ($group !== null) {
-		if ($_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik') {
+		if ($_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik' || $GLOBALS['traefikAuthEnable']) {
 			$redirect = 'Location: ' . getServerPath();
 		}
 		if (qualifyRequest($group) && $unlocked) {

@@ -261,4 +261,5 @@ return array(
 	'enableLocalAddressForward' => false,
 	'performanceDisableIconDropdown' => false,
 	'performanceDisableImageDropdown' => false,
+	'traefikAuthEnable' => false
 );
