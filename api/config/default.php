@@ -258,5 +258,7 @@ return array(
 	'youtubeAPI' => '',
 	'wanDomain' => '',
 	'localAddress' => '',
-	'enableLocalAddressForward' => false
+	'enableLocalAddressForward' => false,
+	'performanceDisableIconDropdown' => false,
+	'performanceDisableImageDropdown' => false,
 );

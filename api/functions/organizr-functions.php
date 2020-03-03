@@ -825,6 +825,22 @@ function getSettingsMain()
 				)
 			)
 		),
+		'Performance' => array(
+			array(
+				'type' => 'switch',
+				'name' => 'performanceDisableIconDropdown',
+				'label' => 'Disable Icon Dropdown',
+				'help' => 'Disable select dropdown boxes on new and edit tab forms',
+				'value' => $GLOBALS['performanceDisableIconDropdown'],
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'performanceDisableImageDropdown',
+				'label' => 'Disable Image Dropdown',
+				'help' => 'Disable select dropdown boxes on new and edit tab forms',
+				'value' => $GLOBALS['performanceDisableImageDropdown'],
+			),
+		),
 		'Login' => array(
 			array(
 				'type' => 'password-alt',
