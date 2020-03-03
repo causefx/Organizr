@@ -48,7 +48,7 @@ $d = Adldap::getEventDispatcher();
 $d->listen(Failed::class, function (Failed $event) {
     $conn = $event->connection;
     
-    echo $conn->getLastError(); // 'Invalid credentails'
+    echo $conn->getLastError(); // 'Invalid credentials'
     echo $conn->getDiagnosticMessage(); // '80090308: LdapErr: DSID-0C09042A, comment: AcceptSecurityContext error, data 532, v3839'
     
     if ($error = $conn->getDetailedError()) {

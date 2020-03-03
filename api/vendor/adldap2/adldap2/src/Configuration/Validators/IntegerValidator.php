@@ -5,11 +5,9 @@ namespace Adldap\Configuration\Validators;
 use Adldap\Configuration\ConfigurationException;
 
 /**
- * Class IntegerValidator
+ * Class IntegerValidator.
  *
  * Validates that the configuration value is an integer / number.
- *
- * @package Adldap\Configuration\Validators
  */
 class IntegerValidator extends Validator
 {

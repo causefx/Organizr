@@ -31,7 +31,6 @@ Adldap2 allows you to easily manage the above problems without reinventing the w
 ## Implementations
 
 - [Laravel](https://github.com/Adldap2/Adldap2-Laravel)
-- [Kohana](https://github.com/Adldap2/Adldap2-Kohana)
 
 ## Quick Start
 

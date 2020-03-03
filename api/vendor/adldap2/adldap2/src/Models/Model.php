@@ -4,33 +4,30 @@ namespace Adldap\Models;
 
 use DateTime;
 use ArrayAccess;
+use Adldap\Utilities;
 use JsonSerializable;
+use Adldap\Query\Builder;
+use Illuminate\Support\Arr;
+use Adldap\Query\Collection;
 use InvalidArgumentException;
 use UnexpectedValueException;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
-use Adldap\Utilities;
-use Adldap\Query\Builder;
-use Adldap\Schemas\SchemaInterface;
 use Adldap\Models\Attributes\Sid;
 use Adldap\Models\Attributes\Guid;
+use Adldap\Schemas\SchemaInterface;
 use Adldap\Models\Attributes\MbString;
-use Adldap\Models\Attributes\DistinguishedName;
-use Adldap\Models\Concerns\HasEvents;
-use Adldap\Models\Concerns\HasAttributes;
 use Adldap\Connections\ConnectionException;
+use Adldap\Models\Attributes\DistinguishedName;
 
 /**
- * Class Model
+ * Class Model.
  *
  * Represents an LDAP record and provides the ability
  * to modify / retrieve data from the record.
- *
- * @package Adldap\Models
  */
 abstract class Model implements ArrayAccess, JsonSerializable
 {
-    use HasAttributes, HasEvents;
+    use Concerns\HasEvents,
+        Concerns\HasAttributes;
 
     /**
      * Indicates if the model exists.
@@ -66,7 +63,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * @param array   $attributes
      * @param Builder $builder
      */
-    public function __construct(array $attributes = [], Builder $builder)
+    public function __construct(array $attributes, Builder $builder)
     {
         $this->setQuery($builder)
             ->setSchema($builder->getSchema())
@@ -136,7 +133,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      *
      * @param mixed $items
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function newCollection($items = [])
     {
@@ -176,7 +173,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function offsetExists($offset)
     {
-        return isset($this->{$offset});
+        return !is_null($this->getAttribute($offset));
     }
 
     /**
@@ -188,7 +185,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function offsetGet($offset)
     {
-        return $this->{$offset};
+        return $this->getAttribute($offset);
     }
 
     /**
@@ -201,7 +198,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function offsetSet($offset, $value)
     {
-        $this->{$offset} = $value;
+        $this->setAttribute($offset, $value);
     }
 
     /**
@@ -213,7 +210,19 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function offsetUnset($offset)
     {
-        unset($this->{$offset});
+        unset($this->attributes[$offset]);
+    }
+
+    /**
+     * Determine if an attribute exists on the model.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return $this->offsetExists($key);
     }
 
     /**
@@ -225,12 +234,12 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $attributes = $this->getAttributes();
 
-        array_walk_recursive($attributes, function(&$val) {
+        array_walk_recursive($attributes, function (&$val) {
             if (MbString::isLoaded()) {
                 // If we're able to detect the attribute
                 // encoding, we'll encode only the
                 // attributes that need to be.
-                if (! MbString::isUtf8($val)) {
+                if (!MbString::isUtf8($val)) {
                     $val = utf8_encode($val);
                 }
             } else {
@@ -245,7 +254,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
         // their string equivalents for convenience.
         return array_replace($attributes, [
             $this->schema->objectGuid() => $this->getConvertedGuid(),
-            $this->schema->objectSid() => $this->getConvertedSid(),
+            $this->schema->objectSid()  => $this->getConvertedSid(),
         ]);
     }
 
@@ -258,7 +267,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         $model = $this->query->newInstance()->findByDn($this->getDn());
 
-        return $model instanceof Model ? $model : null;
+        return $model instanceof self ? $model : null;
     }
 
     /**
@@ -381,6 +390,40 @@ abstract class Model implements ArrayAccess, JsonSerializable
         $dn = $this->getDistinguishedName() ?: $this->query->getDn();
 
         return $this->getNewDnBuilder($dn);
+    }
+
+    /**
+     * Returns the models distinguished name components.
+     *
+     * @param bool $removeAttributePrefixes
+     *
+     * @return array
+     */
+    public function getDnComponents($removeAttributePrefixes = true)
+    {
+        if ($components = Utilities::explodeDn($this->getDn(), $removeAttributePrefixes)) {
+            unset($components['count']);
+
+            return $components;
+        }
+
+        return [];
+    }
+
+    /**
+     * Returns the distinguished name that the model is a leaf of.
+     *
+     * @return string
+     */
+    public function getDnRoot()
+    {
+        $components = $this->getDnComponents(false);
+
+        // Shift off the beginning of the array;
+        // This contains the models RDN.
+        array_shift($components);
+
+        return implode(',', $components);
     }
 
     /**
@@ -556,6 +599,30 @@ abstract class Model implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * Returns the model's userPrincipalName.
+     *
+     * @link https://docs.microsoft.com/en-us/windows/win32/adschema/a-userprincipalname
+     *
+     * @return string
+     */
+    public function getUserPrincipalName()
+    {
+        return $this->getFirstAttribute($this->schema->userPrincipalName());
+    }
+
+    /**
+     * Sets the model's userPrincipalName.
+     *
+     * @param string $upn
+     *
+     * @return Model
+     */
+    public function setUserPrincipalName($upn)
+    {
+        return $this->setFirstAttribute($this->schema->userPrincipalName(), $upn);
+    }
+
+    /**
      * Returns the model's samaccounttype.
      *
      * @link https://msdn.microsoft.com/en-us/library/ms679637(v=vs.85).aspx
@@ -596,7 +663,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function getCreatedAtTimestamp()
     {
-        return DateTime::createFromFormat('YmdHis.0Z', $this->getCreatedAt())->getTimestamp();
+        return DateTime::createFromFormat($this->timestampFormat, $this->getCreatedAt())->getTimestamp();
     }
 
     /**
@@ -736,7 +803,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function setManagedBy($dn)
     {
-        if ($dn instanceof Model) {
+        if ($dn instanceof self) {
             $dn = $dn->getDn();
         }
 
@@ -777,7 +844,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      */
     public function inOu($ou, $strict = false)
     {
-        if ($ou instanceof Model) {
+        if ($ou instanceof self) {
             // If we've been given an OU model, we can
             // just check if the OU's DN is inside
             // the current models DN.
@@ -964,7 +1031,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * Delete specific values in attributes:
      *
      *     ["memberuid" => "username"]
-     * 
+     *
      * Delete an entire attribute:
      *
      *     ["memberuid" => []]
@@ -998,11 +1065,13 @@ abstract class Model implements ArrayAccess, JsonSerializable
      * Throws a ModelNotFoundException if the current model does
      * not exist or does not contain a distinguished name.
      *
+     * @param bool $recursive Whether to recursively delete leaf nodes (models that are children).
+     *
      * @throws ModelDoesNotExistException
      *
      * @return bool
      */
-    public function delete()
+    public function delete($recursive = false)
     {
         $dn = $this->getDn();
 
@@ -1014,9 +1083,17 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         $this->fireModelEvent(new Events\Deleting($this));
 
+        if ($recursive) {
+            // If recursive is requested, we'll retrieve all direct leaf nodes
+            // by executing a 'listing' and delete each resulting model.
+            $this->newQuery()->listing()->in($this->getDn())->get()->each(function (self $model) use ($recursive) {
+                $model->delete($recursive);
+            });
+        }
+
         if ($this->query->getConnection()->delete($dn)) {
-            // We'll set the exists property to false on delete
-            // so the dev can run create operations.
+            // If the deletion was successful, we'll mark the model
+            // as non-existing and fire the deleted event.
             $this->exists = false;
 
             $this->fireModelEvent(new Events\Deleted($this));
@@ -1030,12 +1107,10 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Moves the current model into the given new parent.
      *
-     * For example:
+     * For example: $user->move($ou);
      *
-     *      $user->move($ou);
-     *
-     * @param string|Model $newParentDn The new parent of the current Model.
-     * @param bool         $deleteOldRdn
+     * @param Model|string $newParentDn  The new parent of the current model.
+     * @param bool         $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
      *
      * @return bool
      */
@@ -1046,7 +1121,7 @@ abstract class Model implements ArrayAccess, JsonSerializable
 
         // If the current model has an empty RDN, we can't move it.
         if ((int) Arr::first($parts) === 0) {
-            throw new UnexpectedValueException("Current model does not contain an RDN to move.");
+            throw new UnexpectedValueException('Current model does not contain an RDN to move.');
         }
 
         // Looks like we have a DN. We'll retrieve the leftmost RDN (the identifier).
@@ -1058,15 +1133,19 @@ abstract class Model implements ArrayAccess, JsonSerializable
     /**
      * Renames the current model to a new RDN and new parent.
      *
-     * @param string      $rdn          The models new relative distinguished name. Example: "cn=JohnDoe"
-     * @param string|null $newParentDn  The models new parent distinguished name (if moving). Leave this null if you are only renaming. Example: "ou=MovedUsers,dc=acme,dc=org"
-     * @param bool|true   $deleteOldRdn Whether to delete the old models relative distinguished name onced renamed / moved.
+     * @param string            $rdn          The models new relative distinguished name. Example: "cn=JohnDoe"
+     * @param Model|string|null $newParentDn  The models new parent distinguished name (if moving). Leave this null if you are only renaming. Example: "ou=MovedUsers,dc=acme,dc=org"
+     * @param bool|true         $deleteOldRdn Whether to delete the old models relative distinguished name once renamed / moved.
      *
      * @return bool
      */
-    public function rename($rdn, $newParentDn, $deleteOldRdn = true)
+    public function rename($rdn, $newParentDn = null, $deleteOldRdn = true)
     {
-        $moved = $this->query->getConnection()->rename($this->getDn(), $rdn, (string) $newParentDn, $deleteOldRdn);
+        if ($newParentDn instanceof self) {
+            $newParentDn = $newParentDn->getDn();
+        }
+
+        $moved = $this->query->getConnection()->rename($this->getDn(), $rdn, $newParentDn, $deleteOldRdn);
 
         if ($moved) {
             // If the model was successfully moved, we'll set its
@@ -1160,11 +1239,11 @@ abstract class Model implements ArrayAccess, JsonSerializable
     {
         if (!$this->query->getConnection()->canChangePasswords()) {
             throw new ConnectionException(
-                "You must be connected to your LDAP server with TLS or SSL to perform this operation."
+                'You must be connected to your LDAP server with TLS or SSL to perform this operation.'
             );
         }
     }
-    
+
     /**
      * Converts the inserted string boolean to a PHP boolean.
      *

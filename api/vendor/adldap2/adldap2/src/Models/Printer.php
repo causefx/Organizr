@@ -3,11 +3,9 @@
 namespace Adldap\Models;
 
 /**
- * Class Printer
+ * Class Printer.
  *
  * Represents an LDAP printer.
- *
- * @package Adldap\Models
  */
 class Printer extends Entry
 {
@@ -283,6 +281,6 @@ class Printer extends Entry
      */
     public function getPrintRateUnit()
     {
-        return $this->getFirstAttribute($this->schema->printerPrintRate());
+        return $this->getFirstAttribute($this->schema->printerPrintRateUnit());
     }
 }

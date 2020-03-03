@@ -7,6 +7,14 @@ class OpenLDAP extends Schema
     /**
      * {@inheritdoc}
      */
+    public function accountName()
+    {
+        return 'uid';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function distinguishedName()
     {
         return 'dn';

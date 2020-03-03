@@ -237,6 +237,8 @@ interface SchemaInterface
      * value to be the first element in an array, however OpenLDAP expects
      * the dn attribute to contain the value, not an array.
      *
+     * @deprecated since 10.0.0
+     *
      * @return int|null
      */
     public function distinguishedNameSubKey();
@@ -391,7 +393,7 @@ interface SchemaInterface
 
     /**
      * Specifies the drive letter to which to map the UNC path specified by homeDirectory.
-     * 
+     *
      * @link https://msdn.microsoft.com/en-us/library/ms676191(v=vs.85).aspx
      *
      * @return string|null
@@ -400,12 +402,21 @@ interface SchemaInterface
 
     /**
      * The home directory for the account.
-     * 
+     *
      * @link https://msdn.microsoft.com/en-us/library/ms676190(v=vs.85).aspx
      *
      * @return string|null
      */
     public function homeDirectory();
+
+    /**
+     * The user's main home phone number.
+     *
+     * @link https://docs.microsoft.com/en-us/windows/desktop/ADSchema/a-homephone
+     *
+     * @return string|null
+     */
+    public function homePhone();
 
     /**
      * The users extra notable information.
@@ -438,9 +449,9 @@ interface SchemaInterface
 
     /**
      * Specifies the TCP/IP address for the phone. Used by telephony.
-     * 
+     *
      * @link https://msdn.microsoft.com/en-us/library/cc221092.aspx
-     * 
+     *
      * @return string
      */
     public function ipPhone();
@@ -621,7 +632,7 @@ interface SchemaInterface
     /**
      * The range limited list of users that belong to the group. See range limit in Active Directory
      * (Range Retrieval of Attribute Values https://msdn.microsoft.com/en-us/library/cc223242.aspx)
-     * Issue #342
+     * Issue #342.
      *
      * @link https://msdn.microsoft.com/en-us/library/ms677097(v=vs.85).aspx
      *
@@ -1261,18 +1272,18 @@ interface SchemaInterface
 
     /**
      * The primary mobile phone number.
-     * 
+     *
      * @link https://docs.microsoft.com/en-us/windows/desktop/adschema/a-mobile
-     * 
+     *
      * @return string
      */
     public function mobile();
 
     /**
      * The secondary mobile phone number.
-     * 
+     *
      * @link https://docs.microsoft.com/en-us/windows/desktop/ADSchema/a-othermobile
-     * 
+     *
      * @return string
      */
     public function otherMobile();
@@ -1367,6 +1378,13 @@ interface SchemaInterface
      * @return string
      */
     public function userModel();
+
+    /**
+     * The object classes that User models must be constructed with.
+     *
+     * @return array
+     */
+    public function userObjectClasses() : array;
 
     /**
      * This attribute contains the UPN that is an Internet-style login name for

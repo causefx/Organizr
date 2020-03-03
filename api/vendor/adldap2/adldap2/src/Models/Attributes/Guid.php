@@ -18,6 +18,7 @@ class Guid
      * The guid structure in order by section to parse using substr().
      *
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>
+     *
      * @link https://github.com/ldaptools/ldaptools
      *
      * @var array
@@ -34,15 +35,16 @@ class Guid
      * The hexadecimal octet order based on string position.
      *
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>
+     *
      * @link https://github.com/ldaptools/ldaptools
      *
      * @var array
      */
     protected $octetSections = [
-        [6, 4, 2 ,0],
+        [6, 4, 2, 0],
         [10, 8],
         [14, 12],
-        [16, 18, 20, 22, 24, 26, 28, 30]
+        [16, 18, 20, 22, 24, 26, 28, 30],
     ];
 
     /**
@@ -68,10 +70,10 @@ class Guid
     {
         if (static::isValid($value)) {
             $this->value = $value;
-        } else if ($value = $this->binaryGuidToString($value)) {
+        } elseif ($value = $this->binaryGuidToString($value)) {
             $this->value = $value;
         } else {
-            throw new InvalidArgumentException("Invalid Binary / String GUID.");
+            throw new InvalidArgumentException('Invalid Binary / String GUID.');
         }
     }
 
@@ -129,6 +131,7 @@ class Guid
      * Return the specified section of the hexadecimal string.
      *
      * @author Chad Sikorra <Chad.Sikorra@gmail.com>
+     *
      * @link https://github.com/ldaptools/ldaptools
      *
      * @param string $hex      The full hex string.

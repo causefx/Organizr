@@ -95,9 +95,7 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
-     * The class name of the Computer model.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function computerModel()
     {
@@ -121,9 +119,7 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
-     * The class name of the Contact model.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function contactModel()
     {
@@ -131,9 +127,7 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
-     * The class name of the Container model.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function containerModel()
     {
@@ -277,9 +271,7 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
-     * The class name of the Entry model.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function entryModel()
     {
@@ -294,7 +286,6 @@ abstract class Schema implements SchemaInterface
         return 'FALSE';
     }
 
-
     /**
      * {@inheritdoc}
      */
@@ -304,9 +295,7 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
-     * The class name of the Group model.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function groupModel()
     {
@@ -351,6 +340,14 @@ abstract class Schema implements SchemaInterface
     public function homeDirectory()
     {
         return 'homedirectory';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function homePhone()
+    {
+        return 'homephone';
     }
 
     /**
@@ -518,7 +515,7 @@ abstract class Schema implements SchemaInterface
      */
     public function memberRange($from, $to)
     {
-        return $this->member() . ";range={$from}-{$to}";
+        return $this->member().";range={$from}-{$to}";
     }
 
     /**
@@ -694,7 +691,7 @@ abstract class Schema implements SchemaInterface
             $this->objectClassContainer()                   => $this->containerModel(),
             $this->objectClassPrinter()                     => $this->printerModel(),
             $this->objectClassOu()                          => $this->organizationalUnitModel(),
-            $this->objectClassForeignSecurityPrincipal()    => $this->foreignSecurityPrincipalModel()
+            $this->objectClassForeignSecurityPrincipal()    => $this->foreignSecurityPrincipalModel(),
         ];
     }
 
@@ -763,9 +760,7 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
-     * The class name of the Organizational Unit model.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function organizationalUnitModel()
     {
@@ -909,9 +904,7 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
-     * The class name of the Printer model.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function printerModel()
     {
@@ -1191,13 +1184,24 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
-     * The class name of the User model.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function userModel()
     {
         return User::class;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function userObjectClasses() : array
+    {
+        return [
+            $this->top(),
+            $this->person(),
+            $this->organizationalPerson(),
+            $this->objectClassUser(),
+        ];
     }
 
     /**
@@ -1225,9 +1229,7 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
-     * The class name of the foreignSecurityPrincipal model.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function foreignSecurityPrincipalModel()
     {

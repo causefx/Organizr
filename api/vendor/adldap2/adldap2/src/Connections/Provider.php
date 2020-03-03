@@ -3,23 +3,23 @@
 namespace Adldap\Connections;
 
 use Adldap\Adldap;
-use InvalidArgumentException;
 use Adldap\Auth\Guard;
+use Adldap\Query\Cache;
+use InvalidArgumentException;
 use Adldap\Auth\GuardInterface;
 use Adldap\Schemas\ActiveDirectory;
 use Adldap\Schemas\SchemaInterface;
-use Adldap\Query\Factory as SearchFactory;
+use Psr\SimpleCache\CacheInterface;
 use Adldap\Models\Factory as ModelFactory;
+use Adldap\Query\Factory as SearchFactory;
 use Adldap\Configuration\DomainConfiguration;
 
 /**
- * Class Provider
+ * Class Provider.
  *
  * Contains the LPAP connection and domain configuration to
  * instantiate factories for retrieving and creating
  * LDAP records as well as authentication (binding).
- *
- * @package Adldap\Connections
  */
 class Provider implements ProviderInterface
 {
@@ -52,6 +52,13 @@ class Provider implements ProviderInterface
     protected $guard;
 
     /**
+     * The providers cache instance.
+     *
+     * @var Cache|null
+     */
+    protected $cache;
+
+    /**
      * {@inheritdoc}
      */
     public function __construct($configuration = [], ConnectionInterface $connection = null)
@@ -62,7 +69,7 @@ class Provider implements ProviderInterface
 
     /**
      * Close the LDAP connection (if bound) upon destruction.
-     * 
+     *
      * @return void
      */
     public function __destruct()
@@ -89,14 +96,14 @@ class Provider implements ProviderInterface
 
             $schema = $configuration->get('schema');
 
-            // We'll update our schema here when our configuration is set.
-            $this->setSchema(new $schema);
-            
+            // We will update our schema here when our configuration is set.
+            $this->setSchema(new $schema());
+
             return $this;
         }
 
         $class = DomainConfiguration::class;
-        
+
         throw new InvalidArgumentException(
             "Configuration must be array or instance of $class"
         );
@@ -107,7 +114,7 @@ class Provider implements ProviderInterface
      */
     public function setConnection(ConnectionInterface $connection = null)
     {
-        // We'll create a standard connection if one isn't given.
+        // We will create a standard connection if one isn't given.
         $this->connection = $connection ?: new Ldap();
 
         // Prepare the connection.
@@ -138,6 +145,20 @@ class Provider implements ProviderInterface
     public function setGuard(GuardInterface $guard)
     {
         $this->guard = $guard;
+
+        return $this;
+    }
+
+    /**
+     * Sets the cache store.
+     *
+     * @param CacheInterface $store
+     *
+     * @return $this
+     */
+    public function setCache(CacheInterface $store)
+    {
+        $this->cache = new Cache($store);
 
         return $this;
     }
@@ -205,11 +226,17 @@ class Provider implements ProviderInterface
      */
     public function search()
     {
-        return new SearchFactory(
+        $factory = new SearchFactory(
             $this->connection,
             $this->schema,
             $this->configuration->get('base_dn')
         );
+
+        if ($this->cache) {
+            $factory->setCache($this->cache);
+        }
+
+        return $factory;
     }
 
     /**
@@ -243,9 +270,9 @@ class Provider implements ProviderInterface
     /**
      * Prepares the connection by setting configured parameters.
      *
-     * @return void
-     *
      * @throws \Adldap\Configuration\ConfigurationException When configuration options requested do not exist
+     *
+     * @return void
      */
     protected function prepareConnection()
     {
@@ -259,8 +286,8 @@ class Provider implements ProviderInterface
             $this->configuration->get('custom_options'),
             [
                 LDAP_OPT_PROTOCOL_VERSION => $this->configuration->get('version'),
-                LDAP_OPT_NETWORK_TIMEOUT => $this->configuration->get('timeout'),
-                LDAP_OPT_REFERRALS => $this->configuration->get('follow_referrals')
+                LDAP_OPT_NETWORK_TIMEOUT  => $this->configuration->get('timeout'),
+                LDAP_OPT_REFERRALS        => $this->configuration->get('follow_referrals'),
             ]
         );
 

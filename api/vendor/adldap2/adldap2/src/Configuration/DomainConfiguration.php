@@ -6,11 +6,9 @@ use Adldap\Schemas\ActiveDirectory;
 use Adldap\Connections\ConnectionInterface;
 
 /**
- * Class DomainConfiguration
+ * Class DomainConfiguration.
  *
  * Contains an array of configuration options for a single LDAP connection.
- *
- * @package Adldap\Configuration
  */
 class DomainConfiguration
 {
@@ -92,7 +90,7 @@ class DomainConfiguration
      */
     public function set($key, $value)
     {
-        if($this->validate($key, $value)) {
+        if ($this->validate($key, $value)) {
             $this->options[$key] = $value;
         }
     }
@@ -104,9 +102,9 @@ class DomainConfiguration
      *
      * @param string $key
      *
-     * @return mixed
-     *
      * @throws ConfigurationException When the option specified does not exist.
+     *
+     * @return mixed
      */
     public function get($key)
     {
@@ -138,9 +136,9 @@ class DomainConfiguration
      * @param string $key
      * @param mixed  $value
      *
-     * @return bool
-     *
      * @throws ConfigurationException When an option value given is an invalid type.
+     *
+     * @return bool
      */
     protected function validate($key, $value)
     {

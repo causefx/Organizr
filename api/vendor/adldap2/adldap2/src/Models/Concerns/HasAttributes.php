@@ -30,7 +30,7 @@ trait HasAttributes
      * @var array
      */
     protected $attributes = [];
-    
+
     /**
      * The models original attributes.
      *
@@ -89,7 +89,7 @@ trait HasAttributes
      */
     public function getAttribute($key, $subKey = null)
     {
-        if (! $key) {
+        if (!$key) {
             return;
         }
 
@@ -256,7 +256,7 @@ trait HasAttributes
     {
         // Normalize key.
         $key = $this->normalizeAttributeKey($key);
-        
+
         if (is_null($subKey)) {
             return Arr::has($this->attributes, $key);
         }
@@ -295,7 +295,7 @@ trait HasAttributes
         $dirty = [];
 
         foreach ($this->attributes as $key => $value) {
-            if (! $this->originalIsEquivalent($key)) {
+            if (!$this->originalIsEquivalent($key)) {
                 // We need to reset the array's indices using array_values due to
                 // LDAP requiring consecutive indices (0, 1, 2 etc.)
                 $dirty[$key] = array_values($value);
@@ -326,7 +326,7 @@ trait HasAttributes
      */
     protected function originalIsEquivalent($key)
     {
-        if (! array_key_exists($key, $this->original)) {
+        if (!array_key_exists($key, $this->original)) {
             return false;
         }
 

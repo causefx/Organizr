@@ -8,24 +8,26 @@
     "packages": [
         {
             "name": "adldap2/adldap2",
-            "version": "v10.0.2",
+            "version": "v10.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Adldap2/Adldap2.git",
-                "reference": "f38a58161c07a295f67d3e8877c4236cdd9170e6"
+                "reference": "f09ca4ae3a65dbf123b56dc7e4ace8682ea16cdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Adldap2/Adldap2/zipball/f38a58161c07a295f67d3e8877c4236cdd9170e6",
-                "reference": "f38a58161c07a295f67d3e8877c4236cdd9170e6",
+                "url": "https://api.github.com/repos/Adldap2/Adldap2/zipball/f09ca4ae3a65dbf123b56dc7e4ace8682ea16cdb",
+                "reference": "f09ca4ae3a65dbf123b56dc7e4ace8682ea16cdb",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "ext-ldap": "*",
-                "illuminate/contracts": "~5.0",
+                "illuminate/contracts": "~5.0|~6.0",
                 "php": ">=7.0",
-                "psr/log": "~1.1",
-                "tightenco/collect": "~5.0"
+                "psr/log": "~1.0",
+                "psr/simple-cache": "~1.0",
+                "tightenco/collect": "~5.0|~6.0"
             },
             "require-dev": {
                 "mockery/mockery": "~1.0",
@@ -61,7 +63,7 @@
                 "ldap",
                 "windows"
             ],
-            "time": "2019-02-16T04:26:37+00:00"
+            "time": "2019-12-18T15:07:31+00:00"
         },
         {
             "name": "composer/semver",
