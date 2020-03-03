@@ -4,13 +4,13 @@
     "keywords": ["php-pusher-server", "pusher", "rest", "realtime", "real-time", "real time", "messaging", "push", "trigger", "publish", "events"],
     "license": "MIT",
     "require": {
-        "php": "^5.4 || ^7.0",
+        "php": "^7.1",
         "ext-curl": "*",
         "psr/log": "^1.0",
         "paragonie/sodium_compat": "^1.6"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.8.35 || ^5.7"
+        "phpunit/phpunit": "^7.2"
     },
     "autoload": {
         "psr-4": {
@@ -25,7 +25,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.0-dev"
+            "dev-master": "3.4-dev"
         }
     },
     "minimum-stability": "dev",
