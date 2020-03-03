@@ -1651,15 +1651,16 @@ function auth()
 	$ban = isset($_GET['ban']) ? strtoupper($_GET['ban']) : "";
 	$whitelist = isset($_GET['whitelist']) ? $_GET['whitelist'] : false;
 	$blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
-    $group = 0;
-    $groupParam = $_GET['group'];
-    if(isset($groupParam)) {
-        if (is_numeric($groupParam)) {
-            $group = (int)$groupParam;
-        } else {
-            $group = getTabGroup($groupParam);
-        }
-    }
+	$group = 0;
+	$groupParam = $_GET['group'];
+	$redirect = false;
+	if(isset($groupParam)) {
+		if (is_numeric($groupParam)) {
+			$group = (int)$groupParam;
+		} else {
+			$group = getTabGroup($groupParam);
+		}
+	}
 	$currentIP = userIP();
 	$unlocked = ($GLOBALS['organizrUser']['locked'] == '1') ? false : true;
 	if (isset($GLOBALS['organizrUser'])) {
@@ -1683,15 +1684,18 @@ function auth()
 		}
 	}
 	if ($group !== null) {
+		if ($_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik') {
+			$redirect = 'Location: ' . getServerPath();
+		}
 		if (qualifyRequest($group) && $unlocked) {
 			header("X-Organizr-User: $currentUser");
 			header("X-Organizr-Email: $currentEmail");
 			!$debug ? exit(http_response_code(200)) : die("$userInfo Authorized");
 		} else {
-			!$debug ? exit(http_response_code(401)) : die("$userInfo Not Authorized");
+			!$debug ? (!$redirect ? exit(http_response_code(401)) : exit(http_response_code(401) . header($redirect))) : die("$userInfo Not Authorized");
 		}
 	} else {
-		!$debug ? exit(http_response_code(401)) : die("Not Authorized Due To No Parameters Set");
+		!$debug ? (!$redirect ? exit(http_response_code(401)) : exit(http_response_code(401) . header($redirect))) : die("Not Authorized Due To No Parameters Set");
 	}
 }
 
