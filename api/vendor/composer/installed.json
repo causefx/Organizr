@@ -1274,17 +1274,17 @@
     },
     {
         "name": "pusher/pusher-php-server",
-        "version": "v3.2.0",
-        "version_normalized": "3.2.0.0",
+        "version": "v3.3.1",
+        "version_normalized": "3.3.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/pusher/pusher-http-php.git",
-            "reference": "4da4d208fe13fd2ff71ede5063a3456f23f38cf7"
+            "reference": "2279bcd21a608a76f9be1fe0675aa2dd1efb2fa0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/4da4d208fe13fd2ff71ede5063a3456f23f38cf7",
-            "reference": "4da4d208fe13fd2ff71ede5063a3456f23f38cf7",
+            "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/2279bcd21a608a76f9be1fe0675aa2dd1efb2fa0",
+            "reference": "2279bcd21a608a76f9be1fe0675aa2dd1efb2fa0",
             "shasum": ""
         },
         "require": {
@@ -1294,9 +1294,9 @@
             "psr/log": "^1.0"
         },
         "require-dev": {
-            "phpunit/phpunit": "^4.8 || ^5.7"
+            "phpunit/phpunit": "^4.8.35 || ^5.7"
         },
-        "time": "2018-08-13T14:57:32+00:00",
+        "time": "2019-01-18T12:10:21+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {

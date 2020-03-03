@@ -1,3 +1,12 @@
+## 3.3.1 (2019-01-18)
+
+[FIXED] PHP Notice for Undefined `socket_id` in triggerBatch
+
+## 3.3.0 (2019-01-03)
+
+[ADDED] Support for End-to-end encrypted channels for triggerbatch
+[FIXED] trigger behavior with mixtures of encrypted and non-encrypted channels
+
 ## 3.2.0 (2018-08-13)
 
 [ADDED] This release adds support for end to end encrypted channels, a new feature for Channels. Read more [in our docs](https://pusher.com/docs/client_api_guide/client_encrypted_channels).
