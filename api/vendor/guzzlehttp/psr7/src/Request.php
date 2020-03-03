@@ -36,6 +36,7 @@ class Request implements RequestInterface
         $body = null,
         $version = '1.1'
     ) {
+        $this->assertMethod($method);
         if (!($uri instanceof UriInterface)) {
             $uri = new Uri($uri);
         }
@@ -45,7 +46,7 @@ class Request implements RequestInterface
         $this->setHeaders($headers);
         $this->protocol = $version;
 
-        if (!$this->hasHeader('Host')) {
+        if (!isset($this->headerNames['host'])) {
             $this->updateHostFromUri();
         }
 
@@ -91,6 +92,7 @@ class Request implements RequestInterface
 
     public function withMethod($method)
     {
+        $this->assertMethod($method);
         $new = clone $this;
         $new->method = strtoupper($method);
         return $new;
@@ -110,7 +112,7 @@ class Request implements RequestInterface
         $new = clone $this;
         $new->uri = $uri;
 
-        if (!$preserveHost) {
+        if (!$preserveHost || !isset($this->headerNames['host'])) {
             $new->updateHostFromUri();
         }
 
@@ -138,5 +140,12 @@ class Request implements RequestInterface
         // Ensure Host is the first header.
         // See: http://tools.ietf.org/html/rfc7230#section-5.4
         $this->headers = [$header => [$host]] + $this->headers;
+    }
+
+    private function assertMethod($method)
+    {
+        if (!is_string($method) || $method === '') {
+            throw new \InvalidArgumentException('Method must be a non-empty string.');
+        }
     }
 }
