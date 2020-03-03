@@ -1258,6 +1258,7 @@ function getCustomizeAppearance()
 					            <div class="panel-wrapper collapse in" aria-expanded="true">
 					                <div class="panel-body">
 					                    <span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
+					                    <span lang="en">To revert back to default, save with no value defined in the relevant field.</span>
 					                </div>
 					            </div>
 					        </div>
