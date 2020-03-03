@@ -1,0 +1,51 @@
+{
+    "name": "phpmailer/phpmailer",
+    "type": "library",
+    "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+    "authors": [
+        {
+            "name": "Marcus Bointon",
+            "email": "phpmailer@synchromedia.co.uk"
+        },
+        {
+            "name": "Jim Jagielski",
+            "email": "jimjag@gmail.com"
+        },
+        {
+            "name": "Andy Prevost",
+            "email": "codeworxtech@users.sourceforge.net"
+        },
+        {
+            "name": "Brent R. Matzelle"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "ext-ctype": "*",
+        "ext-filter": "*"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.2",
+        "phpunit/phpunit": "^4.8 || ^5.7",
+        "doctrine/annotations": "^1.2"
+    },
+    "suggest": {
+        "psr/log": "For optional PSR-3 debug logging",
+        "league/oauth2-google": "Needed for Google XOAUTH2 authentication",
+        "hayageek/oauth2-yahoo": "Needed for Yahoo XOAUTH2 authentication",
+        "stevenmaguire/oauth2-microsoft": "Needed for Microsoft XOAUTH2 authentication",
+        "ext-mbstring": "Needed to send email in multibyte encoding charset",
+        "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)"
+    },
+    "autoload": {
+        "psr-4": {
+            "PHPMailer\\PHPMailer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PHPMailer\\Test\\": "test/"
+        }
+    },
+    "license": "LGPL-2.1-only"
+}
