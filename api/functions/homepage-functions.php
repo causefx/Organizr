@@ -1458,7 +1458,7 @@ function getHomepageList()
 						'name' => 'rTorrentURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['rTorrentURL'],
-						'help' => 'Only use if you cannot connect.  Please make sure to use local IP address and port - You also may use local dns name too.',
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1466,7 +1466,7 @@ function getHomepageList()
 						'name' => 'rTorrentURLOverride',
 						'label' => 'rTorrent API URL Override',
 						'value' => $GLOBALS['rTorrentURLOverride'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'help' => 'Only use if you cannot connect.  Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port/xmlrpc'
 					),
 					array(

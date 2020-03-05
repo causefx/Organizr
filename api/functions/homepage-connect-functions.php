@@ -944,15 +944,19 @@ function rTorrentStatus($completed, $state, $status)
 
 function rTorrentConnect()
 {
-	if ($GLOBALS['homepagerTorrentEnabled'] && !empty($GLOBALS['rTorrentURL']) && qualifyRequest($GLOBALS['homepagerTorrentAuth'])) {
+	if ($GLOBALS['homepagerTorrentEnabled'] && (!empty($GLOBALS['rTorrentURL']) || !empty($GLOBALS['rTorrentURLOverride'])) && qualifyRequest($GLOBALS['homepagerTorrentAuth'])) {
 		try {
 			$torrents = array();
 			$digest = (empty($GLOBALS['rTorrentURLOverride'])) ? qualifyURL($GLOBALS['rTorrentURL'], true) : qualifyURL(checkOverrideURL($GLOBALS['rTorrentURL'], $GLOBALS['rTorrentURLOverride']), true);
-			$passwordInclude = ($GLOBALS['rTorrentUsername'] != '' && $GLOBALS['rTorrentPassword'] != '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
+			$passwordInclude = ($GLOBALS['rTorrentUsername'] !== '' && $GLOBALS['rTorrentPassword'] !== '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
 			$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 			$extraPath = (empty($GLOBALS['rTorrentURLOverride'])) ? $extraPath : '';
 			$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
 			$options = (localURL($url, $GLOBALS['rTorrentDisableCertCheck'])) ? array('verify' => false) : array();
+			if($GLOBALS['rTorrentUsername'] !== '' && decrypt($GLOBALS['rTorrentPassword']) !== ''){
+				$credentials = array('auth' => new Requests_Auth_Digest(array($GLOBALS['rTorrentUsername'], decrypt($GLOBALS['rTorrentPassword']))));
+				$options = array_merge($options, $credentials);
+			}
 			$data = xmlrpc_encode_request("d.multicall2", array(
 				"",
 				"main",
@@ -2651,14 +2655,18 @@ function testAPIConnection($array)
 			}
 			break;
 		case 'rtorrent':
-			if (!empty($GLOBALS['rTorrentURL'])) {
+			if (!empty($GLOBALS['rTorrentURL']) || !empty($GLOBALS['rTorrentURLOverride'])) {
 				try {
 					$digest = (empty($GLOBALS['rTorrentURLOverride'])) ? qualifyURL($GLOBALS['rTorrentURL'], true) : qualifyURL(checkOverrideURL($GLOBALS['rTorrentURL'], $GLOBALS['rTorrentURLOverride']), true);
-					$passwordInclude = ($GLOBALS['rTorrentUsername'] != '' && $GLOBALS['rTorrentPassword'] != '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
+					$passwordInclude = ($GLOBALS['rTorrentUsername'] !== '' && $GLOBALS['rTorrentPassword'] !== '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
 					$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 					$extraPath = (empty($GLOBALS['rTorrentURLOverride'])) ? $extraPath : '';
 					$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
 					$options = (localURL($url, $GLOBALS['rTorrentDisableCertCheck'])) ? array('verify' => false) : array();
+					if($GLOBALS['rTorrentUsername'] !== '' && decrypt($GLOBALS['rTorrentPassword']) !== ''){
+						$credentials = array('auth' => new Requests_Auth_Digest(array($GLOBALS['rTorrentUsername'], decrypt($GLOBALS['rTorrentPassword']))));
+						$options = array_merge($options, $credentials);
+					}
 					$data = xmlrpc_encode_request("system.listMethods", null);
 					$response = Requests::post($url, array(), $data, $options);
 					if ($response->success) {
