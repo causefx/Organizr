@@ -229,5 +229,12 @@
     "new": "Added option to forward to local instance if detected",
     "fixed": "Fix for YouTube daily query quota is too low (#1297)",
     "notes": "Please report bugs in GitHub issues page|Updated language translations"
+  },
+  "2.0.390": {
+    "date": "2020-03-06 20:50",
+    "title": "",
+    "new": "Remove tab has after logout|Added ChangeLog Link (#1292)|server auth redirect for traefik (#1240)|Edit wording for rutorrent urls|add ssl options to fopen on getCert function",
+    "fixed": "Fixed Radarr V2 and V3 image issue|Workaround for Organizr become unresponsive after opening Tab Editor tab (#1319)|How to Reset the \"Color and Themes\" Section? (#1085)|Attempt to fix rutorrent issues with seedboxes|Attempt to fix 2.0.370 update not working (#1316)",
+    "notes": "Framework changes below|Updated PHP Mailer|Updated JWT|Updated pusher|Updated LDAP|Updated guzzle|removed TLD Extract|Please report bugs in GitHub issues page|Updated language translations"
   }
 }
