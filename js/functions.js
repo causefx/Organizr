@@ -4335,7 +4335,7 @@ function buildRequestItem(array, extra=null){
 				var user = (activeInfo.user.groupID <= 1) ? '<span lang="en">Requested By:</span> '+v.user : '';
 				var user2 = (activeInfo.user.groupID <= 1) ? '<br>'+v.user : '';
 				items += `
-				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
+				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` request-`+v.request_id+`-div mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
 					<div class="outside-request-div">
 						<div class="inside-over-request-div `+badge2+`"></div>
 						<div class="inside-request-div `+badge+`"></div>
@@ -4825,8 +4825,9 @@ function processRequest(id,type){
 function ombiActions(id,action,type){
 	//console.log(id,action,type);
 	var msg = (activeInfo.user.groupID <= 1) ? '<a href="https://github.com/tidusjar/Ombi/issues/2176" target="_blank">Not Org Fault - Ask Ombi</a>' : 'Connection Error to Request Server';
-	ajaxloader('.preloader-'+id,'in');
-    ajaxloader('.mfp-content .white-popup .col-md-8 .white-box .user-bg','in');
+	ajaxloader('.request-' + id + '-div', 'in')
+    $.magnificPopup.close();
+    message(window.lang.translate('Submitting Action to Ombi'),'',activeInfo.settings.notifications.position,"#FFF",'success',"3500");
 	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
         try {
             var response = JSON.parse(data);
@@ -4839,7 +4840,6 @@ function ombiActions(id,action,type){
 		if(response.data !== false){
             if(action == 'delete'){
                 homepageRequests();
-                $.magnificPopup.close();
                 message(window.lang.translate('Deleted Request Item'),'',activeInfo.settings.notifications.position,"#FFF",'success',"3500");
                 return true;
             }
@@ -4850,12 +4850,11 @@ function ombiActions(id,action,type){
                 orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(response.data.bd));
                 return false;
             }
-            console.log(responseData);
+            //console.log(responseData);
             var responseMessage = (responseData.isError == true) ? responseData.errorMessage : 'Success';
             var responseType = (responseData.isError == true) ? 'error' : 'success';
 			homepageRequests();
 			if(action !== 'add'){
-				$.magnificPopup.close();
 				message(window.lang.translate('Updated Request Item'),responseMessage,activeInfo.settings.notifications.position,"#FFF",responseType,"3500");
 			}else{
 				ajaxloader();
