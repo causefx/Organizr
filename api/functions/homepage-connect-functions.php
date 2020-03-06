@@ -944,15 +944,19 @@ function rTorrentStatus($completed, $state, $status)
 
 function rTorrentConnect()
 {
-	if ($GLOBALS['homepagerTorrentEnabled'] && !empty($GLOBALS['rTorrentURL']) && qualifyRequest($GLOBALS['homepagerTorrentAuth'])) {
+	if ($GLOBALS['homepagerTorrentEnabled'] && (!empty($GLOBALS['rTorrentURL']) || !empty($GLOBALS['rTorrentURLOverride'])) && qualifyRequest($GLOBALS['homepagerTorrentAuth'])) {
 		try {
 			$torrents = array();
 			$digest = (empty($GLOBALS['rTorrentURLOverride'])) ? qualifyURL($GLOBALS['rTorrentURL'], true) : qualifyURL(checkOverrideURL($GLOBALS['rTorrentURL'], $GLOBALS['rTorrentURLOverride']), true);
-			$passwordInclude = ($GLOBALS['rTorrentUsername'] != '' && $GLOBALS['rTorrentPassword'] != '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
+			$passwordInclude = ($GLOBALS['rTorrentUsername'] !== '' && $GLOBALS['rTorrentPassword'] !== '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
 			$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 			$extraPath = (empty($GLOBALS['rTorrentURLOverride'])) ? $extraPath : '';
 			$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
 			$options = (localURL($url, $GLOBALS['rTorrentDisableCertCheck'])) ? array('verify' => false) : array();
+			if($GLOBALS['rTorrentUsername'] !== '' && decrypt($GLOBALS['rTorrentPassword']) !== ''){
+				$credentials = array('auth' => new Requests_Auth_Digest(array($GLOBALS['rTorrentUsername'], decrypt($GLOBALS['rTorrentPassword']))));
+				$options = array_merge($options, $credentials);
+			}
 			$data = xmlrpc_encode_request("d.multicall2", array(
 				"",
 				"main",
@@ -1529,7 +1533,7 @@ function getSonarrCalendar($array, $number)
 				$fanart = $image['url'];
 			}
 		}
-		if ($fanart !== "/plugins/images/cache/no-np.png") {
+		if ($fanart !== "/plugins/images/cache/no-np.png" || (strpos($fanart, '://') === false)) {
 			$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 			$imageURL = $fanart;
 			$cacheFile = $cacheDirectory . $seriesID . '.jpg';
@@ -1682,17 +1686,22 @@ function getRadarrCalendar($array, $number, $url)
 			$banner = "/plugins/images/cache/no-np.png";
 			foreach ($child['images'] as $image) {
 				if ($image['coverType'] == "banner" || $image['coverType'] == "fanart") {
-					$imageUrl = $image['url'];
-					$urlParts = explode("/", $url);
-					$imageParts = explode("/", $image['url']);
-					if ($imageParts[1] == end($urlParts)) {
-						unset($imageParts[1]);
-						$imageUrl = implode("/", $imageParts);
+					if (strpos($image['url'], '://') === false) {
+						$imageUrl = $image['url'];
+						$urlParts = explode("/", $url);
+						$imageParts = explode("/", $image['url']);
+						if ($imageParts[1] == end($urlParts)) {
+							unset($imageParts[1]);
+							$imageUrl = implode("/", $imageParts);
+						}
+						$banner = $url . $imageUrl . '?apikey=' . $GLOBALS['radarrToken'];
+					}else{
+						$banner = $image['url'];
 					}
-					$banner = $url . $imageUrl . '?apikey=' . $GLOBALS['radarrToken'];
+					
 				}
 			}
-			if ($banner !== "/plugins/images/cache/no-np.png") {
+			if ($banner !== "/plugins/images/cache/no-np.png" || (strpos($banner, 'apikey') !== false)) {
 				$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 				$imageURL = $banner;
 				$cacheFile = $cacheDirectory . $movieID . '.jpg';
@@ -2646,14 +2655,18 @@ function testAPIConnection($array)
 			}
 			break;
 		case 'rtorrent':
-			if (!empty($GLOBALS['rTorrentURL'])) {
+			if (!empty($GLOBALS['rTorrentURL']) || !empty($GLOBALS['rTorrentURLOverride'])) {
 				try {
 					$digest = (empty($GLOBALS['rTorrentURLOverride'])) ? qualifyURL($GLOBALS['rTorrentURL'], true) : qualifyURL(checkOverrideURL($GLOBALS['rTorrentURL'], $GLOBALS['rTorrentURLOverride']), true);
-					$passwordInclude = ($GLOBALS['rTorrentUsername'] != '' && $GLOBALS['rTorrentPassword'] != '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
+					$passwordInclude = ($GLOBALS['rTorrentUsername'] !== '' && $GLOBALS['rTorrentPassword'] !== '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
 					$extraPath = (strpos($GLOBALS['rTorrentURL'], '.php') !== false) ? '' : '/RPC2';
 					$extraPath = (empty($GLOBALS['rTorrentURLOverride'])) ? $extraPath : '';
 					$url = $digest['scheme'] . '://' . $passwordInclude . $digest['host'] . $digest['port'] . $digest['path'] . $extraPath;
 					$options = (localURL($url, $GLOBALS['rTorrentDisableCertCheck'])) ? array('verify' => false) : array();
+					if($GLOBALS['rTorrentUsername'] !== '' && decrypt($GLOBALS['rTorrentPassword']) !== ''){
+						$credentials = array('auth' => new Requests_Auth_Digest(array($GLOBALS['rTorrentUsername'], decrypt($GLOBALS['rTorrentPassword']))));
+						$options = array_merge($options, $credentials);
+					}
 					$data = xmlrpc_encode_request("system.listMethods", null);
 					$response = Requests::post($url, array(), $data, $options);
 					if ($response->success) {

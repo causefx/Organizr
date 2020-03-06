@@ -5,11 +5,9 @@ namespace Adldap\Configuration\Validators;
 use Adldap\Configuration\ConfigurationException;
 
 /**
- * Class BooleanValidator
+ * Class BooleanValidator.
  *
  * Validates that the configuration value is a boolean.
- *
- * @package Adldap\Configuration\Validators
  */
 class BooleanValidator extends Validator
 {

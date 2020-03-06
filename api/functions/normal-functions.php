@@ -311,15 +311,25 @@ function getCert()
 {
 	$url = 'http://curl.haxx.se/ca/cacert.pem';
 	$file = __DIR__ . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'cacert.pem';
+	$file2 = __DIR__ . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'cacert-initial.pem';
+	$useCert = (file_exists($file)) ? $file : $file2;
 	if($GLOBALS['selfSignedCert'] !== ''){
 		if(file_exists($GLOBALS['selfSignedCert'])){
 			return $GLOBALS['selfSignedCert'];
 		}
 	}
+	$context = stream_context_create(
+		array(
+			'ssl'=> array(
+				'verify_peer' => true,
+				'cafile' => $useCert
+			)
+		)
+	);
 	if (!file_exists($file)) {
-		file_put_contents($file, fopen($url, 'r'));
+		file_put_contents($file, fopen($url, 'r', false, $context));
 	} elseif (file_exists($file) && time() - 2592000 > filemtime($file)) {
-		file_put_contents($file, fopen($url, 'r'));
+		file_put_contents($file, fopen($url, 'r', false, $context));
 	}
 	return $file;
 }

@@ -35,7 +35,7 @@ class Operator
     public static $doesNotEqual = '!';
 
     /**
-     * The does not equal operator (alias)
+     * The does not equal operator (alias).
      *
      * @var string
      */

@@ -76,7 +76,15 @@ function downloadFile($url, $path)
 		}
 	}
 	$newfname = $folderPath . $path;
-	$file = fopen($url, 'rb');
+	$context = stream_context_create(
+		array(
+			'ssl'=> array(
+				'verify_peer' => true,
+				'cafile' => getCert()
+			)
+		)
+	);
+	$file = fopen($url, 'rb', false, $context);
 	if ($file) {
 		$newf = fopen($newfname, 'wb');
 		if ($newf) {
@@ -85,19 +93,22 @@ function downloadFile($url, $path)
 			}
 		}
 	} else {
-		//writeLog("error", "organizr could not download $url");
+		writeLog("error", "organizr could not download $url");
+		return false;
 	}
 	if ($file) {
 		fclose($file);
-		//writeLog("success", "organizr finished downloading the github zip file");
+		writeLog("success", "organizr finished downloading the github zip file");
 	} else {
-		//writeLog("error", "organizr could not download the github zip file");
+		writeLog("error", "organizr could not download the github zip file");
+		return false;
 	}
 	if ($newf) {
 		fclose($newf);
-		//writeLog("success", "organizr created upgrade zip file from github zip file");
+		writeLog("success", "organizr created upgrade zip file from github zip file");
 	} else {
-		//writeLog("error", "organizr could not create upgrade zip file from github zip file");
+		writeLog("error", "organizr could not create upgrade zip file from github zip file");
+		return false;
 	}
 	return true;
 }
@@ -107,7 +118,7 @@ function downloadFileToPath($from, $to, $path)
 	ini_set('max_execution_time', 0);
 	set_time_limit(0);
 	if (@!mkdir($path, 0777, true)) {
-		//writeLog("error", "organizr could not create upgrade folder");
+		writeLog("error", "organizr could not create upgrade folder");
 	}
 	$file = fopen($from, 'rb');
 	if ($file) {
@@ -118,19 +129,19 @@ function downloadFileToPath($from, $to, $path)
 			}
 		}
 	} else {
-		//writeLog("error", "organizr could not download $url");
+		writeLog("error", "organizr could not download $url");
 	}
 	if ($file) {
 		fclose($file);
-		//writeLog("success", "organizr finished downloading the github zip file");
+		writeLog("success", "organizr finished downloading the github zip file");
 	} else {
-		//writeLog("error", "organizr could not download the github zip file");
+		writeLog("error", "organizr could not download the github zip file");
 	}
 	if ($newf) {
 		fclose($newf);
-		//writeLog("success", "organizr created upgrade zip file from github zip file");
+		writeLog("success", "organizr created upgrade zip file from github zip file");
 	} else {
-		//writeLog("error", "organizr could not create upgrade zip file from github zip file");
+		writeLog("error", "organizr could not create upgrade zip file from github zip file");
 	}
 	return true;
 }
@@ -142,9 +153,9 @@ function unzipFile($zipFile)
 	$zip = new ZipArchive;
 	$extractPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "upgrade/";
 	if ($zip->open($extractPath . $zipFile) != "true") {
-		//writeLog("error", "organizr could not unzip upgrade.zip");
+		writeLog("error", "organizr could not unzip upgrade.zip");
 	} else {
-		//writeLog("success", "organizr unzipped upgrade.zip");
+		writeLog("success", "organizr unzipped upgrade.zip");
 	}
 	/* Extract Zip File */
 	$zip->extractTo($extractPath);

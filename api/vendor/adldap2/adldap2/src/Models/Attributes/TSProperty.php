@@ -175,7 +175,7 @@ class TSProperty
     {
         $nameLength = hexdec(substr($tsProperty, 0, 2));
 
-        # 1 data byte is 3 encoded bytes
+        // 1 data byte is 3 encoded bytes
         $valueLength = hexdec(substr($tsProperty, 2, 2)) * 3;
 
         $this->valueType = hexdec(substr($tsProperty, 4, 2));

@@ -9,9 +9,9 @@ class ClassValidator extends Validator
     /**
      * Validates the configuration value.
      *
-     * @return bool
-     *
      * @throws ConfigurationException When the value given fails validation.
+     *
+     * @return bool
      */
     public function validate()
     {

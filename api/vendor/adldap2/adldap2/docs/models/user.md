@@ -3,6 +3,48 @@
 > **Note**: This model contains the trait `HasMemberOf`. For more information, visit the documentation:
 > [HasMemberOfTrait](/models/traits/has-member-of.md)
 
+## Creating
+
+> **Note**: If you need to create users with passwords, SSL or TLS **must** be enabled on your configured connection.
+> 
+> The password you enter for the user **must** also obey your LDAP servers password requirements,
+> otherwise you will receive a "Server is unwilling to perform" LDAP exception upon saving.
+
+```php
+// Construct a new User model instance.
+$user = $provider->make()->user();
+
+// Create the users distinguished name.
+// We're adding an OU onto the users base DN to have it be saved in the specified OU.
+$dn = $user->getDnBuilder()->addOu('Users'); // Built DN will be: "CN=John Doe,OU=Users,DC=acme,DC=org";
+
+// Set the users DN, account name.
+$user->setDn($dn);
+$user->setAccountName('jdoe');
+$user->setCommonName('John Doe');
+
+// Set the users password.
+// NOTE: This password must obey your AD servers password requirements
+// (including password history, length, special characters etc.)
+// otherwise saving will fail and you will receive an
+// "LDAP Server is unwilling to perform" message.
+$user->setPassword('correct-horse-battery-staple');
+
+// Get a new account control object for the user.
+$ac = $user->getUserAccountControlObject();
+
+// Mark the account as enabled (normal).
+$ac->accountIsNormal();
+
+// Set the account control on the user and save it.
+$user->setUserAccountControl($ac);
+
+// Save the user.
+$user->save();
+
+// All done! An enabled user will be created and is ready for use.
+```
+
 ## Methods
 
 There's a ton of available methods for the User model. Below is a list for a quick reference.
@@ -123,6 +165,9 @@ $user->getEmployeeId();
 
 // Get the users employee number.
 $user->getEmployeeNumber();
+
+// Get the users employee type
+$user->getEmployeeType();
 
 // Get the users room number.
 $user->getRoomNumber();

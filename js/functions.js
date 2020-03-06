@@ -446,6 +446,7 @@ function logout(){
         }
 		if(html.data == true){
             local('set','message','Goodbye|Logout Successful|success');
+            history.replaceState(null, null, ' ');
 			location.reload();
 		}else{
 			message('Logout Error',' An Error Occured',activeInfo.settings.notifications.position,'#FFF','warning','10000');

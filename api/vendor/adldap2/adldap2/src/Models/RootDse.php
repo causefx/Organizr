@@ -5,11 +5,9 @@ namespace Adldap\Models;
 use DateTime;
 
 /**
- * Class RootDse
+ * Class RootDse.
  *
  * Represents the LDAP connections Root DSE record.
- *
- * @package Adldap\Models
  */
 class RootDse extends Model
 {

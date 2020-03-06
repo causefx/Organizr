@@ -12,7 +12,6 @@ use Adldap\Connections\ConnectionInterface;
  *
  * Constructs new LDAP queries.
  *
- * @package Adldap\Search
  *
  * @mixin Builder
  */
@@ -38,11 +37,18 @@ class Factory
     protected $base;
 
     /**
+     * The query cache.
+     *
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
      * Constructor.
      *
      * @param ConnectionInterface  $connection The connection to use when constructing a new query.
-     * @param SchemaInterface|null $schema The schema to use for the query and models located.
-     * @param string               $baseDn The base DN to use for all searches.
+     * @param SchemaInterface|null $schema     The schema to use for the query and models located.
+     * @param string               $baseDn     The base DN to use for all searches.
      */
     public function __construct(ConnectionInterface $connection, SchemaInterface $schema = null, $baseDn = '')
     {
@@ -94,6 +100,20 @@ class Factory
     }
 
     /**
+     * Sets the cache for storing query results.
+     *
+     * @param Cache $cache
+     *
+     * @return $this
+     */
+    public function setCache(Cache $cache)
+    {
+        $this->cache = $cache;
+
+        return $this;
+    }
+
+    /**
      * Returns a new query builder instance.
      *
      * @return Builder
@@ -108,7 +128,7 @@ class Factory
      * connection by performing a search for all entries
      * that contain a common name attribute.
      *
-     * @return \Illuminate\Support\Collection|array
+     * @return \Adldap\Query\Collection|array
      */
     public function get()
     {
@@ -124,7 +144,7 @@ class Factory
     {
         $wheres = [
             [$this->schema->objectClass(), Operator::$equals, $this->schema->objectClassUser()],
-            [$this->schema->objectCategory(), Operator::$equals, $this->schema->objectCategoryPerson()]
+            [$this->schema->objectCategory(), Operator::$equals, $this->schema->objectCategoryPerson()],
         ];
 
         // OpenLDAP doesn't like specifying the omission of user objectclasses
@@ -256,6 +276,10 @@ class Factory
      */
     protected function newBuilder()
     {
-        return new Builder($this->connection, $this->newGrammar(), $this->schema);
+        $builder = new Builder($this->connection, $this->newGrammar(), $this->schema);
+
+        $builder->setCache($this->cache);
+
+        return $builder;
     }
 }

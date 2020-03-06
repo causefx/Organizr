@@ -2,8 +2,8 @@
 
 ## Introduction
 
-Adldap2 implements the ActiveRecord pattern. This means that each LDAP
-record in your directory is represented as it's own model instance.
+Adldap2 implements the [ActiveRecord](https://en.wikipedia.org/wiki/Active_record_pattern) pattern.
+This means that each LDAP record in your directory is represented as it's own model instance.
 
 ## Creating
 
@@ -21,7 +21,7 @@ Or you can chain all methods if you'd prefer:
 $user = $provider->make()->user();
 ```
 
-### Available Make Methods:
+### Available Make Methods
 
 When calling a make method, all of them accept an `$attributes` parameter
 to fill the model with your specified attributes.
@@ -130,9 +130,7 @@ $user = $provider->search()->find('jdoe');
 $user->exists; // Returns true.
 
 if ($user->delete()) {
-
     $user->exists; // Returns false.
-
 }
 ```
 
@@ -146,9 +144,7 @@ $user = $provider->make()->user([
 $user->exists; // Returns false.
 
 if ($user->save()) {
-    
     $user->exists; // Returns true.
-    
 }
 ```
 
@@ -375,6 +371,23 @@ $user->fill([
 ]);
 ```
 
+#### Setting Boolean Attributes
+
+When setting boolean attribute values, you cannot use `0` / `1` / `true` / `false` as these
+are simply converted to integer values when saving and your LDAP server will
+likely return an error for doing so on certain attributes.
+
+You will need to use the string versions of the boolean (`'TRUE'` / `'FALSE'`) for the
+boolean attribute to be set properly on your LDAP server.
+
+Here's an example:
+
+```php
+$user->setFirstAttribute('msExchHideFromAddressLists', 'TRUE');
+
+$user->save();
+```
+
 ### Creating Attributes
 
 To create an attribute that does not exist on the model, you can set it like a regular property:
@@ -514,36 +527,43 @@ $user->syncRaw();
 
 ## Moving / Renaming
 
-To move a user from one DN or OU to another, use the `move($newRdn, $newParentDn)` method:
+To move a user from one DN or OU to another, use the `move()` method:
+
+> **Note**: The `move()` method is actually an alias for the `rename()` method.
 
 ```php
-// New Relative distinguished name.
-$newRdn = 'cn=John Doe';
-
 // New parent distiguished name.
 $newParentDn = 'OU=New Ou,DC=corp,DC=local';
 
-if ($user->move($newRdn, $newParentDn)) {
+if ($user->move($newParentDn)) {
     // User was successfully moved to the new OU.
 }
 ```
 
-If you would like to keep the models old RDN along side their new RDN, pass in false in the last parameter:
+You can also provide a model to move the child model into:
 
 ```php
-// New Relative distinguished name.
-$newRdn = 'cn=John Doe';
+// New parent OU.
+$newParentOu = $provider->search()->ous()->find('Accounting');
 
+if ($user->move($newParentOu)) {
+    // User was successfully moved to the new OU.
+}
+```
+
+If you would like to keep the models old RDN along side their new RDN, pass in false in the second parameter:
+
+```php
 // New parent distiguished name.
 $newParentDn = 'OU=New Ou,DC=corp,DC=local';
 
-if ($user->move($newRdn, $newParentDn, $deleteOldRdn = false)) {
+if ($user->move($newParentDn, $deleteOldRdn = false)) {
     // User was successfully moved to the new OU,
     // and their old RDN has been left in-tact.
 }
 ```
 
-To rename a users DN, just pass in their new relative distinguished name in the `rename($newRdn)` method:
+To rename a users DN, just pass in their new relative distinguished name in the `rename()` method:
 
 ```php
 $newRdn = 'cn=New Name';
@@ -552,8 +572,6 @@ if ($user->rename($newRdn)) {
     // User was successfully renamed.
 }
 ```
-
-> **Note**: The `rename()` method is actually an alias for the `move()` method.
 
 ## Deleting
 

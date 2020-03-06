@@ -823,7 +823,30 @@ function getSettingsMain()
 						'value' => 'allow-top-navigation'
 					),
 				)
-			)
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'traefikAuthEnable',
+				'label' => 'Enable Traefik Auth Redirect',
+				'help' => 'This will enable the webserver to forward errors so traefik will accept them',
+				'value' => $GLOBALS['traefikAuthEnable']
+			),
+		),
+		'Performance' => array(
+			array(
+				'type' => 'switch',
+				'name' => 'performanceDisableIconDropdown',
+				'label' => 'Disable Icon Dropdown',
+				'help' => 'Disable select dropdown boxes on new and edit tab forms',
+				'value' => $GLOBALS['performanceDisableIconDropdown'],
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'performanceDisableImageDropdown',
+				'label' => 'Disable Image Dropdown',
+				'help' => 'Disable select dropdown boxes on new and edit tab forms',
+				'value' => $GLOBALS['performanceDisableImageDropdown'],
+			),
 		),
 		'Login' => array(
 			array(
@@ -1242,6 +1265,7 @@ function getCustomizeAppearance()
 					            <div class="panel-wrapper collapse in" aria-expanded="true">
 					                <div class="panel-body">
 					                    <span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
+					                    <span lang="en">To revert back to default, save with no value defined in the relevant field.</span>
 					                </div>
 					            </div>
 					        </div>
@@ -1634,15 +1658,16 @@ function auth()
 	$ban = isset($_GET['ban']) ? strtoupper($_GET['ban']) : "";
 	$whitelist = isset($_GET['whitelist']) ? $_GET['whitelist'] : false;
 	$blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
-    $group = 0;
-    $groupParam = $_GET['group'];
-    if(isset($groupParam)) {
-        if (is_numeric($groupParam)) {
-            $group = (int)$groupParam;
-        } else {
-            $group = getTabGroup($groupParam);
-        }
-    }
+	$group = 0;
+	$groupParam = $_GET['group'];
+	$redirect = false;
+	if(isset($groupParam)) {
+		if (is_numeric($groupParam)) {
+			$group = (int)$groupParam;
+		} else {
+			$group = getTabGroup($groupParam);
+		}
+	}
 	$currentIP = userIP();
 	$unlocked = ($GLOBALS['organizrUser']['locked'] == '1') ? false : true;
 	if (isset($GLOBALS['organizrUser'])) {
@@ -1666,15 +1691,18 @@ function auth()
 		}
 	}
 	if ($group !== null) {
+		if ($_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik' || $GLOBALS['traefikAuthEnable']) {
+			$redirect = 'Location: ' . getServerPath();
+		}
 		if (qualifyRequest($group) && $unlocked) {
 			header("X-Organizr-User: $currentUser");
 			header("X-Organizr-Email: $currentEmail");
 			!$debug ? exit(http_response_code(200)) : die("$userInfo Authorized");
 		} else {
-			!$debug ? exit(http_response_code(401)) : die("$userInfo Not Authorized");
+			!$debug ? (!$redirect ? exit(http_response_code(401)) : exit(http_response_code(401) . header($redirect))) : die("$userInfo Not Authorized");
 		}
 	} else {
-		!$debug ? exit(http_response_code(401)) : die("Not Authorized Due To No Parameters Set");
+		!$debug ? (!$redirect ? exit(http_response_code(401)) : exit(http_response_code(401) . header($redirect))) : die("Not Authorized Due To No Parameters Set");
 	}
 }
 

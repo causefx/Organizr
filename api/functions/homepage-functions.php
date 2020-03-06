@@ -1424,11 +1424,21 @@ function getHomepageList()
 						    <div class="col-lg-12">
 						        <div class="panel panel-info">
 						            <div class="panel-heading">
-						                <span lang="en">This module requires XMLRPC</span>
+						                <span lang="en">ATTENTION</span>
 						            </div>
 						            <div class="panel-wrapper collapse in" aria-expanded="true">
 						                <div class="panel-body">
+						                	<h4 lang="en">This module requires XMLRPC</h4>
 						                    <span lang="en">Status: [ <b>' . $xmlStatus . '</b> ]</span>
+						                    <br/></br>
+						                    <span lang="en">
+						                    	<h4><b>Note about API URL</b></h4>
+						                    	Organizr appends the url with <code>/RPC2</code> unless the URL ends in <code>.php</code><br/>
+						                    	<h5>Possible URLs:</h5>
+						                    	<li>http://localhost:8080</li>
+						                    	<li>https://domain.site/xmlrpc.php</li>
+						                    	<li>https://seedbox.site/rutorrent/plugins/httprpc/action.php</li>
+						                    </span>
 						                </div>
 						            </div>
 						        </div>
@@ -1458,7 +1468,7 @@ function getHomepageList()
 						'name' => 'rTorrentURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['rTorrentURL'],
-						'help' => 'Only use if you cannot connect.  Please make sure to use local IP address and port - You also may use local dns name too.',
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
@@ -1466,7 +1476,7 @@ function getHomepageList()
 						'name' => 'rTorrentURLOverride',
 						'label' => 'rTorrent API URL Override',
 						'value' => $GLOBALS['rTorrentURLOverride'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'help' => 'Only use if you cannot connect.  Please make sure to use local IP address and port - You also may use local dns name too.',
 						'placeholder' => 'http(s)://hostname:port/xmlrpc'
 					),
 					array(

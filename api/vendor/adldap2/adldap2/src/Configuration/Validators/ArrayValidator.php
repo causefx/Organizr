@@ -5,11 +5,9 @@ namespace Adldap\Configuration\Validators;
 use Adldap\Configuration\ConfigurationException;
 
 /**
- * Class ArrayValidator
+ * Class ArrayValidator.
  *
  * Validates that the configuration value is an array.
- *
- * @package Adldap\Configuration\Validators
  */
 class ArrayValidator extends Validator
 {

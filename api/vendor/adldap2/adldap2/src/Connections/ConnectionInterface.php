@@ -41,7 +41,7 @@ interface ConnectionInterface
 
     /**
      * Constructor.
-     * 
+     *
      * @param string|null $name The connection name.
      */
     public function __construct($name = null);
@@ -103,7 +103,7 @@ interface ConnectionInterface
 
     /**
      * Returns the connections name.
-     * 
+     *
      * @return string|null
      */
     public function getName();
@@ -264,6 +264,8 @@ interface ConnectionInterface
      *
      * @link http://php.net/manual/en/function.ldap-start-tls.php
      *
+     * @throws ConnectionException If starting TLS fails.
+     *
      * @return mixed
      */
     public function startTLS();
@@ -278,7 +280,7 @@ interface ConnectionInterface
      * @param string $password
      * @param bool   $sasl
      *
-     * @throws ConnectionException If connecting over TLS fails.
+     * @throws ConnectionException If starting TLS fails.
      *
      * @return bool
      */
@@ -319,9 +321,9 @@ interface ConnectionInterface
      * @param string $dn
      * @param $filter
      * @param array $fields
-     * @param bool   $onlyAttributes
-     * @param int    $size
-     * @param int    $time
+     * @param bool  $onlyAttributes
+     * @param int   $size
+     * @param int   $time
      *
      * @return mixed
      */
@@ -406,7 +408,7 @@ interface ConnectionInterface
 
     /**
      * Add attribute values to current attributes.
-     * 
+     *
      * @link http://php.net/manual/en/function.ldap-mod-add.php
      *
      * @param string $dn
@@ -454,7 +456,7 @@ interface ConnectionInterface
     public function controlPagedResult($pageSize = 1000, $isCritical = false, $cookie = '');
 
     /**
-     * Retrieve a paginated result response.
+     * Retrieve the LDAP pagination cookie.
      *
      * @link http://php.net/manual/en/function.ldap-control-paged-result-response.php
      *
@@ -464,6 +466,17 @@ interface ConnectionInterface
      * @return mixed
      */
     public function controlPagedResultResponse($result, &$cookie);
+
+    /**
+     * Frees up the memory allocated internally to store the result.
+     *
+     * @link https://www.php.net/manual/en/function.ldap-free-result.php
+     *
+     * @param resource $result
+     *
+     * @return bool
+     */
+    public function freeResult($result);
 
     /**
      * Returns the error number of the last command
