@@ -316,10 +316,18 @@ function getCert()
 			return $GLOBALS['selfSignedCert'];
 		}
 	}
+	$context = stream_context_create(
+		array(
+			'ssl'=> array(
+				'verify_peer' => true,
+				'cafile' => getCert()
+			)
+		)
+	);
 	if (!file_exists($file)) {
-		file_put_contents($file, fopen($url, 'r'));
+		file_put_contents($file, fopen($url, 'r', false, $context));
 	} elseif (file_exists($file) && time() - 2592000 > filemtime($file)) {
-		file_put_contents($file, fopen($url, 'r'));
+		file_put_contents($file, fopen($url, 'r', false, $context));
 	}
 	return $file;
 }
