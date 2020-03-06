@@ -311,6 +311,8 @@ function getCert()
 {
 	$url = 'http://curl.haxx.se/ca/cacert.pem';
 	$file = __DIR__ . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'cacert.pem';
+	$file2 = __DIR__ . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'cacert-initial.pem';
+	$useCert = (file_exists($file)) ? $file : $file2;
 	if($GLOBALS['selfSignedCert'] !== ''){
 		if(file_exists($GLOBALS['selfSignedCert'])){
 			return $GLOBALS['selfSignedCert'];
@@ -320,7 +322,7 @@ function getCert()
 		array(
 			'ssl'=> array(
 				'verify_peer' => true,
-				'cafile' => getCert()
+				'cafile' => $useCert
 			)
 		)
 	);
