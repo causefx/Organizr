@@ -2025,13 +2025,23 @@ function getImage()
 		if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh == false) {
 			header("Content-type: image/jpeg");
 			//@readfile($cachefile);
-			echo @curl('get', $cachefile)['content'];
+			//echo @curl('get', $cachefile)['content'];
+			$options = array('verify' => false);
+			$response = Requests::get($cachefile, array(), $options);
+			if ($response->success) {
+				echo $response->body;
+			}
 			exit;
 		}
 		ob_start(); // Start the output buffer
 		header('Content-type: image/jpeg');
 		//@readfile($image_src);
-		echo @curl('get', $image_src)['content'];
+		//echo @curl('get', $image_src)['content'];
+		$options = array('verify' => false);
+		$response = Requests::get($image_src, array(), $options);
+		if ($response->success) {
+			echo $response->body;
+		}
 		// Cache the output to a file
 		$fp = fopen($cachefile, 'wb');
 		fwrite($fp, ob_get_contents());
