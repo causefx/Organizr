@@ -52,7 +52,7 @@ function homepageConnect($array)
 			return getCalendar();
 			break;
 		case 'getRequests':
-			return getOmbiRequests($GLOBALS['ombiLimit']);
+			return getOmbiRequests('both', $GLOBALS['ombiLimit']);
 			break;
 		case 'getHealthChecks':
 			return (qualifyRequest($GLOBALS['homepageHealthChecksAuth'])) ? getHealthChecks($array['data']['tags']) : false;
