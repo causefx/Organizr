@@ -1691,7 +1691,7 @@ function auth()
 		}
 	}
 	if ($group !== null) {
-		if ($_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik' || $GLOBALS['traefikAuthEnable']) {
+		if ((isset($_SERVER['HTTP_X_FORWARDED_SERVER']) && $_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik') || $GLOBALS['traefikAuthEnable']) {
 			$redirect = 'Location: ' . getServerPath();
 		}
 		if (qualifyRequest($group) && $unlocked) {
