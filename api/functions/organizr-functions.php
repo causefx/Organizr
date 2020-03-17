@@ -1140,6 +1140,7 @@ function loadAppearance()
 	$appearance['logo'] = $GLOBALS['logo'];
 	$appearance['title'] = $GLOBALS['title'];
 	$appearance['useLogo'] = $GLOBALS['useLogo'];
+	$appearance['useLogoLogin'] = $GLOBALS['useLogoLogin'];
 	$appearance['headerColor'] = $GLOBALS['headerColor'];
 	$appearance['headerTextColor'] = $GLOBALS['headerTextColor'];
 	$appearance['sidebarColor'] = $GLOBALS['sidebarColor'];
@@ -1205,6 +1206,12 @@ function getCustomizeAppearance()
 					'label' => 'Login Wallpaper',
 					'value' => $GLOBALS['loginWallpaper'],
 					'help' => 'You may enter multiple URL\'s using the CSV format.  i.e. link#1,link#2,link#3'
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'useLogoLogin',
+					'label' => 'Use Logo instead of Title on Login Page',
+					'value' => $GLOBALS['useLogoLogin']
 				),
 				array(
 					'type' => 'switch',
@@ -1722,7 +1729,7 @@ function getTabGroup ($tab)
 
 function logoOrText()
 {
-	if ($GLOBALS['useLogo'] == false) {
+	if ($GLOBALS['useLogoLogin'] == false) {
 		return '<h1>' . $GLOBALS['title'] . '</h1>';
 	} else {
 		return '<img class="loginLogo" src="' . $GLOBALS['loginLogo'] . '" alt="Home" />';

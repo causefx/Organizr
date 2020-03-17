@@ -16,6 +16,7 @@ return array(
 	'loginWallpaper' => '',
 	'title' => 'Organizr V2',
 	'useLogo' => false,
+	'useLogoLogin' => false,
 	'headerColor' => '',
 	'headerTextColor' => '',
 	'sidebarColor' => '',
