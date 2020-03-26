@@ -14,6 +14,7 @@ lang.init({
 	allowCookieOverride: true
 });
 var OAuthLoginNeeded = false;
+var pingOrg = false;
 var timeouts = {};
 var increment = 0;
 var tabInformation = {};
@@ -2638,7 +2639,7 @@ function tabProcess(arrayItems) {
 		noTabs(arrayItems);
 	}
 	$(menuExtras(arrayItems.data.user.loggedin)).appendTo($('#side-menu'));
-    new SimpleBar($('.sidebar')[0]);
+    new SimpleBar($('.sidebar')[0], { direction: 'rtl' });
 }
 function buildLogin(){
 	swapDisplay('login');
@@ -7378,6 +7379,21 @@ function oAuthLoginNeededCheck() {
 function ipInfoSpan(ip){
     return '<span class="ipInfo mouse">'+ip+'</span>';
 }
+function checkToken(activate = false){
+    if(typeof activeInfo !== 'undefined'){
+        if(typeof activeInfo.settings.misc.uuid !== 'undefined'){
+            var token = getCookie('organizr_token_' + activeInfo.settings.misc.uuid);
+            if(token){
+                setTimeout(function(){ checkToken(true); }, 5000);
+            }else{
+                if(activate){
+                    local('set','message','Token Expired|You have been logged out|error');
+                    location.reload();
+                }
+            }
+        }
+    }
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
@@ -7425,6 +7441,7 @@ function launch(){
 		changeStyle(activeInfo.style);
 		changeTheme(activeInfo.theme);
 		setSSO();
+		checkToken();
 		switch (json.data.status.status) {
 			case "wizard":
 				buildWizard();
