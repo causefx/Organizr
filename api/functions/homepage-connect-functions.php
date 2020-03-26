@@ -763,7 +763,7 @@ function jdownloaderConnect()
         $url = qualifyURL($GLOBALS['jdownloaderURL']);
 
         try {
-            $options = (localURL($url)) ? array('verify' => false) : array();
+            $options = (localURL($url)) ? array('verify' => false, 'timeout' => 30) : array('timeout' => 30);
             $response = Requests::get($url, array(), $options);
             if ($response->success) {
                 $temp = json_decode($response->body, true);
@@ -2591,7 +2591,7 @@ function testAPIConnection($array)
             if (!empty($GLOBALS['jdownloaderURL'])) {
                 $url = qualifyURL($GLOBALS['jdownloaderURL']);
                 try {
-                    $options = (localURL($url)) ? array('verify' => false) : array();
+	                $options = (localURL($url)) ? array('verify' => false, 'timeout' => 30) : array('timeout' => 30);
                     $response = Requests::get($url, array(), $options);
                     if ($response->success) {
                         return true;
