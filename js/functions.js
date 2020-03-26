@@ -2638,6 +2638,7 @@ function tabProcess(arrayItems) {
 		noTabs(arrayItems);
 	}
 	$(menuExtras(arrayItems.data.user.loggedin)).appendTo($('#side-menu'));
+    new SimpleBar($('.sidebar')[0]);
 }
 function buildLogin(){
 	swapDisplay('login');
