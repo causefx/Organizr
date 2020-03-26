@@ -113,7 +113,7 @@
     <!-- ============================================================== -->
     <!-- Left Sidebar - style you can find in sidebar.scss  -->
     <!-- ============================================================== -->
-    <div class="navbar-default sidebar" role="navigation">
+    <div class="navbar-default sidebar" role="navigation" data-simplebar-direction="rtl">
         <div class="sidebar-nav">
             <div class="sidebar-head">
                 <h3><span class="open-close m-r-5"><i class="ti-menu hidden-xs"></i><i class="ti-close visible-xs"></i></span>
