@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1473a4b919301bb2dba1f39810e12418",
+    "content-hash": "b895341ab62fbe32e131b91bf9ca2e04",
     "packages": [
         {
             "name": "adldap2/adldap2",
@@ -129,16 +129,16 @@
         },
         {
             "name": "dibi/dibi",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dg/dibi.git",
-                "reference": "906e1f240742124e49562cace271916e1b08c991"
+                "reference": "d571460a6f8fa1334a04f7aaa1551bb0f12c2266"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dg/dibi/zipball/906e1f240742124e49562cace271916e1b08c991",
-                "reference": "906e1f240742124e49562cace271916e1b08c991",
+                "url": "https://api.github.com/repos/dg/dibi/zipball/d571460a6f8fa1334a04f7aaa1551bb0f12c2266",
+                "reference": "d571460a6f8fa1334a04f7aaa1551bb0f12c2266",
                 "shasum": ""
             },
             "require": {
@@ -192,7 +192,7 @@
                 "sqlite",
                 "sqlsrv"
             ],
-            "time": "2018-09-17T11:47:10+00:00"
+            "time": "2020-03-26T03:05:01+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

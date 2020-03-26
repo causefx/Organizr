@@ -445,11 +445,12 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 		$columns = [];
 		static $types = [SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null'];
 		for ($i = 0; $i < $count; $i++) {
+			$type = $this->resultSet->columnType($i); // buggy in PHP 7.4.4 & 7.3.16, bug 79414
 			$columns[] = [
 				'name' => $this->resultSet->columnName($i),
 				'table' => null,
 				'fullname' => $this->resultSet->columnName($i),
-				'nativetype' => $types[$this->resultSet->columnType($i)],
+				'nativetype' => $type ? $types[$type] : null,
 			];
 		}
 		return $columns;
