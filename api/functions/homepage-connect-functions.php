@@ -839,7 +839,7 @@ function nzbgetConnect()
 		try {
 			$options = (localURL($url)) ? array('verify' => false) : array();
 			if($GLOBALS['nzbgetUsername'] !== '' && decrypt($GLOBALS['nzbgetPassword']) !== ''){
-				$credentials = array('auth' => new Requests_Auth_Digest(array($GLOBALS['nzbgetUsername'], decrypt($GLOBALS['nzbgetPassword']))));
+				$credentials = array('auth' => new Requests_Auth_Basic(array($GLOBALS['nzbgetUsername'], decrypt($GLOBALS['nzbgetPassword']))));
 				$options = array_merge($options, $credentials);
 			}
 			$response = Requests::get($url, array(), $options);
@@ -854,7 +854,7 @@ function nzbgetConnect()
 		try {
 			$options = (localURL($url)) ? array('verify' => false) : array();
 			if($GLOBALS['nzbgetUsername'] !== '' && decrypt($GLOBALS['nzbgetPassword']) !== ''){
-				$credentials = array('auth' => new Requests_Auth_Digest(array($GLOBALS['nzbgetUsername'], decrypt($GLOBALS['nzbgetPassword']))));
+				$credentials = array('auth' => new Requests_Auth_Basic(array($GLOBALS['nzbgetUsername'], decrypt($GLOBALS['nzbgetPassword']))));
 				$options = array_merge($options, $credentials);
 			}
 			$response = Requests::get($url, array(), $options);
@@ -2627,7 +2627,7 @@ function testAPIConnection($array)
 				try {
 					$options = (localURL($url)) ? array('verify' => false) : array();
 					if($GLOBALS['nzbgetUsername'] !== '' && decrypt($GLOBALS['nzbgetPassword']) !== ''){
-						$credentials = array('auth' => new Requests_Auth_Digest(array($GLOBALS['nzbgetUsername'], decrypt($GLOBALS['nzbgetPassword']))));
+						$credentials = array('auth' => new Requests_Auth_Basic(array($GLOBALS['nzbgetUsername'], decrypt($GLOBALS['nzbgetPassword']))));
 						$options = array_merge($options, $credentials);
 					}
 					$response = Requests::get($url, array(), $options);
