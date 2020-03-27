@@ -14,6 +14,7 @@ lang.init({
 	allowCookieOverride: true
 });
 var OAuthLoginNeeded = false;
+var pingOrg = false;
 var timeouts = {};
 var increment = 0;
 var tabInformation = {};
@@ -2638,6 +2639,7 @@ function tabProcess(arrayItems) {
 		noTabs(arrayItems);
 	}
 	$(menuExtras(arrayItems.data.user.loggedin)).appendTo($('#side-menu'));
+    new SimpleBar($('.sidebar')[0], { direction: 'rtl' });
 }
 function buildLogin(){
 	swapDisplay('login');
@@ -4335,7 +4337,7 @@ function buildRequestItem(array, extra=null){
 				var user = (activeInfo.user.groupID <= 1) ? '<span lang="en">Requested By:</span> '+v.user : '';
 				var user2 = (activeInfo.user.groupID <= 1) ? '<br>'+v.user : '';
 				items += `
-				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
+				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` request-`+v.request_id+`-div mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
 					<div class="outside-request-div">
 						<div class="inside-over-request-div `+badge2+`"></div>
 						<div class="inside-request-div `+badge+`"></div>
@@ -4825,8 +4827,9 @@ function processRequest(id,type){
 function ombiActions(id,action,type){
 	//console.log(id,action,type);
 	var msg = (activeInfo.user.groupID <= 1) ? '<a href="https://github.com/tidusjar/Ombi/issues/2176" target="_blank">Not Org Fault - Ask Ombi</a>' : 'Connection Error to Request Server';
-	ajaxloader('.preloader-'+id,'in');
-    ajaxloader('.mfp-content .white-popup .col-md-8 .white-box .user-bg','in');
+	ajaxloader('.request-' + id + '-div', 'in')
+    $.magnificPopup.close();
+    message(window.lang.translate('Submitting Action to Ombi'),'',activeInfo.settings.notifications.position,"#FFF",'success',"3500");
 	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
         try {
             var response = JSON.parse(data);
@@ -4839,7 +4842,6 @@ function ombiActions(id,action,type){
 		if(response.data !== false){
             if(action == 'delete'){
                 homepageRequests();
-                $.magnificPopup.close();
                 message(window.lang.translate('Deleted Request Item'),'',activeInfo.settings.notifications.position,"#FFF",'success',"3500");
                 return true;
             }
@@ -4850,12 +4852,11 @@ function ombiActions(id,action,type){
                 orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(response.data.bd));
                 return false;
             }
-            console.log(responseData);
+            //console.log(responseData);
             var responseMessage = (responseData.isError == true) ? responseData.errorMessage : 'Success';
             var responseType = (responseData.isError == true) ? 'error' : 'success';
 			homepageRequests();
 			if(action !== 'add'){
-				$.magnificPopup.close();
 				message(window.lang.translate('Updated Request Item'),responseMessage,activeInfo.settings.notifications.position,"#FFF",responseType,"3500");
 			}else{
 				ajaxloader();
@@ -5060,7 +5061,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.filename+`</td>
-                    <td class="hidden-xs">`+v.status+`</td>
+                    <td class="hidden-xs sabnzbd-`+cleanClass(v.status)+`">`+v.status+`</td>
                     <td class="downloader mouse" data-target="`+v.nzo_id+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>
                     <td class="hidden-xs"><span class="label label-info">`+v.cat+`</span></td>
                     <td class="hidden-xs">`+v.size+`</td>
@@ -5080,7 +5081,7 @@ function buildDownloaderItem(array, source, type='none'){
                 history += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs">`+v.status+`</td>
+                    <td class="hidden-xs sabnzbd-`+cleanClass(v.status)+`">`+v.status+`</td>
                     <td class="hidden-xs"><span class="label label-info">`+v.category+`</span></td>
                     <td class="hidden-xs">`+v.size+`</td>
                     <td class="text-right">
@@ -5110,7 +5111,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.NZBName+`</td>
-                    <td class="hidden-xs">`+v.Status+`</td>
+                    <td class="hidden-xs nzbget-`+cleanClass(v.Status)+`">`+v.Status+`</td>
                     <!--<td class="downloader mouse" data-target="`+v.NZBID+`" data-source="sabnzbd" data-action="`+action+`"><i class="fa fa-`+actionIcon+`"></i></td>-->
                     <td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
                     <td class="hidden-xs">`+humanFileSize(size,true)+`</td>
@@ -5131,7 +5132,7 @@ function buildDownloaderItem(array, source, type='none'){
                 history += `
                 <tr>
                     <td class="max-texts">`+v.NZBName+`</td>
-                    <td class="hidden-xs">`+v.Status+`</td>
+                    <td class="hidden-xs nzbget-`+cleanClass(v.Status)+`">`+v.Status+`</td>
                     <td class="hidden-xs"><span class="label label-info">`+v.Category+`</span></td>
                     <td class="hidden-xs">`+humanFileSize(size,true)+`</td>
                     <td class="text-right">
@@ -5194,7 +5195,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs">`+status+`</td>
+                    <td class="hidden-xs transmission-`+cleanClass(status)+`">`+status+`</td>
                     <td class="hidden-xs">`+v.downloadDir+`</td>
                     <td class="hidden-xs">`+humanFileSize(v.totalSize,true)+`</td>
                     <td class="text-right">
@@ -5229,7 +5230,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+date+`">`+v.name+`</span></td>
-                    <td class="hidden-xs">`+v.status+`</td>
+                    <td class="hidden-xs rtorrent-`+cleanClass(v.status)+`">`+v.status+`</td>
                     <td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+downTotal+`"><i class="fa fa-download"></i>&nbsp;`+download+`</span></td>
                     <td class="hidden-xs"><span class="tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+upTotal+`"><i class="fa fa-upload"></i>&nbsp;`+upload+`</span></td>
                     <td class="hidden-xs">`+size+`</td>
@@ -5290,7 +5291,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs qbit-`+status+`">`+status+`</td>
+                    <td class="hidden-xs qbit-`+cleanClass(status)+`">`+status+`</td>
                     <td class="hidden-xs">`+v.save_path+`</td>
                     <td class="hidden-xs">`+size+`</td>
                     <td class="text-right">
@@ -5321,7 +5322,7 @@ function buildDownloaderItem(array, source, type='none'){
                 queue += `
                 <tr>
                     <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs">`+v.state+`</td>
+                    <td class="hidden-xs deluge-`+cleanClass(v.state)+`">`+v.state+`</td>
                     <td class="hidden-xs">`+size+`</td>
                     <td class="hidden-xs"><i class="fa fa-download"></i>&nbsp;`+download+`</td>
                     <td class="hidden-xs"><i class="fa fa-upload"></i>&nbsp;`+upload+`</td>
@@ -7378,6 +7379,21 @@ function oAuthLoginNeededCheck() {
 function ipInfoSpan(ip){
     return '<span class="ipInfo mouse">'+ip+'</span>';
 }
+function checkToken(activate = false){
+    if(typeof activeInfo !== 'undefined'){
+        if(typeof activeInfo.settings.misc.uuid !== 'undefined'){
+            var token = getCookie('organizr_token_' + activeInfo.settings.misc.uuid);
+            if(token){
+                setTimeout(function(){ checkToken(true); }, 5000);
+            }else{
+                if(activate){
+                    local('set','message','Token Expired|You have been logged out|error');
+                    location.reload();
+                }
+            }
+        }
+    }
+}
 function launch(){
 	organizrConnect('api/?v1/launch_organizr').success(function (data) {
         try {
@@ -7425,6 +7441,7 @@ function launch(){
 		changeStyle(activeInfo.style);
 		changeTheme(activeInfo.theme);
 		setSSO();
+		checkToken();
 		switch (json.data.status.status) {
 			case "wizard":
 				buildWizard();

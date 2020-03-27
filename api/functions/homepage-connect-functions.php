@@ -52,7 +52,7 @@ function homepageConnect($array)
 			return getCalendar();
 			break;
 		case 'getRequests':
-			return getOmbiRequests($GLOBALS['ombiLimit']);
+			return getOmbiRequests('both', $GLOBALS['ombiLimit']);
 			break;
 		case 'getHealthChecks':
 			return (qualifyRequest($GLOBALS['homepageHealthChecksAuth'])) ? getHealthChecks($array['data']['tags']) : false;
@@ -763,7 +763,7 @@ function jdownloaderConnect()
         $url = qualifyURL($GLOBALS['jdownloaderURL']);
 
         try {
-            $options = (localURL($url)) ? array('verify' => false) : array();
+            $options = (localURL($url)) ? array('verify' => false, 'timeout' => 30) : array('timeout' => 30);
             $response = Requests::get($url, array(), $options);
             if ($response->success) {
                 $temp = json_decode($response->body, true);
@@ -835,13 +835,13 @@ function nzbgetConnect()
 {
 	if ($GLOBALS['homepageNzbgetEnabled'] && !empty($GLOBALS['nzbgetURL']) && qualifyRequest($GLOBALS['homepageNzbgetAuth'])) {
 		$url = qualifyURL($GLOBALS['nzbgetURL']);
-		if (!empty($GLOBALS['nzbgetUsername']) && !empty($GLOBALS['nzbgetPassword'])) {
-			$url = $url . '/' . $GLOBALS['nzbgetUsername'] . ':' . decrypt($GLOBALS['nzbgetPassword']) . '/jsonrpc/listgroups';
-		} else {
-			$url = $url . '/jsonrpc/listgroups';
-		}
+		$url = $url . '/jsonrpc/listgroups';
 		try {
 			$options = (localURL($url)) ? array('verify' => false) : array();
+			if($GLOBALS['nzbgetUsername'] !== '' && decrypt($GLOBALS['nzbgetPassword']) !== ''){
+				$credentials = array('auth' => new Requests_Auth_Basic(array($GLOBALS['nzbgetUsername'], decrypt($GLOBALS['nzbgetPassword']))));
+				$options = array_merge($options, $credentials);
+			}
 			$response = Requests::get($url, array(), $options);
 			if ($response->success) {
 				$api['content']['queueItems'] = json_decode($response->body, true);
@@ -850,13 +850,13 @@ function nzbgetConnect()
 			writeLog('error', 'NZBGet Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		};
 		$url = qualifyURL($GLOBALS['nzbgetURL']);
-		if (!empty($GLOBALS['nzbgetUsername']) && !empty($GLOBALS['nzbgetPassword'])) {
-			$url = $url . '/' . $GLOBALS['nzbgetUsername'] . ':' . decrypt($GLOBALS['nzbgetPassword']) . '/jsonrpc/history';
-		} else {
-			$url = $url . '/jsonrpc/history';
-		}
+		$url = $url . '/jsonrpc/history';
 		try {
 			$options = (localURL($url)) ? array('verify' => false) : array();
+			if($GLOBALS['nzbgetUsername'] !== '' && decrypt($GLOBALS['nzbgetPassword']) !== ''){
+				$credentials = array('auth' => new Requests_Auth_Basic(array($GLOBALS['nzbgetUsername'], decrypt($GLOBALS['nzbgetPassword']))));
+				$options = array_merge($options, $credentials);
+			}
 			$response = Requests::get($url, array(), $options);
 			if ($response->success) {
 				$api['content']['historyItems'] = json_decode($response->body, true);
@@ -2591,7 +2591,7 @@ function testAPIConnection($array)
             if (!empty($GLOBALS['jdownloaderURL'])) {
                 $url = qualifyURL($GLOBALS['jdownloaderURL']);
                 try {
-                    $options = (localURL($url)) ? array('verify' => false) : array();
+	                $options = (localURL($url)) ? array('verify' => false, 'timeout' => 30) : array('timeout' => 30);
                     $response = Requests::get($url, array(), $options);
                     if ($response->success) {
                         return true;
@@ -2623,13 +2623,13 @@ function testAPIConnection($array)
 		case 'nzbget':
 			if (!empty($GLOBALS['nzbgetURL'])) {
 				$url = qualifyURL($GLOBALS['nzbgetURL']);
-				if (!empty($GLOBALS['nzbgetUsername']) && !empty($GLOBALS['nzbgetPassword'])) {
-					$url = $url . '/' . $GLOBALS['nzbgetUsername'] . ':' . decrypt($GLOBALS['nzbgetPassword']) . '/jsonrpc/listgroups';
-				} else {
-					$url = $url . '/jsonrpc/listgroups';
-				}
+				$url = $url . '/jsonrpc/listgroups';
 				try {
 					$options = (localURL($url)) ? array('verify' => false) : array();
+					if($GLOBALS['nzbgetUsername'] !== '' && decrypt($GLOBALS['nzbgetPassword']) !== ''){
+						$credentials = array('auth' => new Requests_Auth_Basic(array($GLOBALS['nzbgetUsername'], decrypt($GLOBALS['nzbgetPassword']))));
+						$options = array_merge($options, $credentials);
+					}
 					$response = Requests::get($url, array(), $options);
 					if ($response->success) {
 						return true;

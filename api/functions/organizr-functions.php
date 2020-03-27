@@ -1140,6 +1140,7 @@ function loadAppearance()
 	$appearance['logo'] = $GLOBALS['logo'];
 	$appearance['title'] = $GLOBALS['title'];
 	$appearance['useLogo'] = $GLOBALS['useLogo'];
+	$appearance['useLogoLogin'] = $GLOBALS['useLogoLogin'];
 	$appearance['headerColor'] = $GLOBALS['headerColor'];
 	$appearance['headerTextColor'] = $GLOBALS['headerTextColor'];
 	$appearance['sidebarColor'] = $GLOBALS['sidebarColor'];
@@ -1205,6 +1206,12 @@ function getCustomizeAppearance()
 					'label' => 'Login Wallpaper',
 					'value' => $GLOBALS['loginWallpaper'],
 					'help' => 'You may enter multiple URL\'s using the CSV format.  i.e. link#1,link#2,link#3'
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'useLogoLogin',
+					'label' => 'Use Logo instead of Title on Login Page',
+					'value' => $GLOBALS['useLogoLogin']
 				),
 				array(
 					'type' => 'switch',
@@ -1691,7 +1698,7 @@ function auth()
 		}
 	}
 	if ($group !== null) {
-		if ($_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik' || $GLOBALS['traefikAuthEnable']) {
+		if ((isset($_SERVER['HTTP_X_FORWARDED_SERVER']) && $_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik') || $GLOBALS['traefikAuthEnable']) {
 			$redirect = 'Location: ' . getServerPath();
 		}
 		if (qualifyRequest($group) && $unlocked) {
@@ -1722,7 +1729,7 @@ function getTabGroup ($tab)
 
 function logoOrText()
 {
-	if ($GLOBALS['useLogo'] == false) {
+	if ($GLOBALS['useLogoLogin'] == false) {
 		return '<h1>' . $GLOBALS['title'] . '</h1>';
 	} else {
 		return '<img class="loginLogo" src="' . $GLOBALS['loginLogo'] . '" alt="Home" />';
@@ -2025,13 +2032,23 @@ function getImage()
 		if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh == false) {
 			header("Content-type: image/jpeg");
 			//@readfile($cachefile);
-			echo @curl('get', $cachefile)['content'];
+			//echo @curl('get', $cachefile)['content'];
+			$options = array('verify' => false);
+			$response = Requests::get($cachefile, array(), $options);
+			if ($response->success) {
+				echo $response->body;
+			}
 			exit;
 		}
 		ob_start(); // Start the output buffer
 		header('Content-type: image/jpeg');
 		//@readfile($image_src);
-		echo @curl('get', $image_src)['content'];
+		//echo @curl('get', $image_src)['content'];
+		$options = array('verify' => false);
+		$response = Requests::get($image_src, array(), $options);
+		if ($response->success) {
+			echo $response->body;
+		}
 		// Cache the output to a file
 		$fp = fopen($cachefile, 'wb');
 		fwrite($fp, ob_get_contents());

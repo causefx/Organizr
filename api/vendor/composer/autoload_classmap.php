@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Dibi\\Bridges\\Nette\\DibiExtension22' => $vendorDir . '/dibi/dibi/src/Dibi/Bridges/Nette/DibiExtension22.php',
+    'Dibi\\Bridges\\Tracy\\Panel' => $vendorDir . '/dibi/dibi/src/Dibi/Bridges/Tracy/Panel.php',
     'Dibi\\Connection' => $vendorDir . '/dibi/dibi/src/Dibi/Connection.php',
     'Dibi\\ConstraintViolationException' => $vendorDir . '/dibi/dibi/src/Dibi/exceptions.php',
     'Dibi\\DataSource' => $vendorDir . '/dibi/dibi/src/Dibi/DataSource.php',

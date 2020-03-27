@@ -1,6 +1,6 @@
 <?php include 'api/functions/static-globals.php';?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ontouchmove>
 
 <head>
     <meta charset="utf-8">
@@ -51,7 +51,7 @@
     <![endif]-->
 </head>
 
-<body class="fix-header" data-active-tab="">
+<body class="fix-header" data-active-tab="" tabIndex=0>
 <!-- ============================================================== -->
 <!-- Preloader -->
 <!-- ============================================================== -->
@@ -113,8 +113,8 @@
     <!-- ============================================================== -->
     <!-- Left Sidebar - style you can find in sidebar.scss  -->
     <!-- ============================================================== -->
-    <div class="navbar-default sidebar" role="navigation">
-        <div class="sidebar-nav slimscrollsidebar">
+    <div class="navbar-default sidebar" role="navigation" data-simplebar-direction="rtl">
+        <div class="sidebar-nav">
             <div class="sidebar-head">
                 <h3><span class="open-close m-r-5"><i class="ti-menu hidden-xs"></i><i class="ti-close visible-xs"></i></span>
                     <span class="hide-menu hidden-xs" lang="en">Navigation</span>

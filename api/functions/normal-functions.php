@@ -101,13 +101,13 @@ function coookie($type, $name, $value = '', $days = -1, $http = true)
 			. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + (86400 * $days)) . ' GMT')
 			. (empty($Path) ? '' : '; path=' . $Path)
 			. (empty($Domain) ? '' : '; domain=' . $Domain)
-			. (!$Secure ? '' : '; secure')
+			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + (86400 * $days)) . ' GMT')
 			. (empty($Path) ? '' : '; path=' . $Path)
 			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
-			. (!$Secure ? '' : '; secure')
+			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 	} elseif ($type == 'delete') {
 		unset($_COOKIE[$name]);
@@ -115,13 +115,13 @@ function coookie($type, $name, $value = '', $days = -1, $http = true)
 			. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
 			. (empty($Path) ? '' : '; path=' . $Path)
 			. (empty($Domain) ? '' : '; domain=' . $Domain)
-			. (!$Secure ? '' : '; secure')
+			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
 			. (empty($Path) ? '' : '; path=' . $Path)
 			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
-			. (!$Secure ? '' : '; secure')
+			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 	}
 }
@@ -150,13 +150,13 @@ function coookieSeconds($type, $name, $value = '', $ms, $http = true)
 			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + ($ms / 1000)) . ' GMT')
 			. (empty($Path) ? '' : '; path=' . $Path)
 			. (empty($Domain) ? '' : '; domain=' . $Domain)
-			. (!$Secure ? '' : '; secure')
+			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + ($ms / 1000)) . ' GMT')
 			. (empty($Path) ? '' : '; path=' . $Path)
 			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
-			. (!$Secure ? '' : '; secure')
+			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 	} elseif ($type == 'delete') {
 		unset($_COOKIE[$name]);
@@ -164,13 +164,13 @@ function coookieSeconds($type, $name, $value = '', $ms, $http = true)
 			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
 			. (empty($Path) ? '' : '; path=' . $Path)
 			. (empty($Domain) ? '' : '; domain=' . $Domain)
-			. (!$Secure ? '' : '; secure')
+			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
 			. (empty($Path) ? '' : '; path=' . $Path)
 			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
-			. (!$Secure ? '' : '; secure')
+			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 	}
 }
