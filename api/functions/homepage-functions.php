@@ -2668,6 +2668,13 @@ function buildHomepageSettings()
 					$class .= ' faded';
 				}
 				break;
+			case 'homepageOrderPihole':
+				$class = 'bg-info';
+				$image = 'plugins/images/tabs/pihole.png';
+				if (!$GLOBALS['homepagePiholeEnabled']) {
+					$class .= ' faded';
+				}
+				break;
 			default:
 				$class = 'blue-bg';
 				$image = '';
