@@ -5678,6 +5678,23 @@ function buildHealthChecks(array){
 	<div class="clearfix"></div>
 	` : '';
 }
+function buildPihole(array){
+    if(array === false){ return ''; }
+    return (array) ? `
+    <div id="allPihole">
+		<div class="el-element-overlay row">
+		    <div class="col-md-12">
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Pi-hole</span></h4>
+		        <hr class="hidden-xs ml-2">
+		    </div>
+			<div class="clearfix"></div>
+		    <div class="piholeCards col-sm-12">
+			    `+buildPiholeItem(array)+`
+			</div>
+		</div>
+	</div>
+    ` : 'hello';
+}
 function buildUnifi(array){
     if(array === false){ return ''; }
     var items = (typeof array.content.unifi.data !== 'undefined') ? array.content.unifi.data.length : false;
@@ -5858,6 +5875,180 @@ function buildHealthChecksItem(array){
         `
     });
     return checks;
+}
+function buildPiholeItem(array){
+    var stats = `
+    <style>
+    .bg-green {
+        background-color: #00a65a !important;
+    }
+    
+    .bg-aqua {
+        background-color: #00c0ef!important;
+    }
+    
+    .bg-yellow {
+        background-color: #f39c12!important;
+    }
+    
+    .bg-red {
+        background-color: #dd4b39!important;
+    }
+    
+    .pihole-stat {
+        color: #fff !important;
+    }
+    
+    .pihole-stat .card-body h3 {
+        font-size: 38px;
+        font-weight: 700;
+    }
+
+    .pihole-stat .card-body i {
+        font-size: 5em;
+        float: right;
+        color: #ffffff6b;
+    }
+
+    .inline-block {
+        display: inline-block;
+    }
+    </style>
+    `;
+    var length = Object.keys(array['data']).length;
+    var combine = array['options']['combine'];
+    var totalQueries = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card text-white mb-3 pihole-stat bg-green">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p>Total queries</p>`;
+        for(var key in data) {
+            var e = data[key];
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-globe inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var totalBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-aqua">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p>Queries Blocked</p>`;
+        for(var key in data) {
+            var e = data[key];
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-hand-paper-o inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var percentBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-yellow">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p>Percent Blocked</p>`;
+        for(var key in data) {
+            var e = data[key];
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_percentage_today'].toFixed(1)+`%</h3>`
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-pie-chart inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var domainsBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p>Domains on Blocklist</p>`;
+        for(var key in data) {
+            var e = data[key];
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-list inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    if(combine) {
+        stats += '<div class="row">'
+        stats += totalQueries(array['data']);
+        stats += totalBlocked(array['data']);
+        stats += percentBlocked(array['data']);
+        stats += domainsBlocked(array['data']);
+        stats += '</div>';
+    } else {
+        for(var key in array['data']) {
+            if(length > 1) {
+                stats += `
+                <div class="row mb-2">
+                    <div class="col-sm-12">
+                        `+key+`
+                    </div>
+                </div>
+                `;
+            }
+            var data = array['data'][key];
+            obj = {};
+            obj[key] = data;
+            stats += '<div class="row">'
+            stats += totalQueries(obj);
+            stats += totalBlocked(obj);
+            stats += percentBlocked(obj);
+            stats += domainsBlocked(obj);
+            stats += '</div>';
+        };
+    }
+    return stats;
+}
+function homepagePihole(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepagePiholeRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getPihole'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderPihole').innerHTML = '';
+        if(response.data !== null){
+            buildPihole(response.data)
+            $('#homepageOrderPihole').html(buildPihole(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'PiHole-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepagePihole(timeout); }, timeout);
 }
 function homepageHealthChecks(tags, timeout){
     var tags = (typeof tags !== 'undefined') ? tags : activeInfo.settings.homepage.options.healthChecksTags;

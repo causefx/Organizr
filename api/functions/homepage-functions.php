@@ -22,6 +22,7 @@ function homepageOrder()
 		"homepageOrderdownloader" => $GLOBALS['homepageOrderdownloader'],
 		"homepageOrderhealthchecks" => $GLOBALS['homepageOrderhealthchecks'],
 		"homepageOrderunifi" => $GLOBALS['homepageOrderunifi'],
+		"homepageOrderPihole" => $GLOBALS['homepageOrderPihole'],
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -331,6 +332,17 @@ function buildHomepageItem($homepageItem)
 				';
 			}
 			break;
+		case 'homepageOrderPihole':
+			if ($GLOBALS['homepagePiholeEnabled']) {
+				$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Pi-hole Stats...</h2></div>';
+				$item .= '
+				<script>
+				// Pi-hole Stats
+				homepagePihole();
+				// End Pi-hole Stats
+				</script>
+				';
+			}
 		default:
 			# code...
 			break;
@@ -2488,7 +2500,49 @@ function getHomepageList()
 					),
 				)
 			)
-		)
+		),
+		array(
+			'name' => 'Pi-hole',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/pihole.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepagePiholeEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepagePiholeEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepagePiholeAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepagePiholeAuth'],
+						'options' => $groups
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'piholeURL',
+						'label' => 'URL',
+						'value' => $GLOBALS['piholeURL'],
+						'help' => 'Please make sure to use local IP address and port and to include \'/admin/\' at the end of the URL. You can add multiple Pi-holes by comma separating the URLs.',
+						'placeholder' => 'http(s)://hostname:port/admin/'
+					),
+				),
+				'Misc' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepagePiholeCombine',
+						'label' => 'Combine stat cards',
+						'value' => $GLOBALS['homepagePiholeCombine'],
+						'help' => 'This controls whether to combine the stats for multiple piholes into 1 card.',
+					),
+				),
+			)
+			),
 	);
 }
 
@@ -2611,6 +2665,13 @@ function buildHomepageSettings()
 				$class = 'bg-info';
 				$image = 'plugins/images/tabs/ubnt.png';
 				if (!$GLOBALS['homepageUnifiEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderPihole':
+				$class = 'bg-info';
+				$image = 'plugins/images/tabs/pihole.png';
+				if (!$GLOBALS['homepagePiholeEnabled']) {
 					$class .= ' faded';
 				}
 				break;

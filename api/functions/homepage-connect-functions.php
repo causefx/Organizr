@@ -60,6 +60,9 @@ function homepageConnect($array)
 		case 'getUnifi':
 			return unifiConnect();
 			break;
+		case 'getPihole':
+			return getPihole();
+			break;
 		default:
 			# code...
 			break;
@@ -108,6 +111,31 @@ function getHealthChecks($tags = null)
 			return $a['status'] <=> $b['status'];
 		});
 		$api['content']['checks'] = isset($api['content']['checks']) ? $api['content']['checks'] : false;
+		return $api;
+	}
+	return false;
+}
+
+function getPihole()
+{
+	if ($GLOBALS['homepagePiholeEnabled'] && !empty($GLOBALS['piholeURL'])) {
+		$api = array();
+		$urls = explode(',', $GLOBALS['piholeURL']);
+		foreach($urls as $url) {
+			$url = $url . '/api.php?';
+			try {
+				$response = Requests::get($url, [], []);
+				if ($response->success) {
+					$piholeResults = json_decode($response->body, true);
+					$ip = qualifyURL($url, true)['host'];
+					$api['data'][$ip] = $piholeResults;
+				}
+			} catch (Requests_Exception $e) {
+				writeLog('error', 'Pi-hole Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			};
+		}
+		$api['options']['combine'] = $GLOBALS['homepagePiholeCombine'];
+		$api = isset($api) ? $api : false;
 		return $api;
 	}
 	return false;
