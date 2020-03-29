@@ -22,6 +22,7 @@ function homepageOrder()
 		"homepageOrderdownloader" => $GLOBALS['homepageOrderdownloader'],
 		"homepageOrderhealthchecks" => $GLOBALS['homepageOrderhealthchecks'],
 		"homepageOrderunifi" => $GLOBALS['homepageOrderunifi'],
+		"homepageOrdertautulli" => $GLOBALS['homepageOrdertautulli'],
 		"homepageOrderPihole" => $GLOBALS['homepageOrderPihole'],
 	);
 	asort($homepageOrder);
@@ -328,6 +329,18 @@ function buildHomepageItem($homepageItem)
 				// Unifi
 				homepageUnifi("' . $GLOBALS['homepageHealthChecksRefresh'] . '");
 				// End Unifi
+				</script>
+				';
+			}
+			break;
+		case 'homepageOrdertautulli':
+			if ($GLOBALS['homepageTautulliEnabled'] && qualifyRequest($GLOBALS['homepageTautulliAuth'])) {
+				$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Tautulli...</h2></div>';
+				$item .= '
+				<script>
+				// Tautulli
+				homepageTautulli("' . $GLOBALS['homepageTautulliRefresh'] . '");
+				// End Tautulli
 				</script>
 				';
 			}
@@ -2501,8 +2514,8 @@ function getHomepageList()
 				)
 			)
 		),
-		array(
-			'name' => 'Pi-hole',
+    array(
+      'name' => 'Pi-hole',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/pihole.png',
 			'category' => 'Monitor',
@@ -2542,7 +2555,123 @@ function getHomepageList()
 					),
 				),
 			)
-			),
+    ),
+		array(
+			'name' => 'Tautulli',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/tautulli.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageTautulliEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepageTautulliEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageTautulliAuth'],
+						'options' => $groups
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'tautulliURL',
+						'label' => 'URL',
+						'value' => $GLOBALS['tautulliURL'],
+						'help' => 'URL for Tautulli API, include the IP, the port and the base URL (e.g. /tautulli/) in the URL',
+						'placeholder' => 'http://<ip>:<port>'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'tautulliApikey',
+						'label' => 'API Key',
+						'value' => $GLOBALS['tautulliApikey']
+					)
+				),
+				'Library Stats' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliLibraries',
+						'label' => 'Libraries',
+						'value' => $GLOBALS['tautulliLibraries'],
+						'help' => 'Shows/hides the card with library information.',
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliLibraryAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageTautulliLibraryAuth'],
+						'options' => $groups
+					),
+				),
+				'Viewing Stats' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliPopularMovies',
+						'label' => 'Popular Movies',
+						'value' => $GLOBALS['tautulliPopularMovies'],
+						'help' => 'Shows/hides the card with Popular Movies information.',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliPopularTV',
+						'label' => 'Popular TV',
+						'value' => $GLOBALS['tautulliPopularTV'],
+						'help' => 'Shows/hides the card with Popular TV information.',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliTopMovies',
+						'label' => 'Top Movies',
+						'value' => $GLOBALS['tautulliTopMovies'],
+						'help' => 'Shows/hides the card with Top Movies information.',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliTopTV',
+						'label' => 'Top TV',
+						'value' => $GLOBALS['tautulliTopTV'],
+						'help' => 'Shows/hides the card with Top TV information.',
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliViewsAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageTautulliViewsAuth'],
+						'options' => $groups
+					),
+				),
+				'Misc Stats' => array(
+					
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliTopUsers',
+						'label' => 'Top Users',
+						'value' => $GLOBALS['tautulliTopUsers'],
+						'help' => 'Shows/hides the card with Top Users information.',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliTopPlatforms',
+						'label' => 'Top Platforms',
+						'value' => $GLOBALS['tautulliTopPlatforms'],
+						'help' => 'Shows/hides the card with Top Platforms information.',
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliMiscAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageTautulliMiscAuth'],
+						'options' => $groups
+					),
+				),
+			)
+		),
 	);
 }
 
@@ -2668,6 +2797,13 @@ function buildHomepageSettings()
 					$class .= ' faded';
 				}
 				break;
+			case 'homepageOrdertautulli':
+					$class = 'bg-info';
+					$image = 'plugins/images/tabs/tautulli.png';
+					if (!$GLOBALS['homepageTautulliEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 			case 'homepageOrderPihole':
 				$class = 'bg-info';
 				$image = 'plugins/images/tabs/pihole.png';

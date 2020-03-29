@@ -6381,6 +6381,279 @@ function homepageCalendar(timeout){
 	if(typeof timeouts['calendar-Homepage'] !== 'undefined'){ clearTimeout(timeouts['calendar-Homepage']); }
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
+function buildTautulliItem(array){
+    var cards = `
+    <style>
+    .homepage-tautulli-card .poster {
+        max-width: 100%;
+        max-height: 15em;
+    }
+
+    .homepage-tautulli-card .lib-icon {
+        max-width: 100%;
+        height: 7.5em;
+    }
+
+    .homepage-tautulli-card .avatar {
+        border-radius: 50%;
+    }
+
+    .homepage-tautulli-card .align-self-center {
+        text-align: center;
+    }
+
+    .homepage-tautulli-card ol.pl-2 li p {
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .one-line {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .homepage-tautulli-card .bg-img-cont {
+        overflow: hidden;
+        pointer-events: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .homepage-tautulli-card .bg-img {
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        filter: blur(7px) brightness(50%);
+    }
+
+    .lib-stats-row::before {
+        content: none !important;
+    }
+
+    .card-bg-colour {
+        background-color: #7b7b7b2e;
+    }
+
+    .platform-android-rgba { background-color: rgba(164, 202, 57, 0.40); }
+    .platform-atv-rgba { background-color: rgba(133, 132, 135, 0.40); }
+    .platform-chrome-rgba { background-color: rgba(237, 94, 80, 0.40); }
+    .platform-chromecast-rgba { background-color: rgba(16, 164, 232, 0.40); }
+    .platform-default-rgba { background-color: rgba(229, 160, 13, 0.40); }
+    .platform-dlna-rgba { background-color: rgba(12, 177, 75, 0.40); }
+    .platform-firefox-rgba { background-color: rgba(230, 120, 23, 0.40); }
+    .platform-gtv-rgba { background-color: rgba(0, 139, 207, 0.40); }
+    .platform-ie-rgba { background-color: rgba(0, 89, 158, 0.40); }
+    .platform-ios-rgba { background-color: rgba(133, 132, 135, 0.40); }
+    .platform-kodi-rgba { background-color: rgba(49, 175, 225, 0.40); }
+    .platform-linux-rgba { background-color: rgba(23, 147, 208, 0.40); }
+    .platform-macos-rgba { background-color: rgba(133, 132, 135, 0.40); }
+    .platform-msedge-rgba { background-color: rgba(0, 120, 215, 0.40); }
+    .platform-opera-rgba { background-color: rgba(255, 27, 45, 0.40); }
+    .platform-playstation-rgba { background-color: rgba(3, 77, 162, 0.40); }
+    .platform-plex-rgba { background-color: rgba(229, 160, 13, 0.40); }
+    .platform-plexamp-rgba { background-color: rgba(229, 160, 13, 0.40); }
+    .platform-roku-rgba { background-color: rgba(109, 60, 151, 0.40); }
+    .platform-safari-rgba { background-color: rgba(0, 169, 236, 0.40); }
+    .platform-samsung-rgba { background-color: rgba(3, 78, 162, 0.40); }
+    .platform-synclounge-rgba { background-color: rgba(21, 25, 36, 0.40); }
+    .platform-tivo-rgba { background-color: rgba(0, 167, 225, 0.40); }
+    .platform-wiiu-rgba { background-color: rgba(3, 169, 244, 0.40); }
+    .platform-windows-rgba { background-color: rgba(47, 192, 245, 0.40); }
+    .platform-wp-rgba { background-color: rgba(104, 33, 122, 0.40); }
+    .platform-xbmc-rgba { background-color: rgba(59, 72, 114, 0.40); }
+    .platform-xbox-rgba { background-color: rgba(16, 124, 16, 0.40); }
+    </style>
+    `;
+    var homestats = array.homestats.data;
+    var libstats = array.libstats;
+    var options = array.options;
+    var buildLibraries = function(data){
+        var libs = data.data;
+        var movies = [];
+        var tv = [];
+        var audio = [];
+
+        libs.forEach(e => {
+            switch(e['section_type']) {
+                case 'movie':
+                    movies.push(e);
+                    break;
+                case 'show':
+                    tv.push(e);
+                    break;
+                case 'artist':
+                    audio.push(e);
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        movies = movies.sort((a, b) => (parseInt(a['count']) > parseInt(b['count'])) ? -1 : 1);
+        tv = tv.sort((a, b) => (parseInt(a['count']) > parseInt(b['count'])) ? -1 : 1);
+        audio = audio.sort((a, b) => (parseInt(a['count']) > parseInt(b['count'])) ? -1 : 1);
+
+        var buildCard = function(type, data) {
+            var card = `
+            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                <div class="card text-white mb-3 homepage-tautulli-card card-bg-colour">
+                    <div class="card-body">
+                        <div class="row" style="display: flex;">
+                            <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">
+                                <img src="`+options['url']+`images/libraries/`+type;
+                                if(type == 'artist') {
+                                    card += `.png`;
+                                } else {
+                                    card += '.svg';
+                                }
+            card += `
+                                " class="lib-icon" alt="library icon">
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                                <ol class="pl-2">`;
+                                data.forEach(e => {
+                                    card += `<li class="w-100">
+                                                <p class="one-line d-inline">`+e['section_name']+`</p>`;
+                                                if(type == 'movie') {
+                                                    card += `<p class="mb-0 pull-right d-inline text-right text-warning">`+e['count']+`</p>`;
+                                                } else {
+                                                    card += `<p class="mb-0 pull-right d-inline text-right text-warning">`+e['count']+` / `+e['parent_count']+` / `+e['child_count']+`</p>`;
+                                                }
+                                    card += `
+                                            </li>`;
+                                });
+            card += `
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            return card;
+        };
+        var card = buildCard('movie', movies);
+        card += buildCard('show', tv);
+        card += buildCard('artist', audio);
+        return card;
+    };
+    var buildStats = function(data, stat){
+        var card = '';
+        data.forEach(e => {
+            if(e['stat_id'] == stat) {
+                if(stat === 'top_platforms') {
+                    classes = ' platform-' + e['rows'][0]['platform_name'] + '-rgba';
+                } else if(stat === 'top_users') {
+                    classes = ' card-bg-colour';
+                } else {
+                    classes = '';
+                }
+                card += `
+                <div class=col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                    <div class="card text-white mb-3 homepage-tautulli-card`+classes+`">`;
+                        if(stat !== 'top_users' && stat !== 'top_platforms') {
+                            card += `
+                            <div class="bg-img-cont">
+                                <img class="bg-img" src="`+options['url']+`pms_image_proxy?img=`+e['rows'][0]['art']+`" alt="background art">
+                            </div>
+                            `;
+                        }
+                card += `
+                        <div class="card-body">
+                            <div class="row" style="display: flex;">
+                                <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">`;
+                                if(stat == 'top_users') {
+                                    card += `<img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar">`;
+                                } else if(stat == 'top_platforms') {
+                                    card += `<img src="`+options['url']+`images/platforms/`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon">`;
+                                } else {
+                                    card += `<img src="`+options['url']+`pms_image_proxy?img=`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster">`;
+                                }
+                card += `
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                                    <h4>`+e['stat_title']+`</h4>
+                                    <hr class="my-2">
+                                    <ol class="pl-2">`;
+                                    for(var i = 0; i < 5; i++) {
+                                        var item = e['rows'][i];
+                                        if(stat == 'top_users') {
+                                            card += `<li><p class="one-line">`+item['user']+`</p></li>`;
+                                        } else if(stat == 'top_platforms') {
+                                            card += `<li><p class="one-line">`+item['platform']+`</p></li>`;
+                                        } else {
+                                            card += `<li><p class="one-line">`+item['title']+`</p></li>`;
+                                        }
+                                    }
+                card += `
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            } else {
+                return '';
+            }
+        });
+        return card;
+    };
+    cards += '<div class="row">'
+    cards += (options['popularMovies']) ? buildStats(homestats, 'popular_movies') : '';
+    cards += (options['popularTV']) ? buildStats(homestats, 'popular_tv') : '';
+    cards += (options['topMovies']) ? buildStats(homestats, 'top_movies') : '';
+    cards += (options['topTV']) ? buildStats(homestats, 'top_tv') : '';
+    cards += (options['topUsers']) ? buildStats(homestats, 'top_users') : '';
+    cards += (options['topPlatforms']) ? buildStats(homestats, 'top_platforms') : '';
+    cards += '</div>';
+    cards += '<div class="row">'
+    cards += (options['libraries']) ? buildLibraries(libstats) : '';
+    cards += '</div>';
+    return cards;
+}
+function buildTautulli(array){
+    if(array === false){ return ''; }
+    return (array) ? `
+    <div id="allPihole">
+		<div class="el-element-overlay row">
+		    <div class="col-md-12">
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Tautulli</span></h4>
+		        <hr class="hidden-xs ml-2">
+		    </div>
+			<div class="clearfix"></div>
+            <div class="piholeCards col-sm-12">
+                `+buildTautulliItem(array)+`
+			</div>
+		</div>
+	</div>
+    ` : '';
+}
+function homepageTautulli(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageTautulliRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getTautulli'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrdertautulli').innerHTML = '';
+        if(response.data !== null){
+            buildTautulli(response.data)
+            $('#homepageOrdertautulli').html(buildTautulli(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Tautulli-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageTautulli(timeout); }, timeout);
+}
 // Thanks Swifty!
 function PopupCenter(url, title, w, h) {
     // Fixes dual-screen position                         Most browsers      Firefox
