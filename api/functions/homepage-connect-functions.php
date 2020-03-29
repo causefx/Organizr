@@ -2403,7 +2403,7 @@ function unifiConnect()
 
 function getTautulli()
 {
-	if ($GLOBALS['homepageTautulliEnabled'] && !empty($GLOBALS['tautulliURL']) && !empty($GLOBALS['tautulliApikey'])) {
+	if ($GLOBALS['homepageTautulliEnabled'] && !empty($GLOBALS['tautulliURL']) && !empty($GLOBALS['tautulliApikey']) && qualifyRequest($GLOBALS['homepageTautulliAuth'])) {
 		$api = [];
 		$url = $GLOBALS['tautulliURL'] . '/api/v2?apikey=' . $GLOBALS['tautulliApikey'];
 		try {
@@ -2429,8 +2429,34 @@ function getTautulli()
 				'popularMovies' => $GLOBALS['tautulliPopularMovies'],
 				'popularTV' => $GLOBALS['tautulliPopularTV'],
 			];
+
+			$ids = []; // Array of stat_ids to remove from the returned array
+			if(!qualifyRequest($GLOBALS['homepageTautulliLibraryAuth'])) {
+				$api['options']['libraries'] = false;
+				unset($api['libstats']);
+			}
+			if(!qualifyRequest($GLOBALS['homepageTautulliViewsAuth'])) {
+				$api['options']['topMovies'] = false;
+				$api['options']['topTV'] = false;
+				$api['options']['popularMovies'] = false;
+				$api['options']['popularTV'] = false;
+				$ids = array_merge([ 'top_movies', 'popular_movies', 'popular_tv', 'top_tv' ], $ids);
+				$api['homestats']['data'] = array_values($api['homestats']['data']);
+			}
+			if(!qualifyRequest($GLOBALS['homepageTautulliMiscAuth'])) {
+				$api['options']['topUsers'] = false;
+				$api['options']['topPlatforms'] = false;
+				$ids = array_merge([ 'top_platforms', 'top_users' ], $ids);
+				$api['homestats']['data'] = array_values($api['homestats']['data']);
+			}
+			$ids = array_merge([ 'top_music', 'popular_music', 'last_watched', 'most_concurrent' ], $ids);
+			foreach($ids as $id) {
+				$key = array_search($id, array_column($api['homestats']['data'], 'stat_id'));
+				unset($api['homestats']['data'][$key]);
+				$api['homestats']['data'] = array_values($api['homestats']['data']);
+			}
 		} catch (Requests_Exception $e) {
-			writeLog('error', 'Pi-hole Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			writeLog('error', 'Tautulli Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		};
 		$api = isset($api) ? $api : false;
 		return $api;

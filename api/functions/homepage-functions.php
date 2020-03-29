@@ -2539,7 +2539,7 @@ function getHomepageList()
 						'value' => $GLOBALS['tautulliApikey']
 					)
 				),
-				'Misc Options' => array(
+				'Library Stats' => array(
 					array(
 						'type' => 'switch',
 						'name' => 'tautulliLibraries',
@@ -2547,6 +2547,15 @@ function getHomepageList()
 						'value' => $GLOBALS['tautulliLibraries'],
 						'help' => 'Shows/hides the card with library information.',
 					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliLibraryAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageTautulliLibraryAuth'],
+						'options' => $groups
+					),
+				),
+				'Viewing Stats' => array(
 					array(
 						'type' => 'switch',
 						'name' => 'tautulliPopularMovies',
@@ -2576,6 +2585,16 @@ function getHomepageList()
 						'help' => 'Shows/hides the card with Top TV information.',
 					),
 					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliViewsAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageTautulliViewsAuth'],
+						'options' => $groups
+					),
+				),
+				'Misc Stats' => array(
+					
+					array(
 						'type' => 'switch',
 						'name' => 'tautulliTopUsers',
 						'label' => 'Top Users',
@@ -2588,6 +2607,13 @@ function getHomepageList()
 						'label' => 'Top Platforms',
 						'value' => $GLOBALS['tautulliTopPlatforms'],
 						'help' => 'Shows/hides the card with Top Platforms information.',
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliMiscAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageTautulliMiscAuth'],
+						'options' => $groups
 					),
 				),
 			)
