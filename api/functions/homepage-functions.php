@@ -2717,6 +2717,13 @@ function buildHomepageSettings()
 					$class .= ' faded';
 				}
 				break;
+			case 'homepageOrdertautulli':
+					$class = 'bg-info';
+					$image = 'plugins/images/tabs/tautulli.png';
+					if (!$GLOBALS['homepageTautulliEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 			default:
 				$class = 'blue-bg';
 				$image = '';

@@ -6198,6 +6198,11 @@ function buildTautulliItem(array){
         max-height: 15em;
     }
 
+    .homepage-tautulli-card .lib-icon {
+        max-width: 100%;
+        height: 7.5em;
+    }
+
     .homepage-tautulli-card .avatar {
         border-radius: 50%;
     }
@@ -6231,6 +6236,14 @@ function buildTautulliItem(array){
         top: 0;
         left: 0;
         filter: blur(7px) brightness(50%);
+    }
+
+    .lib-stats-row::before {
+        content: none !important;
+    }
+
+    .card-bg-colour {
+        background-color: #7b7b7b2e;
     }
 
     .platform-android-rgba { background-color: rgba(164, 202, 57, 0.40); }
@@ -6267,22 +6280,73 @@ function buildTautulliItem(array){
     var libstats = array.libstats;
     var options = array.options;
     var buildLibraries = function(data){
-        var card = `
-        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-            <div class="card text-white mb-3">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-5 col-md-5 hidden-sm hidden-xs">
-                            <img src="`+options['url']+`images/libraries/movie.svg" alt="library icon">
-                        </div>
-                        <div class="col-lg-7 col-md-7 col-sm-12">
-                            List here
+        var libs = data.data;
+        var movies = [];
+        var tv = [];
+        var audio = [];
+
+        libs.forEach(e => {
+            switch(e['section_type']) {
+                case 'movie':
+                    movies.push(e);
+                    break;
+                case 'show':
+                    tv.push(e);
+                    break;
+                case 'artist':
+                    audio.push(e);
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        movies = movies.sort((a, b) => (parseInt(a['count']) > parseInt(b['count'])) ? -1 : 1);
+        tv = tv.sort((a, b) => (parseInt(a['count']) > parseInt(b['count'])) ? -1 : 1);
+        audio = audio.sort((a, b) => (parseInt(a['count']) > parseInt(b['count'])) ? -1 : 1);
+
+        var buildCard = function(type, data) {
+            var card = `
+            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                <div class="card text-white mb-3 homepage-tautulli-card card-bg-colour">
+                    <div class="card-body">
+                        <div class="row" style="display: flex;">
+                            <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">
+                                <img src="`+options['url']+`images/libraries/`+type;
+                                if(type == 'artist') {
+                                    card += `.png`;
+                                } else {
+                                    card += '.svg';
+                                }
+            card += `
+                                " class="lib-icon" alt="library icon">
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                                <ol class="pl-2">`;
+                                data.forEach(e => {
+                                    card += `<li class="w-100">
+                                                <p class="one-line d-inline">`+e['section_name']+`</p>`;
+                                                if(type == 'movie') {
+                                                    card += `<p class="mb-0 pull-right d-inline text-right text-warning">`+e['count']+`</p>`;
+                                                } else {
+                                                    card += `<p class="mb-0 pull-right d-inline text-right text-warning">`+e['count']+` / `+e['parent_count']+` / `+e['child_count']+`</p>`;
+                                                }
+                                    card += `
+                                            </li>`;
+                                });
+            card += `
+                                </ol>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        `;
+            `;
+            return card;
+        };
+        var card = buildCard('movie', movies);
+        card += buildCard('show', tv);
+        card += buildCard('artist', audio);
         return card;
     };
     var buildStats = function(data, stat){
@@ -6292,7 +6356,7 @@ function buildTautulliItem(array){
                 if(stat === 'top_platforms') {
                     classes = ' platform-' + e['rows'][0]['platform_name'] + '-rgba';
                 } else if(stat === 'top_users') {
-                    classes = ' platform-synclounge-rgba';
+                    classes = ' card-bg-colour';
                 } else {
                     classes = '';
                 }
@@ -6348,15 +6412,15 @@ function buildTautulliItem(array){
         return card;
     };
     cards += '<div class="row">'
-    cards += (options['libraries']) ? buildLibraries(libstats) : '';
-    cards += '</div>';
-    cards += '<div class="row">'
     cards += (options['popularMovies']) ? buildStats(homestats, 'popular_movies') : '';
     cards += (options['popularTV']) ? buildStats(homestats, 'popular_tv') : '';
     cards += (options['topMovies']) ? buildStats(homestats, 'top_movies') : '';
     cards += (options['topTV']) ? buildStats(homestats, 'top_tv') : '';
     cards += (options['topUsers']) ? buildStats(homestats, 'top_users') : '';
     cards += (options['topPlatforms']) ? buildStats(homestats, 'top_platforms') : '';
+    cards += '</div>';
+    cards += '<div class="row">'
+    cards += (options['libraries']) ? buildLibraries(libstats) : '';
     cards += '</div>';
     return cards;
 }
