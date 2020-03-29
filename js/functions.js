@@ -5926,7 +5926,7 @@ function buildPiholeItem(array){
                         <p>Total queries</p>`;
         for(var key in data) {
             var e = data[key];
-            card += `<h3>`+e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
                     </div>
@@ -5946,7 +5946,7 @@ function buildPiholeItem(array){
                         <p>Queries Blocked</p>`;
         for(var key in data) {
             var e = data[key];
-            card += `<h3>`+e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
                     </div>
@@ -5966,7 +5966,7 @@ function buildPiholeItem(array){
                         <p>Percent Blocked</p>`;
         for(var key in data) {
             var e = data[key];
-            card += `<h3>`+e['ads_percentage_today'].toFixed(1)+`%</h3>`
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_percentage_today'].toFixed(1)+`%</h3>`
         };
         card += `
                     </div>
@@ -5986,7 +5986,7 @@ function buildPiholeItem(array){
                         <p>Domains on Blocklist</p>`;
         for(var key in data) {
             var e = data[key];
-            card += `<h3>`+e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
                     </div>
@@ -6016,11 +6016,13 @@ function buildPiholeItem(array){
                 `;
             }
             var data = array['data'][key];
+            obj = {};
+            obj[key] = data;
             stats += '<div class="row">'
-            stats += totalQueries({0: data});
-            stats += totalBlocked({0: data});
-            stats += percentBlocked({0: data});
-            stats += domainsBlocked({0: data});
+            stats += totalQueries(obj);
+            stats += totalBlocked(obj);
+            stats += percentBlocked(obj);
+            stats += domainsBlocked(obj);
             stats += '</div>';
         };
     }
