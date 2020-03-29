@@ -6190,6 +6190,49 @@ function homepageCalendar(timeout){
 	if(typeof timeouts['calendar-Homepage'] !== 'undefined'){ clearTimeout(timeouts['calendar-Homepage']); }
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
+function buildTautulliItem(array){
+    var cards = ``;
+    return cards;
+}
+function buildTautulli(array){
+    if(array === false){ return ''; }
+    return (array) ? `
+    <div id="allPihole">
+		<div class="el-element-overlay row">
+		    <div class="col-md-12">
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Tautulli</span></h4>
+		        <hr class="hidden-xs ml-2">
+		    </div>
+			<div class="clearfix"></div>
+            <div class="piholeCards col-sm-12">
+                `+buildTautulliItem(array)+`
+			</div>
+		</div>
+	</div>
+    ` : '';
+}
+function homepageTautulli(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageTautulliRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getTautulli'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrdertautulli').innerHTML = '';
+        if(response.data !== null){
+            buildTautulli(response.data)
+            $('#homepageOrdertautulli').html(buildTautulli(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Tautulli-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageTautulli(timeout); }, timeout);
+}
 // Thanks Swifty!
 function PopupCenter(url, title, w, h) {
     // Fixes dual-screen position                         Most browsers      Firefox

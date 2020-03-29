@@ -60,6 +60,9 @@ function homepageConnect($array)
 		case 'getUnifi':
 			return unifiConnect();
 			break;
+		case 'getTautulli':
+			return getTautulli();
+			break;
 		default:
 			# code...
 			break;
@@ -2393,6 +2396,33 @@ function unifiConnect()
 			writeLog('error', 'Unifi Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		};
 		$api['content']['unifi'] = isset($api['content']['unifi']) ? $api['content']['unifi'] : false;
+		return $api;
+	}
+	return false;
+}
+
+function getTautulli()
+{
+	if ($GLOBALS['homepageTautulliEnabled'] && !empty($GLOBALS['tautulliURL']) && !empty($GLOBALS['tautulliApikey'])) {
+		$api = [];
+		$url = $GLOBALS['tautulliURL'] . '/api/v2?apikey=' . $GLOBALS['tautulliApikey'];
+		try {
+			$homestatsUrl = $url . '&cmd=get_home_stats';
+			$homestats = Requests::get($homestatsUrl, [], []);
+			if ($homestats->success) {
+				$homestats = json_decode($homestats->body, true);
+				$api['homestats'] = $homestats['response'];
+			}
+			$libstatsUrl = $url . '&cmd=get_libraries';
+			$libstats = Requests::get($libstatsUrl, [], []);
+			if ($libstats->success) {
+				$libstats = json_decode($libstats->body, true);
+				$api['libstats'] = $libstats['response'];
+			}
+		} catch (Requests_Exception $e) {
+			writeLog('error', 'Pi-hole Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		};
+		$api = isset($api) ? $api : false;
 		return $api;
 	}
 	return false;
