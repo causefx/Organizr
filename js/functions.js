@@ -6191,7 +6191,136 @@ function homepageCalendar(timeout){
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
 function buildTautulliItem(array){
-    var cards = ``;
+    var cards = `
+    <style>
+    .homepage-tautulli-card .poster {
+        max-width: 100%;
+        max-height: 15em;
+    }
+
+    .homepage-tautulli-card .avatar {
+        border-radius: 50%;
+    }
+
+    .homepage-tautulli-card .align-self-center {
+        text-align: center;
+    }
+
+    .homepage-tautulli-card ol.pl-2 li p {
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .one-line {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .homepage-tautulli-card .bg-img-cont {
+        overflow: hidden;
+        pointer-events: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .homepage-tautulli-card .bg-img {
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        filter: blur(7px) brightness(50%);
+    }
+    </style>
+    `;
+    var homestats = array.homestats.data;
+    var libstats = array.libstats;
+    var options = array.options;
+    var buildLibraries = function(data){
+        var card = `
+        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <div class="card text-white mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-5 hidden-sm hidden-xs">
+                            <img src="`+options['url']+`images/libraries/movie.svg" alt="library icon">
+                        </div>
+                        <div class="col-lg-7 col-md-7 col-sm-12">
+                            List here
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+        return card;
+    };
+    var buildStats = function(data, stat){
+        var card = '';
+        data.forEach(e => {
+            if(e['stat_id'] == stat) {
+                card += `
+                <div class=col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                    <div class="card text-white mb-3 homepage-tautulli-card">`;
+                        if(stat !== 'top_users' && stat !== 'top_platforms') {
+                            card += `
+                            <div class="bg-img-cont">
+                                <img class="bg-img" src="`+options['url']+`pms_image_proxy?img=`+e['rows'][0]['art']+`" alt="background art">
+                            </div>
+                            `;
+                        }
+                card += `
+                        <div class="card-body">
+                            <div class="row" style="display: flex;">
+                                <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">`;
+                                if(stat == 'top_users') {
+                                    console.log(e);
+                                    card += `<img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar">`;
+                                } else {
+                                    card += `<img src="`+options['url']+`pms_image_proxy?img=`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster">`;
+                                }
+                card += `
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                                    <h4>`+e['stat_title']+`</h4>
+                                    <hr class="my-2">
+                                    <ol class="pl-2">`;
+                                    for(var i = 0; i < 5; i++) {
+                                        var item = e['rows'][i];
+                                        if(stat == 'top_users') {
+                                            card += `<li><p class="one-line">`+item['user']+`</p></li>`;
+                                        } else if(stat == 'top_platforms') {
+                                            card += `<li><p class="one-line">`+item['platform']+`</p></li>`;
+                                        } else {
+                                            card += `<li><p class="one-line">`+item['title']+`</p></li>`;
+                                        }
+                                    }
+                card += `
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            } else {
+                return '';
+            }
+        });
+        return card;
+    };
+    cards += '<div class="row">'
+    cards += (options['libraries']) ? buildLibraries(libstats) : '';
+    cards += '</div>';
+    cards += '<div class="row">'
+    cards += (options['popularMovies']) ? buildStats(homestats, 'popular_movies') : '';
+    cards += (options['popularTV']) ? buildStats(homestats, 'popular_tv') : '';
+    cards += (options['topMovies']) ? buildStats(homestats, 'top_movies') : '';
+    cards += (options['topTV']) ? buildStats(homestats, 'top_tv') : '';
+    cards += (options['topUsers']) ? buildStats(homestats, 'top_users') : '';
+    cards += (options['topPlatforms']) ? buildStats(homestats, 'top_platforms') : '';
+    cards += '</div>';
     return cards;
 }
 function buildTautulli(array){

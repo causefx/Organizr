@@ -2419,6 +2419,16 @@ function getTautulli()
 				$libstats = json_decode($libstats->body, true);
 				$api['libstats'] = $libstats['response'];
 			}
+			$api['options'] = [
+				'url' => $GLOBALS['tautulliURL'],
+				'libraries' => $GLOBALS['tautulliLibraries'],
+				'topMovies' => $GLOBALS['tautulliTopMovies'],
+				'topTV' => $GLOBALS['tautulliTopTV'],
+				'topUsers' => $GLOBALS['tautulliTopUsers'],
+				'topPlatforms' => $GLOBALS['tautulliTopPlatforms'],
+				'popularMovies' => $GLOBALS['tautulliPopularMovies'],
+				'popularTV' => $GLOBALS['tautulliPopularTV'],
+			];
 		} catch (Requests_Exception $e) {
 			writeLog('error', 'Pi-hole Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		};

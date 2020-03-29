@@ -2549,6 +2549,20 @@ function getHomepageList()
 					),
 					array(
 						'type' => 'switch',
+						'name' => 'tautulliPopularMovies',
+						'label' => 'Popular Movies',
+						'value' => $GLOBALS['tautulliPopularMovies'],
+						'help' => 'Shows/hides the card with Popular Movies information.',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliPopularTV',
+						'label' => 'Popular TV',
+						'value' => $GLOBALS['tautulliPopularTV'],
+						'help' => 'Shows/hides the card with Popular TV information.',
+					),
+					array(
+						'type' => 'switch',
 						'name' => 'tautulliTopMovies',
 						'label' => 'Top Movies',
 						'value' => $GLOBALS['tautulliTopMovies'],
@@ -2563,8 +2577,8 @@ function getHomepageList()
 					),
 					array(
 						'type' => 'switch',
-						'name' => 'Top Users',
-						'label' => 'Libraries',
+						'name' => 'tautulliTopUsers',
+						'label' => 'Top Users',
 						'value' => $GLOBALS['tautulliTopUsers'],
 						'help' => 'Shows/hides the card with Top Users information.',
 					),
@@ -2574,20 +2588,6 @@ function getHomepageList()
 						'label' => 'Top Platforms',
 						'value' => $GLOBALS['tautulliTopPlatforms'],
 						'help' => 'Shows/hides the card with Top Platforms information.',
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'tautulliPopularMovies',
-						'label' => 'Popular Movies',
-						'value' => $GLOBALS['tautulliPopularMovies'],
-						'help' => 'Shows/hides the card with Popular Movies information.',
-					),
-					array(
-						'type' => 'switch',
-						'name' => 'tautulliPopularTV',
-						'label' => 'Popular TV',
-						'value' => $GLOBALS['tautulliPopularTV'],
-						'help' => 'Shows/hides the card with Popular TV information.',
 					),
 				),
 			)
