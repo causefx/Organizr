@@ -127,7 +127,8 @@ function getPihole()
 				$response = Requests::get($url, [], []);
 				if ($response->success) {
 					$piholeResults = json_decode($response->body, true);
-					$api['data'][substr($url, 7, -16)] = $piholeResults;
+					$ip = qualifyURL($url, true)['host'];
+					$api['data'][$ip] = $piholeResults;
 				}
 			} catch (Requests_Exception $e) {
 				writeLog('error', 'Pi-hole Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
