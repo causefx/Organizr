@@ -338,7 +338,7 @@ function buildHomepageItem($homepageItem)
 				$item .= '
 				<script>
 				// Pi-hole Stats
-				homepagePihole();
+				homepagePihole("' . $GLOBALS['homepagePiholeRefresh'] . '");
 				// End Pi-hole Stats
 				</script>
 				';

@@ -268,4 +268,5 @@ return array(
 	'homepagePiholeAuth' => '1',
 	'homepagePiholeRefresh' => '10000',
 	'homepagePiholeCombine' => false,
+	'piholeURL' => ''
 );
