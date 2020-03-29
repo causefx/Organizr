@@ -162,6 +162,7 @@ return array(
 	'homepageOrderhealthchecks' => '17',
 	'homepageOrderjdownloader' => '18',
 	'homepageOrderunifi' => '19',
+	'homepageOrderPihole' => '20',
 	'homepageShowStreamNames' => false,
 	'homepageShowStreamNamesAuth' => '1',
 	'homepageStreamRefresh' => '60000',
@@ -262,5 +263,9 @@ return array(
 	'enableLocalAddressForward' => false,
 	'performanceDisableIconDropdown' => false,
 	'performanceDisableImageDropdown' => false,
-	'traefikAuthEnable' => false
+	'traefikAuthEnable' => false,
+	'homepagePiholeEnabled' => 'false',
+	'homepagePiholeAuth' => '1',
+	'homepagePiholeRefresh' => '10000',
+	'homepagePiholeCombine' => false,
 );
