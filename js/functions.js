@@ -5926,7 +5926,7 @@ function buildPiholeItem(array){
                         <p>Total queries</p>`;
         for(var key in data) {
             var e = data[key];
-            card += `<h3>`+e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+            card += `<h3>`+e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
                     </div>
