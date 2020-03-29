@@ -107,7 +107,7 @@ return array(
 	'homepagCustomHTMLtwoAuth' => '1',
 	'homepageDelugeEnabled' => false,
 	'homepageDelugeAuth' => '1',
-    'homepageJdownloaderEnabled' => false,
+  'homepageJdownloaderEnabled' => false,
 	'homepageJdownloaderAuth' => '1',
 	'homepageSabnzbdEnabled' => false,
 	'homepageSabnzbdAuth' => '1',
@@ -162,7 +162,8 @@ return array(
 	'homepageOrderhealthchecks' => '17',
 	'homepageOrderjdownloader' => '18',
 	'homepageOrderunifi' => '19',
-	'homepageOrdertautulli' => '20',
+  'homepageOrderPihole' => '20',
+	'homepageOrdertautulli' => '21',
 	'homepageShowStreamNames' => false,
 	'homepageShowStreamNamesAuth' => '1',
 	'homepageStreamRefresh' => '60000',
@@ -279,4 +280,9 @@ return array(
 	'tautulliTopPlatforms' => true,
 	'tautulliPopularMovies' => true,
 	'tautulliPopularTV' => true,
+	'homepagePiholeEnabled' => 'false',
+	'homepagePiholeAuth' => '1',
+	'homepagePiholeRefresh' => '10000',
+	'homepagePiholeCombine' => false,
+	'piholeURL' => ''
 );
