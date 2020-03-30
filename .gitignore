@@ -151,3 +151,7 @@ api/plugins/*
 # =========================
 api/pages/custom/*.php
 /plugins/images/tabs/eatsleep.jpg
+/plugins/images/cache/tautulli-show.svg
+/plugins/images/cache/tautulli-android.svg
+/plugins/images/cache/tautulli-artist.png
+/plugins/images/cache/tautulli-movie.svg

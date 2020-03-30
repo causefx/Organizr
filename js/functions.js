@@ -4391,7 +4391,7 @@ function buildStream(array, type){
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span>: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+type+`')">`+streams+`</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+type+`')">`+streams+`</span></h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -4434,7 +4434,7 @@ function buildRecent(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span></h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 			`+dropdownMenu+`
 			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
@@ -4529,7 +4529,7 @@ function buildPlaylist(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left homepage-element-title"><span onclick="homepagePlaylist('`+type+`')" class="`+type+`-playlistTitle mouse">`+first+`</span></h4>
+			<h4 class="pull-left homepage-element-title"><span onclick="homepagePlaylist('`+type+`')" class="`+type+`-playlistTitle mouse">`+first+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -4612,7 +4612,7 @@ function buildRequest(array){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span></h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -5684,7 +5684,7 @@ function buildPihole(array){
     <div id="allPihole">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Pi-hole</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Pi-hole</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 		        <hr class="hidden-xs ml-2">
 		    </div>
 			<div class="clearfix"></div>
@@ -6382,7 +6382,6 @@ function homepageCalendar(timeout){
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
 function buildTautulliItem(array){
-    console.log(array);
     var cards = `
     <style>
     .homepage-tautulli-card {
@@ -6465,6 +6464,7 @@ function buildTautulliItem(array){
         top: 0;
         left: 0;
         filter: blur(7px) brightness(30%);
+        transform: scale(1.1);
     }
 
     .lib-stats-row::before {
@@ -6540,15 +6540,15 @@ function buildTautulliItem(array){
                 <div class="card text-white mb-3 homepage-tautulli-card library-card card-bg-colour">
                     <div class="card-body h-100">
                         <div class="row h-100" style="display: flex;">
-                            <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">`;
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 align-self-center" style="overflow: hidden;">`;
                             if(type == 'artist') {
-                                card += `<img src="/plugins/images/cache/tautulli-`+type+`.jpg" class="lib-icon" alt="library icon">`;
+                                card += `<img src="plugins/images/cache/tautulli-`+type+`.png" class="lib-icon" alt="library icon">`;
                             } else {
-                                card += `<img src="/plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon">`;
+                                card += `<img src="plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon">`;
                             }
             card += `
                             </div>
-                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12" style="overflow: hidden;">
                                 <ol class="h-100">`;
                                 data.forEach(e => {
                                     card += `<li class="w-100">
@@ -6588,7 +6588,7 @@ function buildTautulliItem(array){
                     classes = '';
                 }
                 card += `
-                <div class=col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                     <div class="card text-white mb-3 homepage-tautulli-card`+classes+`">`;
                         if(stat !== 'top_users' && stat !== 'top_platforms') {
                             card += `
@@ -6600,21 +6600,21 @@ function buildTautulliItem(array){
                 card += `
                         <div class="card-body">
                             <div class="row" style="display: flex;">
-                                <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">`;
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 align-self-center" style="overflow: hidden;">`;
                                 if(stat == 'top_users') {
                                     card += `<img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar">`;
                                 } else if(stat == 'top_platforms') {
-                                    card += `<img src="/plugins/images/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon">`;
+                                    card += `<img src="plugins/images/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon">`;
                                 } else {
                                     card += `<img src="`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster">`;
                                 }
                 card += `
                                 </div>
-                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12" style="overflow: hidden;">
                                     <h4>`+e['stat_title']+`</h4>
                                     <hr class="my-2">
                                     <ol class="pl-2">`;
-                                    for(var i = 0; i < 5; i++) {
+                                    for(var i = 0; i < Math.min(5, e['rows'].length); i++) {
                                         var item = e['rows'][i];
                                         if(stat == 'top_users') {
                                             card += `<li><p class="one-line">`+item['user']+`</p></li>`;
@@ -6657,7 +6657,7 @@ function buildTautulli(array){
     <div id="allTautulli">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Tautulli</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span>`+activeInfo.settings.homepage.options.titles.tautulli+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 		        <hr class="hidden-xs ml-2">
 		    </div>
 			<div class="clearfix"></div>

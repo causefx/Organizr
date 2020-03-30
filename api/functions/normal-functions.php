@@ -313,14 +313,14 @@ function getCert()
 	$file = __DIR__ . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'cacert.pem';
 	$file2 = __DIR__ . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'cacert-initial.pem';
 	$useCert = (file_exists($file)) ? $file : $file2;
-	if($GLOBALS['selfSignedCert'] !== ''){
-		if(file_exists($GLOBALS['selfSignedCert'])){
+	if ($GLOBALS['selfSignedCert'] !== '') {
+		if (file_exists($GLOBALS['selfSignedCert'])) {
 			return $GLOBALS['selfSignedCert'];
 		}
 	}
 	$context = stream_context_create(
 		array(
-			'ssl'=> array(
+			'ssl' => array(
 				'verify_peer' => true,
 				'cafile' => $useCert
 			)
@@ -420,7 +420,7 @@ function download($url, $path)
 
 function localURL($url, $force = false)
 {
-	if($force){
+	if ($force) {
 		return true;
 	}
 	if (strpos($url, 'https') !== false) {

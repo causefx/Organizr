@@ -177,10 +177,10 @@ function buildHomepageItem($homepageItem)
 				}
 			}
 			break;
-        case 'homepageOrderjdownloader':
-            if ($GLOBALS['homepageJdownloaderEnabled'] && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
-                if ($GLOBALS['jdownloaderCombine']) {
-                    $item .= '
+		case 'homepageOrderjdownloader':
+			if ($GLOBALS['homepageJdownloaderEnabled'] && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
+				if ($GLOBALS['jdownloaderCombine']) {
+					$item .= '
 					<script>
 					// JDownloader
 					buildDownloaderCombined(\'jdownloader\');
@@ -188,9 +188,9 @@ function buildHomepageItem($homepageItem)
 					// End JDownloader
 					</script>
 					';
-                } else {
-                    $item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
-                    $item .= '
+				} else {
+					$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+					$item .= '
 					<script>
 					// JDownloader
 					$("#' . $homepageItem . '").html(buildDownloader("jdownloader"));
@@ -198,9 +198,9 @@ function buildHomepageItem($homepageItem)
 					// End JDownloader
 					</script>
 					';
-                }
-            }
-            break;
+				}
+			}
+			break;
 		case 'homepageOrdersabnzbd':
 			if ($GLOBALS['homepageSabnzbdEnabled'] && qualifyRequest($GLOBALS['homepageSabnzbdAuth'])) {
 				if ($GLOBALS['sabnzbdCombine']) {
@@ -1048,13 +1048,13 @@ function getHomepageList()
 				)
 			)
 		),
-        array(
-            'name' => 'JDownloader',
-            'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
-            'image' => 'plugins/images/tabs/jdownloader.png',
-            'category' => 'Downloader',
-            'settings' => array(
-	            'custom' => '
+		array(
+			'name' => 'JDownloader',
+			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
+			'image' => 'plugins/images/tabs/jdownloader.png',
+			'category' => 'Downloader',
+			'settings' => array(
+				'custom' => '
 				<div class="row">
                     <div class="col-lg-12">
                         <div class="panel panel-info">
@@ -1073,62 +1073,62 @@ function getHomepageList()
                     </div>
 				</div>
 				',
-                'Enable' => array(
-                    array(
-                        'type' => 'switch',
-                        'name' => 'homepageJdownloaderEnabled',
-                        'label' => 'Enable',
-                        'value' => $GLOBALS['homepageJdownloaderEnabled']
-                    ),
-                    array(
-                        'type' => 'select',
-                        'name' => 'homepageJdownloaderAuth',
-                        'label' => 'Minimum Authentication',
-                        'value' => $GLOBALS['homepageJdownloaderAuth'],
-                        'options' => $groups
-                    )
-                ),
-                'Connection' => array(
-                    array(
-                        'type' => 'input',
-                        'name' => 'jdownloaderURL',
-                        'label' => 'URL',
-                        'value' => $GLOBALS['jdownloaderURL'],
-                        'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
-                        'placeholder' => 'http(s)://hostname:port'
-                    )
-                ),
-                'Misc Options' => array(
-                    array(
-                        'type' => 'select',
-                        'name' => 'homepageDownloadRefresh',
-                        'label' => 'Refresh Seconds',
-                        'value' => $GLOBALS['homepageDownloadRefresh'],
-                        'options' => optionTime()
-                    ),
-                    array(
-                        'type' => 'switch',
-                        'name' => 'jdownloaderCombine',
-                        'label' => 'Add to Combined Downloader',
-                        'value' => $GLOBALS['jdownloaderCombine']
-                    ),
-                ),
-                'Test Connection' => array(
-                    array(
-                        'type' => 'blank',
-                        'label' => 'Please Save before Testing'
-                    ),
-                    array(
-                        'type' => 'button',
-                        'label' => '',
-                        'icon' => 'fa fa-flask',
-                        'class' => 'pull-right',
-                        'text' => 'Test Connection',
-                        'attr' => 'onclick="testAPIConnection(\'jdownloader\')"'
-                    ),
-                )
-            )
-        ),
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageJdownloaderEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepageJdownloaderEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageJdownloaderAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageJdownloaderAuth'],
+						'options' => $groups
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'jdownloaderURL',
+						'label' => 'URL',
+						'value' => $GLOBALS['jdownloaderURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageDownloadRefresh'],
+						'options' => optionTime()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'jdownloaderCombine',
+						'label' => 'Add to Combined Downloader',
+						'value' => $GLOBALS['jdownloaderCombine']
+					),
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'jdownloader\')"'
+					),
+				)
+			)
+		),
 		array(
 			'name' => 'SabNZBD',
 			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
@@ -2577,6 +2577,15 @@ function getHomepageList()
 						'options' => $groups
 					)
 				),
+				'Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'tautulliHeader',
+						'label' => 'Title',
+						'value' => $GLOBALS['tautulliHeader'],
+						'help' => 'Sets the title of this homepage module'
+					)
+				),
 				'Connection' => array(
 					array(
 						'type' => 'input',
@@ -2654,7 +2663,6 @@ function getHomepageList()
 					),
 				),
 				'Misc Stats' => array(
-					
 					array(
 						'type' => 'switch',
 						'name' => 'tautulliTopUsers',
@@ -2717,13 +2725,13 @@ function buildHomepageSettings()
 					$class .= ' faded';
 				}
 				break;
-            case 'homepageOrderjdownloader':
-                $class = 'bg-sab';
-                $image = 'plugins/images/tabs/jdownloader.png';
-                if (!$GLOBALS['homepageJdownloaderEnabled']) {
-                    $class .= ' faded';
-                }
-                break;
+			case 'homepageOrderjdownloader':
+				$class = 'bg-sab';
+				$image = 'plugins/images/tabs/jdownloader.png';
+				if (!$GLOBALS['homepageJdownloaderEnabled']) {
+					$class .= ' faded';
+				}
+				break;
 			case 'homepageOrdersabnzbd':
 				$class = 'bg-sab';
 				$image = 'plugins/images/tabs/sabnzbd.png';
@@ -2805,12 +2813,12 @@ function buildHomepageSettings()
 				}
 				break;
 			case 'homepageOrdertautulli':
-					$class = 'bg-info';
-					$image = 'plugins/images/tabs/tautulli.png';
-					if (!$GLOBALS['homepageTautulliEnabled']) {
-						$class .= ' faded';
-					}
-					break;
+				$class = 'bg-info';
+				$image = 'plugins/images/tabs/tautulli.png';
+				if (!$GLOBALS['homepageTautulliEnabled']) {
+					$class .= ' faded';
+				}
+				break;
 			case 'homepageOrderPihole':
 				$class = 'bg-info';
 				$image = 'plugins/images/tabs/pihole.png';
