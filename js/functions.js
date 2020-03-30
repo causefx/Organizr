@@ -5688,7 +5688,7 @@ function buildPihole(array){
 		        <hr class="hidden-xs ml-2">
 		    </div>
 			<div class="clearfix"></div>
-		    <div class="piholeCards col-sm-12">
+		    <div class="piholeCards col-sm-12 my-3">
 			    `+buildPiholeItem(array)+`
 			</div>
 		</div>
@@ -6382,8 +6382,17 @@ function homepageCalendar(timeout){
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
 function buildTautulliItem(array){
+    console.log(array);
     var cards = `
     <style>
+    .homepage-tautulli-card {
+        height: 242px;
+    }
+
+    .library-card {
+        height: 137px;
+    }
+
     .homepage-tautulli-card .poster {
         max-width: 100%;
         max-height: 15em;
@@ -6402,9 +6411,38 @@ function buildTautulliItem(array){
         text-align: center;
     }
 
-    .homepage-tautulli-card ol.pl-2 li p {
-        font-weight: 700;
+    .library-card ol {
+        overflow: auto;
+    }
+
+    .homepage-tautulli-card ol.pl-2 li p,
+    .library-card ol li p {
+        font-weight: 400;
         font-size: 16px;
+        margin-bottom: 0;
+    }
+
+    .homepage-tautulli-card ol.pl-2 li,
+    .library-card ol li {
+        margin-top: 2px;
+    }
+
+    .library-card ol::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        border-radius: 10px;
+        background-color: #7b7b7b2e;
+        margin: 0 30px;
+    }
+
+    .library-card ol::-webkit-scrollbar {
+        width: 12px;
+        background-color: #7b7b7b2e;
+    }
+
+    .library-card ol::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #555;
     }
 
     .one-line {
@@ -6426,7 +6464,7 @@ function buildTautulliItem(array){
         height: 100%;
         top: 0;
         left: 0;
-        filter: blur(7px) brightness(50%);
+        filter: blur(7px) brightness(30%);
     }
 
     .lib-stats-row::before {
@@ -6499,21 +6537,19 @@ function buildTautulliItem(array){
         var buildCard = function(type, data) {
             var card = `
             <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
-                <div class="card text-white mb-3 homepage-tautulli-card card-bg-colour">
-                    <div class="card-body">
-                        <div class="row" style="display: flex;">
-                            <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">
-                                <img src="`+options['url']+`images/libraries/`+type;
-                                if(type == 'artist') {
-                                    card += `.png`;
-                                } else {
-                                    card += '.svg';
-                                }
+                <div class="card text-white mb-3 homepage-tautulli-card library-card card-bg-colour">
+                    <div class="card-body h-100">
+                        <div class="row h-100" style="display: flex;">
+                            <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">`;
+                            if(type == 'artist') {
+                                card += `<img src="/plugins/images/cache/tautulli-`+type+`.jpg" class="lib-icon" alt="library icon">`;
+                            } else {
+                                card += `<img src="/plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon">`;
+                            }
             card += `
-                                " class="lib-icon" alt="library icon">
                             </div>
                             <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-                                <ol class="pl-2">`;
+                                <ol class="h-100">`;
                                 data.forEach(e => {
                                     card += `<li class="w-100">
                                                 <p class="one-line d-inline">`+e['section_name']+`</p>`;
@@ -6557,7 +6593,7 @@ function buildTautulliItem(array){
                         if(stat !== 'top_users' && stat !== 'top_platforms') {
                             card += `
                             <div class="bg-img-cont">
-                                <img class="bg-img" src="`+options['url']+`pms_image_proxy?img=`+e['rows'][0]['art']+`" alt="background art">
+                                <img class="bg-img" src="`+e['rows'][0]['art']+`" alt="background art">
                             </div>
                             `;
                         }
@@ -6568,9 +6604,9 @@ function buildTautulliItem(array){
                                 if(stat == 'top_users') {
                                     card += `<img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar">`;
                                 } else if(stat == 'top_platforms') {
-                                    card += `<img src="`+options['url']+`images/platforms/`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon">`;
+                                    card += `<img src="/plugins/images/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon">`;
                                 } else {
-                                    card += `<img src="`+options['url']+`pms_image_proxy?img=`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster">`;
+                                    card += `<img src="`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster">`;
                                 }
                 card += `
                                 </div>
@@ -6618,14 +6654,14 @@ function buildTautulliItem(array){
 function buildTautulli(array){
     if(array === false){ return ''; }
     return (array) ? `
-    <div id="allPihole">
+    <div id="allTautulli">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
 		        <h4 class="pull-left homepage-element-title"><span lang="en">Tautulli</span></h4>
 		        <hr class="hidden-xs ml-2">
 		    </div>
 			<div class="clearfix"></div>
-            <div class="piholeCards col-sm-12">
+            <div class="tautulliCards col-sm-12 my-3">
                 `+buildTautulliItem(array)+`
 			</div>
 		</div>

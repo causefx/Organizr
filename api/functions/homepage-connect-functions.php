@@ -2432,19 +2432,40 @@ function getTautulli()
 {
 	if ($GLOBALS['homepageTautulliEnabled'] && !empty($GLOBALS['tautulliURL']) && !empty($GLOBALS['tautulliApikey']) && qualifyRequest($GLOBALS['homepageTautulliAuth'])) {
 		$api = [];
-		$url = $GLOBALS['tautulliURL'] . '/api/v2?apikey=' . $GLOBALS['tautulliApikey'];
+		$url = qualifyURL($GLOBALS['tautulliURL']);
+		$url = $url . '/api/v2?apikey=' . $GLOBALS['tautulliApikey'];
 		try {
 			$homestatsUrl = $url . '&cmd=get_home_stats';
 			$homestats = Requests::get($homestatsUrl, [], []);
 			if ($homestats->success) {
 				$homestats = json_decode($homestats->body, true);
 				$api['homestats'] = $homestats['response'];
+				// Cache art & thumb for first result in each tautulli API result
+				$categories = [ 'top_movies', 'top_tv', 'popular_movies', 'popular_tv' ];
+				foreach($categories as $cat) {
+					$key = array_search($cat, array_column($api['homestats']['data'], 'stat_id'));
+					$img = $api['homestats']['data'][$key]['rows'][0];
+					cacheImage($GLOBALS['tautulliURL'] . 'pms_image_proxy?img=' . $img['art'], $img['title'] . '-art');
+					cacheImage($GLOBALS['tautulliURL'] . 'pms_image_proxy?img=' . $img['thumb'], $img['title'] . '-thumb');
+					$img['art'] = '/plugins/images/cache/' . $img['title'] . '-art.jpg';
+					$img['thumb'] = '/plugins/images/cache/' . $img['title'] . '-thumb.jpg';
+					$api['homestats']['data'][$key]['rows'][0] = $img;
+				}
+				// Cache the platform icon
+				$key = array_search('top_platforms', array_column($api['homestats']['data'], 'stat_id'));
+				$platform = $api['homestats']['data'][$key]['rows'][0]['platform_name'];
+				cacheImage($GLOBALS['tautulliURL'] . 'images/platforms/' . $platform . '.svg', 'tautulli-' . $platform, 'svg');
 			}
 			$libstatsUrl = $url . '&cmd=get_libraries';
 			$libstats = Requests::get($libstatsUrl, [], []);
 			if ($libstats->success) {
 				$libstats = json_decode($libstats->body, true);
 				$api['libstats'] = $libstats['response'];
+				$categories = [ 'movie.svg', 'show.svg', 'artist.png' ];
+				foreach($categories as $cat) {
+					$parts = explode('.', $cat);
+					cacheImage($GLOBALS['tautulliURL'] . 'images/libraries/' . $cat, 'tautulli-' . $parts[0], $parts[1]);
+				}
 			}
 			$api['options'] = [
 				'url' => $GLOBALS['tautulliURL'],
