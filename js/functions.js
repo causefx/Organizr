@@ -6465,6 +6465,7 @@ function buildTautulliItem(array){
         top: 0;
         left: 0;
         filter: blur(7px) brightness(30%);
+        transform: scale(1.1);
     }
 
     .lib-stats-row::before {
