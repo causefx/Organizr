@@ -5680,20 +5680,26 @@ function buildHealthChecks(array){
 }
 function buildPihole(array){
     if(array === false){ return ''; }
-    return (array) ? `
+    var html = `
     <div id="allPihole">
-		<div class="el-element-overlay row">
-		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Pi-hole</span> : </h4><h4 class="pull-left">&nbsp;</h4>
-		        <hr class="hidden-xs ml-2">
-		    </div>
-			<div class="clearfix"></div>
+        <div class="el-element-overlay row">`;
+    if(array['options']['title']) {
+        html += `
+            <div class="col-md-12">
+                <h4 class="pull-left homepage-element-title"><span lang="en">Pi-hole</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+                <hr class="hidden-xs ml-2">
+            </div>
+            <div class="clearfix"></div>
+        `;
+    }
+    html += `
 		    <div class="piholeCards col-sm-12 my-3">
 			    `+buildPiholeItem(array)+`
 			</div>
 		</div>
 	</div>
-    ` : 'hello';
+    `;
+    return (array) ? html : '';
 }
 function buildUnifi(array){
     if(array === false){ return ''; }
@@ -6663,20 +6669,26 @@ function buildTautulliItem(array){
 }
 function buildTautulli(array){
     if(array === false){ return ''; }
-    return (array) ? `
+    var html = `
     <div id="allTautulli">
-		<div class="el-element-overlay row">
-		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span>`+activeInfo.settings.homepage.options.titles.tautulli+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
-		        <hr class="hidden-xs ml-2">
-		    </div>
-			<div class="clearfix"></div>
+		<div class="el-element-overlay row">`
+    if(array['options']['title']) {
+        html += `
+            <div class="col-md-12">
+                <h4 class="pull-left homepage-element-title"><span>`+activeInfo.settings.homepage.options.titles.tautulli+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+                <hr class="hidden-xs ml-2">
+            </div>
+            <div class="clearfix"></div>
+        `;
+    }
+    html += `
             <div class="tautulliCards col-sm-12 my-3">
                 `+buildTautulliItem(array)+`
 			</div>
 		</div>
 	</div>
-    ` : '';
+    `;
+    return (array) ? html : '';
 }
 function homepageTautulli(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageTautulliRefresh;
