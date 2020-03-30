@@ -137,6 +137,7 @@ function getPihole()
 			};
 		}
 		$api['options']['combine'] = $GLOBALS['homepagePiholeCombine'];
+		$api['options']['title'] = $GLOBALS['piholeHeaderToggle'];
 		$api = isset($api) ? $api : false;
 		return $api;
 	}
@@ -2473,6 +2474,7 @@ function getTautulli()
 				'topPlatforms' => $GLOBALS['tautulliTopPlatforms'],
 				'popularMovies' => $GLOBALS['tautulliPopularMovies'],
 				'popularTV' => $GLOBALS['tautulliPopularTV'],
+				'title' => $GLOBALS['tautulliHeaderToggle'],
 			];
 			$ids = []; // Array of stat_ids to remove from the returned array
 			if (!qualifyRequest($GLOBALS['homepageTautulliLibraryAuth'])) {

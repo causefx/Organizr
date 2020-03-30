@@ -280,9 +280,11 @@ return array(
 	'tautulliPopularMovies' => true,
 	'tautulliPopularTV' => true,
 	'tautulliHeader' => 'Tautulli',
+	'tautulliHeaderToggle' => true,
 	'homepagePiholeEnabled' => false,
 	'homepagePiholeAuth' => '1',
 	'homepagePiholeRefresh' => '10000',
 	'homepagePiholeCombine' => false,
+	'piholeHeaderToggle' => true,
 	'piholeURL' => ''
 );

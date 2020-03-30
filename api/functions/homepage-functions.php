@@ -2548,6 +2548,13 @@ function getHomepageList()
 				'Misc' => array(
 					array(
 						'type' => 'switch',
+						'name' => 'piholeHeaderToggle',
+						'label' => 'Toggle Title',
+						'value' => $GLOBALS['piholeHeaderToggle'],
+						'help' => 'Shows/hides the title of this homepage module'
+					),
+					array(
+						'type' => 'switch',
 						'name' => 'homepagePiholeCombine',
 						'label' => 'Combine stat cards',
 						'value' => $GLOBALS['homepagePiholeCombine'],
@@ -2584,6 +2591,13 @@ function getHomepageList()
 						'label' => 'Title',
 						'value' => $GLOBALS['tautulliHeader'],
 						'help' => 'Sets the title of this homepage module'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliHeaderToggle',
+						'label' => 'Toggle Title',
+						'value' => $GLOBALS['tautulliHeaderToggle'],
+						'help' => 'Shows/hides the title of this homepage module'
 					)
 				),
 				'Connection' => array(
