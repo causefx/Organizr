@@ -2514,8 +2514,8 @@ function getHomepageList()
 				)
 			)
 		),
-    array(
-      'name' => 'Pi-hole',
+		array(
+			'name' => 'Pi-hole',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/pihole.png',
 			'category' => 'Monitor',
@@ -2555,7 +2555,7 @@ function getHomepageList()
 					),
 				),
 			)
-    ),
+		),
 		array(
 			'name' => 'Tautulli',
 			'enabled' => true,
@@ -2591,7 +2591,14 @@ function getHomepageList()
 						'name' => 'tautulliApikey',
 						'label' => 'API Key',
 						'value' => $GLOBALS['tautulliApikey']
-					)
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageTautulliRefresh'],
+						'options' => optionTime()
+					),
 				),
 				'Library Stats' => array(
 					array(
