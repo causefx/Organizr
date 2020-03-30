@@ -6382,7 +6382,6 @@ function homepageCalendar(timeout){
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
 function buildTautulliItem(array){
-    console.log(array);
     var cards = `
     <style>
     .homepage-tautulli-card {
@@ -6542,7 +6541,7 @@ function buildTautulliItem(array){
                         <div class="row h-100" style="display: flex;">
                             <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">`;
                             if(type == 'artist') {
-                                card += `<img src="/plugins/images/cache/tautulli-`+type+`.jpg" class="lib-icon" alt="library icon">`;
+                                card += `<img src="/plugins/images/cache/tautulli-`+type+`.png" class="lib-icon" alt="library icon">`;
                             } else {
                                 card += `<img src="/plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon">`;
                             }
