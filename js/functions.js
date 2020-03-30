@@ -6475,6 +6475,12 @@ function buildTautulliItem(array){
         background-color: #7b7b7b2e;
     }
 
+    @media (max-width: 767px) {
+        .library-card ol {
+            padding-left: 0;
+        }
+    }
+
     .platform-android-rgba { background-color: rgba(164, 202, 57, 0.40); }
     .platform-atv-rgba { background-color: rgba(133, 132, 135, 0.40); }
     .platform-chrome-rgba { background-color: rgba(237, 94, 80, 0.40); }
