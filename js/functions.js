@@ -6382,7 +6382,6 @@ function homepageCalendar(timeout){
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
 function buildTautulliItem(array){
-    console.log(array);
     var cards = `
     <style>
     .homepage-tautulli-card {
@@ -6465,6 +6464,7 @@ function buildTautulliItem(array){
         top: 0;
         left: 0;
         filter: blur(7px) brightness(30%);
+        transform: scale(1.1);
     }
 
     .lib-stats-row::before {
@@ -6540,15 +6540,15 @@ function buildTautulliItem(array){
                 <div class="card text-white mb-3 homepage-tautulli-card library-card card-bg-colour">
                     <div class="card-body h-100">
                         <div class="row h-100" style="display: flex;">
-                            <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">`;
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 align-self-center" style="overflow: hidden;">`;
                             if(type == 'artist') {
-                                card += `<img src="/plugins/images/cache/tautulli-`+type+`.jpg" class="lib-icon" alt="library icon">`;
+                                card += `<img src="/plugins/images/cache/tautulli-`+type+`.png" class="lib-icon" alt="library icon">`;
                             } else {
                                 card += `<img src="/plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon">`;
                             }
             card += `
                             </div>
-                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12" style="overflow: hidden;">
                                 <ol class="h-100">`;
                                 data.forEach(e => {
                                     card += `<li class="w-100">
@@ -6588,7 +6588,7 @@ function buildTautulliItem(array){
                     classes = '';
                 }
                 card += `
-                <div class=col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                     <div class="card text-white mb-3 homepage-tautulli-card`+classes+`">`;
                         if(stat !== 'top_users' && stat !== 'top_platforms') {
                             card += `
@@ -6600,7 +6600,7 @@ function buildTautulliItem(array){
                 card += `
                         <div class="card-body">
                             <div class="row" style="display: flex;">
-                                <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">`;
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 align-self-center" style="overflow: hidden;">`;
                                 if(stat == 'top_users') {
                                     card += `<img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar">`;
                                 } else if(stat == 'top_platforms') {
@@ -6610,11 +6610,11 @@ function buildTautulliItem(array){
                                 }
                 card += `
                                 </div>
-                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12" style="overflow: hidden;">
                                     <h4>`+e['stat_title']+`</h4>
                                     <hr class="my-2">
                                     <ol class="pl-2">`;
-                                    for(var i = 0; i < 5; i++) {
+                                    for(var i = 0; i < Math.min(5, e['rows'].length); i++) {
                                         var item = e['rows'][i];
                                         if(stat == 'top_users') {
                                             card += `<li><p class="one-line">`+item['user']+`</p></li>`;
