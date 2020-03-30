@@ -6382,7 +6382,6 @@ function homepageCalendar(timeout){
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
 function buildTautulliItem(array){
-    console.log(array);
     var cards = `
     <style>
     .homepage-tautulli-card {
@@ -6615,7 +6614,7 @@ function buildTautulliItem(array){
                                     <h4>`+e['stat_title']+`</h4>
                                     <hr class="my-2">
                                     <ol class="pl-2">`;
-                                    for(var i = 0; i < 5; i++) {
+                                    for(var i = 0; i < Math.min(5, e['rows'].length); i++) {
                                         var item = e['rows'][i];
                                         if(stat == 'top_users') {
                                             card += `<li><p class="one-line">`+item['user']+`</p></li>`;
