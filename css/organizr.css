@@ -1280,7 +1280,7 @@ span.fc-title {
 }
 @media(max-width:767px) {
     .show-sidebar .sidebar {
-        overflow-y: auto;
+        overflow-y: auto !important;
     }
 }
 .nav-second-level .sidebar-tabName {
