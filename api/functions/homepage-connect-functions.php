@@ -2432,7 +2432,8 @@ function getTautulli()
 {
 	if ($GLOBALS['homepageTautulliEnabled'] && !empty($GLOBALS['tautulliURL']) && !empty($GLOBALS['tautulliApikey']) && qualifyRequest($GLOBALS['homepageTautulliAuth'])) {
 		$api = [];
-		$url = $GLOBALS['tautulliURL'] . '/api/v2?apikey=' . $GLOBALS['tautulliApikey'];
+		$url = qualifyURL($GLOBALS['tautulliURL']);
+		$url = $url . '/api/v2?apikey=' . $GLOBALS['tautulliApikey'];
 		try {
 			$homestatsUrl = $url . '&cmd=get_home_stats';
 			$homestats = Requests::get($homestatsUrl, [], []);

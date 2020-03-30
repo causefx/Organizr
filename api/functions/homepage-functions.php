@@ -2514,8 +2514,8 @@ function getHomepageList()
 				)
 			)
 		),
-    array(
-      'name' => 'Pi-hole',
+	    array(
+			'name' => 'Pi-hole',
 			'enabled' => true,
 			'image' => 'plugins/images/tabs/pihole.png',
 			'category' => 'Monitor',
@@ -2555,7 +2555,7 @@ function getHomepageList()
 					),
 				),
 			)
-    ),
+	    ),
 		array(
 			'name' => 'Tautulli',
 			'enabled' => true,

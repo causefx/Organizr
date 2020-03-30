@@ -6382,6 +6382,7 @@ function homepageCalendar(timeout){
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
 function buildTautulliItem(array){
+    console.log(array);
     var cards = `
     <style>
     .homepage-tautulli-card .poster {
