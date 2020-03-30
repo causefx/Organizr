@@ -6608,10 +6608,20 @@ function buildTautulliItem(array){
                                 } else {
                                     card += `<img src="`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster">`;
                                 }
+                                var addExtraField = false;
+                                var extraField = null;
+                                if(e['stat_title'].includes('Popular')){
+                                    addExtraField = true;
+                                    extraField = ''//users;
+                                }else if(e['stat_title'].includes('Watched')){
+                                    addExtraField = true;
+                                    extraField = ''//plays;
+                                }
+                                var cardTitle = (addExtraField) ? '<span class="pull-left">'+e['stat_title']+'</span><span class="pull-right">'+extraField+'</span><div class="clearfix"></div>' : '<h4>'+e['stat_title']+'</h4>';
                 card += `
                                 </div>
                                 <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12" style="overflow: hidden;">
-                                    <h4>`+e['stat_title']+`</h4>
+                                    `+cardTitle+`
                                     <hr class="my-2">
                                     <ol class="pl-2">`;
                                     for(var i = 0; i < Math.min(5, e['rows'].length); i++) {
@@ -6621,7 +6631,7 @@ function buildTautulliItem(array){
                                         } else if(stat == 'top_platforms') {
                                             card += `<li><p class="one-line">`+item['platform']+`</p></li>`;
                                         } else {
-                                            card += `<li><p class="one-line">`+item['title']+`</p></li>`;
+                                            card += `<li><span class="one-line">`+item['title']+`</span></li>`;
                                         }
                                     }
                 card += `
