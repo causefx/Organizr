@@ -4391,7 +4391,7 @@ function buildStream(array, type){
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span>: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+type+`')">`+streams+`</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+type+`')">`+streams+`</span></h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -4434,7 +4434,7 @@ function buildRecent(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span></h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 			`+dropdownMenu+`
 			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
@@ -4529,7 +4529,7 @@ function buildPlaylist(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left homepage-element-title"><span onclick="homepagePlaylist('`+type+`')" class="`+type+`-playlistTitle mouse">`+first+`</span></h4>
+			<h4 class="pull-left homepage-element-title"><span onclick="homepagePlaylist('`+type+`')" class="`+type+`-playlistTitle mouse">`+first+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -4612,7 +4612,7 @@ function buildRequest(array){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span></h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -5684,7 +5684,7 @@ function buildPihole(array){
     <div id="allPihole">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Pi-hole</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Pi-hole</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 		        <hr class="hidden-xs ml-2">
 		    </div>
 			<div class="clearfix"></div>
