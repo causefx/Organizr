@@ -2447,8 +2447,8 @@ function getTautulli()
 					$img = $api['homestats']['data'][$key]['rows'][0];
 					cacheImage($url . '/pms_image_proxy?img=' . $img['art'], $img['rating_key'] . '-np');
 					cacheImage($url . '/pms_image_proxy?img=' . $img['thumb'], $img['rating_key'] . '-list');
-					$img['art'] = '/plugins/images/cache/' . $img['rating_key'] . '-np.jpg';
-					$img['thumb'] = '/plugins/images/cache/' . $img['rating_key'] . '-list.jpg';
+					$img['art'] = 'plugins/images/cache/' . $img['rating_key'] . '-np.jpg';
+					$img['thumb'] = 'plugins/images/cache/' . $img['rating_key'] . '-list.jpg';
 					$api['homestats']['data'][$key]['rows'][0] = $img;
 				}
 				// Cache the platform icon
