@@ -2445,10 +2445,10 @@ function getTautulli()
 				foreach($categories as $cat) {
 					$key = array_search($cat, array_column($api['homestats']['data'], 'stat_id'));
 					$img = $api['homestats']['data'][$key]['rows'][0];
-					cacheImage($url . '/pms_image_proxy?img=' . $img['art'], $img['title'] . '-art');
-					cacheImage($url . '/pms_image_proxy?img=' . $img['thumb'], $img['title'] . '-thumb');
-					$img['art'] = '/plugins/images/cache/' . $img['title'] . '-art.jpg';
-					$img['thumb'] = '/plugins/images/cache/' . $img['title'] . '-thumb.jpg';
+					cacheImage($url . '/pms_image_proxy?img=' . $img['art'], $img['rating_key'] . '-np');
+					cacheImage($url . '/pms_image_proxy?img=' . $img['thumb'], $img['rating_key'] . '-list');
+					$img['art'] = '/plugins/images/cache/' . $img['rating_key'] . '-np.jpg';
+					$img['thumb'] = '/plugins/images/cache/' . $img['rating_key'] . '-list.jpg';
 					$api['homestats']['data'][$key]['rows'][0] = $img;
 				}
 				// Cache the platform icon
