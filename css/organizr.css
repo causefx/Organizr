@@ -1278,6 +1278,11 @@ span.fc-title {
     position: absolute;
     top: 15px;
 }
+@media(max-width:767px) {
+    .show-sidebar .sidebar {
+        overflow-y: auto;
+    }
+}
 .nav-second-level .sidebar-tabName {
     position: absolute;
     top: 20px;
