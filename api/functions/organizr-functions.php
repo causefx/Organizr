@@ -2067,7 +2067,10 @@ function cacheImage($url, $name, $extension = 'jpg')
         mkdir($cacheDirectory, 0777, true);
     }
     $cachefile = $cacheDirectory . $name . '.' . $extension;
-    @copy($url, $cachefile);
+	$cachetime = 604800;
+	if ((file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) || !file_exists($cachefile)) {
+		@copy($url, $cachefile);
+	}
 }
 
 function downloader($array)
