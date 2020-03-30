@@ -5688,7 +5688,7 @@ function buildPihole(array){
 		        <hr class="hidden-xs ml-2">
 		    </div>
 			<div class="clearfix"></div>
-		    <div class="piholeCards col-sm-12">
+		    <div class="piholeCards col-sm-12 my-3">
 			    `+buildPiholeItem(array)+`
 			</div>
 		</div>
@@ -6616,14 +6616,14 @@ function buildTautulliItem(array){
 function buildTautulli(array){
     if(array === false){ return ''; }
     return (array) ? `
-    <div id="allPihole">
+    <div id="allTautulli">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
 		        <h4 class="pull-left homepage-element-title"><span lang="en">Tautulli</span></h4>
 		        <hr class="hidden-xs ml-2">
 		    </div>
 			<div class="clearfix"></div>
-            <div class="piholeCards col-sm-12">
+            <div class="tautulliCards col-sm-12 my-3">
                 `+buildTautulliItem(array)+`
 			</div>
 		</div>
