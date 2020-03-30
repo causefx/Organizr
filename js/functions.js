@@ -6502,15 +6502,13 @@ function buildTautulliItem(array){
                 <div class="card text-white mb-3 homepage-tautulli-card card-bg-colour">
                     <div class="card-body">
                         <div class="row" style="display: flex;">
-                            <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">
-                                <img src="`+options['url']+`images/libraries/`+type;
-                                if(type == 'artist') {
-                                    card += `.png`;
-                                } else {
-                                    card += '.svg';
-                                }
+                            <div class="col-lg-4 col-md-4 col-sm-4 hidden-xs align-self-center">`;
+                            if(type == 'artist') {
+                                card += `<img src="/plugins/images/cache/tautulli-`+type+`.jpg" class="lib-icon" alt="library icon">`;
+                            } else {
+                                card += `<img src="/plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon">`;
+                            }
             card += `
-                                " class="lib-icon" alt="library icon">
                             </div>
                             <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
                                 <ol class="pl-2">`;
@@ -6557,7 +6555,7 @@ function buildTautulliItem(array){
                         if(stat !== 'top_users' && stat !== 'top_platforms') {
                             card += `
                             <div class="bg-img-cont">
-                                <img class="bg-img" src="`+options['url']+`pms_image_proxy?img=`+e['rows'][0]['art']+`" alt="background art">
+                                <img class="bg-img" src="`+e['rows'][0]['art']+`" alt="background art">
                             </div>
                             `;
                         }
@@ -6568,9 +6566,9 @@ function buildTautulliItem(array){
                                 if(stat == 'top_users') {
                                     card += `<img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar">`;
                                 } else if(stat == 'top_platforms') {
-                                    card += `<img src="`+options['url']+`images/platforms/`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon">`;
+                                    card += `<img src="/plugins/images/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon">`;
                                 } else {
-                                    card += `<img src="`+options['url']+`pms_image_proxy?img=`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster">`;
+                                    card += `<img src="`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster">`;
                                 }
                 card += `
                                 </div>
