@@ -6657,7 +6657,7 @@ function buildTautulli(array){
     <div id="allTautulli">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Tautulli</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+		        <h4 class="pull-left homepage-element-title"><span>`+activeInfo.settings.homepage.options.titles.tautulli+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 		        <hr class="hidden-xs ml-2">
 		    </div>
 			<div class="clearfix"></div>

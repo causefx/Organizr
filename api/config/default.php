@@ -279,6 +279,7 @@ return array(
 	'tautulliTopPlatforms' => true,
 	'tautulliPopularMovies' => true,
 	'tautulliPopularTV' => true,
+	'tautulliHeader' => 'Tautulli',
 	'homepagePiholeEnabled' => false,
 	'homepagePiholeAuth' => '1',
 	'homepagePiholeRefresh' => '10000',
