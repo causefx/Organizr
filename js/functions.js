@@ -6808,9 +6808,9 @@ function homepageMonitorr(timeout){
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
     });
-    var timeoutTitle = 'PiHole-Homepage';
+    var timeoutTitle = 'Monitorr-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
-    timeouts[timeoutTitle] = setTimeout(function(){ homepagePihole(timeout); }, timeout);
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageMonitorr(timeout); }, timeout);
 }
 // Thanks Swifty!
 function PopupCenter(url, title, w, h) {
