@@ -24,6 +24,7 @@ function homepageOrder()
 		"homepageOrderunifi" => $GLOBALS['homepageOrderunifi'],
 		"homepageOrdertautulli" => $GLOBALS['homepageOrdertautulli'],
 		"homepageOrderPihole" => $GLOBALS['homepageOrderPihole'],
+		"homepageOrderMonitorr" => $GLOBALS['homepageOrderMonitorr'],
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -356,6 +357,19 @@ function buildHomepageItem($homepageItem)
 				</script>
 				';
 			}
+			break;
+		case 'homepageOrderMonitorr':
+			if ($GLOBALS['homepageMonitorrEnabled']) {
+				$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Monitorr...</h2></div>';
+				$item .= '
+				<script>
+				// Monitorr
+				homepageMonitorr("' . $GLOBALS['homepageMonitorrRefresh'] . '");
+				// End Monitorr
+				</script>
+				';
+			}
+			break;
 		default:
 			# code...
 			break;
@@ -2701,6 +2715,69 @@ function getHomepageList()
 				),
 			)
 		),
+		array(
+			'name' => 'Monitorr',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/monitorr.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageMonitorrEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepageMonitorrEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageMonitorrAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageMonitorrAuth'],
+						'options' => $groups
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'monitorrURL',
+						'label' => 'URL',
+						'value' => $GLOBALS['monitorrURL'],
+						'help' => 'URL for Monitorr. Please use the revers proxy URL i.e. https://domain.com/monitorr/.',
+						'placeholder' => 'http://domain.com/monitorr/'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageMonitorrRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageMonitorrRefresh'],
+						'options' => optionTime()
+					),
+				),
+				'Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'monitorrHeader',
+						'label' => 'Title',
+						'value' => $GLOBALS['monitorrHeader'],
+						'help' => 'Sets the title of this homepage module',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'monitorrHeaderToggle',
+						'label' => 'Toggle Title',
+						'value' => $GLOBALS['monitorrHeaderToggle'],
+						'help' => 'Shows/hides the title of this homepage module'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'monitorrCompact',
+						'label' => 'Compact view',
+						'value' => $GLOBALS['monitorrCompact'],
+						'help' => 'Toggles the compact view of this homepage module'
+					),
+				),
+			)
+		),
 	);
 }
 
@@ -2837,6 +2914,13 @@ function buildHomepageSettings()
 				$class = 'bg-info';
 				$image = 'plugins/images/tabs/pihole.png';
 				if (!$GLOBALS['homepagePiholeEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderMonitorr':
+				$class = 'bg-info';
+				$image = 'plugins/images/tabs/monitorr.png';
+				if (!$GLOBALS['homepageMonitorrEnabled']) {
 					$class .= ' faded';
 				}
 				break;

@@ -65,6 +65,9 @@ function homepageConnect($array)
 		case 'getPihole':
 			return getPihole();
 			break;
+		case 'getMonitorr':
+			return getMonitorr();
+			break;
 		default:
 			# code...
 			break;
@@ -2509,6 +2512,83 @@ function getTautulli()
 		return $api;
 	}
 	return false;
+}
+
+function getMonitorr()
+{
+	if ($GLOBALS['homepageMonitorrEnabled'] && !empty($GLOBALS['monitorrURL']) && qualifyRequest($GLOBALS['homepageMonitorrAuth'])) {
+		$api = [];
+		$url = qualifyURL($GLOBALS['monitorrURL']);
+		$dataUrl = $url . '/assets/php/loop.php';
+		try {
+			$response = Requests::get($dataUrl, [ 'Token' => $GLOBALS['organizrAPI'] ], []);
+			if ($response->success) {
+				$html = html_entity_decode($response->body);
+
+				// This section grabs the names of all services by regex
+				$services = [];
+				$servicesMatch = [];
+				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline" style="cursor: default"><div>(.*)<\/div><\/div><div class="btnoffline" style="cursor: default">Offline<\/div><\/div><\/div>/';
+				preg_match_all($servicePattern, $html, $servicesMatch);
+				unset($servicesMatch[0]);
+				$servicesMatch = array_values($servicesMatch);
+				foreach($servicesMatch as $group) {
+					foreach($group as $service) {
+						if($service !== '') {
+							array_push($services, $service);
+						}
+					}
+				}
+
+				// This section then grabs the status and image of that service with regex
+				$statuses = [];
+				foreach($services as $service) {
+					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div><\/a><\/div><\/div>|' . $service . '<\/div><\/div><div class="btnoffline" style="cursor: default">(Offline)<\/div><\/div><\/div>/';
+					$status = [];
+					preg_match($statusPattern, $html, $status);
+					$statuses[$service] = $status;
+					foreach($status as $match) {
+						if($match == 'Online') {
+							$statuses[$service] = [
+								'status' => true
+							];
+						} else if($match == 'Offline') {
+							$statuses[$service] = [
+								'status' => false
+							];
+						}
+					}
+
+					$imageMatch = [];
+
+					$imgPattern = '/assets\/img\/..\/img\/(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitle"><div>' . $service . '|assets\/img\/\.\.\/img\/(.*)" class="serviceimg imgoffline" alt=.*><\/div><\/div><div id="servicetitleoffline" style="cursor: default"><div>' . $service . '/';
+
+					preg_match($imgPattern, $html, $imageMatch);
+					unset($imageMatch[0]);
+					$imageMatch = array_values($imageMatch);
+					// array_push($api['imagematches'][$service], $imageMatch);
+					foreach($imageMatch as $match) {
+						if($match!== '') {
+							$image = $match;
+						}
+					}
+					$statuses[$service]['image'] = $url . '/assets/img/' . $image;
+				}
+
+				ksort($statuses);
+				$api['services'] = $statuses;
+				$api['options'] = [
+					'title' => $GLOBALS['monitorrHeader'],
+					'titleToggle' => $GLOBALS['monitorrHeaderToggle'],
+					'compact' => $GLOBALS['monitorrCompact'],
+				];
+			}
+		} catch (Requests_Exception $e) {
+			writeLog('error', 'Monitorr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		};
+		$api = isset($api) ? $api : false;
+		return $api;
+	}
 }
 
 function testAPIConnection($array)

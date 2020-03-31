@@ -164,6 +164,7 @@ return array(
 	'homepageOrderunifi' => '19',
 	'homepageOrderPihole' => '20',
 	'homepageOrdertautulli' => '21',
+	'homepageOrderMonitorr' => '22',
 	'homepageShowStreamNames' => false,
 	'homepageShowStreamNamesAuth' => '1',
 	'homepageStreamRefresh' => '60000',
@@ -286,5 +287,12 @@ return array(
 	'homepagePiholeRefresh' => '10000',
 	'homepagePiholeCombine' => false,
 	'piholeHeaderToggle' => true,
-	'piholeURL' => ''
+	'piholeURL' => '',
+	'homepageMonitorrEnabled' => false,
+	'homepageMonitorrAuth' => '1',
+	'homepageMonitorrRefresh' => '5000',
+	'monitorrURL' => '',
+	'monitorrHeaderToggle' => true,
+	'monitorrHeader' => 'Monitorr',
+	'monitorrCompact' => false,
 );
