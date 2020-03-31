@@ -6702,6 +6702,116 @@ function homepageTautulli(timeout){
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageTautulli(timeout); }, timeout);
 }
+function buildMonitorrItem(array){
+    var cards = `
+    <style>
+    .monitorr-card {
+        background-color: #7b7b7b2e;
+    }
+
+    .monitorr-card .card-body {
+        text-align: center;
+    }
+
+    .monitorr-card img {
+        max-height: 100px;
+        max-width: 100%;]
+    }
+
+    .monitorr-card .indicator {
+        border-radius: 7px;
+    }
+
+    .monitorr-card .indicator.online {
+        background-color: green;
+    }
+
+    .monitorr-card .indicator.offline {
+        background-color: #a90000;
+    }
+
+    .monitorr-card .indicator p {
+        font-weight: 600;
+        color: #fff;
+    }
+    </style>
+    `;
+    var options = array['options'];
+    var services = array['services'];
+
+    var buildCard = function(name, data) {
+        var card = `
+        <div class="card monitorr-card">
+            <div class="card-body">
+                <div class="d-block">
+                    <h4>`+name+`</h4>
+                    <img class="my-2" src="`+data.image+`" alt="service icon">
+                </div>
+                <div class="d-inline-block mt-4 py-2 px-4 indicator `; if(data.status) { card += 'online' } else { card += 'offline' } card+=`">
+                    <p class="mb-0">`; if(data.status) { card += 'ONLINE' } else { card += 'OFFLINE' } card+=`</p>
+                </div>
+            </div>
+        </div>
+        `;
+        return card;
+    }
+
+    cards += '<div class="row">';
+    cards += '<div class="col"></div>';
+    for(var key in services) {
+        cards += '<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">';
+        cards += buildCard(key, services[key]);
+        cards += '</div>';
+    };
+    cards += '<div class="col"></div>';
+    cards += '</div>';
+    return cards;
+}
+function buildMonitorr(array){
+    if(array === false){ return ''; }
+    var html = `
+    <div id="allMonitorr">
+		<div class="el-element-overlay row">`
+    if(array['options']['titleToggle']) {
+        html += `
+            <div class="col-md-12">
+                <h4 class="pull-left homepage-element-title"><span>`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+                <hr class="hidden-xs ml-2">
+            </div>
+            <div class="clearfix"></div>
+        `;
+    }
+    html += `
+            <div class="monitorrCards col-sm-12 my-3">
+                `+buildMonitorrItem(array)+`
+			</div>
+		</div>
+	</div>
+    `;
+    return (array) ? html : '';
+}
+function homepageMonitorr(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepagePiholeRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getMonitorr'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderMonitorr').innerHTML = '';
+        if(response.data !== null){
+            buildMonitorr(response.data)
+            $('#homepageOrderMonitorr').html(buildMonitorr(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'PiHole-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepagePihole(timeout); }, timeout);
+}
 // Thanks Swifty!
 function PopupCenter(url, title, w, h) {
     // Fixes dual-screen position                         Most browsers      Firefox
