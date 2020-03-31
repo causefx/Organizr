@@ -338,6 +338,13 @@ function doneTypingMediaSearch () {
 }
 $(document).on("click", ".login-button", function(e) {
     e.preventDefault;
+    var oAuthEntered = $('#oAuth-Input').val();
+    var usernameEntered = $('#login-username-Input').val();
+    if(oAuthEntered == '' && usernameEntered == ''){
+        message('Login Error', ' You need to enter a Username', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+        $('#login-username-Input').focus();
+        return false;
+    }
     loginAttempts = loginAttempts + 1;
     $('#login-attempts').val(loginAttempts);
     var check = (local('g','loggingIn'));
