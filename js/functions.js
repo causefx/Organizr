@@ -6709,6 +6709,11 @@ function buildMonitorrItem(array){
         background-color: #7b7b7b2e;
     }
 
+    .monitorrCards .row {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
     .monitorr-card .card-body {
         text-align: center;
     }
@@ -6770,6 +6775,12 @@ function buildMonitorrItem(array){
         font-weight: 600;
         color: #fff;
     }
+
+    .one-line {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
     </style>
     `;
     var options = array['options'];
@@ -6792,10 +6803,10 @@ function buildMonitorrItem(array){
             `;
         } else {
             var card = `
-            <div class="card monitorr-card">
+            <div class="card monitorr-card mb-3">
                 <div class="card-body">
                     <div class="d-block">
-                        <h4>`+name+`</h4>
+                        <h4 class="one-line">`+name+`</h4>
                         <img class="my-2" src="`+data.image+`" alt="service icon">
                     </div>
                     <div class="d-inline-block mt-4 py-2 px-4 indicator `; if(data.status) { card += 'online' } else { card += 'offline' } card+=`">
@@ -6814,7 +6825,7 @@ function buildMonitorrItem(array){
         if(options['compact']) {
             cards += '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 px-2">';
         } else {
-            cards += '<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">';
+            cards += '<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 px-2">';
         }
         cards += buildCard(key, services[key]);
         cards += '</div>';
