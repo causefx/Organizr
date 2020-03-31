@@ -6713,8 +6713,14 @@ function buildMonitorrItem(array){
         text-align: center;
     }
 
+    .monitorr-card-compact {
+        height: 66px;
+    }
+
     .monitorr-card-compact .card-body {
         text-align: left;
+        overflow: hidden;
+        white-space: nowrap;
     }
 
     .monitorr-card-compact p {
@@ -6772,7 +6778,7 @@ function buildMonitorrItem(array){
     var buildCard = function(name, data) {
         if(options['compact']) {
             var card = `
-            <div class="card monitorr-card monitorr-card-compact `; if(data.status) { card += 'online' } else { card += 'offline' } card+=`">
+            <div class="card monitorr-card monitorr-card-compact mb-3 `; if(data.status) { card += 'online' } else { card += 'offline' } card+=`">
                 <div class="card-body">
                     <p class="ml-2 d-inline">`+name+`</p>`;
                     if(data.status) {
@@ -6806,7 +6812,7 @@ function buildMonitorrItem(array){
     cards += '<div class="col"></div>';
     for(var key in services) {
         if(options['compact']) {
-            cards += '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">';
+            cards += '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 px-2">';
         } else {
             cards += '<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">';
         }
