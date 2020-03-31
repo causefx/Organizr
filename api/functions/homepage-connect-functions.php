@@ -2528,7 +2528,7 @@ function getMonitorr()
 				// This section grabs the names of all services by regex
 				$services = [];
 				$servicesMatch = [];
-				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline" style="cursor: default"><div>(.*)<\/div><\/div><div class="btnoffline" style="cursor: default">Offline<\/div><\/div><\/div>/';
+				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline".*><div>(.*)<\/div><\/div><div class="btnoffline".*>Offline<\/div><\/div><\/div>/';
 				preg_match_all($servicePattern, $html, $servicesMatch);
 				unset($servicesMatch[0]);
 				$servicesMatch = array_values($servicesMatch);
@@ -2543,7 +2543,7 @@ function getMonitorr()
 				// This section then grabs the status and image of that service with regex
 				$statuses = [];
 				foreach($services as $service) {
-					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div><\/a><\/div><\/div>|' . $service . '<\/div><\/div><div class="btnoffline" style="cursor: default">(Offline)<\/div><\/div><\/div>/';
+					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div><\/a><\/div><\/div>|' . $service . '<\/div><\/div><div class="btnoffline".*>(Offline)<\/div><\/div><\/div>/';
 					$status = [];
 					preg_match($statusPattern, $html, $status);
 					$statuses[$service] = $status;
@@ -2561,7 +2561,7 @@ function getMonitorr()
 
 					$imageMatch = [];
 
-					$imgPattern = '/assets\/img\/..\/img\/(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitle"><div>' . $service . '|assets\/img\/\.\.\/img\/(.*)" class="serviceimg imgoffline" alt=.*><\/div><\/div><div id="servicetitleoffline" style="cursor: default"><div>' . $service . '/';
+					$imgPattern = '/assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitle"><div>'.$service.'|assets\/img\/\.\.(.*)" class="serviceimg imgoffline" alt=.*><\/div><\/div><div id="servicetitleoffline".*><div>'.$service.'/';
 
 					preg_match($imgPattern, $html, $imageMatch);
 					unset($imageMatch[0]);
@@ -2572,7 +2572,7 @@ function getMonitorr()
 							$image = $match;
 						}
 					}
-					$statuses[$service]['image'] = $url . '/assets/img/' . $image;
+					$statuses[$service]['image'] = $url . '/assets' . $image;
 				}
 
 				ksort($statuses);
