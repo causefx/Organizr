@@ -6577,9 +6577,9 @@ function buildTautulliItem(array){
             `;
             return card;
         };
-        var card = buildCard('movie', movies);
-        card += buildCard('show', tv);
-        card += buildCard('artist', audio);
+        var card = (movies.length > 0) ? buildCard('movie', movies) : '';
+        card += (tv.length > 0) ? buildCard('show', tv) : '';
+        card += (audio.length > 0) ? buildCard('artist', audio) : '';
         return card;
     };
     var buildStats = function(data, stat){

@@ -2497,9 +2497,10 @@ function getTautulli()
 			}
 			$ids = array_merge(['top_music', 'popular_music', 'last_watched', 'most_concurrent'], $ids);
 			foreach ($ids as $id) {
-				$key = array_search($id, array_column($api['homestats']['data'], 'stat_id'));
-				unset($api['homestats']['data'][$key]);
-				$api['homestats']['data'] = array_values($api['homestats']['data']);
+				if($key = array_search($id, array_column($api['homestats']['data'], 'stat_id'))) {
+					unset($api['homestats']['data'][$key]);
+					$api['homestats']['data'] = array_values($api['homestats']['data']);
+				}
 			}
 		} catch (Requests_Exception $e) {
 			writeLog('error', 'Tautulli Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
