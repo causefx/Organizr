@@ -6713,6 +6713,16 @@ function buildMonitorrItem(array){
         text-align: center;
     }
 
+    .monitorr-card-compact .card-body {
+        text-align: left;
+    }
+
+    .monitorr-card-compact p {
+        font-size: 1.5em;
+        font-weight: 450;
+        color: white;
+    }
+
     .monitorr-card img {
         max-height: 100px;
         max-width: 100%;]
@@ -6723,11 +6733,31 @@ function buildMonitorrItem(array){
     }
 
     .monitorr-card .indicator.online {
-        background-color: green;
+        background-color: #3db85d;
     }
 
     .monitorr-card .indicator.offline {
-        background-color: #a90000;
+        background-color: #de3535;
+    }
+
+    .monitorr-card-compact.online {
+        border-left: 7px solid #3db85d;
+    }
+
+    .monitorr-card-compact.offline {
+        border-left: 7px solid #de3535;
+    }
+
+    .monitorr-card-compact .fa {
+        font-size: 2.5em;
+    }
+
+    .monitorr-card-compact .fa.online {
+        color: #3db85d;
+    }
+
+    .monitorr-card-compact .fa.offline {
+        color: #de3535;
     }
 
     .monitorr-card .indicator p {
@@ -6740,26 +6770,46 @@ function buildMonitorrItem(array){
     var services = array['services'];
 
     var buildCard = function(name, data) {
-        var card = `
-        <div class="card monitorr-card">
-            <div class="card-body">
-                <div class="d-block">
-                    <h4>`+name+`</h4>
-                    <img class="my-2" src="`+data.image+`" alt="service icon">
-                </div>
-                <div class="d-inline-block mt-4 py-2 px-4 indicator `; if(data.status) { card += 'online' } else { card += 'offline' } card+=`">
-                    <p class="mb-0">`; if(data.status) { card += 'ONLINE' } else { card += 'OFFLINE' } card+=`</p>
+        if(options['compact']) {
+            var card = `
+            <div class="card monitorr-card monitorr-card-compact `; if(data.status) { card += 'online' } else { card += 'offline' } card+=`">
+                <div class="card-body">
+                    <p class="ml-2 d-inline">`+name+`</p>`;
+                    if(data.status) {
+                        card += `<i class="fa fa-check-circle d-inline pull-right online" aria-hidden="true"></i>`;
+                    } else {
+                        card += `<i class="fa fa-times-circle d-inline pull-right offline" aria-hidden="true"></i>`;
+                    }
+            card += `
                 </div>
             </div>
-        </div>
-        `;
+            `;
+        } else {
+            var card = `
+            <div class="card monitorr-card">
+                <div class="card-body">
+                    <div class="d-block">
+                        <h4>`+name+`</h4>
+                        <img class="my-2" src="`+data.image+`" alt="service icon">
+                    </div>
+                    <div class="d-inline-block mt-4 py-2 px-4 indicator `; if(data.status) { card += 'online' } else { card += 'offline' } card+=`">
+                        <p class="mb-0">`; if(data.status) { card += 'ONLINE' } else { card += 'OFFLINE' } card+=`</p>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
         return card;
     }
 
     cards += '<div class="row">';
     cards += '<div class="col"></div>';
     for(var key in services) {
-        cards += '<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">';
+        if(options['compact']) {
+            cards += '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">';
+        } else {
+            cards += '<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">';
+        }
         cards += buildCard(key, services[key]);
         cards += '</div>';
     };

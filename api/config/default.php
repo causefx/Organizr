@@ -294,4 +294,5 @@ return array(
 	'monitorrURL' => '',
 	'monitorrHeaderToggle' => true,
 	'monitorrHeader' => 'Monitorr',
+	'monitorrCompact' => false,
 );

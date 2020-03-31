@@ -2767,7 +2767,14 @@ function getHomepageList()
 						'label' => 'Toggle Title',
 						'value' => $GLOBALS['monitorrHeaderToggle'],
 						'help' => 'Shows/hides the title of this homepage module'
-					)
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'monitorrCompact',
+						'label' => 'Compact view',
+						'value' => $GLOBALS['monitorrCompact'],
+						'help' => 'Toggles the compact view of this homepage module'
+					),
 				),
 			)
 		),

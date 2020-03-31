@@ -2579,6 +2579,7 @@ function getMonitorr()
 				$api['options'] = [
 					'title' => $GLOBALS['monitorrHeader'],
 					'titleToggle' => $GLOBALS['monitorrHeaderToggle'],
+					'compact' => $GLOBALS['monitorrCompact'],
 				];
 			}
 		} catch (Requests_Exception $e) {
