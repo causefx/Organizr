@@ -4336,8 +4336,9 @@ function buildRequestItem(array, extra=null){
 				adminFunctions = (activeInfo.user.groupID <= 1) ? adminFunctions : '';
 				var user = (activeInfo.user.groupID <= 1) ? '<span lang="en">Requested By:</span> '+v.user : '';
 				var user2 = (activeInfo.user.groupID <= 1) ? '<br>'+v.user : '';
+				var divId = (v.type == 'movie') ? v.request_id : v.id;
 				items += `
-				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` request-`+v.request_id+`-div mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
+				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` request-`+divId+`-div mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
 					<div class="outside-request-div">
 						<div class="inside-over-request-div `+badge2+`"></div>
 						<div class="inside-request-div `+badge+`"></div>
