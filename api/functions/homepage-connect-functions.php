@@ -2574,6 +2574,7 @@ function getMonitorr()
 					$statuses[$service]['image'] = $url . '/assets/img/' . $image;
 				}
 
+				ksort($statuses);
 				$api['services'] = $statuses;
 				$api['options'] = [
 					'title' => $GLOBALS['monitorrHeader'],
