@@ -6431,6 +6431,7 @@ function buildTautulliItem(array){
     .homepage-tautulli-card ol.pl-2 li,
     .library-card ol li {
         margin-top: 2px;
+        text-align-last: left;
     }
 
     .library-card ol::-webkit-scrollbar-track {
@@ -6480,6 +6481,15 @@ function buildTautulliItem(array){
 
     .card-bg-colour {
         background-color: #7b7b7b2e;
+    }
+
+    .homepage-tautulli-card .card-body h4 {
+        text-align-last: left;
+    }
+
+    .homepage-tautulli-card .card-body span.pull-left {
+        line-height: 22px;
+        font-size: 18px;
     }
 
     .platform-android-rgba { background-color: rgba(164, 202, 57, 0.40); }
@@ -6606,7 +6616,7 @@ function buildTautulliItem(array){
                         }
                 card += `
                         <div class="card-body">
-                            <div class="row" style="display: flex;">
+                            <div class="row h-100" style="display: flex;">
                                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 align-self-center" style="overflow: hidden;">`;
                                 if(stat == 'top_users') {
                                     card += `<img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar">`;
@@ -6627,7 +6637,7 @@ function buildTautulliItem(array){
                                 var cardTitle = (addExtraField) ? '<span class="pull-left">'+e['stat_title']+'</span><span class="pull-right">'+extraField+'</span><div class="clearfix"></div>' : '<h4>'+e['stat_title']+'</h4>';
                 card += `
                                 </div>
-                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12" style="overflow: hidden;">
+                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 align-self-center" style="overflow: hidden;">
                                     `+cardTitle+`
                                     <hr class="my-2">
                                     <ol class="pl-2">`;
