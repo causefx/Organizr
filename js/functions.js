@@ -6779,7 +6779,7 @@ function buildMonitorr(array){
     if(array['options']['titleToggle']) {
         html += `
             <div class="col-md-12">
-                <h4 class="pull-left homepage-element-title"><span>`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+                <h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageMonitorr()">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
                 <hr class="hidden-xs ml-2">
             </div>
             <div class="clearfix"></div>
