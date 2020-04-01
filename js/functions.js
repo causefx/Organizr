@@ -6665,7 +6665,7 @@ function buildTautulliItem(array){
         });
         return card;
     };
-    cards += '<div class="row">'
+    cards += '<div class="row tautulliTop">'
     cards += (options['popularMovies']) ? buildStats(homestats, 'popular_movies') : '';
     cards += (options['popularTV']) ? buildStats(homestats, 'popular_tv') : '';
     cards += (options['topMovies']) ? buildStats(homestats, 'top_movies') : '';
@@ -6673,7 +6673,7 @@ function buildTautulliItem(array){
     cards += (options['topUsers']) ? buildStats(homestats, 'top_users') : '';
     cards += (options['topPlatforms']) ? buildStats(homestats, 'top_platforms') : '';
     cards += '</div>';
-    cards += '<div class="row">'
+    cards += '<div class="row tautulliLibraries">'
     cards += (options['libraries']) ? buildLibraries(libstats) : '';
     cards += '</div>';
     return cards;
