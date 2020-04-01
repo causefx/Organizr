@@ -6730,17 +6730,12 @@ function buildMonitorrItem(array){
         background-color: #7b7b7b2e;
     }
 
-    .monitorrCards .row {
-        padding-right: 10px;
-        padding-left: 10px;
-    }
-
     .monitorr-card .card-body {
         text-align: center;
     }
 
     .monitorr-card-compact {
-        height: 66px;
+        height: 45px;
     }
 
     .monitorr-card-compact .card-body {
@@ -6750,8 +6745,8 @@ function buildMonitorrItem(array){
     }
 
     .monitorr-card-compact p {
-        font-size: 1.5em;
-        font-weight: 450;
+        line-height: 30px;
+        font-size: 21px;
         color: white;
     }
 
@@ -6773,15 +6768,15 @@ function buildMonitorrItem(array){
     }
 
     .monitorr-card-compact.online {
-        border-left: 7px solid #3db85d;
+        border-left: 5px solid #3db85d;
     }
 
     .monitorr-card-compact.offline {
-        border-left: 7px solid #de3535;
+        border-left: 5px solid #de3535;
     }
 
     .monitorr-card-compact .fa {
-        font-size: 2.5em;
+        font-size: 2em;
     }
 
     .monitorr-card-compact .fa.online {
@@ -6811,14 +6806,14 @@ function buildMonitorrItem(array){
         if(options['compact']) {
             var card = `
             <div class="card monitorr-card monitorr-card-compact mb-3 `; if(data.status) { card += 'online' } else { card += 'offline' } card+=`">
-                <div class="card-body">
-                    <p class="ml-2 d-inline">`+name+`</p>`;
+                <div class="card-body py-1">`;
                     if(data.status) {
-                        card += `<i class="fa fa-check-circle d-inline pull-right online" aria-hidden="true"></i>`;
+                        card += `<i class="fa fa-check-circle d-inline pull-right online my-2" aria-hidden="true"></i>`;
                     } else {
-                        card += `<i class="fa fa-times-circle d-inline pull-right offline" aria-hidden="true"></i>`;
+                        card += `<i class="fa fa-times-circle d-inline pull-right offline my-2" aria-hidden="true"></i>`;
                     }
             card += `
+                    <p class="ml-2 d-inline d-flex no-block align-items-center my-2">`+name+`</p>
                 </div>
             </div>
             `;
@@ -6844,9 +6839,9 @@ function buildMonitorrItem(array){
     cards += '<div class="col"></div>';
     for(var key in services) {
         if(options['compact']) {
-            cards += '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 px-2">';
+            cards += '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">';
         } else {
-            cards += '<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 px-2">';
+            cards += '<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">';
         }
         cards += buildCard(key, services[key]);
         cards += '</div>';
