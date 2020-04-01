@@ -2578,12 +2578,10 @@ function getMonitorr()
 					$imageUrl = $url . '/assets' . $image;
 
 					$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
-					$cacheImage = $cacheDirectory . 'monitorr-' . $image;
 
 					$img = Requests::get($imageUrl, [ 'Token' => $GLOBALS['organizrAPI'] ], []);
 					if($img->success) {
 						$base64 = 'data:image/' . $ext . ';base64,' . base64_encode($img->body);
-						// $statuses[$service]['image'] = '/plugins/images/cache/monitorr-' . $service . '.' . $ext;
 						$statuses[$service]['image'] = $base64;
 					} else {
 						$statuses[$service]['image'] = $cacheDirectory . 'no-list.png';
