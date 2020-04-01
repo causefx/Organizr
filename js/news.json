@@ -1,5 +1,12 @@
 [
   {
+    "title": "Tab Redirect Loops and SameSite Cookie Issues",
+    "subTitle": "New Browser Restrictions",
+    "date": "2020-04-01 19:30",
+    "body": "It seems there are a lot of issues happening with redirect Loops and SameSite cookie issues.  If you are having issues, please read this document.  <a href=\"https:\/\/docs.organizr.app\/books\/troubleshooting\/page\/redirect-looping---samesite-errors\" target=\"_blank\">Organizr SameSite Docs<\/a>",
+    "author": "CauseFX"
+  },
+  {
     "title": "Plex Oauth Issues - RESOLVED!",
     "subTitle": "Let's make them bring back support correctly",
     "date": "2019-07-17 15:20",
