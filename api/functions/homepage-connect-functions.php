@@ -2572,7 +2572,20 @@ function getMonitorr()
 							$image = $match;
 						}
 					}
-					$statuses[$service]['image'] = $url . '/assets' . $image;
+					$ext = explode('.', $image);
+					$ext = $ext[key(array_slice($ext, -1, 1, true))];
+
+					$imageUrl = $url . '/assets' . $image;
+
+					$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+
+					$img = Requests::get($imageUrl, [ 'Token' => $GLOBALS['organizrAPI'] ], []);
+					if($img->success) {
+						$base64 = 'data:image/' . $ext . ';base64,' . base64_encode($img->body);
+						$statuses[$service]['image'] = $base64;
+					} else {
+						$statuses[$service]['image'] = $cacheDirectory . 'no-list.png';
+					}
 				}
 
 				ksort($statuses);
