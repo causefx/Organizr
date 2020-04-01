@@ -6752,7 +6752,7 @@ function buildMonitorrItem(array){
 
     .monitorr-card img {
         max-height: 100px;
-        max-width: 100%;]
+        max-width: 100%;
     }
 
     .monitorr-card .indicator {
