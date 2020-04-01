@@ -6724,109 +6724,41 @@ function homepageTautulli(timeout){
     timeouts[timeoutTitle] = setTimeout(function(){ homepageTautulli(timeout); }, timeout);
 }
 function buildMonitorrItem(array){
-    var cards = `
-    <style>
-    .monitorr-card {
-        background-color: #7b7b7b2e;
-    }
-
-    .monitorr-card .card-body {
-        text-align: center;
-    }
-
-    .monitorr-card-compact {
-        height: 45px;
-    }
-
-    .monitorr-card-compact .card-body {
-        text-align: left;
-        overflow: hidden;
-        white-space: nowrap;
-    }
-
-    .monitorr-card-compact p {
-        line-height: 30px;
-        font-size: 21px;
-        color: white;
-    }
-
-    .monitorr-card img {
-        max-height: 100px;
-        max-width: 100%;
-    }
-
-    .monitorr-card .indicator {
-        border-radius: 7px;
-    }
-
-    .monitorr-card .indicator.online {
-        background-color: #3db85d;
-    }
-
-    .monitorr-card .indicator.offline {
-        background-color: #de3535;
-    }
-
-    .monitorr-card-compact.online {
-        border-left: 5px solid #3db85d;
-    }
-
-    .monitorr-card-compact.offline {
-        border-left: 5px solid #de3535;
-    }
-
-    .monitorr-card-compact .fa {
-        font-size: 2em;
-    }
-
-    .monitorr-card-compact .fa.online {
-        color: #3db85d;
-    }
-
-    .monitorr-card-compact .fa.offline {
-        color: #de3535;
-    }
-
-    .monitorr-card .indicator p {
-        font-weight: 600;
-        color: #fff;
-    }
-
-    .one-line {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    </style>
-    `;
+    var cards = '';
     var options = array['options'];
     var services = array['services'];
 
     var buildCard = function(name, data) {
+        if(data.status) { var statusColor = 'success'; var imageText = 'fa fa-check-circle text-success' } 
+            else { var statusColor = 'danger animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-danger'}
         if(options['compact']) {
             var card = `
-            <div class="card monitorr-card monitorr-card-compact mb-3 `; if(data.status) { card += 'online' } else { card += 'offline' } card+=`">
-                <div class="card-body py-1">`;
-                    if(data.status) {
-                        card += `<i class="fa fa-check-circle d-inline pull-right online my-2" aria-hidden="true"></i>`;
-                    } else {
-                        card += `<i class="fa fa-times-circle d-inline pull-right offline my-2" aria-hidden="true"></i>`;
-                    }
-            card += `
-                    <p class="ml-2 d-inline d-flex no-block align-items-center my-2">`+name+`</p>
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="card bg-inverse text-white mb-3 monitorr-card">
+                    <div class="card-body bg-org-alt pt-1 pb-1">
+                        <div class="d-flex no-block align-items-center">
+                            <div class="left-health bg-`+statusColor+`"></div>
+                            <div class="ml-1 w-100">
+                                <i class="`+imageText+` font-20 pull-right mt-3 mb-2"></i>
+                                <h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle" src="`+data.image+`">&nbsp;`+name+`</h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            `;
+            </div>`;
         } else {
             var card = `
-            <div class="card monitorr-card mb-3">
-                <div class="card-body">
-                    <div class="d-block">
-                        <h4 class="one-line">`+name+`</h4>
-                        <img class="my-2" src="`+data.image+`" alt="service icon">
-                    </div>
-                    <div class="d-inline-block mt-4 py-2 px-4 indicator `; if(data.status) { card += 'online' } else { card += 'offline' } card+=`">
-                        <p class="mb-0">`; if(data.status) { card += 'ONLINE' } else { card += 'OFFLINE' } card+=`</p>
+            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                <div class="card bg-inverse text-white mb-3 monitorr-card">
+                    <div class="card-body bg-org-alt text-center">
+                        <div class="d-block">
+                            <h3 class="mt-0 mb-3">`+name+`</h3>
+                            <img class="monitorrImage" src="`+data.image+`" alt="service icon">
+                        </div>
+                        <div class="d-inline-block mt-4 py-2 px-4 badge indicator bg-`+statusColor+`">
+                            <p class="mb-0">`; if(data.status) { card += 'ONLINE' } else { card += 'OFFLINE' } card+=`</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -6834,20 +6766,9 @@ function buildMonitorrItem(array){
         }
         return card;
     }
-
-    cards += '<div class="row">';
-    cards += '<div class="col"></div>';
     for(var key in services) {
-        if(options['compact']) {
-            cards += '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">';
-        } else {
-            cards += '<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">';
-        }
         cards += buildCard(key, services[key]);
-        cards += '</div>';
     };
-    cards += '<div class="col"></div>';
-    cards += '</div>';
     return cards;
 }
 function buildMonitorr(array){
@@ -6865,11 +6786,12 @@ function buildMonitorr(array){
         `;
     }
     html += `
-            <div class="monitorrCards col-sm-12 my-3">
+            <div class="monitorrCards">
                 `+buildMonitorrItem(array)+`
 			</div>
 		</div>
-	</div>
+    </div>
+    <div class="clearfix"></div>
     `;
     return (array) ? html : '';
 }
