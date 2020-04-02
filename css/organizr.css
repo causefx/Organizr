@@ -319,6 +319,10 @@ img.imageSourceBottom {
     margin-top: -7px;
 }
 
+.monitorrImage {
+    height: 100px;
+}
+
 .grayscale {
     -webkit-filter: grayscale(100%);
     /* Safari 6.0 - 9.0 */
