@@ -4095,6 +4095,14 @@ function buildStreamItem(array,source){
 	var count = 0;
 	var total = array.length;
     var sourceIcon = (source === 'jellyfin' && activeInfo.settings.homepage.media.jellyfin) ? 'play' : source;
+    var streamDetails = {
+        direct: 0,
+        transcode: 0
+    };
+    var bandwidthDetails = {
+        wan: 0,
+        lan: 0
+    };
 	cards += '<div class="flexbox">';
 	$.each(array, function(i,v) {
 		var icon = '';
@@ -4128,10 +4136,12 @@ function buildStreamItem(array,source){
 			var userStream = 'Direct Play';
 			var userVideo = 'Direct Play';
 			var userAudio = 'Direct Play';
+            streamDetails['direct'] = streamDetails['direct'] + 1;
 		}else{
 			var userStream = v.userStream.stream;
 			var userVideo = v.userStream.videoDecision+' ('+v.userStream.sourceVideoCodec+' <i class="mdi mdi-ray-start-arrow"></i> '+v.userStream.videoCodec+' '+v.userStream.videoResolution+')';
 			var userAudio = v.userStream.audioDecision+' ('+v.userStream.sourceAudioCodec+' <i class="mdi mdi-ray-start-arrow"></i> '+v.userStream.audioCodec+')';
+            streamDetails['transcode'] = streamDetails['transcode'] + 1;
 
 		}
 		var streamInfo = '';
@@ -4139,6 +4149,7 @@ function buildStreamItem(array,source){
 		streamInfo += (v.userStream.videoResolution) ? `<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-video"></i> Video: `+userVideo+`</span></div>` : '';
 		streamInfo += `<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-speaker"></i> Audio: `+userAudio+`</span></div>`;
 		v.session = v.session.replace(/[\W_]+/g,"-");
+        bandwidthDetails[v.bandwidthType] = bandwidthDetails[v.bandwidthType] + parseFloat(v.bandwidth);
 		cards += `
 		<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12 nowPlayingItem">
 			<div class="white-box">
@@ -4197,7 +4208,38 @@ function buildStreamItem(array,source){
 
 	});
 	cards += '</div><!--end-->';
+    cards += buildStreamTooltip(bandwidthDetails, streamDetails, source);
 	return cards;
+}
+function buildStreamTooltip(bandwidth, streams, type){
+    var html = '';
+    var streamText = 'Streams: ';
+    var bandwidthText = ' | Bandwidth: ';
+    var bandwidthTotal = parseFloat(bandwidth['wan']) + parseFloat(bandwidth['lan']);
+    if(type !== 'plex'){
+        bandwidthText += (parseFloat(bandwidth['wan']) / 1000).toFixed(1) + ' Mbps';
+    }else{
+        bandwidthText += (parseFloat(bandwidthTotal) / 1000).toFixed(1) + ' Mbps';
+        if(bandwidth['wan'] !== 0){
+            bandwidthText += ' | WAN: ' + (parseFloat(bandwidth['wan']) / 1000).toFixed(1) + ' Mbps';
+        }
+        if(bandwidth['lan'] !== 0){
+            bandwidthText += ' | LAN: ' + (parseFloat(bandwidth['lan']) / 1000).toFixed(1) + ' Mbps';
+        }
+
+    }
+    var spacer = '';
+    if(streams['direct'] !== 0){
+        streamText += streams['direct']  + ' Direct Play(s)';
+        spacer = ' & '
+    }
+    if(streams['transcode'] !== 0){
+        streamText += spacer + streams['transcode']  + ' Transcode(s)';
+    }
+    html += '<span class="label label-info m-l-20 mouse" title="" data-toggle="tooltip" data-original-title="'+ streamText + bandwidthText +'"><i class="fa fa-info"></i></span>';
+    return `
+    <script>$('.streamDetails-`+type+`').html('`+html+`');$('[data-toggle="tooltip"]').tooltip();</script>
+    `;
 }
 function buildRecentItem(array, type, extra=null){
 	var items = '';
@@ -4387,12 +4429,13 @@ function buildRequestItem(array, extra=null){
 }
 function buildStream(array, type){
 	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
+	var originalType = type;
     type = (type === 'emby' && activeInfo.settings.homepage.media.jellyfin) ? 'jellyfin' : type;
 	return (streams) ? `
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+type+`')">`+streams+`</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+originalType+`')">`+streams+`</span><span class="streamDetails-`+type+`"></span></h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
