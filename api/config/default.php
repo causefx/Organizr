@@ -290,7 +290,7 @@ return array(
 	'piholeURL' => '',
 	'homepageMonitorrEnabled' => false,
 	'homepageMonitorrAuth' => '1',
-	'homepageMonitorrRefresh' => '5000',
+	'homepageMonitorrRefresh' => '60000',
 	'monitorrURL' => '',
 	'monitorrHeaderToggle' => true,
 	'monitorrHeader' => 'Monitorr',
