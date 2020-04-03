@@ -6783,8 +6783,10 @@ function buildMonitorrItem(array){
                             <div class="left-health bg-`+statusColor+`"></div>
                             <div class="ml-1 w-100">
                                 <i class="`+imageText+` font-20 pull-right mt-3 mb-2"></i>
-                                <h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle" src="`+data.image+`">&nbsp;`+name+`</h3>
-                                <div class="clearfix"></div>
+                                `; if (typeof data.link !== 'undefined') { card +=`<a href="`+data.link+`" target="_blank">`; }
+                                card += `<h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle" src="`+data.image+`">&nbsp;`+name+`</h3>
+                                `; if (typeof data.link !== 'undefined') { card +=`</a>`; }
+                                card += `<div class="clearfix"></div>
                             </div>
                         </div>
                     </div>
@@ -6795,14 +6797,16 @@ function buildMonitorrItem(array){
             <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
                 <div class="card bg-inverse text-white mb-3 monitorr-card">
                     <div class="card-body bg-org-alt text-center">
-                        <div class="d-block">
+                        `; if (typeof data.link !== 'undefined') { card +=`<a href="`+data.link+`" target="_blank">`; }
+                        card += `<div class="d-block">
                             <h3 class="mt-0 mb-3">`+name+`</h3>
                             <img class="monitorrImage" src="`+data.image+`" alt="service icon">
                         </div>
                         <div class="d-inline-block mt-4 py-2 px-4 badge indicator bg-`+statusColor+`">
                             <p class="mb-0">`; if(data.status) { card += 'ONLINE' } else { card += 'OFFLINE' } card+=`</p>
                         </div>
-                    </div>
+                        `; if (typeof data.link !== 'undefined') { card +=`</a>`; }
+                        card += `</div>
                 </div>
             </div>
             `;
@@ -6816,13 +6820,14 @@ function buildMonitorrItem(array){
 }
 function buildMonitorr(array){
     if(array === false){ return ''; }
+    var services = (typeof array.services !== 'undefined') ? Object.keys(array.services).length : false;
     var html = `
     <div id="allMonitorr">
 		<div class="el-element-overlay row">`
     if(array['options']['titleToggle']) {
         html += `
             <div class="col-md-12">
-                <h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageMonitorr()">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+                <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-monitorr-services mouse">`+services+`</span></h4></h4>
                 <hr class="hidden-xs ml-2">
             </div>
             <div class="clearfix"></div>

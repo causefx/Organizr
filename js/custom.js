@@ -1948,6 +1948,10 @@ $(document).on('click', ".showMoreHealth", function(){
     $('.showMoreHealthDiv-'+id).toggleClass('d-none');
     $(this).find('.card-body').toggleClass('healthPosition');
 });
+// homepage monitorr
+$(document).on('click', ".good-monitorr-services", function(){
+    homepageMonitorr();
+});
 //IP INFO
 $(document).on('click', ".ipInfo", function(){
     $.getJSON("https://ipinfo.io/"+$(this).text()+"/?token=ddd0c072ad5021", function (response) {

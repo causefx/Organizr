@@ -2586,6 +2586,20 @@ function getMonitorr()
 					} else {
 						$statuses[$service]['image'] = $cacheDirectory . 'no-list.png';
 					}
+
+					$linkMatch = [];
+
+					$linkPattern = '/<a class="servicetile" href="(.*)" target="_blank" style="display: block"><div id="serviceimg"><div><img id="'.strtolower($service).'-service-img/';
+
+					preg_match($linkPattern, $html, $linkMatch);
+
+					$linkMatch = array_values($linkMatch);
+					unset($linkMatch[0]);
+					foreach($linkMatch as $link) {
+						if($link!== '') {
+							$statuses[$service]['link'] = $link;
+						}
+					}
 				}
 
 				ksort($statuses);
