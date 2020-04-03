@@ -1940,9 +1940,6 @@ $(document).on("keyup", "#authBackendHostPrefix-input, #authBackendHostSuffix-in
 });
 
 // homepage healthchecks
-$(document).on('click', ".good-health-checks", function(){
-    homepageHealthChecks();
-});
 $(document).on('click', ".showMoreHealth", function(){
    var id = $(this).attr('data-id');
     $('.showMoreHealthDiv-'+id).toggleClass('d-none');

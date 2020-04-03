@@ -2528,7 +2528,7 @@ function getMonitorr()
 				// This section grabs the names of all services by regex
 				$services = [];
 				$servicesMatch = [];
-				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline".*><div>(.*)<\/div><\/div><div class="btnoffline".*>Offline<\/div><\/div><\/div>/';
+				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline".*><div>(.*)<\/div><\/div><div class="btnoffline".*>Offline<\/div><\/div><\/div>|<div id="servicetitlenolink".*><div>(.*)<\/div><\/div><div class="btnonline".*>Online<\/div><\/div><\/div>/';
 				preg_match_all($servicePattern, $html, $servicesMatch);
 				unset($servicesMatch[0]);
 				$servicesMatch = array_values($servicesMatch);
@@ -2543,7 +2543,7 @@ function getMonitorr()
 				// This section then grabs the status and image of that service with regex
 				$statuses = [];
 				foreach($services as $service) {
-					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div><\/a><\/div><\/div>|' . $service . '<\/div><\/div><div class="btnoffline".*>(Offline)<\/div><\/div><\/div>/';
+					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div>|' . $service . '<\/div><\/div><div class="btnoffline".*>(Offline)<\/div><\/div><\/div>/';
 					$status = [];
 					preg_match($statusPattern, $html, $status);
 					$statuses[$service] = $status;
@@ -2561,7 +2561,7 @@ function getMonitorr()
 
 					$imageMatch = [];
 
-					$imgPattern = '/assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitle"><div>'.$service.'|assets\/img\/\.\.(.*)" class="serviceimg imgoffline" alt=.*><\/div><\/div><div id="servicetitleoffline".*><div>'.$service.'/';
+					$imgPattern = '/assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitle"><div>'.$service.'|assets\/img\/\.\.(.*)" class="serviceimg imgoffline" alt=.*><\/div><\/div><div id="servicetitleoffline".*><div>'.$service.'|assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitlenolink".*><div>'.$service.'/';
 
 					preg_match($imgPattern, $html, $imageMatch);
 					unset($imageMatch[0]);
@@ -2585,6 +2585,20 @@ function getMonitorr()
 						$statuses[$service]['image'] = $base64;
 					} else {
 						$statuses[$service]['image'] = $cacheDirectory . 'no-list.png';
+					}
+
+					$linkMatch = [];
+
+					$linkPattern = '/<a class="servicetile" href="(.*)" target="_blank" style="display: block"><div id="serviceimg"><div><img id="'.strtolower($service).'-service-img/';
+
+					preg_match($linkPattern, $html, $linkMatch);
+
+					$linkMatch = array_values($linkMatch);
+					unset($linkMatch[0]);
+					foreach($linkMatch as $link) {
+						if($link!== '') {
+							$statuses[$service]['link'] = $link;
+						}
 					}
 				}
 
