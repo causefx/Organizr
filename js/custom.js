@@ -1983,7 +1983,7 @@ $(document).on('click', ".ipInfo", function(){
         });
     });
 });
-
+// set active for group list
 $(document).on('click', '.allGroupsList', function() {
     console.log($(this));
     $(this).toggleClass('active');
