@@ -123,7 +123,7 @@ function getHealthChecks($tags = null)
 
 function getPihole()
 {
-	if ($GLOBALS['homepagePiholeEnabled'] && !empty($GLOBALS['piholeURL'])) {
+	if ($GLOBALS['homepagePiholeEnabled'] && !empty($GLOBALS['piholeURL']) && qualifyRequest($GLOBALS['homepagePiholeAuth'])) {
 		$api = array();
 		$urls = explode(',', $GLOBALS['piholeURL']);
 		foreach ($urls as $url) {
