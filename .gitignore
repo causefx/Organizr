@@ -127,6 +127,10 @@ api/plugins/*
 !api/plugins/api/chat.php
 !api/plugins/config/chat.php
 !api/plugins/js/chat.js
+!api/plugins/healthChecks.php
+!api/plugins/api/healthChecks.php
+!api/plugins/config/healthChecks.php
+!api/plugins/js/healthChecks.js
 !api/plugins/php-mailer.php
 !api/plugins/api/php-mailer.php
 !api/plugins/config/php-mailer.php
