@@ -765,3 +765,10 @@ function formatSeconds($seconds)
 	//return $timeExtra[0] . 's ' . (number_format(('0.' . substr($timeExtra[1], 0, 4)), 4, '.', '') * 1000) . 'ms';
 	//return (number_format(('0.' . substr($timeExtra[1], 0, 4)), 4, '.', '') * 1000) . 'ms';
 }
+
+function cleanPath($path)
+{
+	$path = preg_replace('/([^:])(\/{2,})/', '$1/', $path);
+	$path = rtrim($path, '/');
+	return $path;
+}
