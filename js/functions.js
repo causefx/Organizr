@@ -924,7 +924,8 @@ function buildAccordion(array, open = false){
 function buildFormItem(item){
     var placeholder = (item.placeholder) ? ' placeholder="'+item.placeholder+'"' : '';
 	var id = (item.id) ? ' id="'+item.id+'"' : '';
-	var type = (item.type) ? ' data-type="'+item.type+'"' : '';
+    var type = (item.type) ? ' data-type="'+item.type+'"' : '';
+    var label = (item.label) ? ' data-label="'+item.label+'"' : '';
 	var value = (item.value) ? ' value="'+item.value+'"' : '';
 	var textarea = (item.value) ? item.value : '';
 	var name = (item.name) ? ' name="'+item.name+'"' : '';
@@ -948,33 +949,33 @@ function buildFormItem(item){
 	switch (item.type) {
 		case 'input':
 		case 'text':
-			return smallLabel+'<input data-changed="false" lang="en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+			return smallLabel+'<input data-changed="false" lang="en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" />';
 			break;
         case 'number':
-            return smallLabel+'<input data-changed="false" lang="en" type="number" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+            return smallLabel+'<input data-changed="false" lang="en" type="number" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" />';
             break;
 		case 'textbox':
-			return smallLabel+'<textarea data-changed="false" class="form-control'+extraClass+'"'+placeholder+id+name+disabled+type+attr+' autocomplete="new-password">'+textarea+'</textarea>';
+			return smallLabel+'<textarea data-changed="false" class="form-control'+extraClass+'"'+placeholder+id+name+disabled+type+label+attr+' autocomplete="new-password">'+textarea+'</textarea>';
 			break;
 		case 'password':
-			return smallLabel+pwgMgr+'<input data-changed="false" lang="en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+			return smallLabel+pwgMgr+'<input data-changed="false" lang="en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" />';
 			break;
 		case 'password-alt':
-			return smallLabel+'<div class="input-group">'+pwgMgr+'<input data-changed="false" lang="en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
+			return smallLabel+'<div class="input-group">'+pwgMgr+'<input data-changed="false" lang="en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
 			break;
 		case 'hidden':
-			return '<input data-changed="false" lang="en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
+			return '<input data-changed="false" lang="en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' />';
 			break;
 		case 'select':
-			return smallLabel+'<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+'>'+selectOptions(item.options, item.value)+'</select>';
+			return smallLabel+'<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+'>'+selectOptions(item.options, item.value)+'</select>';
 			break;
 		case 'select2':
             var select2ID = (item.id) ? '#'+item.id : '.'+item.name;
-            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2();</script>';
+            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2();</script>';
 			break;
 		case 'switch':
 		case 'checkbox':
-			return smallLabel+'<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
+			return smallLabel+'<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+label+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
 			break;
 		case 'button':
 			return smallLabel+'<button class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none'+extraClass+'" '+href+attr+' type="button"><span class="btn-label"><i class="'+icon+'"></i></span><span lang="en">'+text+'</span></button>';
@@ -983,13 +984,16 @@ function buildFormItem(item){
 			return '';
 			break;
 		case 'accordion':
-			return '<div class="panel-group'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+'  aria-multiselectable="true" role="tablist">'+accordionOptions(item.options, item.id)+'</div>';
+			return '<div class="panel-group'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+'  aria-multiselectable="true" role="tablist">'+accordionOptions(item.options, item.id)+'</div>';
 			break;
 		case 'html':
 			return item.html;
 			break;
+        case 'arrayMultiple':
+            return '<span class="text-danger">BuildFormItem Class not setup...';
+            break;
 		default:
-			return false;
+			return '<span class="text-danger">BuildFormItem Class not setup...';
 	}
 }
 function buildPluginsItem(array){
@@ -1661,24 +1665,56 @@ function buildFormGroup(array){
 				if(typeof v.override !== 'undefined'){
 					override = v.override;
 				}
+                var arrayMultiple = false;
+                if(typeof v.type !== 'undefined'){
+                    if(v.type == 'arrayMultiple'){
+                        arrayMultiple = true;
+                    }
+                }
 				count++;
                 if (count % 2 !== 0) {
                     group += '<div class="row start">';
                 }
                 var helpID = '#help-info-'+v.name;
                 var helpTip = (v.help) ? '<sup><a class="help-tip" data-toggle="collapse" href="'+helpID+'" aria-expanded="true"><i class="m-l-5 fa fa-question-circle text-info" title="Help" data-toggle="tooltip"></i></a></sup>' : '';
-                group += `
-					<!-- INPUT BOX -->
+                var builtItems = '';
+                if(arrayMultiple == true){
+                    $.each(v.value, function(index,value){
+                        if (typeof value === 'object'){
+                            builtItems += '<div class="row m-b-40">';
+                            $.each(value, function(number,formItem) {
+                                builtItems += `
+                                    <!-- INPUT BOX  Yes Multiple -->
+                                    <div class="col-md-6 p-b-10">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12"><span lang="en">`+formItem.label+`</span>`+helpTip+`</label>
+                                            <div class="col-md-12"> `+ buildFormItem(formItem) +` </div> <!-- end div -->
+                                        </div>
+                                    </div>
+                                    <!--/ INPUT BOX -->
+                                `;
+                            });
+                            builtItems += '</div>';
+                        }else{
+                            builtItems += buildFormItem(value);
+                        }
+                    });
+
+                }else{
+                    builtItems = `
+					<!-- INPUT BOX  no Multiple-->
 					<div class="col-md-`+override+` p-b-10">
 						<div class="form-group">
 							<label class="control-label col-md-12"><span lang="en">`+v.label+`</span>`+helpTip+`</label>
 							<div class="col-md-12">
-								`+buildFormItem(v)+`
+								`+ buildFormItem(v) +`
 							</div>
 						</div>
 					</div>
 					<!--/ INPUT BOX -->
 				`;
+                }
+                group += builtItems;
                 if (count % 2 == 0 || count == total) {
                     group += '</div><!--end-->';
                 }
@@ -2946,28 +2982,71 @@ function buildTabEditorItem(array){
 	});
 	return tabList;
 }
+function getSubmitSettingsFormValueSingle(form, index, value){
+    var values = {};
+    if(value !== '#987654' && index.includes('disable-pwd-mgr') == false) {
+        var input = $("#" + form + " [name='" + index + "']");
+        var dataType = input.attr('data-type');
+        switch (dataType) {
+            case 'switch':
+            case 'checkbox':
+                var value = input.prop("checked") ? true : false;
+                break;
+            case 'select2':
+                var value = (input.val() !== null) ? input.val().toString() : '';
+                break;
+            default:
+                var value = input.val();
+        }
+        values = {name: index, value: value, type: dataType};
+        return values;
+    }
+    return false;
+}
+function getSubmitSettingsFormValueObject(form, index, value){
+    var values = [];
+    $.each(value, function(i,v) {
+        var objectList = [];
+        var object = [];
+        $.each(v, function(key,val) {
+            if(val !== '#987654' && key.includes('disable-pwd-mgr') == false) {
+                var input = $("#" + form + " [name='" + index + "["+i+"]."+key+"']");
+                var dataType = input.attr('data-type');
+                var dataLabel = input.attr('data-label');
+                switch (dataType) {
+                    case 'switch':
+                    case 'checkbox':
+                        var value = input.prop("checked") ? true : false;
+                        break;
+                    case 'select2':
+                        var value = (input.val() !== null) ? input.val().toString() : '';
+                        break;
+                    default:
+                        var value = input.val();
+                }
+                var newKey = index + '[' + i + '].' + key;
+                object.push({type: dataType, name: newKey, label: dataLabel, value: value});
+            }
+        })
+        values.push(object);
+    });
+    values = {name: index, value: values, type: 'array'};
+    return values;
+}
 function submitSettingsForm(form){
     var list = $( "#"+form ).serializeToJSON();
     var size = 0;
     var submit = {};
     $.each(list, function(i,v) {
-        if(v !== '#987654' && i.includes('disable-pwd-mgr') == false){
-            size++;
-            var input = $( "#"+form+" [name='"+i+"']" );
-            var dataType = input.attr('data-type');
-            switch (dataType) {
-                case 'switch':
-                case 'checkbox':
-                    var value = input.prop("checked") ? true : false;
-                    break;
-				case 'select2':
-                    var value = (input.val() !== null) ? input.val().toString() : '';
-                    break;
-                default:
-                    var value = input.val();
-            }
-
-            submit[i] = {name: i , value: value, type: dataType};
+        var values = false;
+        if(typeof v === 'object'){
+            values = getSubmitSettingsFormValueObject(form, i, v)
+        }else{
+            values = getSubmitSettingsFormValueSingle(form, i, v)
+        }
+        size++;
+        if(values){
+            submit[i] = {name: values.name , value: values.value, type: values.type};
         }
     });
     var post = {
@@ -2984,10 +3063,8 @@ function submitSettingsForm(form){
             //callbacks.add( buildCustomizeAppearance );
             break;
         default:
-
     }
     if(size > 0){
-        //console.log(submit);
         settingsAPI(post,callbacks);
         $("#"+form+" :input").each(function(){
             var input = $(this);
