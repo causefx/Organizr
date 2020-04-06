@@ -1576,6 +1576,7 @@ function updateConfigMultipleForm($array)
 {
 	$newItem = array();
 	foreach ($array['data']['payload'] as $k => $v) {
+		$v['value'] = $v['value'] ?? '';
 		switch ($v['value']) {
 			case 'true':
 				$v['value'] = (bool)true;
@@ -1602,6 +1603,7 @@ function updateConfigMultipleForm($array)
 
 function updateConfigItem($array)
 {
+	$array['data']['value'] = $array['data']['value'] ?? '';
 	switch ($array['data']['value']) {
 		case 'true':
 			$array['data']['value'] = (bool)true;
