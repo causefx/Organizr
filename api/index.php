@@ -35,9 +35,8 @@ if (!in_array($function, $approvedFunctionsBypass)) {
 }
 $result['request'] = key($_GET);
 $result['params'] = $_POST;
-
 //Custom Page Check
-if(strpos($function,'v1_custom_page_') !== false){
+if (strpos($function, 'v1_custom_page_') !== false) {
 	$endpoint = explode('v1_custom_page_', $function)[1];
 	$function = 'v1_custom_page';
 }
@@ -1293,11 +1292,11 @@ switch ($function) {
 				break;
 		}
 		$token = validateToken($token);
-		if($token){
+		if ($token) {
 			$result['status'] = 'success';
 			$result['statusText'] = 'success';
 			$result['data'] = $token;
-		}else{
+		} else {
 			$result['status'] = 'error';
 			$result['statusText'] = 'Token not validated or empty';
 		}
@@ -1388,7 +1387,7 @@ switch ($function) {
 	case 'v1_custom_page':
 		switch ($method) {
 			case 'GET':
-				$customPage = 'customPage'.ucwords($endpoint);
+				$customPage = 'customPage' . ucwords($endpoint);
 				$result['status'] = 'success';
 				$result['statusText'] = 'success';
 				$result['data'] = $$customPage;
@@ -1413,6 +1412,25 @@ switch ($function) {
 				break;
 		}
 		break;
+	case 'v1_scrape':
+		switch ($method) {
+			case 'POST':
+				if (qualifyRequest(998)) {
+					$result['status'] = 'success';
+					$result['statusText'] = 'success';
+					$result['data'] = scrapePage($_POST);
+				} else {
+					$result['status'] = 'error';
+					$result['statusText'] = 'API/Token invalid or not set';
+					$result['data'] = null;
+				}
+				break;
+			default:
+				$result['status'] = 'error';
+				$result['statusText'] = 'The function requested is not defined for method: ' . $method;
+				break;
+		}
+		break;
 	default:
 		//No Function Available
 		$result['status'] = 'error';
@@ -1427,9 +1445,9 @@ if (!$result) {
 $result['generationDate'] = $GLOBALS['currentTime'];
 $result['generationTime'] = formatSeconds(timeExecution());
 //Set HTTP Code
-if($result['statusText'] == "API/Token invalid or not set"){
+if ($result['statusText'] == "API/Token invalid or not set") {
 	http_response_code(401);
-}else{
+} else {
 	http_response_code(200);
 }
 //return JSON array

@@ -2239,15 +2239,46 @@ function buildTwoFA(current){
         </div>
     </div>
     `;
-
-
-
-
-
-
-
-
     return element;
+}
+function scrapeCall(){
+    // Define the URL to scrape [only supports GET at the moment
+    var url = 'https://api.github.com/users/causefx/repos';
+    // Define callbacks variable first
+    var callbacks = $.Callbacks();
+    // Add functions that will deal with the data
+    callbacks.add( scrapeFunction );
+    // Call the API function to scrape the page you want [types = 'json' or 'html']
+    scrapeAPI(url, callbacks, 'json');
+}
+function scrapeFunction(data){
+    // Here you would do whatever you like
+    if(data.data.result == 'Success'){
+        console.log('Success!!!');
+    }
+    console.log('data:')
+    console.log(data);
+}
+function scrapeAPI(url, callbacks = null, type = null){
+    if (typeof url === 'undefined'){
+        console.log('error');
+        return false;
+    }
+    organizrAPI('POST','api/?v1/scrape',{url:url, type:type}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        if(response){
+            if(callbacks){ callbacks.fire(response); }
+        }
+    }).fail(function(xhr) {
+        ajaxloader();
+        console.error("Organizr Function: API Connection Failed");
+    });
 }
 function revokeToken(token,id){
     organizrAPI('POST','api/?v1/token/revoke',{token:token}).success(function(data) {

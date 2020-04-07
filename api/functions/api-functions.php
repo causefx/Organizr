@@ -1300,3 +1300,43 @@ function youtubeSearch($query)
 	}
 	return ($results) ? $results : false;
 }
+
+function scrapePage($array)
+{
+	try {
+		$url = $array['data']['url'] ?? false;
+		$type = $array['data']['type'] ?? false;
+		if (!$url) return array(
+			'result' => 'Error',
+			'data' => 'No URL'
+		);
+		$url = qualifyURL($url);
+		$data = array(
+			'full_url' => $url,
+			'drill_url' => qualifyURL($url, true)
+		);
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		$data['response_code'] = $response->status_code;
+		if ($response->success) {
+			$data['result'] = 'Success';
+			switch ($type) {
+				case 'html':
+					$data['data'] = html_entity_decode($response->body);
+					break;
+				case 'json':
+					$data['data'] = json_decode($response->body);
+					break;
+				default:
+					$data['data'] = $response->body;
+			}
+			return $data;
+		}
+	} catch (Requests_Exception $e) {
+		return array(
+			'result' => 'Error',
+			'data' => $e->getMessage()
+		);
+	};
+	return array('result' => 'Error');
+}

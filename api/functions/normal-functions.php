@@ -472,14 +472,17 @@ function qualifyURL($url, $return = false)
 	$port = (isset($digest['port']) ? ':' . $digest['port'] : '');
 	// Path
 	$path = (isset($digest['path']) ? $digest['path'] : '');
+	// Query
+	$query = (isset($digest['query']) ? '?' . $digest['query'] : '');
 	// Output
 	$array = array(
 		'scheme' => $scheme,
 		'host' => $host,
 		'port' => $port,
-		'path' => $path
+		'path' => $path,
+		'query' => $query
 	);
-	return ($return) ? $array : $scheme . '://' . $host . $port . $path;
+	return ($return) ? $array : $scheme . '://' . $host . $port . $path . $query;
 }
 
 function getServerPath($over = false)
