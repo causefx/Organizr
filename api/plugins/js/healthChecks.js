@@ -40,7 +40,7 @@ $(document).on('click', '#HEALTHCHECKS-settings-button', function() {
             var el = $(val);
             var text = el.text();
             if(text === 'Service Name'){
-                $(this).after('&nbsp;<code lang="en" class="m-l-20 removeHCService mouse">Remove Service</code>');
+                $(this).after('&nbsp;<div class="pull-right text-danger removeHCService mouse"><i class="fa fa-close text-danger"></i></div>');
             }
         })
 
@@ -61,7 +61,7 @@ $(document).on('click', '.addNewHCService', function() {
         '\t<!-- INPUT BOX  Yes Multiple -->\n' +
         '\t<div class="col-md-6 p-b-10">\n' +
         '\t\t<div class="form-group">\n' +
-        '\t\t\t<label class="control-label col-md-12"><span lang="en">Service Name</span>&nbsp;<code lang="en" class="m-l-20 removeHCService mouse">Remove Service</code></label>\n' +
+        '\t\t\t<label class="control-label col-md-12"><span lang="en">Service Name</span>&nbsp;<div class="pull-right text-danger removeHCService mouse"><i class="fa fa-close text-danger"></i></div></label>\n' +
         '\t\t\t<div class="col-md-12"> <input data-changed="false" lang="en" type="text" class="form-control" value="" name="HEALTHCHECKS-all-items[999999].name" data-type="input" data-label="Service Name" autocomplete="new-password"> </div> <!-- end div -->\n' +
         '\t\t</div>\n' +
         '\t</div>\n' +
