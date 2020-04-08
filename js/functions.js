@@ -6874,6 +6874,163 @@ function homepageTautulli(timeout){
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageTautulli(timeout); }, timeout);
 }
+function weatherIcon(code, daytime = true){
+    switch (code) {
+        case 1:
+        case 2:
+            return (daytime) ? 'wi-day-sunny' : 'wi-night-clear';
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 22:
+            return (daytime) ? 'wi-day-sunny-overcast' : 'wi-night-alt-partly-cloudy';
+        case 7:
+        case 8:
+        case 9:
+            return (daytime) ? 'wi-day-cloudy-high' : 'wi-night-partly-cloudy';
+        case 10:
+        case 11:
+        case 12:
+            return (daytime) ? 'wi-day-thunderstorm' : 'wi-night-thunderstorm';
+        case 13:
+        case 14:
+        case 15:
+            return (daytime) ? 'wi-day-haze' : 'wi-night-cloudy-windy';
+        case 16:
+        case 17:
+        case 18:
+            return (daytime) ? 'wi-day-fog' : 'wi-night-fog';
+        case 19:
+        case 20:
+        case 21:
+            return (daytime) ? 'wi-day-cloudy-high' : 'wi-night-cloudy-high';
+        case 23:
+        case 25:
+            return (daytime) ? 'wi-day-rain' : 'wi-night-rain';
+        case 24:
+        case 26:
+            return (daytime) ? 'wi-day-snow' : 'wi-night-snow';
+        case 27:
+        case 28:
+        case 30:
+        case 31:
+        case 33:
+            return (daytime) ? 'wi-day-rain-mix' : 'wi-night-alt-rain-mix';
+        case 29:
+        case 32:
+        case 34:
+        case 35:
+            return (daytime) ? 'wi-day-snow-thunderstorm' : 'wi-night-alt-snow-thunderstorm';
+        default:
+            return (daytime) ? 'wi-day-sunny' : 'wi-night-clear';
+    }
+}
+function buildWeatherAndAir(array){
+    if (typeof array.content === 'undefined'){ return ''; }
+    if(array.content.weather !== false){
+        if(array.content.weather.error === null){
+            let dates = {};
+            $.each(array.content.weather.data, function(i,v) {
+                let date = moment(v.datetime).format('YYYY-MM-DD')
+                if( typeof dates[date] === 'undefined'){
+                    dates[date] = v;
+                    dates[date]['temps'] = {
+                        'high': v.temperature.value,
+                        'low': v.temperature.value
+                    }
+                }else{
+                    if(moment(v.datetime).format('hh:mm a') == '12:00 pm'){
+                        dates[date]['icon_code'] = v.icon_code;
+                        dates[date]['is_day_time'] = v.is_day_time;
+                    }
+                    if(v.temperature.value > dates[date]['temps']['high']){
+                        dates[date]['temps']['high'] = v.temperature.value;
+                    }
+                    if(v.temperature.value < dates[date]['temps']['low']){
+                        dates[date]['temps']['low'] = v.temperature.value;
+                    }
+                }
+            })
+            let weatherItems = '<div class="row">';
+            let weatherItemsCount = 0;
+            $.each(dates, function(i,v) {
+                if(weatherItemsCount === 0){
+                    weatherItems += `
+                    <div class="col-lg-4 col-sm-12 col-xs-12">
+                        <div class="white-box">
+                            <h3 class="box-title">`+moment(v.datetime).format('dddd')+`<small class="pull-right m-t-10">Feels Like `+Math.round(v.feels_like_temperature.value)+`°</small></h3>
+                            <ul class="list-inline two-part">
+                                <li><i class="wi `+weatherIcon(v.icon_code, v.is_day_time)+` text-info"></i></li>
+                                <li class="text-right"><span class="counter">`+Math.round(v.temperature.value)+`<small><sup>°`+v.temperature.units+`</sup></small></span></li>
+                            </ul>
+                            <ul class="list-inline m-b-0">
+                                <li class="pull-left"><h5 class="text-uppercase">`+v.weather_text+`</h5></li>
+                                <li class="pull-right"><h5><i class="wi wi-strong-wind m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Wind"></i>`+Math.round(v.wind.speed.value)+` `+v.wind.speed.units+`</h5></li>
+                                <li class="pull-right"><h5><i class="wi wi-barometer m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pressure"></i>`+Math.round(v.pressure.value)+` `+v.pressure.units+`</h5></li>
+                                <li class="pull-right"><h5><i class="wi wi-humidity m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Humidity"></i>`+Math.round(v.relative_humidity)+`</h5></li>
+                                <li class="pull-right"><h5><i class="wi wi-raindrop m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Dew Point"></i>`+Math.round(v.dew_point.value)+`°</h5></li>
+                                <div class="clearfix"></div>
+                            </ul>
+                        </div>
+                    </div>
+                    `;
+                }else if(weatherItemsCount !== 5){
+                    weatherItems += `
+                    <div class="col-lg-2 col-sm-3 col-xs-12">
+                        <div class="white-box">
+                            <h3 class="box-title">`+moment(v.datetime).format('dddd')+`</h3>
+                            <ul class="list-inline two-part">
+                                <li><i class="wi `+weatherIcon(v.icon_code, v.is_day_time)+` text-info"></i></li>
+                                <li class="text-right"><span class="counter">`+Math.round(v.temps.high)+`<small><sup>°`+v.temperature.units+`</sup></small></span></li>
+                            </ul>
+                            <ul class="list-inline m-b-0">
+                                <li class="pull-left"><h5 class="text-uppercase">`+v.weather_text+`</h5></li>
+                                <div class="clearfix"></div>
+                            </ul>
+                        </div>
+                    </div>
+                    `;
+                }
+                weatherItemsCount ++;
+            })
+            weatherItems += '</div>';
+            return weatherItems;
+        }
+    }
+    if(array.content.air !== false){
+        if(array.content.air.error === null) {
+
+            console.log('load air')
+        }
+    }
+    if(array.content.pollen !== false){
+        if(array.content.pollen.error === null){
+            console.log('load pollen')
+        }
+    }
+}
+function homepageWeatherAndAir(array){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageWeatherAndAirRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getWeatherAndAir'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderWeatherAndAir').innerHTML = '';
+        if(response.data !== null){
+            $('#homepageOrderWeatherAndAir').html(buildWeatherAndAir(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Tautulli-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageTautulli(timeout); }, timeout);
+}
 function buildMonitorrItem(array){
     var cards = '';
     var options = array['options'];

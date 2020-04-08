@@ -25,6 +25,7 @@ function homepageOrder()
 		"homepageOrdertautulli" => $GLOBALS['homepageOrdertautulli'],
 		"homepageOrderPihole" => $GLOBALS['homepageOrderPihole'],
 		"homepageOrderMonitorr" => $GLOBALS['homepageOrderMonitorr'],
+		"homepageOrderWeatherAndAir" => $GLOBALS['homepageOrderWeatherAndAir']
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -370,6 +371,18 @@ function buildHomepageItem($homepageItem)
 				';
 			}
 			break;
+		case 'homepageOrderWeatherAndAir':
+			if ($GLOBALS['homepageWeatherAndAirEnabled']) {
+				$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Weather And Air...</h2></div>';
+				$item .= '
+				<script>
+				// Weather And Air
+				homepageWeatherAndAir("' . $GLOBALS['homepageWeatherAndAirRefresh'] . '");
+				// End Weather And Air
+				</script>
+				';
+			}
+			break;
 		default:
 			# code...
 			break;
@@ -639,87 +652,88 @@ function getHomepageList()
 		)
 	);
 	$xmlStatus = (extension_loaded('xmlrpc')) ? 'Installed' : 'Not Installed';
-	return array(array(
-		'name' => 'Calendar',
-		'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
-		'image' => 'plugins/images/tabs/calendar.png',
-		'category' => 'HOMEPAGE',
-		'settings' => array(
-			'Enable' => array(
-				array(
-					'type' => 'switch',
-					'name' => 'homepageCalendarEnabled',
-					'label' => 'Enable iCal',
-					'value' => $GLOBALS['homepageCalendarEnabled']
+	return array(
+		array(
+			'name' => 'Calendar',
+			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
+			'image' => 'plugins/images/tabs/calendar.png',
+			'category' => 'HOMEPAGE',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageCalendarEnabled',
+						'label' => 'Enable iCal',
+						'value' => $GLOBALS['homepageCalendarEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageCalendarAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageCalendarAuth'],
+						'options' => $groups
+					),
+					array(
+						'type' => 'input',
+						'name' => 'calendariCal',
+						'label' => 'iCal URL\'s',
+						'value' => $GLOBALS['calendariCal'],
+						'placeholder' => 'separate by comma\'s'
+					),
 				),
-				array(
-					'type' => 'select',
-					'name' => 'homepageCalendarAuth',
-					'label' => 'Minimum Authentication',
-					'value' => $GLOBALS['homepageCalendarAuth'],
-					'options' => $groups
+				'Misc Options' => array(
+					array(
+						'type' => 'number',
+						'name' => 'calendarStart',
+						'label' => '# of Days Before',
+						'value' => $GLOBALS['calendarStart'],
+						'placeholder' => ''
+					),
+					array(
+						'type' => 'number',
+						'name' => 'calendarEnd',
+						'label' => '# of Days After',
+						'value' => $GLOBALS['calendarEnd'],
+						'placeholder' => ''
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarFirstDay',
+						'label' => 'Start Day',
+						'value' => $GLOBALS['calendarFirstDay'],
+						'options' => $day
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarDefault',
+						'label' => 'Default View',
+						'value' => $GLOBALS['calendarDefault'],
+						'options' => $calendarDefault
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarTimeFormat',
+						'label' => 'Time Format',
+						'value' => $GLOBALS['calendarTimeFormat'],
+						'options' => $timeFormat
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarLimit',
+						'label' => 'Items Per Day',
+						'value' => $GLOBALS['calendarLimit'],
+						'options' => $limit
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['calendarRefresh'],
+						'options' => optionTime()
+					)
 				),
-				array(
-					'type' => 'input',
-					'name' => 'calendariCal',
-					'label' => 'iCal URL\'s',
-					'value' => $GLOBALS['calendariCal'],
-					'placeholder' => 'separate by comma\'s'
-				),
-			),
-			'Misc Options' => array(
-				array(
-					'type' => 'number',
-					'name' => 'calendarStart',
-					'label' => '# of Days Before',
-					'value' => $GLOBALS['calendarStart'],
-					'placeholder' => ''
-				),
-				array(
-					'type' => 'number',
-					'name' => 'calendarEnd',
-					'label' => '# of Days After',
-					'value' => $GLOBALS['calendarEnd'],
-					'placeholder' => ''
-				),
-				array(
-					'type' => 'select',
-					'name' => 'calendarFirstDay',
-					'label' => 'Start Day',
-					'value' => $GLOBALS['calendarFirstDay'],
-					'options' => $day
-				),
-				array(
-					'type' => 'select',
-					'name' => 'calendarDefault',
-					'label' => 'Default View',
-					'value' => $GLOBALS['calendarDefault'],
-					'options' => $calendarDefault
-				),
-				array(
-					'type' => 'select',
-					'name' => 'calendarTimeFormat',
-					'label' => 'Time Format',
-					'value' => $GLOBALS['calendarTimeFormat'],
-					'options' => $timeFormat
-				),
-				array(
-					'type' => 'select',
-					'name' => 'calendarLimit',
-					'label' => 'Items Per Day',
-					'value' => $GLOBALS['calendarLimit'],
-					'options' => $limit
-				),
-				array(
-					'type' => 'select',
-					'name' => 'calendarRefresh',
-					'label' => 'Refresh Seconds',
-					'value' => $GLOBALS['calendarRefresh'],
-					'options' => optionTime()
-				)
-			),
-		)
-	),
+			)
+		),
 		array(
 			'name' => 'Plex',
 			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
@@ -2778,6 +2792,105 @@ function getHomepageList()
 				),
 			)
 		),
+		array(
+			'name' => 'Weather-Air',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/wind.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageWeatherAndAirEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepageWeatherAndAirEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageWeatherAndAirAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageWeatherAndAirAuth'],
+						'options' => $groups
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'homepageWeatherAndAirLatitude',
+						'label' => 'Latitude',
+						'value' => $GLOBALS['homepageWeatherAndAirLatitude'],
+						'help' => 'Please enter full latitude including minus if needed'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'homepageWeatherAndAirLongitude',
+						'label' => 'Longitude',
+						'value' => $GLOBALS['homepageWeatherAndAirLongitude'],
+						'help' => 'Please enter full longitude including minus if needed'
+					)
+				),
+				'Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'homepageWeatherAndAirWeatherHeader',
+						'label' => 'Title',
+						'value' => $GLOBALS['homepageWeatherAndAirWeatherHeader'],
+						'help' => 'Sets the title of this homepage module',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageWeatherAndAirWeatherHeaderToggle',
+						'label' => 'Toggle Title',
+						'value' => $GLOBALS['homepageWeatherAndAirWeatherHeaderToggle'],
+						'help' => 'Shows/hides the title of this homepage module'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageWeatherAndAirWeatherEnabled',
+						'label' => 'Enable Weather',
+						'value' => $GLOBALS['homepageWeatherAndAirWeatherEnabled'],
+						'help' => 'Toggles the view module for Weather'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageWeatherAndAirAirQualityEnabled',
+						'label' => 'Enable Air Quality',
+						'value' => $GLOBALS['homepageWeatherAndAirAirQualityEnabled'],
+						'help' => 'Toggles the view module for Air Quality'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageWeatherAndAirPollenEnabled',
+						'label' => 'Enable Pollen',
+						'value' => $GLOBALS['homepageWeatherAndAirPollenEnabled'],
+						'help' => 'Toggles the view module for Pollen'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageWeatherAndAirUnits',
+						'label' => 'Unit of Measurement',
+						'value' => $GLOBALS['homepageWeatherAndAirUnits'],
+						'options' => array(
+							array(
+								'name' => 'Imperial',
+								'value' => 'imperial'
+							),
+							array(
+								'name' => 'Metric',
+								'value' => 'metric'
+							)
+						)
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageWeatherAndAirRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageWeatherAndAirRefresh'],
+						'options' => optionTime()
+					),
+				),
+			)
+		),
 	);
 }
 
@@ -2921,6 +3034,13 @@ function buildHomepageSettings()
 				$class = 'bg-info';
 				$image = 'plugins/images/tabs/monitorr.png';
 				if (!$GLOBALS['homepageMonitorrEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderWeatherAndAir':
+				$class = 'bg-success';
+				$image = 'plugins/images/tabs/wind.png';
+				if (!$GLOBALS['homepageWeatherAndAirEnabled']) {
 					$class .= ' faded';
 				}
 				break;

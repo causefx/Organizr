@@ -68,6 +68,9 @@ function homepageConnect($array)
 		case 'getMonitorr':
 			return getMonitorr();
 			break;
+		case 'getWeatherAndAir':
+			return getWeatherAndAir();
+			break;
 		default:
 			# code...
 			break;
@@ -90,6 +93,55 @@ function healthChecksTags($tags)
 			return $return . $tags;
 		}
 	}
+}
+
+function getWeatherAndAir()
+{
+	if ($GLOBALS['homepageWeatherAndAirEnabled'] && !empty($GLOBALS['homepageWeatherAndAirLatitude']) && !empty($GLOBALS['homepageWeatherAndAirLongitude']) && qualifyRequest($GLOBALS['homepageWeatherAndAirAuth'])) {
+		$api['content'] = array(
+			'weather' => false,
+			'air' => false,
+			'pollen' => false
+		);
+		$apiURL = qualifyURL('https://api.breezometer.com/');
+		$info = '&lat=' . $GLOBALS['homepageWeatherAndAirLatitude'] . '&lon=' . $GLOBALS['homepageWeatherAndAirLongitude'] . '&units=' . $GLOBALS['homepageWeatherAndAirUnits'] . '&key=b7401295888443538a7ebe04719c8394';
+		try {
+			$headers = array();
+			$options = array();
+			if ($GLOBALS['homepageWeatherAndAirWeatherEnabled']) {
+				$endpoint = '/weather/v1/forecast/hourly?hours=120&metadata=true';
+				$response = Requests::get($apiURL . $endpoint . $info, $headers, $options);
+				if ($response->success) {
+					$apiData = json_decode($response->body, true);
+					$api['content']['weather'] = ($apiData['error'] === null) ? $apiData : false;
+					unset($apiData);
+				}
+			}
+			if ($GLOBALS['homepageWeatherAndAirAirQualityEnabled']) {
+				$endpoint = '/air-quality/v2/current-conditions?features=breezometer_aqi,local_aqi,health_recommendations,sources_and_effects,pollutants_concentrations,pollutants_aqi_information&metadata=true';
+				$response = Requests::get($apiURL . $endpoint . $info, $headers, $options);
+				if ($response->success) {
+					$apiData = json_decode($response->body, true);
+					$api['content']['air'] = ($apiData['error'] === null) ? $apiData : false;
+					unset($apiData);
+				}
+			}
+			if ($GLOBALS['homepageWeatherAndAirPollenEnabled']) {
+				$endpoint = '/pollen/v2/forecast/daily/?features=plants_information,types_information&days=1&metadata=true';
+				$response = Requests::get($apiURL . $endpoint . $info, $headers, $options);
+				if ($response->success) {
+					$apiData = json_decode($response->body, true);
+					$api['content']['pollen'] = ($apiData['error'] === null) ? $apiData : false;
+					unset($apiData);
+				}
+			}
+		} catch (Requests_Exception $e) {
+			writeLog('error', 'Weather And Air Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		};
+		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		return $api;
+	}
+	return false;
 }
 
 function getHealthChecks($tags = null)
@@ -2500,7 +2552,7 @@ function getTautulli()
 			}
 			$ids = array_merge(['top_music', 'popular_music', 'last_watched', 'most_concurrent'], $ids);
 			foreach ($ids as $id) {
-				if($key = array_search($id, array_column($api['homestats']['data'], 'stat_id'))) {
+				if ($key = array_search($id, array_column($api['homestats']['data'], 'stat_id'))) {
 					unset($api['homestats']['data'][$key]);
 					$api['homestats']['data'] = array_values($api['homestats']['data']);
 				}
@@ -2521,10 +2573,9 @@ function getMonitorr()
 		$url = qualifyURL($GLOBALS['monitorrURL']);
 		$dataUrl = $url . '/assets/php/loop.php';
 		try {
-			$response = Requests::get($dataUrl, [ 'Token' => $GLOBALS['organizrAPI'] ], []);
+			$response = Requests::get($dataUrl, ['Token' => $GLOBALS['organizrAPI']], []);
 			if ($response->success) {
 				$html = html_entity_decode($response->body);
-
 				// This section grabs the names of all services by regex
 				$services = [];
 				$servicesMatch = [];
@@ -2532,76 +2583,64 @@ function getMonitorr()
 				preg_match_all($servicePattern, $html, $servicesMatch);
 				unset($servicesMatch[0]);
 				$servicesMatch = array_values($servicesMatch);
-				foreach($servicesMatch as $group) {
-					foreach($group as $service) {
-						if($service !== '') {
+				foreach ($servicesMatch as $group) {
+					foreach ($group as $service) {
+						if ($service !== '') {
 							array_push($services, $service);
 						}
 					}
 				}
-
 				// This section then grabs the status and image of that service with regex
 				$statuses = [];
-				foreach($services as $service) {
+				foreach ($services as $service) {
 					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div>|' . $service . '<\/div><\/div><div class="btnoffline".*>(Offline)<\/div><\/div><\/div>/';
 					$status = [];
 					preg_match($statusPattern, $html, $status);
 					$statuses[$service] = $status;
-					foreach($status as $match) {
-						if($match == 'Online') {
+					foreach ($status as $match) {
+						if ($match == 'Online') {
 							$statuses[$service] = [
 								'status' => true
 							];
-						} else if($match == 'Offline') {
+						} else if ($match == 'Offline') {
 							$statuses[$service] = [
 								'status' => false
 							];
 						}
 					}
-
 					$imageMatch = [];
-
-					$imgPattern = '/assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitle"><div>'.$service.'|assets\/img\/\.\.(.*)" class="serviceimg imgoffline" alt=.*><\/div><\/div><div id="servicetitleoffline".*><div>'.$service.'|assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitlenolink".*><div>'.$service.'/';
-
+					$imgPattern = '/assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitle"><div>' . $service . '|assets\/img\/\.\.(.*)" class="serviceimg imgoffline" alt=.*><\/div><\/div><div id="servicetitleoffline".*><div>' . $service . '|assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitlenolink".*><div>' . $service . '/';
 					preg_match($imgPattern, $html, $imageMatch);
 					unset($imageMatch[0]);
 					$imageMatch = array_values($imageMatch);
 					// array_push($api['imagematches'][$service], $imageMatch);
-					foreach($imageMatch as $match) {
-						if($match!== '') {
+					foreach ($imageMatch as $match) {
+						if ($match !== '') {
 							$image = $match;
 						}
 					}
 					$ext = explode('.', $image);
 					$ext = $ext[key(array_slice($ext, -1, 1, true))];
-
 					$imageUrl = $url . '/assets' . $image;
-
 					$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
-
-					$img = Requests::get($imageUrl, [ 'Token' => $GLOBALS['organizrAPI'] ], []);
-					if($img->success) {
+					$img = Requests::get($imageUrl, ['Token' => $GLOBALS['organizrAPI']], []);
+					if ($img->success) {
 						$base64 = 'data:image/' . $ext . ';base64,' . base64_encode($img->body);
 						$statuses[$service]['image'] = $base64;
 					} else {
 						$statuses[$service]['image'] = $cacheDirectory . 'no-list.png';
 					}
-
 					$linkMatch = [];
-
-					$linkPattern = '/<a class="servicetile" href="(.*)" target="_blank" style="display: block"><div id="serviceimg"><div><img id="'.strtolower($service).'-service-img/';
-
+					$linkPattern = '/<a class="servicetile" href="(.*)" target="_blank" style="display: block"><div id="serviceimg"><div><img id="' . strtolower($service) . '-service-img/';
 					preg_match($linkPattern, $html, $linkMatch);
-
 					$linkMatch = array_values($linkMatch);
 					unset($linkMatch[0]);
-					foreach($linkMatch as $link) {
-						if($link!== '') {
+					foreach ($linkMatch as $link) {
+						if ($link !== '') {
 							$statuses[$service]['link'] = $link;
 						}
 					}
 				}
-
 				ksort($statuses);
 				$api['services'] = $statuses;
 				$api['options'] = [
