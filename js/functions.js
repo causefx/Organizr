@@ -5939,7 +5939,7 @@ function buildUnifiItem(array){
                 <div class="col-lg-4 col-md-6 col-center">
                     <div class="panel panel-` + panelColor + `">
                         <div class="panel-heading"> <span class="text-uppercase">` + name + `</span>
-                            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a></div>
                         </div>
                         <div class="panel-wrapper collapse in" aria-expanded="true">
                             <div class="panel-body">
@@ -6985,7 +6985,7 @@ function buildWeatherAndAir(array){
                                 <li class="text-right"><span class="counter">`+Math.round(v.temps.high)+`<small><sup>°`+v.temperature.units+`</sup></small></span></li>
                             </ul>
                             <ul class="list-inline m-b-0">
-                                <li class="pull-left"><h5 class="text-uppercase">`+v.weather_text+`</h5></li>
+                                <li class="pull-left"><h6 class="text-uppercase">`+v.weather_text+`</h6></li>
                                 <div class="clearfix"></div>
                             </ul>
                         </div>
@@ -8227,6 +8227,94 @@ function createElementFromHTML(htmlString) {
     var div = document.createElement('div');
     div.innerHTML = htmlString.trim();
     return div.firstChild;
+}
+function addCoordinatesToInput(latitude, longitude){
+    $('#homepage-Weather-Air-form [name=homepageWeatherAndAirLatitude]').val(latitude).change();
+    $('#homepage-Weather-Air-form [name=homepageWeatherAndAirLongitude]').val(longitude).change();
+    swal.close();
+    message('Coordinates Added','Please Save',activeInfo.settings.notifications.position,'#FFF','success','10000');
+}
+function searchCoordinatesAPI(query){
+    organizrAPI('POST','api/?v1/coordinates/search',{query:query}).success(function(data) {
+        try {
+            var html = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        console.log(html.data);
+        if(html.data.type == 'FeatureCollection'){
+            var entries = '';
+            $.each(html.data.features, function(i,v) {
+                entries += '<li class="text-left"><i class="fa fa-caret-right text-info"></i><span class="mouse" onclick="addCoordinatesToInput(\''+v.center[1]+'\',\''+v.center[0]+'\')">'+v.place_name+'</span></li>';
+            })
+            var div = `
+            <div class="row">
+                <div class="col-12">
+                    <div class="card m-b-0">
+                        <div class="form-horizontal">
+                            <div class="card-body">
+                                <h4 class="card-title" lang="en">Select Place</h4>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <ul class="list-icons">
+                                            `+entries+`
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            if(entries !== ''){
+                swal.close();
+                swal({
+                    content: createElementFromHTML(div),
+                    buttons: false,
+                    className: 'bg-org'
+                })
+            }else{
+                message('API Error','No results found...',activeInfo.settings.notifications.position,'#FFF','warning','10000');
+            }
+
+        }else{
+            message('API Error','',activeInfo.settings.notifications.position,'#FFF','warning','10000');
+            console.error('Organizr Function: API failed');
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Failed");
+    });
+}
+function showLookupCoordinatesModal(){
+    var div = `
+    <div class="row">
+        <div class="col-12">
+            <div class="card m-b-0">
+                <div class="form-horizontal">
+                    <div class="card-body">
+                        <h4 class="card-title" lang="en">Enter City or Address</h4>
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="coordinatesModalCityInput" placeholder="Enter City or Address...">
+                            </div>
+                        </div>
+                        <div class="form-group mb-0 p-r-10 text-right">
+                            <button type="submit" onclick="searchCoordinatesAPI($('#coordinatesModalCityInput').val())" class="btn btn-info waves-effect waves-light">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+    swal({
+        content: createElementFromHTML(div),
+        buttons: false,
+        className: 'bg-org'
+    })
 }
 function showLDAPLoginTest(){
     var div = `

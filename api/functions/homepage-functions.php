@@ -2827,7 +2827,19 @@ function getHomepageList()
 						'label' => 'Longitude',
 						'value' => $GLOBALS['homepageWeatherAndAirLongitude'],
 						'help' => 'Please enter full longitude including minus if needed'
-					)
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-search',
+						'class' => 'pull-right',
+						'text' => 'Need Help With Coordinates?',
+						'attr' => 'onclick="showLookupCoordinatesModal()"'
+					),
 				),
 				'Options' => array(
 					array(

@@ -1340,3 +1340,22 @@ function scrapePage($array)
 	};
 	return array('result' => 'Error');
 }
+
+function searchCityForCoordinates($array)
+{
+	try {
+		$query = $array['data']['query'] ?? false;
+		$url = qualifyURL('https://api.mapbox.com/geocoding/v5/mapbox.places/' . urlencode($query) . '.json?access_token=pk.eyJ1IjoiY2F1c2VmeCIsImEiOiJjazhyeGxqeXgwMWd2M2ZydWQ4YmdjdGlzIn0.R50iYuMewh1CnUZ7sFPdHA&limit=5&fuzzyMatch=true');
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			return json_decode($response->body);
+		}
+	} catch (Requests_Exception $e) {
+		return array(
+			'result' => 'Error',
+			'data' => $e->getMessage()
+		);
+	};
+	return array('result' => 'Error');
+}
