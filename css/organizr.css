@@ -4069,3 +4069,48 @@ html {
 .spinner-grow-sm {
     width: 1rem;
     height: 1rem; }
+
+.pollen-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+.pollen-wrapper .details {
+    margin-bottom: 4px;
+    line-height: 19px;
+    color: #2d2d2d;
+    display: flex;
+}
+.pollen-wrapper .details .details__level {
+    display: flex;
+    padding-left: 1px;
+    opacity: .5;
+}
+.pollen-wrapper .details .details__numeric-value {
+    margin-left: auto;
+}
+.pollen-wrapper .level {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-column-gap: 3px;
+    width: 100%;
+}
+.pollen-wrapper .level .level-item {
+    display: block;
+    height: 4px;
+    background: #d1d1d1;
+    position: relative;
+    overflow: hidden;
+}
+.pollen-wrapper .level.level--1 .level-item span {
+    background: #00c853;
+}
+.pollen-wrapper .level .level-item span {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: block;
+    -webkit-animation: pollen-wrapz .4s;
+    animation: pollen-wrapz .4s;
+}
