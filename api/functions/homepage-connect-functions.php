@@ -118,7 +118,7 @@ function getWeatherAndAir()
 				}
 			}
 			if ($GLOBALS['homepageWeatherAndAirAirQualityEnabled']) {
-				$endpoint = '/air-quality/v2/current-conditions?features=breezometer_aqi,local_aqi,health_recommendations,sources_and_effects,pollutants_concentrations,pollutants_aqi_information&metadata=true';
+				$endpoint = '/air-quality/v2/current-conditions?features=breezometer_aqi,local_aqi,health_recommendations,sources_and_effects,dominant_pollutant_concentrations,pollutants_concentrations,pollutants_aqi_information&metadata=true';
 				$response = Requests::get($apiURL . $endpoint . $info, $headers, $options);
 				if ($response->success) {
 					$apiData = json_decode($response->body, true);
