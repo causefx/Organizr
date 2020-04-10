@@ -7002,9 +7002,81 @@ function buildWeatherAndAir(array){
     }
     if(array.content.air !== false){
         if(array.content.air.error === null) {
-            $.each(array.content.air.data, function(i,v) {
-
-            })
+            let airItems = '<div class="row">';
+            var activeClasses = {
+                'poor': '',
+                'low': '',
+                'moderate': '',
+                'good': '',
+                'excellent': ''
+            };
+            if(array.content.air.data.indexes.baqi.aqi <= 20){
+                activeClasses['poor'] = 'active';
+            }else if(array.content.air.data.indexes.baqi.aqi <= 40){
+                activeClasses['low'] = 'active';
+            }else if(array.content.air.data.indexes.baqi.aqi <= 60){
+                activeClasses['moderate'] = 'active';
+            }else if(array.content.air.data.indexes.baqi.aqi <= 80){
+                activeClasses['good'] = 'active';
+            }else if(array.content.air.data.indexes.baqi.aqi <= 100){
+                activeClasses['excellent'] = 'active';
+            }
+            airItems += `
+            <div class="col-lg-4 col-sm-12 col-xs-12">
+                <div class="white-box text-white">
+                    <div class="aqi-scale-component-wrapper">
+                        <div class="aqi__header">
+                            <div class="aqi__value">
+                                <div class="component-wrapper aqi-number text-good-gradient">${array.content.air.data.indexes.baqi.aqi}</div>
+                            </div>
+                            <div class="aqi__text"><h2 >AirQuality Index</h2></div>
+                        </div>
+                        <div class="aqi-scale m-t-40">
+                            <div class="category">
+                                <div class="chip ${activeClasses['poor']}">
+                                    <div class="chip__text text-white">Poor</div>
+                                    <div class="chip__bar bg-poor-gradient"></div>
+                                </div>
+                                <div class="category__min-value text-white">0</div>
+                                <div class="category__max-value text-white">20</div>
+                            </div>
+                            <div class="category">
+                                <div class="chip ${activeClasses['low']}">
+                                    <div class="chip__text text-white">Low</div>
+                                    <div class="chip__bar bg-low-gradient"></div>
+                                </div>
+                                <div class="category__max-value text-white">40</div>
+                            </div>
+                            <div class="category">
+                                <div class="chip ${activeClasses['moderate']}">
+                                    <div class="chip__text text-white">Moderate</div>
+                                    <div class="chip__bar bg-moderate-gradient"></div>
+                                </div>
+                                <div class="category__max-value text-white">60</div>
+                            </div>
+                            <div class="category">
+                                <div class="chip ${activeClasses['good']}">
+                                    <div class="chip__text text-white">Good</div>
+                                    <div class="chip__bar bg-good-gradient"></div>
+                                </div>
+                                <div class="category__max-value text-white">80</div>
+                            </div>
+                            <div class="category">
+                                <div class="chip ${activeClasses['excellent']}">
+                                    <div class="chip__text text-white">Excellent</div>
+                                    <div class="chip__bar bg-excellent-gradient"></div>
+                                </div>
+                                <div class="category__max-value text-white">100</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ${buildPollutant(array.content.air.data.pollutants)}
+            ${buildHealthRecommendation(array.content.air.data.health_recommendations)}
+            `;
+            airItems += '</div>';
+            returnData += airItems;
             console.log('load air')
         }
     }
@@ -7014,6 +7086,112 @@ function buildWeatherAndAir(array){
         }
     }
     return returnData;
+}
+function buildHealthRecommendation(array){
+    var healthHeader = '';
+    var healthSection = '';
+    $.each(array, function(i,v) {
+        var title = i.toString().replace('_', ' ').toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ')
+        switch (i) {
+            case 'general_population':
+                var icon = 'fa fa-group';
+                break;
+            case 'elderly':
+                var icon = 'fa fa-inbox';
+                break;
+            case 'lung_diseases':
+                var icon = 'mdi mdi-spray';
+                break;
+            case 'heart_diseases':
+                var icon = 'mdi mdi-heart-pulse';
+                break;
+            case 'active':
+                var icon = 'mdi mdi-run-fast';
+                break;
+            case 'pregnant_women':
+                var icon = 'mdi mdi-human-pregnant';
+                break;
+            case 'children':
+                var icon = 'fa fa-child';
+                break;
+            default:
+                var icon = '';
+        }
+        healthHeader += '<li><a href="#section-health-'+i+'" class="sticon '+icon+'"></a></li>';
+        healthSection += `
+            <section id="section-pollutant-${i}" class="" >
+                <h5 class="m-t-0">${title}</h5>
+                <span>${v}</span>
+            </section>
+        `;
+    });
+var html = `
+    <div class="col-lg-4 hidden-xs hidden-sm">
+        <div class="white-box text-white p-0">
+            <!-- Tabstyle start -->
+            <section class="">
+                <div class="sttabs tabs-style-iconbox">
+                    <nav>
+                        <ul>${healthHeader}</ul>
+                    </nav>
+                    <div class="content-wrap health-and-pollutant-section" data-simplebar>${healthSection}</div>
+                    <!-- /content -->
+                </div>
+                <!-- /tabs -->
+            </section>
+            <!-- Tabstyle start -->
+        </div>
+    </div>
+    <script>
+        (function() {
+            [].slice.call(document.querySelectorAll('.sttabs')).forEach(function(el) {
+                new CBPFWTabs(el);
+            });
+        })();
+    </script>`
+    return html;
+}
+function buildPollutant(array){
+    var pollutantHeader = '';
+    var pollutantSection = '';
+    $.each(array, function(i,v) {
+        pollutantHeader += '<li><a href="#section-pollutant-'+i+'" class="sticon"><strong>'+v.display_name+'</strong><br/><small class="elip">'+v.concentration.value+' '+v.concentration.units+'</small></a></li>';
+        pollutantSection += `
+            <section id="section-pollutant-${i}">
+                <h5 class="m-t-0">${v.full_name}</h5>
+                <h6>Sources</h6>
+                <span>${v.sources_and_effects.sources}</span>
+                <hr>
+                <h6>Effects</h6>
+                <span>${v.sources_and_effects.effects}</span>
+            </section>
+        `;
+    });
+    var html = `
+    <div class="col-lg-4 hidden-xs hidden-sm">
+        <div class="white-box text-white p-0">
+            <!-- Tabstyle start -->
+            <section class="">
+                <div class="sttabs tabs-style-iconbox">
+                    <nav>
+                        <ul>${pollutantHeader}</ul>
+                    </nav>
+                    <div class="content-wrap health-and-pollutant-section" data-simplebar>${pollutantSection}</div>
+                    <!-- /content -->
+                </div>
+                <!-- /tabs -->
+            </section>
+            <!-- Tabstyle start -->
+        </div>
+    </div>
+    <script>
+        (function() {
+            [].slice.call(document.querySelectorAll('.sttabs')).forEach(function(el) {
+                new CBPFWTabs(el);
+            });
+        })();
+    </script>`
+    return html;
 }
 function homepageWeatherAndAir(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageWeatherAndAirRefresh;
