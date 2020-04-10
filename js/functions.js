@@ -3068,9 +3068,10 @@ function submitSettingsForm(form){
     var list = $( "#"+form ).serializeToJSON();
     var size = 0;
     var submit = {};
+    console.log(list);
     $.each(list, function(i,v) {
         var values = false;
-        if(typeof v === 'object'){
+        if(typeof v === 'object' && typeof v.length === 'undefined'){
             values = getSubmitSettingsFormValueObject(form, i, v)
         }else{
             values = getSubmitSettingsFormValueSingle(form, i, v)
@@ -6927,6 +6928,7 @@ function weatherIcon(code, daytime = true){
     }
 }
 function buildWeatherAndAir(array){
+    var returnData = '';
     if (typeof array.content === 'undefined'){ return ''; }
     if(array.content.weather !== false){
         if(array.content.weather.error === null){
@@ -6995,12 +6997,14 @@ function buildWeatherAndAir(array){
                 weatherItemsCount ++;
             })
             weatherItems += '</div>';
-            return weatherItems;
+            returnData += weatherItems;
         }
     }
     if(array.content.air !== false){
         if(array.content.air.error === null) {
+            $.each(array.content.air.data, function(i,v) {
 
+            })
             console.log('load air')
         }
     }
@@ -7009,6 +7013,7 @@ function buildWeatherAndAir(array){
             console.log('load pollen')
         }
     }
+    return returnData;
 }
 function homepageWeatherAndAir(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageWeatherAndAirRefresh;
