@@ -2488,7 +2488,7 @@ function getTautulli()
 		$url = qualifyURL($GLOBALS['tautulliURL']);
 		$apiURL = $url . '/api/v2?apikey=' . $GLOBALS['tautulliApikey'];
 		try {
-			$homestatsUrl = $apiURL . '&cmd=get_home_stats';
+			$homestatsUrl = $apiURL . '&cmd=get_home_stats&grouping=1';
 			$homestats = Requests::get($homestatsUrl, [], []);
 			if ($homestats->success) {
 				$homestats = json_decode($homestats->body, true);
@@ -2514,7 +2514,7 @@ function getTautulli()
 			if ($libstats->success) {
 				$libstats = json_decode($libstats->body, true);
 				$api['libstats'] = $libstats['response'];
-				$categories = ['movie.svg', 'show.svg', 'artist.png'];
+				$categories = ['movie.svg', 'show.svg', 'artist.svg'];
 				foreach ($categories as $cat) {
 					$parts = explode('.', $cat);
 					cacheImage($url . '/images/libraries/' . $cat, 'tautulli-' . $parts[0], $parts[1]);

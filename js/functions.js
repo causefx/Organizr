@@ -6544,21 +6544,87 @@ function buildTautulliItem(array){
     var cards = `
     <style>
     .homepage-tautulli-card {
-        height: 242px;
+        height: 160px;
     }
 
-    .library-card {
-        height: 137px;
+    .homepage-tautulli-card .card-body {
+        padding: 0;
     }
 
     .homepage-tautulli-card .poster {
         max-width: 100%;
-        max-height: 15em;
+        max-height: 150px;
+    }
+
+    .homepage-tautulli-card th {
+        border-bottom: 1px solid #ffffff20;
+        height: 30px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .homepage-tautulli-card .poster-td {
+        width: 110px;
+        padding: 5px;
+    }
+
+    .homepage-tautulli-card .scrollable {
+        height: 129px;
+    }
+
+    .homepage-tautulli-card table {
+        position: absolute;
+    }
+
+    .homepage-tautulli-card .cardCountType {
+        padding-top: 2px;
+        padding-right: 5px;
+        color: #808080;
+        font-size: smaller;
+    }
+
+    .homepage-tautulli-card .tautulliRank, .homepage-tautulli-card .tautulliSeparator {
+        color: #808080;
+        font-size: small;
+        padding-right: 2px;
+    }
+
+    .homepage-tautulli-card .cardListItem {
+        padding-top: 2px;
+        margin-left: 10px;
+        padding-right: 5px;
+        border-bottom: 1px solid #ffffff20;
+        box-sizing: border-box;
+        height: 25px;
+    }
+
+    .homepage-tautulli-card .cardListRow {
+        min-height: 25px;
+    }
+
+    .homepage-tautulli-card .cardListCount {
+        color: #f9be03;
+    }
+
+    .homepage-tautulli-card .tautulliFirstItem {
+        height: 30px;
+        padding-top: 2px;
+        font-size: large;
+    }
+
+    .homepage-tautulli-card .tautulliLastItem {
+        border-bottom: none;
+    }
+
+    .homepage-tautulli-card .simplebar-track {
+        left: 0;
+        right: auto;
     }
 
     .homepage-tautulli-card .lib-icon {
         max-width: 100%;
-        height: 7.5em;
+        height: 64px;
     }
 
     .homepage-tautulli-card .avatar {
@@ -6569,53 +6635,13 @@ function buildTautulliItem(array){
         text-align: center;
     }
 
-    .library-card ol {
-        overflow: auto;
-    }
-
-    .homepage-tautulli-card ol.pl-2 li p,
-    .library-card ol li p {
-        font-weight: 400;
-        font-size: 16px;
-        margin-bottom: 0;
-    }
-
-    .homepage-tautulli-card ol.pl-2 li,
-    .library-card ol li {
-        margin-top: 2px;
-        text-align-last: left;
-    }
-
-    .library-card ol::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-        border-radius: 10px;
-        background-color: #7b7b7b2e;
-        margin: 0 30px;
-    }
-
-    .library-card ol::-webkit-scrollbar {
-        width: 12px;
-        background-color: #7b7b7b2e;
-    }
-
-    .library-card ol::-webkit-scrollbar-thumb {
-        border-radius: 10px;
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-        background-color: #555;
-    }
-
-    .one-line {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
     .homepage-tautulli-card .bg-img-cont {
         overflow: hidden;
         pointer-events: none;
         position: absolute;
         width: 100%;
         height: 100%;
+        border: 1px solid #ffffff10;
     }
 
     .homepage-tautulli-card .bg-img {
@@ -6625,23 +6651,6 @@ function buildTautulliItem(array){
         left: 0;
         filter: blur(7px) brightness(30%);
         transform: scale(1.1);
-    }
-
-    .lib-stats-row::before {
-        content: none !important;
-    }
-
-    .card-bg-colour {
-        background-color: #7b7b7b2e;
-    }
-
-    .homepage-tautulli-card .card-body h4 {
-        text-align-last: left;
-    }
-
-    .homepage-tautulli-card .card-body span.pull-left {
-        line-height: 22px;
-        font-size: 18px;
     }
 
     .platform-android-rgba { background-color: rgba(164, 202, 57, 0.40); }
@@ -6706,38 +6715,45 @@ function buildTautulliItem(array){
         var buildCard = function(type, data) {
             var card = `
             <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
-                <div class="card text-white mb-3 homepage-tautulli-card library-card card-bg-colour">
-                    <div class="card-body h-100">
-                        <div class="row h-100" style="display: flex;">
-                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 align-self-center" style="overflow: hidden;">`;
-                            if(type == 'artist') {
-                                card += `<img src="plugins/images/cache/tautulli-`+type+`.png" class="lib-icon" alt="library icon">`;
-                            } else {
-                                card += `<img src="plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon">`;
-                            }
+                <div class="card text-white mb-3 homepage-tautulli-card library-card">
+                    <div class="card-body h-100 bg-org-alt">
+                        <table class="h-100 w-100">
+                            <tr>
+                                <td rowspan='2' class="poster-td align-self-center"><img src="plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon">`;
+                                var extraField = null;
+                                var section_name = null;
+                                if(type == 'movie'){
+                                    extraField = 'Movies';
+                                    section_name = 'Movie Libaries';
+                                }else if(type == 'show'){
+                                    extraField = 'Shows/Seasons/Episodes';
+                                    section_name = 'TV Show Libaries';
+                                }else if(type == 'artist'){
+                                    extraField = 'Artists/Albums/Tracks';
+                                    section_name = 'Music Libaries';
+                                }
+                                var cardTitle = '<th><span class="pull-left cardTitle">'+section_name.toUpperCase()+'</span><span class="pull-right cardCountType">'+extraField.toUpperCase()+'</th>';
+                                card += cardTitle+`
+                            </tr>
+                            <tr>
+                                <td><div class="scrollable" data-simplebar>`;
+                                for(var i = 0; i < data.length; i++) {
+                                    if(type == 'movie') {
+                                        card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == data.length-1) { card +=` tautulliLastItem`; }
+                                        card += `"><span class="tautulliRank">`+(i+1)+`</span> `+data[i]['section_name']+`</span><span class="cardListCount pull-right">`+data[i]['count']+`</div>`;
+                                    } else {
+                                        card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == data.length-1) { card +=` tautulliLastItem`; }
+                                        card += `"><span class="tautulliRank">`+(i+1)+`</span> `+data[i]['section_name']+`</span>
+                                                <span class="cardListCount pull-right">`+data[i]['count']+`<span class="tautulliSeparator"> / </span>`+data[i]['parent_count']+`<span class="tautulliSeparator"> / </span>`+data[i]['child_count']+`</div>`;
+                                    }
+                                };
             card += `
-                            </div>
-                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12" style="overflow: hidden;">
-                                <ol class="h-100">`;
-                                data.forEach(e => {
-                                    card += `<li class="w-100">
-                                                <p class="one-line d-inline">`+e['section_name']+`</p>`;
-                                                if(type == 'movie') {
-                                                    card += `<p class="mb-0 pull-right d-inline text-right text-warning">`+e['count']+`</p>`;
-                                                } else {
-                                                    card += `<p class="mb-0 pull-right d-inline text-right text-warning">`+e['count']+` / `+e['parent_count']+` / `+e['child_count']+`</p>`;
-                                                }
-                                    card += `
-                                            </li>`;
-                                });
-            card += `
-                                </ol>
-                            </div>
-                        </div>
+                                </div></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
-            </div>
-            `;
+            </div>`;
             return card;
         };
         var card = (movies.length > 0) ? buildCard('movie', movies) : '';
@@ -6752,12 +6768,12 @@ function buildTautulliItem(array){
                 if(stat === 'top_platforms') {
                     classes = ' platform-' + e['rows'][0]['platform_name'] + '-rgba';
                 } else if(stat === 'top_users') {
-                    classes = ' card-bg-colour';
+                    classes = ' bg-org-alt';
                 } else {
                     classes = '';
                 }
                 card += `
-                <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-xs-12">
                     <div class="card text-white mb-3 homepage-tautulli-card`+classes+`">`;
                         if(stat !== 'top_users' && stat !== 'top_platforms') {
                             card += `
@@ -6767,50 +6783,50 @@ function buildTautulliItem(array){
                             `;
                         }
                 card += `
-                        <div class="card-body">
-                            <div class="row h-100" style="display: flex;">
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 align-self-center" style="overflow: hidden;">`;
-                                if(stat == 'top_users') {
-                                    card += `<img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar">`;
-                                } else if(stat == 'top_platforms') {
-                                    card += `<img src="plugins/images/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon">`;
-                                } else {
-                                    card += `<img src="`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster">`;
-                                }
-                                var addExtraField = false;
-                                var extraField = null;
-                                if(e['stat_title'].includes('Popular')){
-                                    addExtraField = true;
-                                    extraField = ''//users;
-                                }else if(e['stat_title'].includes('Watched')){
-                                    addExtraField = true;
-                                    extraField = ''//plays;
-                                }
-                                var cardTitle = (addExtraField) ? '<span class="pull-left">'+e['stat_title']+'</span><span class="pull-right">'+extraField+'</span><div class="clearfix"></div>' : '<h4>'+e['stat_title']+'</h4>';
-                card += `
-                                </div>
-                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 align-self-center" style="overflow: hidden;">
-                                    `+cardTitle+`
-                                    <hr class="my-2">
-                                    <ol class="pl-2">`;
-                                    for(var i = 0; i < Math.min(5, e['rows'].length); i++) {
-                                        var item = e['rows'][i];
-                                        if(stat == 'top_users') {
-                                            card += `<li><p class="one-line">`+item['user']+`</p></li>`;
-                                        } else if(stat == 'top_platforms') {
-                                            card += `<li><p class="one-line">`+item['platform']+`</p></li>`;
-                                        } else {
-                                            card += `<li><span class="one-line">`+item['title']+`</span></li>`;
-                                        }
+                        <div class="card-body h-100 bg-org-alt">
+                            <table class="h-100 w-100">
+                                <tr>`;
+                                    if(stat == 'top_users') {
+                                        card += `<td rowspan="2" class="poster-td align-self-center"><img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar"></td>`;
+                                    } else if(stat == 'top_platforms') {
+                                        card += `<td rowspan="2" class="poster-td align-self-center"><img src="plugins/images/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon"></td>`;
+                                    } else {
+                                        card += `<td rowspan="2" class="poster-td"><img src="`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster"></td>`;
                                     }
-                card += `
-                                    </ol>
-                                </div>
-                            </div>
+                                    var extraField = null;
+                                    if(e['stat_title'].includes('Popular')){
+                                        extraField = 'users';
+                                    }else if(e['stat_title'].includes('Watched')||e['stat_title'].includes('Active')){
+                                        extraField = 'plays';
+                                    }
+                                    var cardTitle = '<th><span class="pull-left cardTitle">'+e['stat_title'].toUpperCase()+'</span><span class="pull-right cardCountType">'+extraField.toUpperCase()+'</th>';
+                                    card += cardTitle+`
+                                </tr>
+                                <tr>
+                                    <td><div class="scrollable" data-simplebar>`;
+                                        for(var i = 0; i < e['rows'].length; i++) {
+                                            var item = e['rows'][i];
+                                            if(stat == 'top_users') {
+                                                card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
+                                                card += `"><span class="tautulliRank">`+(i+1)+`</span> `+item['user']+`</span><span class="cardListCount pull-right">`+item['total_plays']+`</div>`;
+                                            } else if(stat == 'top_platforms') {
+                                                card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
+                                                card += `"><span class="tautulliRank">`+(i+1)+`</span> `+item['platform']+`</span><span class="cardListCount pull-right">`+item['total_plays']+`</div>`;
+                                            } else if(extraField == 'users') {
+                                                card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
+                                                card += `"><span class="tautulliRank">`+(i+1)+`</span> `+item['title']+`</span><span class="cardListCount pull-right">`+item['users_watched']+`</div>`;
+                                            } else {
+                                                card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
+                                                card += `"><span class="tautulliRank">`+(i+1)+`</span> `+item['title']+`</span><span class="cardListCount pull-right">`+item['total_plays']+`</div>`;
+                                            }
+                                        };
+card += `
+                                    </div></td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
-                </div>
-                `;
+                </div>`;
             } else {
                 return '';
             }
@@ -6818,6 +6834,7 @@ function buildTautulliItem(array){
         return card;
     };
     cards += '<div class="row tautulliTop">'
+    cards += (options['libraries']) ? buildLibraries(libstats) : '';
     cards += (options['popularMovies']) ? buildStats(homestats, 'popular_movies') : '';
     cards += (options['popularTV']) ? buildStats(homestats, 'popular_tv') : '';
     cards += (options['topMovies']) ? buildStats(homestats, 'top_movies') : '';
@@ -6826,7 +6843,6 @@ function buildTautulliItem(array){
     cards += (options['topPlatforms']) ? buildStats(homestats, 'top_platforms') : '';
     cards += '</div>';
     cards += '<div class="row tautulliLibraries">'
-    cards += (options['libraries']) ? buildLibraries(libstats) : '';
     cards += '</div>';
     return cards;
 }
