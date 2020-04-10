@@ -2026,7 +2026,7 @@ function buildLanguage(replace=false,newLang=null){
 					<div class="drop-title" lang="en">Choose Language</div>
 				</li>
 				<li>
-					<div class="message-center" data-simplebar>`+languageItems+`</div>
+					<div class="message-center" data-simplebar>${languageItems}</div>
 				</li>
 			</ul>
 			<!-- /.dropdown-messages -->
@@ -7010,7 +7010,7 @@ function buildWeatherAndAir(array){
         }
     }
 }
-function homepageWeatherAndAir(array){
+function homepageWeatherAndAir(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageWeatherAndAirRefresh;
     organizrAPI('POST','api/?v1/homepage/connect',{action:'getWeatherAndAir'}).success(function(data) {
         try {
@@ -7027,9 +7027,9 @@ function homepageWeatherAndAir(array){
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
     });
-    var timeoutTitle = 'Tautulli-Homepage';
+    var timeoutTitle = 'WeatherAndAir-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
-    timeouts[timeoutTitle] = setTimeout(function(){ homepageTautulli(timeout); }, timeout);
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageWeatherAndAir(timeout); }, timeout);
 }
 function buildMonitorrItem(array){
     var cards = '';
