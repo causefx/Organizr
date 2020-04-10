@@ -4202,10 +4202,13 @@ html {
     color: #fff;
     line-height: 13px;
     transition: opacity .6s;
-    opacity: .4;
+    opacity: .7;
+}
+.aqi-scale .chip.active {
+    opacity: 1;
 }
 .chip .chip__text {
-    color: rgba(45,45,45,.8);
+    /*color: rgba(45,45,45,.8);*/
 }
 .chip .chip__bar {
     margin-top: 6px;
@@ -4226,4 +4229,10 @@ html {
     right: 0;
     text-align: right;
     transform: translateX(2px);
+}
+.health-and-pollutant-section {
+    max-height: 128px;
+}
+.health-and-pollutant-section .content-current {
+    background: #1b1a1a;
 }
