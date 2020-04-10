@@ -6541,148 +6541,7 @@ function homepageCalendar(timeout){
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
 }
 function buildTautulliItem(array){
-    var cards = `
-    <style>
-    .homepage-tautulli-card {
-        height: 160px;
-    }
-
-    .homepage-tautulli-card .card-body {
-        padding: 0;
-    }
-
-    .homepage-tautulli-card .poster {
-        max-width: 100%;
-        max-height: 150px;
-    }
-
-    .homepage-tautulli-card th {
-        border-bottom: 1px solid #ffffff20;
-        height: 30px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .homepage-tautulli-card .poster-td {
-        width: 110px;
-        padding: 5px;
-    }
-
-    .homepage-tautulli-card .scrollable {
-        height: 129px;
-    }
-
-    .homepage-tautulli-card table {
-        position: absolute;
-    }
-
-    .homepage-tautulli-card .cardCountType {
-        padding-top: 2px;
-        padding-right: 5px;
-        color: #808080;
-        font-size: smaller;
-    }
-
-    .homepage-tautulli-card .tautulliRank, .homepage-tautulli-card .tautulliSeparator {
-        color: #808080;
-        font-size: small;
-        padding-right: 2px;
-    }
-
-    .homepage-tautulli-card .cardListItem {
-        padding-top: 2px;
-        margin-left: 10px;
-        padding-right: 5px;
-        border-bottom: 1px solid #ffffff20;
-        box-sizing: border-box;
-        height: 25px;
-    }
-
-    .homepage-tautulli-card .cardListRow {
-        min-height: 25px;
-    }
-
-    .homepage-tautulli-card .cardListCount {
-        color: #f9be03;
-    }
-
-    .homepage-tautulli-card .tautulliFirstItem {
-        height: 30px;
-        padding-top: 2px;
-        font-size: large;
-    }
-
-    .homepage-tautulli-card .tautulliLastItem {
-        border-bottom: none;
-    }
-
-    .homepage-tautulli-card .simplebar-track {
-        left: 0;
-        right: auto;
-    }
-
-    .homepage-tautulli-card .lib-icon {
-        max-width: 100%;
-        height: 64px;
-    }
-
-    .homepage-tautulli-card .avatar {
-        border-radius: 50%;
-    }
-
-    .homepage-tautulli-card .align-self-center {
-        text-align: center;
-    }
-
-    .homepage-tautulli-card .bg-img-cont {
-        overflow: hidden;
-        pointer-events: none;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border: 1px solid #ffffff10;
-    }
-
-    .homepage-tautulli-card .bg-img {
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        filter: blur(7px) brightness(30%);
-        transform: scale(1.1);
-    }
-
-    .platform-android-rgba { background-color: rgba(164, 202, 57, 0.40); }
-    .platform-atv-rgba { background-color: rgba(133, 132, 135, 0.40); }
-    .platform-chrome-rgba { background-color: rgba(237, 94, 80, 0.40); }
-    .platform-chromecast-rgba { background-color: rgba(16, 164, 232, 0.40); }
-    .platform-default-rgba { background-color: rgba(229, 160, 13, 0.40); }
-    .platform-dlna-rgba { background-color: rgba(12, 177, 75, 0.40); }
-    .platform-firefox-rgba { background-color: rgba(230, 120, 23, 0.40); }
-    .platform-gtv-rgba { background-color: rgba(0, 139, 207, 0.40); }
-    .platform-ie-rgba { background-color: rgba(0, 89, 158, 0.40); }
-    .platform-ios-rgba { background-color: rgba(133, 132, 135, 0.40); }
-    .platform-kodi-rgba { background-color: rgba(49, 175, 225, 0.40); }
-    .platform-linux-rgba { background-color: rgba(23, 147, 208, 0.40); }
-    .platform-macos-rgba { background-color: rgba(133, 132, 135, 0.40); }
-    .platform-msedge-rgba { background-color: rgba(0, 120, 215, 0.40); }
-    .platform-opera-rgba { background-color: rgba(255, 27, 45, 0.40); }
-    .platform-playstation-rgba { background-color: rgba(3, 77, 162, 0.40); }
-    .platform-plex-rgba { background-color: rgba(229, 160, 13, 0.40); }
-    .platform-plexamp-rgba { background-color: rgba(229, 160, 13, 0.40); }
-    .platform-roku-rgba { background-color: rgba(109, 60, 151, 0.40); }
-    .platform-safari-rgba { background-color: rgba(0, 169, 236, 0.40); }
-    .platform-samsung-rgba { background-color: rgba(3, 78, 162, 0.40); }
-    .platform-synclounge-rgba { background-color: rgba(21, 25, 36, 0.40); }
-    .platform-tivo-rgba { background-color: rgba(0, 167, 225, 0.40); }
-    .platform-wiiu-rgba { background-color: rgba(3, 169, 244, 0.40); }
-    .platform-windows-rgba { background-color: rgba(47, 192, 245, 0.40); }
-    .platform-wp-rgba { background-color: rgba(104, 33, 122, 0.40); }
-    .platform-xbmc-rgba { background-color: rgba(59, 72, 114, 0.40); }
-    .platform-xbox-rgba { background-color: rgba(16, 124, 16, 0.40); }
-    </style>
-    `;
+    var cards = ""
     var homestats = array.homestats.data;
     var libstats = array.libstats;
     var options = array.options;
@@ -6719,7 +6578,7 @@ function buildTautulliItem(array){
                     <div class="card-body h-100 bg-org-alt">
                         <table class="h-100 w-100">
                             <tr>
-                                <td rowspan='2' class="poster-td align-self-center"><img src="plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon">`;
+                                <td rowspan='2' class="poster-td text-center"><img src="plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon">`;
                                 var extraField = null;
                                 var section_name = null;
                                 if(type == 'movie'){
@@ -6787,9 +6646,9 @@ function buildTautulliItem(array){
                             <table class="h-100 w-100">
                                 <tr>`;
                                     if(stat == 'top_users') {
-                                        card += `<td rowspan="2" class="poster-td align-self-center"><img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar"></td>`;
+                                        card += `<td rowspan="2" class="poster-td text-center"><img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar"></td>`;
                                     } else if(stat == 'top_platforms') {
-                                        card += `<td rowspan="2" class="poster-td align-self-center"><img src="plugins/images/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon"></td>`;
+                                        card += `<td rowspan="2" class="poster-td text-center"><img src="plugins/images/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon"></td>`;
                                     } else {
                                         card += `<td rowspan="2" class="poster-td"><img src="`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster"></td>`;
                                     }
