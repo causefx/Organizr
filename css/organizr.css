@@ -68,7 +68,7 @@
 }
 
 .lock-screen {
-    background: url(../../plugins/images/login-register.jpg) center center/cover no-repeat !important;
+    background: url(../plugins/images/login-register.jpg) center center/cover no-repeat !important;
     height: 100%;
     position: fixed;
     z-index: 1001;
@@ -4113,4 +4113,117 @@ html {
     display: block;
     -webkit-animation: pollen-wrapz .4s;
     animation: pollen-wrapz .4s;
+}
+.bg-poor-gradient {
+    background: linear-gradient(90deg, rgb(102, 46, 155) 0%, rgb(99, 20, 161) 50%, rgb(156, 46, 64) 100%);
+}
+.bg-low-gradient {
+    background: linear-gradient(90deg, rgb(198, 21, 22) 0%, rgb(224, 90, 14) 50%, rgb(238, 137, 18) 100%);
+}
+.bg-moderate-gradient {
+    background: linear-gradient(90deg, rgb(238, 137, 18) 0%, rgb(230, 174, 73) 50%, rgb(243, 216, 75) 100%);
+}
+.bg-good-gradient {
+    background: linear-gradient(90deg, rgb(195, 237, 26) 0%, rgb(52, 216, 49) 50%, rgb(24, 215, 169) 100%);
+}
+.bg-excellent-gradient {
+    background: linear-gradient(90deg, rgb(68, 216, 207) 0%, rgb(35, 146, 149) 50%, rgb(55, 74, 91) 100%);
+}
+.text-poor-gradient {
+    background: linear-gradient(90deg, rgb(102, 46, 155) 0%, rgb(99, 20, 161) 50%, rgb(156, 46, 64) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.text-low-gradient {
+    background: linear-gradient(90deg, rgb(198, 21, 22) 0%, rgb(224, 90, 14) 50%, rgb(238, 137, 18) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.text-moderate-gradient {
+    background: linear-gradient(90deg, rgb(238, 137, 18) 0%, rgb(230, 174, 73) 50%, rgb(243, 216, 75) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.text-good-gradient {
+    background: linear-gradient(90deg, rgb(195, 237, 26) 0%, rgb(52, 216, 49) 50%, rgb(24, 215, 169) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.text-excellent-gradient {
+    background: linear-gradient(90deg, rgb(68, 216, 207) 0%, rgb(35, 146, 149) 50%, rgb(55, 74, 91) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.aqi-scale-component-wrapper {
+    display: block;
+    width: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+    position: relative;
+}
+.aqi__header {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    grid-template-areas: "value text";
+    align-items: center;
+    margin-bottom: 6px;
+}
+.aqi__header .aqi__value {
+    position: relative;
+    grid-area: value;
+    grid-template-areas: "item";
+    font-size: 57px;
+    min-height: 90px;
+    color: #2d2d2d;
+    display: grid;
+    align-items: center;
+    justify-content: left;
+    transition: color 1s,font-size .3s;
+}
+.aqi__header .aqi-number, .aqi__header .aqi-progress, .aqi__header .aqi-value__no-data {
+    grid-area: item;
+    transition: opacity .3s;
+}
+.component-wrapper {
+    display: inline;
+}
+.aqi-scale {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(5,1fr);
+    grid-gap: 2px;
+}
+.aqi-scale .category {
+    text-align: center;
+    position: relative;
+}
+.aqi-scale .chip {
+    font-size: 12px;
+    color: #fff;
+    line-height: 13px;
+    transition: opacity .6s;
+    opacity: .4;
+}
+.chip .chip__text {
+    color: rgba(45,45,45,.8);
+}
+.chip .chip__bar {
+    margin-top: 6px;
+    display: block;
+    height: 4px;
+}
+.category__min-value {
+    left: 0;
+    text-align: left;
+}
+.category__max-value, .category__min-value {
+    position: absolute;
+    display: inline-block;
+    font-size: 12px;
+    color: rgba(45,45,45,.8);
+}
+.category__max-value {
+    right: 0;
+    text-align: right;
+    transform: translateX(2px);
 }
