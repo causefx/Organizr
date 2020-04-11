@@ -6572,42 +6572,57 @@ function buildTautulliItem(array){
         audio = audio.sort((a, b) => (parseInt(a['count']) > parseInt(b['count'])) ? -1 : 1);
 
         var buildCard = function(type, data) {
+            var extraField = null;
+            var section_name = null;
+            if(type == 'movie'){
+                extraField = 'Movies';
+                section_name = 'Movie Libaries';
+            }else if(type == 'show'){
+                extraField = 'Shows/Seasons/Episodes';
+                section_name = 'TV Show Libaries';
+            }else if(type == 'artist'){
+                extraField = 'Artists/Albums/Tracks';
+                section_name = 'Music Libaries';
+            }
+            var cardTitle = '<th><span class="pull-left cardTitle">'+section_name.toUpperCase()+'</span><span class="pull-right cardCountType">'+extraField.toUpperCase()+'</th>';
             var card = `
             <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                 <div class="card text-white mb-3 homepage-tautulli-card library-card">
                     <div class="card-body h-100 bg-org-alt">
                         <table class="h-100 w-100">
                             <tr>
-                                <td rowspan='2' class="poster-td text-center"><img src="plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon">`;
-                                var extraField = null;
-                                var section_name = null;
-                                if(type == 'movie'){
-                                    extraField = 'Movies';
-                                    section_name = 'Movie Libaries';
-                                }else if(type == 'show'){
-                                    extraField = 'Shows/Seasons/Episodes';
-                                    section_name = 'TV Show Libaries';
-                                }else if(type == 'artist'){
-                                    extraField = 'Artists/Albums/Tracks';
-                                    section_name = 'Music Libaries';
-                                }
-                                var cardTitle = '<th><span class="pull-left cardTitle">'+section_name.toUpperCase()+'</span><span class="pull-right cardCountType">'+extraField.toUpperCase()+'</th>';
-                                card += cardTitle+`
+                                <td rowspan='2' class="poster-td text-center"><img src="plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon"></td>
+                                ${cardTitle}
                             </tr>
                             <tr>
-                                <td><div class="scrollable" data-simplebar>`;
-                                for(var i = 0; i < data.length; i++) {
-                                    if(type == 'movie') {
-                                        card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == data.length-1) { card +=` tautulliLastItem`; }
-                                        card += `"><div class="tautulliRank col-md-1 p-0">`+(i+1)+`</div><div class="col-md-9 p-0 text-left elip"> `+data[i]['section_name']+`</div><div class="col-md-2 cardListCount text-right m-l-10 p-0">`+data[i]['count']+`</div></div>`;
-                                    } else {
-                                        card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == data.length-1) { card +=` tautulliLastItem`; }
-                                        card += `"><div class="tautulliRank col-md-1 p-0">`+(i+1)+`</div><div class="col-md-5 p-0 text-left elip"> `+data[i]['section_name']+`</div>
-                                                <div class="col-md-6 cardListCount text-right m-l-10 p-0">`+data[i]['count']+`<span class="tautulliSeparator"> / </span>`+data[i]['parent_count']+`<span class="tautulliSeparator"> / </span>`+data[i]['child_count']+`</div></div>`;
-                                    }
-                                };
-            card += `
-                                </div></td>
+                                <td>
+                                    <div class="scrollable" data-simplebar>`;
+                                    for(var i = 0; i < data.length; i++) {
+                                        var rowType = i == 0 ? 'tautulliFirstItem' : i == data.length-1 ? 'tautulliLastItem' : '';
+                                        var rowValue = '';
+                                        var firstDivCol = '';
+                                        var secondDivCol = '';
+                                        if(type == 'movie') {
+                                            rowValue = data[i]['count'];
+                                            firstDivCol = 'col-md-9';
+                                            secondDivCol = 'col-md-2';
+                                        } else {
+                                            rowValue = data[i]['count'] + '<span class="tautulliSeparator"> / </span>' + data[i]['parent_count'] + '<span class="tautulliSeparator"> / </span>' + data[i]['child_count'];
+                                            firstDivCol = 'col-md-5';
+                                            secondDivCol = 'col-md-6';
+                                        }
+                                        card += `
+                                        <div class="cardListItem elip row w-100 p-r-0 m-0 ${rowType}">
+                                            <div class="tautulliRank col-md-1 p-0">${i+1}</div>
+                                            <div class="${firstDivCol} p-0 text-left elip"> ${data[i]['section_name']}</div>
+                                            <div class="${secondDivCol} cardListCount text-right m-l-10 p-0">${rowValue}</div>
+                                        </div>
+                                        `;
+                                    };
+
+                                    card += `
+                                    </div>
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -6623,11 +6638,10 @@ function buildTautulliItem(array){
     var buildStats = function(data, stat){
         var card = '';
         data.forEach(e => {
+            let classes = '';
             if(e['stat_id'] == stat) {
                 if(stat === 'top_platforms') {
                     classes = ' platform-' + e['rows'][0]['platform_name'] + '-rgba';
-                } else if(stat === 'top_users') {
-                    classes = ' bg-org-alt';
                 } else {
                     classes = ' bg-org-alt';
                 }
@@ -6665,21 +6679,30 @@ function buildTautulliItem(array){
                                     <td><div class="scrollable" data-simplebar>`;
                                         for(var i = 0; i < e['rows'].length; i++) {
                                             var item = e['rows'][i];
+                                            var rowType = i == 0 ? 'tautulliFirstItem' : i == e['rows'].length-1 ? 'tautulliLastItem' : '';
+                                            var rowNameValue = '';
+                                            var rowValue = '';
                                             if(stat == 'top_users') {
-                                                card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
-                                                card += `"><div class="tautulliRank col-md-1 p-0">`+(i+1)+`</div><div class="col-md-10 p-0 text-left elip"> `+item['user']+`</div><div class="col-md-1 cardListCount text-right m-l-10 p-0">`+item['total_plays']+`</div></div>`;
+                                                rowNameValue = item['user'];
+                                                rowValue = item['total_plays'];
                                             } else if(stat == 'top_platforms') {
-                                                card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
-                                                card += `"><div class="tautulliRank col-md-1 p-0">`+(i+1)+`</div><div class="col-md-10 p-0 text-left elip"> `+item['platform']+`</div><div class="col-md-1 cardListCount text-right m-l-10 p-0">`+item['total_plays']+`</div></div>`;
+                                                rowNameValue = item['platform'];
+                                                rowValue = item['total_plays'];
                                             } else if(extraField == 'users') {
-                                                card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
-                                                card += `"><div class="tautulliRank col-md-1 p-0">`+(i+1)+`</div><div class="col-md-10 p-0 text-left elip"> `+item['title']+`</div><div class="col-md-1 cardListCount text-right m-l-10 p-0">`+item['users_watched']+`</div></div>`;
+                                                rowNameValue = item['title'];
+                                                rowValue = item['users_watched'];
                                             } else {
-                                                card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
-                                                card += `"><div class="tautulliRank col-md-1 p-0 text-center">`+(i+1)+`</div><div class="col-md-10 p-0 text-left elip"> `+item['title']+`</div><div class="col-md-1 cardListCount text-right m-l-10 p-0">`+item['total_plays']+`</div></div>`;
+                                                rowNameValue = item['title'];
+                                                rowValue = item['total_plays'];
                                             }
+                                            card += `
+                                            <div class="cardListItem elip row w-100 p-r-0 m-0 ${rowType}">
+                                                <div class="tautulliRank col-md-1 p-0">${i+1}</div>
+                                                <div class="col-md-9 p-0 text-left elip">${rowNameValue}</div>
+                                                <div class="col-md-2 cardListCount text-right m-l-10 p-0">${rowValue}</div>
+                                            </div>`;
                                         };
-card += `
+                                    card += `
                                     </div></td>
                                 </tr>
                             </table>
