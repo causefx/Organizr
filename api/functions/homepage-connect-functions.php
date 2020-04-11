@@ -2487,6 +2487,10 @@ function getTautulli()
 		$api = [];
 		$url = qualifyURL($GLOBALS['tautulliURL']);
 		$apiURL = $url . '/api/v2?apikey=' . $GLOBALS['tautulliApikey'];
+		$height = getCacheImageSize('h');
+		$width = getCacheImageSize('w');
+		$nowPlayingHeight = getCacheImageSize('nph');
+		$nowPlayingWidth = getCacheImageSize('npw');
 		try {
 			$homestatsUrl = $apiURL . '&cmd=get_home_stats&grouping=1';
 			$homestats = Requests::get($homestatsUrl, [], []);
@@ -2498,8 +2502,8 @@ function getTautulli()
 				foreach ($categories as $cat) {
 					$key = array_search($cat, array_column($api['homestats']['data'], 'stat_id'));
 					$img = $api['homestats']['data'][$key]['rows'][0];
-					cacheImage($url . '/pms_image_proxy?img=' . $img['art'], $img['rating_key'] . '-np');
-					cacheImage($url . '/pms_image_proxy?img=' . $img['thumb'], $img['rating_key'] . '-list');
+					cacheImage($url . '/pms_image_proxy?img=' . $img['art'] . '&rating_key=' . $img['rating_key'] . '&width=' . $nowPlayingWidth . '&height=' . $nowPlayingHeight, $img['rating_key'] . '-np');
+					cacheImage($url . '/pms_image_proxy?img=' . $img['thumb'] . '&rating_key=' . $img['rating_key'] . '&width=' . $width . '&height=' . $height, $img['rating_key'] . '-list');
 					$img['art'] = 'plugins/images/cache/' . $img['rating_key'] . '-np.jpg';
 					$img['thumb'] = 'plugins/images/cache/' . $img['rating_key'] . '-list.jpg';
 					$api['homestats']['data'][$key]['rows'][0] = $img;
