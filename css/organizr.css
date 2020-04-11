@@ -369,6 +369,11 @@ img.imageSourceBottom {
     font-size: small;
     padding-right: 2px;
 }
+.homepage-tautulli-card .tautulliRank {
+    width: 15px !important;
+    webkit-flex-shrink: 0;
+    flex-shrink: 0;
+}
 
 .homepage-tautulli-card .cardListItem {
     padding-top: 2px;
@@ -377,6 +382,10 @@ img.imageSourceBottom {
     border-bottom: 1px solid #ffffff20;
     box-sizing: border-box;
     height: 25px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
 }
 
 .homepage-tautulli-card .cardListRow {
@@ -4370,4 +4379,7 @@ html {
 }
 .health-and-pollutant-section .content-current {
     background: #1b1a1a;
+}
+.m-r-0 {
+    margin-right: 0px !important;
 }
