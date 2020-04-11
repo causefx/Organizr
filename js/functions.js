@@ -6598,12 +6598,12 @@ function buildTautulliItem(array){
                                 <td><div class="scrollable" data-simplebar>`;
                                 for(var i = 0; i < data.length; i++) {
                                     if(type == 'movie') {
-                                        card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == data.length-1) { card +=` tautulliLastItem`; }
-                                        card += `"><span class="tautulliRank">`+(i+1)+`</span> `+data[i]['section_name']+`</span><span class="cardListCount pull-right">`+data[i]['count']+`</div>`;
+                                        card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == data.length-1) { card +=` tautulliLastItem`; }
+                                        card += `"><div class="tautulliRank col-md-1 p-0">`+(i+1)+`</div><div class="col-md-9 p-0 text-left elip"> `+data[i]['section_name']+`</div><div class="col-md-2 cardListCount text-right m-l-10 p-0">`+data[i]['count']+`</div></div>`;
                                     } else {
-                                        card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == data.length-1) { card +=` tautulliLastItem`; }
-                                        card += `"><span class="tautulliRank">`+(i+1)+`</span> `+data[i]['section_name']+`</span>
-                                                <span class="cardListCount pull-right">`+data[i]['count']+`<span class="tautulliSeparator"> / </span>`+data[i]['parent_count']+`<span class="tautulliSeparator"> / </span>`+data[i]['child_count']+`</div>`;
+                                        card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == data.length-1) { card +=` tautulliLastItem`; }
+                                        card += `"><div class="tautulliRank col-md-1 p-0">`+(i+1)+`</div><div class="col-md-5 p-0 text-left elip"> `+data[i]['section_name']+`</div>
+                                                <div class="col-md-6 cardListCount text-right m-l-10 p-0">`+data[i]['count']+`<span class="tautulliSeparator"> / </span>`+data[i]['parent_count']+`<span class="tautulliSeparator"> / </span>`+data[i]['child_count']+`</div></div>`;
                                     }
                                 };
             card += `
@@ -6666,17 +6666,17 @@ function buildTautulliItem(array){
                                         for(var i = 0; i < e['rows'].length; i++) {
                                             var item = e['rows'][i];
                                             if(stat == 'top_users') {
-                                                card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
-                                                card += `"><span class="tautulliRank">`+(i+1)+`</span> `+item['user']+`</span><span class="cardListCount pull-right">`+item['total_plays']+`</div>`;
+                                                card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
+                                                card += `"><div class="tautulliRank col-md-1 p-0">`+(i+1)+`</div><div class="col-md-10 p-0 text-left elip"> `+item['user']+`</div><div class="col-md-1 cardListCount text-right m-l-10 p-0">`+item['total_plays']+`</div></div>`;
                                             } else if(stat == 'top_platforms') {
-                                                card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
-                                                card += `"><span class="tautulliRank">`+(i+1)+`</span> `+item['platform']+`</span><span class="cardListCount pull-right">`+item['total_plays']+`</div>`;
+                                                card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
+                                                card += `"><div class="tautulliRank col-md-1 p-0">`+(i+1)+`</div><div class="col-md-10 p-0 text-left elip"> `+item['platform']+`</div><div class="col-md-1 cardListCount text-right m-l-10 p-0">`+item['total_plays']+`</div></div>`;
                                             } else if(extraField == 'users') {
-                                                card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
-                                                card += `"><span class="tautulliRank">`+(i+1)+`</span> `+item['title']+`</span><span class="cardListCount pull-right">`+item['users_watched']+`</div>`;
+                                                card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
+                                                card += `"><div class="tautulliRank col-md-1 p-0">`+(i+1)+`</div><div class="col-md-10 p-0 text-left elip"> `+item['title']+`</div><div class="col-md-1 cardListCount text-right m-l-10 p-0">`+item['users_watched']+`</div></div>`;
                                             } else {
-                                                card += `<div class="cardListItem elip`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
-                                                card += `"><span class="tautulliRank">`+(i+1)+`</span> `+item['title']+`</span><span class="cardListCount pull-right">`+item['total_plays']+`</div>`;
+                                                card += `<div class="cardListItem elip row w-100 p-r-0 m-0`; if (i == 0) { card +=` tautulliFirstItem`; } if (i == e['rows'].length-1) { card +=` tautulliLastItem`; }
+                                                card += `"><div class="tautulliRank col-md-1 p-0 text-center">`+(i+1)+`</div><div class="col-md-10 p-0 text-left elip"> `+item['title']+`</div><div class="col-md-1 cardListCount text-right m-l-10 p-0">`+item['total_plays']+`</div></div>`;
                                             }
                                         };
 card += `
@@ -6740,7 +6740,6 @@ function homepageTautulli(timeout){
         }
         document.getElementById('homepageOrdertautulli').innerHTML = '';
         if(response.data !== null){
-            buildTautulli(response.data)
             $('#homepageOrdertautulli').html(buildTautulli(response.data));
         }
     }).fail(function(xhr) {
@@ -6972,7 +6971,7 @@ function buildHealthRecommendation(array){
                 var icon = 'fa fa-group';
                 break;
             case 'elderly':
-                var icon = 'fa fa-inbox';
+                var icon = 'ti ti-wheelchair';
                 break;
             case 'lung_diseases':
                 var icon = 'mdi mdi-spray';
