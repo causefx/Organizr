@@ -6629,11 +6629,11 @@ function buildTautulliItem(array){
                 } else if(stat === 'top_users') {
                     classes = ' bg-org-alt';
                 } else {
-                    classes = '';
+                    classes = ' bg-org-alt';
                 }
                 card += `
                 <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-xs-12">
-                    <div class="card text-white mb-3 homepage-tautulli-card`+classes+`">`;
+                    <div class="card text-white mb-3 homepage-tautulli-card">`;
                         if(stat !== 'top_users' && stat !== 'top_platforms') {
                             card += `
                             <div class="bg-img-cont">
@@ -6642,7 +6642,7 @@ function buildTautulliItem(array){
                             `;
                         }
                 card += `
-                        <div class="card-body h-100 bg-org-alt">
+                        <div class="card-body h-100`+classes+`">
                             <table class="h-100 w-100">
                                 <tr>`;
                                     if(stat == 'top_users') {
