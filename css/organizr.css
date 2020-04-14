@@ -351,6 +351,7 @@ img.imageSourceBottom {
 
 .homepage-tautulli-card .scrollable {
     height: 129px;
+    margin-left: 10px;
 }
 
 .homepage-tautulli-card table {
@@ -407,7 +408,7 @@ img.imageSourceBottom {
 }
 
 .homepage-tautulli-card .simplebar-track {
-    left: 0;
+    left: -12px;
     right: auto;
 }
 

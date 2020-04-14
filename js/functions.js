@@ -6615,7 +6615,7 @@ function buildTautulliItem(array){
                                         <div class="cardListItem elip row w-100 p-r-0 m-0 ${rowType}">
                                             <div class="tautulliRank col-md-1 p-0">${i+1}</div>
                                             <div class="${firstDivCol} p-0 text-left elip"> ${data[i]['section_name']}</div>
-                                            <div class="${secondDivCol} cardListCount text-right m-l-10 p-0">${rowValue}</div>
+                                            <div class="${secondDivCol} cardListCount text-right m-l-10 m-r-5 p-0">${rowValue}</div>
                                         </div>
                                         `;
                                     };
@@ -6699,7 +6699,7 @@ function buildTautulliItem(array){
                                             <div class="cardListItem elip row w-100 p-r-0 m-0 ${rowType}">
                                                 <div class="tautulliRank col-md-1 p-0">${i+1}</div>
                                                 <div class="col-md-9 p-0 text-left elip">${rowNameValue}</div>
-                                                <div class="col-md-2 cardListCount text-right m-l-10 p-0">${rowValue}</div>
+                                                <div class="col-md-2 cardListCount text-right m-l-10 m-r-5 p-0">${rowValue}</div>
                                             </div>`;
                                         };
                                     card += `
@@ -6743,7 +6743,7 @@ function buildTautulli(array){
         `;
     }
     html += `
-            <div class="tautulliCards col-sm-12 my-3">
+            <div class="tautulliCards col-sm-12">
                 `+buildTautulliItem(array)+`
 			</div>
 		</div>
