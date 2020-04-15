@@ -1648,14 +1648,14 @@ function editPlugins($array)
 			$newItem = array(
 				$array['data']['configName'] => true
 			);
-			writeLog('success', 'Plugin Function -  Enabled Plugin [' . $_POST['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
+			writeLog('success', 'Plugin Function -  Enabled Plugin [' . $array['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
 			return (updateConfig($newItem)) ? true : false;
 			break;
 		case 'disable':
 			$newItem = array(
 				$array['data']['configName'] => false
 			);
-			writeLog('success', 'Plugin Function -  Disabled Plugin [' . $_POST['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
+			writeLog('success', 'Plugin Function -  Disabled Plugin [' . $array['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
 			return (updateConfig($newItem)) ? true : false;
 			break;
 		default:
