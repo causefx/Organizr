@@ -6926,7 +6926,7 @@ function buildWeatherAndAir(array){
                             <div class="aqi__value">
                                 <div class="component-wrapper aqi-number text-good-gradient">${array.content.air.data.indexes.baqi.aqi}</div>
                             </div>
-                            <div class="aqi__text"><h2 >AirQuality Index</h2></div>
+                            <div class="aqi__text"><h2 >Air Quality Index</h2></div>
                         </div>
                         <div class="aqi-scale m-t-40">
                             <div class="category">
