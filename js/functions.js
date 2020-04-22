@@ -2010,7 +2010,11 @@ function settingsAPI(post, callbacks=null){
 function buildLanguage(replace=false,newLang=null){
 	var languageItems = '';
 	var currentLanguage = (getCookie('organizrLanguage')) ? getCookie('organizrLanguage') : window.lang.currentLang;
+	var newLangCode = '';
 	$.each(languageList, function(i,v) {
+	    if(newLang === v.language){
+            newLangCode = v.code;
+        }
 		var active = (v.code == currentLanguage) ? '' : '';
 		languageItems += `
 			<a onclick="window.lang.change('`+v.code+`');buildLanguage(true,'`+v.language+`')" href="javascript:void(0);" class="`+active+`">
@@ -2033,7 +2037,7 @@ function buildLanguage(replace=false,newLang=null){
 		</li>
 	`;
 	if(replace == true){
-	    setLangCookie(newLang);
+	    setLangCookie(newLangCode);
 		$('#languageDropdown').replaceWith(lang);
 		message("",window.lang.translate('Changed Language To')+": "+newLang,activeInfo.settings.notifications.position,"#FFF","success","3500");
 	}else if(replace == 'wizard'){
@@ -6615,7 +6619,7 @@ function buildTautulliItem(array){
                                         <div class="cardListItem elip row w-100 p-r-0 m-0 ${rowType}">
                                             <div class="tautulliRank col-md-1 p-0">${i+1}</div>
                                             <div class="${firstDivCol} p-0 text-left elip"> ${data[i]['section_name']}</div>
-                                            <div class="${secondDivCol} cardListCount text-right m-l-10 m-r-5 p-0">${rowValue}</div>
+                                            <div class="${secondDivCol} cardListCount text-right m-l-10 p-0">${rowValue}</div>
                                         </div>
                                         `;
                                     };
@@ -6699,7 +6703,7 @@ function buildTautulliItem(array){
                                             <div class="cardListItem elip row w-100 p-r-0 m-0 ${rowType}">
                                                 <div class="tautulliRank col-md-1 p-0">${i+1}</div>
                                                 <div class="col-md-9 p-0 text-left elip">${rowNameValue}</div>
-                                                <div class="col-md-2 cardListCount text-right m-l-10 m-r-5 p-0">${rowValue}</div>
+                                                <div class="col-md-2 cardListCount text-right m-l-10 p-0">${rowValue}</div>
                                             </div>`;
                                         };
                                     card += `
@@ -6743,7 +6747,7 @@ function buildTautulli(array){
         `;
     }
     html += `
-            <div class="tautulliCards col-sm-12">
+            <div class="tautulliCards col-sm-12 my-3">
                 `+buildTautulliItem(array)+`
 			</div>
 		</div>
@@ -6926,7 +6930,7 @@ function buildWeatherAndAir(array){
                             <div class="aqi__value">
                                 <div class="component-wrapper aqi-number text-good-gradient">${array.content.air.data.indexes.baqi.aqi}</div>
                             </div>
-                            <div class="aqi__text"><h2 >Air Quality Index</h2></div>
+                            <div class="aqi__text"><h2 >AirQuality Index</h2></div>
                         </div>
                         <div class="aqi-scale m-t-40">
                             <div class="category">
