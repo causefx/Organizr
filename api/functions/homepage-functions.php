@@ -25,7 +25,8 @@ function homepageOrder()
 		"homepageOrdertautulli" => $GLOBALS['homepageOrdertautulli'],
 		"homepageOrderPihole" => $GLOBALS['homepageOrderPihole'],
 		"homepageOrderMonitorr" => $GLOBALS['homepageOrderMonitorr'],
-		"homepageOrderWeatherAndAir" => $GLOBALS['homepageOrderWeatherAndAir']
+		"homepageOrderWeatherAndAir" => $GLOBALS['homepageOrderWeatherAndAir'],
+		"homepageOrderSpeedtest" => $GLOBALS['homepageOrderSpeedtest'],
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -379,6 +380,18 @@ function buildHomepageItem($homepageItem)
 				// Weather And Air
 				homepageWeatherAndAir("' . $GLOBALS['homepageWeatherAndAirRefresh'] . '");
 				// End Weather And Air
+				</script>
+				';
+			}
+			break;
+		case 'homepageOrderSpeedtest':
+			if ($GLOBALS['homepageSpeedtestEnabled']) {
+				$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Speedtest...</h2></div>';
+				$item .= '
+				<script>
+				// Speedtest
+				homepageSpeedtest("' . $GLOBALS['homepageSpeedtestRefresh'] . '");
+				// End Speedtest
 				</script>
 				';
 			}
@@ -2903,6 +2916,54 @@ function getHomepageList()
 				),
 			)
 		),
+		array(
+			'name' => 'Speedtest',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/speedtest-icon.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageSpeedtestEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepageSpeedtestEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageSpeedtestAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageSpeedtestAuth'],
+						'options' => $groups
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'speedtestURL',
+						'label' => 'URL',
+						'value' => $GLOBALS['speedtestURL'],
+						'help' => 'Enter the IP:PORT of your speedtest instance e.g. http(s)://<ip>:<port>'
+					),
+				),
+				'Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'speedtestHeader',
+						'label' => 'Title',
+						'value' => $GLOBALS['speedtestHeader'],
+						'help' => 'Sets the title of this homepage module',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'speedtestToggle',
+						'label' => 'Toggle Title',
+						'value' => $GLOBALS['speedtestHeaderToggle'],
+						'help' => 'Shows/hides the title of this homepage module'
+					),
+				),
+			)
+		),
 	);
 }
 
@@ -3053,6 +3114,13 @@ function buildHomepageSettings()
 				$class = 'bg-success';
 				$image = 'plugins/images/tabs/wind.png';
 				if (!$GLOBALS['homepageWeatherAndAirEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderSpeedtest':
+				$class = 'bg-success';
+				$image = 'plugins/images/tabs/speedtest-icon.png';
+				if (!$GLOBALS['homepageSpeedtestEnabled']) {
 					$class .= ' faded';
 				}
 				break;

@@ -177,6 +177,7 @@ return array(
 	'homepageOrdertautulli' => '21',
 	'homepageOrderMonitorr' => '22',
 	'homepageOrderWeatherAndAir' => '23',
+	'homepageOrderSpeedtest' => '24',
 	'homepageShowStreamNames' => false,
 	'homepageShowStreamNamesAuth' => '1',
 	'homepageStreamRefresh' => '60000',
@@ -307,4 +308,10 @@ return array(
 	'monitorrHeaderToggle' => true,
 	'monitorrHeader' => 'Monitorr',
 	'monitorrCompact' => false,
+	'homepageSpeedtestEnabled' => false,
+	'homepageSpeedtestAuth' => '1',
+	'homepageSpeedtestRefresh' => '3600000',
+	'speedtestURL' => '',
+	'speedtestHeaderToggle' => true,
+	'speedtestHeader' => 'Speedtest',
 );
