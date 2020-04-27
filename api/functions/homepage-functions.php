@@ -2924,6 +2924,12 @@ function getHomepageList()
 			'settings' => array(
 				'Enable' => array(
 					array(
+						'type' => 'html',
+						'override' => 6,
+						'label' => 'Info',
+						'html' => '<p>This homepage item requires <a href="https://github.com/henrywhitaker3/Speedtest-Tracker" target="_blank" rel="noreferrer noopener">Speedtest-Tracker</a> to be running on your network.</p>'
+					),
+					array(
 						'type' => 'switch',
 						'name' => 'homepageSpeedtestEnabled',
 						'label' => 'Enable',
