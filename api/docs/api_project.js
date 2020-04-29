@@ -1,4 +1,4 @@
-{
+define({
   "name": "Organizr API Documentation",
   "version": "1.0.0",
   "description": "API Docs",
@@ -13,4 +13,4 @@
     "url": "http://apidocjs.com",
     "version": "0.22.0"
   }
-}
+});

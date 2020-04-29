@@ -7243,6 +7243,7 @@ function buildSpeedtest(array){
         -webkit-box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
         box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
     }
+
     .speedtest-card {
         background-color: #2d2c2c;
     }
@@ -7260,11 +7261,13 @@ function buildSpeedtest(array){
     }
     .speedtest-card h5 {
     }
+
     .speedtest-card h4,
     .speedtest-card h3 {
         font-weight: 450;
         line-height: 1.2;
     }
+
     .speedtest-card .text-muted,
     .speedtest-card h5 {
         color: #9e9e9e !important;
@@ -7275,7 +7278,7 @@ function buildSpeedtest(array){
     var average = array.data.average;
     var max = array.data.max;
     var options = array.options;
-
+  
     html += `
     <div id="allSpeedtest">
     `;
