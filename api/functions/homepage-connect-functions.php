@@ -2683,8 +2683,10 @@ function getNetdata()
 							'chart' => $GLOBALS['netdata'.($i + 1).'Chart'],
 							'data' => $GLOBALS['netdata'.($i + 1).'Data'],
 							'units' => $GLOBALS['netdata'.($i + 1).'Units'],
+							'commonUnits' => $GLOBALS['netdata'.($i + 1).'CommonUnits'],
 							'dimensions' => $GLOBALS['netdata'.($i + 1).'Dimensions'],
 							'max' => $GLOBALS['netdata'.($i + 1).'Max'],
+							'appendOptions' => $GLOBALS['netdata'.($i + 1).'AppendOptions'],
 						]);
 					}
 				}

@@ -2981,6 +2981,13 @@ function getHomepageList()
 					),
 					array(
 						'type' => 'input',
+						'name' => 'netdata1CommonUnits',
+						'label' => 'Common Units',
+						'value' => $GLOBALS['netdata1CommonUnits'],
+						'help' => 'Common-units for the netdata graph'
+					),
+					array(
+						'type' => 'input',
 						'name' => 'netdata1Dimensions',
 						'label' => 'Dimensions',
 						'value' => $GLOBALS['netdata1Dimensions'],
@@ -2992,6 +2999,13 @@ function getHomepageList()
 						'label' => 'Gauge max value',
 						'value' => $GLOBALS['netdata1Max'],
 						'help' => 'Gauge max value for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata1AppendOptions',
+						'label' => 'Append options',
+						'value' => $GLOBALS['netdata1AppendOptions'],
+						'help' => 'Append options for the netdata graph'
 					),
 				),
 				'Chart 2' => array(
@@ -3025,6 +3039,13 @@ function getHomepageList()
 					),
 					array(
 						'type' => 'input',
+						'name' => 'netdata2CommonUnits',
+						'label' => 'Common Units',
+						'value' => $GLOBALS['netdata2CommonUnits'],
+						'help' => 'Common-units for the netdata graph'
+					),
+					array(
+						'type' => 'input',
 						'name' => 'netdata2Dimensions',
 						'label' => 'Dimensions',
 						'value' => $GLOBALS['netdata2Dimensions'],
@@ -3036,6 +3057,13 @@ function getHomepageList()
 						'label' => 'Gauge max value',
 						'value' => $GLOBALS['netdata2Max'],
 						'help' => 'Gauge max value for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata2AppendOptions',
+						'label' => 'Append options',
+						'value' => $GLOBALS['netdata2AppendOptions'],
+						'help' => 'Append options for the netdata graph'
 					),
 				),
 				'Chart 3' => array(
@@ -3069,6 +3097,13 @@ function getHomepageList()
 					),
 					array(
 						'type' => 'input',
+						'name' => 'netdata3CommonUnits',
+						'label' => 'Common Units',
+						'value' => $GLOBALS['netdata3CommonUnits'],
+						'help' => 'Common-units for the netdata graph'
+					),
+					array(
+						'type' => 'input',
 						'name' => 'netdata3Dimensions',
 						'label' => 'Dimensions',
 						'value' => $GLOBALS['netdata3Dimensions'],
@@ -3080,6 +3115,13 @@ function getHomepageList()
 						'label' => 'Gauge max value',
 						'value' => $GLOBALS['netdata3Max'],
 						'help' => 'Gauge max value for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata3AppendOptions',
+						'label' => 'Append options',
+						'value' => $GLOBALS['netdata3AppendOptions'],
+						'help' => 'Append options for the netdata graph'
 					),
 				),
 				'Chart 4' => array(
@@ -3113,6 +3155,13 @@ function getHomepageList()
 					),
 					array(
 						'type' => 'input',
+						'name' => 'netdata4CommonUnits',
+						'label' => 'Common Units',
+						'value' => $GLOBALS['netdata4CommonUnits'],
+						'help' => 'Common-units for the netdata graph'
+					),
+					array(
+						'type' => 'input',
 						'name' => 'netdata4Dimensions',
 						'label' => 'Dimensions',
 						'value' => $GLOBALS['netdata4Dimensions'],
@@ -3124,6 +3173,13 @@ function getHomepageList()
 						'label' => 'Gauge max value',
 						'value' => $GLOBALS['netdata4Max'],
 						'help' => 'Gauge max value for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata4AppendOptions',
+						'label' => 'Append options',
+						'value' => $GLOBALS['netdata4AppendOptions'],
+						'help' => 'Append options for the netdata graph'
 					),
 				),
 				'Chart 5' => array(
@@ -3157,6 +3213,13 @@ function getHomepageList()
 					),
 					array(
 						'type' => 'input',
+						'name' => 'netdata5CommonUnits',
+						'label' => 'Common Units',
+						'value' => $GLOBALS['netdata5CommonUnits'],
+						'help' => 'Common-units for the netdata graph'
+					),
+					array(
+						'type' => 'input',
 						'name' => 'netdata5Dimensions',
 						'label' => 'Dimensions',
 						'value' => $GLOBALS['netdata5Dimensions'],
@@ -3168,6 +3231,13 @@ function getHomepageList()
 						'label' => 'Gauge max value',
 						'value' => $GLOBALS['netdata5Max'],
 						'help' => 'Gauge max value for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata5AppendOptions',
+						'label' => 'Append options',
+						'value' => $GLOBALS['netdata5AppendOptions'],
+						'help' => 'Append options for the netdata graph'
 					),
 				),
 				'Options' => array(

@@ -7217,9 +7217,10 @@ function homepageMonitorr(timeout){
 function buildNetdataItem(array){
     var html = '';
     array.forEach(e => {
+        var chart = e.chart;
         if(e.data) {
             html += `
-            <div class="col-lg-2">
+            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 my-3">
                 <div class="netdata-item">
                     <div data-netdata="`+e.data+`"
                         data-dimensions="`+e.dimensions+`"
@@ -7228,11 +7229,33 @@ function buildNetdataItem(array){
                         data-before="0"
                         data-after="-300"
                         data-points="300"
-                        data-width="100%"
+                        data-width="90%"`;
+            if(e.chart == 'gauge' && e.max !== '') {
+                html += `
                         data-gauge-adjust="width"
-                        data-easypiechart-max-value="`+e.max+`"
                         data-gauge-max-value="`+e.max+`"
+                `;
+            }
+            if(e.chart = 'easypiechart' && e.max !== '') {
+                html += `
+                        data-easypiechart-max-value="`+e.max+`"
+                `;
+            }
+            if(e.appendOptions != '') {
+                html += `
+                        data-append-options="`+e.appendOptions+`"
+                `;
+            }
+            if(e.units != '') {
+                html += `
+                        data-units="`+e.units+`"
+                `;
+            } else if(e.commonUnits != '') {
+                html += `
                         data-common-units="`+e.units+`"
+                `;
+            }
+            html += `
                     ></div>
                 </div>
             </div>
@@ -7265,7 +7288,7 @@ function buildNetdata(array){
     html += `
     <div class="row">
         
-            <div class="d-flex align-items-center justify-content-center">
+            <div class="d-lg-flex d-md-flex d-sm-block d-xs-block align-items-center justify-content-center">
     `;
     html += buildNetdataItem(options);
     html += `
