@@ -74,6 +74,9 @@ function homepageConnect($array)
 		case 'getSpeedtest':
 			return getSpeedtest();
 			break;
+		case 'getNetdata':
+			return getNetdata();
+			break;
 		default:
 			# code...
 			break;
@@ -2693,6 +2696,41 @@ function getSpeedtest()
 			}
 		} catch (Requests_Exception $e) {
 			writeLog('error', 'Speedtest Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		};
+		$api = isset($api) ? $api : false;
+		return $api;
+	}
+}
+
+function getNetdata()
+{
+	if ($GLOBALS['homepageNetdataEnabled'] && !empty($GLOBALS['netdataURL']) && qualifyRequest($GLOBALS['homepageNetdataAuth'])) {
+		$api = [];
+		$url = qualifyURL($GLOBALS['netdataURL']);
+		try {
+			$response = Requests::get($url);
+			if ($response->success) {
+				$html = json_decode($response->body, true);
+				
+				$api['url'] = $GLOBALS['netdataURL'];
+				$api['options'] = [];
+				for($i = 0; $i < 5; $i++) {
+					if($GLOBALS['netdata'.($i + 1).'Data'] != '') {
+						array_push($api['options'], [
+							'title' => $GLOBALS['netdata'.($i + 1).'Title'],
+							'chart' => $GLOBALS['netdata'.($i + 1).'Chart'],
+							'data' => $GLOBALS['netdata'.($i + 1).'Data'],
+							'units' => $GLOBALS['netdata'.($i + 1).'Units'],
+							'commonUnits' => $GLOBALS['netdata'.($i + 1).'CommonUnits'],
+							'dimensions' => $GLOBALS['netdata'.($i + 1).'Dimensions'],
+							'max' => $GLOBALS['netdata'.($i + 1).'Max'],
+							'appendOptions' => $GLOBALS['netdata'.($i + 1).'AppendOptions'],
+						]);
+					}
+				}
+			}
+		} catch (Requests_Exception $e) {
+			writeLog('error', 'Monitorr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		};
 		$api = isset($api) ? $api : false;
 		return $api;

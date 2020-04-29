@@ -7247,23 +7247,18 @@ function buildSpeedtest(array){
     .speedtest-card {
         background-color: #2d2c2c;
     }
-
     .speedtest-card .text-success {
         color: #07db71 !important;
     }
-
     .speedtest-card .text-warning {
         color: #fca503 !important;
     }
-
     .speedtest-card .text-primary {
         color: #3e95cd !important;
     }
-
     .speedtest-card span.icon {
         font-size: 2em;
     }
-
     .speedtest-card h5 {
     }
 
@@ -7283,7 +7278,7 @@ function buildSpeedtest(array){
     var average = array.data.average;
     var max = array.data.max;
     var options = array.options;
-    
+  
     html += `
     <div id="allSpeedtest">
     `;
@@ -7369,6 +7364,114 @@ function buildSpeedtest(array){
     `;
 
     return (array) ? html : '';
+}
+function buildNetdataItem(array){
+    var html = '';
+    array.forEach(e => {
+        var chart = e.chart;
+        if(e.data) {
+            html += `
+            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 my-3">
+                <div class="netdata-item">
+                    <div data-netdata="`+e.data+`"
+                        data-dimensions="`+e.dimensions+`"
+                        data-chart-library="`+e.chart+`"
+                        data-title="`+e.title+`"
+                        data-before="0"
+                        data-after="-300"
+                        data-points="300"
+                        data-width="90%"`;
+            if(e.chart == 'gauge' && e.max !== '') {
+                html += `
+                        data-gauge-adjust="width"
+                        data-gauge-max-value="`+e.max+`"
+                `;
+            }
+            if(e.chart = 'easypiechart' && e.max !== '') {
+                html += `
+                        data-easypiechart-max-value="`+e.max+`"
+                `;
+            }
+            if(e.appendOptions != '') {
+                html += `
+                        data-append-options="`+e.appendOptions+`"
+                `;
+            }
+            if(e.units != '') {
+                html += `
+                        data-units="`+e.units+`"
+                `;
+            } else if(e.commonUnits != '') {
+                html += `
+                        data-common-units="`+e.units+`"
+                `;
+            }
+            html += `
+                    ></div>
+                </div>
+            </div>
+            `;
+        }
+    });
+    
+    return html;
+}
+var netdataNoFontAwesome = true;
+function buildNetdata(array){
+    console.log(array);
+    if(array === false){ return ''; }
+
+    var options = array.options;
+    var scriptUrl = array.url + '/dashboard.js';
+
+
+    var html = `
+    <script src="`+scriptUrl+`"></script>
+    <style>
+    .netdata-item {
+    }
+    </style>
+    `;
+
+    var number = options.length;
+    var pad = (12 - (number * 2)) / 2;
+
+    html += `
+    <div class="row">
+        
+            <div class="d-lg-flex d-md-flex d-sm-block d-xs-block align-items-center justify-content-center">
+    `;
+    html += buildNetdataItem(options);
+    html += `
+            </div>
+        
+    </div>`;
+   
+    return (array) ? html : '';
+}
+function homepageNetdata(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageNetdataRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getNetdata'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderNetdata').innerHTML = '';
+        if(response.data !== null){
+            $('#homepageOrderNetdata').html(buildNetdata(response.data));
+            setTimeout(function() {
+                $("link[rel='stylesheet'][type='text/css'][href^='"+response.data.url+"/css/bootstrap']").remove()
+            }, 200);
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Netdata-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageNetdata(timeout); }, timeout);
 }
 // Thanks Swifty!
 function PopupCenter(url, title, w, h) {
