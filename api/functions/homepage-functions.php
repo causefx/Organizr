@@ -2952,6 +2952,16 @@ function getHomepageList()
 				),
 				'Chart 1' => array(
 					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => 'Info',
+						'html' => 'These settings are what you would set in the HTML div tag in a custom netdata dashboard. The only 2 required are \'chart\' and \'data\', the rest can be left unset and defaults will be used'
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
 						'type' => 'input',
 						'name' => 'netdata1Title',
 						'label' => 'Title',
@@ -3009,6 +3019,16 @@ function getHomepageList()
 					),
 				),
 				'Chart 2' => array(
+					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => 'Info',
+						'html' => 'These settings are what you would set in the HTML div tag in a custom netdata dashboard. The only 2 required are \'chart\' and \'data\', the rest can be left unset and defaults will be used'
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
 					array(
 						'type' => 'input',
 						'name' => 'netdata2Title',
@@ -3068,6 +3088,16 @@ function getHomepageList()
 				),
 				'Chart 3' => array(
 					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => 'Info',
+						'html' => 'These settings are what you would set in the HTML div tag in a custom netdata dashboard. The only 2 required are \'chart\' and \'data\', the rest can be left unset and defaults will be used'
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
 						'type' => 'input',
 						'name' => 'netdata3Title',
 						'label' => 'Title',
@@ -3126,6 +3156,16 @@ function getHomepageList()
 				),
 				'Chart 4' => array(
 					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => 'Info',
+						'html' => 'These settings are what you would set in the HTML div tag in a custom netdata dashboard. The only 2 required are \'chart\' and \'data\', the rest can be left unset and defaults will be used'
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
 						'type' => 'input',
 						'name' => 'netdata4Title',
 						'label' => 'Title',
@@ -3183,6 +3223,16 @@ function getHomepageList()
 					),
 				),
 				'Chart 5' => array(
+					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => 'Info',
+						'html' => 'These settings are what you would set in the HTML div tag in a custom netdata dashboard. The only 2 required are \'chart\' and \'data\', the rest can be left unset and defaults will be used'
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
 					array(
 						'type' => 'input',
 						'name' => 'netdata5Title',
