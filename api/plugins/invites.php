@@ -223,7 +223,28 @@ function invitesGetSettings()
 				'label' => 'Libraries',
 				'value' => $GLOBALS['INVITES-plexLibraries'],
 				'options' => $libraryList
-			)
+			),
+			array(
+				'type' => 'text',
+				'name' => 'INVITES-plex-tv-labels',
+				'label' => 'TV Labels (comma separated)',
+				'value' => $GLOBALS['INVITES-plex-tv-labels'],
+				'placeholder' => 'All'
+			),
+			array(
+				'type' => 'text',
+				'name' => 'INVITES-plex-movies-labels',
+				'label' => 'Movies Labels (comma separated)',
+				'value' => $GLOBALS['INVITES-plex-movies-labels'],
+				'placeholder' => 'All'
+			),
+			array(
+				'type' => 'text',
+				'name' => 'INVITES-plex-music-labels',
+				'label' => 'Music Labels (comma separated)',
+				'value' => $GLOBALS['INVITES-plex-music-labels'],
+				'placeholder' => 'All'
+			),
 		),
 		'Emby Settings' => array(
 			array(
@@ -272,6 +293,16 @@ function inviteAction($username, $action = null, $type = null)
 				} else {
 					$libraries = '';
 				}
+				if ($GLOBALS['INVITES-plex-tv-labels'] !== "") {
+					$tv_labels = "label=" . $GLOBALS['INVITES-plex-tv-labels'];
+				} else { $tv_labels = ""; }
+				if ($GLOBALS['INVITES-plex-movies-labels'] !== "") {
+					$movies_labels = "label=" . $GLOBALS['INVITES-plex-movies-labels'];
+				} else { $movies_labels = ""; }
+				if ($GLOBALS['INVITES-plex-music-labels'] !== "") {
+					$music_labels = "label=" . $GLOBALS['INVITES-plex-music-labels'];
+				} else { $music_labels = ""; }
+				
 				$headers = array(
 					"Accept" => "application/json",
 					"Content-Type" => "application/json",
@@ -282,6 +313,11 @@ function inviteAction($username, $action = null, $type = null)
 					"shared_server" => array(
 						"library_section_ids" => $libraries,
 						"invited_email" => $username
+					),
+					"sharing_settings" => array(
+						"filterTelevision" => $tv_labels,
+						"filterMovies" => $movies_labels,
+						"filterMusic" => $music_labels
 					)
 				);
 				try {
