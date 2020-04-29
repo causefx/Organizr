@@ -25,7 +25,8 @@ function homepageOrder()
 		"homepageOrdertautulli" => $GLOBALS['homepageOrdertautulli'],
 		"homepageOrderPihole" => $GLOBALS['homepageOrderPihole'],
 		"homepageOrderMonitorr" => $GLOBALS['homepageOrderMonitorr'],
-		"homepageOrderWeatherAndAir" => $GLOBALS['homepageOrderWeatherAndAir']
+		"homepageOrderWeatherAndAir" => $GLOBALS['homepageOrderWeatherAndAir'],
+		"homepageOrderNetdata" => $GLOBALS['homepageOrderNetdata']
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -379,6 +380,18 @@ function buildHomepageItem($homepageItem)
 				// Weather And Air
 				homepageWeatherAndAir("' . $GLOBALS['homepageWeatherAndAirRefresh'] . '");
 				// End Weather And Air
+				</script>
+				';
+			}
+			break;
+		case 'homepageOrderNetdata':
+			if ($GLOBALS['homepageNetdataEnabled']) {
+				$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Netdata...</h2></div>';
+				$item .= '
+				<script>
+				// Netdata
+				homepageNetdata("' . $GLOBALS['homepageNetdataRefresh'] . '");
+				// End Netdata
 				</script>
 				';
 			}
@@ -2898,6 +2911,271 @@ function getHomepageList()
 						'name' => 'homepageWeatherAndAirRefresh',
 						'label' => 'Refresh Seconds',
 						'value' => $GLOBALS['homepageWeatherAndAirRefresh'],
+						'options' => optionTime()
+					),
+				),
+			)
+		),
+		array(
+			'name' => 'Netdata',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/netdata.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageNetdataEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepageNetdataEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageNetdataAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageNetdataAuth'],
+						'options' => $groups
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'netdataURL',
+						'label' => 'URL',
+						'value' => $GLOBALS['netdataURL'],
+						'help' => 'Please enter the local IP:PORT of your netdata instance'
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+				),
+				'Chart 1' => array(
+					array(
+						'type' => 'input',
+						'name' => 'netdata1Title',
+						'label' => 'Title',
+						'value' => $GLOBALS['netdata1Title'],
+						'help' => 'Title for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata1Chart',
+						'label' => 'Chart',
+						'value' => $GLOBALS['netdata1Chart'],
+						'help' => 'Chart type for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata1Data',
+						'label' => 'Data',
+						'value' => $GLOBALS['netdata1Data'],
+						'help' => 'Data for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata1Units',
+						'label' => 'Units',
+						'value' => $GLOBALS['netdata1Units'],
+						'help' => 'Units for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata1Dimensions',
+						'label' => 'Dimensions',
+						'value' => $GLOBALS['netdata1Dimensions'],
+						'help' => 'Dimensions for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata1Max',
+						'label' => 'Gauge max value',
+						'value' => $GLOBALS['netdata1Max'],
+						'help' => 'Gauge max value for the netdata graph'
+					),
+				),
+				'Chart 2' => array(
+					array(
+						'type' => 'input',
+						'name' => 'netdata2Title',
+						'label' => 'Title',
+						'value' => $GLOBALS['netdata2Title'],
+						'help' => 'Title for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata2Chart',
+						'label' => 'Chart',
+						'value' => $GLOBALS['netdata2Chart'],
+						'help' => 'Chart type for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata2Data',
+						'label' => 'Data',
+						'value' => $GLOBALS['netdata2Data'],
+						'help' => 'Data for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata2Units',
+						'label' => 'Units',
+						'value' => $GLOBALS['netdata2Units'],
+						'help' => 'Units for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata2Dimensions',
+						'label' => 'Dimensions',
+						'value' => $GLOBALS['netdata2Dimensions'],
+						'help' => 'Dimensions for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata2Max',
+						'label' => 'Gauge max value',
+						'value' => $GLOBALS['netdata2Max'],
+						'help' => 'Gauge max value for the netdata graph'
+					),
+				),
+				'Chart 3' => array(
+					array(
+						'type' => 'input',
+						'name' => 'netdata3Title',
+						'label' => 'Title',
+						'value' => $GLOBALS['netdata3Title'],
+						'help' => 'Title for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata3Chart',
+						'label' => 'Chart',
+						'value' => $GLOBALS['netdata3Chart'],
+						'help' => 'Chart type for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata3Data',
+						'label' => 'Data',
+						'value' => $GLOBALS['netdata3Data'],
+						'help' => 'Data for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata3Units',
+						'label' => 'Units',
+						'value' => $GLOBALS['netdata3Units'],
+						'help' => 'Units for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata3Dimensions',
+						'label' => 'Dimensions',
+						'value' => $GLOBALS['netdata3Dimensions'],
+						'help' => 'Dimensions for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata3Max',
+						'label' => 'Gauge max value',
+						'value' => $GLOBALS['netdata3Max'],
+						'help' => 'Gauge max value for the netdata graph'
+					),
+				),
+				'Chart 4' => array(
+					array(
+						'type' => 'input',
+						'name' => 'netdata4Title',
+						'label' => 'Title',
+						'value' => $GLOBALS['netdata4Title'],
+						'help' => 'Title for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata4Chart',
+						'label' => 'Chart',
+						'value' => $GLOBALS['netdata4Chart'],
+						'help' => 'Chart type for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata4Data',
+						'label' => 'Data',
+						'value' => $GLOBALS['netdata4Data'],
+						'help' => 'Data for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata4Units',
+						'label' => 'Units',
+						'value' => $GLOBALS['netdata4Units'],
+						'help' => 'Units for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata4Dimensions',
+						'label' => 'Dimensions',
+						'value' => $GLOBALS['netdata4Dimensions'],
+						'help' => 'Dimensions for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata4Max',
+						'label' => 'Gauge max value',
+						'value' => $GLOBALS['netdata4Max'],
+						'help' => 'Gauge max value for the netdata graph'
+					),
+				),
+				'Chart 5' => array(
+					array(
+						'type' => 'input',
+						'name' => 'netdata5Title',
+						'label' => 'Title',
+						'value' => $GLOBALS['netdata5Title'],
+						'help' => 'Title for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata5Chart',
+						'label' => 'Chart',
+						'value' => $GLOBALS['netdata5Chart'],
+						'help' => 'Chart type for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata5Data',
+						'label' => 'Data',
+						'value' => $GLOBALS['netdata5Data'],
+						'help' => 'Data for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata5Units',
+						'label' => 'Units',
+						'value' => $GLOBALS['netdata5Units'],
+						'help' => 'Units for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata5Dimensions',
+						'label' => 'Dimensions',
+						'value' => $GLOBALS['netdata5Dimensions'],
+						'help' => 'Dimensions for the netdata graph'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata5Max',
+						'label' => 'Gauge max value',
+						'value' => $GLOBALS['netdata5Max'],
+						'help' => 'Gauge max value for the netdata graph'
+					),
+				),
+				'Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'homepageNetdataRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageNetdataRefresh'],
 						'options' => optionTime()
 					),
 				),

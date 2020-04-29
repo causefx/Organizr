@@ -7214,6 +7214,91 @@ function homepageMonitorr(timeout){
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageMonitorr(timeout); }, timeout);
 }
+function buildNetdataItem(array){
+    var html = '';
+    array.forEach(e => {
+        if(e.data) {
+            html += `
+            <div class="col-lg-2">
+                <div class="netdata-item">
+                    <div data-netdata="`+e.data+`"
+                        data-dimensions="`+e.dimensions+`"
+                        data-chart-library="`+e.chart+`"
+                        data-title="`+e.title+`"
+                        data-before="0"
+                        data-after="-300"
+                        data-points="300"
+                        data-width="100%"
+                        data-gauge-adjust="width"
+                        data-easypiechart-max-value="`+e.max+`"
+                        data-gauge-max-value="`+e.max+`"
+                        data-common-units="`+e.units+`"
+                    ></div>
+                </div>
+            </div>
+            `;
+        }
+    });
+    
+    return html;
+}
+var netdataNoFontAwesome = true;
+function buildNetdata(array){
+    console.log(array);
+    if(array === false){ return ''; }
+
+    var options = array.options;
+    var scriptUrl = array.url + '/dashboard.js';
+
+
+    var html = `
+    <script src="`+scriptUrl+`"></script>
+    <style>
+    .netdata-item {
+    }
+    </style>
+    `;
+
+    var number = options.length;
+    var pad = (12 - (number * 2)) / 2;
+
+    html += `
+    <div class="row">
+        
+            <div class="d-flex align-items-center justify-content-center">
+    `;
+    html += buildNetdataItem(options);
+    html += `
+            </div>
+        
+    </div>`;
+   
+    return (array) ? html : '';
+}
+function homepageNetdata(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageNetdataRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getNetdata'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderNetdata').innerHTML = '';
+        if(response.data !== null){
+            $('#homepageOrderNetdata').html(buildNetdata(response.data));
+            setTimeout(function() {
+                $("link[rel='stylesheet'][type='text/css'][href^='"+response.data.url+"/css/bootstrap']").remove()
+            }, 200);
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Netdata-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageNetdata(timeout); }, timeout);
+}
 // Thanks Swifty!
 function PopupCenter(url, title, w, h) {
     // Fixes dual-screen position                         Most browsers      Firefox
