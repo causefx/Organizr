@@ -7214,6 +7214,154 @@ function homepageMonitorr(timeout){
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageMonitorr(timeout); }, timeout);
 }
+function homepageSpeedtest(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageSpeedtestRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getSpeedtest'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderSpeedtest').innerHTML = '';
+        if(response.data !== null){
+            $('#homepageOrderSpeedtest').html(buildSpeedtest(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Speedtest-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageSpeedtest(timeout); }, timeout);
+}
+function buildSpeedtest(array){
+    if(array === false){ return ''; }
+    var html = `
+    <style>
+    .shadow-sm {
+        -webkit-box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
+    }
+    .speedtest-card {
+        background-color: #2d2c2c;
+    }
+    .speedtest-card .text-success {
+        color: #07db71 !important;
+    }
+    .speedtest-card .text-warning {
+        color: #fca503 !important;
+    }
+    .speedtest-card .text-primary {
+        color: #3e95cd !important;
+    }
+    .speedtest-card span.icon {
+        font-size: 2em;
+    }
+    .speedtest-card h5 {
+    }
+    .speedtest-card h4,
+    .speedtest-card h3 {
+        font-weight: 450;
+        line-height: 1.2;
+    }
+    .speedtest-card .text-muted,
+    .speedtest-card h5 {
+        color: #9e9e9e !important;
+    }
+    </style>
+    `;
+    var current = array.data.current;
+    var average = array.data.average;
+    var max = array.data.max;
+    var options = array.options;
+
+    html += `
+    <div id="allSpeedtest">
+    `;
+    if(options.titleToggle) {
+        html += `
+        <div class="row">
+            <div class="col-sm-12">
+                <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+` : </h4>
+            </div>
+        </div>
+        `;
+    }
+    html += `
+        <div class="row">
+            <div class="my-2 col-lg-4 col-md-4 col-sm-12">
+                <div class="card speedtest-card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4>Ping</h4>
+                            <span class="ti-pulse icon text-success" />
+                        </div>
+                        <div class="text-truncate">
+                            <h3 class="d-inline">`+parseFloat(current.ping).toFixed(1)+`</h3>
+                            <p class="d-inline ml-1 text-white">ms (current)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(average.ping).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">ms (average)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(max.ping).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">ms (maximum)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="my-2 col-lg-4 col-md-4 col-sm-12">
+                <div class="card speedtest-card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4>Download</h4>
+                            <span class="ti-download icon text-warning" />
+                        </div>
+                        <div class="text-truncate">
+                            <h3 class="d-inline">`+parseFloat(current.download).toFixed(1)+`</h3>
+                            <p class="d-inline ml-1 text-white">Mbit/s (current)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(average.download).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">Mbit/s (average)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(max.download).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">Mbit/s (maximum)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="my-2 col-lg-4 col-md-4 col-sm-12">
+                <div class="card speedtest-card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4>Upload</h4>
+                            <span class="ti-upload icon text-primary" />
+                        </div>
+                        <div class="text-truncate">
+                            <h3 class="d-inline">`+parseFloat(current.upload).toFixed(1)+`</h3>
+                            <p class="d-inline ml-1 text-white">Mbit/s (current)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(average.upload).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">Mbit/s (average)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(max.upload).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">Mbit/s (maximum)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+
+    return (array) ? html : '';
+}
 function buildNetdataItem(array){
     var html = '';
     array.forEach(e => {

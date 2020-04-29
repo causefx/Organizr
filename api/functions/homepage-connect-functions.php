@@ -71,6 +71,9 @@ function homepageConnect($array)
 		case 'getWeatherAndAir':
 			return getWeatherAndAir();
 			break;
+		case 'getSpeedtest':
+			return getSpeedtest();
+			break;
 		case 'getNetdata':
 			return getNetdata();
 			break;
@@ -2658,6 +2661,36 @@ function getMonitorr()
 			}
 		} catch (Requests_Exception $e) {
 			writeLog('error', 'Monitorr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		};
+		$api = isset($api) ? $api : false;
+		return $api;
+	}
+}
+
+function getSpeedtest()
+{
+	if ($GLOBALS['homepageSpeedtestEnabled'] && !empty($GLOBALS['speedtestURL']) && qualifyRequest($GLOBALS['homepageSpeedtestAuth'])) {
+		$api = [];
+		$url = qualifyURL($GLOBALS['speedtestURL']);
+		$dataUrl = $url . '/api/speedtest/latest';
+		try {
+			$response = Requests::get($dataUrl);
+			if ($response->success) {
+				$json = json_decode($response->body, true);
+
+				$api['data'] = [
+					'current' => $json['data'],
+					'average' => $json['average'],
+					'max' => $json['max'],
+				];
+
+				$api['options'] = [
+					'title' => $GLOBALS['speedtestHeader'],
+					'titleToggle' => $GLOBALS['speedtestHeaderToggle'],
+				];
+			}
+		} catch (Requests_Exception $e) {
+			writeLog('error', 'Speedtest Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 		};
 		$api = isset($api) ? $api : false;
 		return $api;
