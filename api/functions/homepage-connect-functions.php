@@ -2347,6 +2347,11 @@ function ombiAction($id, $action, $type, $fullArray = null)
 
 function getOmbiRequests($type = "both", $limit = 50)
 {
+	$api['count'] = array(
+		'movie' => 0,
+		'tv' => 0,
+		'limit' => (integer)$limit
+	);
 	if ($GLOBALS['homepageOmbiEnabled'] && !empty($GLOBALS['ombiURL']) && !empty($GLOBALS['ombiToken']) && qualifyRequest($GLOBALS['homepageOmbiAuth'])) {
 		$url = qualifyURL($GLOBALS['ombiURL']);
 		$headers = array(
@@ -2375,12 +2380,12 @@ function getOmbiRequests($type = "both", $limit = 50)
 					foreach ($movie as $key => $value) {
 						$proceed = (($GLOBALS['ombiLimitUser']) && strtolower($GLOBALS['organizrUser']['username']) == strtolower($value['requestedUser']['userName'])) || (!$GLOBALS['ombiLimitUser']) || qualifyRequest(1) ? true : false;
 						if ($proceed) {
+							$api['count']['movie']++;
 							$requests[] = array(
-								'test' => $value,
 								'id' => $value['theMovieDbId'],
 								'title' => $value['title'],
 								'overview' => $value['overview'],
-								'poster' => (isset($value['posterPath']) && $value['posterPath'] !== '') ? 'https://image.tmdb.org/t/p/w300/' . $value['posterPath'] : '',
+								'poster' => (isset($value['posterPath']) && $value['posterPath'] !== '') ? 'https://image.tmdb.org/t/p/w300/' . $value['posterPath'] : 'plugins/images/cache/no-list.png',
 								'background' => (isset($value['background']) && $value['background'] !== '') ? 'https://image.tmdb.org/t/p/w1280/' . $value['background'] : '',
 								'approved' => $value['approved'],
 								'available' => $value['available'],
@@ -2404,12 +2409,12 @@ function getOmbiRequests($type = "both", $limit = 50)
 						if (count($value['childRequests']) > 0) {
 							$proceed = (($GLOBALS['ombiLimitUser']) && strtolower($GLOBALS['organizrUser']['username']) == strtolower($value['childRequests'][0]['requestedUser']['userName'])) || (!$GLOBALS['ombiLimitUser']) || qualifyRequest(1) ? true : false;
 							if ($proceed) {
+								$api['count']['tv']++;
 								$requests[] = array(
-									'test' => $value,
 									'id' => $value['tvDbId'],
 									'title' => $value['title'],
 									'overview' => $value['overview'],
-									'poster' => $value['posterPath'],
+									'poster' => (isset($value['posterPath']) && $value['posterPath'] !== '') ? $value['posterPath'] : 'plugins/images/cache/no-list.png',
 									'background' => (isset($value['background']) && $value['background'] !== '') ? 'https://image.tmdb.org/t/p/w1280/' . $value['background'] : '',
 									'approved' => $value['childRequests'][0]['approved'],
 									'available' => $value['childRequests'][0]['available'],
