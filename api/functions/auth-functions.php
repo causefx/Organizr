@@ -167,7 +167,8 @@ function plugin_auth_plex($username, $password)
 			'user[login]' => $username,
 			'user[password]' => $password,
 		);
-		$response = Requests::post($url, $headers, $data);
+		$options = array('timeout' => 30);
+		$response = Requests::post($url, $headers, $data, $options);
 		if ($response->success) {
 			$json = json_decode($response->body, true);
 			if ((is_array($json) && isset($json['user']) && isset($json['user']['username'])) && strtolower($json['user']['username']) == $usernameLower || strtolower($json['user']['email']) == $usernameLower) {
