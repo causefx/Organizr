@@ -3006,6 +3006,12 @@ function getHomepageList()
 				),
 				'Connection' => array(
 					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => 'Info',
+						'html' => 'The URL needs to be on the same domain as your Organizr, and be proxied by subdomain. E.g. If Organizr is accessed at: https://domain.com, then your URL for netdata should be: https://netdata.domain.com'
+					),
+					array(
 						'type' => 'input',
 						'name' => 'netdataURL',
 						'label' => 'URL',
@@ -3019,10 +3025,10 @@ function getHomepageList()
 				),
 				'Chart 1' => array(
 					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => 'Info',
-						'html' => 'These settings are what you would set in the HTML div tag in a custom netdata dashboard. The only 2 required are \'chart\' and \'data\', the rest can be left unset and defaults will be used'
+						'type' => 'switch',
+						'name' => 'netdata1Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata1Enabled']
 					),
 					array(
 						'type' => 'blank',
@@ -3036,61 +3042,33 @@ function getHomepageList()
 						'help' => 'Title for the netdata graph'
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata1Chart',
-						'label' => 'Chart',
-						'value' => $GLOBALS['netdata1Chart'],
-						'help' => 'Chart type for the netdata graph'
-					),
-					array(
-						'type' => 'input',
+						'type' => 'select',
 						'name' => 'netdata1Data',
 						'label' => 'Data',
 						'value' => $GLOBALS['netdata1Data'],
-						'help' => 'Data for the netdata graph'
+						'options' => netdataOptions(),
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata1Units',
-						'label' => 'Units',
-						'value' => $GLOBALS['netdata1Units'],
-						'help' => 'Units for the netdata graph'
+						'type' => 'select',
+						'name' => 'netdata1Chart',
+						'label' => 'Chart',
+						'value' => $GLOBALS['netdata1Chart'],
+						'options' => netdataChartOptions(),
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata1CommonUnits',
-						'label' => 'Common Units',
-						'value' => $GLOBALS['netdata1CommonUnits'],
-						'help' => 'Common-units for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata1Dimensions',
-						'label' => 'Dimensions',
-						'value' => $GLOBALS['netdata1Dimensions'],
-						'help' => 'Dimensions for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata1Max',
-						'label' => 'Gauge max value',
-						'value' => $GLOBALS['netdata1Max'],
-						'help' => 'Gauge max value for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata1AppendOptions',
-						'label' => 'Append options',
-						'value' => $GLOBALS['netdata1AppendOptions'],
-						'help' => 'Append options for the netdata graph'
+						'type' => 'select',
+						'name' => 'netdata1Colour',
+						'label' => 'Colour',
+						'value' => $GLOBALS['netdata1Colour'],
+						'options' => netdataColourOptions(),
 					),
 				),
 				'Chart 2' => array(
 					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => 'Info',
-						'html' => 'These settings are what you would set in the HTML div tag in a custom netdata dashboard. The only 2 required are \'chart\' and \'data\', the rest can be left unset and defaults will be used'
+						'type' => 'switch',
+						'name' => 'netdata2Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata2Enabled']
 					),
 					array(
 						'type' => 'blank',
@@ -3104,61 +3082,33 @@ function getHomepageList()
 						'help' => 'Title for the netdata graph'
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata2Chart',
-						'label' => 'Chart',
-						'value' => $GLOBALS['netdata2Chart'],
-						'help' => 'Chart type for the netdata graph'
-					),
-					array(
-						'type' => 'input',
+						'type' => 'select',
 						'name' => 'netdata2Data',
 						'label' => 'Data',
 						'value' => $GLOBALS['netdata2Data'],
-						'help' => 'Data for the netdata graph'
+						'options' => netdataOptions(),
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata2Units',
-						'label' => 'Units',
-						'value' => $GLOBALS['netdata2Units'],
-						'help' => 'Units for the netdata graph'
+						'type' => 'select',
+						'name' => 'netdata2Chart',
+						'label' => 'Chart',
+						'value' => $GLOBALS['netdata2Chart'],
+						'options' => netdataChartOptions(),
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata2CommonUnits',
-						'label' => 'Common Units',
-						'value' => $GLOBALS['netdata2CommonUnits'],
-						'help' => 'Common-units for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata2Dimensions',
-						'label' => 'Dimensions',
-						'value' => $GLOBALS['netdata2Dimensions'],
-						'help' => 'Dimensions for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata2Max',
-						'label' => 'Gauge max value',
-						'value' => $GLOBALS['netdata2Max'],
-						'help' => 'Gauge max value for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata2AppendOptions',
-						'label' => 'Append options',
-						'value' => $GLOBALS['netdata2AppendOptions'],
-						'help' => 'Append options for the netdata graph'
+						'type' => 'select',
+						'name' => 'netdata2Colour',
+						'label' => 'Colour',
+						'value' => $GLOBALS['netdata2Colour'],
+						'options' => netdataColourOptions(),
 					),
 				),
 				'Chart 3' => array(
 					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => 'Info',
-						'html' => 'These settings are what you would set in the HTML div tag in a custom netdata dashboard. The only 2 required are \'chart\' and \'data\', the rest can be left unset and defaults will be used'
+						'type' => 'switch',
+						'name' => 'netdata3Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata3Enabled']
 					),
 					array(
 						'type' => 'blank',
@@ -3172,61 +3122,33 @@ function getHomepageList()
 						'help' => 'Title for the netdata graph'
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata3Chart',
-						'label' => 'Chart',
-						'value' => $GLOBALS['netdata3Chart'],
-						'help' => 'Chart type for the netdata graph'
-					),
-					array(
-						'type' => 'input',
+						'type' => 'select',
 						'name' => 'netdata3Data',
 						'label' => 'Data',
 						'value' => $GLOBALS['netdata3Data'],
-						'help' => 'Data for the netdata graph'
+						'options' => netdataOptions(),
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata3Units',
-						'label' => 'Units',
-						'value' => $GLOBALS['netdata3Units'],
-						'help' => 'Units for the netdata graph'
+						'type' => 'select',
+						'name' => 'netdata3Chart',
+						'label' => 'Data',
+						'value' => $GLOBALS['netdata3Chart'],
+						'options' => netdataChartOptions(),
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata3CommonUnits',
-						'label' => 'Common Units',
-						'value' => $GLOBALS['netdata3CommonUnits'],
-						'help' => 'Common-units for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata3Dimensions',
-						'label' => 'Dimensions',
-						'value' => $GLOBALS['netdata3Dimensions'],
-						'help' => 'Dimensions for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata3Max',
-						'label' => 'Gauge max value',
-						'value' => $GLOBALS['netdata3Max'],
-						'help' => 'Gauge max value for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata3AppendOptions',
-						'label' => 'Append options',
-						'value' => $GLOBALS['netdata3AppendOptions'],
-						'help' => 'Append options for the netdata graph'
+						'type' => 'select',
+						'name' => 'netdata3Colour',
+						'label' => 'Colour',
+						'value' => $GLOBALS['netdata3Colour'],
+						'options' => netdataColourOptions(),
 					),
 				),
 				'Chart 4' => array(
 					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => 'Info',
-						'html' => 'These settings are what you would set in the HTML div tag in a custom netdata dashboard. The only 2 required are \'chart\' and \'data\', the rest can be left unset and defaults will be used'
+						'type' => 'switch',
+						'name' => 'netdata4Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata4Enabled']
 					),
 					array(
 						'type' => 'blank',
@@ -3240,61 +3162,33 @@ function getHomepageList()
 						'help' => 'Title for the netdata graph'
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata4Chart',
-						'label' => 'Chart',
-						'value' => $GLOBALS['netdata4Chart'],
-						'help' => 'Chart type for the netdata graph'
-					),
-					array(
-						'type' => 'input',
+						'type' => 'select',
 						'name' => 'netdata4Data',
 						'label' => 'Data',
 						'value' => $GLOBALS['netdata4Data'],
-						'help' => 'Data for the netdata graph'
+						'options' => netdataOptions(),
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata4Units',
-						'label' => 'Units',
-						'value' => $GLOBALS['netdata4Units'],
-						'help' => 'Units for the netdata graph'
+						'type' => 'select',
+						'name' => 'netdata4Chart',
+						'label' => 'Chart',
+						'value' => $GLOBALS['netdata4Chart'],
+						'options' => netdataChartOptions(),
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata4CommonUnits',
-						'label' => 'Common Units',
-						'value' => $GLOBALS['netdata4CommonUnits'],
-						'help' => 'Common-units for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata4Dimensions',
-						'label' => 'Dimensions',
-						'value' => $GLOBALS['netdata4Dimensions'],
-						'help' => 'Dimensions for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata4Max',
-						'label' => 'Gauge max value',
-						'value' => $GLOBALS['netdata4Max'],
-						'help' => 'Gauge max value for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata4AppendOptions',
-						'label' => 'Append options',
-						'value' => $GLOBALS['netdata4AppendOptions'],
-						'help' => 'Append options for the netdata graph'
+						'type' => 'select',
+						'name' => 'netdata4Colour',
+						'label' => 'Colour',
+						'value' => $GLOBALS['netdata4Colour'],
+						'options' => netdataColourOptions(),
 					),
 				),
 				'Chart 5' => array(
 					array(
-						'type' => 'html',
-						'override' => 12,
-						'label' => 'Info',
-						'html' => 'These settings are what you would set in the HTML div tag in a custom netdata dashboard. The only 2 required are \'chart\' and \'data\', the rest can be left unset and defaults will be used'
+						'type' => 'switch',
+						'name' => 'netdata5Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata5Enabled']
 					),
 					array(
 						'type' => 'blank',
@@ -3308,53 +3202,65 @@ function getHomepageList()
 						'help' => 'Title for the netdata graph'
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata5Chart',
-						'label' => 'Chart',
-						'value' => $GLOBALS['netdata5Chart'],
-						'help' => 'Chart type for the netdata graph'
-					),
-					array(
-						'type' => 'input',
+						'type' => 'select',
 						'name' => 'netdata5Data',
 						'label' => 'Data',
 						'value' => $GLOBALS['netdata5Data'],
-						'help' => 'Data for the netdata graph'
+						'options' => netdataOptions(),
+					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata5Chart',
+						'label' => 'Chart',
+						'value' => $GLOBALS['netdata5Chart'],
+						'options' => netdataChartOptions(),
+					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata5Colour',
+						'label' => 'Colour',
+						'value' => $GLOBALS['netdata5Colour'],
+						'options' => netdataColourOptions(),
+					),
+				),
+				'Chart 6' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'netdata6Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata6Enabled']
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
 					),
 					array(
 						'type' => 'input',
-						'name' => 'netdata5Units',
-						'label' => 'Units',
-						'value' => $GLOBALS['netdata5Units'],
-						'help' => 'Units for the netdata graph'
+						'name' => 'netdata6Title',
+						'label' => 'Title',
+						'value' => $GLOBALS['netdata6Title'],
+						'help' => 'Title for the netdata graph'
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata5CommonUnits',
-						'label' => 'Common Units',
-						'value' => $GLOBALS['netdata5CommonUnits'],
-						'help' => 'Common-units for the netdata graph'
+						'type' => 'select',
+						'name' => 'netdata6Data',
+						'label' => 'Data',
+						'value' => $GLOBALS['netdata6Data'],
+						'options' => netdataOptions(),
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata5Dimensions',
-						'label' => 'Dimensions',
-						'value' => $GLOBALS['netdata5Dimensions'],
-						'help' => 'Dimensions for the netdata graph'
+						'type' => 'select',
+						'name' => 'netdata6Chart',
+						'label' => 'Chart',
+						'value' => $GLOBALS['netdata6Chart'],
+						'options' => netdataChartOptions(),
 					),
 					array(
-						'type' => 'input',
-						'name' => 'netdata5Max',
-						'label' => 'Gauge max value',
-						'value' => $GLOBALS['netdata5Max'],
-						'help' => 'Gauge max value for the netdata graph'
-					),
-					array(
-						'type' => 'input',
-						'name' => 'netdata5AppendOptions',
-						'label' => 'Append options',
-						'value' => $GLOBALS['netdata5AppendOptions'],
-						'help' => 'Append options for the netdata graph'
+						'type' => 'select',
+						'name' => 'netdata6Colour',
+						'label' => 'Colour',
+						'value' => $GLOBALS['netdata6Colour'],
+						'options' => netdataColourOptions(),
 					),
 				),
 				'Options' => array(
