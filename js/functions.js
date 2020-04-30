@@ -988,7 +988,7 @@ function buildFormItem(item){
 			break;
 		case 'html':
 			return item.html;
-			break;
+            break;
         case 'arrayMultiple':
             return '<span class="text-danger">BuildFormItem Class not setup...';
             break;
@@ -7366,82 +7366,215 @@ function buildSpeedtest(array){
     return (array) ? html : '';
 }
 function buildNetdataItem(array){
-    var html = '';
-    array.forEach(e => {
-        var chart = e.chart;
-        if(e.data) {
-            html += `
-            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6 my-3">
-                <div class="netdata-item">
-                    <div data-netdata="`+e.data+`"
-                        data-dimensions="`+e.dimensions+`"
-                        data-chart-library="`+e.chart+`"
-                        data-title="`+e.title+`"
-                        data-before="0"
-                        data-after="-300"
-                        data-points="300"
-                        data-width="90%"`;
-            if(e.chart == 'gauge' && e.max !== '') {
-                html += `
-                        data-gauge-adjust="width"
-                        data-gauge-max-value="`+e.max+`"
-                `;
-            }
-            if(e.chart = 'easypiechart' && e.max !== '') {
-                html += `
-                        data-easypiechart-max-value="`+e.max+`"
-                `;
-            }
-            if(e.appendOptions != '') {
-                html += `
-                        data-append-options="`+e.appendOptions+`"
-                `;
-            }
-            if(e.units != '') {
-                html += `
-                        data-units="`+e.units+`"
-                `;
-            } else if(e.commonUnits != '') {
-                html += `
-                        data-common-units="`+e.units+`"
-                `;
-            }
-            html += `
-                    ></div>
-                </div>
-            </div>
-            `;
-        }
-    });
-    
-    return html;
-}
-var netdataNoFontAwesome = true;
-function buildNetdata(array){
-    console.log(array);
-    if(array === false){ return ''; }
-
-    var options = array.options;
-    var scriptUrl = array.url + '/dashboard.js';
-
-
     var html = `
-    <script src="`+scriptUrl+`"></script>
     <style>
-    .netdata-item {
+    .all-netdata .chart {
+        width: 183px;
+        height:183px;
+    }
+    .all-netdata .easyPieChart-value {
+        position: absolute;
+        top: 77px;
+        width: 100%;
+        text-align: center;
+        left: 0;
+        font-size: 24.4625px;
+        font-weight: normal;
+    }
+    .all-netdata .easyPieChart-title {
+        position: absolute;
+        top: 37px;
+        width: 100%;
+        text-align: center;
+        left: 0;
+        font-size: 15px;
+        font-weight: bold;
+    }
+    .all-netdata .easyPieChart-units {
+        position: absolute;
+        top: 118px;
+        width: 100%;
+        text-align: center;
+        left: 0;
+        font-size: 15px;
+        font-weight: normal;
     }
     </style>
     `;
 
-    var number = options.length;
-    var pad = (12 - (number * 2)) / 2;
+    array.forEach((e, i) => {
+        html += `
+        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 my-3 text-center">
+            <div class="d-flex justify-content-center">
+                <div class="chart" id="easyPieChart`+(i+1)+`" data-percent="`+e.percent+`">
+                    <span class="easyPieChart-title">`+e.title+`</span>
+                    <span class="easyPieChart-value" id="easyPieChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
+                    <span class="easyPieChart-units" id="easyPieChart`+(i+1)+`Units">`+e.units+`</span>
+                </div>
+            </div>
+        </div>
+        <script>
+        $(function() {
+            $('#easyPieChart`+(i+1)+`').easyPieChart({
+                size: 183,
+                lineWidth: 7,
+                animate: false,
+                scaleColor: false,
+                barColor: '#`+e.colour+`',
+                trackColor: '#bababa',
+            });
+        });
+        </script>
+            `;
+    });
+    
+    return html;
+}
+function buildNetdata(array){
+    console.log(array);
+    var data = array.data;
+    if(array === false){ return ''; }
+
+    var html = `
+    <style>
+    .clearfix {
+        *zoom: 1;
+      }
+      .all-netdata .clearfix:before,
+      .all-netdata .clearfix:after {
+        display: table;
+        content: "";
+      }
+      .all-netdata .clearfix:after {
+        clear: both;
+      }
+      
+      .all-netdata .easyPieChart {
+          position: relative;
+          text-align: center;
+      }
+      
+      .all-netdata .easyPieChart canvas {
+          position: absolute;
+          top: 0;
+          left: 0;
+      }
+      
+      .all-netdata .chart {
+          float: left;
+          margin: 10px;
+      }
+      
+      .all-netdata .percentage,
+      .all-netdata .label {
+          text-align: center;
+          color: #333;
+          font-weight: 100;
+          font-size: 1.2em;
+          margin-bottom: 0.3em;
+      }
+      
+      .all-netdata .credits {
+          padding-top: 0.5em;
+          clear: both;
+          color: #999;
+      }
+      
+      .all-netdata .credits a {
+          color: #333;
+      }
+      
+      .all-netdata .dark {
+          background: #333;
+      }
+      
+      .all-netdata .dark .percentage-light,
+      .all-netdata .dark .label {
+          text-align: center;
+          color: #999;
+          font-weight: 100;
+          font-size: 1.2em;
+          margin-bottom: 0.3em;
+      }
+      
+      
+      .all-netdata .button {
+        -webkit-box-shadow: inset 0 0 1px #000, inset 0 1px 0 1px rgba(255,255,255,0.2), 0 1px 1px -1px rgba(0, 0, 0, .5);
+        -moz-box-shadow: inset 0 0 1px #000, inset 0 1px 0 1px rgba(255,255,255,0.2), 0 1px 1px -1px rgba(0, 0, 0, .5);
+        box-shadow: inset 0 0 1px #000, inset 0 1px 0 1px rgba(255,255,255,0.2), 0 1px 1px -1px rgba(0, 0, 0, .5);
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        padding: 6px 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: block;
+        margin: 0 auto 2em;
+        max-width: 200px;
+        text-align: center;
+        background-color: #5c5c5c;
+        background-image: -moz-linear-gradient(top, #666666, #4d4d4d);
+        background-image: -ms-linear-gradient(top, #666666, #4d4d4d);
+        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#666666), to(#4d4d4d));
+        background-image: -webkit-linear-gradient(top, #666666, #4d4d4d);
+        background-image: -o-linear-gradient(top, #666666, #4d4d4d);
+        background-image: linear-gradient(top, #666666, #4d4d4d);
+        background-repeat: repeat-x;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#666666', endColorstr='#4d4d4d', GradientType=0);
+        color: #ffffff;
+        text-shadow: 0 1px 1px #333333;
+      }
+      .all-netdata .button:hover {
+        color: #ffffff;
+        text-decoration: none;
+        background-color: #616161;
+        background-image: -moz-linear-gradient(top, #6b6b6b, #525252);
+        background-image: -ms-linear-gradient(top, #6b6b6b, #525252);
+        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#6b6b6b), to(#525252));
+        background-image: -webkit-linear-gradient(top, #6b6b6b, #525252);
+        background-image: -o-linear-gradient(top, #6b6b6b, #525252);
+        background-image: linear-gradient(top, #6b6b6b, #525252);
+        background-repeat: repeat-x;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6b6b6b', endColorstr='#525252', GradientType=0);
+      }
+      .all-netdata .button:active {
+        background-color: #575757;
+        background-image: -moz-linear-gradient(top, #616161, #474747);
+        background-image: -ms-linear-gradient(top, #616161, #474747);
+        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#616161), to(#474747));
+        background-image: -webkit-linear-gradient(top, #616161, #474747);
+        background-image: -o-linear-gradient(top, #616161, #474747);
+        background-image: linear-gradient(top, #616161, #474747);
+        background-repeat: repeat-x;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#616161', endColorstr='#474747', GradientType=0);
+        -webkit-transform: translate(0, 1px);
+        -moz-transform: translate(0, 1px);
+        -ms-transform: translate(0, 1px);
+        -o-transform: translate(0, 1px);
+        transform: translate(0, 1px);
+      }
+      .all-netdata .button:disabled {
+        background-color: #dddddd;
+        background-image: -moz-linear-gradient(top, #e7e7e7, #cdcdcd);
+        background-image: -ms-linear-gradient(top, #e7e7e7, #cdcdcd);
+        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e7e7e7), to(#cdcdcd));
+        background-image: -webkit-linear-gradient(top, #e7e7e7, #cdcdcd);
+        background-image: -o-linear-gradient(top, #e7e7e7, #cdcdcd);
+        background-image: linear-gradient(top, #e7e7e7, #cdcdcd);
+        background-repeat: repeat-x;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e7e7e7', endColorstr='#cdcdcd', GradientType=0);
+        color: #939393;
+        text-shadow: 0 1px 1px #fff;
+      }
+    </style>
+    `;
 
     html += `
     <div class="row">
         
-            <div class="d-lg-flex d-md-flex d-sm-block d-xs-block align-items-center justify-content-center">
+            <div class="d-lg-flex d-md-block d-sm-block d-xs-block align-items-center justify-content-center all-netdata">
     `;
-    html += buildNetdataItem(options);
+    html += buildNetdataItem(data);
     html += `
             </div>
         
@@ -7462,9 +7595,6 @@ function homepageNetdata(timeout){
         document.getElementById('homepageOrderNetdata').innerHTML = '';
         if(response.data !== null){
             $('#homepageOrderNetdata').html(buildNetdata(response.data));
-            setTimeout(function() {
-                $("link[rel='stylesheet'][type='text/css'][href^='"+response.data.url+"/css/bootstrap']").remove()
-            }, 200);
         }
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");

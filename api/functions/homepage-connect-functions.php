@@ -2705,33 +2705,60 @@ function getSpeedtest()
 function getNetdata()
 {
 	if ($GLOBALS['homepageNetdataEnabled'] && !empty($GLOBALS['netdataURL']) && qualifyRequest($GLOBALS['homepageNetdataAuth'])) {
+		require_once('netdata-functions.php');
 		$api = [];
+		$api['data'] = [];
+		$api['url'] = $GLOBALS['netdataURL'];
+
 		$url = qualifyURL($GLOBALS['netdataURL']);
-		try {
-			$response = Requests::get($url);
-			if ($response->success) {
-				$html = json_decode($response->body, true);
-				
-				$api['url'] = $GLOBALS['netdataURL'];
-				$api['options'] = [];
-				for($i = 0; $i < 5; $i++) {
-					if($GLOBALS['netdata'.($i + 1).'Data'] != '') {
-						array_push($api['options'], [
-							'title' => $GLOBALS['netdata'.($i + 1).'Title'],
-							'chart' => $GLOBALS['netdata'.($i + 1).'Chart'],
-							'data' => $GLOBALS['netdata'.($i + 1).'Data'],
-							'units' => $GLOBALS['netdata'.($i + 1).'Units'],
-							'commonUnits' => $GLOBALS['netdata'.($i + 1).'CommonUnits'],
-							'dimensions' => $GLOBALS['netdata'.($i + 1).'Dimensions'],
-							'max' => $GLOBALS['netdata'.($i + 1).'Max'],
-							'appendOptions' => $GLOBALS['netdata'.($i + 1).'AppendOptions'],
-						]);
-					}
+
+		for($i = 1; $i < 7; $i++) {
+			if($GLOBALS['netdata'.($i).'Data'] != '') {
+				switch($GLOBALS['netdata'.$i.'Data']) {
+					case 'disk-read':
+						$data = disk('in', $url);
+						break;
+					case 'disk-write':
+						$data = disk('out', $url);
+						$data['value'] = abs($data['value']);
+						$data['percent'] = abs($data['percent']);
+						break;
+					case 'cpu':
+						$data = cpu($url);
+						break;
+					case 'net-in':
+						$data = net('received', $url);
+						break;
+					case 'net-out':
+						$data = net('sent', $url);
+						$data['value'] = abs($data['value']);
+						$data['percent'] = abs($data['percent']);
+						break;
+					case 'ram-used':
+						$data = ram($url);
+						break;
+					case 'ipmi-temp-c':
+						$data = ipmiTemp($url, 'c');
+						break;
+					case 'ipmi-temp-f':
+						$data = ipmiTemp($url, 'f');
+						break;
+					default:
+						$data = [
+							'title' => 'DNC',
+							'value' => 0,
+							'units' => 'N/A',
+						];
+						break;
 				}
+
+				$data['title'] = $GLOBALS['netdata'.$i.'Title'];
+				$data['colour'] = $GLOBALS['netdata'.$i.'Colour'];
+
+				array_push($api['data'], $data);
 			}
-		} catch (Requests_Exception $e) {
-			writeLog('error', 'Monitorr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-		};
+		}
+
 		$api = isset($api) ? $api : false;
 		return $api;
 	}
