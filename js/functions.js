@@ -7418,7 +7418,7 @@ function buildNetdataItem(array){
             $('#easyPieChart`+(i+1)+`').easyPieChart({
                 size: 183,
                 lineWidth: 7,
-                animate: false,
+                //animate: false,
                 scaleColor: false,
                 barColor: '#`+e.colour+`',
                 trackColor: '#bababa',
@@ -7431,7 +7431,7 @@ function buildNetdataItem(array){
     return html;
 }
 function buildNetdata(array){
-    console.log(array);
+    // console.log(array);
     var data = array.data;
     if(array === false){ return ''; }
 
@@ -7592,9 +7592,11 @@ function homepageNetdata(timeout){
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        document.getElementById('homepageOrderNetdata').innerHTML = '';
-        if(response.data !== null){
-            $('#homepageOrderNetdata').html(buildNetdata(response.data));
+        if(!tryUpdateNetdata(response.data.data)) {
+            document.getElementById('homepageOrderNetdata').innerHTML = '';
+            if(response.data !== null){
+                $('#homepageOrderNetdata').html(buildNetdata(response.data));
+            }
         }
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
@@ -7602,6 +7604,20 @@ function homepageNetdata(timeout){
     var timeoutTitle = 'Netdata-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageNetdata(timeout); }, timeout);
+}
+function tryUpdateNetdata(array){
+    var existing = false;
+    array.forEach((e,i) => {
+        var id = i + 1;
+        if($('#easyPieChart' + id).length) {
+            $('#easyPieChart' + id).data('easyPieChart').update(e.percent);
+            $('#easyPieChart' + id + 'Value').html(parseFloat(e.value).toFixed(1));
+            existing = true;
+        } else {
+            existing = false;
+        }
+    });
+    return existing;
 }
 // Thanks Swifty!
 function PopupCenter(url, title, w, h) {

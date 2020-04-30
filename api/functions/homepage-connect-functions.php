@@ -2713,7 +2713,7 @@ function getNetdata()
 		$url = qualifyURL($GLOBALS['netdataURL']);
 
 		for($i = 1; $i < 7; $i++) {
-			if($GLOBALS['netdata'.($i).'Data'] != '') {
+			if($GLOBALS['netdata'.($i).'Enabled']) {
 				switch($GLOBALS['netdata'.$i.'Data']) {
 					case 'disk-read':
 						$data = disk('in', $url);
