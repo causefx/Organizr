@@ -101,6 +101,10 @@ function optionTime()
 {
 	return array(
 		array(
+			'name' => '2.5',
+			'value' => '2500'
+		),
+		array(
 			'name' => '5',
 			'value' => '5000'
 		),

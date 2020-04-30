@@ -311,6 +311,7 @@ return array(
 	'monitorrCompact' => false,
 	'homepageSpeedtestEnabled' => false,
 	'homepageSpeedtestAuth' => '1',
+	'homepageSpeedtestRefresh' => '1800000', // 30 mins
 	'speedtestURL' => '',
 	'speedtestHeaderToggle' => true,
 	'speedtestHeader' => 'Speedtest',

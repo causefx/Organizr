@@ -7294,7 +7294,7 @@ function buildSpeedtest(array){
     html += `
         <div class="row">
             <div class="my-2 col-lg-4 col-md-4 col-sm-12">
-                <div class="card speedtest-card shadow-sm">
+                <div class="card speedtest-card shadow-sm mb-3">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <h4>Ping</h4>
@@ -7316,7 +7316,7 @@ function buildSpeedtest(array){
                 </div>
             </div>
             <div class="my-2 col-lg-4 col-md-4 col-sm-12">
-                <div class="card speedtest-card shadow-sm">
+                <div class="card speedtest-card shadow-sm mb-3">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <h4>Download</h4>
@@ -7338,7 +7338,7 @@ function buildSpeedtest(array){
                 </div>
             </div>
             <div class="my-2 col-lg-4 col-md-4 col-sm-12">
-                <div class="card speedtest-card shadow-sm">
+                <div class="card speedtest-card shadow-sm mb-3">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <h4>Upload</h4>
