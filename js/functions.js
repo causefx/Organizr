@@ -1927,6 +1927,14 @@ function checkTabHomepageItem(id, name, url, urlLocal){
     name = name.toLowerCase();
     url = url.toLowerCase();
     urlLocal = urlLocal.toLowerCase();
+    try {
+        let urlObject = (new URL(url));
+        if(urlObject.pathname !== '/' && urlObject !== '#'){
+            url = urlObject.pathname;
+        }
+    } catch {
+        url = url;
+    }
     if(name.includes('sonarr') || url.includes('sonarr') || urlLocal.includes('sonarr')){
         addEditHomepageItem(id,'Sonarr');
     }else if(name.includes('radarr') || url.includes('radarr') || urlLocal.includes('radarr')){
