@@ -7402,8 +7402,8 @@ function buildNetdataItem(array){
     </style>
     `;
 
-    array.forEach((e, i) => {
-        html += `
+    var buildEasyPieChart = function(e,i) {
+        return `
         <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 my-3 text-center">
             <div class="d-flex justify-content-center">
                 <div class="chart" id="easyPieChart`+(i+1)+`" data-percent="`+e.percent+`">
@@ -7425,7 +7425,13 @@ function buildNetdataItem(array){
             });
         });
         </script>
-            `;
+        `;
+    }
+
+    array.forEach((e, i) => {
+        if(e.chart == 'easypiechart') {
+            html += buildEasyPieChart(e,i);
+        }
     });
     
     return html;
@@ -7609,12 +7615,14 @@ function tryUpdateNetdata(array){
     var existing = false;
     array.forEach((e,i) => {
         var id = i + 1;
-        if($('#easyPieChart' + id).length) {
-            $('#easyPieChart' + id).data('easyPieChart').update(e.percent);
-            $('#easyPieChart' + id + 'Value').html(parseFloat(e.value).toFixed(1));
-            existing = true;
-        } else {
-            existing = false;
+        if(e.chart == 'easypiechart') {
+            if($('#easyPieChart' + id).length) {
+                $('#easyPieChart' + id).data('easyPieChart').update(e.percent);
+                $('#easyPieChart' + id + 'Value').html(parseFloat(e.value).toFixed(1));
+                existing = true;
+            } else {
+                existing = false;
+            }
         }
     });
     return existing;

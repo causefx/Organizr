@@ -2754,6 +2754,7 @@ function getNetdata()
 
 				$data['title'] = $GLOBALS['netdata'.$i.'Title'];
 				$data['colour'] = $GLOBALS['netdata'.$i.'Colour'];
+				$data['chart'] = $GLOBALS['netdata'.$i.'Chart'];
 
 				array_push($api['data'], $data);
 			}
