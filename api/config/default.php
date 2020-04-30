@@ -343,4 +343,10 @@ return array(
 	'netdata6Chart' => '',
 	'netdata6Data' => '',
 	'netdata6Colour' => '',
+	'netdata1Enabled' => false,
+	'netdata2Enabled' => false,
+	'netdata3Enabled' => false,
+	'netdata4Enabled' => false,
+	'netdata5Enabled' => false,
+	'netdata6Enabled' => false,
 );

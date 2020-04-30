@@ -3025,6 +3025,16 @@ function getHomepageList()
 				),
 				'Chart 1' => array(
 					array(
+						'type' => 'switch',
+						'name' => 'netdata1Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata1Enabled']
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
 						'type' => 'input',
 						'name' => 'netdata1Title',
 						'label' => 'Title',
@@ -3041,7 +3051,7 @@ function getHomepageList()
 					array(
 						'type' => 'select',
 						'name' => 'netdata1Chart',
-						'label' => 'Data',
+						'label' => 'Chart',
 						'value' => $GLOBALS['netdata1Chart'],
 						'options' => netdataChartOptions(),
 					),
@@ -3054,6 +3064,16 @@ function getHomepageList()
 					),
 				),
 				'Chart 2' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'netdata2Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata2Enabled']
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
 					array(
 						'type' => 'input',
 						'name' => 'netdata2Title',
@@ -3071,7 +3091,7 @@ function getHomepageList()
 					array(
 						'type' => 'select',
 						'name' => 'netdata2Chart',
-						'label' => 'Data',
+						'label' => 'Chart',
 						'value' => $GLOBALS['netdata2Chart'],
 						'options' => netdataChartOptions(),
 					),
@@ -3084,6 +3104,16 @@ function getHomepageList()
 					),
 				),
 				'Chart 3' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'netdata3Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata3Enabled']
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
 					array(
 						'type' => 'input',
 						'name' => 'netdata3Title',
@@ -3115,6 +3145,16 @@ function getHomepageList()
 				),
 				'Chart 4' => array(
 					array(
+						'type' => 'switch',
+						'name' => 'netdata4Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata4Enabled']
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
 						'type' => 'input',
 						'name' => 'netdata4Title',
 						'label' => 'Title',
@@ -3131,7 +3171,7 @@ function getHomepageList()
 					array(
 						'type' => 'select',
 						'name' => 'netdata4Chart',
-						'label' => 'Data',
+						'label' => 'Chart',
 						'value' => $GLOBALS['netdata4Chart'],
 						'options' => netdataChartOptions(),
 					),
@@ -3144,6 +3184,16 @@ function getHomepageList()
 					),
 				),
 				'Chart 5' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'netdata5Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata5Enabled']
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
 					array(
 						'type' => 'input',
 						'name' => 'netdata5Title',
@@ -3161,7 +3211,7 @@ function getHomepageList()
 					array(
 						'type' => 'select',
 						'name' => 'netdata5Chart',
-						'label' => 'Data',
+						'label' => 'Chart',
 						'value' => $GLOBALS['netdata5Chart'],
 						'options' => netdataChartOptions(),
 					),
@@ -3174,6 +3224,16 @@ function getHomepageList()
 					),
 				),
 				'Chart 6' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'netdata6Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata6Enabled']
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
 					array(
 						'type' => 'input',
 						'name' => 'netdata6Title',
@@ -3191,7 +3251,7 @@ function getHomepageList()
 					array(
 						'type' => 'select',
 						'name' => 'netdata6Chart',
-						'label' => 'Data',
+						'label' => 'Chart',
 						'value' => $GLOBALS['netdata6Chart'],
 						'options' => netdataChartOptions(),
 					),
