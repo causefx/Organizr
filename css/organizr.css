@@ -4384,3 +4384,6 @@ html {
 .m-r-0 {
     margin-right: 0px !important;
 }
+.noty_layout [data-name~="mojs-shape"] {
+    pointer-events:none
+}
