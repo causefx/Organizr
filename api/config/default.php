@@ -316,7 +316,7 @@ return array(
 	'speedtestHeaderToggle' => true,
 	'speedtestHeader' => 'Speedtest',
 	'homepageNetdataEnabled' => false,
-	'homepageNetdataRefresh' => '600000',
+	'homepageNetdataRefresh' => '2500',
 	'homepageNetdataAuth' => '1',
 	'netdataURL' => '',
 	'netdata1Title' => '',

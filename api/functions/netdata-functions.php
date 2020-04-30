@@ -51,6 +51,7 @@ function cpu($url)
             $json = json_decode($response->body, true);
             $data['value'] = $json[0];
             $data['percent'] = $data['value'];
+            $data['max'] = 100;
             $data['units'] = '%';
         }
     } catch (Requests_Exception $e) {
@@ -70,6 +71,7 @@ function ram($url)
             $json = json_decode($response->body, true);
             $data['value'] = $json['result'][0];
             $data['percent'] = $data['value'];
+            $data['max'] = 100;
             $data['units'] = '%';
         }
     } catch (Requests_Exception $e) {
@@ -90,9 +92,11 @@ function ipmiTemp($url, $unit)
             $data['value'] = $json['result'][0];
             if($unit == 'c') {
                 $data['percent'] = ($data['value'] / 50) * 100;
+                $data['max'] = 50;
             } else if($unit == 'f') {
                 $data['value'] = ($data['value'] * 9/5) + 32;
                 $data['percent'] = ($data['value'] / 122) * 100;
+                $data['max'] = 122;
             }
             $data['units'] = '°'.strtoupper($unit);
         }
