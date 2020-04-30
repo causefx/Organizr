@@ -1469,6 +1469,7 @@ function getCalendar()
 							$calendarStartDiff = date_diff($startDt, $newestDay);
 							$calendarEndDiff = date_diff($startDt, $oldestDay);
 							if ($originalTimeZone && $originalTimeZone !== 'UTC' && (strpos($start, 'Z') == false)) {
+								$originalTimeZone = calendarStandardizeTimezone($originalTimeZone);
 								$dateTimeOriginalTZ = new DateTimeZone($originalTimeZone);
 								$dateTimeOriginal = new DateTime('now', $dateTimeOriginalTZ);
 								$dateTimeUTCTZ = new DateTimeZone(date_default_timezone_get());
@@ -1530,6 +1531,47 @@ function calendarDaysCheck($entryStart, $entryEnd)
 		$success = true;
 	}
 	return $success;
+}
+
+function calendarStandardizeTimezone($timezone)
+{
+    switch ($timezone) {
+        case('CST'):
+        case('Central Time'):
+        case('Central Standard Time'):
+            $timezone = 'America/Chicago';
+            break;
+        case('CET'):
+        case('Central European Time'):
+            $timezone = 'Europe/Berlin';
+            break;
+        case('EST'):
+        case('Eastern Time'):
+        case('Eastern Standard Time'):
+            $timezone = 'America/New_York';
+            break;
+        case('PST'):
+        case('Pacific Time'):
+        case('Pacific Standard Time'):
+            $timezone = 'America/Los_Angeles';
+            break;
+        case('China Time'):
+        case('China Standard Time'):
+            $timezone = 'Asia/Beijing';
+            break;
+        case('IST'):
+        case('India Time'):
+        case('India Standard Time'):
+            $timezone = 'Asia/New_Delhi';
+            break;
+        case('JST');
+        case('Japan Time'):
+        case('Japan Standard Time'):
+            $timezone = 'Asia/Tokyo';
+            break;
+    }
+
+    return $timezone;
 }
 
 function getCalenderRepeat($value)
