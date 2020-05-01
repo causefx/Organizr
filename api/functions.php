@@ -51,3 +51,15 @@ $GLOBALS['rememberMeDays'] = ($GLOBALS['rememberMeDays'] == '0') ? '99' : $GLOBA
 $GLOBALS['cookieName'] = $GLOBALS['uuid'] !== '' ? 'organizr_token_' . $GLOBALS['uuid'] : 'organizr_token_temp';
 // Validate Token if set and set guest if not - sets GLOBALS
 getOrganizrUserToken();
+// Include all pages files
+foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
+	require_once $filename;
+}
+// Include all custom pages files
+foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'custom' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
+	require_once $filename;
+}
+// Include all plugin files
+foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
+	require_once $filename;
+}
