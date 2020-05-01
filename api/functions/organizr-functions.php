@@ -44,6 +44,9 @@ function organizrSpecialSettings()
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
 				'healthChecksTags' => $GLOBALS['healthChecksTags'],
+				'titles' => array(
+					'tautulli' => $GLOBALS['tautulliHeader']
+				)
 			),
 			'media' => array(
 				'jellyfin' => (strpos($GLOBALS['embyURL'], 'jellyfin') !== false) ? true : false
@@ -1573,6 +1576,7 @@ function updateConfigMultipleForm($array)
 {
 	$newItem = array();
 	foreach ($array['data']['payload'] as $k => $v) {
+		$v['value'] = $v['value'] ?? '';
 		switch ($v['value']) {
 			case 'true':
 				$v['value'] = (bool)true;
@@ -1599,6 +1603,7 @@ function updateConfigMultipleForm($array)
 
 function updateConfigItem($array)
 {
+	$array['data']['value'] = $array['data']['value'] ?? '';
 	switch ($array['data']['value']) {
 		case 'true':
 			$array['data']['value'] = (bool)true;
@@ -1643,14 +1648,14 @@ function editPlugins($array)
 			$newItem = array(
 				$array['data']['configName'] => true
 			);
-			writeLog('success', 'Plugin Function -  Enabled Plugin [' . $_POST['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
+			writeLog('success', 'Plugin Function -  Enabled Plugin [' . $array['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
 			return (updateConfig($newItem)) ? true : false;
 			break;
 		case 'disable':
 			$newItem = array(
 				$array['data']['configName'] => false
 			);
-			writeLog('success', 'Plugin Function -  Disabled Plugin [' . $_POST['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
+			writeLog('success', 'Plugin Function -  Disabled Plugin [' . $array['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
 			return (updateConfig($newItem)) ? true : false;
 			break;
 		default:
@@ -1668,7 +1673,7 @@ function auth()
 	$group = 0;
 	$groupParam = $_GET['group'];
 	$redirect = false;
-	if(isset($groupParam)) {
+	if (isset($groupParam)) {
 		if (is_numeric($groupParam)) {
 			$group = (int)$groupParam;
 		} else {
@@ -1713,18 +1718,18 @@ function auth()
 	}
 }
 
-function getTabGroup ($tab)
+function getTabGroup($tab)
 {
-    try {
-        $connect = new Dibi\Connection([
-            'driver' => 'sqlite3',
-            'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],]);
-        $row = $connect->fetch('SELECT group_id FROM tabs WHERE name LIKE %~like~', $tab);
-        return $row ? $row['group_id'] : 0;
-    } catch (\Dibi\Exception $e) {
-        writeLog('error', 'Tab Group Function - Error Fetching Tab Group', $tab);
-        return 0;
-    }
+	try {
+		$connect = new Dibi\Connection([
+			'driver' => 'sqlite3',
+			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],]);
+		$row = $connect->fetch('SELECT group_id FROM tabs WHERE name LIKE %~like~', $tab);
+		return $row ? $row['group_id'] : 0;
+	} catch (\Dibi\Exception $e) {
+		writeLog('error', 'Tab Group Function - Error Fetching Tab Group', $tab);
+		return 0;
+	}
 }
 
 function logoOrText()
@@ -2060,14 +2065,17 @@ function getImage()
 	}
 }
 
-function cacheImage($url, $name)
+function cacheImage($url, $name, $extension = 'jpg')
 {
 	$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 	if (!file_exists($cacheDirectory)) {
 		mkdir($cacheDirectory, 0777, true);
 	}
-	$cachefile = $cacheDirectory . $name . '.jpg';
-	@copy($url, $cachefile);
+	$cachefile = $cacheDirectory . $name . '.' . $extension;
+	$cachetime = 604800;
+	if ((file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) || !file_exists($cachefile)) {
+		@copy($url, $cachefile);
+	}
 }
 
 function downloader($array)
@@ -2084,34 +2092,34 @@ function downloader($array)
 					break;
 			}
 			break;
-        case 'jdownloader':
-            switch ($array['data']['action']) {
-                case 'start':
-                    jdownloaderAction($array['data']['action'], $array['data']['target']);
-                    break;
-                case 'stop':
-                    jdownloaderAction($array['data']['action'], $array['data']['target']);
-                    break;
-                case 'resume':
-                    jdownloaderAction($array['data']['action'], $array['data']['target']);
-                    break;
-                case 'pause':
-                    jdownloaderAction($array['data']['action'], $array['data']['target']);
-                    break;
-                case 'update':
-                    jdownloaderAction($array['data']['action'], $array['data']['target']);
-                    break;
-                case 'retry':
-                    jdownloaderAction($array['data']['action'], $array['data']['target']);
-                    break;
-                case 'remove':
-                    jdownloaderAction($array['data']['action'], $array['data']['target']);
-                    break;
-                default:
-                    # code...
-                    break;
-            }
-            break;
+		case 'jdownloader':
+			switch ($array['data']['action']) {
+				case 'start':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'stop':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'resume':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'pause':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'update':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'retry':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'remove':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				default:
+					# code...
+					break;
+			}
+			break;
 		case 'nzbget':
 			break;
 		default:
@@ -2122,53 +2130,51 @@ function downloader($array)
 
 function jdownloaderAction($action = null, $target = null)
 {
-    if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
-        $url = qualifyURL($GLOBALS['jdownloaderURL']);
-
-        # This ensures compatibility with RSScrawler
-        $url = str_replace('/myjd', '', $url);
-        if(substr($url , -1)=='/') {
-            $url = substr_replace($url ,"",-1);
-        }
-
-        switch ($action) {
-            case 'start':
-                $url = $url . '/myjd_start/';
-                break;
-            case 'stop':
-                $url = $url . '/myjd_stop/';
-                break;
-            case 'resume':
-                $url = $url . '/myjd_pause/false';
-                break;
-            case 'pause':
-                $url = $url . '/myjd_pause/true';
-                break;
-            case 'update':
-                $url = $url . '/myjd_update';
-                break;
-            case 'retry':
-                # code...
-                break;
-            case 'remove':
-                # code...
-                break;
-            default:
-                # code...
-                break;
-        }
-        try {
-            $options = (localURL($url)) ? array('verify' => false) : array();
-            $response = Requests::post($url, array(), $options);
-            if ($response->success) {
-                $api['content'] = json_decode($response->body, true);
-            }
-        } catch (Requests_Exception $e) {
-            writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-        };
-        $api['content'] = isset($api['content']) ? $api['content'] : false;
-        return $api;
-    }
+	if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
+		$url = qualifyURL($GLOBALS['jdownloaderURL']);
+		# This ensures compatibility with RSScrawler
+		$url = str_replace('/myjd', '', $url);
+		if (substr($url, -1) == '/') {
+			$url = substr_replace($url, "", -1);
+		}
+		switch ($action) {
+			case 'start':
+				$url = $url . '/myjd_start/';
+				break;
+			case 'stop':
+				$url = $url . '/myjd_stop/';
+				break;
+			case 'resume':
+				$url = $url . '/myjd_pause/false';
+				break;
+			case 'pause':
+				$url = $url . '/myjd_pause/true';
+				break;
+			case 'update':
+				$url = $url . '/myjd_update';
+				break;
+			case 'retry':
+				# code...
+				break;
+			case 'remove':
+				# code...
+				break;
+			default:
+				# code...
+				break;
+		}
+		try {
+			$options = (localURL($url)) ? array('verify' => false) : array();
+			$response = Requests::post($url, array(), $options);
+			if ($response->success) {
+				$api['content'] = json_decode($response->body, true);
+			}
+		} catch (Requests_Exception $e) {
+			writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		};
+		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		return $api;
+	}
 }
 
 function sabnzbdAction($action = null, $target = null)
@@ -2657,21 +2663,23 @@ function checkHostPrefix($s)
 	}
 	return (substr($s, -1, 1) == '\\') ? $s : $s . '\\';
 }
+
 function analyzeIP($ip)
 {
-	if(strpos($ip,'/') !== false){
+	if (strpos($ip, '/') !== false) {
 		$explodeIP = explode('/', $ip);
 		$prefix = $explodeIP[1];
 		$start_ip = $explodeIP[0];
 		$ip_count = 1 << (32 - $prefix);
 		$start_ip_long = ip2long($start_ip);
 		$last_ip_long = ip2long($start_ip) + $ip_count - 1;
-	}elseif(substr_count($ip, '.') == 3){
+	} elseif (substr_count($ip, '.') == 3) {
 		$start_ip_long = ip2long($ip);
 		$last_ip_long = ip2long($ip);
 	}
 	return (isset($start_ip_long) && isset($last_ip_long)) ? array('from' => $start_ip_long, 'to' => $last_ip_long) : false;
 }
+
 function authProxyRangeCheck($from, $to)
 {
 	$approved = false;

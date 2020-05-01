@@ -101,6 +101,10 @@ function optionTime()
 {
 	return array(
 		array(
+			'name' => '2.5',
+			'value' => '2500'
+		),
+		array(
 			'name' => '5',
 			'value' => '5000'
 		),
@@ -142,4 +146,86 @@ function optionTime()
 		),
 	);
 	
+}
+
+function netdataOptions()
+{
+	return [
+		[
+			'name' => 'Disk Read',
+			'value' => 'disk-read',
+		],
+		[
+			'name' => 'Disk Write',
+			'value' => 'disk-write',
+		],
+		[
+			'name' => 'CPU',
+			'value' => 'cpu'
+		],
+		[
+			'name' => 'Network Inbound',
+			'value' => 'net-in',
+		],
+		[
+			'name' => 'Network Outbound',
+			'value' => 'net-out',
+		],
+		[
+			'name' => 'Used RAM',
+			'value' => 'ram-used',
+		],
+		[
+			'name' => 'IPMI Temperature C',
+			'value' => 'ipmi-temp-c'
+		],
+		[
+			'name' => 'IPMI Temperature F',
+			'value' => 'ipmi-temp-f'
+		],
+	];
+}
+
+function netdataChartOptions()
+{
+	return [
+		[
+			'name' => 'Easy Pie Chart',
+			'value' => 'easypiechart',
+		],
+		[
+			'name' => 'Gauge',
+			'value' => 'gauge'
+		]
+	];
+}
+
+function netdataColourOptions()
+{
+	return [
+		[
+			'name' => 'Red',
+			'value' => 'fe3912',
+		],
+		[
+			'name' => 'Green',
+			'value' => 'DD4400',
+		],
+		[
+			'name' => 'Purple',
+			'value' => 'CC22AA'
+		],
+		[
+			'name' => 'Blue',
+			'value' => '5054e6',
+		],
+		[
+			'name' => 'Yellow',
+			'value' => 'dddd00',
+		],
+		[
+			'name' => 'Orange',
+			'value' => 'd66300',
+		]
+	];
 }

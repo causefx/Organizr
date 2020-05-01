@@ -68,7 +68,7 @@
 }
 
 .lock-screen {
-    background: url(../../plugins/images/login-register.jpg) center center/cover no-repeat !important;
+    background: url(../plugins/images/login-register.jpg) center center/cover no-repeat !important;
     height: 100%;
     position: fixed;
     z-index: 1001;
@@ -318,6 +318,155 @@ img.imageSourceBottom {
     height: 40px;
     margin-top: -7px;
 }
+
+.monitorrImage {
+    height: 100px;
+}
+
+.homepage-tautulli-card {
+    height: 160px;
+}
+
+.homepage-tautulli-card .card-body {
+    padding: 0;
+}
+
+.homepage-tautulli-card .poster {
+    max-width: 100%;
+    max-height: 150px;
+}
+
+.homepage-tautulli-card th {
+    border-bottom: 1px solid #ffffff20;
+    height: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.homepage-tautulli-card .poster-td {
+    width: 110px;
+    padding: 5px;
+}
+
+.homepage-tautulli-card .scrollable {
+    height: 129px;
+    margin-left: 10px;
+}
+
+.homepage-tautulli-card table {
+    position: absolute;
+}
+
+.homepage-tautulli-card .cardCountType {
+    padding-top: 2px;
+    padding-right: 5px;
+    color: #808080;
+    font-size: smaller;
+}
+
+.homepage-tautulli-card .tautulliRank, .homepage-tautulli-card .tautulliSeparator {
+    color: #808080;
+    font-size: small;
+    padding-right: 2px;
+}
+.homepage-tautulli-card .tautulliRank {
+    width: 15px !important;
+    webkit-flex-shrink: 0;
+    flex-shrink: 0;
+}
+
+.homepage-tautulli-card .cardListItem {
+    padding-top: 2px;
+    margin-left: 10px;
+    padding-right: 5px;
+    border-bottom: 1px solid #ffffff20;
+    box-sizing: border-box;
+    height: 25px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
+}
+
+.homepage-tautulli-card .cardListRow {
+    min-height: 25px;
+}
+
+.homepage-tautulli-card .cardListCount {
+    color: #f9be03;
+}
+
+.homepage-tautulli-card .tautulliFirstItem {
+    height: 30px;
+    padding-top: 2px;
+    font-size: large;
+}
+
+.homepage-tautulli-card .tautulliLastItem {
+    border-bottom: none;
+}
+
+.homepage-tautulli-card .simplebar-track {
+    left: -12px;
+    right: auto;
+}
+
+.homepage-tautulli-card .lib-icon {
+    max-width: 100%;
+    height: 64px;
+}
+
+.homepage-tautulli-card .avatar {
+    border-radius: 50%;
+}
+
+.homepage-tautulli-card .bg-img-cont {
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ffffff10;
+}
+
+.homepage-tautulli-card .bg-img {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    filter: blur(7px) brightness(30%);
+    transform: scale(1.1);
+}
+/* Tautulli Background Colors */
+.platform-android-rgba { background-color: rgba(164, 202, 57, 0.40); }
+.platform-atv-rgba { background-color: rgba(133, 132, 135, 0.40); }
+.platform-chrome-rgba { background-color: rgba(237, 94, 80, 0.40); }
+.platform-chromecast-rgba { background-color: rgba(16, 164, 232, 0.40); }
+.platform-default-rgba { background-color: rgba(229, 160, 13, 0.40); }
+.platform-dlna-rgba { background-color: rgba(12, 177, 75, 0.40); }
+.platform-firefox-rgba { background-color: rgba(230, 120, 23, 0.40); }
+.platform-gtv-rgba { background-color: rgba(0, 139, 207, 0.40); }
+.platform-ie-rgba { background-color: rgba(0, 89, 158, 0.40); }
+.platform-ios-rgba { background-color: rgba(133, 132, 135, 0.40); }
+.platform-kodi-rgba { background-color: rgba(49, 175, 225, 0.40); }
+.platform-linux-rgba { background-color: rgba(23, 147, 208, 0.40); }
+.platform-macos-rgba { background-color: rgba(133, 132, 135, 0.40); }
+.platform-msedge-rgba { background-color: rgba(0, 120, 215, 0.40); }
+.platform-opera-rgba { background-color: rgba(255, 27, 45, 0.40); }
+.platform-playstation-rgba { background-color: rgba(3, 77, 162, 0.40); }
+.platform-plex-rgba { background-color: rgba(229, 160, 13, 0.40); }
+.platform-plexamp-rgba { background-color: rgba(229, 160, 13, 0.40); }
+.platform-roku-rgba { background-color: rgba(109, 60, 151, 0.40); }
+.platform-safari-rgba { background-color: rgba(0, 169, 236, 0.40); }
+.platform-samsung-rgba { background-color: rgba(3, 78, 162, 0.40); }
+.platform-synclounge-rgba { background-color: rgba(21, 25, 36, 0.40); }
+.platform-tivo-rgba { background-color: rgba(0, 167, 225, 0.40); }
+.platform-wiiu-rgba { background-color: rgba(3, 169, 244, 0.40); }
+.platform-windows-rgba { background-color: rgba(47, 192, 245, 0.40); }
+.platform-wp-rgba { background-color: rgba(104, 33, 122, 0.40); }
+.platform-xbmc-rgba { background-color: rgba(59, 72, 114, 0.40); }
+.platform-xbox-rgba { background-color: rgba(16, 124, 16, 0.40); }
 
 .grayscale {
     -webkit-filter: grayscale(100%);
@@ -1277,6 +1426,11 @@ span.fc-title {
 .sidebar-tabName {
     position: absolute;
     top: 15px;
+}
+@media(max-width:767px) {
+    .show-sidebar .sidebar {
+        overflow-y: auto !important;
+    }
 }
 .nav-second-level .sidebar-tabName {
     position: absolute;
@@ -4060,3 +4214,176 @@ html {
 .spinner-grow-sm {
     width: 1rem;
     height: 1rem; }
+
+.pollen-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+.pollen-wrapper .details {
+    margin-bottom: 4px;
+    line-height: 19px;
+    color: #2d2d2d;
+    display: flex;
+}
+.pollen-wrapper .details .details__level {
+    display: flex;
+    padding-left: 1px;
+    opacity: .5;
+}
+.pollen-wrapper .details .details__numeric-value {
+    margin-left: auto;
+}
+.pollen-wrapper .level {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-column-gap: 3px;
+    width: 100%;
+}
+.pollen-wrapper .level .level-item {
+    display: block;
+    height: 4px;
+    background: #d1d1d1;
+    position: relative;
+    overflow: hidden;
+}
+.pollen-wrapper .level.level--1 .level-item span {
+    background: #00c853;
+}
+.pollen-wrapper .level .level-item span {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: block;
+    -webkit-animation: pollen-wrapz .4s;
+    animation: pollen-wrapz .4s;
+}
+.bg-poor-gradient {
+    background: linear-gradient(90deg, rgb(102, 46, 155) 0%, rgb(99, 20, 161) 50%, rgb(156, 46, 64) 100%);
+}
+.bg-low-gradient {
+    background: linear-gradient(90deg, rgb(198, 21, 22) 0%, rgb(224, 90, 14) 50%, rgb(238, 137, 18) 100%);
+}
+.bg-moderate-gradient {
+    background: linear-gradient(90deg, rgb(238, 137, 18) 0%, rgb(230, 174, 73) 50%, rgb(243, 216, 75) 100%);
+}
+.bg-good-gradient {
+    background: linear-gradient(90deg, rgb(195, 237, 26) 0%, rgb(52, 216, 49) 50%, rgb(24, 215, 169) 100%);
+}
+.bg-excellent-gradient {
+    background: linear-gradient(90deg, rgb(68, 216, 207) 0%, rgb(35, 146, 149) 50%, rgb(55, 74, 91) 100%);
+}
+.text-poor-gradient {
+    background: linear-gradient(90deg, rgb(102, 46, 155) 0%, rgb(99, 20, 161) 50%, rgb(156, 46, 64) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.text-low-gradient {
+    background: linear-gradient(90deg, rgb(198, 21, 22) 0%, rgb(224, 90, 14) 50%, rgb(238, 137, 18) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.text-moderate-gradient {
+    background: linear-gradient(90deg, rgb(238, 137, 18) 0%, rgb(230, 174, 73) 50%, rgb(243, 216, 75) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.text-good-gradient {
+    background: linear-gradient(90deg, rgb(195, 237, 26) 0%, rgb(52, 216, 49) 50%, rgb(24, 215, 169) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.text-excellent-gradient {
+    background: linear-gradient(90deg, rgb(68, 216, 207) 0%, rgb(35, 146, 149) 50%, rgb(55, 74, 91) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.aqi-scale-component-wrapper {
+    display: block;
+    width: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+    position: relative;
+}
+.aqi__header {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    grid-template-areas: "value text";
+    align-items: center;
+    margin-bottom: 6px;
+}
+.aqi__header .aqi__value {
+    position: relative;
+    grid-area: value;
+    grid-template-areas: "item";
+    font-size: 57px;
+    min-height: 90px;
+    color: #2d2d2d;
+    display: grid;
+    align-items: center;
+    justify-content: left;
+    transition: color 1s,font-size .3s;
+}
+.aqi__header .aqi-number, .aqi__header .aqi-progress, .aqi__header .aqi-value__no-data {
+    grid-area: item;
+    transition: opacity .3s;
+}
+.component-wrapper {
+    display: inline;
+}
+.aqi-scale {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(5,1fr);
+    grid-gap: 2px;
+}
+.aqi-scale .category {
+    text-align: center;
+    position: relative;
+}
+.aqi-scale .chip {
+    font-size: 12px;
+    color: #fff;
+    line-height: 13px;
+    transition: opacity .6s;
+    opacity: .7;
+}
+.aqi-scale .chip.active {
+    opacity: 1;
+}
+.chip .chip__text {
+    /*color: rgba(45,45,45,.8);*/
+}
+.chip .chip__bar {
+    margin-top: 6px;
+    display: block;
+    height: 4px;
+}
+.category__min-value {
+    left: 0;
+    text-align: left;
+}
+.category__max-value, .category__min-value {
+    position: absolute;
+    display: inline-block;
+    font-size: 12px;
+    color: rgba(45,45,45,.8);
+}
+.category__max-value {
+    right: 0;
+    text-align: right;
+    transform: translateX(2px);
+}
+.health-and-pollutant-section {
+    max-height: 128px;
+}
+.health-and-pollutant-section .content-current {
+    background: #1b1a1a;
+}
+.m-r-0 {
+    margin-right: 0px !important;
+}
+.noty_layout [data-name~="mojs-shape"] {
+    pointer-events:none
+}

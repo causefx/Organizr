@@ -286,6 +286,8 @@
 <script src="plugins/bower_components/multiselect/js/jquery.multi-select.js"></script>
 <script src="plugins/bower_components/mousetrap/mousetrap.min.js"></script>
 <script src="plugins/bower_components/bootstrap-treeview-master/dist/bootstrap-treeview.min.js"></script>
+<script src="plugins/bower_components/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
+<script src="/js/gauge.min.js"></script>
 <script src="js/jquery.mousewheel.min.js"></script>
 <script src="js/ua-parser.min.js"></script>
 <script src="js/plyr.js"></script>

@@ -338,6 +338,13 @@ function doneTypingMediaSearch () {
 }
 $(document).on("click", ".login-button", function(e) {
     e.preventDefault;
+    var oAuthEntered = $('#oAuth-Input').val();
+    var usernameEntered = $('#login-username-Input').val();
+    if(oAuthEntered == '' && usernameEntered == ''){
+        message('Login Error', ' You need to enter a Username', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+        $('#login-username-Input').focus();
+        return false;
+    }
     loginAttempts = loginAttempts + 1;
     $('#login-attempts').val(loginAttempts);
     var check = (local('g','loggingIn'));
@@ -1933,9 +1940,6 @@ $(document).on("keyup", "#authBackendHostPrefix-input, #authBackendHostSuffix-in
 });
 
 // homepage healthchecks
-$(document).on('click', ".good-health-checks", function(){
-    homepageHealthChecks();
-});
 $(document).on('click', ".showMoreHealth", function(){
    var id = $(this).attr('data-id');
     $('.showMoreHealthDiv-'+id).toggleClass('d-none');
@@ -1979,7 +1983,7 @@ $(document).on('click', ".ipInfo", function(){
         });
     });
 });
-
+// set active for group list
 $(document).on('click', '.allGroupsList', function() {
     console.log($(this));
     $(this).toggleClass('active');

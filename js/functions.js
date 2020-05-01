@@ -924,7 +924,8 @@ function buildAccordion(array, open = false){
 function buildFormItem(item){
     var placeholder = (item.placeholder) ? ' placeholder="'+item.placeholder+'"' : '';
 	var id = (item.id) ? ' id="'+item.id+'"' : '';
-	var type = (item.type) ? ' data-type="'+item.type+'"' : '';
+    var type = (item.type) ? ' data-type="'+item.type+'"' : '';
+    var label = (item.label) ? ' data-label="'+item.label+'"' : '';
 	var value = (item.value) ? ' value="'+item.value+'"' : '';
 	var textarea = (item.value) ? item.value : '';
 	var name = (item.name) ? ' name="'+item.name+'"' : '';
@@ -948,33 +949,33 @@ function buildFormItem(item){
 	switch (item.type) {
 		case 'input':
 		case 'text':
-			return smallLabel+'<input data-changed="false" lang="en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+			return smallLabel+'<input data-changed="false" lang="en" type="text" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" />';
 			break;
         case 'number':
-            return smallLabel+'<input data-changed="false" lang="en" type="number" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+            return smallLabel+'<input data-changed="false" lang="en" type="number" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" />';
             break;
 		case 'textbox':
-			return smallLabel+'<textarea data-changed="false" class="form-control'+extraClass+'"'+placeholder+id+name+disabled+type+attr+' autocomplete="new-password">'+textarea+'</textarea>';
+			return smallLabel+'<textarea data-changed="false" class="form-control'+extraClass+'"'+placeholder+id+name+disabled+type+label+attr+' autocomplete="new-password">'+textarea+'</textarea>';
 			break;
 		case 'password':
-			return smallLabel+pwgMgr+'<input data-changed="false" lang="en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" />';
+			return smallLabel+pwgMgr+'<input data-changed="false" lang="en" type="password" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" />';
 			break;
 		case 'password-alt':
-			return smallLabel+'<div class="input-group">'+pwgMgr+'<input data-changed="false" lang="en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
+			return smallLabel+'<div class="input-group">'+pwgMgr+'<input data-changed="false" lang="en" type="password" class="password-alt form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' autocomplete="new-password" /><span class="input-group-btn"> <button class="btn btn-default showPassword" type="button"><i class="fa fa-eye passwordToggle"></i></button></span></div>';
 			break;
 		case 'hidden':
-			return '<input data-changed="false" lang="en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' />';
+			return '<input data-changed="false" lang="en" type="hidden" class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' />';
 			break;
 		case 'select':
-			return smallLabel+'<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+'>'+selectOptions(item.options, item.value)+'</select>';
+			return smallLabel+'<select class="form-control'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+'>'+selectOptions(item.options, item.value)+'</select>';
 			break;
 		case 'select2':
             var select2ID = (item.id) ? '#'+item.id : '.'+item.name;
-            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2();</script>';
+            return smallLabel+'<select class="m-b-10 '+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+' multiple="multiple" data-placeholder="Choose">'+selectOptions(item.options, item.value)+'</select><script>$("'+select2ID+'").select2();</script>';
 			break;
 		case 'switch':
 		case 'checkbox':
-			return smallLabel+'<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
+			return smallLabel+'<input data-changed="false" type="checkbox" class="js-switch'+extraClass+'" data-size="small" data-color="#99d683" data-secondary-color="#f96262"'+name+value+tof(item.value,'c')+id+disabled+type+label+attr+' /><input data-changed="false" type="hidden"'+name+'value="false">';
 			break;
 		case 'button':
 			return smallLabel+'<button class="btn btn-sm btn-success btn-rounded waves-effect waves-light b-none'+extraClass+'" '+href+attr+' type="button"><span class="btn-label"><i class="'+icon+'"></i></span><span lang="en">'+text+'</span></button>';
@@ -983,13 +984,16 @@ function buildFormItem(item){
 			return '';
 			break;
 		case 'accordion':
-			return '<div class="panel-group'+extraClass+'"'+placeholder+value+id+name+disabled+type+attr+'  aria-multiselectable="true" role="tablist">'+accordionOptions(item.options, item.id)+'</div>';
+			return '<div class="panel-group'+extraClass+'"'+placeholder+value+id+name+disabled+type+label+attr+'  aria-multiselectable="true" role="tablist">'+accordionOptions(item.options, item.id)+'</div>';
 			break;
 		case 'html':
 			return item.html;
-			break;
+            break;
+        case 'arrayMultiple':
+            return '<span class="text-danger">BuildFormItem Class not setup...';
+            break;
 		default:
-			return false;
+			return '<span class="text-danger">BuildFormItem Class not setup...';
 	}
 }
 function buildPluginsItem(array){
@@ -1661,24 +1665,56 @@ function buildFormGroup(array){
 				if(typeof v.override !== 'undefined'){
 					override = v.override;
 				}
+                var arrayMultiple = false;
+                if(typeof v.type !== 'undefined'){
+                    if(v.type == 'arrayMultiple'){
+                        arrayMultiple = true;
+                    }
+                }
 				count++;
                 if (count % 2 !== 0) {
                     group += '<div class="row start">';
                 }
                 var helpID = '#help-info-'+v.name;
                 var helpTip = (v.help) ? '<sup><a class="help-tip" data-toggle="collapse" href="'+helpID+'" aria-expanded="true"><i class="m-l-5 fa fa-question-circle text-info" title="Help" data-toggle="tooltip"></i></a></sup>' : '';
-                group += `
-					<!-- INPUT BOX -->
+                var builtItems = '';
+                if(arrayMultiple == true){
+                    $.each(v.value, function(index,value){
+                        if (typeof value === 'object'){
+                            builtItems += '<div class="row m-b-40">';
+                            $.each(value, function(number,formItem) {
+                                builtItems += `
+                                    <!-- INPUT BOX  Yes Multiple -->
+                                    <div class="col-md-6 p-b-10">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12"><span lang="en">`+formItem.label+`</span>`+helpTip+`</label>
+                                            <div class="col-md-12"> `+ buildFormItem(formItem) +` </div> <!-- end div -->
+                                        </div>
+                                    </div>
+                                    <!--/ INPUT BOX -->
+                                `;
+                            });
+                            builtItems += '</div>';
+                        }else{
+                            builtItems += buildFormItem(value);
+                        }
+                    });
+
+                }else{
+                    builtItems = `
+					<!-- INPUT BOX  no Multiple-->
 					<div class="col-md-`+override+` p-b-10">
 						<div class="form-group">
 							<label class="control-label col-md-12"><span lang="en">`+v.label+`</span>`+helpTip+`</label>
 							<div class="col-md-12">
-								`+buildFormItem(v)+`
+								`+ buildFormItem(v) +`
 							</div>
 						</div>
 					</div>
 					<!--/ INPUT BOX -->
 				`;
+                }
+                group += builtItems;
                 if (count % 2 == 0 || count == total) {
                     group += '</div><!--end-->';
                 }
@@ -1891,6 +1927,14 @@ function checkTabHomepageItem(id, name, url, urlLocal){
     name = name.toLowerCase();
     url = url.toLowerCase();
     urlLocal = urlLocal.toLowerCase();
+    try {
+        let urlObject = (new URL(url));
+        if(urlObject.pathname !== '/' && urlObject !== '#'){
+            url = urlObject.pathname;
+        }
+    } catch {
+        url = url;
+    }
     if(name.includes('sonarr') || url.includes('sonarr') || urlLocal.includes('sonarr')){
         addEditHomepageItem(id,'Sonarr');
     }else if(name.includes('radarr') || url.includes('radarr') || urlLocal.includes('radarr')){
@@ -1974,7 +2018,11 @@ function settingsAPI(post, callbacks=null){
 function buildLanguage(replace=false,newLang=null){
 	var languageItems = '';
 	var currentLanguage = (getCookie('organizrLanguage')) ? getCookie('organizrLanguage') : window.lang.currentLang;
+	var newLangCode = '';
 	$.each(languageList, function(i,v) {
+	    if(newLang === v.language){
+            newLangCode = v.code;
+        }
 		var active = (v.code == currentLanguage) ? '' : '';
 		languageItems += `
 			<a onclick="window.lang.change('`+v.code+`');buildLanguage(true,'`+v.language+`')" href="javascript:void(0);" class="`+active+`">
@@ -1990,14 +2038,14 @@ function buildLanguage(replace=false,newLang=null){
 					<div class="drop-title" lang="en">Choose Language</div>
 				</li>
 				<li>
-					<div class="message-center" data-simplebar>`+languageItems+`</div>
+					<div class="message-center" data-simplebar>${languageItems}</div>
 				</li>
 			</ul>
 			<!-- /.dropdown-messages -->
 		</li>
 	`;
 	if(replace == true){
-	    setLangCookie(newLang);
+	    setLangCookie(newLangCode);
 		$('#languageDropdown').replaceWith(lang);
 		message("",window.lang.translate('Changed Language To')+": "+newLang,activeInfo.settings.notifications.position,"#FFF","success","3500");
 	}else if(replace == 'wizard'){
@@ -2203,15 +2251,46 @@ function buildTwoFA(current){
         </div>
     </div>
     `;
-
-
-
-
-
-
-
-
     return element;
+}
+function scrapeCall(){
+    // Define the URL to scrape [only supports GET at the moment
+    var url = 'https://api.github.com/users/causefx/repos';
+    // Define callbacks variable first
+    var callbacks = $.Callbacks();
+    // Add functions that will deal with the data
+    callbacks.add( scrapeFunction );
+    // Call the API function to scrape the page you want [types = 'json' or 'html']
+    scrapeAPI(url, callbacks, 'json');
+}
+function scrapeFunction(data){
+    // Here you would do whatever you like
+    if(data.data.result == 'Success'){
+        console.log('Success!!!');
+    }
+    console.log('data:')
+    console.log(data);
+}
+function scrapeAPI(url, callbacks = null, type = null){
+    if (typeof url === 'undefined'){
+        console.log('error');
+        return false;
+    }
+    organizrAPI('POST','api/?v1/scrape',{url:url, type:type}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        if(response){
+            if(callbacks){ callbacks.fire(response); }
+        }
+    }).fail(function(xhr) {
+        ajaxloader();
+        console.error("Organizr Function: API Connection Failed");
+    });
 }
 function revokeToken(token,id){
     organizrAPI('POST','api/?v1/token/revoke',{token:token}).success(function(data) {
@@ -2946,28 +3025,72 @@ function buildTabEditorItem(array){
 	});
 	return tabList;
 }
+function getSubmitSettingsFormValueSingle(form, index, value){
+    var values = {};
+    if(value !== '#987654' && index.includes('disable-pwd-mgr') == false) {
+        var input = $("#" + form + " [name='" + index + "']");
+        var dataType = input.attr('data-type');
+        switch (dataType) {
+            case 'switch':
+            case 'checkbox':
+                var value = input.prop("checked") ? true : false;
+                break;
+            case 'select2':
+                var value = (input.val() !== null) ? input.val().toString() : '';
+                break;
+            default:
+                var value = input.val();
+        }
+        values = {name: index, value: value, type: dataType};
+        return values;
+    }
+    return false;
+}
+function getSubmitSettingsFormValueObject(form, index, value){
+    var values = [];
+    $.each(value, function(i,v) {
+        var objectList = [];
+        var object = [];
+        $.each(v, function(key,val) {
+            if(val !== '#987654' && key.includes('disable-pwd-mgr') == false) {
+                var input = $("#" + form + " [name='" + index + "["+i+"]."+key+"']");
+                var dataType = input.attr('data-type');
+                var dataLabel = input.attr('data-label');
+                switch (dataType) {
+                    case 'switch':
+                    case 'checkbox':
+                        var value = input.prop("checked") ? true : false;
+                        break;
+                    case 'select2':
+                        var value = (input.val() !== null) ? input.val().toString() : '';
+                        break;
+                    default:
+                        var value = input.val();
+                }
+                var newKey = index + '[' + i + '].' + key;
+                object.push({type: dataType, name: newKey, label: dataLabel, value: value});
+            }
+        })
+        values.push(object);
+    });
+    values = {name: index, value: values, type: 'array'};
+    return values;
+}
 function submitSettingsForm(form){
     var list = $( "#"+form ).serializeToJSON();
     var size = 0;
     var submit = {};
+    console.log(list);
     $.each(list, function(i,v) {
-        if(v !== '#987654' && i.includes('disable-pwd-mgr') == false){
-            size++;
-            var input = $( "#"+form+" [name='"+i+"']" );
-            var dataType = input.attr('data-type');
-            switch (dataType) {
-                case 'switch':
-                case 'checkbox':
-                    var value = input.prop("checked") ? true : false;
-                    break;
-				case 'select2':
-                    var value = (input.val() !== null) ? input.val().toString() : '';
-                    break;
-                default:
-                    var value = input.val();
-            }
-
-            submit[i] = {name: i , value: value, type: dataType};
+        var values = false;
+        if(typeof v === 'object' && typeof v.length === 'undefined'){
+            values = getSubmitSettingsFormValueObject(form, i, v)
+        }else{
+            values = getSubmitSettingsFormValueSingle(form, i, v)
+        }
+        size++;
+        if(values){
+            submit[i] = {name: values.name , value: values.value, type: values.type};
         }
     });
     var post = {
@@ -2984,10 +3107,8 @@ function submitSettingsForm(form){
             //callbacks.add( buildCustomizeAppearance );
             break;
         default:
-
     }
     if(size > 0){
-        //console.log(submit);
         settingsAPI(post,callbacks);
         $("#"+form+" :input").each(function(){
             var input = $(this);
@@ -4095,6 +4216,14 @@ function buildStreamItem(array,source){
 	var count = 0;
 	var total = array.length;
     var sourceIcon = (source === 'jellyfin' && activeInfo.settings.homepage.media.jellyfin) ? 'play' : source;
+    var streamDetails = {
+        direct: 0,
+        transcode: 0
+    };
+    var bandwidthDetails = {
+        wan: 0,
+        lan: 0
+    };
 	cards += '<div class="flexbox">';
 	$.each(array, function(i,v) {
 		var icon = '';
@@ -4128,10 +4257,12 @@ function buildStreamItem(array,source){
 			var userStream = 'Direct Play';
 			var userVideo = 'Direct Play';
 			var userAudio = 'Direct Play';
+            streamDetails['direct'] = streamDetails['direct'] + 1;
 		}else{
 			var userStream = v.userStream.stream;
 			var userVideo = v.userStream.videoDecision+' ('+v.userStream.sourceVideoCodec+' <i class="mdi mdi-ray-start-arrow"></i> '+v.userStream.videoCodec+' '+v.userStream.videoResolution+')';
 			var userAudio = v.userStream.audioDecision+' ('+v.userStream.sourceAudioCodec+' <i class="mdi mdi-ray-start-arrow"></i> '+v.userStream.audioCodec+')';
+            streamDetails['transcode'] = streamDetails['transcode'] + 1;
 
 		}
 		var streamInfo = '';
@@ -4139,6 +4270,7 @@ function buildStreamItem(array,source){
 		streamInfo += (v.userStream.videoResolution) ? `<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-video"></i> Video: `+userVideo+`</span></div>` : '';
 		streamInfo += `<div class="text-muted m-t-20 text-uppercase"><span class="text-uppercase"><i class="mdi mdi-speaker"></i> Audio: `+userAudio+`</span></div>`;
 		v.session = v.session.replace(/[\W_]+/g,"-");
+        bandwidthDetails[v.bandwidthType] = bandwidthDetails[v.bandwidthType] + parseFloat(v.bandwidth);
 		cards += `
 		<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12 nowPlayingItem">
 			<div class="white-box">
@@ -4197,7 +4329,38 @@ function buildStreamItem(array,source){
 
 	});
 	cards += '</div><!--end-->';
+    cards += buildStreamTooltip(bandwidthDetails, streamDetails, source);
 	return cards;
+}
+function buildStreamTooltip(bandwidth, streams, type){
+    var html = '';
+    var streamText = 'Streams: ';
+    var bandwidthText = ' | Bandwidth: ';
+    var bandwidthTotal = parseFloat(bandwidth['wan']) + parseFloat(bandwidth['lan']);
+    if(type !== 'plex'){
+        bandwidthText += (parseFloat(bandwidth['wan']) / 1000).toFixed(1) + ' Mbps';
+    }else{
+        bandwidthText += (parseFloat(bandwidthTotal) / 1000).toFixed(1) + ' Mbps';
+        if(bandwidth['wan'] !== 0){
+            bandwidthText += ' | WAN: ' + (parseFloat(bandwidth['wan']) / 1000).toFixed(1) + ' Mbps';
+        }
+        if(bandwidth['lan'] !== 0){
+            bandwidthText += ' | LAN: ' + (parseFloat(bandwidth['lan']) / 1000).toFixed(1) + ' Mbps';
+        }
+
+    }
+    var spacer = '';
+    if(streams['direct'] !== 0){
+        streamText += streams['direct']  + ' Direct Play(s)';
+        spacer = ' & '
+    }
+    if(streams['transcode'] !== 0){
+        streamText += spacer + streams['transcode']  + ' Transcode(s)';
+    }
+    html += '<span class="label label-info m-l-20 mouse" title="" data-toggle="tooltip" data-original-title="'+ streamText + bandwidthText +'"><i class="fa fa-info"></i></span>';
+    return `
+    <script>$('.streamDetails-`+type+`').html('`+html+`');$('[data-toggle="tooltip"]').tooltip();</script>
+    `;
 }
 function buildRecentItem(array, type, extra=null){
 	var items = '';
@@ -4336,8 +4499,9 @@ function buildRequestItem(array, extra=null){
 				adminFunctions = (activeInfo.user.groupID <= 1) ? adminFunctions : '';
 				var user = (activeInfo.user.groupID <= 1) ? '<span lang="en">Requested By:</span> '+v.user : '';
 				var user2 = (activeInfo.user.groupID <= 1) ? '<br>'+v.user : '';
+				var divId = (v.type == 'movie') ? v.request_id : v.id;
 				items += `
-				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` request-`+v.request_id+`-div mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
+				<div class="item lazyload recent-poster request-item request-`+v.type+` `+className+` request-`+divId+`-div mouse" data-target="request-`+v.id+`" data-src="`+v.poster+`">
 					<div class="outside-request-div">
 						<div class="inside-over-request-div `+badge2+`"></div>
 						<div class="inside-request-div `+badge+`"></div>
@@ -4386,12 +4550,13 @@ function buildRequestItem(array, extra=null){
 }
 function buildStream(array, type){
 	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
+	var originalType = type;
     type = (type === 'emby' && activeInfo.settings.homepage.media.jellyfin) ? 'jellyfin' : type;
 	return (streams) ? `
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span>: </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+type+`')">`+streams+`</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Active</span> `+toUpper(type)+` <span lang="en">Streams</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle mouse" onclick="homepageStream('`+originalType+`')">`+streams+`</span><span class="streamDetails-`+type+`"></span></h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -4434,7 +4599,7 @@ function buildRecent(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span></h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRecent('`+type+`')" lang="en">Recently Added</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 			`+dropdownMenu+`
 			<hr class="hidden-xs"><div class="clearfix"></div>
 		</div>
@@ -4529,7 +4694,7 @@ function buildPlaylist(array, type){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left homepage-element-title"><span onclick="homepagePlaylist('`+type+`')" class="`+type+`-playlistTitle mouse">`+first+`</span></h4>
+			<h4 class="pull-left homepage-element-title"><span onclick="homepagePlaylist('`+type+`')" class="`+type+`-playlistTitle mouse">`+first+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -4612,7 +4777,7 @@ function buildRequest(array){
 	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
 		var headerAlt = `
 		<div class="col-md-12">
-			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span></h4>
+			<h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageRequests()" lang="en">Requests</span> : </h4><h4 class="pull-left">&nbsp;</h4>
 			<div class="btn-group pull-right">
 				`+builtDropdown+`
 			</div>
@@ -5664,7 +5829,7 @@ function buildHealthChecks(array){
 	<div id="allHealthChecks">
 		<div class="el-element-overlay row">
 		    <div class="col-md-12">
-		        <h4 class="pull-left homepage-element-title"><span lang="en">Health Checks</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-health-checks mouse">`+checks+`</span></h4>
+		        <h4 class="pull-left homepage-element-title"><span lang="en">Health Checks</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-health-checks mouse" onclick="homepageHealthChecks()">`+checks+`</span></h4>
 		        <hr class="hidden-xs">
 		    </div>
 			<div class="clearfix"></div>
@@ -5677,6 +5842,29 @@ function buildHealthChecks(array){
 	</div>
 	<div class="clearfix"></div>
 	` : '';
+}
+function buildPihole(array){
+    if(array === false){ return ''; }
+    var html = `
+    <div id="allPihole">
+        <div class="el-element-overlay row">`;
+    if(array['options']['title']) {
+        html += `
+            <div class="col-md-12">
+                <h4 class="pull-left homepage-element-title"><span lang="en">Pi-hole</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+                <hr class="hidden-xs ml-2">
+            </div>
+            <div class="clearfix"></div>
+        `;
+    }
+    html += `
+		    <div class="piholeCards col-sm-12 my-3">
+			    `+buildPiholeItem(array)+`
+			</div>
+		</div>
+	</div>
+    `;
+    return (array) ? html : '';
 }
 function buildUnifi(array){
     if(array === false){ return ''; }
@@ -5764,7 +5952,7 @@ function buildUnifiItem(array){
                 <div class="col-lg-4 col-md-6 col-center">
                     <div class="panel panel-` + panelColor + `">
                         <div class="panel-heading"> <span class="text-uppercase">` + name + `</span>
-                            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> <a href="#" data-perform="panel-dismiss"><i class="ti-close"></i></a> </div>
+                            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a></div>
                         </div>
                         <div class="panel-wrapper collapse in" aria-expanded="true">
                             <div class="panel-body">
@@ -5858,6 +6046,180 @@ function buildHealthChecksItem(array){
         `
     });
     return checks;
+}
+function buildPiholeItem(array){
+    var stats = `
+    <style>
+    .bg-green {
+        background-color: #00a65a !important;
+    }
+    
+    .bg-aqua {
+        background-color: #00c0ef!important;
+    }
+    
+    .bg-yellow {
+        background-color: #f39c12!important;
+    }
+    
+    .bg-red {
+        background-color: #dd4b39!important;
+    }
+    
+    .pihole-stat {
+        color: #fff !important;
+    }
+    
+    .pihole-stat .card-body h3 {
+        font-size: 38px;
+        font-weight: 700;
+    }
+
+    .pihole-stat .card-body i {
+        font-size: 5em;
+        float: right;
+        color: #ffffff6b;
+    }
+
+    .inline-block {
+        display: inline-block;
+    }
+    </style>
+    `;
+    var length = Object.keys(array['data']).length;
+    var combine = array['options']['combine'];
+    var totalQueries = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card text-white mb-3 pihole-stat bg-green">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p>Total queries</p>`;
+        for(var key in data) {
+            var e = data[key];
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-globe inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var totalBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-aqua">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p>Queries Blocked</p>`;
+        for(var key in data) {
+            var e = data[key];
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-hand-paper-o inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var percentBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-yellow">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p>Percent Blocked</p>`;
+        for(var key in data) {
+            var e = data[key];
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_percentage_today'].toFixed(1)+`%</h3>`
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-pie-chart inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    var domainsBlocked = function(data) {
+        var card = `
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+            <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
+                <div class="card-body">
+                    <div class="inline-block">
+                        <p>Domains on Blocklist</p>`;
+        for(var key in data) {
+            var e = data[key];
+            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+        };
+        card += `
+                    </div>
+                    <i class="fa fa-list inline-block" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        `
+        return card;
+    };
+    if(combine) {
+        stats += '<div class="row">'
+        stats += totalQueries(array['data']);
+        stats += totalBlocked(array['data']);
+        stats += percentBlocked(array['data']);
+        stats += domainsBlocked(array['data']);
+        stats += '</div>';
+    } else {
+        for(var key in array['data']) {
+            if(length > 1) {
+                stats += `
+                <div class="row mb-2">
+                    <div class="col-sm-12">
+                        `+key+`
+                    </div>
+                </div>
+                `;
+            }
+            var data = array['data'][key];
+            obj = {};
+            obj[key] = data;
+            stats += '<div class="row">'
+            stats += totalQueries(obj);
+            stats += totalBlocked(obj);
+            stats += percentBlocked(obj);
+            stats += domainsBlocked(obj);
+            stats += '</div>';
+        };
+    }
+    return stats;
+}
+function homepagePihole(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepagePiholeRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getPihole'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderPihole').innerHTML = '';
+        if(response.data !== null){
+            buildPihole(response.data)
+            $('#homepageOrderPihole').html(buildPihole(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'PiHole-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepagePihole(timeout); }, timeout);
 }
 function homepageHealthChecks(tags, timeout){
     var tags = (typeof tags !== 'undefined') ? tags : activeInfo.settings.homepage.options.healthChecksTags;
@@ -6189,6 +6551,1168 @@ function homepageCalendar(timeout){
 	});
 	if(typeof timeouts['calendar-Homepage'] !== 'undefined'){ clearTimeout(timeouts['calendar-Homepage']); }
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
+}
+function buildTautulliItem(array){
+    var cards = ""
+    var homestats = array.homestats.data;
+    var libstats = array.libstats;
+    var options = array.options;
+    var buildLibraries = function(data){
+        var libs = data.data;
+        var movies = [];
+        var tv = [];
+        var audio = [];
+
+        libs.forEach(e => {
+            switch(e['section_type']) {
+                case 'movie':
+                    movies.push(e);
+                    break;
+                case 'show':
+                    tv.push(e);
+                    break;
+                case 'artist':
+                    audio.push(e);
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        movies = movies.sort((a, b) => (parseInt(a['count']) > parseInt(b['count'])) ? -1 : 1);
+        tv = tv.sort((a, b) => (parseInt(a['count']) > parseInt(b['count'])) ? -1 : 1);
+        audio = audio.sort((a, b) => (parseInt(a['count']) > parseInt(b['count'])) ? -1 : 1);
+
+        var buildCard = function(type, data) {
+            var extraField = null;
+            var section_name = null;
+            if(type == 'movie'){
+                extraField = 'Movies';
+                section_name = 'Movie Libaries';
+            }else if(type == 'show'){
+                extraField = 'Shows/Seasons/Episodes';
+                section_name = 'TV Show Libaries';
+            }else if(type == 'artist'){
+                extraField = 'Artists/Albums/Tracks';
+                section_name = 'Music Libaries';
+            }
+            var cardTitle = '<th><span class="pull-left cardTitle">'+section_name.toUpperCase()+'</span><span class="pull-right cardCountType">'+extraField.toUpperCase()+'</th>';
+            var card = `
+            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                <div class="card text-white mb-3 homepage-tautulli-card library-card">
+                    <div class="card-body h-100 bg-org-alt">
+                        <table class="h-100 w-100">
+                            <tr>
+                                <td rowspan='2' class="poster-td text-center"><img src="plugins/images/cache/tautulli-`+type+`.svg" class="lib-icon" alt="library icon"></td>
+                                ${cardTitle}
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="scrollable" data-simplebar>`;
+                                    for(var i = 0; i < data.length; i++) {
+                                        var rowType = i == 0 ? 'tautulliFirstItem' : i == data.length-1 ? 'tautulliLastItem' : '';
+                                        var rowValue = '';
+                                        var firstDivCol = '';
+                                        var secondDivCol = '';
+                                        if(type == 'movie') {
+                                            rowValue = data[i]['count'];
+                                            firstDivCol = 'col-md-9';
+                                            secondDivCol = 'col-md-2';
+                                        } else {
+                                            rowValue = data[i]['count'] + '<span class="tautulliSeparator"> / </span>' + data[i]['parent_count'] + '<span class="tautulliSeparator"> / </span>' + data[i]['child_count'];
+                                            firstDivCol = 'col-md-5';
+                                            secondDivCol = 'col-md-6';
+                                        }
+                                        card += `
+                                        <div class="cardListItem elip row w-100 p-r-0 m-0 ${rowType}">
+                                            <div class="tautulliRank col-md-1 p-0">${i+1}</div>
+                                            <div class="${firstDivCol} p-0 text-left elip"> ${data[i]['section_name']}</div>
+                                            <div class="${secondDivCol} cardListCount text-right m-l-10 p-0">${rowValue}</div>
+                                        </div>
+                                        `;
+                                    };
+
+                                    card += `
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+            return card;
+        };
+        var card = (movies.length > 0) ? buildCard('movie', movies) : '';
+        card += (tv.length > 0) ? buildCard('show', tv) : '';
+        card += (audio.length > 0) ? buildCard('artist', audio) : '';
+        return card;
+    };
+    var buildStats = function(data, stat){
+        var card = '';
+        data.forEach(e => {
+            let classes = '';
+            if(e['stat_id'] == stat) {
+                if(stat === 'top_platforms') {
+                    classes = ' platform-' + e['rows'][0]['platform_name'] + '-rgba';
+                } else {
+                    classes = ' bg-org-alt';
+                }
+                card += `
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                    <div class="card text-white mb-3 homepage-tautulli-card">`;
+                        if(stat !== 'top_users' && stat !== 'top_platforms') {
+                            card += `
+                            <div class="bg-img-cont">
+                                <img class="bg-img" src="`+e['rows'][0]['art']+`" alt="background art">
+                            </div>
+                            `;
+                        }
+                card += `
+                        <div class="card-body h-100`+classes+`">
+                            <table class="h-100 w-100">
+                                <tr>`;
+                                    if(stat == 'top_users') {
+                                        card += `<td rowspan="2" class="poster-td text-center"><img src="`+e['rows'][0]['user_thumb']+`" class="poster avatar" alt="user avatar"></td>`;
+                                    } else if(stat == 'top_platforms') {
+                                        card += `<td rowspan="2" class="poster-td text-center"><img src="plugins/images/cache/tautulli-`+e['rows'][0]['platform_name']+`.svg" class="poster" alt="platform icon"></td>`;
+                                    } else {
+                                        card += `<td rowspan="2" class="poster-td"><img src="`+e['rows'][0]['thumb']+`" class="poster" alt="movie poster"></td>`;
+                                    }
+                                    var extraField = null;
+                                    if(e['stat_title'].includes('Popular')){
+                                        extraField = 'users';
+                                    }else if(e['stat_title'].includes('Watched')||e['stat_title'].includes('Active')){
+                                        extraField = 'plays';
+                                    }
+                                    var cardTitle = '<th><span class="pull-left cardTitle">'+e['stat_title'].toUpperCase()+'</span><span class="pull-right cardCountType">'+extraField.toUpperCase()+'</th>';
+                                    card += cardTitle+`
+                                </tr>
+                                <tr>
+                                    <td><div class="scrollable" data-simplebar>`;
+                                        for(var i = 0; i < e['rows'].length; i++) {
+                                            var item = e['rows'][i];
+                                            var rowType = i == 0 ? 'tautulliFirstItem' : i == e['rows'].length-1 ? 'tautulliLastItem' : '';
+                                            var rowNameValue = '';
+                                            var rowValue = '';
+                                            if(stat == 'top_users') {
+                                                rowNameValue = item['user'];
+                                                rowValue = item['total_plays'];
+                                            } else if(stat == 'top_platforms') {
+                                                rowNameValue = item['platform'];
+                                                rowValue = item['total_plays'];
+                                            } else if(extraField == 'users') {
+                                                rowNameValue = item['title'];
+                                                rowValue = item['users_watched'];
+                                            } else {
+                                                rowNameValue = item['title'];
+                                                rowValue = item['total_plays'];
+                                            }
+                                            card += `
+                                            <div class="cardListItem elip row w-100 p-r-0 m-0 ${rowType}">
+                                                <div class="tautulliRank col-md-1 p-0">${i+1}</div>
+                                                <div class="col-md-9 p-0 text-left elip">${rowNameValue}</div>
+                                                <div class="col-md-2 cardListCount text-right m-l-10 p-0">${rowValue}</div>
+                                            </div>`;
+                                        };
+                                    card += `
+                                    </div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>`;
+            } else {
+                return '';
+            }
+        });
+        return card;
+    };
+    cards += '<div class="row tautulliTop">'
+    cards += (options['libraries']) ? buildLibraries(libstats) : '';
+    cards += (options['popularMovies']) ? buildStats(homestats, 'popular_movies') : '';
+    cards += (options['popularTV']) ? buildStats(homestats, 'popular_tv') : '';
+    cards += (options['topMovies']) ? buildStats(homestats, 'top_movies') : '';
+    cards += (options['topTV']) ? buildStats(homestats, 'top_tv') : '';
+    cards += (options['topUsers']) ? buildStats(homestats, 'top_users') : '';
+    cards += (options['topPlatforms']) ? buildStats(homestats, 'top_platforms') : '';
+    cards += '</div>';
+    cards += '<div class="row tautulliLibraries">'
+    cards += '</div>';
+    return cards;
+}
+function buildTautulli(array){
+    if(array === false){ return ''; }
+    var html = `
+    <div id="allTautulli">
+		<div class="el-element-overlay row">`
+    if(array['options']['title']) {
+        html += `
+            <div class="col-md-12">
+                <h4 class="pull-left homepage-element-title"><span class="mouse" onclick="homepageTautulli()">`+activeInfo.settings.homepage.options.titles.tautulli+`</span> : </h4><h4 class="pull-left">&nbsp;</h4>
+                <hr class="hidden-xs ml-2">
+            </div>
+            <div class="clearfix"></div>
+        `;
+    }
+    html += `
+            <div class="tautulliCards col-sm-12 my-3">
+                `+buildTautulliItem(array)+`
+			</div>
+		</div>
+	</div>
+    `;
+    return (array) ? html : '';
+}
+function homepageTautulli(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageTautulliRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getTautulli'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrdertautulli').innerHTML = '';
+        if(response.data !== null){
+            $('#homepageOrdertautulli').html(buildTautulli(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Tautulli-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageTautulli(timeout); }, timeout);
+}
+function weatherIcon(code, daytime = true){
+    switch (code) {
+        case 1:
+        case 2:
+            return (daytime) ? 'wi-day-sunny' : 'wi-night-clear';
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 22:
+            return (daytime) ? 'wi-day-sunny-overcast' : 'wi-night-alt-partly-cloudy';
+        case 7:
+        case 8:
+        case 9:
+            return (daytime) ? 'wi-day-cloudy-high' : 'wi-night-partly-cloudy';
+        case 10:
+        case 11:
+        case 12:
+            return (daytime) ? 'wi-day-thunderstorm' : 'wi-night-thunderstorm';
+        case 13:
+        case 14:
+        case 15:
+            return (daytime) ? 'wi-day-haze' : 'wi-night-cloudy-windy';
+        case 16:
+        case 17:
+        case 18:
+            return (daytime) ? 'wi-day-fog' : 'wi-night-fog';
+        case 19:
+        case 20:
+        case 21:
+            return (daytime) ? 'wi-day-cloudy-high' : 'wi-night-cloudy-high';
+        case 23:
+        case 25:
+            return (daytime) ? 'wi-day-rain' : 'wi-night-rain';
+        case 24:
+        case 26:
+            return (daytime) ? 'wi-day-snow' : 'wi-night-snow';
+        case 27:
+        case 28:
+        case 30:
+        case 31:
+        case 33:
+            return (daytime) ? 'wi-day-rain-mix' : 'wi-night-alt-rain-mix';
+        case 29:
+        case 32:
+        case 34:
+        case 35:
+            return (daytime) ? 'wi-day-snow-thunderstorm' : 'wi-night-alt-snow-thunderstorm';
+        default:
+            return (daytime) ? 'wi-day-sunny' : 'wi-night-clear';
+    }
+}
+function buildWeatherAndAir(array){
+    var returnData = '';
+    if (typeof array.content === 'undefined'){ return ''; }
+    if(array.content.weather !== false){
+        if(array.content.weather.error === null){
+            let dates = {};
+            $.each(array.content.weather.data, function(i,v) {
+                let date = moment(v.datetime).format('YYYY-MM-DD')
+                if( typeof dates[date] === 'undefined'){
+                    dates[date] = v;
+                    dates[date]['temps'] = {
+                        'high': v.temperature.value,
+                        'low': v.temperature.value
+                    }
+                }else{
+                    if(moment(v.datetime).format('hh:mm a') == '12:00 pm'){
+                        dates[date]['icon_code'] = v.icon_code;
+                        dates[date]['is_day_time'] = v.is_day_time;
+                    }
+                    if(v.temperature.value > dates[date]['temps']['high']){
+                        dates[date]['temps']['high'] = v.temperature.value;
+                    }
+                    if(v.temperature.value < dates[date]['temps']['low']){
+                        dates[date]['temps']['low'] = v.temperature.value;
+                    }
+                }
+            })
+            let weatherItems = '<div class="row">';
+            let weatherItemsCount = 0;
+            $.each(dates, function(i,v) {
+                if(weatherItemsCount === 0){
+                    weatherItems += `
+                    <div class="col-lg-4 col-sm-12 col-xs-12">
+                        <div class="white-box">
+                            <h3 class="box-title">`+moment(v.datetime).format('dddd')+`<small class="pull-right m-t-10">Feels Like `+Math.round(v.feels_like_temperature.value)+`°</small></h3>
+                            <ul class="list-inline two-part">
+                                <li><i class="wi `+weatherIcon(v.icon_code, v.is_day_time)+` text-info"></i></li>
+                                <li class="text-right"><span class="counter">`+Math.round(v.temperature.value)+`<small><sup>°`+v.temperature.units+`</sup></small></span></li>
+                            </ul>
+                            <ul class="list-inline m-b-0">
+                                <li class="pull-left w-50"><h5 class="text-uppercase elip">`+v.weather_text+`</h5></li>
+                                <li class="pull-right" style="width:75px"><h5><i class="wi wi-strong-wind m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Wind"></i>`+Math.round(v.wind.speed.value)+` `+v.wind.speed.units+`</h5></li>
+                                <li class="pull-right" style="width:75px"><h5><i class="wi wi-barometer m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pressure"></i>`+Math.round(v.pressure.value)+` `+v.pressure.units+`</h5></li>
+                                <li class="pull-right" style="width:45px"><h5><i class="wi wi-humidity m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Humidity"></i>`+Math.round(v.relative_humidity)+`</h5></li>
+                                <li class="pull-right" style="width:45px"><h5><i class="wi wi-raindrop m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Dew Point"></i>`+Math.round(v.dew_point.value)+`°</h5></li>
+                                <div class="clearfix"></div>
+                            </ul>
+                        </div>
+                    </div>
+                    `;
+                }else if(weatherItemsCount !== 5){
+                    weatherItems += `
+                    <div class="col-lg-2 col-sm-3 col-xs-12">
+                        <div class="white-box">
+                            <h3 class="box-title">`+moment(v.datetime).format('dddd')+`</h3>
+                            <ul class="list-inline two-part">
+                                <li><i class="wi `+weatherIcon(v.icon_code, v.is_day_time)+` text-info"></i></li>
+                                <li class="text-right"><span class="counter">`+Math.round(v.temps.high)+`<small><sup>°`+v.temperature.units+`</sup></small></span></li>
+                            </ul>
+                            <ul class="list-inline m-b-0">
+                                <li class="pull-left w-100"><h6 class="text-uppercase elip">`+v.weather_text+`</h6></li>
+                                <div class="clearfix"></div>
+                            </ul>
+                        </div>
+                    </div>
+                    `;
+                }
+                weatherItemsCount ++;
+            })
+            weatherItems += '</div>';
+            returnData += weatherItems;
+        }
+    }
+    if(array.content.air !== false){
+        if(array.content.air.error === null) {
+            let airItems = '<div class="row">';
+            var activeClasses = {
+                'poor': '',
+                'low': '',
+                'moderate': '',
+                'good': '',
+                'excellent': ''
+            };
+            if(array.content.air.data.indexes.baqi.aqi <= 20){
+                activeClasses['poor'] = 'active';
+            }else if(array.content.air.data.indexes.baqi.aqi <= 40){
+                activeClasses['low'] = 'active';
+            }else if(array.content.air.data.indexes.baqi.aqi <= 60){
+                activeClasses['moderate'] = 'active';
+            }else if(array.content.air.data.indexes.baqi.aqi <= 80){
+                activeClasses['good'] = 'active';
+            }else if(array.content.air.data.indexes.baqi.aqi <= 100){
+                activeClasses['excellent'] = 'active';
+            }
+            airItems += `
+            <div class="col-lg-4 col-sm-12 col-xs-12">
+                <div class="white-box text-white">
+                    <div class="aqi-scale-component-wrapper">
+                        <div class="aqi__header">
+                            <div class="aqi__value">
+                                <div class="component-wrapper aqi-number text-good-gradient">${array.content.air.data.indexes.baqi.aqi}</div>
+                            </div>
+                            <div class="aqi__text"><h2 >AirQuality Index</h2></div>
+                        </div>
+                        <div class="aqi-scale m-t-40">
+                            <div class="category">
+                                <div class="chip ${activeClasses['poor']}">
+                                    <div class="chip__text text-white">Poor</div>
+                                    <div class="chip__bar bg-poor-gradient"></div>
+                                </div>
+                                <div class="category__min-value text-white">0</div>
+                                <div class="category__max-value text-white">20</div>
+                            </div>
+                            <div class="category">
+                                <div class="chip ${activeClasses['low']}">
+                                    <div class="chip__text text-white">Low</div>
+                                    <div class="chip__bar bg-low-gradient"></div>
+                                </div>
+                                <div class="category__max-value text-white">40</div>
+                            </div>
+                            <div class="category">
+                                <div class="chip ${activeClasses['moderate']}">
+                                    <div class="chip__text text-white">Moderate</div>
+                                    <div class="chip__bar bg-moderate-gradient"></div>
+                                </div>
+                                <div class="category__max-value text-white">60</div>
+                            </div>
+                            <div class="category">
+                                <div class="chip ${activeClasses['good']}">
+                                    <div class="chip__text text-white">Good</div>
+                                    <div class="chip__bar bg-good-gradient"></div>
+                                </div>
+                                <div class="category__max-value text-white">80</div>
+                            </div>
+                            <div class="category">
+                                <div class="chip ${activeClasses['excellent']}">
+                                    <div class="chip__text text-white">Excellent</div>
+                                    <div class="chip__bar bg-excellent-gradient"></div>
+                                </div>
+                                <div class="category__max-value text-white">100</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ${buildPollutant(array.content.air.data.pollutants)}
+            ${buildHealthRecommendation(array.content.air.data.health_recommendations)}
+            `;
+            airItems += '</div>';
+            returnData += airItems;
+            console.log('load air')
+        }
+    }
+    if(array.content.pollen !== false){
+        if(array.content.pollen.error === null){
+            console.log('load pollen')
+        }
+    }
+    return returnData;
+}
+function buildHealthRecommendation(array){
+    var healthHeader = '';
+    var healthSection = '';
+    $.each(array, function(i,v) {
+        var title = i.toString().replace('_', ' ').toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ')
+        switch (i) {
+            case 'general_population':
+                var icon = 'fa fa-group';
+                break;
+            case 'elderly':
+                var icon = 'ti ti-wheelchair';
+                break;
+            case 'lung_diseases':
+                var icon = 'mdi mdi-spray';
+                break;
+            case 'heart_diseases':
+                var icon = 'mdi mdi-heart-pulse';
+                break;
+            case 'active':
+                var icon = 'mdi mdi-run-fast';
+                break;
+            case 'pregnant_women':
+                var icon = 'mdi mdi-human-pregnant';
+                break;
+            case 'children':
+                var icon = 'fa fa-child';
+                break;
+            default:
+                var icon = '';
+        }
+        healthHeader += '<li><a href="#section-health-'+i+'" class="sticon '+icon+'"></a></li>';
+        healthSection += `
+            <section id="section-pollutant-${i}" class="" >
+                <h5 class="m-t-0">${title}</h5>
+                <span>${v}</span>
+            </section>
+        `;
+    });
+var html = `
+    <div class="col-lg-4 hidden-xs hidden-sm">
+        <div class="white-box text-white p-0">
+            <!-- Tabstyle start -->
+            <section class="">
+                <div class="sttabs tabs-style-iconbox">
+                    <nav>
+                        <ul>${healthHeader}</ul>
+                    </nav>
+                    <div class="content-wrap health-and-pollutant-section" data-simplebar>${healthSection}</div>
+                    <!-- /content -->
+                </div>
+                <!-- /tabs -->
+            </section>
+            <!-- Tabstyle start -->
+        </div>
+    </div>
+    <script>
+        (function() {
+            [].slice.call(document.querySelectorAll('.sttabs')).forEach(function(el) {
+                new CBPFWTabs(el);
+            });
+        })();
+    </script>`
+    return html;
+}
+function buildPollutant(array){
+    var pollutantHeader = '';
+    var pollutantSection = '';
+    $.each(array, function(i,v) {
+        pollutantHeader += '<li><a href="#section-pollutant-'+i+'" class="sticon"><strong>'+v.display_name+'</strong><br/><small class="elip">'+v.concentration.value+' '+v.concentration.units+'</small></a></li>';
+        pollutantSection += `
+            <section id="section-pollutant-${i}">
+                <h5 class="m-t-0">${v.full_name}</h5>
+                <h6>Sources</h6>
+                <span>${v.sources_and_effects.sources}</span>
+                <hr>
+                <h6>Effects</h6>
+                <span>${v.sources_and_effects.effects}</span>
+            </section>
+        `;
+    });
+    var html = `
+    <div class="col-lg-4 hidden-xs hidden-sm">
+        <div class="white-box text-white p-0">
+            <!-- Tabstyle start -->
+            <section class="">
+                <div class="sttabs tabs-style-iconbox">
+                    <nav>
+                        <ul>${pollutantHeader}</ul>
+                    </nav>
+                    <div class="content-wrap health-and-pollutant-section" data-simplebar>${pollutantSection}</div>
+                    <!-- /content -->
+                </div>
+                <!-- /tabs -->
+            </section>
+            <!-- Tabstyle start -->
+        </div>
+    </div>
+    <script>
+        (function() {
+            [].slice.call(document.querySelectorAll('.sttabs')).forEach(function(el) {
+                new CBPFWTabs(el);
+            });
+        })();
+    </script>`
+    return html;
+}
+function homepageWeatherAndAir(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageWeatherAndAirRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getWeatherAndAir'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderWeatherAndAir').innerHTML = '';
+        if(response.data !== null){
+            $('#homepageOrderWeatherAndAir').html(buildWeatherAndAir(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'WeatherAndAir-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageWeatherAndAir(timeout); }, timeout);
+}
+function buildMonitorrItem(array){
+    var cards = '';
+    var options = array['options'];
+    var services = array['services'];
+
+    var buildCard = function(name, data) {
+        if(data.status) { var statusColor = 'success'; var imageText = 'fa fa-check-circle text-success' } 
+            else { var statusColor = 'danger animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-danger'}
+        if(options['compact']) {
+            var card = `
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="card bg-inverse text-white mb-3 monitorr-card">
+                    <div class="card-body bg-org-alt pt-1 pb-1">
+                        <div class="d-flex no-block align-items-center">
+                            <div class="left-health bg-`+statusColor+`"></div>
+                            <div class="ml-1 w-100">
+                                <i class="`+imageText+` font-20 pull-right mt-3 mb-2"></i>
+                                `; if (typeof data.link !== 'undefined') { card +=`<a href="`+data.link+`" target="_blank">`; }
+                                card += `<h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle" src="`+data.image+`">&nbsp;`+name+`</h3>
+                                `; if (typeof data.link !== 'undefined') { card +=`</a>`; }
+                                card += `<div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        } else {
+            var card = `
+            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                <div class="card bg-inverse text-white mb-3 monitorr-card">
+                    <div class="card-body bg-org-alt text-center">
+                        `; if (typeof data.link !== 'undefined') { card +=`<a href="`+data.link+`" target="_blank">`; }
+                        card += `<div class="d-block">
+                            <h3 class="mt-0 mb-3">`+name+`</h3>
+                            <img class="monitorrImage" src="`+data.image+`" alt="service icon">
+                        </div>
+                        <div class="d-inline-block mt-4 py-2 px-4 badge indicator bg-`+statusColor+`">
+                            <p class="mb-0">`; if(data.status) { card += 'ONLINE' } else { card += 'OFFLINE' } card+=`</p>
+                        </div>
+                        `; if (typeof data.link !== 'undefined') { card +=`</a>`; }
+                        card += `</div>
+                </div>
+            </div>
+            `;
+        }
+        return card;
+    }
+    for(var key in services) {
+        cards += buildCard(key, services[key]);
+    };
+    return cards;
+}
+function buildMonitorr(array){
+    if(array === false){ return ''; }
+    var services = (typeof array.services !== 'undefined') ? Object.keys(array.services).length : false;
+    var html = `
+    <div id="allMonitorr">
+		<div class="el-element-overlay row">`
+    if(array['options']['titleToggle']) {
+        html += `
+            <div class="col-md-12">
+                <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-monitorr-services mouse" onclick="homepageMonitorr()">`+services+`</span></h4></h4>
+                <hr class="hidden-xs ml-2">
+            </div>
+            <div class="clearfix"></div>
+        `;
+    }
+    html += `
+            <div class="monitorrCards">
+                `+buildMonitorrItem(array)+`
+			</div>
+		</div>
+    </div>
+    <div class="clearfix"></div>
+    `;
+    return (array) ? html : '';
+}
+function homepageMonitorr(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepagePiholeRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getMonitorr'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderMonitorr').innerHTML = '';
+        if(response.data !== null){
+            buildMonitorr(response.data)
+            $('#homepageOrderMonitorr').html(buildMonitorr(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Monitorr-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageMonitorr(timeout); }, timeout);
+}
+function homepageSpeedtest(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageSpeedtestRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getSpeedtest'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderSpeedtest').innerHTML = '';
+        if(response.data !== null){
+            $('#homepageOrderSpeedtest').html(buildSpeedtest(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Speedtest-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageSpeedtest(timeout); }, timeout);
+}
+function buildSpeedtest(array){
+    if(array === false){ return ''; }
+    var html = `
+    <style>
+    .shadow-sm {
+        -webkit-box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
+    }
+
+    .speedtest-card {
+        background-color: #2d2c2c;
+    }
+    .speedtest-card .text-success {
+        color: #07db71 !important;
+    }
+    .speedtest-card .text-warning {
+        color: #fca503 !important;
+    }
+    .speedtest-card .text-primary {
+        color: #3e95cd !important;
+    }
+    .speedtest-card span.icon {
+        font-size: 2em;
+    }
+    .speedtest-card h5 {
+    }
+
+    .speedtest-card h4,
+    .speedtest-card h3 {
+        font-weight: 450;
+        line-height: 1.2;
+    }
+
+    .speedtest-card .text-muted,
+    .speedtest-card h5 {
+        color: #9e9e9e !important;
+    }
+    </style>
+    `;
+    var current = array.data.current;
+    var average = array.data.average;
+    var max = array.data.max;
+    var options = array.options;
+  
+    html += `
+    <div id="allSpeedtest">
+    `;
+    if(options.titleToggle) {
+        html += `
+        <div class="row">
+            <div class="col-sm-12">
+                <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+` : </h4>
+            </div>
+        </div>
+        `;
+    }
+    html += `
+        <div class="row">
+            <div class="my-2 col-lg-4 col-md-4 col-sm-12">
+                <div class="card speedtest-card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4>Ping</h4>
+                            <span class="ti-pulse icon text-success" />
+                        </div>
+                        <div class="text-truncate">
+                            <h3 class="d-inline">`+parseFloat(current.ping).toFixed(1)+`</h3>
+                            <p class="d-inline ml-1 text-white">ms (current)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(average.ping).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">ms (average)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(max.ping).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">ms (maximum)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="my-2 col-lg-4 col-md-4 col-sm-12">
+                <div class="card speedtest-card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4>Download</h4>
+                            <span class="ti-download icon text-warning" />
+                        </div>
+                        <div class="text-truncate">
+                            <h3 class="d-inline">`+parseFloat(current.download).toFixed(1)+`</h3>
+                            <p class="d-inline ml-1 text-white">Mbit/s (current)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(average.download).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">Mbit/s (average)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(max.download).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">Mbit/s (maximum)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="my-2 col-lg-4 col-md-4 col-sm-12">
+                <div class="card speedtest-card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4>Upload</h4>
+                            <span class="ti-upload icon text-primary" />
+                        </div>
+                        <div class="text-truncate">
+                            <h3 class="d-inline">`+parseFloat(current.upload).toFixed(1)+`</h3>
+                            <p class="d-inline ml-1 text-white">Mbit/s (current)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(average.upload).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">Mbit/s (average)</p>
+                        </div>
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(max.upload).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">Mbit/s (maximum)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+
+    return (array) ? html : '';
+}
+function buildNetdataItem(array){
+    var html = `
+    <style>
+    .all-netdata .chart {
+        width: 183px;
+        height:183px;
+    }
+    .all-netdata .easyPieChart-value {
+        position: absolute;
+        top: 77px;
+        width: 100%;
+        text-align: center;
+        left: 0;
+        font-size: 24.4625px;
+        font-weight: normal;
+    }
+    .all-netdata .easyPieChart-title {
+        position: absolute;
+        top: 37px;
+        width: 100%;
+        text-align: center;
+        left: 0;
+        font-size: 15px;
+        font-weight: bold;
+    }
+    .all-netdata .easyPieChart-units {
+        position: absolute;
+        top: 118px;
+        width: 100%;
+        text-align: center;
+        left: 0;
+        font-size: 15px;
+        font-weight: normal;
+    }
+
+    .all-netdata .gauge-chart .gauge-value {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: 30px;
+        color: #dcdcdc;
+        font-weight: bold;
+        left: 0;
+        font-size: 26px;
+    }
+
+    .all-netdata .gauge-chart .gauge-title {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: -10px;
+        //color: #fff;
+        font-weight: bold;
+        left: 0;
+        font-size: 15px;
+    }
+    </style>
+    `;
+
+    var buildEasyPieChart = function(e,i) {
+        return `
+        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 my-3 text-center">
+            <div class="d-flex justify-content-center">
+                <div class="chart" id="easyPieChart`+(i+1)+`" data-percent="`+e.percent+`">
+                    <span class="easyPieChart-title">`+e.title+`</span>
+                    <span class="easyPieChart-value" id="easyPieChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
+                    <span class="easyPieChart-units" id="easyPieChart`+(i+1)+`Units">`+e.units+`</span>
+                </div>
+            </div>
+        </div>
+        <script>
+        $(function() {
+            $('#easyPieChart`+(i+1)+`').easyPieChart({
+                size: 183,
+                lineWidth: 7,
+                //animate: false,
+                scaleColor: false,
+                barColor: '#`+e.colour+`',
+                trackColor: '#bababa',
+            });
+        });
+        </script>
+        `;
+    }
+
+    var buildGaugeChart = function(e,i) {
+        return `
+        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 my-3 text-center">
+            <div class="d-flex justify-content-center">
+                <div class="gauge-chart">
+                    <span class="gauge-title" id="gaugeChart`+(i+1)+`Title">`+e.title+`</span>
+                    <span class="gauge-value" id="gaugeChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
+                    <canvas id="gaugeChart`+(i+1)+`">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        <script>
+        $(function() {
+            var opts = {
+                angle: 0.14, // The span of the gauge arc
+                lineWidth: 0.54, // The line thickness
+                radiusScale: 1, // Relative radius
+                pointer: {
+                    length: 0.77, // // Relative to gauge radius
+                    strokeWidth: 0.075, // The thickness
+                    color: '#A1A1A1' // Fill color
+                },
+                limitMax: false,     // If false, max value increases automatically if value > maxValue
+                limitMin: false,     // If true, the min value of the gauge will be fixed
+                colorStart: '#`+e.colour+`',   // Colors
+                colorStop: '#`+e.colour+`',    // just experiment with them
+                strokeColor: '#636363',  // to see which ones work best for you
+                generateGradient: true,
+                highDpiSupport: true,     // High resolution support
+            
+            };
+            var target = document.getElementById('gaugeChart`+(i+1)+`'); // your canvas element
+            var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
+            gauge.maxValue = `+e.max+`; // set max gauge value
+            gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
+            gauge.animationSpeed = 20; // set animation speed (32 is default value)
+            gauge.set(`+e.percent+`); // set actual value
+            window.netdata[`+(i+1)+`] = gauge
+        });
+        </script>
+        `;
+    }
+
+    array.forEach((e, i) => {
+        if(e.chart == 'easypiechart') {
+            html += buildEasyPieChart(e,i);
+        } else if(e.chart == 'gauge') {
+            html += buildGaugeChart(e,i);
+        }
+    });
+    
+    return html;
+}
+function buildNetdata(array){
+    // console.log(array);
+    var data = array.data;
+    if(array === false){ return ''; }
+    window.netdata = [];
+
+    var html = `
+    <style>
+    .clearfix {
+        *zoom: 1;
+      }
+      .all-netdata .clearfix:before,
+      .all-netdata .clearfix:after {
+        display: table;
+        content: "";
+      }
+      .all-netdata .clearfix:after {
+        clear: both;
+      }
+      
+      .all-netdata .easyPieChart {
+          position: relative;
+          text-align: center;
+      }
+      
+      .all-netdata .easyPieChart canvas {
+          position: absolute;
+          top: 0;
+          left: 0;
+      }
+      
+      .all-netdata .chart {
+          float: left;
+          margin: 10px;
+      }
+      
+      .all-netdata .percentage,
+      .all-netdata .label {
+          text-align: center;
+          color: #333;
+          font-weight: 100;
+          font-size: 1.2em;
+          margin-bottom: 0.3em;
+      }
+      
+      .all-netdata .credits {
+          padding-top: 0.5em;
+          clear: both;
+          color: #999;
+      }
+      
+      .all-netdata .credits a {
+          color: #333;
+      }
+      
+      .all-netdata .dark {
+          background: #333;
+      }
+      
+      .all-netdata .dark .percentage-light,
+      .all-netdata .dark .label {
+          text-align: center;
+          color: #999;
+          font-weight: 100;
+          font-size: 1.2em;
+          margin-bottom: 0.3em;
+      }
+      
+      
+      .all-netdata .button {
+        -webkit-box-shadow: inset 0 0 1px #000, inset 0 1px 0 1px rgba(255,255,255,0.2), 0 1px 1px -1px rgba(0, 0, 0, .5);
+        -moz-box-shadow: inset 0 0 1px #000, inset 0 1px 0 1px rgba(255,255,255,0.2), 0 1px 1px -1px rgba(0, 0, 0, .5);
+        box-shadow: inset 0 0 1px #000, inset 0 1px 0 1px rgba(255,255,255,0.2), 0 1px 1px -1px rgba(0, 0, 0, .5);
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        padding: 6px 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: block;
+        margin: 0 auto 2em;
+        max-width: 200px;
+        text-align: center;
+        background-color: #5c5c5c;
+        background-image: -moz-linear-gradient(top, #666666, #4d4d4d);
+        background-image: -ms-linear-gradient(top, #666666, #4d4d4d);
+        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#666666), to(#4d4d4d));
+        background-image: -webkit-linear-gradient(top, #666666, #4d4d4d);
+        background-image: -o-linear-gradient(top, #666666, #4d4d4d);
+        background-image: linear-gradient(top, #666666, #4d4d4d);
+        background-repeat: repeat-x;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#666666', endColorstr='#4d4d4d', GradientType=0);
+        color: #ffffff;
+        text-shadow: 0 1px 1px #333333;
+      }
+      .all-netdata .button:hover {
+        color: #ffffff;
+        text-decoration: none;
+        background-color: #616161;
+        background-image: -moz-linear-gradient(top, #6b6b6b, #525252);
+        background-image: -ms-linear-gradient(top, #6b6b6b, #525252);
+        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#6b6b6b), to(#525252));
+        background-image: -webkit-linear-gradient(top, #6b6b6b, #525252);
+        background-image: -o-linear-gradient(top, #6b6b6b, #525252);
+        background-image: linear-gradient(top, #6b6b6b, #525252);
+        background-repeat: repeat-x;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6b6b6b', endColorstr='#525252', GradientType=0);
+      }
+      .all-netdata .button:active {
+        background-color: #575757;
+        background-image: -moz-linear-gradient(top, #616161, #474747);
+        background-image: -ms-linear-gradient(top, #616161, #474747);
+        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#616161), to(#474747));
+        background-image: -webkit-linear-gradient(top, #616161, #474747);
+        background-image: -o-linear-gradient(top, #616161, #474747);
+        background-image: linear-gradient(top, #616161, #474747);
+        background-repeat: repeat-x;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#616161', endColorstr='#474747', GradientType=0);
+        -webkit-transform: translate(0, 1px);
+        -moz-transform: translate(0, 1px);
+        -ms-transform: translate(0, 1px);
+        -o-transform: translate(0, 1px);
+        transform: translate(0, 1px);
+      }
+      .all-netdata .button:disabled {
+        background-color: #dddddd;
+        background-image: -moz-linear-gradient(top, #e7e7e7, #cdcdcd);
+        background-image: -ms-linear-gradient(top, #e7e7e7, #cdcdcd);
+        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e7e7e7), to(#cdcdcd));
+        background-image: -webkit-linear-gradient(top, #e7e7e7, #cdcdcd);
+        background-image: -o-linear-gradient(top, #e7e7e7, #cdcdcd);
+        background-image: linear-gradient(top, #e7e7e7, #cdcdcd);
+        background-repeat: repeat-x;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e7e7e7', endColorstr='#cdcdcd', GradientType=0);
+        color: #939393;
+        text-shadow: 0 1px 1px #fff;
+      }
+    </style>
+    `;
+
+    html += `
+    <div class="row">
+        
+            <div class="d-lg-flex d-md-block d-sm-block d-xs-block align-items-center justify-content-center all-netdata">
+    `;
+    html += buildNetdataItem(data);
+    html += `
+            </div>
+        
+    </div>`;
+   
+    return (array) ? html : '';
+}
+function homepageNetdata(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageNetdataRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getNetdata'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        if(!tryUpdateNetdata(response.data.data)) {
+            document.getElementById('homepageOrderNetdata').innerHTML = '';
+            if(response.data !== null){
+                $('#homepageOrderNetdata').html(buildNetdata(response.data));
+            }
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Netdata-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageNetdata(timeout); }, timeout);
+}
+function tryUpdateNetdata(array){
+    var existing = false;
+    array.forEach((e,i) => {
+        var id = i + 1;
+        if(e.chart == 'easypiechart') {
+            if($('#easyPieChart' + id).length) {
+                $('#easyPieChart' + id).data('easyPieChart').update(e.percent);
+                $('#easyPieChart' + id + 'Value').html(parseFloat(e.value).toFixed(1));
+                existing = true;
+            }
+        } else if(e.chart == 'gauge') {
+            if(window.netdata) {
+                if(window.netdata[(i+1)]) {
+                    window.netdata[(i+1)].set(e.percent); // set actual value
+                    $('#gaugeChart' + (i+1) + 'Value').html(parseFloat(e.percent).toFixed(1));
+                    existing = true;
+                }
+            } else {
+                existing = false;
+            }
+        } else {
+            existing = false;
+        }
+    });
+    return existing;
 }
 // Thanks Swifty!
 function PopupCenter(url, title, w, h) {
@@ -7287,6 +8811,94 @@ function createElementFromHTML(htmlString) {
     var div = document.createElement('div');
     div.innerHTML = htmlString.trim();
     return div.firstChild;
+}
+function addCoordinatesToInput(latitude, longitude){
+    $('#homepage-Weather-Air-form [name=homepageWeatherAndAirLatitude]').val(latitude).change();
+    $('#homepage-Weather-Air-form [name=homepageWeatherAndAirLongitude]').val(longitude).change();
+    swal.close();
+    message('Coordinates Added','Please Save',activeInfo.settings.notifications.position,'#FFF','success','10000');
+}
+function searchCoordinatesAPI(query){
+    organizrAPI('POST','api/?v1/coordinates/search',{query:query}).success(function(data) {
+        try {
+            var html = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        console.log(html.data);
+        if(html.data.type == 'FeatureCollection'){
+            var entries = '';
+            $.each(html.data.features, function(i,v) {
+                entries += '<li class="text-left"><i class="fa fa-caret-right text-info"></i><span class="mouse" onclick="addCoordinatesToInput(\''+v.center[1]+'\',\''+v.center[0]+'\')">'+v.place_name+'</span></li>';
+            })
+            var div = `
+            <div class="row">
+                <div class="col-12">
+                    <div class="card m-b-0">
+                        <div class="form-horizontal">
+                            <div class="card-body">
+                                <h4 class="card-title" lang="en">Select Place</h4>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <ul class="list-icons">
+                                            `+entries+`
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            if(entries !== ''){
+                swal.close();
+                swal({
+                    content: createElementFromHTML(div),
+                    buttons: false,
+                    className: 'bg-org'
+                })
+            }else{
+                message('API Error','No results found...',activeInfo.settings.notifications.position,'#FFF','warning','10000');
+            }
+
+        }else{
+            message('API Error','',activeInfo.settings.notifications.position,'#FFF','warning','10000');
+            console.error('Organizr Function: API failed');
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Failed");
+    });
+}
+function showLookupCoordinatesModal(){
+    var div = `
+    <div class="row">
+        <div class="col-12">
+            <div class="card m-b-0">
+                <div class="form-horizontal">
+                    <div class="card-body">
+                        <h4 class="card-title" lang="en">Enter City or Address</h4>
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="coordinatesModalCityInput" placeholder="Enter City or Address...">
+                            </div>
+                        </div>
+                        <div class="form-group mb-0 p-r-10 text-right">
+                            <button type="submit" onclick="searchCoordinatesAPI($('#coordinatesModalCityInput').val())" class="btn btn-info waves-effect waves-light">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+    swal({
+        content: createElementFromHTML(div),
+        buttons: false,
+        className: 'bg-org'
+    })
 }
 function showLDAPLoginTest(){
     var div = `

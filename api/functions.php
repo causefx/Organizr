@@ -37,8 +37,8 @@ if (isset($GLOBALS['dbLocation'])) {
 		}
 	}
 	// Oauth?
-	if($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== ''){
-		if(isset(getallheaders()[$GLOBALS['authProxyHeaderName']])){
+	if ($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== '') {
+		if (isset(getallheaders()[$GLOBALS['authProxyHeaderName']])) {
 			coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
 		}
 	}

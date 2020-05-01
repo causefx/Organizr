@@ -78,7 +78,7 @@ function downloadFile($url, $path)
 	$newfname = $folderPath . $path;
 	$context = stream_context_create(
 		array(
-			'ssl'=> array(
+			'ssl' => array(
 				'verify_peer' => true,
 				'cafile' => getCert()
 			)
@@ -187,6 +187,8 @@ function rcopy($src, $dst)
 {
 	ini_set('max_execution_time', 0);
 	set_time_limit(0);
+	$src = cleanPath($src);
+	$dst = cleanPath($dst);
 	if (is_dir($src)) {
 		if (!file_exists($dst)) : mkdir($dst);
 		endif;

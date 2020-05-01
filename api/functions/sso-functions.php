@@ -3,7 +3,7 @@ function ssoCheck($username, $password, $token = null)
 {
 	$test = '';
 	if ($GLOBALS['ssoPlex'] && $token) {
-		coookie('set', 'mpt', $token, $GLOBALS['rememberMeDays']);
+		coookie('set', 'mpt', $token, $GLOBALS['rememberMeDays'], false);
 	}
 	if ($GLOBALS['ssoOmbi']) {
 		$ombiToken = getOmbiToken($username, $password, $token);
@@ -66,8 +66,8 @@ function getTautulliToken($username, $password, $plexToken = null)
 					"User-Agent" => isset($_SERVER ['HTTP_USER_AGENT']) ? $_SERVER ['HTTP_USER_AGENT'] : null
 				);
 				$data = array(
-	                "username" => ($plexToken ? "" : $username),
-	                "password" => ($plexToken ? "" : $password),
+					"username" => ($plexToken ? "" : $username),
+					"password" => ($plexToken ? "" : $password),
 					"token" => $plexToken,
 					"remember_me" => 1,
 				);

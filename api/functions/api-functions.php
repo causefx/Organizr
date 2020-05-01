@@ -79,7 +79,7 @@ function login($array)
 	$oAuth = (isset($oAuth)) ? $oAuth : false;
 	$output = (isset($output)) ? $output : false;
 	$loginAttempts = (isset($loginAttempts)) ? $loginAttempts : false;
-	if($loginAttempts > $GLOBALS['loginAttempts'] || isset($_COOKIE['lockout'])){
+	if ($loginAttempts > $GLOBALS['loginAttempts'] || isset($_COOKIE['lockout'])) {
 		coookieSeconds('set', 'lockout', $GLOBALS['loginLockout'], $GLOBALS['loginLockout']);
 		return 'lockout';
 	}
@@ -90,18 +90,18 @@ function login($array)
 		]);
 		$authSuccess = false;
 		$authProxy = false;
-		if($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== ''){
-			if(isset(getallheaders()[$GLOBALS['authProxyHeaderName']])){
+		if ($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== '') {
+			if (isset(getallheaders()[$GLOBALS['authProxyHeaderName']])) {
 				$usernameHeader = isset(getallheaders()[$GLOBALS['authProxyHeaderName']]) ? getallheaders()[$GLOBALS['authProxyHeaderName']] : $username;
 				writeLog('success', 'Auth Proxy Function - Starting Verification for IP: ' . userIP() . ' for request on: ' . $_SERVER['REMOTE_ADDR'] . ' against IP/Subnet: ' . $GLOBALS['authProxyWhitelist'], $usernameHeader);
 				$whitelistRange = analyzeIP($GLOBALS['authProxyWhitelist']);
 				$from = $whitelistRange['from'];
 				$to = $whitelistRange['to'];
-				$authProxy = authProxyRangeCheck($from,$to);
+				$authProxy = authProxyRangeCheck($from, $to);
 				$username = ($authProxy) ? $usernameHeader : $username;
-				if($authProxy){
+				if ($authProxy) {
 					writeLog('success', 'Auth Proxy Function - IP: ' . userIP() . ' has been verified', $usernameHeader);
-				}else{
+				} else {
 					writeLog('error', 'Auth Proxy Function - IP: ' . userIP() . ' has failed verification', $usernameHeader);
 				}
 			}
@@ -109,6 +109,7 @@ function login($array)
 		$function = 'plugin_auth_' . $GLOBALS['authBackend'];
 		if (!$oAuth) {
 			$result = $database->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE', $username, $username);
+			$result['password'] = $result['password'] ?? '';
 			switch ($GLOBALS['authType']) {
 				case 'external':
 					if (function_exists($function)) {
@@ -190,10 +191,10 @@ function login($array)
 				if ($result['auth_service'] !== 'internal' && strpos($result['auth_service'], '::') !== false) {
 					$tfaProceed = true;
 					// Add check for local or not
-					if($GLOBALS['ignoreTFALocal'] !== false) {
+					if ($GLOBALS['ignoreTFALocal'] !== false) {
 						$tfaProceed = (isLocal()) ? false : true;
 					}
-					if($tfaProceed) {
+					if ($tfaProceed) {
 						$TFA = explode('::', $result['auth_service']);
 						// Is code with login info?
 						if ($tfaCode == '') {
@@ -228,10 +229,10 @@ function login($array)
 			// authentication failed
 			writeLoginLog($username, 'error');
 			writeLog('error', 'Login Function - Wrong Password', $username);
-			if($loginAttempts >= $GLOBALS['loginAttempts']){
+			if ($loginAttempts >= $GLOBALS['loginAttempts']) {
 				coookieSeconds('set', 'lockout', $GLOBALS['loginLockout'], $GLOBALS['loginLockout']);
 				return 'lockout';
-			}else{
+			} else {
 				return 'mismatch';
 			}
 		}
@@ -1219,7 +1220,7 @@ function loadTabs($type = null)
 				$v['count'] = isset($count[$v['category_id']]) ? $count[$v['category_id']] : 0;
 			}
 			$all['categories'] = $categories;
-			switch ($type){
+			switch ($type) {
 				case 'categories':
 					return $all['categories'];
 				case 'tabs':
@@ -1282,11 +1283,12 @@ function getSchema()
 	}
 }
 
-function youtubeSearch($query){
-	if(!$query){
+function youtubeSearch($query)
+{
+	if (!$query) {
 		return 'no query provided!';
 	}
-	$keys = array('AIzaSyBsdt8nLJRMTwOq5PY5A5GLZ2q7scgn01w','AIzaSyD-8SHutB60GCcSM8q_Fle38rJUV7ujd8k','AIzaSyBzOpVBT6VII-b-8gWD0MOEosGg4hyhCsQ');
+	$keys = array('AIzaSyBsdt8nLJRMTwOq5PY5A5GLZ2q7scgn01w', 'AIzaSyD-8SHutB60GCcSM8q_Fle38rJUV7ujd8k', 'AIzaSyBzOpVBT6VII-b-8gWD0MOEosGg4hyhCsQ');
 	$randomKeyIndex = array_rand($keys);
 	$key = $keys[$randomKeyIndex];
 	$apikey = ($GLOBALS['youtubeAPI'] !== '') ? $GLOBALS['youtubeAPI'] : $key;
@@ -1297,4 +1299,63 @@ function youtubeSearch($query){
 		$results = json_decode($response->body, true);
 	}
 	return ($results) ? $results : false;
+}
+
+function scrapePage($array)
+{
+	try {
+		$url = $array['data']['url'] ?? false;
+		$type = $array['data']['type'] ?? false;
+		if (!$url) return array(
+			'result' => 'Error',
+			'data' => 'No URL'
+		);
+		$url = qualifyURL($url);
+		$data = array(
+			'full_url' => $url,
+			'drill_url' => qualifyURL($url, true)
+		);
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		$data['response_code'] = $response->status_code;
+		if ($response->success) {
+			$data['result'] = 'Success';
+			switch ($type) {
+				case 'html':
+					$data['data'] = html_entity_decode($response->body);
+					break;
+				case 'json':
+					$data['data'] = json_decode($response->body);
+					break;
+				default:
+					$data['data'] = $response->body;
+			}
+			return $data;
+		}
+	} catch (Requests_Exception $e) {
+		return array(
+			'result' => 'Error',
+			'data' => $e->getMessage()
+		);
+	};
+	return array('result' => 'Error');
+}
+
+function searchCityForCoordinates($array)
+{
+	try {
+		$query = $array['data']['query'] ?? false;
+		$url = qualifyURL('https://api.mapbox.com/geocoding/v5/mapbox.places/' . urlencode($query) . '.json?access_token=pk.eyJ1IjoiY2F1c2VmeCIsImEiOiJjazhyeGxqeXgwMWd2M2ZydWQ4YmdjdGlzIn0.R50iYuMewh1CnUZ7sFPdHA&limit=5&fuzzyMatch=true');
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			return json_decode($response->body);
+		}
+	} catch (Requests_Exception $e) {
+		return array(
+			'result' => 'Error',
+			'data' => $e->getMessage()
+		);
+	};
+	return array('result' => 'Error');
 }
