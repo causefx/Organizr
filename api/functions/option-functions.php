@@ -192,6 +192,10 @@ function netdataChartOptions()
 		[
 			'name' => 'Easy Pie Chart',
 			'value' => 'easypiechart',
+		],
+		[
+			'name' => 'Gauge',
+			'value' => 'gauge'
 		]
 	];
 }

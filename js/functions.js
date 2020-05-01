@@ -7407,6 +7407,28 @@ function buildNetdataItem(array){
         font-size: 15px;
         font-weight: normal;
     }
+
+    .all-netdata .gauge-chart .gauge-value {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: 30px;
+        color: #dcdcdc;
+        font-weight: bold;
+        left: 0;
+        font-size: 26px;
+    }
+
+    .all-netdata .gauge-chart .gauge-title {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: -10px;
+        //color: #fff;
+        font-weight: bold;
+        left: 0;
+        font-size: 15px;
+    }
     </style>
     `;
 
@@ -7436,9 +7458,55 @@ function buildNetdataItem(array){
         `;
     }
 
+    var buildGaugeChart = function(e,i) {
+        return `
+        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 my-3 text-center">
+            <div class="d-flex justify-content-center">
+                <div class="gauge-chart">
+                    <span class="gauge-title" id="gaugeChart`+(i+1)+`Title">`+e.title+`</span>
+                    <span class="gauge-value" id="gaugeChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
+                    <canvas id="gaugeChart`+(i+1)+`">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        <script>
+        $(function() {
+            var opts = {
+                angle: 0.14, // The span of the gauge arc
+                lineWidth: 0.54, // The line thickness
+                radiusScale: 1, // Relative radius
+                pointer: {
+                    length: 0.77, // // Relative to gauge radius
+                    strokeWidth: 0.075, // The thickness
+                    color: '#A1A1A1' // Fill color
+                },
+                limitMax: false,     // If false, max value increases automatically if value > maxValue
+                limitMin: false,     // If true, the min value of the gauge will be fixed
+                colorStart: '#`+e.colour+`',   // Colors
+                colorStop: '#`+e.colour+`',    // just experiment with them
+                strokeColor: '#636363',  // to see which ones work best for you
+                generateGradient: true,
+                highDpiSupport: true,     // High resolution support
+            
+            };
+            var target = document.getElementById('gaugeChart`+(i+1)+`'); // your canvas element
+            var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
+            gauge.maxValue = `+e.max+`; // set max gauge value
+            gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
+            gauge.animationSpeed = 20; // set animation speed (32 is default value)
+            gauge.set(`+e.percent+`); // set actual value
+            window.netdata[`+(i+1)+`] = gauge
+        });
+        </script>
+        `;
+    }
+
     array.forEach((e, i) => {
         if(e.chart == 'easypiechart') {
             html += buildEasyPieChart(e,i);
+        } else if(e.chart == 'gauge') {
+            html += buildGaugeChart(e,i);
         }
     });
     
@@ -7448,6 +7516,7 @@ function buildNetdata(array){
     // console.log(array);
     var data = array.data;
     if(array === false){ return ''; }
+    window.netdata = [];
 
     var html = `
     <style>
@@ -7628,9 +7697,19 @@ function tryUpdateNetdata(array){
                 $('#easyPieChart' + id).data('easyPieChart').update(e.percent);
                 $('#easyPieChart' + id + 'Value').html(parseFloat(e.value).toFixed(1));
                 existing = true;
+            }
+        } else if(e.chart == 'gauge') {
+            if(window.netdata) {
+                if(window.netdata[(i+1)]) {
+                    window.netdata[(i+1)].set(e.percent); // set actual value
+                    $('#gaugeChart' + (i+1) + 'Value').html(parseFloat(e.percent).toFixed(1));
+                    existing = true;
+                }
             } else {
                 existing = false;
             }
+        } else {
+            existing = false;
         }
     });
     return existing;
