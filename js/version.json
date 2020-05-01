@@ -243,5 +243,12 @@
     "new": "Reworked Ombi Homepage ajax loading screen - faster now|added validate token api endpoint|sidebar rtl for tabs|added org token check and logout if not valid|Add IDs to all downloader Homepage item? (#1213)|Add toggle for login image|increase jdownloader timeout",
     "fixed": "Fix Sidebar doesn't load tabs on iPhone running iOS 13.4+ (#1328)|Attempt to fix api call for image fetch for some users|check if HTTP_X_FORWARDED_SERVER is set|rtorrent/Nzbget API homepage modules and special character in password (#1309)|fix for nzbget connection|2FA login breaks with LastPass Chrome extension (#997)Ombi homepage item \"Item limit\" setting does not change the number of items displayed on the homepage (#1324)",
     "notes": "Updated Dibi|Please report bugs in GitHub issues page|Updated language translations"
+  },
+  "2.0.570": {
+    "date": "2020-05-01 19:15",
+    "title": "Quarantine Update",
+    "new": "Weather Homepage Item|Pi-Hole Homepage Item|Tautulli Homepage Item|Monitorr Homepage Item|Netdata Homepage Item|SpeedTest Homepage Item|HealthChecks Plugin|Bandwidth info to Now Playing|Config files can now contain arrays|Scrape API endpoint|New API Docs WIP located at /api/docs",
+    "fixed": "iOS icon issue|Language Bug|Cache Image timing|fix hardcoded plugins directory for root (#1341)|Ombi Posters|Plex Timeouts|Indent cleanup|Homepage Item shortcut in Tab Editor broken (#1368)|Empty login form submitting|Sanitize username going into log (#1359)|Ombi Div for tv items|edit sttabs for reflect more than just settings tabs|Emby HomePage Add-in - Item Details URL Needs updating (#1290)|Fix JQuery error on settings save (#1356)",
+    "notes": "Added note about Samesite issues|New Radarr Logo|Please report bugs in GitHub issues page"
   }
 }
