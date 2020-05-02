@@ -209,7 +209,7 @@ function netdataColourOptions()
 		],
 		[
 			'name' => 'Green',
-			'value' => 'DD4400',
+			'value' => '46e302',
 		],
 		[
 			'name' => 'Purple',
