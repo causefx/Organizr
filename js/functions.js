@@ -7445,14 +7445,17 @@ function buildNetdataItem(array){
         </div>
         <script>
         $(function() {
-            $('#easyPieChart`+(i+1)+`').easyPieChart({
+            var opts = {
                 size: 183,
                 lineWidth: 7,
-                //animate: false,
                 scaleColor: false,
                 barColor: '#`+e.colour+`',
                 trackColor: '#bababa',
-            });
+            };
+            if(`+e.percent+` == 0) {
+                opts.lineCap = 'butt';
+            }
+            $('#easyPieChart`+(i+1)+`').easyPieChart(opts);
         });
         </script>
         `;
@@ -7494,7 +7497,7 @@ function buildNetdataItem(array){
             var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
             gauge.maxValue = `+e.max+`; // set max gauge value
             gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
-            gauge.animationSpeed = 20; // set animation speed (32 is default value)
+            gauge.animationSpeed = 8; // set animation speed (32 is default value)
             gauge.set(`+e.percent+`); // set actual value
             window.netdata[`+(i+1)+`] = gauge
         });
