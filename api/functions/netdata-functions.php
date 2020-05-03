@@ -1,5 +1,135 @@
 <?php
 
+function netdataSettngsArray()
+{
+    $array = array(
+        'name' => 'Netdata',
+        'enabled' => true,
+        'image' => 'plugins/images/tabs/netdata.png',
+        'category' => 'Monitor',
+        'settings' => array(
+            'Enable' => array(
+                array(
+                    'type' => 'switch',
+                    'name' => 'homepageNetdataEnabled',
+                    'label' => 'Enable',
+                    'value' => $GLOBALS['homepageNetdataEnabled']
+                ),
+                array(
+                    'type' => 'select',
+                    'name' => 'homepageNetdataAuth',
+                    'label' => 'Minimum Authentication',
+                    'value' => $GLOBALS['homepageNetdataAuth'],
+                    'options' => groupSelect()
+                )
+            ),
+            'Connection' => array(
+                array(
+                    'type' => 'html',
+                    'override' => 12,
+                    'label' => 'Info',
+                    'html' => 'The URL needs to be on the same domain as your Organizr, and be proxied by subdomain. E.g. If Organizr is accessed at: https://domain.com, then your URL for netdata should be: https://netdata.domain.com'
+                ),
+                array(
+                    'type' => 'input',
+                    'name' => 'netdataURL',
+                    'label' => 'URL',
+                    'value' => $GLOBALS['netdataURL'],
+                    'help' => 'Please enter the local IP:PORT of your netdata instance'
+                ),
+                array(
+                    'type' => 'blank',
+                    'label' => ''
+                ),
+            ),
+        )
+    );
+
+    for($i = 1; $i <= 7; $i++) {
+        $array['settings']['Chart '.$i] = array(
+            array(
+                'type' => 'switch',
+                'name' => 'netdata'.$i.'Enabled',
+                'label' => 'Enable',
+                'value' => $GLOBALS['netdata'.$i.'Enabled']
+            ),
+            array(
+                'type' => 'blank',
+                'label' => ''
+            ),
+            array(
+                'type' => 'input',
+                'name' => 'netdata'.$i.'Title',
+                'label' => 'Title',
+                'value' => $GLOBALS['netdata'.$i.'Title'],
+                'help' => 'Title for the netdata graph'
+            ),
+            array(
+                'type' => 'select',
+                'name' => 'netdata'.$i.'Data',
+                'label' => 'Data',
+                'value' => $GLOBALS['netdata'.$i.'Data'],
+                'options' => netdataOptions(),
+            ),
+            array(
+                'type' => 'select',
+                'name' => 'netdata'.$i.'Chart',
+                'label' => 'Chart',
+                'value' => $GLOBALS['netdata'.$i.'Chart'],
+                'options' => netdataChartOptions(),
+            ),
+            array(
+                'type' => 'select',
+                'name' => 'netdata'.$i.'Colour',
+                'label' => 'Colour',
+                'value' => $GLOBALS['netdata'.$i.'Colour'],
+                'options' => netdataColourOptions(),
+            ),
+            array(
+                'type' => 'select',
+                'name' => 'netdata'.$i.'Size',
+                'label' => 'Size',
+                'value' => $GLOBALS['netdata'.$i.'Size'],
+                'options' => netdataSizeOptions(),
+            ),
+            array(
+                'type' => 'blank',
+                'label' => ''
+            ),
+            array(
+                'type' => 'switch',
+                'name' => 'netdata'.$i.'lg',
+                'label' => 'Show on large screens',
+                'value' => $GLOBALS['netdata'.$i.'lg']
+            ),
+            array(
+                'type' => 'switch',
+                'name' => 'netdata'.$i.'md',
+                'label' => 'Show on medium screens',
+                'value' => $GLOBALS['netdata'.$i.'md']
+            ),
+            array(
+                'type' => 'switch',
+                'name' => 'netdata'.$i.'sm',
+                'label' => 'Show on small screens',
+                'value' => $GLOBALS['netdata'.$i.'sm']
+            ),
+        );
+    }
+
+    $array['settings']['Options'] =  array(
+        array(
+            'type' => 'select',
+            'name' => 'homepageNetdataRefresh',
+            'label' => 'Refresh Seconds',
+            'value' => $GLOBALS['homepageNetdataRefresh'],
+            'options' => optionTime()
+        ),
+    );
+
+    return $array;
+}
+
 function disk($dimension, $url)
 {
     $data = [];
