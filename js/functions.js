@@ -7560,7 +7560,7 @@ function buildNetdataItem(array){
                 lineWidth: 7,
                 scaleColor: false,
                 barColor: '#`+e.colour+`',
-                trackColor: '#bababa',
+                trackColor: '#636363',
             };
             if(`+e.percent+` == 0) {
                 opts.lineCap = 'butt';
