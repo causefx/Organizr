@@ -7794,7 +7794,7 @@ function buildNetdata(array){
     html += `
     <div class="row">
         
-            <div class="d-lg-block d-md-block d-sm-block d-xs-block align-items-center justify-content-center text-center all-netdata">
+            <div class="d-block text-center all-netdata">
     `;
     html += buildNetdataItem(data);
     html += `
