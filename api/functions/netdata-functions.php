@@ -12,6 +12,7 @@ function disk($dimension, $url)
             $data['value'] = $json['latest_values'][0] / 1000;
             $data['percent'] = ($json['latest_values'][0] / $json['max']) * 100;
             $data['units'] = 'MiB/s';
+            $data['max'] = $json['max'];
         }
     } catch (Requests_Exception $e) {
         writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
@@ -33,6 +34,7 @@ function net($dimension, $url)
             $data['value'] = $json['latest_values'][0] / 1000;
             $data['percent'] = ($json['latest_values'][0] / $json['max']) * 100;
             $data['units'] = 'Mbit/s';
+            $data['max'] = $json['max'];
         }
     } catch (Requests_Exception $e) {
         writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
