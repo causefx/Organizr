@@ -3305,6 +3305,53 @@ function getHomepageList()
 						'options' => netdataSizeOptions(),
 					),
 				),
+				'Chart 7' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'netdata7Enabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['netdata7Enabled']
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'input',
+						'name' => 'netdata7Title',
+						'label' => 'Title',
+						'value' => $GLOBALS['netdata7Title'],
+						'help' => 'Title for the netdata graph'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata7Data',
+						'label' => 'Data',
+						'value' => $GLOBALS['netdata7Data'],
+						'options' => netdataOptions(),
+					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata7Chart',
+						'label' => 'Chart',
+						'value' => $GLOBALS['netdata7Chart'],
+						'options' => netdataChartOptions(),
+					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata7Colour',
+						'label' => 'Colour',
+						'value' => $GLOBALS['netdata7Colour'],
+						'options' => netdataColourOptions(),
+					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata7Size',
+						'label' => 'Size',
+						'value' => $GLOBALS['netdata7Size'],
+						'options' => netdataSizeOptions(),
+					),
+				),
 				'Options' => array(
 					array(
 						'type' => 'select',
