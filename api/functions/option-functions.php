@@ -176,6 +176,18 @@ function netdataOptions()
 			'value' => 'ram-used',
 		],
 		[
+			'name' => 'Used Swap',
+			'value' => 'swap-used',
+		],
+		[
+			'name' => 'Disk space used',
+			'value' => 'disk-used',
+		],
+		[
+			'name' => 'Disk space available',
+			'value' => 'disk-avail',
+		],
+		[
 			'name' => 'IPMI Temperature C',
 			'value' => 'ipmi-temp-c'
 		],

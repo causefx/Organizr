@@ -2754,7 +2754,7 @@ function getNetdata()
 
 		$url = qualifyURL($GLOBALS['netdataURL']);
 
-		for($i = 1; $i < 7; $i++) {
+		for($i = 1; $i < 8; $i++) {
 			if($GLOBALS['netdata'.($i).'Enabled']) {
 				switch($GLOBALS['netdata'.$i.'Data']) {
 					case 'disk-read':
@@ -2779,6 +2779,15 @@ function getNetdata()
 					case 'ram-used':
 						$data = ram($url);
 						break;
+					case 'swap-used':
+						$data = swap($url);
+						break;
+					case 'disk-avail':
+						$data = diskSpace('avail', $url);
+						break;
+					case 'disk-used':
+						$data = diskSpace('used', $url);
+						break;
 					case 'ipmi-temp-c':
 						$data = ipmiTemp($url, 'c');
 						break;
@@ -2790,6 +2799,7 @@ function getNetdata()
 							'title' => 'DNC',
 							'value' => 0,
 							'units' => 'N/A',
+							'max' => 100,
 						];
 						break;
 				}
