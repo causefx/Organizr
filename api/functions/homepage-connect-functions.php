@@ -2808,6 +2808,9 @@ function getNetdata()
 				$data['colour'] = $GLOBALS['netdata'.$i.'Colour'];
 				$data['chart'] = $GLOBALS['netdata'.$i.'Chart'];
 				$data['size'] = $GLOBALS['netdata'.$i.'Size'];
+				$data['lg'] = $GLOBALS['netdata'.($i).'lg'];
+				$data['md'] = $GLOBALS['netdata'.($i).'md'];
+				$data['sm'] = $GLOBALS['netdata'.($i).'sm'];
 
 				array_push($api['data'], $data);
 			}

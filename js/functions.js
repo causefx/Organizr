@@ -7481,19 +7481,19 @@ function buildNetdataItem(array){
 
     .all-netdata .chart-lg .gauge-chart,
     .all-netdata .gauge-cont.chart-lg {
-        height: 300px;
+        //height: 300px;
         width: 300px;
     }
 
     .all-netdata .chart-md .gauge-chart,
     .all-netdata .gauge-cont.chart-md {
-        height: 275px;
+        //height: 275px;
         width: 275px;
     }
 
     .all-netdata .chart-sm .gauge-chart,
     .all-netdata .gauge-cont.chart-sm {
-        height: 250px;
+        //height: 250px;
         width: 250px;
     }
 
@@ -7544,9 +7544,9 @@ function buildNetdataItem(array){
     </style>
     `;
 
-    var buildEasyPieChart = function(e,i,size,easySize) {
+    var buildEasyPieChart = function(e,i,size,easySize,display) {
         return `
-        <div class="chart-`+size+` my-3 text-center">
+        <div class="chart-`+size+` my-3 text-center `+display+`">
             <div class="chart" id="easyPieChart`+(i+1)+`" data-percent="`+e.percent+`">
                 <span class="easyPieChart-title">`+e.title+`</span>
                 <span class="easyPieChart-value" id="easyPieChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
@@ -7571,7 +7571,7 @@ function buildNetdataItem(array){
         `;
     }
 
-    var buildGaugeChart = function(e,i,size,easySize) {
+    var buildGaugeChart = function(e,i,size,easySize,display) {
         switch(size) {
             case 'lg':
                 easySize = 300;
@@ -7585,7 +7585,7 @@ function buildNetdataItem(array){
                 break;
         }
         return `
-        <div class="mx-0 gauge-cont chart-`+size+` my-3 text-center">
+        <div class="mx-0 gauge-cont chart-`+size+` my-3 text-center `+display+`">
             <div class="gauge-chart text-center">
                 <span class="gauge-title d-block" id="gaugeChart`+(i+1)+`Title">`+e.title+`</span>
                 <span class="gauge-value d-block" id="gaugeChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
@@ -7642,10 +7642,29 @@ function buildNetdataItem(array){
                 easySize = 160;
                 break;
         }
+
+        var display = ' ';
+        if(e.lg) {
+            display += ' d-xl-inline-block d-lg-inline-block';
+        } else {
+            display += ' d-xl-none d-lg-none d-none';
+        }
+        if(e.md) {
+            display += ' d-md-inline-block';
+        } else {
+            display += ' d-md-none d-none';
+        }
+        if(e.sm) {
+            display += ' d-sm-inline-block d-xs-inline-block';
+        } else {
+            display += ' d-sm-none d-xs-none d-none';
+        }
+        display += ' ';
+
         if(e.chart == 'easypiechart') {
-            html += buildEasyPieChart(e,i,size,easySize);
+            html += buildEasyPieChart(e,i,size,easySize,display);
         } else if(e.chart == 'gauge') {
-            html += buildGaugeChart(e,i,size,easySize);
+            html += buildGaugeChart(e,i,size,easySize,display);
         }
     });
     

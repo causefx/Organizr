@@ -3069,6 +3069,28 @@ function getHomepageList()
 						'value' => $GLOBALS['netdata1Size'],
 						'options' => netdataSizeOptions(),
 					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata1lg',
+						'label' => 'Show on large screens',
+						'value' => $GLOBALS['netdata1lg']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata1md',
+						'label' => 'Show on medium screens',
+						'value' => $GLOBALS['netdata1md']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata1sm',
+						'label' => 'Show on small screens',
+						'value' => $GLOBALS['netdata1sm']
+					),
 				),
 				'Chart 2' => array(
 					array(
@@ -3115,6 +3137,28 @@ function getHomepageList()
 						'label' => 'Size',
 						'value' => $GLOBALS['netdata2Size'],
 						'options' => netdataSizeOptions(),
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata2lg',
+						'label' => 'Show on large screens',
+						'value' => $GLOBALS['netdata2lg']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata2md',
+						'label' => 'Show on medium screens',
+						'value' => $GLOBALS['netdata2md']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata2sm',
+						'label' => 'Show on small screens',
+						'value' => $GLOBALS['netdata2sm']
 					),
 				),
 				'Chart 3' => array(
@@ -3163,6 +3207,28 @@ function getHomepageList()
 						'value' => $GLOBALS['netdata3Size'],
 						'options' => netdataSizeOptions(),
 					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata3lg',
+						'label' => 'Show on large screens',
+						'value' => $GLOBALS['netdata3lg']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata3md',
+						'label' => 'Show on medium screens',
+						'value' => $GLOBALS['netdata3md']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata3sm',
+						'label' => 'Show on small screens',
+						'value' => $GLOBALS['netdata3sm']
+					),
 				),
 				'Chart 4' => array(
 					array(
@@ -3209,6 +3275,28 @@ function getHomepageList()
 						'label' => 'Size',
 						'value' => $GLOBALS['netdata4Size'],
 						'options' => netdataSizeOptions(),
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata4lg',
+						'label' => 'Show on large screens',
+						'value' => $GLOBALS['netdata4lg']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata4md',
+						'label' => 'Show on medium screens',
+						'value' => $GLOBALS['netdata4md']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata4sm',
+						'label' => 'Show on small screens',
+						'value' => $GLOBALS['netdata4sm']
 					),
 				),
 				'Chart 5' => array(
@@ -3257,6 +3345,28 @@ function getHomepageList()
 						'value' => $GLOBALS['netdata5Size'],
 						'options' => netdataSizeOptions(),
 					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata5lg',
+						'label' => 'Show on large screens',
+						'value' => $GLOBALS['netdata5lg']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata5md',
+						'label' => 'Show on medium screens',
+						'value' => $GLOBALS['netdata5md']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata5sm',
+						'label' => 'Show on small screens',
+						'value' => $GLOBALS['netdata5sm']
+					),
 				),
 				'Chart 6' => array(
 					array(
@@ -3304,6 +3414,28 @@ function getHomepageList()
 						'value' => $GLOBALS['netdata6Size'],
 						'options' => netdataSizeOptions(),
 					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata6lg',
+						'label' => 'Show on large screens',
+						'value' => $GLOBALS['netdata6lg']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata6md',
+						'label' => 'Show on medium screens',
+						'value' => $GLOBALS['netdata6md']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata6sm',
+						'label' => 'Show on small screens',
+						'value' => $GLOBALS['netdata6sm']
+					),
 				),
 				'Chart 7' => array(
 					array(
@@ -3350,6 +3482,28 @@ function getHomepageList()
 						'label' => 'Size',
 						'value' => $GLOBALS['netdata7Size'],
 						'options' => netdataSizeOptions(),
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata7lg',
+						'label' => 'Show on large screens',
+						'value' => $GLOBALS['netdata7lg']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata7md',
+						'label' => 'Show on medium screens',
+						'value' => $GLOBALS['netdata7md']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'netdata7sm',
+						'label' => 'Show on small screens',
+						'value' => $GLOBALS['netdata7sm']
 					),
 				),
 				'Options' => array(
