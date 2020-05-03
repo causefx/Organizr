@@ -3062,6 +3062,13 @@ function getHomepageList()
 						'value' => $GLOBALS['netdata1Colour'],
 						'options' => netdataColourOptions(),
 					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata1Size',
+						'label' => 'Size',
+						'value' => $GLOBALS['netdata1Size'],
+						'options' => netdataSizeOptions(),
+					),
 				),
 				'Chart 2' => array(
 					array(
@@ -3101,6 +3108,13 @@ function getHomepageList()
 						'label' => 'Colour',
 						'value' => $GLOBALS['netdata2Colour'],
 						'options' => netdataColourOptions(),
+					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata2Size',
+						'label' => 'Size',
+						'value' => $GLOBALS['netdata2Size'],
+						'options' => netdataSizeOptions(),
 					),
 				),
 				'Chart 3' => array(
@@ -3142,6 +3156,13 @@ function getHomepageList()
 						'value' => $GLOBALS['netdata3Colour'],
 						'options' => netdataColourOptions(),
 					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata3Size',
+						'label' => 'Size',
+						'value' => $GLOBALS['netdata3Size'],
+						'options' => netdataSizeOptions(),
+					),
 				),
 				'Chart 4' => array(
 					array(
@@ -3181,6 +3202,13 @@ function getHomepageList()
 						'label' => 'Colour',
 						'value' => $GLOBALS['netdata4Colour'],
 						'options' => netdataColourOptions(),
+					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata4Size',
+						'label' => 'Size',
+						'value' => $GLOBALS['netdata4Size'],
+						'options' => netdataSizeOptions(),
 					),
 				),
 				'Chart 5' => array(
@@ -3222,6 +3250,13 @@ function getHomepageList()
 						'value' => $GLOBALS['netdata5Colour'],
 						'options' => netdataColourOptions(),
 					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata5Size',
+						'label' => 'Size',
+						'value' => $GLOBALS['netdata5Size'],
+						'options' => netdataSizeOptions(),
+					),
 				),
 				'Chart 6' => array(
 					array(
@@ -3261,6 +3296,13 @@ function getHomepageList()
 						'label' => 'Colour',
 						'value' => $GLOBALS['netdata6Colour'],
 						'options' => netdataColourOptions(),
+					),
+					array(
+						'type' => 'select',
+						'name' => 'netdata6Size',
+						'label' => 'Size',
+						'value' => $GLOBALS['netdata6Size'],
+						'options' => netdataSizeOptions(),
 					),
 				),
 				'Options' => array(

@@ -229,3 +229,21 @@ function netdataColourOptions()
 		]
 	];
 }
+
+function netdataSizeOptions()
+{
+	return [
+		[
+			'name' => 'Large',
+			'value' => 'lg',
+		],
+		[
+			'name' => 'Medium',
+			'value' => 'md',
+		],
+		[
+			'name' => 'Small',
+			'value' => 'sm'
+		]
+	];
+}

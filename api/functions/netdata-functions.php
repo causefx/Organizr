@@ -32,7 +32,7 @@ function net($dimension, $url)
             $json = json_decode($response->body, true);
             $data['value'] = $json['latest_values'][0] / 1000;
             $data['percent'] = ($json['latest_values'][0] / $json['max']) * 100;
-            $data['units'] = 'megabits/s';
+            $data['units'] = 'Mbit/s';
         }
     } catch (Requests_Exception $e) {
         writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');

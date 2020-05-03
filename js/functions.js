@@ -7376,10 +7376,6 @@ function buildSpeedtest(array){
 function buildNetdataItem(array){
     var html = `
     <style>
-    .all-netdata .chart {
-        width: 183px;
-        height:183px;
-    }
     .all-netdata .easyPieChart-value {
         position: absolute;
         top: 77px;
@@ -7391,11 +7387,9 @@ function buildNetdataItem(array){
     }
     .all-netdata .easyPieChart-title {
         position: absolute;
-        top: 37px;
         width: 100%;
         text-align: center;
         left: 0;
-        font-size: 15px;
         font-weight: bold;
     }
     .all-netdata .easyPieChart-units {
@@ -7409,7 +7403,7 @@ function buildNetdataItem(array){
     }
 
     .all-netdata .gauge-chart .gauge-value {
-        position: absolute;
+        position: relative;
         width: 100%;
         text-align: center;
         top: 30px;
@@ -7420,7 +7414,7 @@ function buildNetdataItem(array){
     }
 
     .all-netdata .gauge-chart .gauge-title {
-        position: absolute;
+        position: relative;
         width: 100%;
         text-align: center;
         top: -10px;
@@ -7429,24 +7423,140 @@ function buildNetdataItem(array){
         left: 0;
         font-size: 15px;
     }
+
+    .all-netdata .chart-lg .gauge-chart .gauge-value {
+        top: 70px;
+        font-size: 26px;
+    }
+
+    .all-netdata .chart-lg .gauge-chart .gauge-title {
+        top: 45px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-md .gauge-chart .gauge-value {
+        top: 65px;
+        font-size: 26px;
+    }
+
+    .all-netdata .chart-md .gauge-chart .gauge-title {
+        top: 45px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-sm .gauge-chart .gauge-value {
+        top: 65px;
+        font-size: 26px;
+    }
+
+    .all-netdata .chart-sm .gauge-chart .gauge-title {
+        top: 45px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-lg,
+    .all-netdata .chart-md,
+    .all-netdata .chart-sm {
+        display: inline-block;
+        margin: 15px;
+    }
+
+    .all-netdata .chart-lg,
+    .all-netdata .chart-lg .chart {
+        height: 180px;
+        width: 180px;
+    }
+
+    .all-netdata .chart-md,
+    .all-netdata .chart-md .chart {
+        height: 160px;
+        width: 160px;
+    }
+
+    .all-netdata .chart-sm,
+    .all-netdata .chart-sm .chart {
+        height: 140px;
+        width: 140px;
+    }
+
+    .all-netdata .chart-lg .gauge-chart,
+    .all-netdata .gauge-cont.chart-lg {
+        height: 300px;
+        width: 300px;
+    }
+
+    .all-netdata .chart-md .gauge-chart,
+    .all-netdata .gauge-cont.chart-md {
+        height: 275px;
+        width: 275px;
+    }
+
+    .all-netdata .chart-sm .gauge-chart,
+    .all-netdata .gauge-cont.chart-sm {
+        height: 250px;
+        width: 250px;
+    }
+
+    .all-netdata .chart-lg .easyPieChart-title {
+        top: 37px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-md .easyPieChart-title {
+        top: 33px;
+        font-size: 13.5px;
+    }
+
+    .all-netdata .chart-sm .easyPieChart-title {
+        top: 30px;
+        font-size: 12px;
+    }
+
+    .all-netdata .chart-lg .easyPieChart-value {
+        top: 75px;
+        font-size: 24.4625px;
+    }
+
+    .all-netdata .chart-md .easyPieChart-value {
+        top: 65px;
+        font-size: 24.4625px;
+    }
+
+    .all-netdata .chart-sm .easyPieChart-value {
+        top: 55px;
+        font-size: 24.4625px;
+    }
+
+    .all-netdata .chart-lg .easyPieChart-units {
+        top: 130px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-md .easyPieChart-units {
+        top: 108px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-sm .easyPieChart-units {
+        top: 95px;
+        font-size: 15px;
+    }
     </style>
     `;
 
-    var buildEasyPieChart = function(e,i) {
+    var buildEasyPieChart = function(e,i,size,easySize) {
         return `
-        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 my-3 text-center">
-            <div class="d-flex justify-content-center">
-                <div class="chart" id="easyPieChart`+(i+1)+`" data-percent="`+e.percent+`">
-                    <span class="easyPieChart-title">`+e.title+`</span>
-                    <span class="easyPieChart-value" id="easyPieChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
-                    <span class="easyPieChart-units" id="easyPieChart`+(i+1)+`Units">`+e.units+`</span>
-                </div>
+        <div class="chart-`+size+` my-3 text-center">
+            <div class="chart" id="easyPieChart`+(i+1)+`" data-percent="`+e.percent+`">
+                <span class="easyPieChart-title">`+e.title+`</span>
+                <span class="easyPieChart-value" id="easyPieChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
+                <span class="easyPieChart-units" id="easyPieChart`+(i+1)+`Units">`+e.units+`</span>
             </div>
         </div>
         <script>
         $(function() {
             var opts = {
-                size: 183,
+                size: `+easySize+`,
                 lineWidth: 7,
                 scaleColor: false,
                 barColor: '#`+e.colour+`',
@@ -7461,16 +7571,25 @@ function buildNetdataItem(array){
         `;
     }
 
-    var buildGaugeChart = function(e,i) {
+    var buildGaugeChart = function(e,i,size,easySize) {
+        switch(size) {
+            case 'lg':
+                easySize = 300;
+                break;
+            case 'sm':
+                easySize = 275;
+                break;
+            case 'md':
+            default:
+                easySize = 250;
+                break;
+        }
         return `
-        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 my-3 text-center">
-            <div class="d-flex justify-content-center">
-                <div class="gauge-chart">
-                    <span class="gauge-title" id="gaugeChart`+(i+1)+`Title">`+e.title+`</span>
-                    <span class="gauge-value" id="gaugeChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
-                    <canvas id="gaugeChart`+(i+1)+`">
-                    </canvas>
-                </div>
+        <div class="mx-0 gauge-cont chart-`+size+` my-3 text-center">
+            <div class="gauge-chart text-center">
+                <span class="gauge-title d-block" id="gaugeChart`+(i+1)+`Title">`+e.title+`</span>
+                <span class="gauge-value d-block" id="gaugeChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
+                <canvas id="gaugeChart`+(i+1)+`" style="width: 100%"></canvas>
             </div>
         </div>
         <script>
@@ -7506,10 +7625,27 @@ function buildNetdataItem(array){
     }
 
     array.forEach((e, i) => {
+        var size = e.size;
+        var easySize;
+        if(size == '') {
+            size = 'md';
+        }
+        switch(size) {
+            case 'lg':
+                easySize = 180;
+                break;
+            case 'sm':
+                easySize = 140;
+                break;
+            case 'md':
+            default:
+                easySize = 160;
+                break;
+        }
         if(e.chart == 'easypiechart') {
-            html += buildEasyPieChart(e,i);
+            html += buildEasyPieChart(e,i,size,easySize);
         } else if(e.chart == 'gauge') {
-            html += buildGaugeChart(e,i);
+            html += buildGaugeChart(e,i,size,easySize);
         }
     });
     
@@ -7548,7 +7684,7 @@ function buildNetdata(array){
       
       .all-netdata .chart {
           float: left;
-          margin: 10px;
+          //margin: 10px;
       }
       
       .all-netdata .percentage,
@@ -7658,7 +7794,7 @@ function buildNetdata(array){
     html += `
     <div class="row">
         
-            <div class="d-lg-flex d-md-block d-sm-block d-xs-block align-items-center justify-content-center all-netdata">
+            <div class="d-lg-block d-md-block d-sm-block d-xs-block align-items-center justify-content-center text-center all-netdata">
     `;
     html += buildNetdataItem(data);
     html += `
