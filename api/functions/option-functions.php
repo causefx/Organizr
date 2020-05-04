@@ -176,12 +176,32 @@ function netdataOptions()
 			'value' => 'ram-used',
 		],
 		[
+			'name' => 'Used Swap',
+			'value' => 'swap-used',
+		],
+		[
+			'name' => 'Disk space used',
+			'value' => 'disk-used',
+		],
+		[
+			'name' => 'Disk space available',
+			'value' => 'disk-avail',
+		],
+		[
 			'name' => 'IPMI Temperature C',
 			'value' => 'ipmi-temp-c'
 		],
 		[
 			'name' => 'IPMI Temperature F',
 			'value' => 'ipmi-temp-f'
+		],
+		[
+			'name' => 'CPU Temperature C',
+			'value' => 'cpu-temp-c'
+		],
+		[
+			'name' => 'CPU Temperature F',
+			'value' => 'cpu-temp-f'
 		],
 	];
 }
@@ -209,7 +229,7 @@ function netdataColourOptions()
 		],
 		[
 			'name' => 'Green',
-			'value' => 'DD4400',
+			'value' => '46e302',
 		],
 		[
 			'name' => 'Purple',
@@ -226,6 +246,24 @@ function netdataColourOptions()
 		[
 			'name' => 'Orange',
 			'value' => 'd66300',
+		]
+	];
+}
+
+function netdataSizeOptions()
+{
+	return [
+		[
+			'name' => 'Large',
+			'value' => 'lg',
+		],
+		[
+			'name' => 'Medium',
+			'value' => 'md',
+		],
+		[
+			'name' => 'Small',
+			'value' => 'sm'
 		]
 	];
 }

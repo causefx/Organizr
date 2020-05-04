@@ -2754,7 +2754,7 @@ function getNetdata()
 
 		$url = qualifyURL($GLOBALS['netdataURL']);
 
-		for($i = 1; $i < 7; $i++) {
+		for($i = 1; $i < 8; $i++) {
 			if($GLOBALS['netdata'.($i).'Enabled']) {
 				switch($GLOBALS['netdata'.$i.'Data']) {
 					case 'disk-read':
@@ -2779,17 +2779,33 @@ function getNetdata()
 					case 'ram-used':
 						$data = ram($url);
 						break;
+					case 'swap-used':
+						$data = swap($url);
+						break;
+					case 'disk-avail':
+						$data = diskSpace('avail', $url);
+						break;
+					case 'disk-used':
+						$data = diskSpace('used', $url);
+						break;
 					case 'ipmi-temp-c':
 						$data = ipmiTemp($url, 'c');
 						break;
 					case 'ipmi-temp-f':
 						$data = ipmiTemp($url, 'f');
 						break;
+					case 'cpu-temp-c':
+						$data = cpuTemp($url, 'c');
+						break;
+					case 'cpu-temp-f':
+						$data = cpuTemp($url, 'f');
+						break;
 					default:
 						$data = [
 							'title' => 'DNC',
 							'value' => 0,
 							'units' => 'N/A',
+							'max' => 100,
 						];
 						break;
 				}
@@ -2797,6 +2813,10 @@ function getNetdata()
 				$data['title'] = $GLOBALS['netdata'.$i.'Title'];
 				$data['colour'] = $GLOBALS['netdata'.$i.'Colour'];
 				$data['chart'] = $GLOBALS['netdata'.$i.'Chart'];
+				$data['size'] = $GLOBALS['netdata'.$i.'Size'];
+				$data['lg'] = $GLOBALS['netdata'.($i).'lg'];
+				$data['md'] = $GLOBALS['netdata'.($i).'md'];
+				$data['sm'] = $GLOBALS['netdata'.($i).'sm'];
 
 				array_push($api['data'], $data);
 			}
