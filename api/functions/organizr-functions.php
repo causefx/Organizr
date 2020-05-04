@@ -2640,9 +2640,14 @@ function settingsPathChecks()
 
 function dockerUpdate()
 {
+	$dockerUpdate = null;
 	chdir('/etc/cont-init.d/');
-	$dockerUpdate = shell_exec('./30-install');
-	return $dockerUpdate;
+	if (file_exists('./30-install')) {
+		$dockerUpdate = shell_exec('./30-install');
+	} elseif (file_exists('./40-install')) {
+		$dockerUpdate = shell_exec('./40-install');
+	}
+	return $dockerUpdate ?? 'Update Failed';
 }
 
 function windowsUpdate()
