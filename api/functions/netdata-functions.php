@@ -288,3 +288,36 @@ function getPercent($val, $max)
         return ( $val / $max ) * 100;
     }
 }
+
+function cpuTemp($url, $unit)
+{
+    $data = [];
+    $dataUrl = $url . '/api/v1/data?chart=sensors.coretemp-isa-0000_temperature&format=json&points=509&group=average&gtime=0&options=ms|flip|jsonwrap|nonzero&after=-540';
+    try {
+        $response = Requests::get($dataUrl);
+        if ($response->success) {
+            $json = json_decode($response->body, true);
+            $vals = $json['latest_values'];
+            $vals = array_filter($vals);
+            if(count($vals) > 0) {
+                $data['value'] = array_sum($vals) / count($vals);
+            } else {
+                $data['value'] = 0;
+            }
+            
+            if($unit == 'c') {
+                $data['percent'] = ($data['value'] / 50) * 100;
+                $data['max'] = 50;
+            } else if($unit == 'f') {
+                $data['value'] = ($data['value'] * 9/5) + 32;
+                $data['percent'] = ($data['value'] / 122) * 100;
+                $data['max'] = 122;
+            }
+            $data['units'] = '°'.strtoupper($unit);
+        }
+    } catch (Requests_Exception $e) {
+        writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+    };
+
+    return $data;
+}

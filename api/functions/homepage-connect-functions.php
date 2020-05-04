@@ -2794,6 +2794,12 @@ function getNetdata()
 					case 'ipmi-temp-f':
 						$data = ipmiTemp($url, 'f');
 						break;
+					case 'cpu-temp-c':
+						$data = cpuTemp($url, 'c');
+						break;
+					case 'cpu-temp-f':
+						$data = cpuTemp($url, 'f');
+						break;
 					default:
 						$data = [
 							'title' => 'DNC',
