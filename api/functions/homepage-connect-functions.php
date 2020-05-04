@@ -2800,6 +2800,9 @@ function getNetdata()
 					case 'cpu-temp-f':
 						$data = cpuTemp($url, 'f');
 						break;
+					case 'custom':
+						$data = customNetdata($url, $i);
+						break;
 					default:
 						$data = [
 							'title' => 'DNC',

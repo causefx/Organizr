@@ -203,6 +203,10 @@ function netdataOptions()
 			'name' => 'CPU Temperature F',
 			'value' => 'cpu-temp-f'
 		],
+		[
+			'name' => 'Custom',
+			'value' => 'custom',
+		]
 	];
 }
 

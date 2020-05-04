@@ -7661,7 +7661,9 @@ function buildNetdataItem(array){
         }
         display += ' ';
 
-        if(e.chart == 'easypiechart') {
+        if(e.error) {
+            console.log('Netdata error (Chart ' + (i+1) + '): ' + e.error);
+        } else if(e.chart == 'easypiechart') {
             html += buildEasyPieChart(e,i,size,easySize,display);
         } else if(e.chart == 'gauge') {
             html += buildGaugeChart(e,i,size,easySize,display);

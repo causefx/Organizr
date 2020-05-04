@@ -381,5 +381,8 @@ return array(
 	'netdata4Enabled' => false,
 	'netdata5Enabled' => false,
 	'netdata6Enabled' => false,
-	'netdata7Enabled' => false
+	'netdata7Enabled' => false,
+	'netdataCustom' => '{
+    
+	}'
 );

@@ -117,6 +117,44 @@ function netdataSettngsArray()
         );
     }
 
+    $array['settings']['Custom data'] = [
+        [
+            'type' => 'html',
+            'label' => '',
+            'override' => 12,
+            'html' => <<<HTML
+            <div>
+                <p>This is where you can define custom data sources for your netdata charts. To use a custom source, you need to select 'Custom' in the data field for the chart.</p>
+                <p>To define a custom data source, you need to add an entry to the JSON below, where the key is the chart number you want the custom data to be used for. Here is an example to set chart 1's custom data source to RAM percentage:</p>
+                <pre>{
+                "1": {
+                    "url": "/api/v1/data?chart=system.ram&format=array&points=540&group=average&gtime=0&options=absolute|percentage|jsonwrap|nonzero&after=-540&dimensions=used|buffers|active|wired",
+                    "value": "result,0",
+                    "units": "%",
+                    "max": 100
+                }
+            }</pre>
+                <p>The URL is appended to your netdata URL and returns JSON formatted data. The value field tells Organizr how to return the value you want from the netdata API. This should be formatted as comma-separated keys to access the desired value. So the value field here will access data from an array like this:</p>
+                <pre>[
+                'result': [
+                    VALUE,
+                    // more values...
+                ]
+            ]</pre>
+            </div>
+            HTML
+        ],
+        [
+            'type' => 'textbox',
+            'name' => 'netdataCustom',
+            'class' => 'javaTextarea',
+            'label' => 'Custom definitions',
+            'override' => 12,
+            'value' => $GLOBALS['netdataCustom'],
+            'attr' => 'rows="10"',
+        ]
+    ];
+
     $array['settings']['Options'] =  array(
         array(
             'type' => 'select',
@@ -320,4 +358,57 @@ function cpuTemp($url, $unit)
     };
 
     return $data;
+}
+
+function customNetdata($url, $id)
+{
+    try {
+        $customs = json_decode($GLOBALS['netdataCustom'], true, 512, JSON_THROW_ON_ERROR);
+    } catch(Exception $e) {
+        $customs = false;
+    }
+        
+    if($customs == false) {
+        return [
+            'error' => 'unable to parse custom JSON'
+        ];
+    } else if(!isset($customs[$id])) {
+        return [
+            'error' => 'custom definition not found'
+        ];
+    } else {
+        $data = [];
+        $custom = $customs[$id];
+        $dataUrl = $url . '/' . $custom['url'];
+        try {
+            $response = Requests::get($dataUrl);
+            if ($response->success) {
+                $json = json_decode($response->body, true);
+                $data['max'] = $custom['max'];
+                $data['units'] = $custom['units'];
+
+                $selectors = explode(',', $custom['value']);
+                foreach($selectors as $selector) {
+                    if(is_numeric($selector)) {
+                        $selector = (int) $selector;
+                    }
+                    if(!isset($data['value'])) {
+                        $data['value'] = $json[$selector];
+                    } else {
+                        $data['value'] = $data['value'][$selector];
+                    }
+                }
+
+                if($data['max'] == 0) {
+                    $data['percent'] = 0;
+                } else {
+                    $data['percent'] = ( $data['value'] / $data['max'] ) * 100;
+                }
+            }
+        } catch (Requests_Exception $e) {
+            writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+        };
+    
+        return $data;
+    }
 }
