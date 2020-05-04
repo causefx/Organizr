@@ -140,7 +140,7 @@ function disk($dimension, $url)
         if ($response->success) {
             $json = json_decode($response->body, true);
             $data['value'] = $json['latest_values'][0] / 1000;
-            $data['percent'] = ($json['latest_values'][0] / $json['max']) * 100;
+            $data['percent'] =  getPercent($json['latest_values'][0], $json['max']);
             $data['units'] = 'MiB/s';
             $data['max'] = $json['max'];
         }
@@ -183,7 +183,7 @@ function net($dimension, $url)
         if ($response->success) {
             $json = json_decode($response->body, true);
             $data['value'] = $json['latest_values'][0] / 1000;
-            $data['percent'] = ($json['latest_values'][0] / $json['max']) * 100;
+            $data['percent'] = getPercent($json['latest_values'][0], $json['max']);
             $data['units'] = 'Mbit/s';
             $data['max'] = $json['max'];
         }
@@ -278,4 +278,13 @@ function ipmiTemp($url, $unit)
     };
 
     return $data;
+}
+
+function getPercent($val, $max)
+{
+    if($max == 0) {
+        return 0;
+    } else {
+        return ( $val / $max ) * 100;
+    }
 }
