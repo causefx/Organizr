@@ -131,7 +131,8 @@ function netdataSettngsArray()
                     "url": "/api/v1/data?chart=system.ram&format=array&points=540&group=average&gtime=0&options=absolute|percentage|jsonwrap|nonzero&after=-540&dimensions=used|buffers|active|wired",
                     "value": "result,0",
                     "units": "%",
-                    "max": 100
+                    "max": 100,
+                    "mutator": ""
                 }
             }</pre>
                 <p>The URL is appended to your netdata URL and returns JSON formatted data. The value field tells Organizr how to return the value you want from the netdata API. This should be formatted as comma-separated keys to access the desired value. So the value field here will access data from an array like this:</p>
@@ -141,6 +142,7 @@ function netdataSettngsArray()
                     // more values...
                 ]
             ]</pre>
+            <p>The 'mutator' field is optional and can be used to perform simple mathematical operations on the result (+, -, /, *). For example: dividing the result by 1000 would be '/1000'. These operations can be chained together by putting them in a comma-seprated format.
             </div>
             HTML
         ],
@@ -400,6 +402,10 @@ function customNetdata($url, $id)
                             $data['value'] = $data['value'][$selector];
                         }
                     }
+
+                    if(isset($custom['mutator'])) {
+                        $data['value'] = parseMutators($data['value'], $custom['mutator']);
+                    }
     
                     if($data['max'] == 0) {
                         $data['percent'] = 0;
@@ -416,4 +422,35 @@ function customNetdata($url, $id)
     
         return $data;
     }
+}
+
+function parseMutators($val, $mutators)
+{
+    $mutators = explode(',', $mutators);
+    foreach($mutators as $m) {
+        $op = $m[0];
+        try {
+            $m = (float) substr($m, 1);
+            switch($op) {
+                case '+':
+                    $val = $val + $m;
+                    break;
+                case '-':
+                    $val = $val - $m;
+                    break;
+                case '/':
+                    $val = $val / $m;
+                    break;
+                case '*':
+                    $val = $val * $m;
+                    break;
+                default:
+                    break;
+            }
+        } catch(Exception $e) {
+            //
+        }
+    }
+
+    return $val;
 }
