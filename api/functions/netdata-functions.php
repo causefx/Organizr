@@ -379,35 +379,40 @@ function customNetdata($url, $id)
     } else {
         $data = [];
         $custom = $customs[$id];
-        $dataUrl = $url . '/' . $custom['url'];
-        try {
-            $response = Requests::get($dataUrl);
-            if ($response->success) {
-                $json = json_decode($response->body, true);
-                $data['max'] = $custom['max'];
-                $data['units'] = $custom['units'];
 
-                $selectors = explode(',', $custom['value']);
-                foreach($selectors as $selector) {
-                    if(is_numeric($selector)) {
-                        $selector = (int) $selector;
+        if(isset($custom['url']) && isset($custom['value']) && isset($custom['max']) && isset($custom['units'])) {
+            $dataUrl = $url . '/' . $custom['url'];
+            try {
+                $response = Requests::get($dataUrl);
+                if ($response->success) {
+                    $json = json_decode($response->body, true);
+                    $data['max'] = $custom['max'];
+                    $data['units'] = $custom['units'];
+    
+                    $selectors = explode(',', $custom['value']);
+                    foreach($selectors as $selector) {
+                        if(is_numeric($selector)) {
+                            $selector = (int) $selector;
+                        }
+                        if(!isset($data['value'])) {
+                            $data['value'] = $json[$selector];
+                        } else {
+                            $data['value'] = $data['value'][$selector];
+                        }
                     }
-                    if(!isset($data['value'])) {
-                        $data['value'] = $json[$selector];
+    
+                    if($data['max'] == 0) {
+                        $data['percent'] = 0;
                     } else {
-                        $data['value'] = $data['value'][$selector];
+                        $data['percent'] = ( $data['value'] / $data['max'] ) * 100;
                     }
                 }
-
-                if($data['max'] == 0) {
-                    $data['percent'] = 0;
-                } else {
-                    $data['percent'] = ( $data['value'] / $data['max'] ) * 100;
-                }
-            }
-        } catch (Requests_Exception $e) {
-            writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-        };
+            } catch (Requests_Exception $e) {
+                writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+            };
+        } else {
+            $data['error'] = 'custom definition incomplete';
+        }
     
         return $data;
     }
