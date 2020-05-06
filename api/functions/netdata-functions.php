@@ -147,13 +147,20 @@ function netdataSettngsArray()
             HTML
         ],
         [
-            'type' => 'textbox',
-            'name' => 'netdataCustom',
-            'class' => 'javaTextarea',
+            'type' => 'html',
+            'name' => 'netdataCustomTextAce',
+            'class' => 'jsonTextarea hidden',
             'label' => 'Custom definitions',
             'override' => 12,
+            'html' => '<div id="netdataCustomTextAce" style="height: 300px;">' . htmlentities($GLOBALS['netdataCustom']) . '</div>',
+        ],
+        [
+            'type' => 'textbox',
+            'name' => 'netdataCustom',
+            'class' => 'jsonTextarea hidden',
+            'id' => 'netdataCustomText',
+            'label' => '',
             'value' => $GLOBALS['netdataCustom'],
-            'attr' => 'rows="10"',
         ]
     ];
 

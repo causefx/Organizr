@@ -1988,3 +1988,22 @@ $(document).on('click', '.allGroupsList', function() {
     console.log($(this));
     $(this).toggleClass('active');
 });
+// Control init of custom netdata JSON editor
+$(document).on('click', 'li a[aria-controls="Custom data"]', function() {
+    var resizeEditor = function(jsonEditor) {
+        const aceEditor = jsonEditor;
+        const newHeight = aceEditor.getSession().getScreenLength() * (aceEditor.renderer.lineHeight + aceEditor.renderer.scrollBar.getWidth());
+        aceEditor.container.style.height = `${newHeight}px`;
+        aceEditor.resize();
+    }
+
+    jsonEditor = ace.edit("netdataCustomTextAce");
+    var JsonMode = ace.require("ace/mode/javascript").Mode;
+    jsonEditor.session.setMode(new JsonMode());
+    jsonEditor.setTheme("ace/theme/idle_fingers");
+    jsonEditor.setShowPrintMargin(false);
+    jsonEditor.session.on('change', function(delta) {
+        $('#netdataCustomText').val(jsonEditor.getValue());
+        $('#customize-appearance-form-save').removeClass('hidden');
+    });
+});
