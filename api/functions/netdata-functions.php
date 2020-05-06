@@ -422,7 +422,7 @@ function customNetdata($url, $id)
         $data = [];
         $custom = $customs[$id];
 
-        if(isset($custom['url']) && isset($custom['value']) && isset($custom['max']) && isset($custom['units'])) {
+        if( isset($custom['url']) && isset($custom['value']) ) {
             if( isset($custom['netdata']) && $custom['netdata'] != '' ) {
                 $url = qualifyURL($custom['netdata']);
             }
@@ -431,7 +431,15 @@ function customNetdata($url, $id)
                 $response = Requests::get($dataUrl);
                 if ($response->success) {
                     $json = json_decode($response->body, true);
+
+                    if( !isset($custom['max']) || $custom['max'] == '' ) {
+                        $custom['max'] = 100;
+                    }
                     $data['max'] = $custom['max'];
+
+                    if( !isset($custom['units']) || $custom['units'] == '' ) {
+                        $custom['units'] = '%';
+                    }
                     $data['units'] = $custom['units'];
     
                     $selectors = explode(',', $custom['value']);
