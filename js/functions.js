@@ -7673,7 +7673,6 @@ function buildNetdataItem(array){
     return html;
 }
 function buildNetdata(array){
-    // console.log(array);
     var data = array.data;
     if(array === false){ return ''; }
     window.netdata = [];
@@ -7862,7 +7861,7 @@ function tryUpdateNetdata(array){
             if(window.netdata) {
                 if(window.netdata[(i+1)]) {
                     window.netdata[(i+1)].set(e.percent); // set actual value
-                    $('#gaugeChart' + (i+1) + 'Value').html(parseFloat(e.percent).toFixed(1));
+                    $('#gaugeChart' + (i+1) + 'Value').html(parseFloat(e.value).toFixed(1));
                     existing = true;
                 }
             } else {

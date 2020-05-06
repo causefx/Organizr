@@ -131,8 +131,7 @@ function netdataSettngsArray()
                     "url": "/api/v1/data?chart=system.ram&format=array&points=540&group=average&gtime=0&options=absolute|percentage|jsonwrap|nonzero&after=-540&dimensions=used|buffers|active|wired",
                     "value": "result,0",
                     "units": "%",
-                    "max": 100,
-                    "mutator": ""
+                    "max": 100
                 }
             }</pre>
                 <p>The URL is appended to your netdata URL and returns JSON formatted data. The value field tells Organizr how to return the value you want from the netdata API. This should be formatted as comma-separated keys to access the desired value. So the value field here will access data from an array like this:</p>
@@ -142,7 +141,47 @@ function netdataSettngsArray()
                     // more values...
                 ]
             ]</pre>
-            <p>The 'mutator' field is optional and can be used to perform simple mathematical operations on the result (+, -, /, *). For example: dividing the result by 1000 would be '/1000'. These operations can be chained together by putting them in a comma-seprated format.
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                        <th>Required</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>url</td>
+                        <td>Specifies the netdata API endpoint</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>value</td>
+                        <td>Specifies the selector used to get the data form the netdata response</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>units</td>
+                        <td>Specifies the units shown in the graph/chart</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>max</td>
+                        <td>Specifies the maximum possible value for the data</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>mutator</td>
+                        <td>Used to perform simple mathematical operations on the result (+, -, /, *). For example: dividing the result by 1000 would be '/1000'. These operations can be chained together by putting them in a comma-seprated format.</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>netdata</td>
+                        <td>Can be used to override the netdata instance data is retrieved from (in the format: http://<IP>:<PORT>)</td>
+                        <td>No</td>
+                    </tr>
+                </tbody>
+            </table>
             </div>
             HTML
         ],
@@ -390,6 +429,9 @@ function customNetdata($url, $id)
         $custom = $customs[$id];
 
         if(isset($custom['url']) && isset($custom['value']) && isset($custom['max']) && isset($custom['units'])) {
+            if( isset($custom['netdata']) && $custom['netdata'] != '' ) {
+                $url = qualifyURL($custom['netdata']);
+            }
             $dataUrl = $url . '/' . $custom['url'];
             try {
                 $response = Requests::get($dataUrl);
