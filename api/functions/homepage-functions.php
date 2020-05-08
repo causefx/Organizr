@@ -2619,7 +2619,7 @@ function getHomepageList()
 		),
 		array(
 			'name' => 'Tautulli',
-			'enabled' => true,
+			'enabled' => (strpos('personal', $GLOBALS['license']) !== false) ? true : false,
 			'image' => 'plugins/images/tabs/tautulli.png',
 			'category' => 'Monitor',
 			'settings' => array(
