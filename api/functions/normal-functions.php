@@ -79,6 +79,7 @@ function parseDomain($value, $force = false)
 // Cookie Custom Function
 function coookie($type, $name, $value = '', $days = -1, $http = true)
 {
+	$days = ($days > 365) ? 365 : $days;
 	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https") {
 		$Secure = true;
 		$HTTPOnly = true;
