@@ -188,21 +188,9 @@ function netdataOptions()
 			'value' => 'disk-avail',
 		],
 		[
-			'name' => 'IPMI Temperature C',
-			'value' => 'ipmi-temp-c'
-		],
-		[
-			'name' => 'IPMI Temperature F',
-			'value' => 'ipmi-temp-f'
-		],
-		[
-			'name' => 'CPU Temperature C',
-			'value' => 'cpu-temp-c'
-		],
-		[
-			'name' => 'CPU Temperature F',
-			'value' => 'cpu-temp-f'
-		],
+			'name' => 'Custom',
+			'value' => 'custom',
+		]
 	];
 }
 

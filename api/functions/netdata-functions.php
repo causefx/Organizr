@@ -117,6 +117,86 @@ function netdataSettngsArray()
         );
     }
 
+    $array['settings']['Custom data'] = [
+        [
+            'type' => 'html',
+            'label' => '',
+            'override' => 12,
+            'html' => <<<HTML
+            <div>
+                <p>This is where you can define custom data sources for your netdata charts. To use a custom source, you need to select 'Custom' in the data field for the chart.</p>
+                <p>To define a custom data source, you need to add an entry to the JSON below, where the key is the chart number you want the custom data to be used for. Here is an example to set chart 1's custom data source to RAM percentage:</p>
+                <pre>{
+                "1": {
+                    "url": "/api/v1/data?chart=system.ram&format=array&points=540&group=average&gtime=0&options=absolute|percentage|jsonwrap|nonzero&after=-540&dimensions=used|buffers|active|wired",
+                    "value": "result,0",
+                    "units": "%",
+                    "max": 100
+                }
+            }</pre>
+                <p>The URL is appended to your netdata URL and returns JSON formatted data. The value field tells Organizr how to return the value you want from the netdata API. This should be formatted as comma-separated keys to access the desired value.</p>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                            <th>Required</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>url</td>
+                            <td>Specifies the netdata API endpoint</td>
+                            <td><i class="fa fa-check text-success" aria-hidden="true"></i></td>
+                        </tr>
+                        <tr>
+                            <td>value</td>
+                            <td>Specifies the selector used to get the data form the netdata response</td>
+                            <td><i class="fa fa-check text-success" aria-hidden="true"></i></td>
+                        </tr>
+                        <tr>
+                            <td>units</td>
+                            <td>Specifies the units shown in the graph/chart. Defaults to %</td>
+                            <td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
+                        </tr>
+                        <tr>
+                            <td>max</td>
+                            <td>Specifies the maximum possible value for the data. Defaults to 100</td>
+                            <td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
+                        </tr>
+                        <tr>
+                            <td>mutator</td>
+                            <td>Used to perform simple mathematical operations on the result (+, -, /, *). For example: dividing the result by 1000 would be '/1000'. These operations can be chained together by putting them in a comma-seprated format.</td>
+                            <td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
+                        </tr>
+                        <tr>
+                            <td>netdata</td>
+                            <td>Can be used to override the netdata instance data is retrieved from (in the format: http://IP:PORT)</td>
+                            <td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            HTML
+        ],
+        [
+            'type' => 'html',
+            'name' => 'netdataCustomTextAce',
+            'class' => 'jsonTextarea hidden',
+            'label' => 'Custom definitions',
+            'override' => 12,
+            'html' => '<div id="netdataCustomTextAce" style="height: 300px;">' . htmlentities($GLOBALS['netdataCustom']) . '</div>',
+        ],
+        [
+            'type' => 'textbox',
+            'name' => 'netdataCustom',
+            'class' => 'jsonTextarea hidden',
+            'id' => 'netdataCustomText',
+            'label' => '',
+            'value' => $GLOBALS['netdataCustom'],
+        ]
+    ];
+
     $array['settings']['Options'] =  array(
         array(
             'type' => 'select',
@@ -254,32 +334,6 @@ function swap($url)
     return $data;
 }
 
-function ipmiTemp($url, $unit)
-{
-    $data = [];
-    $dataUrl = $url . '/api/v1/data?chart=ipmi.temperatures_c&format=array&points=540&group=average&gtime=0&options=absolute|jsonwrap|nonzero&after=-540';
-    try {
-        $response = Requests::get($dataUrl);
-        if ($response->success) {
-            $json = json_decode($response->body, true);
-            $data['value'] = $json['result'][0];
-            if($unit == 'c') {
-                $data['percent'] = ($data['value'] / 50) * 100;
-                $data['max'] = 50;
-            } else if($unit == 'f') {
-                $data['value'] = ($data['value'] * 9/5) + 32;
-                $data['percent'] = ($data['value'] / 122) * 100;
-                $data['max'] = 122;
-            }
-            $data['units'] = '°'.strtoupper($unit);
-        }
-    } catch (Requests_Exception $e) {
-        writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-    };
-
-    return $data;
-}
-
 function getPercent($val, $max)
 {
     if($max == 0) {
@@ -289,35 +343,106 @@ function getPercent($val, $max)
     }
 }
 
-function cpuTemp($url, $unit)
+function customNetdata($url, $id)
 {
-    $data = [];
-    $dataUrl = $url . '/api/v1/data?chart=sensors.coretemp-isa-0000_temperature&format=json&points=509&group=average&gtime=0&options=ms|flip|jsonwrap|nonzero&after=-540';
     try {
-        $response = Requests::get($dataUrl);
-        if ($response->success) {
-            $json = json_decode($response->body, true);
-            $vals = $json['latest_values'];
-            $vals = array_filter($vals);
-            if(count($vals) > 0) {
-                $data['value'] = array_sum($vals) / count($vals);
-            } else {
-                $data['value'] = 0;
-            }
-            
-            if($unit == 'c') {
-                $data['percent'] = ($data['value'] / 50) * 100;
-                $data['max'] = 50;
-            } else if($unit == 'f') {
-                $data['value'] = ($data['value'] * 9/5) + 32;
-                $data['percent'] = ($data['value'] / 122) * 100;
-                $data['max'] = 122;
-            }
-            $data['units'] = '°'.strtoupper($unit);
-        }
-    } catch (Requests_Exception $e) {
-        writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-    };
+        $customs = json_decode($GLOBALS['netdataCustom'], true, 512, JSON_THROW_ON_ERROR);
+    } catch(Exception $e) {
+        $customs = false;
+    }
+        
+    if($customs == false) {
+        return [
+            'error' => 'unable to parse custom JSON'
+        ];
+    } else if(!isset($customs[$id])) {
+        return [
+            'error' => 'custom definition not found'
+        ];
+    } else {
+        $data = [];
+        $custom = $customs[$id];
 
-    return $data;
+        if( isset($custom['url']) && isset($custom['value']) ) {
+            if( isset($custom['netdata']) && $custom['netdata'] != '' ) {
+                $url = qualifyURL($custom['netdata']);
+            }
+            $dataUrl = $url . '/' . $custom['url'];
+            try {
+                $response = Requests::get($dataUrl);
+                if ($response->success) {
+                    $json = json_decode($response->body, true);
+
+                    if( !isset($custom['max']) || $custom['max'] == '' ) {
+                        $custom['max'] = 100;
+                    }
+                    $data['max'] = $custom['max'];
+
+                    if( !isset($custom['units']) || $custom['units'] == '' ) {
+                        $custom['units'] = '%';
+                    }
+                    $data['units'] = $custom['units'];
+    
+                    $selectors = explode(',', $custom['value']);
+                    foreach($selectors as $selector) {
+                        if(is_numeric($selector)) {
+                            $selector = (int) $selector;
+                        }
+                        if(!isset($data['value'])) {
+                            $data['value'] = $json[$selector];
+                        } else {
+                            $data['value'] = $data['value'][$selector];
+                        }
+                    }
+
+                    if(isset($custom['mutator'])) {
+                        $data['value'] = parseMutators($data['value'], $custom['mutator']);
+                    }
+    
+                    if($data['max'] == 0) {
+                        $data['percent'] = 0;
+                    } else {
+                        $data['percent'] = ( $data['value'] / $data['max'] ) * 100;
+                    }
+                }
+            } catch (Requests_Exception $e) {
+                writeLog('error', 'Netdata Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+            };
+        } else {
+            $data['error'] = 'custom definition incomplete';
+        }
+    
+        return $data;
+    }
+}
+
+function parseMutators($val, $mutators)
+{
+    $mutators = explode(',', $mutators);
+    foreach($mutators as $m) {
+        $op = $m[0];
+        try {
+            $m = (float) substr($m, 1);
+            switch($op) {
+                case '+':
+                    $val = $val + $m;
+                    break;
+                case '-':
+                    $val = $val - $m;
+                    break;
+                case '/':
+                    $val = $val / $m;
+                    break;
+                case '*':
+                    $val = $val * $m;
+                    break;
+                default:
+                    break;
+            }
+        } catch(Exception $e) {
+            //
+        }
+    }
+
+    return $val;
 }
