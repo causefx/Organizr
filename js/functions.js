@@ -6094,9 +6094,12 @@ function buildPiholeItem(array){
             <div class="card text-white mb-3 pihole-stat bg-green">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Total queries</p>`;
+                        <p class="d-inline mr-1">Total queries</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
@@ -6114,9 +6117,12 @@ function buildPiholeItem(array){
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-aqua">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Queries Blocked</p>`;
+                        <p class="d-inline mr-1">Queries Blocked</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
@@ -6134,9 +6140,12 @@ function buildPiholeItem(array){
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-yellow">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Percent Blocked</p>`;
+                        <p class="d-inline mr-1">Percent Blocked</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_percentage_today'].toFixed(1)+`%</h3>`
         };
         card += `
@@ -6154,9 +6163,12 @@ function buildPiholeItem(array){
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Domains on Blocklist</p>`;
+                        <p class="d-inline mr-1">Domains on Blocklist</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
@@ -6177,15 +6189,6 @@ function buildPiholeItem(array){
         stats += '</div>';
     } else {
         for(var key in array['data']) {
-            if(length > 1) {
-                stats += `
-                <div class="row mb-2">
-                    <div class="col-sm-12">
-                        `+key+`
-                    </div>
-                </div>
-                `;
-            }
             var data = array['data'][key];
             obj = {};
             obj[key] = data;
