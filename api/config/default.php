@@ -384,5 +384,8 @@ return array(
 	'netdata7Enabled' => false,
 	'netdataCustom' => '{
     
-	}'
+	}',
+	'githubMenuLink' => true,
+	'organizrSupportMenuLink' => true,
+	'organizrDocsMenuLink' => true
 );

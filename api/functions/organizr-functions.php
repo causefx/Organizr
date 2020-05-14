@@ -131,6 +131,11 @@ function organizrSpecialSettings()
 			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth']),
 			'debugErrors' => $GLOBALS['debugErrors'],
 			'sandbox' => $GLOBALS['sandbox'],
+		),
+		'menuLink' => array(
+			'githubMenuLink' => $GLOBALS['githubMenuLink'],
+			'organizrSupportMenuLink' => $GLOBALS['organizrSupportMenuLink'],
+			'organizrDocsMenuLink' => $GLOBALS['organizrDocsMenuLink']
 		)
 	);
 }
@@ -1239,6 +1244,24 @@ function getCustomizeAppearance()
 					'name' => 'debugErrors',
 					'label' => 'Show Debug Errors',
 					'value' => $GLOBALS['debugErrors']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'githubMenuLink',
+					'label' => 'Show GitHub Repo Link',
+					'value' => $GLOBALS['githubMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrSupportMenuLink',
+					'label' => 'Show Organizr Support Link',
+					'value' => $GLOBALS['organizrSupportMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrDocsMenuLink',
+					'label' => 'Show Organizr Docs Link',
+					'value' => $GLOBALS['organizrDocsMenuLink']
 				),
 				array(
 					'type' => 'select',

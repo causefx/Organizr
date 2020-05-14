@@ -204,7 +204,7 @@ function isNumberKey(evt) {
     return true;
 }
 function setTabInfo(tab,action,value){
-    if(tab == 'Organizr-Support'){
+    if(tab == 'Organizr-Support' || tab == 'Organizr-Docs'){
         return false;
     }
     if(tab !== null && action !== null && value !== null){
@@ -2582,14 +2582,18 @@ function userMenu(user){
 }
 function menuExtras(active){
     var supportFrame = buildFrameContainer('Organizr Support','https://organizr.app/support',1);
-    var adminMenu = (activeInfo.user.groupID <= 1) ? buildMenuList('Organizr Support','https://organizr.app/support',1,'fontawesome::life-ring'): '';
+    var docsFrame = buildFrameContainer('Organizr Docs','https://docs.organizr.app',1);
+    var adminMenu = (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.githubMenuLink) ? buildMenuList('GitHub Repo','https://github.com/causefx/organizr',2,'fontawesome::github') : '';
+    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrSupportMenuLink) ? buildMenuList('Organizr Support','https://organizr.app/support',1,'fontawesome::life-ring') : '';
+    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrDocsMenuLink) ? buildMenuList('Organizr Docs','https://docs.organizr.app',1,'simpleline::docs') : '';
+
     $(supportFrame).appendTo($('.iFrame-listing'));
+    $(docsFrame).appendTo($('.iFrame-listing'));
 	if(active === true){
 		return `
 			<li class="devider"></li>
 			<li id="sign-out"><a class="waves-effect" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span class="hide-menu" lang="en">Logout</span></a></li>
 			<li class="devider"></li>
-			<li id="github"><a href="https://github.com/causefx/organizr" target="_blank" class="waves-effect"><i class="fa fa-github fa-fw text-success"></i> <span class="hide-menu">GitHub</span></a></li>
 		`+adminMenu;
 	}else{
 		return `
