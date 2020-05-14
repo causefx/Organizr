@@ -1787,15 +1787,34 @@ function showoAuth()
 
 function getImages()
 {
+	$allIconsPrep = array();
+	$allIcons = array();
+	$ignore = array(".", "..", "._.DS_Store", ".DS_Store", ".pydio_id", "index.html");
 	$dirname = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'tabs' . DIRECTORY_SEPARATOR;
 	$path = 'plugins/images/tabs/';
 	$images = scandir($dirname);
-	$ignore = array(".", "..", "._.DS_Store", ".DS_Store", ".pydio_id");
-	$allIcons = array();
 	foreach ($images as $image) {
 		if (!in_array($image, $ignore)) {
-			$allIcons[] = $path . $image;
+			$allIconsPrep[$image] = array(
+				'path' => $path,
+				'name' => $image
+			);
 		}
+	}
+	$dirname = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+	$path = 'plugins/images/userTabs/';
+	$images = scandir($dirname);
+	foreach ($images as $image) {
+		if (!in_array($image, $ignore)) {
+			$allIconsPrep[$image] = array(
+				'path' => $path,
+				'name' => $image
+			);
+		}
+	}
+	ksort($allIconsPrep);
+	foreach ($allIconsPrep as $item) {
+		$allIcons[] = $item['path'] . $item['name'];
 	}
 	return $allIcons;
 }
@@ -1817,7 +1836,7 @@ function editImages()
 	$array = array();
 	$postCheck = array_filter($_POST);
 	$filesCheck = array_filter($_FILES);
-	$approvedPath = 'plugins/images/tabs/';
+	$approvedPath = 'plugins/images/userTabs/';
 	if (!empty($postCheck)) {
 		$removeImage = $approvedPath . pathinfo($_POST['data']['imagePath'], PATHINFO_BASENAME);
 		if ($_POST['data']['action'] == 'deleteImage' && approvedFileExtension($removeImage)) {
@@ -1831,7 +1850,7 @@ function editImages()
 		ini_set('upload_max_filesize', '10M');
 		ini_set('post_max_size', '10M');
 		$tempFile = $_FILES['file']['tmp_name'];
-		$targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'tabs' . DIRECTORY_SEPARATOR;
+		$targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
 		$targetFile = $targetPath . $_FILES['file']['name'];
 		return (move_uploaded_file($tempFile, $targetFile)) ? true : false;
 	}
