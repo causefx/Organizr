@@ -825,6 +825,10 @@ function getSettingsMain()
 						'name' => 'Allow Top Navigation',
 						'value' => 'allow-top-navigation'
 					),
+					array(
+						'name' => 'Allow Downloads',
+						'value' => 'allow-downloads'
+					),
 				)
 			),
 			array(
