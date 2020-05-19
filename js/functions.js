@@ -4816,7 +4816,7 @@ function buildRequest(array){
 			<div class="white-box m-b-0 search-div resultBox-outside">
 				<div class="form-group m-b-0">
 					<div id="request-input-div" class="input-group">
-						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control inline-focus">
+						<input id="request-input" lang="en" placeholder="Request a Show or Movie" type="text" class="form-control inline-focus">
                         <input id="request-page" type="hidden" class="form-control">
                         <div class="input-group-btn">
                             <button type="button" class="btn waves-effect waves-light btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span> <span class="caret"></span></button>
