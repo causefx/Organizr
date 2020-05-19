@@ -6588,13 +6588,13 @@ function buildTautulliItem(array){
             var section_name = null;
             if(type == 'movie'){
                 extraField = 'Movies';
-                section_name = 'Movie Libaries';
+                section_name = 'Movie Libraries';
             }else if(type == 'show'){
                 extraField = 'Shows/Seasons/Episodes';
-                section_name = 'TV Show Libaries';
+                section_name = 'TV Show Libraries';
             }else if(type == 'artist'){
                 extraField = 'Artists/Albums/Tracks';
-                section_name = 'Music Libaries';
+                section_name = 'Music Libraries';
             }
             var cardTitle = '<th><span class="pull-left cardTitle">'+section_name.toUpperCase()+'</span><span class="pull-right cardCountType">'+extraField.toUpperCase()+'</th>';
             var card = `
