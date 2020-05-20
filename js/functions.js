@@ -6591,7 +6591,7 @@ function buildTautulliItem(array){
                 section_name = 'Movie Libraries';
             }else if(type == 'show'){
                 extraField = 'Shows/Seasons/Episodes';
-                section_name = 'TV Shows Libraries';
+                section_name = 'TV Show Libraries';
             }else if(type == 'artist'){
                 extraField = 'Artists/Albums/Tracks';
                 section_name = 'Music Libraries';
