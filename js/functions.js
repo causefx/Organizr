@@ -4820,7 +4820,7 @@ function buildRequest(array){
 			<div class="white-box m-b-0 search-div resultBox-outside">
 				<div class="form-group m-b-0">
 					<div id="request-input-div" class="input-group">
-						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control inline-focus">
+						<input id="request-input" lang="en" placeholder="Request a Show or Movie" type="text" class="form-control inline-focus">
                         <input id="request-page" type="hidden" class="form-control">
                         <div class="input-group-btn">
                             <button type="button" class="btn waves-effect waves-light btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span> <span class="caret"></span></button>
@@ -6595,13 +6595,13 @@ function buildTautulliItem(array){
             var section_name = null;
             if(type == 'movie'){
                 extraField = 'Movies';
-                section_name = 'Movie Libaries';
+                section_name = 'Movie Libraries';
             }else if(type == 'show'){
                 extraField = 'Shows/Seasons/Episodes';
-                section_name = 'TV Show Libaries';
+                section_name = 'TV Show Libraries';
             }else if(type == 'artist'){
                 extraField = 'Artists/Albums/Tracks';
-                section_name = 'Music Libaries';
+                section_name = 'Music Libraries';
             }
             var cardTitle = '<th><span class="pull-left cardTitle">'+section_name.toUpperCase()+'</span><span class="pull-right cardCountType">'+extraField.toUpperCase()+'</th>';
             var card = `
