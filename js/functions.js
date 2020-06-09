@@ -3735,7 +3735,7 @@ function marketplaceJSON(type) {
 }
 function allIcons() {
     return $.ajax({
-        url: "/js/icons.json",
+        url: "js/icons.json",
     });
 }
 function organizrConnect(path){
