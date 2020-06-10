@@ -1,4 +1,4 @@
-<?php include 'api/functions/static-globals.php';?>
+<?php include 'api/functions/static-globals.php'; ?>
 <!DOCTYPE html>
 <html lang="en" ontouchmove>
 
@@ -256,7 +256,7 @@
 <script src="plugins/bower_components/jquery-wizard-master/libs/formvalidation/bootstrap.min.js"></script>
 <script src="js/bowser.min.js"></script>
 <script src="js/jasny-bootstrap.js"></script>
-<script src="js/cbpFWTabs.js"></script>
+<script src="js/cbpFWTabs.js?v=<?php echo $GLOBALS['fileHash']; ?>"></script>
 <script src="js/js.cookie.js"></script>
 <script src="js/jquery-lang.js"></script>
 <script src="js/jquery-ui.min.js"></script>
@@ -287,7 +287,7 @@
 <script src="plugins/bower_components/mousetrap/mousetrap.min.js"></script>
 <script src="plugins/bower_components/bootstrap-treeview-master/dist/bootstrap-treeview.min.js"></script>
 <script src="plugins/bower_components/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
-<script src="/js/gauge.min.js"></script>
+<script src="js/gauge.min.js"></script>
 <script src="js/jquery.mousewheel.min.js"></script>
 <script src="js/ua-parser.min.js"></script>
 <script src="js/plyr.js"></script>

@@ -115,6 +115,8 @@ plugins/theme_files/*
 plugins/plugin_files/*
 !plugins/theme_files/index.html
 !plugins/plugin_files/index.html
+plugins/images/userTabs/*
+!plugins/images/userTabs/index.html
 # =========================
 # Plugin files
 # =========================

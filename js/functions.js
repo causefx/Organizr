@@ -204,7 +204,7 @@ function isNumberKey(evt) {
     return true;
 }
 function setTabInfo(tab,action,value){
-    if(tab == 'Organizr-Support'){
+    if(tab == 'Organizr-Support' || tab == 'Organizr-Docs'){
         return false;
     }
     if(tab !== null && action !== null && value !== null){
@@ -2582,14 +2582,18 @@ function userMenu(user){
 }
 function menuExtras(active){
     var supportFrame = buildFrameContainer('Organizr Support','https://organizr.app/support',1);
-    var adminMenu = (activeInfo.user.groupID <= 1) ? buildMenuList('Organizr Support','https://organizr.app/support',1,'fontawesome::life-ring'): '';
+    var docsFrame = buildFrameContainer('Organizr Docs','https://docs.organizr.app',1);
+    var adminMenu = (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.githubMenuLink) ? buildMenuList('GitHub Repo','https://github.com/causefx/organizr',2,'fontawesome::github') : '';
+    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrSupportMenuLink) ? buildMenuList('Organizr Support','https://organizr.app/support',1,'fontawesome::life-ring') : '';
+    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrDocsMenuLink) ? buildMenuList('Organizr Docs','https://docs.organizr.app',1,'simpleline::docs') : '';
+
     $(supportFrame).appendTo($('.iFrame-listing'));
+    $(docsFrame).appendTo($('.iFrame-listing'));
 	if(active === true){
 		return `
 			<li class="devider"></li>
 			<li id="sign-out"><a class="waves-effect" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span class="hide-menu" lang="en">Logout</span></a></li>
 			<li class="devider"></li>
-			<li id="github"><a href="https://github.com/causefx/organizr" target="_blank" class="waves-effect"><i class="fa fa-github fa-fw text-success"></i> <span class="hide-menu">GitHub</span></a></li>
 		`+adminMenu;
 	}else{
 		return `
@@ -3731,7 +3735,7 @@ function marketplaceJSON(type) {
 }
 function allIcons() {
     return $.ajax({
-        url: "/js/icons.json",
+        url: "js/icons.json",
     });
 }
 function organizrConnect(path){
@@ -4816,7 +4820,7 @@ function buildRequest(array){
 			<div class="white-box m-b-0 search-div resultBox-outside">
 				<div class="form-group m-b-0">
 					<div id="request-input-div" class="input-group">
-						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control inline-focus">
+						<input id="request-input" lang="en" placeholder="Request a Show or Movie" type="text" class="form-control inline-focus">
                         <input id="request-page" type="hidden" class="form-control">
                         <div class="input-group-btn">
                             <button type="button" class="btn waves-effect waves-light btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span> <span class="caret"></span></button>
@@ -6591,13 +6595,13 @@ function buildTautulliItem(array){
             var section_name = null;
             if(type == 'movie'){
                 extraField = 'Movies';
-                section_name = 'Movie Libaries';
+                section_name = 'Movie Libraries';
             }else if(type == 'show'){
                 extraField = 'Shows/Seasons/Episodes';
-                section_name = 'TV Show Libaries';
+                section_name = 'TV Show Libraries';
             }else if(type == 'artist'){
                 extraField = 'Artists/Albums/Tracks';
-                section_name = 'Music Libaries';
+                section_name = 'Music Libraries';
             }
             var cardTitle = '<th><span class="pull-left cardTitle">'+section_name.toUpperCase()+'</span><span class="pull-right cardCountType">'+extraField.toUpperCase()+'</th>';
             var card = `
