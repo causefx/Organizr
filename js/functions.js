@@ -7184,27 +7184,31 @@ function buildMonitorrItem(array){
 }
 function buildMonitorr(array){
     if(array === false){ return ''; }
-    var services = (typeof array.services !== 'undefined') ? Object.keys(array.services).length : false;
-    var html = `
-    <div id="allMonitorr">
-		<div class="el-element-overlay row">`
-    if(array['options']['titleToggle']) {
+    if(array.error != undefined) {
+        console.log('Monitorr error: ' + array.error);
+    } else {
+        var services = (typeof array.services !== 'undefined') ? Object.keys(array.services).length : false;
+        var html = `
+        <div id="allMonitorr">
+            <div class="el-element-overlay row">`
+        if(array['options']['titleToggle']) {
+            html += `
+                <div class="col-md-12">
+                    <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-monitorr-services mouse" onclick="homepageMonitorr()">`+services+`</span></h4></h4>
+                    <hr class="hidden-xs ml-2">
+                </div>
+                <div class="clearfix"></div>
+            `;
+        }
         html += `
-            <div class="col-md-12">
-                <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-monitorr-services mouse" onclick="homepageMonitorr()">`+services+`</span></h4></h4>
-                <hr class="hidden-xs ml-2">
+                <div class="monitorrCards">
+                    `+buildMonitorrItem(array)+`
+                </div>
             </div>
-            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
         `;
     }
-    html += `
-            <div class="monitorrCards">
-                `+buildMonitorrItem(array)+`
-			</div>
-		</div>
-    </div>
-    <div class="clearfix"></div>
-    `;
     return (array) ? html : '';
 }
 function homepageMonitorr(timeout){

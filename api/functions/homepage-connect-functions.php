@@ -2708,6 +2708,7 @@ function getMonitorr()
 			}
 		} catch (Requests_Exception $e) {
 			writeLog('error', 'Monitorr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$api['error'] = $e->getMessage();
 		};
 		$api = isset($api) ? $api : false;
 		return $api;
