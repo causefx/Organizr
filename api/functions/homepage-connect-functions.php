@@ -2636,7 +2636,7 @@ function getMonitorr()
 				// This section grabs the names of all services by regex
 				$services = [];
 				$servicesMatch = [];
-				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline".*><div>(.*)<\/div><\/div><div class="btnoffline".*>Offline<\/div><\/div><\/div>|<div id="servicetitlenolink".*><div>(.*)<\/div><\/div><div class="btnonline".*>Online<\/div><\/div><\/div>/';
+				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline".*><div>(.*)<\/div><\/div><div class="btnoffline".*>Offline<\/div><\/div><\/div>|<div id="servicetitlenolink".*><div>(.*)<\/div><\/div><div class="btnonline".*>Online<\/div><\/div><\/div>|<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnunknown">/';
 				preg_match_all($servicePattern, $html, $servicesMatch);
 				unset($servicesMatch[0]);
 				$servicesMatch = array_values($servicesMatch);
@@ -2650,7 +2650,7 @@ function getMonitorr()
 				// This section then grabs the status and image of that service with regex
 				$statuses = [];
 				foreach ($services as $service) {
-					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div>|' . $service . '<\/div><\/div><div class="btnoffline".*>(Offline)<\/div><\/div><\/div>/';
+					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div>|' . $service . '<\/div><\/div><div class="btnoffline".*>(Offline)<\/div><\/div><\/div>|' . $service . '<\/div><\/div><div class="btnunknown">(.*)<\/div><\/a>/';
 					$status = [];
 					preg_match($statusPattern, $html, $status);
 					$statuses[$service] = $status;
@@ -2662,6 +2662,10 @@ function getMonitorr()
 						} else if ($match == 'Offline') {
 							$statuses[$service] = [
 								'status' => false
+							];
+						} else if ($match == 'Unresponsive') {
+							$statuses[$service] = [
+								'status' => 'unresponsive'
 							];
 						}
 					}
@@ -2708,6 +2712,7 @@ function getMonitorr()
 			}
 		} catch (Requests_Exception $e) {
 			writeLog('error', 'Monitorr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$api['error'] = $e->getMessage();
 		};
 		$api = isset($api) ? $api : false;
 		return $api;

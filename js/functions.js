@@ -7136,8 +7136,13 @@ function buildMonitorrItem(array){
     var services = array['services'];
 
     var buildCard = function(name, data) {
-        if(data.status) { var statusColor = 'success'; var imageText = 'fa fa-check-circle text-success' } 
-            else { var statusColor = 'danger animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-danger'}
+        if(data.status == true) {
+            var statusColor = 'success'; var imageText = 'fa fa-check-circle text-success'
+        } else if (data.status == 'unresponsive') {
+            var statusColor = 'warning animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-warning'
+        } else {
+            var statusColor = 'danger animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-danger'
+        }
         if(options['compact']) {
             var card = `
             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
@@ -7167,7 +7172,7 @@ function buildMonitorrItem(array){
                             <img class="monitorrImage" src="`+data.image+`" alt="service icon">
                         </div>
                         <div class="d-inline-block mt-4 py-2 px-4 badge indicator bg-`+statusColor+`">
-                            <p class="mb-0">`; if(data.status) { card += 'ONLINE' } else { card += 'OFFLINE' } card+=`</p>
+                            <p class="mb-0">`; if(data.status == true) { card += 'ONLINE' } else if(data.status == 'unresponsive') { card += 'UNRESPONSIVE' } else { card += 'OFFLINE' } card+=`</p>
                         </div>
                         `; if (typeof data.link !== 'undefined') { card +=`</a>`; }
                         card += `</div>
@@ -7184,27 +7189,31 @@ function buildMonitorrItem(array){
 }
 function buildMonitorr(array){
     if(array === false){ return ''; }
-    var services = (typeof array.services !== 'undefined') ? Object.keys(array.services).length : false;
-    var html = `
-    <div id="allMonitorr">
-		<div class="el-element-overlay row">`
-    if(array['options']['titleToggle']) {
+    if(array.error != undefined) {
+        console.log('Monitorr error: ' + array.error);
+    } else {
+        var services = (typeof array.services !== 'undefined') ? Object.keys(array.services).length : false;
+        var html = `
+        <div id="allMonitorr">
+            <div class="el-element-overlay row">`
+        if(array['options']['titleToggle']) {
+            html += `
+                <div class="col-md-12">
+                    <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-monitorr-services mouse" onclick="homepageMonitorr()">`+services+`</span></h4></h4>
+                    <hr class="hidden-xs ml-2">
+                </div>
+                <div class="clearfix"></div>
+            `;
+        }
         html += `
-            <div class="col-md-12">
-                <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-monitorr-services mouse" onclick="homepageMonitorr()">`+services+`</span></h4></h4>
-                <hr class="hidden-xs ml-2">
+                <div class="monitorrCards">
+                    `+buildMonitorrItem(array)+`
+                </div>
             </div>
-            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
         `;
     }
-    html += `
-            <div class="monitorrCards">
-                `+buildMonitorrItem(array)+`
-			</div>
-		</div>
-    </div>
-    <div class="clearfix"></div>
-    `;
     return (array) ? html : '';
 }
 function homepageMonitorr(timeout){
