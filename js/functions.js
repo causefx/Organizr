@@ -3306,7 +3306,10 @@ function newsLoad(){
         try {
             var response = JSON.parse(data);
             var items = [];
+            var limit = 5;
+            var count = 0;
             $.each(response, function(i,v) {
+                count++;
                 var newBody = `
                 <h5 class="pull-left">`+moment(v.date).format('LLL')+`</h5>
                 <h5 class="pull-right">`+v.author+`</h5>
@@ -3314,9 +3317,11 @@ function newsLoad(){
                 `+((v.subTitle) ? '<h5>' + v.subTitle + '</h5>' : '' )+`
                 <p>`+v.body+`</p>
                 `;
-                items[i] = {
-                    title:v.title,
-                    body:newBody
+                if(count <= limit){
+                    items[i] = {
+                        title:v.title,
+                        body:newBody
+                    }
                 }
             });
             var body = buildAccordion(items, true);
