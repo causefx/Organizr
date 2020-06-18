@@ -1535,43 +1535,42 @@ function calendarDaysCheck($entryStart, $entryEnd)
 
 function calendarStandardizeTimezone($timezone)
 {
-    switch ($timezone) {
-        case('CST'):
-        case('Central Time'):
-        case('Central Standard Time'):
-            $timezone = 'America/Chicago';
-            break;
-        case('CET'):
-        case('Central European Time'):
-            $timezone = 'Europe/Berlin';
-            break;
-        case('EST'):
-        case('Eastern Time'):
-        case('Eastern Standard Time'):
-            $timezone = 'America/New_York';
-            break;
-        case('PST'):
-        case('Pacific Time'):
-        case('Pacific Standard Time'):
-            $timezone = 'America/Los_Angeles';
-            break;
-        case('China Time'):
-        case('China Standard Time'):
-            $timezone = 'Asia/Beijing';
-            break;
-        case('IST'):
-        case('India Time'):
-        case('India Standard Time'):
-            $timezone = 'Asia/New_Delhi';
-            break;
-        case('JST');
-        case('Japan Time'):
-        case('Japan Standard Time'):
-            $timezone = 'Asia/Tokyo';
-            break;
-    }
-
-    return $timezone;
+	switch ($timezone) {
+		case('CST'):
+		case('Central Time'):
+		case('Central Standard Time'):
+			$timezone = 'America/Chicago';
+			break;
+		case('CET'):
+		case('Central European Time'):
+			$timezone = 'Europe/Berlin';
+			break;
+		case('EST'):
+		case('Eastern Time'):
+		case('Eastern Standard Time'):
+			$timezone = 'America/New_York';
+			break;
+		case('PST'):
+		case('Pacific Time'):
+		case('Pacific Standard Time'):
+			$timezone = 'America/Los_Angeles';
+			break;
+		case('China Time'):
+		case('China Standard Time'):
+			$timezone = 'Asia/Beijing';
+			break;
+		case('IST'):
+		case('India Time'):
+		case('India Standard Time'):
+			$timezone = 'Asia/New_Delhi';
+			break;
+		case('JST');
+		case('Japan Time'):
+		case('Japan Standard Time'):
+			$timezone = 'Asia/Tokyo';
+			break;
+	}
+	return $timezone;
 }
 
 function getCalenderRepeat($value)
@@ -2729,13 +2728,11 @@ function getSpeedtest()
 			$response = Requests::get($dataUrl);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
-
 				$api['data'] = [
 					'current' => $json['data'],
 					'average' => $json['average'],
 					'max' => $json['max'],
 				];
-
 				$api['options'] = [
 					'title' => $GLOBALS['speedtestHeader'],
 					'titleToggle' => $GLOBALS['speedtestHeaderToggle'],
@@ -2756,12 +2753,10 @@ function getNetdata()
 		$api = [];
 		$api['data'] = [];
 		$api['url'] = $GLOBALS['netdataURL'];
-
 		$url = qualifyURL($GLOBALS['netdataURL']);
-
-		for($i = 1; $i < 8; $i++) {
-			if($GLOBALS['netdata'.($i).'Enabled']) {
-				switch($GLOBALS['netdata'.$i.'Data']) {
+		for ($i = 1; $i < 8; $i++) {
+			if ($GLOBALS['netdata' . ($i) . 'Enabled']) {
+				switch ($GLOBALS['netdata' . $i . 'Data']) {
 					case 'disk-read':
 						$data = disk('in', $url);
 						break;
@@ -2817,19 +2812,16 @@ function getNetdata()
 						];
 						break;
 				}
-
-				$data['title'] = $GLOBALS['netdata'.$i.'Title'];
-				$data['colour'] = $GLOBALS['netdata'.$i.'Colour'];
-				$data['chart'] = $GLOBALS['netdata'.$i.'Chart'];
-				$data['size'] = $GLOBALS['netdata'.$i.'Size'];
-				$data['lg'] = $GLOBALS['netdata'.($i).'lg'];
-				$data['md'] = $GLOBALS['netdata'.($i).'md'];
-				$data['sm'] = $GLOBALS['netdata'.($i).'sm'];
-
+				$data['title'] = $GLOBALS['netdata' . $i . 'Title'];
+				$data['colour'] = $GLOBALS['netdata' . $i . 'Colour'];
+				$data['chart'] = $GLOBALS['netdata' . $i . 'Chart'];
+				$data['size'] = $GLOBALS['netdata' . $i . 'Size'];
+				$data['lg'] = $GLOBALS['netdata' . ($i) . 'lg'];
+				$data['md'] = $GLOBALS['netdata' . ($i) . 'md'];
+				$data['sm'] = $GLOBALS['netdata' . ($i) . 'sm'];
 				array_push($api['data'], $data);
 			}
 		}
-
 		$api = isset($api) ? $api : false;
 		return $api;
 	}
@@ -3157,8 +3149,8 @@ function testAPIConnection($array)
 					'account_suffix' => (empty($GLOBALS['authBackendHostSuffix'])) ? null : $GLOBALS['authBackendHostSuffix'],
 					'port' => $ldapPort,
 					'follow_referrals' => false,
-					'use_ssl' => false,
-					'use_tls' => false,
+					'use_ssl' => $GLOBALS['ldapSSL'],
+					'use_tls' => $GLOBALS['ldapTLS'],
 					'version' => 3,
 					'timeout' => 5,
 					// Custom LDAP Options
@@ -3235,8 +3227,8 @@ function testAPIConnection($array)
 					'account_suffix' => '',
 					'port' => $ldapPort,
 					'follow_referrals' => false,
-					'use_ssl' => false,
-					'use_tls' => false,
+					'use_ssl' => $GLOBALS['ldapSSL'],
+					'use_tls' => $GLOBALS['ldapTLS'],
 					'version' => 3,
 					'timeout' => 5,
 					// Custom LDAP Options
