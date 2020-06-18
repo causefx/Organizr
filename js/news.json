@@ -1,7 +1,7 @@
 [
   {
     "title": "Plex OAuth Patch",
-    "subTitle": "You server hostname will no be listed on OAuth box",
+    "subTitle": "You server hostname will now be listed on OAuth box",
     "date": "2020-06-18 16:30",
     "body": "Plex has now fixed the 3 open CVE's pertaining to the ability for an attacker to phish for an Plex Admins token.  Please follow this link to read more about it.  <a href=\"https:\/\/www.bleepingcomputer.com\/news\/security\/plex-fixes-media-server-bugs-allowing-full-system-takeover\" target=\"_blank\">Plex Vulnerabilities Patched<\/a>",
     "author": "CauseFX"
