@@ -2799,7 +2799,7 @@ function buildSplashScreen(json){
         <section id="splashScreen" class="lock-screen splash-screen fade in">
             <div class="row p-20 flexbox">`+items+`</div>
             <div class="row p-20 p-t-0 flexbox">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse hvr-wobble-bottom" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse hvr-wobble-bottom bottom-close-splash" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
                     <div class="homepage-drag fc-event bg-danger lazyload"  data-src="">
                         <span class="homepage-text">&nbsp; Close Splash</span>
                     </div>

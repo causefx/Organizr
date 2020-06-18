@@ -4393,3 +4393,9 @@ html {
 .noty_layout [data-name~="mojs-shape"] {
     pointer-events:none
 }
+.bottom-close-splash {
+    position: absolute;
+    width: 130px;
+    right: 20px;
+    bottom: 20px;
+}
