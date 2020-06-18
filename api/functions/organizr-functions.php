@@ -690,6 +690,22 @@ function getSettingsMain()
 				'html' => '<span id="accountDN" class="ldapAuth switchAuth">' . $GLOBALS['authBackendHostPrefix'] . 'TestAcct' . $GLOBALS['authBackendHostSuffix'] . '</span>'
 			),
 			array(
+				'type' => 'switch',
+				'name' => 'ldapSSL',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Enable LDAP SSL',
+				'value' => $GLOBALS['ldapSSL'],
+				'help' => 'This will enable the use of SSL for LDAP connections'
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'ldapSSL',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Enable LDAP TLS',
+				'value' => $GLOBALS['ldapTLS'],
+				'help' => 'This will enable the use of TLS for LDAP connections'
+			),
+			array(
 				'type' => 'button',
 				'name' => 'test-button-ldap',
 				'label' => 'Test Connection',

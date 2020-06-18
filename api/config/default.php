@@ -8,6 +8,8 @@ return array(
 	'authBackendHostSuffix' => '',
 	'ldapBindUsername' => '',
 	'ldapBindPassword' => '',
+	'ldapSSL' => false,
+	'ldapTLS' => false,
 	'authBaseDN' => '',
 	'authBackendDomain' => '',
 	'ldapType' => '1',

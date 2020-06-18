@@ -40,11 +40,15 @@
 		// current index
 		this.current = -1;
 		// show current content item
-        if(this.tabs[0].innerHTML.indexOf('#settings') >= 0){
-            this._show(5);
-        }else{
-            this._show();
-        }
+		try{
+			if(this.tabs[0].innerHTML.indexOf('#settings') >= 0){
+				this._show(5);
+			}else{
+				this._show();
+			}
+		}catch{
+			this._show();
+		}
 		// init events
 		this._initEvents();
 	};
