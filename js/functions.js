@@ -204,7 +204,7 @@ function isNumberKey(evt) {
     return true;
 }
 function setTabInfo(tab,action,value){
-    if(tab == 'Organizr-Support'){
+    if(tab == 'Organizr-Support' || tab == 'Organizr-Docs'){
         return false;
     }
     if(tab !== null && action !== null && value !== null){
@@ -2582,14 +2582,18 @@ function userMenu(user){
 }
 function menuExtras(active){
     var supportFrame = buildFrameContainer('Organizr Support','https://organizr.app/support',1);
-    var adminMenu = (activeInfo.user.groupID <= 1) ? buildMenuList('Organizr Support','https://organizr.app/support',1,'fontawesome::life-ring'): '';
+    var docsFrame = buildFrameContainer('Organizr Docs','https://docs.organizr.app',1);
+    var adminMenu = (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.githubMenuLink) ? buildMenuList('GitHub Repo','https://github.com/causefx/organizr',2,'fontawesome::github') : '';
+    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrSupportMenuLink) ? buildMenuList('Organizr Support','https://organizr.app/support',1,'fontawesome::life-ring') : '';
+    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrDocsMenuLink) ? buildMenuList('Organizr Docs','https://docs.organizr.app',1,'simpleline::docs') : '';
+
     $(supportFrame).appendTo($('.iFrame-listing'));
+    $(docsFrame).appendTo($('.iFrame-listing'));
 	if(active === true){
 		return `
 			<li class="devider"></li>
 			<li id="sign-out"><a class="waves-effect" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span class="hide-menu" lang="en">Logout</span></a></li>
 			<li class="devider"></li>
-			<li id="github"><a href="https://github.com/causefx/organizr" target="_blank" class="waves-effect"><i class="fa fa-github fa-fw text-success"></i> <span class="hide-menu">GitHub</span></a></li>
 		`+adminMenu;
 	}else{
 		return `
@@ -2795,7 +2799,7 @@ function buildSplashScreen(json){
         <section id="splashScreen" class="lock-screen splash-screen fade in">
             <div class="row p-20 flexbox">`+items+`</div>
             <div class="row p-20 p-t-0 flexbox">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse hvr-wobble-bottom" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse hvr-wobble-bottom bottom-close-splash" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
                     <div class="homepage-drag fc-event bg-danger lazyload"  data-src="">
                         <span class="homepage-text">&nbsp; Close Splash</span>
                     </div>
@@ -3302,7 +3306,10 @@ function newsLoad(){
         try {
             var response = JSON.parse(data);
             var items = [];
+            var limit = 5;
+            var count = 0;
             $.each(response, function(i,v) {
+                count++;
                 var newBody = `
                 <h5 class="pull-left">`+moment(v.date).format('LLL')+`</h5>
                 <h5 class="pull-right">`+v.author+`</h5>
@@ -3310,9 +3317,11 @@ function newsLoad(){
                 `+((v.subTitle) ? '<h5>' + v.subTitle + '</h5>' : '' )+`
                 <p>`+v.body+`</p>
                 `;
-                items[i] = {
-                    title:v.title,
-                    body:newBody
+                if(count <= limit){
+                    items[i] = {
+                        title:v.title,
+                        body:newBody
+                    }
                 }
             });
             var body = buildAccordion(items, true);
@@ -3731,7 +3740,7 @@ function marketplaceJSON(type) {
 }
 function allIcons() {
     return $.ajax({
-        url: "/js/icons.json",
+        url: "js/icons.json",
     });
 }
 function organizrConnect(path){
@@ -4816,7 +4825,7 @@ function buildRequest(array){
 			<div class="white-box m-b-0 search-div resultBox-outside">
 				<div class="form-group m-b-0">
 					<div id="request-input-div" class="input-group">
-						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control inline-focus">
+						<input id="request-input" lang="en" placeholder="Request a Show or Movie" type="text" class="form-control inline-focus">
                         <input id="request-page" type="hidden" class="form-control">
                         <div class="input-group-btn">
                             <button type="button" class="btn waves-effect waves-light btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span> <span class="caret"></span></button>
@@ -6094,9 +6103,12 @@ function buildPiholeItem(array){
             <div class="card text-white mb-3 pihole-stat bg-green">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Total queries</p>`;
+                        <p class="d-inline mr-1">Total queries</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
@@ -6114,9 +6126,12 @@ function buildPiholeItem(array){
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-aqua">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Queries Blocked</p>`;
+                        <p class="d-inline mr-1">Queries Blocked</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
@@ -6134,9 +6149,12 @@ function buildPiholeItem(array){
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-yellow">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Percent Blocked</p>`;
+                        <p class="d-inline mr-1">Percent Blocked</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_percentage_today'].toFixed(1)+`%</h3>`
         };
         card += `
@@ -6154,9 +6172,12 @@ function buildPiholeItem(array){
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Domains on Blocklist</p>`;
+                        <p class="d-inline mr-1">Domains on Blocklist</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
@@ -6177,15 +6198,6 @@ function buildPiholeItem(array){
         stats += '</div>';
     } else {
         for(var key in array['data']) {
-            if(length > 1) {
-                stats += `
-                <div class="row mb-2">
-                    <div class="col-sm-12">
-                        `+key+`
-                    </div>
-                </div>
-                `;
-            }
             var data = array['data'][key];
             obj = {};
             obj[key] = data;
@@ -6588,13 +6600,13 @@ function buildTautulliItem(array){
             var section_name = null;
             if(type == 'movie'){
                 extraField = 'Movies';
-                section_name = 'Movie Libaries';
+                section_name = 'Movie Libraries';
             }else if(type == 'show'){
                 extraField = 'Shows/Seasons/Episodes';
-                section_name = 'TV Show Libaries';
+                section_name = 'TV Show Libraries';
             }else if(type == 'artist'){
                 extraField = 'Artists/Albums/Tracks';
-                section_name = 'Music Libaries';
+                section_name = 'Music Libraries';
             }
             var cardTitle = '<th><span class="pull-left cardTitle">'+section_name.toUpperCase()+'</span><span class="pull-right cardCountType">'+extraField.toUpperCase()+'</th>';
             var card = `
@@ -7129,8 +7141,13 @@ function buildMonitorrItem(array){
     var services = array['services'];
 
     var buildCard = function(name, data) {
-        if(data.status) { var statusColor = 'success'; var imageText = 'fa fa-check-circle text-success' } 
-            else { var statusColor = 'danger animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-danger'}
+        if(data.status == true) {
+            var statusColor = 'success'; var imageText = 'fa fa-check-circle text-success'
+        } else if (data.status == 'unresponsive') {
+            var statusColor = 'warning animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-warning'
+        } else {
+            var statusColor = 'danger animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-danger'
+        }
         if(options['compact']) {
             var card = `
             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
@@ -7160,7 +7177,7 @@ function buildMonitorrItem(array){
                             <img class="monitorrImage" src="`+data.image+`" alt="service icon">
                         </div>
                         <div class="d-inline-block mt-4 py-2 px-4 badge indicator bg-`+statusColor+`">
-                            <p class="mb-0">`; if(data.status) { card += 'ONLINE' } else { card += 'OFFLINE' } card+=`</p>
+                            <p class="mb-0">`; if(data.status == true) { card += 'ONLINE' } else if(data.status == 'unresponsive') { card += 'UNRESPONSIVE' } else { card += 'OFFLINE' } card+=`</p>
                         </div>
                         `; if (typeof data.link !== 'undefined') { card +=`</a>`; }
                         card += `</div>
@@ -7177,27 +7194,31 @@ function buildMonitorrItem(array){
 }
 function buildMonitorr(array){
     if(array === false){ return ''; }
-    var services = (typeof array.services !== 'undefined') ? Object.keys(array.services).length : false;
-    var html = `
-    <div id="allMonitorr">
-		<div class="el-element-overlay row">`
-    if(array['options']['titleToggle']) {
+    if(array.error != undefined) {
+        console.log('Monitorr error: ' + array.error);
+    } else {
+        var services = (typeof array.services !== 'undefined') ? Object.keys(array.services).length : false;
+        var html = `
+        <div id="allMonitorr">
+            <div class="el-element-overlay row">`
+        if(array['options']['titleToggle']) {
+            html += `
+                <div class="col-md-12">
+                    <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-monitorr-services mouse" onclick="homepageMonitorr()">`+services+`</span></h4></h4>
+                    <hr class="hidden-xs ml-2">
+                </div>
+                <div class="clearfix"></div>
+            `;
+        }
         html += `
-            <div class="col-md-12">
-                <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-monitorr-services mouse" onclick="homepageMonitorr()">`+services+`</span></h4></h4>
-                <hr class="hidden-xs ml-2">
+                <div class="monitorrCards">
+                    `+buildMonitorrItem(array)+`
+                </div>
             </div>
-            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
         `;
     }
-    html += `
-            <div class="monitorrCards">
-                `+buildMonitorrItem(array)+`
-			</div>
-		</div>
-    </div>
-    <div class="clearfix"></div>
-    `;
     return (array) ? html : '';
 }
 function homepageMonitorr(timeout){
@@ -7376,10 +7397,6 @@ function buildSpeedtest(array){
 function buildNetdataItem(array){
     var html = `
     <style>
-    .all-netdata .chart {
-        width: 183px;
-        height:183px;
-    }
     .all-netdata .easyPieChart-value {
         position: absolute;
         top: 77px;
@@ -7391,11 +7408,9 @@ function buildNetdataItem(array){
     }
     .all-netdata .easyPieChart-title {
         position: absolute;
-        top: 37px;
         width: 100%;
         text-align: center;
         left: 0;
-        font-size: 15px;
         font-weight: bold;
     }
     .all-netdata .easyPieChart-units {
@@ -7409,7 +7424,7 @@ function buildNetdataItem(array){
     }
 
     .all-netdata .gauge-chart .gauge-value {
-        position: absolute;
+        position: relative;
         width: 100%;
         text-align: center;
         top: 30px;
@@ -7420,7 +7435,7 @@ function buildNetdataItem(array){
     }
 
     .all-netdata .gauge-chart .gauge-title {
-        position: absolute;
+        position: relative;
         width: 100%;
         text-align: center;
         top: -10px;
@@ -7429,45 +7444,173 @@ function buildNetdataItem(array){
         left: 0;
         font-size: 15px;
     }
+
+    .all-netdata .chart-lg .gauge-chart .gauge-value {
+        top: 70px;
+        font-size: 26px;
+    }
+
+    .all-netdata .chart-lg .gauge-chart .gauge-title {
+        top: 45px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-md .gauge-chart .gauge-value {
+        top: 65px;
+        font-size: 26px;
+    }
+
+    .all-netdata .chart-md .gauge-chart .gauge-title {
+        top: 45px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-sm .gauge-chart .gauge-value {
+        top: 65px;
+        font-size: 26px;
+    }
+
+    .all-netdata .chart-sm .gauge-chart .gauge-title {
+        top: 45px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-lg,
+    .all-netdata .chart-md,
+    .all-netdata .chart-sm {
+        display: inline-block;
+        margin: 15px;
+    }
+
+    .all-netdata .chart-lg,
+    .all-netdata .chart-lg .chart {
+        height: 180px;
+        width: 180px;
+    }
+
+    .all-netdata .chart-md,
+    .all-netdata .chart-md .chart {
+        height: 160px;
+        width: 160px;
+    }
+
+    .all-netdata .chart-sm,
+    .all-netdata .chart-sm .chart {
+        height: 140px;
+        width: 140px;
+    }
+
+    .all-netdata .chart-lg .gauge-chart,
+    .all-netdata .gauge-cont.chart-lg {
+        //height: 300px;
+        width: 300px;
+    }
+
+    .all-netdata .chart-md .gauge-chart,
+    .all-netdata .gauge-cont.chart-md {
+        //height: 275px;
+        width: 275px;
+    }
+
+    .all-netdata .chart-sm .gauge-chart,
+    .all-netdata .gauge-cont.chart-sm {
+        //height: 250px;
+        width: 250px;
+    }
+
+    .all-netdata .chart-lg .easyPieChart-title {
+        top: 37px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-md .easyPieChart-title {
+        top: 33px;
+        font-size: 13.5px;
+    }
+
+    .all-netdata .chart-sm .easyPieChart-title {
+        top: 30px;
+        font-size: 12px;
+    }
+
+    .all-netdata .chart-lg .easyPieChart-value {
+        top: 75px;
+        font-size: 24.4625px;
+    }
+
+    .all-netdata .chart-md .easyPieChart-value {
+        top: 65px;
+        font-size: 24.4625px;
+    }
+
+    .all-netdata .chart-sm .easyPieChart-value {
+        top: 55px;
+        font-size: 24.4625px;
+    }
+
+    .all-netdata .chart-lg .easyPieChart-units {
+        top: 130px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-md .easyPieChart-units {
+        top: 108px;
+        font-size: 15px;
+    }
+
+    .all-netdata .chart-sm .easyPieChart-units {
+        top: 95px;
+        font-size: 15px;
+    }
     </style>
     `;
 
-    var buildEasyPieChart = function(e,i) {
+    var buildEasyPieChart = function(e,i,size,easySize,display) {
         return `
-        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 my-3 text-center">
-            <div class="d-flex justify-content-center">
-                <div class="chart" id="easyPieChart`+(i+1)+`" data-percent="`+e.percent+`">
-                    <span class="easyPieChart-title">`+e.title+`</span>
-                    <span class="easyPieChart-value" id="easyPieChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
-                    <span class="easyPieChart-units" id="easyPieChart`+(i+1)+`Units">`+e.units+`</span>
-                </div>
+        <div class="chart-`+size+` my-3 text-center `+display+`">
+            <div class="chart" id="easyPieChart`+(i+1)+`" data-percent="`+e.percent+`">
+                <span class="easyPieChart-title">`+e.title+`</span>
+                <span class="easyPieChart-value" id="easyPieChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
+                <span class="easyPieChart-units" id="easyPieChart`+(i+1)+`Units">`+e.units+`</span>
             </div>
         </div>
         <script>
         $(function() {
-            $('#easyPieChart`+(i+1)+`').easyPieChart({
-                size: 183,
+            var opts = {
+                size: `+easySize+`,
                 lineWidth: 7,
-                //animate: false,
                 scaleColor: false,
                 barColor: '#`+e.colour+`',
-                trackColor: '#bababa',
-            });
+                trackColor: '#636363',
+            };
+            if(`+e.percent+` == 0) {
+                opts.lineCap = 'butt';
+            }
+            $('#easyPieChart`+(i+1)+`').easyPieChart(opts);
         });
         </script>
         `;
     }
 
-    var buildGaugeChart = function(e,i) {
+    var buildGaugeChart = function(e,i,size,easySize,display) {
+        switch(size) {
+            case 'lg':
+                easySize = 300;
+                break;
+            case 'sm':
+                easySize = 275;
+                break;
+            case 'md':
+            default:
+                easySize = 250;
+                break;
+        }
         return `
-        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 my-3 text-center">
-            <div class="d-flex justify-content-center">
-                <div class="gauge-chart">
-                    <span class="gauge-title" id="gaugeChart`+(i+1)+`Title">`+e.title+`</span>
-                    <span class="gauge-value" id="gaugeChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
-                    <canvas id="gaugeChart`+(i+1)+`">
-                    </canvas>
-                </div>
+        <div class="mx-0 gauge-cont chart-`+size+` my-3 text-center `+display+`">
+            <div class="gauge-chart text-center">
+                <span class="gauge-title d-block" id="gaugeChart`+(i+1)+`Title">`+e.title+`</span>
+                <span class="gauge-value d-block" id="gaugeChart`+(i+1)+`Value">`+parseFloat(e.value).toFixed(1)+`</span>
+                <canvas id="gaugeChart`+(i+1)+`" style="width: 100%"></canvas>
             </div>
         </div>
         <script>
@@ -7494,7 +7637,7 @@ function buildNetdataItem(array){
             var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
             gauge.maxValue = `+e.max+`; // set max gauge value
             gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
-            gauge.animationSpeed = 20; // set animation speed (32 is default value)
+            gauge.animationSpeed = 8; // set animation speed (32 is default value)
             gauge.set(`+e.percent+`); // set actual value
             window.netdata[`+(i+1)+`] = gauge
         });
@@ -7503,17 +7646,54 @@ function buildNetdataItem(array){
     }
 
     array.forEach((e, i) => {
-        if(e.chart == 'easypiechart') {
-            html += buildEasyPieChart(e,i);
+        var size = e.size;
+        var easySize;
+        if(size == '') {
+            size = 'md';
+        }
+        switch(size) {
+            case 'lg':
+                easySize = 180;
+                break;
+            case 'sm':
+                easySize = 140;
+                break;
+            case 'md':
+            default:
+                easySize = 160;
+                break;
+        }
+
+        var display = ' ';
+        if(e.lg) {
+            display += ' d-xl-inline-block d-lg-inline-block';
+        } else {
+            display += ' d-xl-none d-lg-none d-none';
+        }
+        if(e.md) {
+            display += ' d-md-inline-block';
+        } else {
+            display += ' d-md-none d-none';
+        }
+        if(e.sm) {
+            display += ' d-sm-inline-block d-xs-inline-block';
+        } else {
+            display += ' d-sm-none d-xs-none d-none';
+        }
+        display += ' ';
+
+        if(e.error) {
+            console.log('Netdata error (Chart ' + (i+1) + '): ' + e.error);
+        } else if(e.chart == 'easypiechart') {
+            html += buildEasyPieChart(e,i,size,easySize,display);
         } else if(e.chart == 'gauge') {
-            html += buildGaugeChart(e,i);
+            html += buildGaugeChart(e,i,size,easySize,display);
         }
     });
     
     return html;
 }
 function buildNetdata(array){
-    // console.log(array);
     var data = array.data;
     if(array === false){ return ''; }
     window.netdata = [];
@@ -7545,7 +7725,7 @@ function buildNetdata(array){
       
       .all-netdata .chart {
           float: left;
-          margin: 10px;
+          //margin: 10px;
       }
       
       .all-netdata .percentage,
@@ -7655,7 +7835,7 @@ function buildNetdata(array){
     html += `
     <div class="row">
         
-            <div class="d-lg-flex d-md-block d-sm-block d-xs-block align-items-center justify-content-center all-netdata">
+            <div class="d-block text-center all-netdata">
     `;
     html += buildNetdataItem(data);
     html += `
@@ -7702,7 +7882,7 @@ function tryUpdateNetdata(array){
             if(window.netdata) {
                 if(window.netdata[(i+1)]) {
                     window.netdata[(i+1)].set(e.percent); // set actual value
-                    $('#gaugeChart' + (i+1) + 'Value').html(parseFloat(e.percent).toFixed(1));
+                    $('#gaugeChart' + (i+1) + 'Value').html(parseFloat(e.value).toFixed(1));
                     existing = true;
                 }
             } else {

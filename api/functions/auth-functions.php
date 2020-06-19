@@ -225,8 +225,8 @@ if (function_exists('ldap_connect')) {
 				'account_suffix' => (empty($GLOBALS['authBackendHostSuffix'])) ? null : $GLOBALS['authBackendHostSuffix'],
 				'port' => $ldapPort,
 				'follow_referrals' => false,
-				'use_ssl' => false,
-				'use_tls' => false,
+				'use_ssl' => $GLOBALS['ldapSSL'],
+				'use_tls' => $GLOBALS['ldapTLS'],
 				'version' => 3,
 				'timeout' => 5,
 				// Custom LDAP Options

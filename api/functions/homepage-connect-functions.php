@@ -1535,43 +1535,42 @@ function calendarDaysCheck($entryStart, $entryEnd)
 
 function calendarStandardizeTimezone($timezone)
 {
-    switch ($timezone) {
-        case('CST'):
-        case('Central Time'):
-        case('Central Standard Time'):
-            $timezone = 'America/Chicago';
-            break;
-        case('CET'):
-        case('Central European Time'):
-            $timezone = 'Europe/Berlin';
-            break;
-        case('EST'):
-        case('Eastern Time'):
-        case('Eastern Standard Time'):
-            $timezone = 'America/New_York';
-            break;
-        case('PST'):
-        case('Pacific Time'):
-        case('Pacific Standard Time'):
-            $timezone = 'America/Los_Angeles';
-            break;
-        case('China Time'):
-        case('China Standard Time'):
-            $timezone = 'Asia/Beijing';
-            break;
-        case('IST'):
-        case('India Time'):
-        case('India Standard Time'):
-            $timezone = 'Asia/New_Delhi';
-            break;
-        case('JST');
-        case('Japan Time'):
-        case('Japan Standard Time'):
-            $timezone = 'Asia/Tokyo';
-            break;
-    }
-
-    return $timezone;
+	switch ($timezone) {
+		case('CST'):
+		case('Central Time'):
+		case('Central Standard Time'):
+			$timezone = 'America/Chicago';
+			break;
+		case('CET'):
+		case('Central European Time'):
+			$timezone = 'Europe/Berlin';
+			break;
+		case('EST'):
+		case('Eastern Time'):
+		case('Eastern Standard Time'):
+			$timezone = 'America/New_York';
+			break;
+		case('PST'):
+		case('Pacific Time'):
+		case('Pacific Standard Time'):
+			$timezone = 'America/Los_Angeles';
+			break;
+		case('China Time'):
+		case('China Standard Time'):
+			$timezone = 'Asia/Beijing';
+			break;
+		case('IST'):
+		case('India Time'):
+		case('India Standard Time'):
+			$timezone = 'Asia/New_Delhi';
+			break;
+		case('JST');
+		case('Japan Time'):
+		case('Japan Standard Time'):
+			$timezone = 'Asia/Tokyo';
+			break;
+	}
+	return $timezone;
 }
 
 function getCalenderRepeat($value)
@@ -2636,7 +2635,7 @@ function getMonitorr()
 				// This section grabs the names of all services by regex
 				$services = [];
 				$servicesMatch = [];
-				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline".*><div>(.*)<\/div><\/div><div class="btnoffline".*>Offline<\/div><\/div><\/div>|<div id="servicetitlenolink".*><div>(.*)<\/div><\/div><div class="btnonline".*>Online<\/div><\/div><\/div>/';
+				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline".*><div>(.*)<\/div><\/div><div class="btnoffline".*>Offline<\/div><\/div><\/div>|<div id="servicetitlenolink".*><div>(.*)<\/div><\/div><div class="btnonline".*>Online<\/div><\/div><\/div>|<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnunknown">/';
 				preg_match_all($servicePattern, $html, $servicesMatch);
 				unset($servicesMatch[0]);
 				$servicesMatch = array_values($servicesMatch);
@@ -2650,7 +2649,7 @@ function getMonitorr()
 				// This section then grabs the status and image of that service with regex
 				$statuses = [];
 				foreach ($services as $service) {
-					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div>|' . $service . '<\/div><\/div><div class="btnoffline".*>(Offline)<\/div><\/div><\/div>/';
+					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div>|' . $service . '<\/div><\/div><div class="btnoffline".*>(Offline)<\/div><\/div><\/div>|' . $service . '<\/div><\/div><div class="btnunknown">(.*)<\/div><\/a>/';
 					$status = [];
 					preg_match($statusPattern, $html, $status);
 					$statuses[$service] = $status;
@@ -2662,6 +2661,10 @@ function getMonitorr()
 						} else if ($match == 'Offline') {
 							$statuses[$service] = [
 								'status' => false
+							];
+						} else if ($match == 'Unresponsive') {
+							$statuses[$service] = [
+								'status' => 'unresponsive'
 							];
 						}
 					}
@@ -2708,6 +2711,7 @@ function getMonitorr()
 			}
 		} catch (Requests_Exception $e) {
 			writeLog('error', 'Monitorr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$api['error'] = $e->getMessage();
 		};
 		$api = isset($api) ? $api : false;
 		return $api;
@@ -2724,13 +2728,11 @@ function getSpeedtest()
 			$response = Requests::get($dataUrl);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
-
 				$api['data'] = [
 					'current' => $json['data'],
 					'average' => $json['average'],
 					'max' => $json['max'],
 				];
-
 				$api['options'] = [
 					'title' => $GLOBALS['speedtestHeader'],
 					'titleToggle' => $GLOBALS['speedtestHeaderToggle'],
@@ -2751,12 +2753,10 @@ function getNetdata()
 		$api = [];
 		$api['data'] = [];
 		$api['url'] = $GLOBALS['netdataURL'];
-
 		$url = qualifyURL($GLOBALS['netdataURL']);
-
-		for($i = 1; $i < 7; $i++) {
-			if($GLOBALS['netdata'.($i).'Enabled']) {
-				switch($GLOBALS['netdata'.$i.'Data']) {
+		for ($i = 1; $i < 8; $i++) {
+			if ($GLOBALS['netdata' . ($i) . 'Enabled']) {
+				switch ($GLOBALS['netdata' . $i . 'Data']) {
 					case 'disk-read':
 						$data = disk('in', $url);
 						break;
@@ -2779,29 +2779,49 @@ function getNetdata()
 					case 'ram-used':
 						$data = ram($url);
 						break;
+					case 'swap-used':
+						$data = swap($url);
+						break;
+					case 'disk-avail':
+						$data = diskSpace('avail', $url);
+						break;
+					case 'disk-used':
+						$data = diskSpace('used', $url);
+						break;
 					case 'ipmi-temp-c':
 						$data = ipmiTemp($url, 'c');
 						break;
 					case 'ipmi-temp-f':
 						$data = ipmiTemp($url, 'f');
 						break;
+					case 'cpu-temp-c':
+						$data = cpuTemp($url, 'c');
+						break;
+					case 'cpu-temp-f':
+						$data = cpuTemp($url, 'f');
+						break;
+					case 'custom':
+						$data = customNetdata($url, $i);
+						break;
 					default:
 						$data = [
 							'title' => 'DNC',
 							'value' => 0,
 							'units' => 'N/A',
+							'max' => 100,
 						];
 						break;
 				}
-
-				$data['title'] = $GLOBALS['netdata'.$i.'Title'];
-				$data['colour'] = $GLOBALS['netdata'.$i.'Colour'];
-				$data['chart'] = $GLOBALS['netdata'.$i.'Chart'];
-
+				$data['title'] = $GLOBALS['netdata' . $i . 'Title'];
+				$data['colour'] = $GLOBALS['netdata' . $i . 'Colour'];
+				$data['chart'] = $GLOBALS['netdata' . $i . 'Chart'];
+				$data['size'] = $GLOBALS['netdata' . $i . 'Size'];
+				$data['lg'] = $GLOBALS['netdata' . ($i) . 'lg'];
+				$data['md'] = $GLOBALS['netdata' . ($i) . 'md'];
+				$data['sm'] = $GLOBALS['netdata' . ($i) . 'sm'];
 				array_push($api['data'], $data);
 			}
 		}
-
 		$api = isset($api) ? $api : false;
 		return $api;
 	}
@@ -3129,8 +3149,8 @@ function testAPIConnection($array)
 					'account_suffix' => (empty($GLOBALS['authBackendHostSuffix'])) ? null : $GLOBALS['authBackendHostSuffix'],
 					'port' => $ldapPort,
 					'follow_referrals' => false,
-					'use_ssl' => false,
-					'use_tls' => false,
+					'use_ssl' => $GLOBALS['ldapSSL'],
+					'use_tls' => $GLOBALS['ldapTLS'],
 					'version' => 3,
 					'timeout' => 5,
 					// Custom LDAP Options
@@ -3207,8 +3227,8 @@ function testAPIConnection($array)
 					'account_suffix' => '',
 					'port' => $ldapPort,
 					'follow_referrals' => false,
-					'use_ssl' => false,
-					'use_tls' => false,
+					'use_ssl' => $GLOBALS['ldapSSL'],
+					'use_tls' => $GLOBALS['ldapTLS'],
 					'version' => 3,
 					'timeout' => 5,
 					// Custom LDAP Options
