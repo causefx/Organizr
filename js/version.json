@@ -252,10 +252,17 @@
     "notes": "Added note about Samesite issues|New Radarr Logo|Please report bugs in GitHub issues page"
   },
   "2.0.631": {
-    "date": "2020-05-01 19:15",
+    "date": "2020-06-19 19:15",
     "title": "Whoa - sorry for the wait",
     "new": "Added css bottom-close-splash",
     "fixed": "Netadata fixes|Docker update fixes|Tautulli Fixes|Hardcode fixes for days beyond one year|Typos|NZBHydra tab image|fix stray / in index.php and js/functions.php (#1408)|LDAP with STARTTLS support (#1411)",
+    "notes": "Please report bugs in GitHub issues page"
+  },
+  "2.0.633": {
+    "date": "2020-06-20 02:01",
+    "title": "Small Bugfix",
+    "new": "",
+    "fixed": "Fix heredoc error on php versions under 7.3",
     "notes": "Please report bugs in GitHub issues page"
   }
 }
