@@ -1793,18 +1793,18 @@ function showLogin()
 
 function checkoAuth()
 {
-	return ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') ? true : false;
+	return ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] !== 'internal') ? true : false;
 }
 
 function checkoAuthOnly()
 {
-	return ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] == 'external') ? true : false;
+	return ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] == 'external') ? true : false;
 }
 
 function showoAuth()
 {
 	$buttons = '';
-	if ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') {
+	if ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] !== 'internal') {
 		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn btn-lg btn-block text-uppercase waves-effect waves-light bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <span>Login</span><i aria-hidden="true" class="mdi mdi-plex m-l-5"></i> </a>';
 	}
 	return ($buttons) ? '
