@@ -135,7 +135,8 @@ function organizrSpecialSettings()
 		'menuLink' => array(
 			'githubMenuLink' => $GLOBALS['githubMenuLink'],
 			'organizrSupportMenuLink' => $GLOBALS['organizrSupportMenuLink'],
-			'organizrDocsMenuLink' => $GLOBALS['organizrDocsMenuLink']
+			'organizrDocsMenuLink' => $GLOBALS['organizrDocsMenuLink'],
+			'organizrSignoutMenuLink' => $GLOBALS['organizrSignoutMenuLink']
 		)
 	);
 }
@@ -1278,6 +1279,12 @@ function getCustomizeAppearance()
 					'name' => 'organizrDocsMenuLink',
 					'label' => 'Show Organizr Docs Link',
 					'value' => $GLOBALS['organizrDocsMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrSignoutMenuLink',
+					'label' => 'Show Organizr Sign out & in Button on Sidebar',
+					'value' => $GLOBALS['organizrSignoutMenuLink']
 				),
 				array(
 					'type' => 'select',
