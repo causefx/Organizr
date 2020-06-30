@@ -7050,7 +7050,7 @@ var html = `
         <div class="white-box text-white p-0">
             <!-- Tabstyle start -->
             <section class="">
-                <div class="sttabs tabs-style-iconbox">
+                <div class="sttabs sttabs-main-weather-health-div tabs-style-iconbox">
                     <nav>
                         <ul>${healthHeader}</ul>
                     </nav>
@@ -7064,7 +7064,7 @@ var html = `
     </div>
     <script>
         (function() {
-            [].slice.call(document.querySelectorAll('.sttabs')).forEach(function(el) {
+            [].slice.call(document.querySelectorAll('.sttabs-main-weather-health-div')).forEach(function(el) {
                 new CBPFWTabs(el);
             });
         })();
@@ -7092,7 +7092,7 @@ function buildPollutant(array){
         <div class="white-box text-white p-0">
             <!-- Tabstyle start -->
             <section class="">
-                <div class="sttabs tabs-style-iconbox">
+                <div class="sttabs sttabs-main-weather-pollutant-div tabs-style-iconbox">
                     <nav>
                         <ul>${pollutantHeader}</ul>
                     </nav>
@@ -7106,7 +7106,7 @@ function buildPollutant(array){
     </div>
     <script>
         (function() {
-            [].slice.call(document.querySelectorAll('.sttabs')).forEach(function(el) {
+            [].slice.call(document.querySelectorAll('.sttabs-main-weather-pollutant-div')).forEach(function(el) {
                 new CBPFWTabs(el);
             });
         })();
