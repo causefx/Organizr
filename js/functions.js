@@ -8139,15 +8139,21 @@ function youtubeSearch(searchQuery) {
 function youtubeCheck(title,link){
 	youtubeSearch(title).success(function(data) {
         var response = JSON.parse(data);
-		inlineLoad();
-		var id = response.data.items["0"].id.videoId;
-		var div = `
+        console.log(data)
+		if(response.data){
+			inlineLoad();
+			var id = response.data.items["0"].id.videoId;
+			var div = `
 		<div id="player-`+link+`" data-plyr-provider="youtube" data-plyr-embed-id="`+id+`"></div>
 		<div class="clearfix"></div>
 		`;
-		$('.youtube-div').html(div);
-		$('.'+link).trigger('click');
-		player = new Plyr('#player-'+link);
+			$('.youtube-div').html(div);
+			$('.'+link).trigger('click');
+			player = new Plyr('#player-'+link);
+		}else{
+			messageSingle('API Limit Reached','YouTube API Error',activeInfo.settings.notifications.position,'#FFF','error','5000');
+		}
+
 	}).fail(function(xhr) {
 		console.error("Organizr Function: YouTube Connection Failed");
 	});

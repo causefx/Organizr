@@ -1288,7 +1288,7 @@ function youtubeSearch($query)
 	if (!$query) {
 		return 'no query provided!';
 	}
-	$keys = array('AIzaSyBsdt8nLJRMTwOq5PY5A5GLZ2q7scgn01w', 'AIzaSyD-8SHutB60GCcSM8q_Fle38rJUV7ujd8k', 'AIzaSyBzOpVBT6VII-b-8gWD0MOEosGg4hyhCsQ');
+	$keys = array('AIzaSyBsdt8nLJRMTwOq5PY5A5GLZ2q7scgn01w', 'AIzaSyD-8SHutB60GCcSM8q_Fle38rJUV7ujd8k', 'AIzaSyBzOpVBT6VII-b-8gWD0MOEosGg4hyhCsQ', 'AIzaSyBKnRe1P8fpfBHgooJpmT0WOsrdUtZ4cpk');
 	$randomKeyIndex = array_rand($keys);
 	$key = $keys[$randomKeyIndex];
 	$apikey = ($GLOBALS['youtubeAPI'] !== '') ? $GLOBALS['youtubeAPI'] : $key;
