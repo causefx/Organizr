@@ -795,7 +795,7 @@ function embyConnect($action, $key = 'Latest', $skip = false)
 				}
 				// Get A User
 				$userIds = $url . "/Users?api_key=" . $GLOBALS['embyToken'];
-				$showPlayed = true;
+				$showPlayed = false;
 				try {
 					$options = (localURL($userIds)) ? array('verify' => false) : array();
 					$response = Requests::get($userIds, array(), $options);
