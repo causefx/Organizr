@@ -729,7 +729,7 @@ function getSettingsMain()
 				'type' => 'input',
 				'name' => 'embyURL',
 				'class' => 'embyAuth switchAuth',
-				'label' => 'Emby URL',
+				'label' => 'Emby/Jellyfin URL',
 				'value' => $GLOBALS['embyURL'],
 				'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 				'placeholder' => 'http(s)://hostname:port'
@@ -738,7 +738,7 @@ function getSettingsMain()
 				'type' => 'password-alt',
 				'name' => 'embyToken',
 				'class' => 'embyAuth switchAuth',
-				'label' => 'Emby Token',
+				'label' => 'Emby/Jellyin Token',
 				'value' => $GLOBALS['embyToken'],
 				'placeholder' => ''
 			),

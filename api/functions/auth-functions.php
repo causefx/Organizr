@@ -337,6 +337,42 @@ function plugin_auth_emby_local($username, $password)
 	return false;
 }
 
+// Pass credentials to JellyFin Backend
+function plugin_auth_jellyfin($username, $password)
+{
+	try {
+		$url = qualifyURL($GLOBALS['embyURL']) . '/Users/authenticatebyname';
+		$headers = array(
+			'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0"',
+			'Content-Type' => 'application/json',
+		);
+		$data = array(
+			'Username' => $username,
+			'Pw' => $password
+		);
+		$response = Requests::post($url, $headers, json_encode($data));
+		if ($response->success) {
+			$json = json_decode($response->body, true);
+			if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
+				writeLog('success', 'JellyFin Auth Function - Found User and Logged In', $username);
+				// Login Success - Now Logout JellyFin Session As We No Longer Need It
+				$headers = array(
+					'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0", Token="' . $json['AccessToken'] . '"',
+					'Content-Type' => 'application/json',
+				);
+				$response = Requests::post(qualifyURL($GLOBALS['embyURL']) . '/Sessions/Logout', $headers, array());
+				if ($response->success) {
+					return true;
+				}
+			}
+		}
+		return false;
+	} catch (Requests_Exception $e) {
+		writeLog('error', 'JellyFin Auth Function - Error: ' . $e->getMessage(), $username);
+	}
+	return false;
+}
+
 // Authenticate against emby connect
 function plugin_auth_emby_connect($username, $password)
 {

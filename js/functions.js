@@ -8258,6 +8258,7 @@ function changeAuth(){
         case 'emby_local':
         case 'emby_connect':
         case 'emby_all':
+	    case 'jellyfin':
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.embyAuth').parent().parent().parent().show();
