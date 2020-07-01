@@ -342,27 +342,26 @@ function plugin_auth_emby_connect($username, $password)
 {
 	// Emby disabled EmbyConnect on their API
 	// https://github.com/MediaBrowser/Emby/issues/3553
-	return plugin_auth_emby_local($username, $password);
-	/*
+	//return plugin_auth_emby_local($username, $password);
 	try {
 		// Get A User
-		$connectId = '';
+		$connectUserName = '';
 		$url = qualifyURL($GLOBALS['embyURL']) . '/Users?api_key=' . $GLOBALS['embyToken'];
 		$response = Requests::get($url);
 		if ($response->success) {
 			$json = json_decode($response->body, true);
 			if (is_array($json)) {
 				foreach ($json as $key => $value) { // Scan for this user
-					if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualify as connect account
-						if ($value['ConnectUserName'] == $username || $value['Name'] == $username) {
-							$connectId = $value['ConnectUserId'];
+					if (isset($value['ConnectUserName']) && isset($value['ConnectLinkType'])) { // Qualify as connect account
+						if (strtolower($value['ConnectUserName']) == $username || strtolower($value['Name']) == $username) {
+							$connectUserName = $value['ConnectUserName'];
 							writeLog('success', 'Emby Connect Auth Function - Found User', $username);
 							break;
 						}
 					}
 				}
-				if ($connectId) {
-					writeLog('success', 'Emby Connect Auth Function - Attempting to Login with Emby ID: ' . $connectId, $username);
+				if ($connectUserName) {
+					writeLog('success', 'Emby Connect Auth Function - Attempting to Login with Emby ID: ' . $connectUserName, $username);
 					$connectURL = 'https://connect.emby.media/service/user/authenticate';
 					$headers = array(
 						'Accept' => 'application/json',
@@ -375,10 +374,10 @@ function plugin_auth_emby_connect($username, $password)
 					$response = Requests::post($connectURL, $headers, $data);
 					if ($response->success) {
 						$json = json_decode($response->body, true);
-						if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
+						if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Name'] == $connectUserName) {
 							return array(
 								'email' => $json['User']['Email'],
-								'image' => $json['User']['ImageUrl'],
+								//'image' => $json['User']['ImageUrl'],
 							);
 						} else {
 							writeLog('error', 'Emby Connect Auth Function - Bad Response', $username);
@@ -394,7 +393,6 @@ function plugin_auth_emby_connect($username, $password)
 		writeLog('error', 'Emby Connect Auth Function - Error: ' . $e->getMessage(), $username);
 		return false;
 	}
-	*/
 }
 
 // Authenticate Against Emby Local (first) and Emby Connect
@@ -403,12 +401,10 @@ function plugin_auth_emby_all($username, $password)
 	// Emby disabled EmbyConnect on their API
 	// https://github.com/MediaBrowser/Emby/issues/3553
 	$localResult = plugin_auth_emby_local($username, $password);
-	return $localResult;
-	/*
+	//return $localResult;
 	if ($localResult) {
 		return $localResult;
 	} else {
 		return plugin_auth_emby_connect($username, $password);
 	}
-	*/
 }
