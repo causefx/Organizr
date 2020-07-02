@@ -163,7 +163,7 @@ function netdataSettngsArray()
 			            </tr>
 			            <tr>
 			                <td>mutator</td>
-			                <td>Used to perform simple mathematical operations on the result (+, -, /, *). For example: dividing the result by 1000 would be "1000". These operations can be chained together by putting them in a comma-seprated format.</td>
+			                <td>Used to perform simple mathematical operations on the result (+, -, /, *). For example: dividing the result by 1000 would be "/1000". These operations can be chained together by putting them in a comma-seprated format.</td>
 			                <td><i class="fa fa-times text-danger" aria-hidden="true"></i></td>
 			            </tr>
 			            <tr>
