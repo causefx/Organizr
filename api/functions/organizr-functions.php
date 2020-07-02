@@ -166,6 +166,7 @@ function wizardConfig($array)
 		'organizrHash' => $hashKey,
 		'organizrAPI' => $api,
 		'registrationPassword' => $registrationPassword,
+		'uuid' => gen_uuid()
 	);
 	// Create Config
 	$GLOBALS['dbLocation'] = $location;
