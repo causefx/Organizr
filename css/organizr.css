@@ -4399,3 +4399,16 @@ html {
     right: 20px;
     bottom: 20px;
 }
+.sort-placeholder {
+    background-size: contain;
+    height: 60px;
+    border-radius: 10px;
+    border: 3px dotted whitesmoke;
+    opacity: .5;
+    font-size: 13px;
+    margin: 1px 0 -9px;
+    text-align: left;
+    background: #1f1f1f;
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+}
