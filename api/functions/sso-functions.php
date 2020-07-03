@@ -15,7 +15,7 @@ function ssoCheck($username, $password, $token = null)
 		$tautulliToken = getTautulliToken($username, $password, $token);
 		if ($tautulliToken) {
 			foreach ($tautulliToken as $key => $value) {
-				coookie('set', 'tautulli_token_' . $value['uuid'], $value['token'], $GLOBALS['rememberMeDays']);
+				coookie('set', 'tautulli_token_' . $value['uuid'], $value['token'], $GLOBALS['rememberMeDays'], true, $value['path']);
 			}
 		}
 	}
@@ -74,8 +74,11 @@ function getTautulliToken($username, $password, $plexToken = null)
 				$options = (localURL($url)) ? array('verify' => false) : array();
 				$response = Requests::post($url . '/auth/signin', $headers, $data, $options);
 				if ($response->success) {
+					$qualifiedURL = qualifyURL($url, true);
+					$path = ($qualifiedURL['path']) ? $qualifiedURL['path'] : '/';
 					$token[$key]['token'] = json_decode($response->body, true)['token'];
 					$token[$key]['uuid'] = json_decode($response->body, true)['uuid'];
+					$token[$key]['path'] = $path;
 					writeLog('success', 'Tautulli Token Function - Grabbed token from: ' . $url, $username);
 				} else {
 					writeLog('error', 'Tautulli Token Function - Error on URL: ' . $url, $username);

@@ -77,7 +77,7 @@ function parseDomain($value, $force = false)
 }
 
 // Cookie Custom Function
-function coookie($type, $name, $value = '', $days = -1, $http = true)
+function coookie($type, $name, $value = '', $days = -1, $http = true, $path = '/')
 {
 	$days = ($days > 365) ? 365 : $days;
 	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https") {
@@ -93,20 +93,19 @@ function coookie($type, $name, $value = '', $days = -1, $http = true)
 	if (!$http) {
 		$HTTPOnly = false;
 	}
-	$Path = '/';
 	$Domain = parseDomain($_SERVER['HTTP_HOST']);
 	$DomainTest = parseDomain($_SERVER['HTTP_HOST'], true);
 	if ($type == 'set') {
 		$_COOKIE[$name] = $value;
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + (86400 * $days)) . ' GMT')
-			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($path) ? '' : '; path=' . $path)
 			. (empty($Domain) ? '' : '; domain=' . $Domain)
 			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + (86400 * $days)) . ' GMT')
-			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($path) ? '' : '; path=' . $path)
 			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
 			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
@@ -114,20 +113,20 @@ function coookie($type, $name, $value = '', $days = -1, $http = true)
 		unset($_COOKIE[$name]);
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
-			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($path) ? '' : '; path=' . $path)
 			. (empty($Domain) ? '' : '; domain=' . $Domain)
 			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($days) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
-			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($path) ? '' : '; path=' . $path)
 			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
 			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 	}
 }
 
-function coookieSeconds($type, $name, $value = '', $ms, $http = true)
+function coookieSeconds($type, $name, $value = '', $ms, $http = true, $path = '/')
 {
 	if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https") {
 		$Secure = true;
@@ -142,20 +141,19 @@ function coookieSeconds($type, $name, $value = '', $ms, $http = true)
 	if (!$http) {
 		$HTTPOnly = false;
 	}
-	$Path = '/';
 	$Domain = parseDomain($_SERVER['HTTP_HOST']);
 	$DomainTest = parseDomain($_SERVER['HTTP_HOST'], true);
 	if ($type == 'set') {
 		$_COOKIE[$name] = $value;
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + ($ms / 1000)) . ' GMT')
-			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($path) ? '' : '; path=' . $path)
 			. (empty($Domain) ? '' : '; domain=' . $Domain)
 			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() + ($ms / 1000)) . ' GMT')
-			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($path) ? '' : '; path=' . $path)
 			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
 			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
@@ -163,13 +161,13 @@ function coookieSeconds($type, $name, $value = '', $ms, $http = true)
 		unset($_COOKIE[$name]);
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
-			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($path) ? '' : '; path=' . $path)
 			. (empty($Domain) ? '' : '; domain=' . $Domain)
 			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);
 		header('Set-Cookie: ' . rawurlencode($name) . '=' . rawurlencode($value)
 			. (empty($ms) ? '' : '; expires=' . gmdate('D, d-M-Y H:i:s', time() - 3600) . ' GMT')
-			. (empty($Path) ? '' : '; path=' . $Path)
+			. (empty($path) ? '' : '; path=' . $path)
 			. (empty($Domain) ? '' : '; domain=' . $DomainTest)
 			. (!$Secure ? '' : '; SameSite=None; Secure')
 			. (!$HTTPOnly ? '' : '; HttpOnly'), false);

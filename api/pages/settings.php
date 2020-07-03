@@ -8,7 +8,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
         sponsorLoad();
         newsLoad();
         checkCommitLoad();
-        [].slice.call(document.querySelectorAll(\'.sttabs\')).forEach(function(el) {
+        [].slice.call(document.querySelectorAll(\'.sttabs-main-settings-div\')).forEach(function(el) {
             new CBPFWTabs(el);
         });
     })();
@@ -30,7 +30,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
     <div class="row">
         <!-- Tab style start -->
         <section class="">
-            <div class="sttabs tabs-style-flip">
+            <div class="sttabs sttabs-main-settings-div tabs-style-flip">
                 <nav>
                     <ul>
                         <li onclick="changeSettingsMenu(\'Settings::Tab Editor\')" id="settings-main-tab-editor-anchor"><a href="#settings-main-tab-editor" class="sticon ti-layout-tab-v"><span lang="en">Tab Editor</span></a></li>

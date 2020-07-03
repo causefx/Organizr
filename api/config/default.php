@@ -389,5 +389,6 @@ return array(
 	}',
 	'githubMenuLink' => true,
 	'organizrSupportMenuLink' => true,
-	'organizrDocsMenuLink' => true
+	'organizrDocsMenuLink' => true,
+	'organizrSignoutMenuLink' => true
 );

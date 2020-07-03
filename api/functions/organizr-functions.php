@@ -135,7 +135,8 @@ function organizrSpecialSettings()
 		'menuLink' => array(
 			'githubMenuLink' => $GLOBALS['githubMenuLink'],
 			'organizrSupportMenuLink' => $GLOBALS['organizrSupportMenuLink'],
-			'organizrDocsMenuLink' => $GLOBALS['organizrDocsMenuLink']
+			'organizrDocsMenuLink' => $GLOBALS['organizrDocsMenuLink'],
+			'organizrSignoutMenuLink' => $GLOBALS['organizrSignoutMenuLink']
 		)
 	);
 }
@@ -165,6 +166,7 @@ function wizardConfig($array)
 		'organizrHash' => $hashKey,
 		'organizrAPI' => $api,
 		'registrationPassword' => $registrationPassword,
+		'uuid' => gen_uuid()
 	);
 	// Create Config
 	$GLOBALS['dbLocation'] = $location;
@@ -728,7 +730,7 @@ function getSettingsMain()
 				'type' => 'input',
 				'name' => 'embyURL',
 				'class' => 'embyAuth switchAuth',
-				'label' => 'Emby URL',
+				'label' => 'Emby/Jellyfin URL',
 				'value' => $GLOBALS['embyURL'],
 				'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 				'placeholder' => 'http(s)://hostname:port'
@@ -737,7 +739,7 @@ function getSettingsMain()
 				'type' => 'password-alt',
 				'name' => 'embyToken',
 				'class' => 'embyAuth switchAuth',
-				'label' => 'Emby Token',
+				'label' => 'Emby/Jellyin Token',
 				'value' => $GLOBALS['embyToken'],
 				'placeholder' => ''
 			),
@@ -1280,6 +1282,12 @@ function getCustomizeAppearance()
 					'value' => $GLOBALS['organizrDocsMenuLink']
 				),
 				array(
+					'type' => 'switch',
+					'name' => 'organizrSignoutMenuLink',
+					'label' => 'Show Organizr Sign out & in Button on Sidebar',
+					'value' => $GLOBALS['organizrSignoutMenuLink']
+				),
+				array(
 					'type' => 'select',
 					'name' => 'unsortedTabs',
 					'label' => 'Unsorted Tab Placement',
@@ -1793,18 +1801,18 @@ function showLogin()
 
 function checkoAuth()
 {
-	return ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') ? true : false;
+	return ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] !== 'internal') ? true : false;
 }
 
 function checkoAuthOnly()
 {
-	return ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] == 'external') ? true : false;
+	return ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] == 'external') ? true : false;
 }
 
 function showoAuth()
 {
 	$buttons = '';
-	if ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') {
+	if ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] !== 'internal') {
 		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn btn-lg btn-block text-uppercase waves-effect waves-light bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <span>Login</span><i aria-hidden="true" class="mdi mdi-plex m-l-5"></i> </a>';
 	}
 	return ($buttons) ? '
