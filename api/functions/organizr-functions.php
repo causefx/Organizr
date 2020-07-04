@@ -2686,7 +2686,13 @@ function importUserButtons()
 	';
 	$buttons = '';
 	if (!empty($GLOBALS['plexToken'])) {
-		$buttons .= '<button class="btn bg-plex text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'plex\')" type="button"><span class="btn-label"><i class="mdi mdi-plex"></i></span><span lang="en">Import Plex Users</span></button>';
+		$buttons .= '<button class="btn m-b-20 m-r-20 bg-plex text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'plex\')" type="button"><span class="btn-label"><i class="mdi mdi-plex"></i></span><span lang="en">Import Plex Users</span></button>';
+	}
+	if (!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken']) && (strpos($GLOBALS['embyURL'], 'jellyfin') !== false)) {
+		$buttons .= '<button class="btn m-b-20 m-r-20 bg-primary text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'jellyfin\')" type="button"><span class="btn-label"><i class="mdi mdi-fish"></i></span><span lang="en">Import Jellyfin Users</span></button>';
+	}
+	if (!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken']) && (strpos($GLOBALS['embyURL'], 'jellyfin') === false)) {
+		$buttons .= '<button class="btn m-b-20 m-r-20 bg-emby text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'emby\')" type="button"><span class="btn-label"><i class="mdi mdi-emby"></i></span><span lang="en">Import Jellyfin Users</span></button>';
 	}
 	return ($buttons !== '') ? $buttons : $emptyButtons;
 }

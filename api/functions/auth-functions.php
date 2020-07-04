@@ -145,7 +145,87 @@ function allPlexUsers($newOnly = false)
 		}
 		return false;
 	} catch (Requests_Exception $e) {
-		writeLog('success', 'Plex User Function - Error: ' . $e->getMessage(), $username);
+		writeLog('success', 'Plex Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
+	}
+	return false;
+}
+
+function allJellyfinUsers($newOnly = false)
+{
+	try {
+		if (!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken'])) {
+			$url = qualifyURL($GLOBALS['embyURL']) . '/Users?api_key=' . $GLOBALS['embyToken'];
+			$headers = array();
+			$response = Requests::get($url, $headers);
+			if ($response->success) {
+				$users = json_decode($response->body, true);
+				if (is_array($users) || is_object($users)) {
+					$results = array();
+					foreach ($users as $child) {
+						// Jellyfin doesn't list emails for some reason
+						$email = random_ascii_string(10) . '@placeholder.eml';
+						if ($newOnly) {
+							$taken = usernameTaken((string)$child['Name'], $email);
+							if (!$taken) {
+								$results[] = array(
+									'username' => (string)$child['Name'],
+									'email' => $email
+								);
+							}
+						} else {
+							$results[] = array(
+								'username' => (string)$child['Name'],
+								'email' => $email,
+							);
+						}
+					}
+					return $results;
+				}
+			}
+		}
+		return false;
+	} catch (Requests_Exception $e) {
+		writeLog('success', 'Jellyfin Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
+	}
+	return false;
+}
+
+function allEmbyUsers($newOnly = false)
+{
+	try {
+		if (!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken'])) {
+			$url = qualifyURL($GLOBALS['embyURL']) . '/Users?api_key=' . $GLOBALS['embyToken'];
+			$headers = array();
+			$response = Requests::get($url, $headers);
+			if ($response->success) {
+				$users = json_decode($response->body, true);
+				if (is_array($users) || is_object($users)) {
+					$results = array();
+					foreach ($users as $child) {
+						// Emby doesn't list emails for some reason
+						$email = random_ascii_string(10) . '@placeholder.eml';
+						if ($newOnly) {
+							$taken = usernameTaken((string)$child['Name'], $email);
+							if (!$taken) {
+								$results[] = array(
+									'username' => (string)$child['Name'],
+									'email' => $email
+								);
+							}
+						} else {
+							$results[] = array(
+								'username' => (string)$child['Name'],
+								'email' => $email,
+							);
+						}
+					}
+					return $results;
+				}
+			}
+		}
+		return false;
+	} catch (Requests_Exception $e) {
+		writeLog('success', 'Emby Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
 	}
 	return false;
 }

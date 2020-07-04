@@ -1154,6 +1154,12 @@ function importUsersType($array)
 			case 'plex':
 				return importUsers(allPlexUsers(true));
 				break;
+			case 'jellyfin':
+				return importUsers(allJellyfinUsers(true));
+				break;
+			case 'emby':
+				return importUsers(allEmbyUsers(true));
+				break;
 			default:
 				return false;
 		}
