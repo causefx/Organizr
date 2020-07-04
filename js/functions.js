@@ -7138,6 +7138,7 @@ function buildMonitorrItem(array){
     var cards = '';
     var options = array['options'];
     var services = array['services'];
+    var tabName = '';
 
     var buildCard = function(name, data) {
         if(data.status == true) {
@@ -7146,6 +7147,12 @@ function buildMonitorrItem(array){
             var statusColor = 'warning animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-warning'
         } else {
             var statusColor = 'danger animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-danger'
+        }
+        if(typeof data.link !== 'undefined' && data.link.includes('#')) {
+            tabName = data.link.substring(data.link.indexOf('#')+1);
+            monitorrLink = '<a href="javascript:void(0)" onclick="tabActions(event,\''+tabName+'\',1)">';
+        } else if(typeof data.link !== 'undefined') {
+            monitorrLink = '<a href="'+data.link+'" target="_blank">'
         }
         if(options['compact']) {
             var card = `
@@ -7156,7 +7163,7 @@ function buildMonitorrItem(array){
                             <div class="left-health bg-`+statusColor+`"></div>
                             <div class="ml-1 w-100">
                                 <i class="`+imageText+` font-20 pull-right mt-3 mb-2"></i>
-                                `; if (typeof data.link !== 'undefined') { card +=`<a href="`+data.link+`" target="_blank">`; }
+                                `; if (typeof data.link !== 'undefined') { card += monitorrLink; }
                                 card += `<h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle" src="`+data.image+`">&nbsp;`+name+`</h3>
                                 `; if (typeof data.link !== 'undefined') { card +=`</a>`; }
                                 card += `<div class="clearfix"></div>
