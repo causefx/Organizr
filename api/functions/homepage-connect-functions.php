@@ -2637,18 +2637,9 @@ function getMonitorr()
 				$servicesMatch = [];
 				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline".*><div>(.*)<\/div><\/div><div class="btnoffline".*>Offline<\/div><\/div><\/div>|<div id="servicetitlenolink".*><div>(.*)<\/div><\/div><div class="btnonline".*>Online<\/div><\/div><\/div>|<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnunknown">/';
 				preg_match_all($servicePattern, $html, $servicesMatch);
-				unset($servicesMatch[0]);
-				$servicesMatch = array_values($servicesMatch);
-				foreach ($servicesMatch as $group) {
-					foreach ($group as $service) {
-						if ($service !== '') {
-							array_push($services, $service);
-						}
-					}
-				}
-				// This section then grabs the status and image of that service with regex
+				$services = array_filter($servicesMatch[1]) + array_filter($servicesMatch[2]) + array_filter($servicesMatch[3]) + array_filter($servicesMatch[4]);
 				$statuses = [];
-				foreach ($services as $service) {
+				foreach ($services as $key => $service) {
 					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div>|' . $service . '<\/div><\/div><div class="btnoffline".*>(Offline)<\/div><\/div><\/div>|' . $service . '<\/div><\/div><div class="btnunknown">(.*)<\/div><\/a>/';
 					$status = [];
 					preg_match($statusPattern, $html, $status);
@@ -2668,6 +2659,7 @@ function getMonitorr()
 							];
 						}
 					}
+					$statuses[$service]['sort'] = $key;
 					$imageMatch = [];
 					$imgPattern = '/assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitle"><div>' . $service . '|assets\/img\/\.\.(.*)" class="serviceimg imgoffline" alt=.*><\/div><\/div><div id="servicetitleoffline".*><div>' . $service . '|assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitlenolink".*><div>' . $service . '/';
 					preg_match($imgPattern, $html, $imageMatch);
@@ -2701,7 +2693,15 @@ function getMonitorr()
 						}
 					}
 				}
-				ksort($statuses);
+				foreach($statuses as $status){
+					foreach($status as $key=>$value){
+						if(!isset($sortArray[$key])){
+							$sortArray[$key] = array();
+						}
+						$sortArray[$key][] = $value;
+					}
+				}
+				array_multisort($sortArray['status'], SORT_ASC, $sortArray['sort'], SORT_ASC, $statuses);
 				$api['services'] = $statuses;
 				$api['options'] = [
 					'title' => $GLOBALS['monitorrHeader'],
