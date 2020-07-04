@@ -138,6 +138,7 @@ function defineConfig($array, $anyCase = true, $nest_prefix = false)
 		if (is_scalar($v) && !defined($nest_prefix . $k)) {
 			$GLOBALS[$nest_prefix . $k] = $v;
 		} elseif (is_array($v)) {
+			$GLOBALS[$nest_prefix . $k] = $v;
 			defineConfig($v, $anyCase, $nest_prefix . $k . '_');
 		}
 	}

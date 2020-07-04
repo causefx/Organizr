@@ -1,7 +1,8 @@
 <?php
 if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	$hideOrganizrLogin = (checkoAuth()) ? 'collapse' : 'collapse in';
-	$hideOrganizrLoginHeader = (checkoAuth()) ? '' : 'hidden';
+	$hideOrganizrLoginHeader = (checkoAuthOnly()) ? 'hidden' : '';
+	$hideOrganizrLoginHeader2 = (checkoAuth()) ? '' : 'hidden';
 	$pageLogin = '
 <script>
 if(activeInfo.settings.login.rememberMe){
@@ -12,6 +13,7 @@ if(activeInfo.settings.login.rememberMe){
   <div class="login-box login-sidebar animated slideInRight">
     <div class="white-box">
       <form class="form-horizontal" id="loginform" onsubmit="return false;">
+      	<input id="login-attempts" class="form-control" name="loginAttempts" type="hidden">
         <a href="javascript:void(0)" class="text-center db visible-xs" id="login-logo">' . logoOrText() . '</a>
         <div id="oAuth-div" class="form-group hidden">
           <div class="col-xs-12">
@@ -30,7 +32,7 @@ if(activeInfo.settings.login.rememberMe){
                     <div class="panel-body">
 	                    <div class="input-group" style="width: 100%;">
 	                        <div class="input-group-addon hidden-xs"><i class="ti-lock"></i></div>
-	                        <input type="text" class="form-control tfa-input" name="tfaCode" placeholder="Code" autocomplete="off" autocorrect="off" autocapitalize="off" maxlength="6" spellcheck="false" autofocus="">
+	                        <input type="text" class="form-control tfa-input" name="tfaCode" placeholder="Code" data-lpignore="true" autocomplete="off" autocorrect="off" autocapitalize="off" maxlength="6" spellcheck="false" autofocus="">
 	                    </div>
 	                    <button class="btn btn-warning btn-lg btn-block text-uppercase waves-effect waves-light login-button m-t-10" type="submit" lang="en">Login</button>
                     </div>
@@ -41,7 +43,7 @@ if(activeInfo.settings.login.rememberMe){
         <div class="panel-group" id="login-panels" data-type="accordion" aria-multiselectable="true" role="tablist">
 	        <!-- ORGANIZR LOGIN -->
 	        <div class="panel">
-	            <div class="panel-heading bg-org ' . $hideOrganizrLoginHeader . '" id="organizr-login-heading" role="tab">
+	            <div class="panel-heading bg-org ' . $hideOrganizrLoginHeader . ' ' . $hideOrganizrLoginHeader2 . '" id="organizr-login-heading" role="tab">
 	            	<a class="panel-title collapsed" data-toggle="collapse" href="#organizr-login-collapse" data-parent="#login-panels" aria-expanded="false" aria-controls="organizr-login-collapse">
                         <img class="lazyload loginTitle" data-src="plugins/images/organizr/logo-no-border.png"> &nbsp;
                         <span class="text-uppercase fw300" lang="en">Login with Organizr</span>

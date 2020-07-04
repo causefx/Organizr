@@ -1,8 +1,0 @@
-exclude_paths:
-  - "/tests/*"
-  - "/vendor/*"
-languages:
-  PHP: true
-ratings:
-  paths:
-  - "**.php"

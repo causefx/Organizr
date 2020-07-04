@@ -2,24 +2,18 @@
 
 namespace Adldap\Models;
 
-use Adldap\Models\Concerns\HasDescription;
-use Adldap\Models\Concerns\HasUserAccountControl;
-use Adldap\Models\Concerns\HasLastLogonAndLogOff;
-use Adldap\Models\Concerns\HasCriticalSystemObject;
-
 /**
- * Class Computer
+ * Class Computer.
  *
  * Represents an LDAP computer / server.
- *
- * @package Adldap\Models
  */
 class Computer extends Entry
 {
-    use HasCriticalSystemObject,
-        HasDescription,
-        HasLastLogonAndLogOff,
-        HasUserAccountControl;
+    use Concerns\HasMemberOf,
+        Concerns\HasDescription,
+        Concerns\HasLastLogonAndLogOff,
+        Concerns\HasUserAccountControl,
+        Concerns\HasCriticalSystemObject;
 
     /**
      * Returns the computers operating system.
@@ -72,7 +66,7 @@ class Computer extends Entry
      *
      * @link https://msdn.microsoft.com/en-us/library/ms675243(v=vs.85).aspx
      *
-     * @return string
+     * @return int
      */
     public function getBadPasswordTime()
     {
@@ -84,7 +78,7 @@ class Computer extends Entry
      *
      * @link https://msdn.microsoft.com/en-us/library/ms675098(v=vs.85).aspx
      *
-     * @return string
+     * @return int
      */
     public function getAccountExpiry()
     {

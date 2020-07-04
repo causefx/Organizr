@@ -115,6 +115,8 @@ plugins/theme_files/*
 plugins/plugin_files/*
 !plugins/theme_files/index.html
 !plugins/plugin_files/index.html
+plugins/images/userTabs/*
+!plugins/images/userTabs/index.html
 # =========================
 # Plugin files
 # =========================
@@ -127,6 +129,10 @@ api/plugins/*
 !api/plugins/api/chat.php
 !api/plugins/config/chat.php
 !api/plugins/js/chat.js
+!api/plugins/healthChecks.php
+!api/plugins/api/healthChecks.php
+!api/plugins/config/healthChecks.php
+!api/plugins/js/healthChecks.js
 !api/plugins/php-mailer.php
 !api/plugins/api/php-mailer.php
 !api/plugins/config/php-mailer.php
@@ -145,3 +151,15 @@ api/plugins/*
 !api/plugins/misc/speedTest/telemetry.php
 !api/plugins/misc/speedTest/telemetry_settings.php
 !api/plugins/misc/speedTest/speedtest_worker.min.js
+
+# =========================
+# Custom files
+# =========================
+api/pages/custom/*.php
+/plugins/images/tabs/eatsleep.jpg
+/plugins/images/cache/tautulli-show.svg
+/plugins/images/cache/tautulli-android.svg
+/plugins/images/cache/tautulli-artist.svg
+/plugins/images/cache/tautulli-movie.svg
+/plugins/images/cache/tautulli-windows.svg
+plugins/images/cache/tautulli-samsung.svg

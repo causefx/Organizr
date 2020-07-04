@@ -54,6 +54,7 @@ function createToken($username, $email, $image, $group, $groupID, $key, $days = 
 	if (!isset($GLOBALS['dbLocation']) || !isset($GLOBALS['dbName'])) {
 		return false;
 	}
+	$days = ($days > 365) ? 365 : $days;
 	//Quick get user ID
 	try {
 		$database = new Dibi\Connection([
@@ -104,8 +105,8 @@ function validateToken($token, $global = false)
 	// Validate script
 	$userInfo = jwtParse($token);
 	$validated = $userInfo ? true : false;
-	if ($validated == true) {
-		if ($global == true) {
+	if ($global == true) {
+		if ($validated == true) {
 			try {
 				$database = new Dibi\Connection([
 					'driver' => 'sqlite3',
@@ -138,12 +139,15 @@ function validateToken($token, $global = false)
 			} catch (Dibi\Exception $e) {
 				$GLOBALS['organizrUser'] = false;
 			}
+		} else {
+			// Delete cookie & reload page
+			coookie('delete', $GLOBALS['cookieName']);
+			$GLOBALS['organizrUser'] = false;
 		}
 	} else {
-		// Delete cookie & reload page
-		coookie('delete', $GLOBALS['cookieName']);
-		$GLOBALS['organizrUser'] = false;
+		return $userInfo;
 	}
+	return false;
 }
 
 function getOrganizrUserToken()

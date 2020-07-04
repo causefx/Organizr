@@ -498,8 +498,11 @@ class Result implements IDataSource
 			} elseif ($type === Type::FLOAT) {
 				$value = ltrim((string) $value, '0');
 				$p = strpos($value, '.');
-				if ($p !== false) {
+				$e = strpos($value, 'e');
+				if ($p !== false && $e === false) {
 					$value = rtrim(rtrim($value, '0'), '.');
+				} elseif ($p !== false && $e !== false) {
+					$value = rtrim($value, '.');
 				}
 				if ($value === '' || $value[0] === '.') {
 					$value = '0' . $value;
@@ -526,6 +529,9 @@ class Result implements IDataSource
 
 			} elseif ($type === Type::BINARY) {
 				$row[$key] = $this->getResultDriver()->unescapeBinary($value);
+
+			} else {
+				$row[$key] = $value;
 			}
 		}
 	}

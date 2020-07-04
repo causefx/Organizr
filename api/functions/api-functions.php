@@ -32,6 +32,10 @@ function apiLogin()
 				'value' => (isset($_POST['tfaCode'])) ? $_POST['tfaCode'] : false
 			),
 			array(
+				'name' => 'loginAttempts',
+				'value' => (isset($_POST['loginAttempts'])) ? $_POST['loginAttempts'] : false
+			),
+			array(
 				'name' => 'output',
 				'value' => true
 			),
@@ -74,15 +78,38 @@ function login($array)
 	$days = (isset($remember)) ? $GLOBALS['rememberMeDays'] : 1;
 	$oAuth = (isset($oAuth)) ? $oAuth : false;
 	$output = (isset($output)) ? $output : false;
+	$loginAttempts = (isset($loginAttempts)) ? $loginAttempts : false;
+	if ($loginAttempts > $GLOBALS['loginAttempts'] || isset($_COOKIE['lockout'])) {
+		coookieSeconds('set', 'lockout', $GLOBALS['loginLockout'], $GLOBALS['loginLockout']);
+		return 'lockout';
+	}
 	try {
 		$database = new Dibi\Connection([
 			'driver' => 'sqlite3',
 			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
 		]);
 		$authSuccess = false;
+		$authProxy = false;
+		if ($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== '') {
+			if (isset(getallheaders()[$GLOBALS['authProxyHeaderName']])) {
+				$usernameHeader = isset(getallheaders()[$GLOBALS['authProxyHeaderName']]) ? getallheaders()[$GLOBALS['authProxyHeaderName']] : $username;
+				writeLog('success', 'Auth Proxy Function - Starting Verification for IP: ' . userIP() . ' for request on: ' . $_SERVER['REMOTE_ADDR'] . ' against IP/Subnet: ' . $GLOBALS['authProxyWhitelist'], $usernameHeader);
+				$whitelistRange = analyzeIP($GLOBALS['authProxyWhitelist']);
+				$from = $whitelistRange['from'];
+				$to = $whitelistRange['to'];
+				$authProxy = authProxyRangeCheck($from, $to);
+				$username = ($authProxy) ? $usernameHeader : $username;
+				if ($authProxy) {
+					writeLog('success', 'Auth Proxy Function - IP: ' . userIP() . ' has been verified', $usernameHeader);
+				} else {
+					writeLog('error', 'Auth Proxy Function - IP: ' . userIP() . ' has failed verification', $usernameHeader);
+				}
+			}
+		}
 		$function = 'plugin_auth_' . $GLOBALS['authBackend'];
 		if (!$oAuth) {
 			$result = $database->fetch('SELECT * FROM users WHERE username = ? COLLATE NOCASE OR email = ? COLLATE NOCASE', $username, $username);
+			$result['password'] = $result['password'] ?? '';
 			switch ($GLOBALS['authType']) {
 				case 'external':
 					if (function_exists($function)) {
@@ -103,6 +130,7 @@ function login($array)
 						}
 					}
 			}
+			$authSuccess = ($authProxy) ? true : $authSuccess;
 		} else {
 			// Has oAuth Token!
 			switch ($oAuthType) {
@@ -130,7 +158,7 @@ function login($array)
 		if ($authSuccess) {
 			// Make sure user exists in database
 			$userExists = false;
-			$passwordMatches = ($oAuth) ? true : false;
+			$passwordMatches = ($oAuth || $authProxy) ? true : false;
 			$token = (is_array($authSuccess) && isset($authSuccess['token']) ? $authSuccess['token'] : '');
 			if ($result['username']) {
 				$userExists = true;
@@ -161,15 +189,22 @@ function login($array)
 				}
 				// 2FA might go here
 				if ($result['auth_service'] !== 'internal' && strpos($result['auth_service'], '::') !== false) {
-					$TFA = explode('::', $result['auth_service']);
-					// Is code with login info?
-					if ($tfaCode == '') {
-						return '2FA';
-					} else {
-						if (!verify2FA($TFA[1], $tfaCode, $TFA[0])) {
-							writeLoginLog($username, 'error');
-							writeLog('error', 'Login Function - Wrong 2FA', $username);
-							return '2FA-incorrect';
+					$tfaProceed = true;
+					// Add check for local or not
+					if ($GLOBALS['ignoreTFALocal'] !== false) {
+						$tfaProceed = (isLocal()) ? false : true;
+					}
+					if ($tfaProceed) {
+						$TFA = explode('::', $result['auth_service']);
+						// Is code with login info?
+						if ($tfaCode == '') {
+							return '2FA';
+						} else {
+							if (!verify2FA($TFA[1], $tfaCode, $TFA[0])) {
+								writeLoginLog($username, 'error');
+								writeLog('error', 'Login Function - Wrong 2FA', $username);
+								return '2FA-incorrect';
+							}
 						}
 					}
 				}
@@ -179,7 +214,7 @@ function login($array)
 				if ($createToken) {
 					writeLoginLog($username, 'success');
 					writeLog('success', 'Login Function - A User has logged in', $username);
-					$ssoUser = (empty($result['email'])) ? $result['username'] : (strpos($result['email'], 'placeholder') !== false) ? $result['username'] : $result['email'];
+					$ssoUser = ((empty($result['email'])) ? $result['username'] : (strpos($result['email'], 'placeholder') !== false)) ? $result['username'] : $result['email'];
 					ssoCheck($ssoUser, $password, $token); //need to work on this
 					return ($output) ? array('name' => $GLOBALS['cookieName'], 'token' => (string)$createToken) : true;
 				} else {
@@ -194,7 +229,12 @@ function login($array)
 			// authentication failed
 			writeLoginLog($username, 'error');
 			writeLog('error', 'Login Function - Wrong Password', $username);
-			return 'mismatch';
+			if ($loginAttempts >= $GLOBALS['loginAttempts']) {
+				coookieSeconds('set', 'lockout', $GLOBALS['loginLockout'], $GLOBALS['loginLockout']);
+				return 'lockout';
+			} else {
+				return 'mismatch';
+			}
 		}
 	} catch (Dibi\Exception $e) {
 		return $e;
@@ -1157,9 +1197,9 @@ function allGroups()
 	return false;
 }
 
-function loadTabs()
+function loadTabs($type = null)
 {
-	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php') && $type) {
 		try {
 			$connect = new Dibi\Connection([
 				'driver' => 'sqlite3',
@@ -1180,7 +1220,14 @@ function loadTabs()
 				$v['count'] = isset($count[$v['category_id']]) ? $count[$v['category_id']] : 0;
 			}
 			$all['categories'] = $categories;
-			return $all;
+			switch ($type) {
+				case 'categories':
+					return $all['categories'];
+				case 'tabs':
+					return $all['tabs'];
+				default:
+					return $all;
+			}
 		} catch (Dibi\Exception $e) {
 			return false;
 		}
@@ -1234,4 +1281,81 @@ function getSchema()
 	} else {
 		return 'DB not set yet...';
 	}
+}
+
+function youtubeSearch($query)
+{
+	if (!$query) {
+		return 'no query provided!';
+	}
+	$keys = array('AIzaSyBsdt8nLJRMTwOq5PY5A5GLZ2q7scgn01w', 'AIzaSyD-8SHutB60GCcSM8q_Fle38rJUV7ujd8k', 'AIzaSyBzOpVBT6VII-b-8gWD0MOEosGg4hyhCsQ', 'AIzaSyBKnRe1P8fpfBHgooJpmT0WOsrdUtZ4cpk');
+	$randomKeyIndex = array_rand($keys);
+	$key = $keys[$randomKeyIndex];
+	$apikey = ($GLOBALS['youtubeAPI'] !== '') ? $GLOBALS['youtubeAPI'] : $key;
+	$results = false;
+	$url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=$query+official+trailer&part=snippet&maxResults=1&type=video&videoDuration=short&key=$apikey";
+	$response = Requests::get($url);
+	if ($response->success) {
+		$results = json_decode($response->body, true);
+	}
+	return ($results) ? $results : false;
+}
+
+function scrapePage($array)
+{
+	try {
+		$url = $array['data']['url'] ?? false;
+		$type = $array['data']['type'] ?? false;
+		if (!$url) return array(
+			'result' => 'Error',
+			'data' => 'No URL'
+		);
+		$url = qualifyURL($url);
+		$data = array(
+			'full_url' => $url,
+			'drill_url' => qualifyURL($url, true)
+		);
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		$data['response_code'] = $response->status_code;
+		if ($response->success) {
+			$data['result'] = 'Success';
+			switch ($type) {
+				case 'html':
+					$data['data'] = html_entity_decode($response->body);
+					break;
+				case 'json':
+					$data['data'] = json_decode($response->body);
+					break;
+				default:
+					$data['data'] = $response->body;
+			}
+			return $data;
+		}
+	} catch (Requests_Exception $e) {
+		return array(
+			'result' => 'Error',
+			'data' => $e->getMessage()
+		);
+	};
+	return array('result' => 'Error');
+}
+
+function searchCityForCoordinates($array)
+{
+	try {
+		$query = $array['data']['query'] ?? false;
+		$url = qualifyURL('https://api.mapbox.com/geocoding/v5/mapbox.places/' . urlencode($query) . '.json?access_token=pk.eyJ1IjoiY2F1c2VmeCIsImEiOiJjazhyeGxqeXgwMWd2M2ZydWQ4YmdjdGlzIn0.R50iYuMewh1CnUZ7sFPdHA&limit=5&fuzzyMatch=true');
+		$options = array('verify' => false);
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			return json_decode($response->body);
+		}
+	} catch (Requests_Exception $e) {
+		return array(
+			'result' => 'Error',
+			'data' => $e->getMessage()
+		);
+	};
+	return array('result' => 'Error');
 }

@@ -2,6 +2,7 @@
 /*global $, jQuery, alert*/
 var idleTime = 0;
 var hasCookie = false;
+var loginAttempts = 0;
 $(document).ajaxComplete(function () {
     pageLoad();
     //new SimpleBar($('.internal-listing')[0]);
@@ -337,6 +338,15 @@ function doneTypingMediaSearch () {
 }
 $(document).on("click", ".login-button", function(e) {
     e.preventDefault;
+    var oAuthEntered = $('#oAuth-Input').val();
+    var usernameEntered = $('#login-username-Input').val();
+    if(oAuthEntered == '' && usernameEntered == ''){
+        message('Login Error', ' You need to enter a Username', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+        $('#login-username-Input').focus();
+        return false;
+    }
+    loginAttempts = loginAttempts + 1;
+    $('#login-attempts').val(loginAttempts);
     var check = (local('g','loggingIn'));
     if(check == null) {
         local('s','loggingIn', true);
@@ -358,10 +368,27 @@ $(document).on("click", ".login-button", function(e) {
                 $('div.login-box').unblock({});
                 message('Login Error', ' Wrong username/email/password combo', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
                 console.error('Organizr Function: Login failed - wrong username/email/password');
+            } else if (html.data == 'lockout') {
+                $('div.login-box').block({
+                    message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
+                    css: {
+                        color: '#fff',
+                        border: '1px solid #e91e63',
+                        backgroundColor: '#f44336'
+                    }
+                });
+                message('Login Error', ' You have been Locked out', activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+                console.error('Organizr Function: Login failed - User has been locked out');
+                setTimeout(function(){ local('r','loggingIn'); location.reload() }, 10000);
             } else if (html.data == '2FA') {
                 $('div.login-box').unblock({});
                 $('#tfa-div').removeClass('hidden');
-                $('#loginform [name=tfaCode]').focus()
+                $('#loginform [name=tfaCode]').focus();
+            } else if (html.data == '2FA-incorrect') {
+                $('div.login-box').unblock({});
+                $('#tfa-div').removeClass('hidden');
+                $('#loginform [name=tfaCode]').focus();
+                message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
             } else {
                 $('div.login-box').unblock({});
                 message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
@@ -1505,15 +1532,13 @@ $(document).on("click", ".refreshImage", function(e) {
             break;
         case 'recent-item':
             var orginalElementAlt = $(this).parent().parent().parent().find('.imageSourceAlt');
-            var orginalElement = $(this).parent().parent().parent().find('.imageSource');
+            var orginalElement = $(this).parent().parent().parent().parent().find('.imageSource');
             orginalElement.attr('style', 'background-image: url("'+original+'");');
             orginalElementAlt.attr('src', original);
             break;
         default:
 
     }
-    //console.log(orginalElement)
-    //console.log('replaced image with : '+original);
     setTimeout(function(){
         message('Image Refreshed ',' Clear Cache Please',activeInfo.settings.notifications.position,'#FFF','success','3000');
     }, 1000);
@@ -1554,6 +1579,7 @@ $(document).on("click", ".metadata-get", function(e) {
             var action = 'getPlexMetadata';
             break;
         case 'emby':
+        case 'jellyfin':
             var action = 'getEmbyMetadata';
             break;
         default:
@@ -1914,11 +1940,70 @@ $(document).on("keyup", "#authBackendHostPrefix-input, #authBackendHostSuffix-in
 });
 
 // homepage healthchecks
-$(document).on('click', ".good-health-checks", function(){
-    homepageHealthChecks();
-});
 $(document).on('click', ".showMoreHealth", function(){
    var id = $(this).attr('data-id');
     $('.showMoreHealthDiv-'+id).toggleClass('d-none');
     $(this).find('.card-body').toggleClass('healthPosition');
+});
+//IP INFO
+$(document).on('click', ".ipInfo", function(){
+    $.getJSON("https://ipinfo.io/"+$(this).text()+"/?token=ddd0c072ad5021", function (response) {
+        var region = (typeof response.region == 'undefined') ? ' N/A' : response.region;
+        var ip = (typeof response.ip == 'undefined') ? ' N/A' : response.ip;
+        var hostname = (typeof response.hostname == 'undefined') ? ' N/A' : response.hostname;
+        var loc = (typeof response.loc == 'undefined') ? ' N/A' : response.loc;
+        var org = (typeof response.org == 'undefined') ? ' N/A' : response.org;
+        var city = (typeof response.city == 'undefined') ? ' N/A' : response.city;
+        var country = (typeof response.country == 'undefined') ? ' N/A' : response.country;
+        var phone = (typeof response.phone == 'undefined') ? ' N/A' : response.phone;
+        var div = '<div class="row">' +
+            '<div class="col-lg-12">' +
+            '<div class="white-box">' +
+            '<h3 class="box-title">'+ip+'</h3>' +
+            '<div class="table-responsive">' +
+            '<table class="table">' +
+            '<tbody>' +
+            '<tr><td class="text-left">Hostname</td><td class="txt-oflo text-right">'+hostname+'</td></tr>' +
+            '<tr><td class="text-left">Location</td><td class="txt-oflo text-right">'+loc+'</td></tr>' +
+            '<tr><td class="text-left">Org</td><td class="txt-oflo text-right">'+org+'</td></tr>' +
+            '<tr><td class="text-left">City</td><td class="txt-oflo text-right">'+city+'</td></tr>' +
+            '<tr><td class="text-left">Country</td><td class="txt-oflo text-right">'+country+'</td></tr>' +
+            '<tr><td class="text-left">Phone</td><td class="txt-oflo text-right">'+phone+'</td></tr>' +
+            '<tr><td class="text-left">Region</td><td class="txt-oflo text-right">'+region+'</td></tr>' +
+            '</tbody>' +
+            '</table>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+        swal({
+            content: createElementFromHTML(div),
+            buttons: false,
+            className: 'bg-org'
+        });
+    });
+});
+// set active for group list
+$(document).on('click', '.allGroupsList', function() {
+    console.log($(this));
+    $(this).toggleClass('active');
+});
+// Control init of custom netdata JSON editor
+$(document).on('click', 'li a[aria-controls="Custom data"]', function() {
+    var resizeEditor = function(jsonEditor) {
+        const aceEditor = jsonEditor;
+        const newHeight = aceEditor.getSession().getScreenLength() * (aceEditor.renderer.lineHeight + aceEditor.renderer.scrollBar.getWidth());
+        aceEditor.container.style.height = newHeight + 'px';
+        aceEditor.resize();
+    }
+
+    jsonEditor = ace.edit("netdataCustomTextAce");
+    var JsonMode = ace.require("ace/mode/javascript").Mode;
+    jsonEditor.session.setMode(new JsonMode());
+    jsonEditor.setTheme("ace/theme/idle_fingers");
+    jsonEditor.setShowPrintMargin(false);
+    jsonEditor.session.on('change', function(delta) {
+        $('#netdataCustomText').val(jsonEditor.getValue());
+        $('#customize-appearance-form-save').removeClass('hidden');
+    });
 });

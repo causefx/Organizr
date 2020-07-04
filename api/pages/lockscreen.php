@@ -3,7 +3,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	$pageLockScreen = '
 <script>
 </script>
-<section id="lockScreen" class="lock-screen" oncontextmenu="return false;" onkeydown="blockDev">
+<section id="lockScreen" class="lock-screen" onkeydown="blockDev">
   <div class="login-box">
     <div class="white-box">
       <form class="form-horizontal form-material" id="form-lockscreen" onsubmit="return false;">

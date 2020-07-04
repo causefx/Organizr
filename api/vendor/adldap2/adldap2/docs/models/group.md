@@ -40,10 +40,7 @@ the members inside the group.
 $group = $provider->search()->groups()->first();
 
 foreach ($group->members as $member) {
-
-    // 'cn=John Doe,dc=corp,dc=acme,dc=org'
-    echo $member;
-
+    echo $member; // 'cn=John Doe,dc=corp,dc=acme,dc=org'
 }
 ```
 
@@ -55,24 +52,16 @@ This can be easily done with the `getMembers()` method on the group.
 $group = $provider->search()->groups()->first();
 
 foreach ($group->getMembers() as $member) {
-    // Will be an instance of a Adldap `Model`
-    $member->getCommonName();
+    echo get_class($member); // Instance of `Adldap\Models\Model`
+
+    echo $member->getCommonName();
 }
 ```
 
-You should be aware however, that calling the `getMembers()` method will
-query your `AD` server for **every** member contained in
-the group to retrieve its model.
+> **Note**: You should be aware however, that calling the `getMembers()` method will
+> query your `AD` server for **every** member contained in the group to retrieve
+> its model. For larger group sets it may be worth paginating them.
 
-Think of this example below as what is being called behind the scenes:
-
-```php
-$group = $provider->search()->groups()->first();
-
-foreach ($group->members as $member) {
-    $model = $provider->search()->findByDn($member);
-}
-```
 
 ### Paginating Group Members
 

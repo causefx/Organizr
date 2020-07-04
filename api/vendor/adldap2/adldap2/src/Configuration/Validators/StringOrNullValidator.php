@@ -5,11 +5,9 @@ namespace Adldap\Configuration\Validators;
 use Adldap\Configuration\ConfigurationException;
 
 /**
- * Class StringOrNullValidator
+ * Class StringOrNullValidator.
  *
  * Validates that the configuration value is a string or null.
- *
- * @package Adldap\Configuration\Validators
  */
 class StringOrNullValidator extends Validator
 {

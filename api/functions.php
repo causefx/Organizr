@@ -36,6 +36,12 @@ if (isset($GLOBALS['dbLocation'])) {
 			$GLOBALS['commit'] = $GLOBALS['quickCommit'];
 		}
 	}
+	// Oauth?
+	if ($GLOBALS['authProxyEnabled'] && $GLOBALS['authProxyHeaderName'] !== '' && $GLOBALS['authProxyWhitelist'] !== '') {
+		if (isset(getallheaders()[$GLOBALS['authProxyHeaderName']])) {
+			coookieSeconds('set', 'organizrOAuth', 'true', 20000, false);
+		}
+	}
 	//Upgrade Check
 	upgradeCheck();
 }
@@ -47,6 +53,10 @@ $GLOBALS['cookieName'] = $GLOBALS['uuid'] !== '' ? 'organizr_token_' . $GLOBALS[
 getOrganizrUserToken();
 // Include all pages files
 foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
+	require_once $filename;
+}
+// Include all custom pages files
+foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'custom' . DIRECTORY_SEPARATOR . "*.php") as $filename) {
 	require_once $filename;
 }
 // Include all plugin files

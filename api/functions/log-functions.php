@@ -14,6 +14,7 @@ function checkLog($path)
 
 function writeLoginLog($username, $authType)
 {
+	$username = htmlspecialchars($username, ENT_QUOTES);
 	if (checkLog($GLOBALS['organizrLoginLog'])) {
 		$getLog = str_replace("\r\ndate", "date", file_get_contents($GLOBALS['organizrLoginLog']));
 		$gotLog = json_decode($getLog, true);
@@ -33,7 +34,7 @@ function writeLog($type = 'error', $message, $username = null)
 {
 	$GLOBALS['timeExecution'] = timeExecution($GLOBALS['timeExecution']);
 	$message = $message . ' [Execution Time: ' . formatSeconds($GLOBALS['timeExecution']) . ']';
-	$username = ($username) ? $username : $GLOBALS['organizrUser']['username'];
+	$username = ($username) ? htmlspecialchars($username, ENT_QUOTES) : $GLOBALS['organizrUser']['username'];
 	if (checkLog($GLOBALS['organizrLog'])) {
 		$getLog = str_replace("\r\ndate", "date", file_get_contents($GLOBALS['organizrLog']));
 		$gotLog = json_decode($getLog, true);

@@ -82,7 +82,11 @@ if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
                     }
                 },
                 { "data": "username" },
-                { "data": "ip" },
+                { data: \'ip\',
+                    render: function ( data, type, row ) {
+                        return ipInfoSpan(data);
+                    }
+                },
                 { data: \'auth_type\',
                     render: function ( data, type, row ) {
                         if ( type === \'display\' || type === \'filter\' ) {
@@ -99,19 +103,18 @@ if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
                 "columns": [
                 { data: \'utc_date\',
                     render: function ( data, type, row ) {
-                        // If display or filter data is requested, format the date
                         if ( type === \'display\' || type === \'filter\' ) {
                             var m = moment.tz(data, activeInfo.timezone);
                             return moment(m).format(\'LLL\');
                         }
-
-                    // Otherwise the data type requested (`type`) is type detection or
-                    // sorting data, for which we want to use the integer, so just return
-                    // that, unaltered
                     return data;}
                     },
                 { "data": "username" },
-                { "data": "ip" },
+                { data: \'ip\',
+                    render: function ( data, type, row ) {
+                        return ipInfoSpan(data);
+                    }
+                },
                 { "data": "message" },
                 { data: \'type\',
                     render: function ( data, type, row ) {

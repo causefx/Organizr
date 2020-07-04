@@ -17,22 +17,22 @@ class TSPropertyArray
      * @var array
      */
     const DEFAULTS = [
-        'CtxCfgPresent' => 2953518677,
-        'CtxWFProfilePath' => '',
-        'CtxWFProfilePathW' => '',
-        'CtxWFHomeDir' => '',
-        'CtxWFHomeDirW' => '',
-        'CtxWFHomeDirDrive' => '',
-        'CtxWFHomeDirDriveW' => '',
-        'CtxShadow' => 1,
+        'CtxCfgPresent'           => 2953518677,
+        'CtxWFProfilePath'        => '',
+        'CtxWFProfilePathW'       => '',
+        'CtxWFHomeDir'            => '',
+        'CtxWFHomeDirW'           => '',
+        'CtxWFHomeDirDrive'       => '',
+        'CtxWFHomeDirDriveW'      => '',
+        'CtxShadow'               => 1,
         'CtxMaxDisconnectionTime' => 0,
-        'CtxMaxConnectionTime' => 0,
-        'CtxMaxIdleTime' => 0,
-        'CtxWorkDirectory' => '',
-        'CtxWorkDirectoryW' => '',
-        'CtxCfgFlags1' => 2418077696,
-        'CtxInitialProgram' => '',
-        'CtxInitialProgramW' => '',
+        'CtxMaxConnectionTime'    => 0,
+        'CtxMaxIdleTime'          => 0,
+        'CtxWorkDirectory'        => '',
+        'CtxWorkDirectoryW'       => '',
+        'CtxCfgFlags1'            => 2418077696,
+        'CtxInitialProgram'       => '',
+        'CtxInitialProgramW'      => '',
     ];
 
     /**
@@ -65,7 +65,7 @@ class TSPropertyArray
     protected $postBinary = '';
 
     /**
-     * Construct in one of the following ways:
+     * Construct in one of the following ways:.
      *
      *   - Pass an array of TSProperty key => value pairs (See DEFAULTS constant).
      *   - Pass the userParameters binary value. The object representation of that will be decoded and constructed.
@@ -120,6 +120,7 @@ class TSPropertyArray
      * Add a TSProperty object. If it already exists, it will be overwritten.
      *
      * @param TSProperty $tsProperty
+     *
      * @return $this
      */
     public function add(TSProperty $tsProperty)

@@ -8,7 +8,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
         sponsorLoad();
         newsLoad();
         checkCommitLoad();
-        [].slice.call(document.querySelectorAll(\'.sttabs\')).forEach(function(el) {
+        [].slice.call(document.querySelectorAll(\'.sttabs-main-settings-div\')).forEach(function(el) {
             new CBPFWTabs(el);
         });
     })();
@@ -30,7 +30,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
     <div class="row">
         <!-- Tab style start -->
         <section class="">
-            <div class="sttabs tabs-style-flip">
+            <div class="sttabs sttabs-main-settings-div tabs-style-flip">
                 <nav>
                     <ul>
                         <li onclick="changeSettingsMenu(\'Settings::Tab Editor\')" id="settings-main-tab-editor-anchor"><a href="#settings-main-tab-editor" class="sticon ti-layout-tab-v"><span lang="en">Tab Editor</span></a></li>
@@ -231,7 +231,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                             <h3 class="box-title" lang="en">Information</h3>
                                             <ul class="feeds">
                                                 <li><div class="bg-info"><i class="mdi mdi-webpack mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Version</span> ' . $GLOBALS['installedVersion'] . '</li>
-                                                <li><div class="bg-info"><i class="mdi mdi-github-box mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Branch</span> ' . $GLOBALS['branch'] . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-github-box mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Branch</span><a href="https://github.com/causefx/Organizr/commits/' . $GLOBALS['branch'] . '" target="_blank"> ' . $GLOBALS['branch'] . '</a></li>
                                                 <li><div class="bg-info"><i class="mdi mdi-database mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Database Location</span> ' . $GLOBALS['dbLocation'] . $GLOBALS['dbName'] . '</li>
                                                 ' . settingsDocker() . settingsPathChecks() . '
                                                 <hr class="m-t-10">

@@ -12,11 +12,11 @@ class DistinguishedName
      * @var array
      */
     protected $components = [
-        'cn' => [],
+        'cn'  => [],
         'uid' => [],
-        'ou' => [],
-        'dc' => [],
-        'o' => [],
+        'ou'  => [],
+        'dc'  => [],
+        'o'   => [],
     ];
 
     /**

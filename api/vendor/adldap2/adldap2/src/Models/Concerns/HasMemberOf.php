@@ -5,7 +5,7 @@ namespace Adldap\Models\Concerns;
 use Adldap\Utilities;
 use Adldap\Models\User;
 use Adldap\Models\Group;
-use Illuminate\Support\Collection;
+use Adldap\Query\Collection;
 
 trait HasMemberOf
 {
@@ -103,7 +103,7 @@ trait HasMemberOf
      * @param bool  $recursive
      * @param array $visited
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getGroups(array $fields = ['*'], $recursive = false, array $visited = [])
     {
@@ -223,7 +223,7 @@ trait HasMemberOf
         $query = $this->query->newInstance();
 
         return $query->newCollection($dns)->map(function ($dn) use ($query, $fields) {
-            return $query->select($fields)->findByDn($dn);
+            return $query->select($fields)->clearFilters()->findByDn($dn);
         })->filter(function ($group) {
             return $group instanceof Group;
         });

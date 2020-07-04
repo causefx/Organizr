@@ -5,7 +5,7 @@ namespace Adldap\Events;
 use Illuminate\Support\Arr;
 
 /**
- * Class Dispatcher
+ * Class Dispatcher.
  *
  * Handles event listening and dispatching.
  *
@@ -14,9 +14,8 @@ use Illuminate\Support\Arr;
  * an extra dependency that would be required.
  *
  * @author Taylor Otwell
- * @see https://github.com/laravel/framework
  *
- * @package Adldap\Events
+ * @see https://github.com/laravel/framework
  */
 class Dispatcher implements DispatcherInterface
 {
@@ -114,7 +113,7 @@ class Dispatcher implements DispatcherInterface
             // If a response is returned from the listener and event halting is enabled
             // we will just return this response, and not call the rest of the event
             // listeners. Otherwise we will add the response on the response list.
-            if ($halt && ! is_null($response)) {
+            if ($halt && !is_null($response)) {
                 return $response;
             }
 
@@ -250,8 +249,8 @@ class Dispatcher implements DispatcherInterface
     /**
      * Register an event listener with the dispatcher.
      *
-     * @param \Closure|string  $listener
-     * @param bool             $wildcard
+     * @param \Closure|string $listener
+     * @param bool            $wildcard
      *
      * @return \Closure
      */

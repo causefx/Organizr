@@ -301,15 +301,7 @@ class Uri implements UriInterface
      */
     public static function withoutQueryValue(UriInterface $uri, $key)
     {
-        $current = $uri->getQuery();
-        if ($current === '') {
-            return $uri;
-        }
-
-        $decodedKey = rawurldecode($key);
-        $result = array_filter(explode('&', $current), function ($part) use ($decodedKey) {
-            return rawurldecode(explode('=', $part)[0]) !== $decodedKey;
-        });
+        $result = self::getFilteredQueryString($uri, [$key]);
 
         return $uri->withQuery(implode('&', $result));
     }
@@ -331,26 +323,29 @@ class Uri implements UriInterface
      */
     public static function withQueryValue(UriInterface $uri, $key, $value)
     {
-        $current = $uri->getQuery();
+        $result = self::getFilteredQueryString($uri, [$key]);
 
-        if ($current === '') {
-            $result = [];
-        } else {
-            $decodedKey = rawurldecode($key);
-            $result = array_filter(explode('&', $current), function ($part) use ($decodedKey) {
-                return rawurldecode(explode('=', $part)[0]) !== $decodedKey;
-            });
-        }
+        $result[] = self::generateQueryString($key, $value);
 
-        // Query string separators ("=", "&") within the key or value need to be encoded
-        // (while preventing double-encoding) before setting the query string. All other
-        // chars that need percent-encoding will be encoded by withQuery().
-        $key = strtr($key, self::$replaceQuery);
+        return $uri->withQuery(implode('&', $result));
+    }
 
-        if ($value !== null) {
-            $result[] = $key . '=' . strtr($value, self::$replaceQuery);
-        } else {
-            $result[] = $key;
+    /**
+     * Creates a new URI with multiple specific query string values.
+     *
+     * It has the same behavior as withQueryValue() but for an associative array of key => value.
+     *
+     * @param UriInterface $uri           URI to use as a base.
+     * @param array        $keyValueArray Associative array of key and values
+     *
+     * @return UriInterface
+     */
+    public static function withQueryValues(UriInterface $uri, array $keyValueArray)
+    {
+        $result = self::getFilteredQueryString($uri, array_keys($keyValueArray));
+
+        foreach ($keyValueArray as $key => $value) {
+            $result[] = self::generateQueryString($key, $value);
         }
 
         return $uri->withQuery(implode('&', $result));
@@ -442,9 +437,9 @@ class Uri implements UriInterface
 
     public function withUserInfo($user, $password = null)
     {
-        $info = $user;
-        if ($password != '') {
-            $info .= ':' . $password;
+        $info = $this->filterUserInfoComponent($user);
+        if ($password !== null) {
+            $info .= ':' . $this->filterUserInfoComponent($password);
         }
 
         if ($this->userInfo === $info) {
@@ -542,7 +537,9 @@ class Uri implements UriInterface
         $this->scheme = isset($parts['scheme'])
             ? $this->filterScheme($parts['scheme'])
             : '';
-        $this->userInfo = isset($parts['user']) ? $parts['user'] : '';
+        $this->userInfo = isset($parts['user'])
+            ? $this->filterUserInfoComponent($parts['user'])
+            : '';
         $this->host = isset($parts['host'])
             ? $this->filterHost($parts['host'])
             : '';
@@ -559,7 +556,7 @@ class Uri implements UriInterface
             ? $this->filterQueryAndFragment($parts['fragment'])
             : '';
         if (isset($parts['pass'])) {
-            $this->userInfo .= ':' . $parts['pass'];
+            $this->userInfo .= ':' . $this->filterUserInfoComponent($parts['pass']);
         }
 
         $this->removeDefaultPort();
@@ -579,6 +576,26 @@ class Uri implements UriInterface
         }
 
         return strtolower($scheme);
+    }
+
+    /**
+     * @param string $component
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException If the user info is invalid.
+     */
+    private function filterUserInfoComponent($component)
+    {
+        if (!is_string($component)) {
+            throw new \InvalidArgumentException('User info must be a string');
+        }
+
+        return preg_replace_callback(
+            '/(?:[^%' . self::$charUnreserved . self::$charSubDelims . ']+|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'rawurlencodeMatchZero'],
+            $component
+        );
     }
 
     /**
@@ -611,13 +628,54 @@ class Uri implements UriInterface
         }
 
         $port = (int) $port;
-        if (1 > $port || 0xffff < $port) {
+        if (0 > $port || 0xffff < $port) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid port: %d. Must be between 1 and 65535', $port)
+                sprintf('Invalid port: %d. Must be between 0 and 65535', $port)
             );
         }
 
         return $port;
+    }
+
+    /**
+     * @param UriInterface $uri
+     * @param array        $keys
+     * 
+     * @return array
+     */
+    private static function getFilteredQueryString(UriInterface $uri, array $keys)
+    {
+        $current = $uri->getQuery();
+
+        if ($current === '') {
+            return [];
+        }
+
+        $decodedKeys = array_map('rawurldecode', $keys);
+
+        return array_filter(explode('&', $current), function ($part) use ($decodedKeys) {
+            return !in_array(rawurldecode(explode('=', $part)[0]), $decodedKeys, true);
+        });
+    }
+
+    /**
+     * @param string      $key
+     * @param string|null $value
+     * 
+     * @return string
+     */
+    private static function generateQueryString($key, $value)
+    {
+        // Query string separators ("=", "&") within the key or value need to be encoded
+        // (while preventing double-encoding) before setting the query string. All other
+        // chars that need percent-encoding will be encoded by withQuery().
+        $queryString = strtr($key, self::$replaceQuery);
+
+        if ($value !== null) {
+            $queryString .= '=' . strtr($value, self::$replaceQuery);
+        }
+
+        return $queryString;
     }
 
     private function removeDefaultPort()

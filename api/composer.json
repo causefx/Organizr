@@ -1,6 +1,6 @@
 {
   "require": {
-    "dibi/dibi": "^3.1",
+    "dibi/dibi": "^3.2",
     "lcobucci/jwt": "^3.2",
     "composer/semver": "^1.4",
     "phpmailer/phpmailer": "^6.0",
@@ -8,9 +8,8 @@
     "kryptonit3/sonarr": "1.0.6.1",
     "kryptonit3/couchpotato": "^1.0",
     "kryptonit3/sickrage": "^1.0",
-    "pusher/pusher-php-server": "^3.2",
+    "pusher/pusher-php-server": "^4.0",
     "pragmarx/google2fa": "^3.0",
-    "layershifter/tld-extract": "^2.0",
     "psr/log": "^1.1",
     "adldap2/adldap2": "^10.0"
   }

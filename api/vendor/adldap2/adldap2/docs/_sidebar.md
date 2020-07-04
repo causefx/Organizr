@@ -1,3 +1,5 @@
+<!-- _sidebar.md -->
+
 * Getting Started
 
   * [Introduction](/)
@@ -14,11 +16,10 @@
   * [Troubleshooting](troubleshooting.md)
 
 * Models
-
+  * [Model (Base)](models/model.md)
   * [Computer](models/computer.md)
   * [Contact](models/contact.md)
   * [Container](models/container.md)
-  * [Entry (Base Model)](models/entry.md)
   * [Group](models/group.md)
   * [Organizational Unit](models/ou.md)
   * [Printer](models/printer.md)

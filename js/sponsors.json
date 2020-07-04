@@ -1,5 +1,13 @@
 [
   {
+    "company_name": "EvoSeedbox",
+    "logo": "https://user-images.githubusercontent.com/16184466/59205364-9d5c5380-8b57-11e9-909c-95ddc5634a72.jpg",
+    "website": "https://evoseedbox.com/",
+    "coupon": "evoizr",
+    "coupon_about": "100% off First Month",
+    "about": "<b>Quality Seedboxes<\/b><br\/>\r\nOur last seedbox went into light-speed, it'll be on the other side of the galaxy by now."
+  },
+  {
     "company_name": "Unraid",
     "logo": "https://user-images.githubusercontent.com/16184466/49177230-e6f6f680-f309-11e8-9d6a-67be65109d14.png",
     "website": "https://unraid.net/"

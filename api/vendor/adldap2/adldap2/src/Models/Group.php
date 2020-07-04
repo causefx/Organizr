@@ -2,34 +2,31 @@
 
 namespace Adldap\Models;
 
-use InvalidArgumentException;
 use Adldap\Utilities;
-use Adldap\Models\Concerns\HasMemberOf;
-use Adldap\Models\Concerns\HasDescription;
+use InvalidArgumentException;
 
 /**
- * Class Group
+ * Class Group.
  *
  * Represents an LDAP group (security / distribution).
- *
- * @package Adldap\Models
  */
 class Group extends Entry
 {
-    use HasDescription, HasMemberOf;
+    use Concerns\HasMemberOf,
+        Concerns\HasDescription;
 
     /**
      * Returns all users apart of the current group.
      *
      * @link https://msdn.microsoft.com/en-us/library/ms677097(v=vs.85).aspx
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Adldap\Query\Collection
      */
     public function getMembers()
     {
         $members = $this->getMembersFromAttribute($this->schema->member());
 
-        if(count($members) === 0) {
+        if (count($members) === 0) {
             $members = $this->getPaginatedMembers();
         }
 
@@ -67,9 +64,7 @@ class Group extends Entry
      */
     public function setMembers(array $entries)
     {
-        $this->setAttribute($this->schema->member(), $entries);
-
-        return $this;
+        return $this->setAttribute($this->schema->member(), $entries);
     }
 
     /**
@@ -205,7 +200,9 @@ class Group extends Entry
             if ($identifier == 'dn' || $identifier == 'distinguishedname') {
                 $member = $query->findByDn($entry);
             } else {
-                $member = $query->findBy($identifier, $entry);
+                // We'll ensure we clear our filters when retrieving each member,
+                // so we can continue fetching the next one in line.
+                $member = $query->clearFilters()->findBy($identifier, $entry);
             }
 
             // We'll double check that we've received a model from
@@ -232,7 +229,7 @@ class Group extends Entry
         // We need to filter out the model attributes so
         // we only retrieve the member range.
         $attributes = array_values(array_filter($keys, function ($key) {
-            return strpos($key,'member;range') !== false;
+            return strpos($key, 'member;range') !== false;
         }));
 
         // We'll grab the member range key so we can run a
@@ -256,7 +253,7 @@ class Group extends Entry
             // If the query already included all member results (indicated
             // by the '*'), then we can return here. Otherwise we need
             // to continue on and retrieve the rest.
-            if($to === '*') {
+            if ($to === '*') {
                 return $members;
             }
 

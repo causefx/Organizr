@@ -1,3 +1,32 @@
+## 4.1.1 (2019-12-03)
+
+[ADDED] Support for PHP 7.4.
+
+## 4.1.0 (2019-10-28)
+
+[ADDED] `path` configuration option.
+
+## 4.0.0 (2019-06-17)
+
+[REMOVED] Support for PHP 5.x, PHP 7.0 and HHVM.
+
+## 3.4.1 (2019-03-18)
+
+[ADDED] Support for PHP 7.3.
+
+## 3.4.0 (2019-03-11)
+
+[ADDED] `get_users_info` method.
+
+## 3.3.1 (2019-01-18)
+
+[FIXED] PHP Notice for Undefined `socket_id` in triggerBatch
+
+## 3.3.0 (2019-01-03)
+
+[ADDED] Support for End-to-end encrypted channels for triggerbatch
+[FIXED] trigger behavior with mixtures of encrypted and non-encrypted channels
+
 ## 3.2.0 (2018-08-13)
 
 [ADDED] This release adds support for end to end encrypted channels, a new feature for Channels. Read more [in our docs](https://pusher.com/docs/client_api_guide/client_encrypted_channels).

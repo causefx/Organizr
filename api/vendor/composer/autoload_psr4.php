@@ -6,7 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'TrueBV\\' => array($vendorDir . '/true/punycode/src'),
     'Tightenco\\Collect\\' => array($vendorDir . '/tightenco/collect/src/Collect'),
     'Symfony\\Polyfill\\Util\\' => array($vendorDir . '/symfony/polyfill-util'),
     'Symfony\\Polyfill\\Php72\\' => array($vendorDir . '/symfony/polyfill-php72'),
@@ -23,9 +22,6 @@ return array(
     'ParagonIE\\ConstantTime\\' => array($vendorDir . '/paragonie/constant_time_encoding/src'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'Lcobucci\\JWT\\' => array($vendorDir . '/lcobucci/jwt/src'),
-    'LayerShifter\\TLDSupport\\' => array($vendorDir . '/layershifter/tld-support/src'),
-    'LayerShifter\\TLDExtract\\' => array($vendorDir . '/layershifter/tld-extract/src'),
-    'LayerShifter\\TLDDatabase\\' => array($vendorDir . '/layershifter/tld-database/src'),
     'Kryptonit3\\Sonarr\\' => array($vendorDir . '/kryptonit3/sonarr/src'),
     'Kryptonit3\\SickRage\\' => array($vendorDir . '/kryptonit3/sickrage/src'),
     'Kryptonit3\\CouchPotato\\' => array($vendorDir . '/kryptonit3/couchpotato/src'),

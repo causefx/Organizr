@@ -1,4 +1,17 @@
 <?php
+function checkPlexAdminFilled()
+{
+	if ($GLOBALS['plexAdmin'] == '') {
+		return false;
+	} else {
+		if ((strpos($GLOBALS['plexAdmin'], '@') !== false)) {
+			return 'email';
+		} else {
+			return 'username';
+		}
+	}
+}
+
 function organizrSpecialSettings()
 {
 	$refreshSearch = "Refresh";
@@ -22,10 +35,21 @@ function organizrSpecialSettings()
 				'sso' => ($GLOBALS['ssoOmbi']) ? true : false,
 				'cookie' => (isset($_COOKIE['Auth'])) ? true : false,
 				'alias' => ($GLOBALS['ombiAlias']) ? true : false,
+				'ombiDefaultFilterAvailable' => $GLOBALS['ombiDefaultFilterAvailable'] ? true : false,
+				'ombiDefaultFilterUnavailable' => $GLOBALS['ombiDefaultFilterUnavailable'] ? true : false,
+				'ombiDefaultFilterApproved' => $GLOBALS['ombiDefaultFilterApproved'] ? true : false,
+				'ombiDefaultFilterUnapproved' => $GLOBALS['ombiDefaultFilterUnapproved'] ? true : false,
+				'ombiDefaultFilterDenied' => $GLOBALS['ombiDefaultFilterDenied'] ? true : false
 			),
 			'options' => array(
 				'alternateHomepageHeaders' => $GLOBALS['alternateHomepageHeaders'],
 				'healthChecksTags' => $GLOBALS['healthChecksTags'],
+				'titles' => array(
+					'tautulli' => $GLOBALS['tautulliHeader']
+				)
+			),
+			'media' => array(
+				'jellyfin' => (strpos($GLOBALS['embyURL'], 'jellyfin') !== false) ? true : false
 			)
 		),
 		'sso' => array(
@@ -39,6 +63,8 @@ function organizrSpecialSettings()
 				'cookie' => isset($_COOKIE['mpt']) ? true : false,
 				'machineID' => (strlen($GLOBALS['plexID']) == 40) ? true : false,
 				'token' => ($GLOBALS['plexToken'] !== '') ? true : false,
+				'plexAdmin' => checkPlexAdminFilled(),
+				'strict' => ($GLOBALS['plexStrictFriends']) ? true : false,
 				'oAuthEnabled' => ($GLOBALS['plexoAuth']) ? true : false,
 				'backend' => ($GLOBALS['authBackend'] == 'plex') ? true : false,
 			),
@@ -84,6 +110,9 @@ function organizrSpecialSettings()
 		'login' => array(
 			'rememberMe' => $GLOBALS['rememberMe'],
 			'rememberMeDays' => $GLOBALS['rememberMeDays'],
+			'wanDomain' => $GLOBALS['wanDomain'],
+			'localAddress' => $GLOBALS['localAddress'],
+			'enableLocalAddressForward' => $GLOBALS['enableLocalAddressForward'],
 		),
 		'misc' => array(
 			'installedPlugins' => qualifyRequest(1) ? $GLOBALS['installedPlugins'] : '',
@@ -102,6 +131,12 @@ function organizrSpecialSettings()
 			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth']),
 			'debugErrors' => $GLOBALS['debugErrors'],
 			'sandbox' => $GLOBALS['sandbox'],
+		),
+		'menuLink' => array(
+			'githubMenuLink' => $GLOBALS['githubMenuLink'],
+			'organizrSupportMenuLink' => $GLOBALS['organizrSupportMenuLink'],
+			'organizrDocsMenuLink' => $GLOBALS['organizrDocsMenuLink'],
+			'organizrSignoutMenuLink' => $GLOBALS['organizrSignoutMenuLink']
 		)
 	);
 }
@@ -131,6 +166,7 @@ function wizardConfig($array)
 		'organizrHash' => $hashKey,
 		'organizrAPI' => $api,
 		'registrationPassword' => $registrationPassword,
+		'uuid' => gen_uuid()
 	);
 	// Create Config
 	$GLOBALS['dbLocation'] = $location;
@@ -428,7 +464,7 @@ function organizrStatus()
 	$status = array();
 	$dependenciesActive = array();
 	$dependenciesInactive = array();
-	$extensions = array("PDO_SQLITE", "PDO", "SQLITE3", "zip", "cURL", "openssl", "simplexml", "json", "session");
+	$extensions = array("PDO_SQLITE", "PDO", "SQLITE3", "zip", "cURL", "openssl", "simplexml", "json", "session", "filter");
 	$functions = array("hash", "fopen", "fsockopen", "fwrite", "fclose", "readfile");
 	foreach ($extensions as $check) {
 		if (extension_loaded($check)) {
@@ -491,7 +527,7 @@ function getSettingsMain()
 				'icon' => 'fa fa-download',
 				'text' => 'Retrieve',
 				'attr' => ($GLOBALS['docker']) ? 'title="You can just restart your docker to update"' : '',
-				'help' => ($GLOBALS['docker']) ? 'Since you are using the Official Docker image, You can just restart your docker to update' : 'This will re-download all of the source files for Organizr'
+				'help' => ($GLOBALS['docker']) ? 'Since you are using the official Docker image, you can just restart your Docker container to update Organizr' : 'This will re-download all of the source files for Organizr'
 			)
 		),
 		'API' => array(
@@ -585,6 +621,13 @@ function getSettingsMain()
 				'help' => 'Enabling this will only allow Friends that have shares to the Machine ID entered above to login, Having this disabled will allow all Friends on your Friends list to login'
 			),
 			array(
+				'type' => 'switch',
+				'name' => 'ignoreTFALocal',
+				'label' => 'Ignore External 2FA on Local Subnet',
+				'value' => $GLOBALS['ignoreTFALocal'],
+				'help' => 'Enabling this will bypass external 2FA security if user is on local Subnet'
+			),
+			array(
 				'type' => 'input',
 				'name' => 'authBackendHost',
 				'class' => 'ldapAuth ftpAuth switchAuth',
@@ -649,6 +692,22 @@ function getSettingsMain()
 				'html' => '<span id="accountDN" class="ldapAuth switchAuth">' . $GLOBALS['authBackendHostPrefix'] . 'TestAcct' . $GLOBALS['authBackendHostSuffix'] . '</span>'
 			),
 			array(
+				'type' => 'switch',
+				'name' => 'ldapSSL',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Enable LDAP SSL',
+				'value' => $GLOBALS['ldapSSL'],
+				'help' => 'This will enable the use of SSL for LDAP connections'
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'ldapSSL',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Enable LDAP TLS',
+				'value' => $GLOBALS['ldapTLS'],
+				'help' => 'This will enable the use of TLS for LDAP connections'
+			),
+			array(
 				'type' => 'button',
 				'name' => 'test-button-ldap',
 				'label' => 'Test Connection',
@@ -671,7 +730,7 @@ function getSettingsMain()
 				'type' => 'input',
 				'name' => 'embyURL',
 				'class' => 'embyAuth switchAuth',
-				'label' => 'Emby URL',
+				'label' => 'Emby/Jellyfin URL',
 				'value' => $GLOBALS['embyURL'],
 				'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 				'placeholder' => 'http(s)://hostname:port'
@@ -680,7 +739,7 @@ function getSettingsMain()
 				'type' => 'password-alt',
 				'name' => 'embyToken',
 				'class' => 'embyAuth switchAuth',
-				'label' => 'Emby Token',
+				'label' => 'Emby/Jellyin Token',
 				'value' => $GLOBALS['embyToken'],
 				'placeholder' => ''
 			),
@@ -693,6 +752,20 @@ function getSettingsMain()
 			)*/
 		),
 		'Security' => array(
+			array(
+				'type' => 'number',
+				'name' => 'loginAttempts',
+				'label' => 'Max Login Attempts',
+				'value' => $GLOBALS['loginAttempts'],
+				'placeholder' => ''
+			),
+			array(
+				'type' => 'select',
+				'name' => 'loginLockout',
+				'label' => 'Login Lockout Seconds',
+				'value' => $GLOBALS['loginLockout'],
+				'options' => optionTime()
+			),
 			array(
 				'type' => 'number',
 				'name' => 'lockoutTimeout',
@@ -775,8 +848,35 @@ function getSettingsMain()
 						'name' => 'Allow Top Navigation',
 						'value' => 'allow-top-navigation'
 					),
+					array(
+						'name' => 'Allow Downloads',
+						'value' => 'allow-downloads'
+					),
 				)
-			)
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'traefikAuthEnable',
+				'label' => 'Enable Traefik Auth Redirect',
+				'help' => 'This will enable the webserver to forward errors so traefik will accept them',
+				'value' => $GLOBALS['traefikAuthEnable']
+			),
+		),
+		'Performance' => array(
+			array(
+				'type' => 'switch',
+				'name' => 'performanceDisableIconDropdown',
+				'label' => 'Disable Icon Dropdown',
+				'help' => 'Disable select dropdown boxes on new and edit tab forms',
+				'value' => $GLOBALS['performanceDisableIconDropdown'],
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'performanceDisableImageDropdown',
+				'label' => 'Disable Image Dropdown',
+				'help' => 'Disable select dropdown boxes on new and edit tab forms',
+				'value' => $GLOBALS['performanceDisableImageDropdown'],
+			),
 		),
 		'Login' => array(
 			array(
@@ -824,6 +924,54 @@ function getSettingsMain()
 				'value' => $GLOBALS['localIPTo'],
 				'placeholder' => 'i.e. 123.123.123.123',
 				'help' => 'IPv4 only at the moment - This will set your login as local if your IP falls within the From and To'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'wanDomain',
+				'label' => 'WAN Domain',
+				'value' => $GLOBALS['wanDomain'],
+				'placeholder' => 'only domain and tld - i.e. domain.com',
+				'help' => 'Enter domain if you wish to be forwarded to a local address - Local Address filled out on next item'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'localAddress',
+				'label' => 'Local Address',
+				'value' => $GLOBALS['localAddress'],
+				'placeholder' => 'http://home.local',
+				'help' => 'Full local address of organizr install - i.e. http://home.local or http://192.168.0.100'
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'enableLocalAddressForward',
+				'label' => 'Enable Local Address Forward',
+				'help' => 'Enables the local address forward if on local address and accessed from WAN Domain',
+				'value' => $GLOBALS['enableLocalAddressForward'],
+			),
+		),
+		'Auth Proxy' => array(
+			array(
+				'type' => 'switch',
+				'name' => 'authProxyEnabled',
+				'label' => 'Auth Proxy',
+				'help' => 'Enable option to set Auth Proxy Header Login',
+				'value' => $GLOBALS['authProxyEnabled'],
+			),
+			array(
+				'type' => 'input',
+				'name' => 'authProxyHeaderName',
+				'label' => 'Auth Proxy Header Name',
+				'value' => $GLOBALS['authProxyHeaderName'],
+				'placeholder' => 'i.e. X-Forwarded-User',
+				'help' => 'Please choose a unique value for added security'
+			),
+			array(
+				'type' => 'input',
+				'name' => 'authProxyWhitelist',
+				'label' => 'Auth Proxy Whitelist',
+				'value' => $GLOBALS['authProxyWhitelist'],
+				'placeholder' => 'i.e. 10.0.0.0/24 or 10.0.0.20',
+				'help' => 'IPv4 only at the moment - This must be set to work, will accept subnet or IP address'
 			),
 		),
 		'Ping' => array(
@@ -1022,6 +1170,7 @@ function loadAppearance()
 	$appearance['logo'] = $GLOBALS['logo'];
 	$appearance['title'] = $GLOBALS['title'];
 	$appearance['useLogo'] = $GLOBALS['useLogo'];
+	$appearance['useLogoLogin'] = $GLOBALS['useLogoLogin'];
 	$appearance['headerColor'] = $GLOBALS['headerColor'];
 	$appearance['headerTextColor'] = $GLOBALS['headerTextColor'];
 	$appearance['sidebarColor'] = $GLOBALS['sidebarColor'];
@@ -1034,6 +1183,7 @@ function loadAppearance()
 	$appearance['buttonTextHoverColor'] = $GLOBALS['buttonTextHoverColor'];
 	$appearance['buttonHoverColor'] = $GLOBALS['buttonHoverColor'];
 	$appearance['loginWallpaper'] = $GLOBALS['loginWallpaper'];
+	$appearance['loginLogo'] = $GLOBALS['loginLogo'];
 	$appearance['customCss'] = $GLOBALS['customCss'];
 	$appearance['customThemeCss'] = $GLOBALS['customThemeCss'];
 	$appearance['customJava'] = $GLOBALS['customJava'];
@@ -1076,9 +1226,22 @@ function getCustomizeAppearance()
 			'Login Page' => array(
 				array(
 					'type' => 'input',
+					'name' => 'loginLogo',
+					'label' => 'Login Logo',
+					'value' => $GLOBALS['loginLogo'],
+				),
+				array(
+					'type' => 'input',
 					'name' => 'loginWallpaper',
 					'label' => 'Login Wallpaper',
-					'value' => $GLOBALS['loginWallpaper']
+					'value' => $GLOBALS['loginWallpaper'],
+					'help' => 'You may enter multiple URL\'s using the CSV format.  i.e. link#1,link#2,link#3'
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'useLogoLogin',
+					'label' => 'Use Logo instead of Title on Login Page',
+					'value' => $GLOBALS['useLogoLogin']
 				),
 				array(
 					'type' => 'switch',
@@ -1101,6 +1264,30 @@ function getCustomizeAppearance()
 					'value' => $GLOBALS['debugErrors']
 				),
 				array(
+					'type' => 'switch',
+					'name' => 'githubMenuLink',
+					'label' => 'Show GitHub Repo Link',
+					'value' => $GLOBALS['githubMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrSupportMenuLink',
+					'label' => 'Show Organizr Support Link',
+					'value' => $GLOBALS['organizrSupportMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrDocsMenuLink',
+					'label' => 'Show Organizr Docs Link',
+					'value' => $GLOBALS['organizrDocsMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrSignoutMenuLink',
+					'label' => 'Show Organizr Sign out & in Button on Sidebar',
+					'value' => $GLOBALS['organizrSignoutMenuLink']
+				),
+				array(
 					'type' => 'select',
 					'name' => 'unsortedTabs',
 					'label' => 'Unsorted Tab Placement',
@@ -1115,6 +1302,13 @@ function getCustomizeAppearance()
 							'value' => 'bottom'
 						)
 					)
+				),
+				array(
+					'type' => 'input',
+					'name' => 'gaTrackingID',
+					'label' => 'Google Analytics Tracking ID',
+					'placeholder' => 'e.g. UA-XXXXXXXXX-X',
+					'value' => $GLOBALS['gaTrackingID']
 				)
 			),
 			'Colors & Themes' => array(
@@ -1132,6 +1326,7 @@ function getCustomizeAppearance()
 					            <div class="panel-wrapper collapse in" aria-expanded="true">
 					                <div class="panel-body">
 					                    <span lang="en">The value of #987654 is just a placeholder, you can change to any value you like.</span>
+					                    <span lang="en">To revert back to default, save with no value defined in the relevant field.</span>
 					                </div>
 					            </div>
 					        </div>
@@ -1432,6 +1627,7 @@ function updateConfigMultipleForm($array)
 {
 	$newItem = array();
 	foreach ($array['data']['payload'] as $k => $v) {
+		$v['value'] = $v['value'] ?? '';
 		switch ($v['value']) {
 			case 'true':
 				$v['value'] = (bool)true;
@@ -1458,6 +1654,7 @@ function updateConfigMultipleForm($array)
 
 function updateConfigItem($array)
 {
+	$array['data']['value'] = $array['data']['value'] ?? '';
 	switch ($array['data']['value']) {
 		case 'true':
 			$array['data']['value'] = (bool)true;
@@ -1502,14 +1699,14 @@ function editPlugins($array)
 			$newItem = array(
 				$array['data']['configName'] => true
 			);
-			writeLog('success', 'Plugin Function -  Enabled Plugin [' . $_POST['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
+			writeLog('success', 'Plugin Function -  Enabled Plugin [' . $array['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
 			return (updateConfig($newItem)) ? true : false;
 			break;
 		case 'disable':
 			$newItem = array(
 				$array['data']['configName'] => false
 			);
-			writeLog('success', 'Plugin Function -  Disabled Plugin [' . $_POST['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
+			writeLog('success', 'Plugin Function -  Disabled Plugin [' . $array['data']['name'] . ']', $GLOBALS['organizrUser']['username']);
 			return (updateConfig($newItem)) ? true : false;
 			break;
 		default:
@@ -1524,15 +1721,26 @@ function auth()
 	$ban = isset($_GET['ban']) ? strtoupper($_GET['ban']) : "";
 	$whitelist = isset($_GET['whitelist']) ? $_GET['whitelist'] : false;
 	$blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
-	$group = isset($_GET['group']) ? (int)$_GET['group'] : (int)0;
+	$group = 0;
+	$groupParam = $_GET['group'];
+	$redirect = false;
+	if (isset($groupParam)) {
+		if (is_numeric($groupParam)) {
+			$group = (int)$groupParam;
+		} else {
+			$group = getTabGroup($groupParam);
+		}
+	}
 	$currentIP = userIP();
 	$unlocked = ($GLOBALS['organizrUser']['locked'] == '1') ? false : true;
 	if (isset($GLOBALS['organizrUser'])) {
 		$currentUser = $GLOBALS['organizrUser']['username'];
 		$currentGroup = $GLOBALS['organizrUser']['groupID'];
+		$currentEmail = $GLOBALS['organizrUser']['email'];
 	} else {
 		$currentUser = 'Guest';
 		$currentGroup = getUserLevel();
+		$currentEmail = 'guest@guest.com';
 	}
 	$userInfo = "User: $currentUser | Group: $currentGroup | IP: $currentIP | Requesting Access to Group $group | Result: ";
 	if ($whitelist) {
@@ -1546,23 +1754,41 @@ function auth()
 		}
 	}
 	if ($group !== null) {
+		if ((isset($_SERVER['HTTP_X_FORWARDED_SERVER']) && $_SERVER['HTTP_X_FORWARDED_SERVER'] == 'traefik') || $GLOBALS['traefikAuthEnable']) {
+			$redirect = 'Location: ' . getServerPath();
+		}
 		if (qualifyRequest($group) && $unlocked) {
 			header("X-Organizr-User: $currentUser");
+			header("X-Organizr-Email: $currentEmail");
 			!$debug ? exit(http_response_code(200)) : die("$userInfo Authorized");
 		} else {
-			!$debug ? exit(http_response_code(401)) : die("$userInfo Not Authorized");
+			!$debug ? (!$redirect ? exit(http_response_code(401)) : exit(http_response_code(401) . header($redirect))) : die("$userInfo Not Authorized");
 		}
 	} else {
-		!$debug ? exit(http_response_code(401)) : die("Not Authorized Due To No Parameters Set");
+		!$debug ? (!$redirect ? exit(http_response_code(401)) : exit(http_response_code(401) . header($redirect))) : die("Not Authorized Due To No Parameters Set");
+	}
+}
+
+function getTabGroup($tab)
+{
+	try {
+		$connect = new Dibi\Connection([
+			'driver' => 'sqlite3',
+			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],]);
+		$row = $connect->fetch('SELECT group_id FROM tabs WHERE name LIKE %~like~', $tab);
+		return $row ? $row['group_id'] : 0;
+	} catch (\Dibi\Exception $e) {
+		writeLog('error', 'Tab Group Function - Error Fetching Tab Group', $tab);
+		return 0;
 	}
 }
 
 function logoOrText()
 {
-	if ($GLOBALS['useLogo'] == false) {
+	if ($GLOBALS['useLogoLogin'] == false) {
 		return '<h1>' . $GLOBALS['title'] . '</h1>';
 	} else {
-		return '<img class="loginLogo" src="' . $GLOBALS['logo'] . '" alt="Home" />';
+		return '<img class="loginLogo" src="' . $GLOBALS['loginLogo'] . '" alt="Home" />';
 	}
 }
 
@@ -1575,13 +1801,18 @@ function showLogin()
 
 function checkoAuth()
 {
-	return ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') ? true : false;
+	return ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] !== 'internal') ? true : false;
+}
+
+function checkoAuthOnly()
+{
+	return ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] == 'external') ? true : false;
 }
 
 function showoAuth()
 {
 	$buttons = '';
-	if ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') {
+	if ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] !== 'internal') {
 		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn btn-lg btn-block text-uppercase waves-effect waves-light bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <span>Login</span><i aria-hidden="true" class="mdi mdi-plex m-l-5"></i> </a>';
 	}
 	return ($buttons) ? '
@@ -1607,15 +1838,34 @@ function showoAuth()
 
 function getImages()
 {
+	$allIconsPrep = array();
+	$allIcons = array();
+	$ignore = array(".", "..", "._.DS_Store", ".DS_Store", ".pydio_id", "index.html");
 	$dirname = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'tabs' . DIRECTORY_SEPARATOR;
 	$path = 'plugins/images/tabs/';
 	$images = scandir($dirname);
-	$ignore = array(".", "..", "._.DS_Store", ".DS_Store", ".pydio_id");
-	$allIcons = array();
 	foreach ($images as $image) {
 		if (!in_array($image, $ignore)) {
-			$allIcons[] = $path . $image;
+			$allIconsPrep[$image] = array(
+				'path' => $path,
+				'name' => $image
+			);
 		}
+	}
+	$dirname = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+	$path = 'plugins/images/userTabs/';
+	$images = scandir($dirname);
+	foreach ($images as $image) {
+		if (!in_array($image, $ignore)) {
+			$allIconsPrep[$image] = array(
+				'path' => $path,
+				'name' => $image
+			);
+		}
+	}
+	ksort($allIconsPrep);
+	foreach ($allIconsPrep as $item) {
+		$allIcons[] = $item['path'] . $item['name'];
 	}
 	return $allIcons;
 }
@@ -1637,7 +1887,7 @@ function editImages()
 	$array = array();
 	$postCheck = array_filter($_POST);
 	$filesCheck = array_filter($_FILES);
-	$approvedPath = 'plugins/images/tabs/';
+	$approvedPath = 'plugins/images/userTabs/';
 	if (!empty($postCheck)) {
 		$removeImage = $approvedPath . pathinfo($_POST['data']['imagePath'], PATHINFO_BASENAME);
 		if ($_POST['data']['action'] == 'deleteImage' && approvedFileExtension($removeImage)) {
@@ -1651,7 +1901,7 @@ function editImages()
 		ini_set('upload_max_filesize', '10M');
 		ini_set('post_max_size', '10M');
 		$tempFile = $_FILES['file']['tmp_name'];
-		$targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'tabs' . DIRECTORY_SEPARATOR;
+		$targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
 		$targetFile = $targetPath . $_FILES['file']['name'];
 		return (move_uploaded_file($tempFile, $targetFile)) ? true : false;
 	}
@@ -1666,6 +1916,7 @@ function approvedFileExtension($filename)
 		case 'png':
 		case 'jpeg':
 		case 'jpg':
+		case 'svg':
 			return true;
 			break;
 		default:
@@ -1856,13 +2107,23 @@ function getImage()
 		if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh == false) {
 			header("Content-type: image/jpeg");
 			//@readfile($cachefile);
-			echo @curl('get', $cachefile)['content'];
+			//echo @curl('get', $cachefile)['content'];
+			$options = array('verify' => false);
+			$response = Requests::get($cachefile, array(), $options);
+			if ($response->success) {
+				echo $response->body;
+			}
 			exit;
 		}
 		ob_start(); // Start the output buffer
 		header('Content-type: image/jpeg');
 		//@readfile($image_src);
-		echo @curl('get', $image_src)['content'];
+		//echo @curl('get', $image_src)['content'];
+		$options = array('verify' => false);
+		$response = Requests::get($image_src, array(), $options);
+		if ($response->success) {
+			echo $response->body;
+		}
 		// Cache the output to a file
 		$fp = fopen($cachefile, 'wb');
 		fwrite($fp, ob_get_contents());
@@ -1874,14 +2135,17 @@ function getImage()
 	}
 }
 
-function cacheImage($url, $name)
+function cacheImage($url, $name, $extension = 'jpg')
 {
 	$cacheDirectory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
 	if (!file_exists($cacheDirectory)) {
 		mkdir($cacheDirectory, 0777, true);
 	}
-	$cachefile = $cacheDirectory . $name . '.jpg';
-	@copy($url, $cachefile);
+	$cachefile = $cacheDirectory . $name . '.' . $extension;
+	$cachetime = 604800;
+	if ((file_exists($cachefile) && time() - $cachetime < filemtime($cachefile)) || !file_exists($cachefile)) {
+		@copy($url, $cachefile);
+	}
 }
 
 function downloader($array)
@@ -1898,11 +2162,88 @@ function downloader($array)
 					break;
 			}
 			break;
+		case 'jdownloader':
+			switch ($array['data']['action']) {
+				case 'start':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'stop':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'resume':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'pause':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'update':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'retry':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				case 'remove':
+					jdownloaderAction($array['data']['action'], $array['data']['target']);
+					break;
+				default:
+					# code...
+					break;
+			}
+			break;
 		case 'nzbget':
 			break;
 		default:
 			# code...
 			break;
+	}
+}
+
+function jdownloaderAction($action = null, $target = null)
+{
+	if ($GLOBALS['homepageJdownloaderEnabled'] && !empty($GLOBALS['jdownloaderURL']) && qualifyRequest($GLOBALS['homepageJdownloaderAuth'])) {
+		$url = qualifyURL($GLOBALS['jdownloaderURL']);
+		# This ensures compatibility with RSScrawler
+		$url = str_replace('/myjd', '', $url);
+		if (substr($url, -1) == '/') {
+			$url = substr_replace($url, "", -1);
+		}
+		switch ($action) {
+			case 'start':
+				$url = $url . '/myjd_start/';
+				break;
+			case 'stop':
+				$url = $url . '/myjd_stop/';
+				break;
+			case 'resume':
+				$url = $url . '/myjd_pause/false';
+				break;
+			case 'pause':
+				$url = $url . '/myjd_pause/true';
+				break;
+			case 'update':
+				$url = $url . '/myjd_update';
+				break;
+			case 'retry':
+				# code...
+				break;
+			case 'remove':
+				# code...
+				break;
+			default:
+				# code...
+				break;
+		}
+		try {
+			$options = (localURL($url)) ? array('verify' => false) : array();
+			$response = Requests::post($url, array(), $options);
+			if ($response->success) {
+				$api['content'] = json_decode($response->body, true);
+			}
+		} catch (Requests_Exception $e) {
+			writeLog('error', 'JDownloader Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+		};
+		$api['content'] = isset($api['content']) ? $api['content'] : false;
+		return $api;
 	}
 }
 
@@ -2369,9 +2710,14 @@ function settingsPathChecks()
 
 function dockerUpdate()
 {
+	$dockerUpdate = null;
 	chdir('/etc/cont-init.d/');
-	$dockerUpdate = shell_exec('./30-install');
-	return $dockerUpdate;
+	if (file_exists('./30-install')) {
+		$dockerUpdate = shell_exec('./30-install');
+	} elseif (file_exists('./40-install')) {
+		$dockerUpdate = shell_exec('./40-install');
+	}
+	return $dockerUpdate ?? 'Update Failed';
 }
 
 function windowsUpdate()
@@ -2391,4 +2737,32 @@ function checkHostPrefix($s)
 		return $s;
 	}
 	return (substr($s, -1, 1) == '\\') ? $s : $s . '\\';
+}
+
+function analyzeIP($ip)
+{
+	if (strpos($ip, '/') !== false) {
+		$explodeIP = explode('/', $ip);
+		$prefix = $explodeIP[1];
+		$start_ip = $explodeIP[0];
+		$ip_count = 1 << (32 - $prefix);
+		$start_ip_long = ip2long($start_ip);
+		$last_ip_long = ip2long($start_ip) + $ip_count - 1;
+	} elseif (substr_count($ip, '.') == 3) {
+		$start_ip_long = ip2long($ip);
+		$last_ip_long = ip2long($ip);
+	}
+	return (isset($start_ip_long) && isset($last_ip_long)) ? array('from' => $start_ip_long, 'to' => $last_ip_long) : false;
+}
+
+function authProxyRangeCheck($from, $to)
+{
+	$approved = false;
+	$userIP = ip2long($_SERVER['REMOTE_ADDR']);
+	$low = $from;
+	$high = $to;
+	if ($userIP <= $high && $low <= $userIP) {
+		$approved = true;
+	}
+	return $approved;
 }

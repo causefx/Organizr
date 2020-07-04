@@ -6,11 +6,9 @@ use Adldap\AdldapException;
 use Adldap\Connections\DetailedError;
 
 /**
- * Class BindException
+ * Class BindException.
  *
  * Thrown when binding to an LDAP connection fails.
- *
- * @package Adldap\Auth
  */
 class BindException extends AdldapException
 {

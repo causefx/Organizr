@@ -37,10 +37,10 @@ class Sid
     {
         if (static::isValid($value)) {
             $this->value = $value;
-        } else if ($value = $this->binarySidToString($value)) {
+        } elseif ($value = $this->binarySidToString($value)) {
             $this->value = $value;
         } else {
-            throw new InvalidArgumentException("Invalid Binary / String SID.");
+            throw new InvalidArgumentException('Invalid Binary / String SID.');
         }
     }
 

@@ -309,6 +309,9 @@ $(document).on('click', '.phpmSendTestEmail', function() {
         var response = JSON.parse(data);
         if(response.data == true){
             messageSingle('',window.lang.translate('Email Test Successful'),activeInfo.settings.notifications.position,'#FFF','success','5000');
+        }else if(response.data.indexOf('|||DEBUG|||') == 0) {
+            messageSingle('',window.lang.translate('Press F11 to check Console for output'),activeInfo.settings.notifications.position,'#FFF','warning','20000');
+            console.warn(response.data);
         }else{
             messageSingle('',response.data,activeInfo.settings.notifications.position,'#FFF','error','5000');
         }

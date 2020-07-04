@@ -1,6 +1,6 @@
 <?php include 'api/functions/static-globals.php'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ontouchmove>
 
 <head>
     <meta charset="utf-8">
@@ -51,7 +51,7 @@
     <![endif]-->
 </head>
 
-<body class="fix-header" data-active-tab="">
+<body class="fix-header" data-active-tab="" tabIndex=0>
 <!-- ============================================================== -->
 <!-- Preloader -->
 <!-- ============================================================== -->
@@ -113,8 +113,8 @@
     <!-- ============================================================== -->
     <!-- Left Sidebar - style you can find in sidebar.scss  -->
     <!-- ============================================================== -->
-    <div class="navbar-default sidebar" role="navigation">
-        <div class="sidebar-nav slimscrollsidebar">
+    <div class="navbar-default sidebar" role="navigation" data-simplebar-direction="rtl">
+        <div class="sidebar-nav">
             <div class="sidebar-head">
                 <h3><span class="open-close m-r-5"><i class="ti-menu hidden-xs"></i><i class="ti-close visible-xs"></i></span>
                     <span class="hide-menu hidden-xs" lang="en">Navigation</span>
@@ -245,7 +245,7 @@
 <?php echo "<script>languageList = " . languagePacks(true) . ";\n</script>"; ?>
 <script src="js/jquery-2.2.4.min.js"></script>
 <script src="bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="plugins/bower_components/sidebar-nav/dist/sidebar-nav.js"></script>
+<script src="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.js"></script>
 <script src="js/jquery.slimscroll.js"></script>
 <script src="js/waves.js"></script>
 <script src="plugins/bower_components/styleswitcher/jQuery.style.switcher.js"></script>
@@ -256,7 +256,7 @@
 <script src="plugins/bower_components/jquery-wizard-master/libs/formvalidation/bootstrap.min.js"></script>
 <script src="js/bowser.min.js"></script>
 <script src="js/jasny-bootstrap.js"></script>
-<script src="js/cbpFWTabs.js"></script>
+<script src="js/cbpFWTabs.js?v=<?php echo $GLOBALS['fileHash']; ?>"></script>
 <script src="js/js.cookie.js"></script>
 <script src="js/jquery-lang.js"></script>
 <script src="js/jquery-ui.min.js"></script>
@@ -286,6 +286,8 @@
 <script src="plugins/bower_components/multiselect/js/jquery.multi-select.js"></script>
 <script src="plugins/bower_components/mousetrap/mousetrap.min.js"></script>
 <script src="plugins/bower_components/bootstrap-treeview-master/dist/bootstrap-treeview.min.js"></script>
+<script src="plugins/bower_components/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
+<script src="js/gauge.min.js"></script>
 <script src="js/jquery.mousewheel.min.js"></script>
 <script src="js/ua-parser.min.js"></script>
 <script src="js/plyr.js"></script>
@@ -298,6 +300,7 @@
 <script src="https://js.pusher.com/4.1/pusher.min.js"
         integrity="sha384-e9MoFh6Cw/uluf+NZ6MJwfJ1Dm7UOvJf9oTBxxCYDyStJeeAF0q53ztnEbLLDSQP"
         crossorigin="anonymous"></script>
+<?php echo googleTracking(); ?>
 <?php echo pluginFiles('js');
 echo formKey(); ?>
 </body>
