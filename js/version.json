@@ -250,5 +250,26 @@
     "new": "Weather Homepage Item|Pi-Hole Homepage Item|Tautulli Homepage Item|Monitorr Homepage Item|Netdata Homepage Item|SpeedTest Homepage Item|HealthChecks Plugin|Bandwidth info to Now Playing|Config files can now contain arrays|Scrape API endpoint|New API Docs WIP located at /api/docs",
     "fixed": "iOS icon issue|Language Bug|Cache Image timing|fix hardcoded plugins directory for root (#1341)|Ombi Posters|Plex Timeouts|Indent cleanup|Homepage Item shortcut in Tab Editor broken (#1368)|Empty login form submitting|Sanitize username going into log (#1359)|Ombi Div for tv items|edit sttabs for reflect more than just settings tabs|Emby HomePage Add-in - Item Details URL Needs updating (#1290)|Fix JQuery error on settings save (#1356)",
     "notes": "Added note about Samesite issues|New Radarr Logo|Please report bugs in GitHub issues page"
+  },
+  "2.0.631": {
+    "date": "2020-06-19 19:15",
+    "title": "Whoa - sorry for the wait",
+    "new": "Added css bottom-close-splash",
+    "fixed": "Netadata fixes|Docker update fixes|Tautulli Fixes|Hardcode fixes for days beyond one year|Typos|NZBHydra tab image|fix stray / in index.php and js/functions.php (#1408)|LDAP with STARTTLS support (#1411)",
+    "notes": "Please report bugs in GitHub issues page"
+  },
+  "2.0.633": {
+    "date": "2020-06-20 02:01",
+    "title": "Small Bugfix",
+    "new": "",
+    "fixed": "Fix heredoc error on php versions under 7.3",
+    "notes": "Please report bugs in GitHub issues page"
+  },
+  "2.0.650": {
+    "date": "2020-07-03 20:55",
+    "title": "Weekly Updates",
+    "new": "Added Jellyfin Auth function to log into Organizr|Re-Enable EmbyConnect backend option|Option to disable logout/login button on sidebar",
+    "fixed": "Plex oAuth login enabled after switching to a different backend (#1416)|losing access to settings (#1418)|Youtube Error catch and added another API Key(#1419)|Update coookie function to include path|Update Tautulli cookie to include path|News.json fixes|homepage sort issue on right side|add uuid on wizard path",
+    "notes": "Please report bugs in GitHub issues page"
   }
 }

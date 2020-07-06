@@ -3,7 +3,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	$pageSettingsTabEditorHomepageOrder = '
 <script>
     $("#homepage-items-sort").sortable({
-	    placeholder:    "sort-placeholder col-md-3 col-xs-12 clearfix",
+	    placeholder:    "sort-placeholder col-md-3 col-xs-12 m-t-10 clearfix",
 	    forcePlaceholderSize: true,
 	    start: function( e, ui ){
 	        ui.item.data( "start-pos", ui.item.index()+1 );

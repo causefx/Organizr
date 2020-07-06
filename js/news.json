@@ -1,23 +1,30 @@
 [
   {
+    "title": "Plex OAuth Patch",
+    "subTitle": "You server hostname will now be listed on OAuth box",
+    "date": "2020-06-18 16:30",
+    "body": "Plex has now fixed the 3 open CVE's pertaining to the ability for an attacker to phish for an Plex Admins token.  Please follow this link to read more about it.  <a href=\"https:\/\/www.bleepingcomputer.com\/news\/security\/plex-fixes-media-server-bugs-allowing-full-system-takeover\/\" target=\"_blank\" rel=\"noopener noreferrer\">Plex Vulnerabilities Patched<\/a>",
+    "author": "CauseFX"
+  },
+  {
     "title": "Tab Redirect Loops and SameSite Cookie Issues",
     "subTitle": "New Browser Restrictions",
     "date": "2020-04-01 19:30",
-    "body": "It seems there are a lot of issues happening with redirect Loops and SameSite cookie issues.  If you are having issues, please read this document.  <a href=\"https:\/\/docs.organizr.app\/books\/troubleshooting\/page\/redirect-looping---samesite-errors\" target=\"_blank\">Organizr SameSite Docs<\/a>",
+    "body": "It seems there are a lot of issues happening with redirect Loops and SameSite cookie issues.  If you are having issues, please read this document.  <a href=\"https:\/\/docs.organizr.app\/books\/troubleshooting\/page\/redirect-looping---samesite-errors\" target=\"_blank\" rel=\"noopener noreferrer\">Organizr SameSite Docs<\/a>",
     "author": "CauseFX"
   },
   {
     "title": "Plex Oauth Issues - RESOLVED!",
     "subTitle": "Let's make them bring back support correctly",
     "date": "2019-07-17 15:20",
-    "body": "It seems like Plex has broken support for us using Oauth.  Currently there is a workaround but we would rather they fix the issue.  Please share your feedback in this thread: <a href=\"https:\/\/forums.plex.tv\/t\/plex-oauth-not-working-with-tautulli-ombi-etc\/433945\" target=\"_blank\">Plex Oauth Discussion<\/a>",
+    "body": "It seems like Plex has broken support for us using Oauth.  Currently there is a workaround but we would rather they fix the issue.  Please share your feedback in this thread: <a href=\"https:\/\/forums.plex.tv\/t\/plex-oauth-not-working-with-tautulli-ombi-etc\/433945\" target=\"_blank\" rel=\"noopener noreferrer\">Plex Oauth Discussion<\/a>",
     "author": "CauseFX"
   },
   {
     "title": "Emby Discontinued Support",
     "subTitle": "Emby API - EmbyConnect Deprecated",
     "date": "2019-05-14 19:15",
-    "body": "Emby has discontinued support for matching users against Emby Connect via API.  Therefore, we will no longer be supporting this method of Authentication for Organizr.  If Emby decides to support this again, I will re-enable it once more.  You can find more information here: <a href=\"https:\/\/github.com\/MediaBrowser\/Emby\/issues\/3553\" target=\"_blank\">Emby API Discussion<\/a>",
+    "body": "Emby has discontinued support for matching users against Emby Connect via API.  Therefore, we will no longer be supporting this method of Authentication for Organizr.  If Emby decides to support this again, I will re-enable it once more.  You can find more information here: <a href=\"https:\/\/github.com\/MediaBrowser\/Emby\/issues\/3553\" target=\"_blank\" rel=\"noopener noreferrer\">Emby API Discussion<\/a>",
     "author": "CauseFX"
   },
   {

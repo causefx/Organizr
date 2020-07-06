@@ -204,7 +204,7 @@ function isNumberKey(evt) {
     return true;
 }
 function setTabInfo(tab,action,value){
-    if(tab == 'Organizr-Support'){
+    if(tab == 'Organizr-Support' || tab == 'Organizr-Docs'){
         return false;
     }
     if(tab !== null && action !== null && value !== null){
@@ -2582,20 +2582,23 @@ function userMenu(user){
 }
 function menuExtras(active){
     var supportFrame = buildFrameContainer('Organizr Support','https://organizr.app/support',1);
-    var adminMenu = (activeInfo.user.groupID <= 1) ? buildMenuList('Organizr Support','https://organizr.app/support',1,'fontawesome::life-ring'): '';
+    var docsFrame = buildFrameContainer('Organizr Docs','https://docs.organizr.app',1);
+    var adminMenu = '<li class="devider"></li>';
+    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.githubMenuLink) ? buildMenuList('GitHub Repo','https://github.com/causefx/organizr',2,'fontawesome::github') : '';
+    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrSupportMenuLink) ? buildMenuList('Organizr Support','https://organizr.app/support',1,'fontawesome::life-ring') : '';
+    adminMenu += (activeInfo.user.groupID <= 1 && activeInfo.settings.menuLink.organizrDocsMenuLink) ? buildMenuList('Organizr Docs','https://docs.organizr.app',1,'simpleline::docs') : '';
     $(supportFrame).appendTo($('.iFrame-listing'));
+    $(docsFrame).appendTo($('.iFrame-listing'));
 	if(active === true){
-		return `
+		return (activeInfo.settings.menuLink.organizrSignoutMenuLink) ? `
 			<li class="devider"></li>
 			<li id="sign-out"><a class="waves-effect" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span class="hide-menu" lang="en">Logout</span></a></li>
-			<li class="devider"></li>
-			<li id="github"><a href="https://github.com/causefx/organizr" target="_blank" class="waves-effect"><i class="fa fa-github fa-fw text-success"></i> <span class="hide-menu">GitHub</span></a></li>
-		`+adminMenu;
+		` + adminMenu : '' + adminMenu;
 	}else{
-		return `
+		return (activeInfo.settings.menuLink.organizrSignoutMenuLink) ? `
 			<li class="devider"></li>
 			<li id="menu-login"><a class="waves-effect show-login" href="javascript:void(0)"><i class="mdi mdi-login fa-fw"></i> <span class="hide-menu" lang="en">Login/Register</span></a></li>
-		`;
+		` : '';
 	}
 }
 function categoryProcess(arrayItems){
@@ -2795,7 +2798,7 @@ function buildSplashScreen(json){
         <section id="splashScreen" class="lock-screen splash-screen fade in">
             <div class="row p-20 flexbox">`+items+`</div>
             <div class="row p-20 p-t-0 flexbox">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse hvr-wobble-bottom" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mouse hvr-wobble-bottom bottom-close-splash" onclick="$('.splash-screen').addClass('hidden').removeClass('in')">
                     <div class="homepage-drag fc-event bg-danger lazyload"  data-src="">
                         <span class="homepage-text">&nbsp; Close Splash</span>
                     </div>
@@ -3302,7 +3305,10 @@ function newsLoad(){
         try {
             var response = JSON.parse(data);
             var items = [];
+            var limit = 5;
+            var count = 0;
             $.each(response, function(i,v) {
+                count++;
                 var newBody = `
                 <h5 class="pull-left">`+moment(v.date).format('LLL')+`</h5>
                 <h5 class="pull-right">`+v.author+`</h5>
@@ -3310,9 +3316,11 @@ function newsLoad(){
                 `+((v.subTitle) ? '<h5>' + v.subTitle + '</h5>' : '' )+`
                 <p>`+v.body+`</p>
                 `;
-                items[i] = {
-                    title:v.title,
-                    body:newBody
+                if(count <= limit){
+                    items[i] = {
+                        title:v.title,
+                        body:newBody
+                    }
                 }
             });
             var body = buildAccordion(items, true);
@@ -3731,7 +3739,7 @@ function marketplaceJSON(type) {
 }
 function allIcons() {
     return $.ajax({
-        url: "/js/icons.json",
+        url: "js/icons.json",
     });
 }
 function organizrConnect(path){
@@ -4816,7 +4824,7 @@ function buildRequest(array){
 			<div class="white-box m-b-0 search-div resultBox-outside">
 				<div class="form-group m-b-0">
 					<div id="request-input-div" class="input-group">
-						<input id="request-input" lang="en" placeholder="Request Show or Movie" type="text" class="form-control inline-focus">
+						<input id="request-input" lang="en" placeholder="Request a Show or Movie" type="text" class="form-control inline-focus">
                         <input id="request-page" type="hidden" class="form-control">
                         <div class="input-group-btn">
                             <button type="button" class="btn waves-effect waves-light btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span lang="en">Suggestions</span> <span class="caret"></span></button>
@@ -6094,9 +6102,12 @@ function buildPiholeItem(array){
             <div class="card text-white mb-3 pihole-stat bg-green">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Total queries</p>`;
+                        <p class="d-inline mr-1">Total queries</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
@@ -6114,9 +6125,12 @@ function buildPiholeItem(array){
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-aqua">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Queries Blocked</p>`;
+                        <p class="d-inline mr-1">Queries Blocked</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
@@ -6134,9 +6148,12 @@ function buildPiholeItem(array){
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-yellow">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Percent Blocked</p>`;
+                        <p class="d-inline mr-1">Percent Blocked</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_percentage_today'].toFixed(1)+`%</h3>`
         };
         card += `
@@ -6154,9 +6171,12 @@ function buildPiholeItem(array){
             <div class="card bg-inverse text-white mb-3 pihole-stat bg-red">
                 <div class="card-body">
                     <div class="inline-block">
-                        <p>Domains on Blocklist</p>`;
+                        <p class="d-inline mr-1">Domains on Blocklist</p>`;
         for(var key in data) {
             var e = data[key];
+            if(length > 1 && !combine) {
+                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            }
             card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
         };
         card += `
@@ -6177,15 +6197,6 @@ function buildPiholeItem(array){
         stats += '</div>';
     } else {
         for(var key in array['data']) {
-            if(length > 1) {
-                stats += `
-                <div class="row mb-2">
-                    <div class="col-sm-12">
-                        `+key+`
-                    </div>
-                </div>
-                `;
-            }
             var data = array['data'][key];
             obj = {};
             obj[key] = data;
@@ -6588,13 +6599,13 @@ function buildTautulliItem(array){
             var section_name = null;
             if(type == 'movie'){
                 extraField = 'Movies';
-                section_name = 'Movie Libaries';
+                section_name = 'Movie Libraries';
             }else if(type == 'show'){
                 extraField = 'Shows/Seasons/Episodes';
-                section_name = 'TV Show Libaries';
+                section_name = 'TV Show Libraries';
             }else if(type == 'artist'){
                 extraField = 'Artists/Albums/Tracks';
-                section_name = 'Music Libaries';
+                section_name = 'Music Libraries';
             }
             var cardTitle = '<th><span class="pull-left cardTitle">'+section_name.toUpperCase()+'</span><span class="pull-right cardCountType">'+extraField.toUpperCase()+'</th>';
             var card = `
@@ -7039,7 +7050,7 @@ var html = `
         <div class="white-box text-white p-0">
             <!-- Tabstyle start -->
             <section class="">
-                <div class="sttabs tabs-style-iconbox">
+                <div class="sttabs sttabs-main-weather-health-div tabs-style-iconbox">
                     <nav>
                         <ul>${healthHeader}</ul>
                     </nav>
@@ -7053,7 +7064,7 @@ var html = `
     </div>
     <script>
         (function() {
-            [].slice.call(document.querySelectorAll('.sttabs')).forEach(function(el) {
+            [].slice.call(document.querySelectorAll('.sttabs-main-weather-health-div')).forEach(function(el) {
                 new CBPFWTabs(el);
             });
         })();
@@ -7081,7 +7092,7 @@ function buildPollutant(array){
         <div class="white-box text-white p-0">
             <!-- Tabstyle start -->
             <section class="">
-                <div class="sttabs tabs-style-iconbox">
+                <div class="sttabs sttabs-main-weather-pollutant-div tabs-style-iconbox">
                     <nav>
                         <ul>${pollutantHeader}</ul>
                     </nav>
@@ -7095,7 +7106,7 @@ function buildPollutant(array){
     </div>
     <script>
         (function() {
-            [].slice.call(document.querySelectorAll('.sttabs')).forEach(function(el) {
+            [].slice.call(document.querySelectorAll('.sttabs-main-weather-pollutant-div')).forEach(function(el) {
                 new CBPFWTabs(el);
             });
         })();
@@ -7127,10 +7138,22 @@ function buildMonitorrItem(array){
     var cards = '';
     var options = array['options'];
     var services = array['services'];
+    var tabName = '';
 
     var buildCard = function(name, data) {
-        if(data.status) { var statusColor = 'success'; var imageText = 'fa fa-check-circle text-success' } 
-            else { var statusColor = 'danger animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-danger'}
+        if(data.status == true) {
+            var statusColor = 'success'; var imageText = 'fa fa-check-circle text-success'
+        } else if (data.status == 'unresponsive') {
+            var statusColor = 'warning animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-warning'
+        } else {
+            var statusColor = 'danger animated-3 loop-animation flash'; var imageText = 'fa fa-times-circle text-danger'
+        }
+        if(typeof data.link !== 'undefined' && data.link.includes('#')) {
+            tabName = data.link.substring(data.link.indexOf('#')+1);
+            monitorrLink = '<a href="javascript:void(0)" onclick="tabActions(event,\''+tabName+'\',1)">';
+        } else if(typeof data.link !== 'undefined') {
+            monitorrLink = '<a href="'+data.link+'" target="_blank">'
+        }
         if(options['compact']) {
             var card = `
             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
@@ -7140,7 +7163,7 @@ function buildMonitorrItem(array){
                             <div class="left-health bg-`+statusColor+`"></div>
                             <div class="ml-1 w-100">
                                 <i class="`+imageText+` font-20 pull-right mt-3 mb-2"></i>
-                                `; if (typeof data.link !== 'undefined') { card +=`<a href="`+data.link+`" target="_blank">`; }
+                                `; if (typeof data.link !== 'undefined') { card += monitorrLink; }
                                 card += `<h3 class="d-flex no-block align-items-center mt-2 mb-2"><img class="lazyload loginTitle" src="`+data.image+`">&nbsp;`+name+`</h3>
                                 `; if (typeof data.link !== 'undefined') { card +=`</a>`; }
                                 card += `<div class="clearfix"></div>
@@ -7160,7 +7183,7 @@ function buildMonitorrItem(array){
                             <img class="monitorrImage" src="`+data.image+`" alt="service icon">
                         </div>
                         <div class="d-inline-block mt-4 py-2 px-4 badge indicator bg-`+statusColor+`">
-                            <p class="mb-0">`; if(data.status) { card += 'ONLINE' } else { card += 'OFFLINE' } card+=`</p>
+                            <p class="mb-0">`; if(data.status == true) { card += 'ONLINE' } else if(data.status == 'unresponsive') { card += 'UNRESPONSIVE' } else { card += 'OFFLINE' } card+=`</p>
                         </div>
                         `; if (typeof data.link !== 'undefined') { card +=`</a>`; }
                         card += `</div>
@@ -7177,27 +7200,31 @@ function buildMonitorrItem(array){
 }
 function buildMonitorr(array){
     if(array === false){ return ''; }
-    var services = (typeof array.services !== 'undefined') ? Object.keys(array.services).length : false;
-    var html = `
-    <div id="allMonitorr">
-		<div class="el-element-overlay row">`
-    if(array['options']['titleToggle']) {
+    if(array.error != undefined) {
+        console.log('Monitorr error: ' + array.error);
+    } else {
+        var services = (typeof array.services !== 'undefined') ? Object.keys(array.services).length : false;
+        var html = `
+        <div id="allMonitorr">
+            <div class="el-element-overlay row">`
+        if(array['options']['titleToggle']) {
+            html += `
+                <div class="col-md-12">
+                    <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-monitorr-services mouse" onclick="homepageMonitorr()">`+services+`</span></h4></h4>
+                    <hr class="hidden-xs ml-2">
+                </div>
+                <div class="clearfix"></div>
+            `;
+        }
         html += `
-            <div class="col-md-12">
-                <h4 class="pull-left homepage-element-title"><span lang="en">`+array['options']['title']+`</span> : </h4><h4 class="pull-left">&nbsp;<span class="label label-info m-l-20 checkbox-circle good-monitorr-services mouse" onclick="homepageMonitorr()">`+services+`</span></h4></h4>
-                <hr class="hidden-xs ml-2">
+                <div class="monitorrCards">
+                    `+buildMonitorrItem(array)+`
+                </div>
             </div>
-            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
         `;
     }
-    html += `
-            <div class="monitorrCards">
-                `+buildMonitorrItem(array)+`
-			</div>
-		</div>
-    </div>
-    <div class="clearfix"></div>
-    `;
     return (array) ? html : '';
 }
 function homepageMonitorr(timeout){
@@ -8119,15 +8146,21 @@ function youtubeSearch(searchQuery) {
 function youtubeCheck(title,link){
 	youtubeSearch(title).success(function(data) {
         var response = JSON.parse(data);
-		inlineLoad();
-		var id = response.data.items["0"].id.videoId;
-		var div = `
+        console.log(data)
+		if(response.data){
+			inlineLoad();
+			var id = response.data.items["0"].id.videoId;
+			var div = `
 		<div id="player-`+link+`" data-plyr-provider="youtube" data-plyr-embed-id="`+id+`"></div>
 		<div class="clearfix"></div>
 		`;
-		$('.youtube-div').html(div);
-		$('.'+link).trigger('click');
-		player = new Plyr('#player-'+link);
+			$('.youtube-div').html(div);
+			$('.'+link).trigger('click');
+			player = new Plyr('#player-'+link);
+		}else{
+			messageSingle('API Limit Reached','YouTube API Error',activeInfo.settings.notifications.position,'#FFF','error','5000');
+		}
+
 	}).fail(function(xhr) {
 		console.error("Organizr Function: YouTube Connection Failed");
 	});
@@ -8232,6 +8265,7 @@ function changeAuth(){
         case 'emby_local':
         case 'emby_connect':
         case 'emby_all':
+	    case 'jellyfin':
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.embyAuth').parent().parent().parent().show();

@@ -131,6 +131,12 @@ function organizrSpecialSettings()
 			'debugArea' => qualifyRequest($GLOBALS['debugAreaAuth']),
 			'debugErrors' => $GLOBALS['debugErrors'],
 			'sandbox' => $GLOBALS['sandbox'],
+		),
+		'menuLink' => array(
+			'githubMenuLink' => $GLOBALS['githubMenuLink'],
+			'organizrSupportMenuLink' => $GLOBALS['organizrSupportMenuLink'],
+			'organizrDocsMenuLink' => $GLOBALS['organizrDocsMenuLink'],
+			'organizrSignoutMenuLink' => $GLOBALS['organizrSignoutMenuLink']
 		)
 	);
 }
@@ -160,6 +166,7 @@ function wizardConfig($array)
 		'organizrHash' => $hashKey,
 		'organizrAPI' => $api,
 		'registrationPassword' => $registrationPassword,
+		'uuid' => gen_uuid()
 	);
 	// Create Config
 	$GLOBALS['dbLocation'] = $location;
@@ -685,6 +692,22 @@ function getSettingsMain()
 				'html' => '<span id="accountDN" class="ldapAuth switchAuth">' . $GLOBALS['authBackendHostPrefix'] . 'TestAcct' . $GLOBALS['authBackendHostSuffix'] . '</span>'
 			),
 			array(
+				'type' => 'switch',
+				'name' => 'ldapSSL',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Enable LDAP SSL',
+				'value' => $GLOBALS['ldapSSL'],
+				'help' => 'This will enable the use of SSL for LDAP connections'
+			),
+			array(
+				'type' => 'switch',
+				'name' => 'ldapSSL',
+				'class' => 'ldapAuth switchAuth',
+				'label' => 'Enable LDAP TLS',
+				'value' => $GLOBALS['ldapTLS'],
+				'help' => 'This will enable the use of TLS for LDAP connections'
+			),
+			array(
 				'type' => 'button',
 				'name' => 'test-button-ldap',
 				'label' => 'Test Connection',
@@ -707,7 +730,7 @@ function getSettingsMain()
 				'type' => 'input',
 				'name' => 'embyURL',
 				'class' => 'embyAuth switchAuth',
-				'label' => 'Emby URL',
+				'label' => 'Emby/Jellyfin URL',
 				'value' => $GLOBALS['embyURL'],
 				'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 				'placeholder' => 'http(s)://hostname:port'
@@ -716,7 +739,7 @@ function getSettingsMain()
 				'type' => 'password-alt',
 				'name' => 'embyToken',
 				'class' => 'embyAuth switchAuth',
-				'label' => 'Emby Token',
+				'label' => 'Emby/Jellyin Token',
 				'value' => $GLOBALS['embyToken'],
 				'placeholder' => ''
 			),
@@ -824,6 +847,10 @@ function getSettingsMain()
 					array(
 						'name' => 'Allow Top Navigation',
 						'value' => 'allow-top-navigation'
+					),
+					array(
+						'name' => 'Allow Downloads',
+						'value' => 'allow-downloads'
 					),
 				)
 			),
@@ -1235,6 +1262,30 @@ function getCustomizeAppearance()
 					'name' => 'debugErrors',
 					'label' => 'Show Debug Errors',
 					'value' => $GLOBALS['debugErrors']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'githubMenuLink',
+					'label' => 'Show GitHub Repo Link',
+					'value' => $GLOBALS['githubMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrSupportMenuLink',
+					'label' => 'Show Organizr Support Link',
+					'value' => $GLOBALS['organizrSupportMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrDocsMenuLink',
+					'label' => 'Show Organizr Docs Link',
+					'value' => $GLOBALS['organizrDocsMenuLink']
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'organizrSignoutMenuLink',
+					'label' => 'Show Organizr Sign out & in Button on Sidebar',
+					'value' => $GLOBALS['organizrSignoutMenuLink']
 				),
 				array(
 					'type' => 'select',
@@ -1750,18 +1801,18 @@ function showLogin()
 
 function checkoAuth()
 {
-	return ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') ? true : false;
+	return ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] !== 'internal') ? true : false;
 }
 
 function checkoAuthOnly()
 {
-	return ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] == 'external') ? true : false;
+	return ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] == 'external') ? true : false;
 }
 
 function showoAuth()
 {
 	$buttons = '';
-	if ($GLOBALS['plexoAuth'] && $GLOBALS['authType'] !== 'internal') {
+	if ($GLOBALS['plexoAuth'] && $GLOBALS['authBackend'] == 'plex' && $GLOBALS['authType'] !== 'internal') {
 		$buttons .= '<a href="javascript:void(0)" onclick="oAuthStart(\'plex\')" class="btn btn-lg btn-block text-uppercase waves-effect waves-light bg-plex text-muted" data-toggle="tooltip" title="" data-original-title="Login with Plex"> <span>Login</span><i aria-hidden="true" class="mdi mdi-plex m-l-5"></i> </a>';
 	}
 	return ($buttons) ? '
@@ -1787,15 +1838,34 @@ function showoAuth()
 
 function getImages()
 {
+	$allIconsPrep = array();
+	$allIcons = array();
+	$ignore = array(".", "..", "._.DS_Store", ".DS_Store", ".pydio_id", "index.html");
 	$dirname = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'tabs' . DIRECTORY_SEPARATOR;
 	$path = 'plugins/images/tabs/';
 	$images = scandir($dirname);
-	$ignore = array(".", "..", "._.DS_Store", ".DS_Store", ".pydio_id");
-	$allIcons = array();
 	foreach ($images as $image) {
 		if (!in_array($image, $ignore)) {
-			$allIcons[] = $path . $image;
+			$allIconsPrep[$image] = array(
+				'path' => $path,
+				'name' => $image
+			);
 		}
+	}
+	$dirname = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
+	$path = 'plugins/images/userTabs/';
+	$images = scandir($dirname);
+	foreach ($images as $image) {
+		if (!in_array($image, $ignore)) {
+			$allIconsPrep[$image] = array(
+				'path' => $path,
+				'name' => $image
+			);
+		}
+	}
+	ksort($allIconsPrep);
+	foreach ($allIconsPrep as $item) {
+		$allIcons[] = $item['path'] . $item['name'];
 	}
 	return $allIcons;
 }
@@ -1817,7 +1887,7 @@ function editImages()
 	$array = array();
 	$postCheck = array_filter($_POST);
 	$filesCheck = array_filter($_FILES);
-	$approvedPath = 'plugins/images/tabs/';
+	$approvedPath = 'plugins/images/userTabs/';
 	if (!empty($postCheck)) {
 		$removeImage = $approvedPath . pathinfo($_POST['data']['imagePath'], PATHINFO_BASENAME);
 		if ($_POST['data']['action'] == 'deleteImage' && approvedFileExtension($removeImage)) {
@@ -1831,7 +1901,7 @@ function editImages()
 		ini_set('upload_max_filesize', '10M');
 		ini_set('post_max_size', '10M');
 		$tempFile = $_FILES['file']['tmp_name'];
-		$targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'tabs' . DIRECTORY_SEPARATOR;
+		$targetPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'userTabs' . DIRECTORY_SEPARATOR;
 		$targetFile = $targetPath . $_FILES['file']['name'];
 		return (move_uploaded_file($tempFile, $targetFile)) ? true : false;
 	}
@@ -2616,7 +2686,13 @@ function importUserButtons()
 	';
 	$buttons = '';
 	if (!empty($GLOBALS['plexToken'])) {
-		$buttons .= '<button class="btn bg-plex text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'plex\')" type="button"><span class="btn-label"><i class="mdi mdi-plex"></i></span><span lang="en">Import Plex Users</span></button>';
+		$buttons .= '<button class="btn m-b-20 m-r-20 bg-plex text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'plex\')" type="button"><span class="btn-label"><i class="mdi mdi-plex"></i></span><span lang="en">Import Plex Users</span></button>';
+	}
+	if (!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken']) && (strpos($GLOBALS['embyURL'], 'jellyfin') !== false)) {
+		$buttons .= '<button class="btn m-b-20 m-r-20 bg-primary text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'jellyfin\')" type="button"><span class="btn-label"><i class="mdi mdi-fish"></i></span><span lang="en">Import Jellyfin Users</span></button>';
+	}
+	if (!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken']) && (strpos($GLOBALS['embyURL'], 'jellyfin') === false)) {
+		$buttons .= '<button class="btn m-b-20 m-r-20 bg-emby text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'emby\')" type="button"><span class="btn-label"><i class="mdi mdi-emby"></i></span><span lang="en">Import Jellyfin Users</span></button>';
 	}
 	return ($buttons !== '') ? $buttons : $emptyButtons;
 }

@@ -145,7 +145,87 @@ function allPlexUsers($newOnly = false)
 		}
 		return false;
 	} catch (Requests_Exception $e) {
-		writeLog('success', 'Plex User Function - Error: ' . $e->getMessage(), $username);
+		writeLog('success', 'Plex Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
+	}
+	return false;
+}
+
+function allJellyfinUsers($newOnly = false)
+{
+	try {
+		if (!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken'])) {
+			$url = qualifyURL($GLOBALS['embyURL']) . '/Users?api_key=' . $GLOBALS['embyToken'];
+			$headers = array();
+			$response = Requests::get($url, $headers);
+			if ($response->success) {
+				$users = json_decode($response->body, true);
+				if (is_array($users) || is_object($users)) {
+					$results = array();
+					foreach ($users as $child) {
+						// Jellyfin doesn't list emails for some reason
+						$email = random_ascii_string(10) . '@placeholder.eml';
+						if ($newOnly) {
+							$taken = usernameTaken((string)$child['Name'], $email);
+							if (!$taken) {
+								$results[] = array(
+									'username' => (string)$child['Name'],
+									'email' => $email
+								);
+							}
+						} else {
+							$results[] = array(
+								'username' => (string)$child['Name'],
+								'email' => $email,
+							);
+						}
+					}
+					return $results;
+				}
+			}
+		}
+		return false;
+	} catch (Requests_Exception $e) {
+		writeLog('success', 'Jellyfin Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
+	}
+	return false;
+}
+
+function allEmbyUsers($newOnly = false)
+{
+	try {
+		if (!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken'])) {
+			$url = qualifyURL($GLOBALS['embyURL']) . '/Users?api_key=' . $GLOBALS['embyToken'];
+			$headers = array();
+			$response = Requests::get($url, $headers);
+			if ($response->success) {
+				$users = json_decode($response->body, true);
+				if (is_array($users) || is_object($users)) {
+					$results = array();
+					foreach ($users as $child) {
+						// Emby doesn't list emails for some reason
+						$email = random_ascii_string(10) . '@placeholder.eml';
+						if ($newOnly) {
+							$taken = usernameTaken((string)$child['Name'], $email);
+							if (!$taken) {
+								$results[] = array(
+									'username' => (string)$child['Name'],
+									'email' => $email
+								);
+							}
+						} else {
+							$results[] = array(
+								'username' => (string)$child['Name'],
+								'email' => $email,
+							);
+						}
+					}
+					return $results;
+				}
+			}
+		}
+		return false;
+	} catch (Requests_Exception $e) {
+		writeLog('success', 'Emby Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
 	}
 	return false;
 }
@@ -225,8 +305,8 @@ if (function_exists('ldap_connect')) {
 				'account_suffix' => (empty($GLOBALS['authBackendHostSuffix'])) ? null : $GLOBALS['authBackendHostSuffix'],
 				'port' => $ldapPort,
 				'follow_referrals' => false,
-				'use_ssl' => false,
-				'use_tls' => false,
+				'use_ssl' => $GLOBALS['ldapSSL'],
+				'use_tls' => $GLOBALS['ldapTLS'],
 				'version' => 3,
 				'timeout' => 5,
 				// Custom LDAP Options
@@ -337,32 +417,67 @@ function plugin_auth_emby_local($username, $password)
 	return false;
 }
 
+// Pass credentials to JellyFin Backend
+function plugin_auth_jellyfin($username, $password)
+{
+	try {
+		$url = qualifyURL($GLOBALS['embyURL']) . '/Users/authenticatebyname';
+		$headers = array(
+			'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0"',
+			'Content-Type' => 'application/json',
+		);
+		$data = array(
+			'Username' => $username,
+			'Pw' => $password
+		);
+		$response = Requests::post($url, $headers, json_encode($data));
+		if ($response->success) {
+			$json = json_decode($response->body, true);
+			if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
+				writeLog('success', 'JellyFin Auth Function - Found User and Logged In', $username);
+				// Login Success - Now Logout JellyFin Session As We No Longer Need It
+				$headers = array(
+					'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0", Token="' . $json['AccessToken'] . '"',
+					'Content-Type' => 'application/json',
+				);
+				$response = Requests::post(qualifyURL($GLOBALS['embyURL']) . '/Sessions/Logout', $headers, array());
+				if ($response->success) {
+					return true;
+				}
+			}
+		}
+		return false;
+	} catch (Requests_Exception $e) {
+		writeLog('error', 'JellyFin Auth Function - Error: ' . $e->getMessage(), $username);
+	}
+	return false;
+}
+
 // Authenticate against emby connect
 function plugin_auth_emby_connect($username, $password)
 {
 	// Emby disabled EmbyConnect on their API
 	// https://github.com/MediaBrowser/Emby/issues/3553
-	return plugin_auth_emby_local($username, $password);
-	/*
+	//return plugin_auth_emby_local($username, $password);
 	try {
 		// Get A User
-		$connectId = '';
+		$connectUserName = '';
 		$url = qualifyURL($GLOBALS['embyURL']) . '/Users?api_key=' . $GLOBALS['embyToken'];
 		$response = Requests::get($url);
 		if ($response->success) {
 			$json = json_decode($response->body, true);
 			if (is_array($json)) {
 				foreach ($json as $key => $value) { // Scan for this user
-					if (isset($value['ConnectUserName']) && isset($value['ConnectUserId'])) { // Qualify as connect account
-						if ($value['ConnectUserName'] == $username || $value['Name'] == $username) {
-							$connectId = $value['ConnectUserId'];
+					if (isset($value['ConnectUserName']) && isset($value['ConnectLinkType'])) { // Qualify as connect account
+						if (strtolower($value['ConnectUserName']) == $username || strtolower($value['Name']) == $username) {
+							$connectUserName = $value['ConnectUserName'];
 							writeLog('success', 'Emby Connect Auth Function - Found User', $username);
 							break;
 						}
 					}
 				}
-				if ($connectId) {
-					writeLog('success', 'Emby Connect Auth Function - Attempting to Login with Emby ID: ' . $connectId, $username);
+				if ($connectUserName) {
+					writeLog('success', 'Emby Connect Auth Function - Attempting to Login with Emby ID: ' . $connectUserName, $username);
 					$connectURL = 'https://connect.emby.media/service/user/authenticate';
 					$headers = array(
 						'Accept' => 'application/json',
@@ -375,10 +490,10 @@ function plugin_auth_emby_connect($username, $password)
 					$response = Requests::post($connectURL, $headers, $data);
 					if ($response->success) {
 						$json = json_decode($response->body, true);
-						if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Id'] == $connectId) {
+						if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Name'] == $connectUserName) {
 							return array(
 								'email' => $json['User']['Email'],
-								'image' => $json['User']['ImageUrl'],
+								//'image' => $json['User']['ImageUrl'],
 							);
 						} else {
 							writeLog('error', 'Emby Connect Auth Function - Bad Response', $username);
@@ -394,7 +509,6 @@ function plugin_auth_emby_connect($username, $password)
 		writeLog('error', 'Emby Connect Auth Function - Error: ' . $e->getMessage(), $username);
 		return false;
 	}
-	*/
 }
 
 // Authenticate Against Emby Local (first) and Emby Connect
@@ -403,12 +517,10 @@ function plugin_auth_emby_all($username, $password)
 	// Emby disabled EmbyConnect on their API
 	// https://github.com/MediaBrowser/Emby/issues/3553
 	$localResult = plugin_auth_emby_local($username, $password);
-	return $localResult;
-	/*
+	//return $localResult;
 	if ($localResult) {
 		return $localResult;
 	} else {
 		return plugin_auth_emby_connect($username, $password);
 	}
-	*/
 }

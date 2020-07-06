@@ -1070,8 +1070,14 @@ input.has-success {
 ul.nav.customtab.nav-tabs.nav-low-margin {
     margin: -25px -25px 0px -25px !important;
 }
-i.fa.fa-life-ring.fa-fw {
+#menu-Organizr-Support i {
     color: #C62828;
+}
+#menu-GitHub-Repo i {
+    color: #2cabe3;
+}
+#menu-Organizr-Docs i {
+    color: #707cd2;
 }
 .ping {
     position: relative;
@@ -4386,4 +4392,23 @@ html {
 }
 .noty_layout [data-name~="mojs-shape"] {
     pointer-events:none
+}
+.bottom-close-splash {
+    position: absolute;
+    width: 130px;
+    right: 20px;
+    bottom: 20px;
+}
+.sort-placeholder {
+    background-size: contain;
+    height: 60px;
+    border-radius: 10px;
+    border: 3px dotted whitesmoke;
+    opacity: .5;
+    font-size: 13px;
+    margin: 1px 0 -9px;
+    text-align: left;
+    background: #1f1f1f;
+    padding-right: 0px !important;
+    padding-left: 0px !important;
 }

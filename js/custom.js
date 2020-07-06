@@ -1993,7 +1993,7 @@ $(document).on('click', 'li a[aria-controls="Custom data"]', function() {
     var resizeEditor = function(jsonEditor) {
         const aceEditor = jsonEditor;
         const newHeight = aceEditor.getSession().getScreenLength() * (aceEditor.renderer.lineHeight + aceEditor.renderer.scrollBar.getWidth());
-        aceEditor.container.style.height = `${newHeight}px`;
+        aceEditor.container.style.height = newHeight + 'px';
         aceEditor.resize();
     }
 

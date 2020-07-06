@@ -795,7 +795,7 @@ function embyConnect($action, $key = 'Latest', $skip = false)
 				}
 				// Get A User
 				$userIds = $url . "/Users?api_key=" . $GLOBALS['embyToken'];
-				$showPlayed = true;
+				$showPlayed = false;
 				try {
 					$options = (localURL($userIds)) ? array('verify' => false) : array();
 					$response = Requests::get($userIds, array(), $options);
@@ -1535,43 +1535,42 @@ function calendarDaysCheck($entryStart, $entryEnd)
 
 function calendarStandardizeTimezone($timezone)
 {
-    switch ($timezone) {
-        case('CST'):
-        case('Central Time'):
-        case('Central Standard Time'):
-            $timezone = 'America/Chicago';
-            break;
-        case('CET'):
-        case('Central European Time'):
-            $timezone = 'Europe/Berlin';
-            break;
-        case('EST'):
-        case('Eastern Time'):
-        case('Eastern Standard Time'):
-            $timezone = 'America/New_York';
-            break;
-        case('PST'):
-        case('Pacific Time'):
-        case('Pacific Standard Time'):
-            $timezone = 'America/Los_Angeles';
-            break;
-        case('China Time'):
-        case('China Standard Time'):
-            $timezone = 'Asia/Beijing';
-            break;
-        case('IST'):
-        case('India Time'):
-        case('India Standard Time'):
-            $timezone = 'Asia/New_Delhi';
-            break;
-        case('JST');
-        case('Japan Time'):
-        case('Japan Standard Time'):
-            $timezone = 'Asia/Tokyo';
-            break;
-    }
-
-    return $timezone;
+	switch ($timezone) {
+		case('CST'):
+		case('Central Time'):
+		case('Central Standard Time'):
+			$timezone = 'America/Chicago';
+			break;
+		case('CET'):
+		case('Central European Time'):
+			$timezone = 'Europe/Berlin';
+			break;
+		case('EST'):
+		case('Eastern Time'):
+		case('Eastern Standard Time'):
+			$timezone = 'America/New_York';
+			break;
+		case('PST'):
+		case('Pacific Time'):
+		case('Pacific Standard Time'):
+			$timezone = 'America/Los_Angeles';
+			break;
+		case('China Time'):
+		case('China Standard Time'):
+			$timezone = 'Asia/Beijing';
+			break;
+		case('IST'):
+		case('India Time'):
+		case('India Standard Time'):
+			$timezone = 'Asia/New_Delhi';
+			break;
+		case('JST');
+		case('Japan Time'):
+		case('Japan Standard Time'):
+			$timezone = 'Asia/Tokyo';
+			break;
+	}
+	return $timezone;
 }
 
 function getCalenderRepeat($value)
@@ -2636,21 +2635,12 @@ function getMonitorr()
 				// This section grabs the names of all services by regex
 				$services = [];
 				$servicesMatch = [];
-				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline".*><div>(.*)<\/div><\/div><div class="btnoffline".*>Offline<\/div><\/div><\/div>|<div id="servicetitlenolink".*><div>(.*)<\/div><\/div><div class="btnonline".*>Online<\/div><\/div><\/div>/';
+				$servicePattern = '/<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnonline">Online<\/div><\/a><\/div><\/div>|<div id="servicetitleoffline".*><div>(.*)<\/div><\/div><div class="btnoffline".*>Offline<\/div><\/div><\/div>|<div id="servicetitlenolink".*><div>(.*)<\/div><\/div><div class="btnonline".*>Online<\/div><\/div><\/div>|<div id="servicetitle"><div>(.*)<\/div><\/div><div class="btnunknown">/';
 				preg_match_all($servicePattern, $html, $servicesMatch);
-				unset($servicesMatch[0]);
-				$servicesMatch = array_values($servicesMatch);
-				foreach ($servicesMatch as $group) {
-					foreach ($group as $service) {
-						if ($service !== '') {
-							array_push($services, $service);
-						}
-					}
-				}
-				// This section then grabs the status and image of that service with regex
+				$services = array_filter($servicesMatch[1]) + array_filter($servicesMatch[2]) + array_filter($servicesMatch[3]) + array_filter($servicesMatch[4]);
 				$statuses = [];
-				foreach ($services as $service) {
-					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div>|' . $service . '<\/div><\/div><div class="btnoffline".*>(Offline)<\/div><\/div><\/div>/';
+				foreach ($services as $key => $service) {
+					$statusPattern = '/' . $service . '<\/div><\/div><div class="btnonline">(Online)<\/div>|' . $service . '<\/div><\/div><div class="btnoffline".*>(Offline)<\/div><\/div><\/div>|' . $service . '<\/div><\/div><div class="btnunknown">(.*)<\/div><\/a>/';
 					$status = [];
 					preg_match($statusPattern, $html, $status);
 					$statuses[$service] = $status;
@@ -2663,8 +2653,13 @@ function getMonitorr()
 							$statuses[$service] = [
 								'status' => false
 							];
+						} else if ($match == 'Unresponsive') {
+							$statuses[$service] = [
+								'status' => 'unresponsive'
+							];
 						}
 					}
+					$statuses[$service]['sort'] = $key;
 					$imageMatch = [];
 					$imgPattern = '/assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitle"><div>' . $service . '|assets\/img\/\.\.(.*)" class="serviceimg imgoffline" alt=.*><\/div><\/div><div id="servicetitleoffline".*><div>' . $service . '|assets\/img\/\.\.(.*)" class="serviceimg" alt=.*><\/div><\/div><div id="servicetitlenolink".*><div>' . $service . '/';
 					preg_match($imgPattern, $html, $imageMatch);
@@ -2698,7 +2693,15 @@ function getMonitorr()
 						}
 					}
 				}
-				ksort($statuses);
+				foreach($statuses as $status){
+					foreach($status as $key=>$value){
+						if(!isset($sortArray[$key])){
+							$sortArray[$key] = array();
+						}
+						$sortArray[$key][] = $value;
+					}
+				}
+				array_multisort($sortArray['status'], SORT_ASC, $sortArray['sort'], SORT_ASC, $statuses);
 				$api['services'] = $statuses;
 				$api['options'] = [
 					'title' => $GLOBALS['monitorrHeader'],
@@ -2708,6 +2711,7 @@ function getMonitorr()
 			}
 		} catch (Requests_Exception $e) {
 			writeLog('error', 'Monitorr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$api['error'] = $e->getMessage();
 		};
 		$api = isset($api) ? $api : false;
 		return $api;
@@ -2724,13 +2728,11 @@ function getSpeedtest()
 			$response = Requests::get($dataUrl);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
-
 				$api['data'] = [
 					'current' => $json['data'],
 					'average' => $json['average'],
 					'max' => $json['max'],
 				];
-
 				$api['options'] = [
 					'title' => $GLOBALS['speedtestHeader'],
 					'titleToggle' => $GLOBALS['speedtestHeaderToggle'],
@@ -2751,12 +2753,10 @@ function getNetdata()
 		$api = [];
 		$api['data'] = [];
 		$api['url'] = $GLOBALS['netdataURL'];
-
 		$url = qualifyURL($GLOBALS['netdataURL']);
-
-		for($i = 1; $i < 8; $i++) {
-			if($GLOBALS['netdata'.($i).'Enabled']) {
-				switch($GLOBALS['netdata'.$i.'Data']) {
+		for ($i = 1; $i < 8; $i++) {
+			if ($GLOBALS['netdata' . ($i) . 'Enabled']) {
+				switch ($GLOBALS['netdata' . $i . 'Data']) {
 					case 'disk-read':
 						$data = disk('in', $url);
 						break;
@@ -2812,19 +2812,16 @@ function getNetdata()
 						];
 						break;
 				}
-
-				$data['title'] = $GLOBALS['netdata'.$i.'Title'];
-				$data['colour'] = $GLOBALS['netdata'.$i.'Colour'];
-				$data['chart'] = $GLOBALS['netdata'.$i.'Chart'];
-				$data['size'] = $GLOBALS['netdata'.$i.'Size'];
-				$data['lg'] = $GLOBALS['netdata'.($i).'lg'];
-				$data['md'] = $GLOBALS['netdata'.($i).'md'];
-				$data['sm'] = $GLOBALS['netdata'.($i).'sm'];
-
+				$data['title'] = $GLOBALS['netdata' . $i . 'Title'];
+				$data['colour'] = $GLOBALS['netdata' . $i . 'Colour'];
+				$data['chart'] = $GLOBALS['netdata' . $i . 'Chart'];
+				$data['size'] = $GLOBALS['netdata' . $i . 'Size'];
+				$data['lg'] = $GLOBALS['netdata' . ($i) . 'lg'];
+				$data['md'] = $GLOBALS['netdata' . ($i) . 'md'];
+				$data['sm'] = $GLOBALS['netdata' . ($i) . 'sm'];
 				array_push($api['data'], $data);
 			}
 		}
-
 		$api = isset($api) ? $api : false;
 		return $api;
 	}
@@ -3152,8 +3149,8 @@ function testAPIConnection($array)
 					'account_suffix' => (empty($GLOBALS['authBackendHostSuffix'])) ? null : $GLOBALS['authBackendHostSuffix'],
 					'port' => $ldapPort,
 					'follow_referrals' => false,
-					'use_ssl' => false,
-					'use_tls' => false,
+					'use_ssl' => $GLOBALS['ldapSSL'],
+					'use_tls' => $GLOBALS['ldapTLS'],
 					'version' => 3,
 					'timeout' => 5,
 					// Custom LDAP Options
@@ -3230,8 +3227,8 @@ function testAPIConnection($array)
 					'account_suffix' => '',
 					'port' => $ldapPort,
 					'follow_referrals' => false,
-					'use_ssl' => false,
-					'use_tls' => false,
+					'use_ssl' => $GLOBALS['ldapSSL'],
+					'use_tls' => $GLOBALS['ldapTLS'],
 					'version' => 3,
 					'timeout' => 5,
 					// Custom LDAP Options

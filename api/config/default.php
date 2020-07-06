@@ -8,6 +8,8 @@ return array(
 	'authBackendHostSuffix' => '',
 	'ldapBindUsername' => '',
 	'ldapBindPassword' => '',
+	'ldapSSL' => false,
+	'ldapTLS' => false,
 	'authBaseDN' => '',
 	'authBackendDomain' => '',
 	'ldapType' => '1',
@@ -316,7 +318,7 @@ return array(
 	'speedtestHeaderToggle' => true,
 	'speedtestHeader' => 'Speedtest',
 	'homepageNetdataEnabled' => false,
-	'homepageNetdataRefresh' => '2500',
+	'homepageNetdataRefresh' => '10000',
 	'homepageNetdataAuth' => '1',
 	'netdataURL' => '',
 	'netdata1Title' => '',
@@ -384,5 +386,9 @@ return array(
 	'netdata7Enabled' => false,
 	'netdataCustom' => '{
     
-	}'
+	}',
+	'githubMenuLink' => true,
+	'organizrSupportMenuLink' => true,
+	'organizrDocsMenuLink' => true,
+	'organizrSignoutMenuLink' => true
 );
