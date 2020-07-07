@@ -240,7 +240,7 @@ function isEncrypted($password)
 
 function encrypt($password, $key = null)
 {
-	$key = (isset($GLOBALS['organizrHash'])) ? $GLOBALS['organizrHash'] : $key;
+	$key = ($key) ? $key : ((isset($GLOBALS['organizrHash'])) ? $GLOBALS['organizrHash'] : null);
 	return openssl_encrypt($password, 'AES-256-CBC', $key, 0, fillString($key, 16));
 }
 
@@ -249,7 +249,7 @@ function decrypt($password, $key = null)
 	if (empty($password)) {
 		return '';
 	}
-	$key = (isset($GLOBALS['organizrHash'])) ? $GLOBALS['organizrHash'] : $key;
+	$key = ($key) ? $key : ((isset($GLOBALS['organizrHash'])) ? $GLOBALS['organizrHash'] : null);
 	return openssl_decrypt($password, 'AES-256-CBC', $key, 0, fillString($key, 16));
 }
 
