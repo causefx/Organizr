@@ -650,6 +650,7 @@ input#inviteCodeInput {
 .bg-emby {
     background: #4CAF50;
 }
+.text-jellyfin,
 .bg-jellyfin {
     background: #a15dc3;
 }
