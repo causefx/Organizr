@@ -303,6 +303,27 @@ class Ldap implements ConnectionInterface
     }
 
     /**
+     * Extract information from an LDAP result.
+     *
+     * @link https://www.php.net/manual/en/function.ldap-parse-result.php
+     *
+     * @param resource $result
+     * @param int      $errorCode
+     * @param string   $dn
+     * @param string   $errorMessage
+     * @param array    $referrals
+     * @param array    $serverControls
+     *
+     * @return bool
+     */
+    public function parseResult($result, &$errorCode, &$dn, &$errorMessage, &$referrals, &$serverControls = [])
+    {
+        return $this->supportsServerControlsInMethods() && !empty($serverControls) ?
+            ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals, $serverControls) :
+            ldap_parse_result($this->connection, $result, $errorCode, $dn, $errorMessage, $referrals);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function bind($username, $password, $sasl = false)
@@ -483,6 +504,16 @@ class Ldap implements ConnectionInterface
     public function getProtocol()
     {
         return $this->isUsingSSL() ? $this::PROTOCOL_SSL : $this::PROTOCOL;
+    }
+
+    /**
+     * Determine if the current PHP version supports server controls.
+     *
+     * @return bool
+     */
+    public function supportsServerControlsInMethods()
+    {
+        return version_compare(PHP_VERSION, '7.3.0') >= 0;
     }
 
     /**

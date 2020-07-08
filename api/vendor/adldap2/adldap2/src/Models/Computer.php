@@ -9,11 +9,11 @@ namespace Adldap\Models;
  */
 class Computer extends Entry
 {
-    use Concerns\HasMemberOf,
-        Concerns\HasDescription,
-        Concerns\HasLastLogonAndLogOff,
-        Concerns\HasUserAccountControl,
-        Concerns\HasCriticalSystemObject;
+    use Concerns\HasMemberOf;
+    use Concerns\HasDescription;
+    use Concerns\HasLastLogonAndLogOff;
+    use Concerns\HasUserAccountControl;
+    use Concerns\HasCriticalSystemObject;
 
     /**
      * Returns the computers operating system.

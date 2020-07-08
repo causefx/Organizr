@@ -12,8 +12,8 @@ use InvalidArgumentException;
  */
 class Group extends Entry
 {
-    use Concerns\HasMemberOf,
-        Concerns\HasDescription;
+    use Concerns\HasMemberOf;
+    use Concerns\HasDescription;
 
     /**
      * Returns all users apart of the current group.

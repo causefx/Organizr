@@ -17,11 +17,11 @@ use Illuminate\Contracts\Auth\Authenticatable;
  */
 class User extends Entry implements Authenticatable
 {
-    use Concerns\HasUserProperties,
-        Concerns\HasDescription,
-        Concerns\HasMemberOf,
-        Concerns\HasLastLogonAndLogOff,
-        Concerns\HasUserAccountControl;
+    use Concerns\HasUserProperties;
+    use Concerns\HasDescription;
+    use Concerns\HasMemberOf;
+    use Concerns\HasLastLogonAndLogOff;
+    use Concerns\HasUserAccountControl;
 
     /** @var callable|null */
     private static $passwordStrategy;

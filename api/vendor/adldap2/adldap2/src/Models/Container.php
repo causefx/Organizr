@@ -9,8 +9,8 @@ namespace Adldap\Models;
  */
 class Container extends Entry
 {
-    use Concerns\HasDescription,
-        Concerns\HasCriticalSystemObject;
+    use Concerns\HasDescription;
+    use Concerns\HasCriticalSystemObject;
 
     /**
      * Returns the containers system flags integer.
