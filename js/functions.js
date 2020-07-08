@@ -3163,6 +3163,7 @@ function submitTabOrder(newTabs){
 	var callbacks = $.Callbacks();
     callbacks.add( buildTabEditor );
 	settingsAPI(post,callbacks);
+	$('.saveTabOrderButton').addClass('hidden');
 }
 function submitCategoryOrder(){
 	var post = {
