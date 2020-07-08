@@ -24,12 +24,6 @@ function netdataSettngsArray()
 			),
 			'Connection' => array(
 				array(
-					'type' => 'html',
-					'override' => 12,
-					'label' => 'Info',
-					'html' => 'The URL needs to be on the same domain as your Organizr, and be proxied by subdomain. E.g. If Organizr is accessed at: https://domain.com, then your URL for netdata should be: https://netdata.domain.com'
-				),
-				array(
 					'type' => 'input',
 					'name' => 'netdataURL',
 					'label' => 'URL',
