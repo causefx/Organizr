@@ -322,8 +322,19 @@ if (function_exists('ldap_connect')) {
 				$provider = $ad->connect();
 				//prettyPrint($provider);
 				if ($provider->auth()->attempt($username, $password)) {
+					try {
+						// Try and get email from LDAP server
+						$accountDN = ((empty($GLOBALS['authBackendHostPrefix'])) ? null : $GLOBALS['authBackendHostPrefix']) . $username . ((empty($GLOBALS['authBackendHostSuffix'])) ? null : $GLOBALS['authBackendHostSuffix']);
+						$record = $provider->search()->findByDnOrFail($accountDN);
+						$email = $record->getFirstAttribute('mail');
+					} catch (Adldap\Models\ModelNotFoundException $e) {
+						// Record wasn't found!
+						$email = null;
+					}
 					// Passed.
-					return true;
+					return array(
+						'email' => $email
+					);
 				} else {
 					// Failed.
 					return false;
