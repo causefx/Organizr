@@ -133,7 +133,7 @@ function getWeatherAndAir()
 				}
 			}
 			if ($GLOBALS['homepageWeatherAndAirPollenEnabled']) {
-				$endpoint = '/pollen/v2/forecast/daily/?features=plants_information,types_information&days=1&metadata=true';
+				$endpoint = '/pollen/v2/forecast/daily?features=plants_information,types_information&days=1&metadata=true';
 				$response = Requests::get($apiURL . $endpoint . $info, $headers, $options);
 				if ($response->success) {
 					$apiData = json_decode($response->body, true);
