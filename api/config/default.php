@@ -100,6 +100,7 @@ return array(
 	'rTorrentReverseSorting' => false,
 	'rTorrentCombine' => false,
 	'rTorrentDisableCertCheck' => false,
+	'rTorrentLimit' => '200',
 	'homepageCalendarEnabled' => false,
 	'homepageCalendarAuth' => '4',
 	'calendariCal' => '',

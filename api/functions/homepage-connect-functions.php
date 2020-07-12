@@ -1035,6 +1035,7 @@ function rTorrentConnect()
 {
 	if ($GLOBALS['homepagerTorrentEnabled'] && (!empty($GLOBALS['rTorrentURL']) || !empty($GLOBALS['rTorrentURLOverride'])) && qualifyRequest($GLOBALS['homepagerTorrentAuth'])) {
 		try {
+			if($GLOBALS['rTorrentLimit'] == '0') { $GLOBALS['rTorrentLimit'] = '1000'; }
 			$torrents = array();
 			$digest = (empty($GLOBALS['rTorrentURLOverride'])) ? qualifyURL($GLOBALS['rTorrentURL'], true) : qualifyURL(checkOverrideURL($GLOBALS['rTorrentURL'], $GLOBALS['rTorrentURLOverride']), true);
 			$passwordInclude = ($GLOBALS['rTorrentUsername'] !== '' && $GLOBALS['rTorrentPassword'] !== '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
@@ -1124,6 +1125,7 @@ function rTorrentConnect()
 								return $b['date'] <=> $a['date'];
 						}
 					});
+					$torrents = array_slice($torrents, 0, $GLOBALS['rTorrentLimit']);
 				}
 				$api['content']['queueItems'] = $torrents;
 				$api['content']['historyItems'] = false;

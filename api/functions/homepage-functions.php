@@ -1604,6 +1604,12 @@ function getHomepageList()
 						'options' => optionTime()
 					),
 					array(
+						'type' => 'number',
+						'name' => 'rTorrentLimit',
+						'label' => 'Item Limit',
+						'value' => $GLOBALS['rTorrentLimit'],
+					),
+					array(
 						'type' => 'switch',
 						'name' => 'rTorrentCombine',
 						'label' => 'Add to Combined Downloader',
