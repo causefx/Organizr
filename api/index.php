@@ -1910,5 +1910,11 @@ if ($result['statusText'] == "API/Token invalid or not set") {
 if ($pretty) {
 	echo '<pre>' . safe_json_encode($result, JSON_PRETTY_PRINT) . '</pre>';
 } else {
+	// will add switch case lil later :/
+	if(isset(getallheaders()['Accept'])){
+		if(strtolower(getallheaders()['Accept']) == 'application/json'){
+			header('Content-Type: application/json; charset=utf-8');
+		}
+	}
 	exit(safe_json_encode($result, JSON_HEX_QUOT | JSON_HEX_TAG));
 }
