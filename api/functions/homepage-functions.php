@@ -302,7 +302,7 @@ function buildHomepageItem($homepageItem)
 			}
 			break;
 		case 'homepageOrdercalendar':
-			if ($GLOBALS['homepageSonarrEnabled'] && qualifyRequest($GLOBALS['homepageSonarrAuth']) || ($GLOBALS['homepageRadarrEnabled'] && qualifyRequest($GLOBALS['homepageRadarrAuth'])) || ($GLOBALS['homepageSickrageEnabled'] && qualifyRequest($GLOBALS['homepageSickrageAuth'])) || ($GLOBALS['homepageCouchpotatoEnabled'] && qualifyRequest($GLOBALS['homepageCouchpotatoAuth'])) || ($GLOBALS['homepageCalendarEnabled'] && qualifyRequest($GLOBALS['homepageCalendarAuth']) && $GLOBALS['calendariCal'] !== '')) {
+			if ($GLOBALS['homepageLidarrEnabled'] && qualifyRequest($GLOBALS['homepageLidarrAuth']) || $GLOBALS['homepageSonarrEnabled'] && qualifyRequest($GLOBALS['homepageSonarrAuth']) || ($GLOBALS['homepageRadarrEnabled'] && qualifyRequest($GLOBALS['homepageRadarrAuth'])) || ($GLOBALS['homepageSickrageEnabled'] && qualifyRequest($GLOBALS['homepageSickrageAuth'])) || ($GLOBALS['homepageCouchpotatoEnabled'] && qualifyRequest($GLOBALS['homepageCouchpotatoAuth'])) || ($GLOBALS['homepageCalendarEnabled'] && qualifyRequest($GLOBALS['homepageCalendarAuth']) && $GLOBALS['calendariCal'] !== '')) {
 				$item .= '
 				<div id="calendar" class="fc fc-ltr m-b-30"></div>
 				<script>
