@@ -2106,13 +2106,12 @@ function getImage()
 		// Serve from the cache if it is younger than $cachetime
 		if (file_exists($cachefile) && time() - $cachetime < filemtime($cachefile) && $refresh == false) {
 			header("Content-type: image/jpeg");
-			//@readfile($cachefile);
-			//echo @curl('get', $cachefile)['content'];
-			$options = array('verify' => false);
+			@readfile($cachefile);
+			/*$options = array('verify' => false);
 			$response = Requests::get($cachefile, array(), $options);
 			if ($response->success) {
 				echo $response->body;
-			}
+			}*/
 			exit;
 		}
 		ob_start(); // Start the output buffer
