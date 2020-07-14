@@ -22,7 +22,7 @@
     <link href="plugins/bower_components/switchery/dist/switchery.min.css" rel="stylesheet"/>
     <link href="plugins/bower_components/dropzone-master/dist/dropzone.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/css-chart/css-chart.css" rel="stylesheet">
-    <link href="plugins/bower_components/calendar/dist/fullcalendar.css" rel="stylesheet"/>
+    <link href="plugins/bower_components/calendar/dist/fullcalendar.min.css" rel="stylesheet"/>
     <link href="plugins/bower_components/custom-select/custom-select.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/bootstrap-colorpicker-sliders/bootstrap.colorpickersliders.min.css"
           rel="stylesheet" type="text/css"/>
@@ -258,7 +258,7 @@
 <script src="js/jasny-bootstrap.js"></script>
 <script src="js/cbpFWTabs.js?v=<?php echo $GLOBALS['fileHash']; ?>"></script>
 <script src="js/js.cookie.js"></script>
-<script src="js/jquery-lang.js"></script>
+<script src="js/jquery-lang.min.js"></script>
 <script src="js/jquery-ui.min.js"></script>
 <script src="js/jquery.serializeToJSON.js"></script>
 <script src="js/lazyload.min2.js"></script>
@@ -269,7 +269,7 @@
 <script src="plugins/bower_components/ace/mode-html.js"></script>
 <script src="plugins/bower_components/ace/mode-javascript.js"></script>
 <script src="plugins/bower_components/ace/theme-idle_fingers.js"></script>
-<script src="plugins/bower_components/blockUI/jquery.blockUI.js"></script>
+<script src="plugins/bower_components/blockUI/jquery.blockUI.min.js"></script>
 <script src="plugins/bower_components/datatables/jquery.dataTables.min.js"></script>
 <script src="plugins/bower_components/datatables-plugins/sorting/datetime-moment.js"></script>
 <script src="plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min.js"></script>
@@ -277,7 +277,7 @@
 <script src="plugins/bower_components/switchery/dist/switchery.min.js"></script>
 <script src="js/tinycolor.min.js"></script>
 <script src="plugins/bower_components/bootstrap-colorpicker-sliders/bootstrap.colorpickersliders.min.js"></script>
-<script src="plugins/bower_components/dropzone-master/dist/dropzone.js"></script>
+<script src="plugins/bower_components/dropzone-master/dist/dropzone.min.js"></script>
 <script src="plugins/bower_components/owl.carousel/owl.carousel.min.js"></script>
 <script src="plugins/bower_components/calendar/dist/fullcalendar.js"></script>
 <script src="plugins/bower_components/custom-select/custom-select.min.js"></script>
