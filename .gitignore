@@ -75,6 +75,7 @@ chatpack.db
 Docker.txt
 Github.txt
 Demo.txt
+Dev.txt
 config/cacert.pem
 config/config.php
 config/config*.bak.php
