@@ -4587,6 +4587,7 @@ function buildRecent(array, type){
 	var dropdown = '';
 	var header = '';
 	var headerAlt = '';
+	var refreshType = type;
 	type = (type === 'emby' && activeInfo.settings.homepage.media.jellyfin) ? 'jellyfin' : type;
 	dropdown += (recent && movie) ? `<li><a data-filter="recent-movie" server-filter="`+type+`" href="javascript:void(0);">Movies</a></li>` : '';
 	dropdown += (recent && tv) ? `<li><a data-filter="recent-tv" server-filter="`+type+`" href="javascript:void(0);">Shows</a></li>` : '';
@@ -6361,6 +6362,8 @@ function homepageRecent(type, timeout){
 			var action = 'getPlexRecent';
 			break;
 		case 'emby':
+		case 'jellyfin':
+			type = 'emby';
 			var action = 'getEmbyRecent';
 			break;
 		default:
