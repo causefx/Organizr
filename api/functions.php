@@ -28,7 +28,7 @@ if (isset($GLOBALS['dbLocation'])) {
 		$GLOBALS['uuid'] = $uuid;
 		updateConfig(array('uuid' => $uuid));
 	}
-	if ($GLOBALS['docker']) {
+	if ($GLOBALS['docker'] && !$GLOBALS['dev']) {
 		$getBranch = file_get_contents(dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'Docker.txt');
 		$getBranch = (empty($getBranch)) ? 'v2-master' : trim($getBranch);
 		$GLOBALS['branch'] = $getBranch;

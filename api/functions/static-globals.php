@@ -12,8 +12,10 @@ if (!(version_compare(PHP_VERSION, $GLOBALS['minimumPHP']) >= 0)) {
 $GLOBALS['userConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
 $GLOBALS['defaultConfigPath'] = dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'default.php';
 $GLOBALS['currentTime'] = gmdate("Y-m-d\TH:i:s\Z");
-$GLOBALS['docker'] = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Docker.txt')) ? true : false;
-if ($GLOBALS['docker']) {
+$GLOBALS['docker'] = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Docker.txt'));
+$GLOBALS['dev'] = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Dev.txt'));
+$GLOBALS['demo'] = (file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Demo.txt'));
+if ($GLOBALS['docker'] && !$GLOBALS['dev']) {
 	$getCommit = file_get_contents(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Github.txt');
 	$getCommit = (empty($getCommit)) ? 'n/a' : $getCommit;
 	$GLOBALS['quickCommit'] = $getCommit;
