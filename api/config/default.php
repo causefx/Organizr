@@ -139,6 +139,7 @@ return array(
 	'homepageOmbiEnabled' => false,
 	'homepageOmbiAuth' => '1',
 	'homepageOmbiRequestAuth' => '1',
+	'homepageJellyfinInstead' => false,
 	'ombiLimitUser' => false,
 	'ombiRefresh' => '600000',
 	'ombiTvDefault' => 'all',

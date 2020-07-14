@@ -987,14 +987,20 @@ function getHomepageList()
 						'name' => 'embyURL',
 						'label' => 'URL',
 						'value' => $GLOBALS['embyURL'],
-						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too. Make sure if Jelly fin to end url with /jellyfin',
-						'placeholder' => 'http(s)://hostname:port - make sure if Jelly fin to end url with /jellyfin'
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
 						'type' => 'password-alt',
 						'name' => 'embyToken',
 						'label' => 'Token',
 						'value' => $GLOBALS['embyToken']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageJellyfinInstead',
+						'label' => 'Jellyfin',
+						'value' => $GLOBALS['homepageJellyfinInstead']
 					)
 				),
 				'Active Streams' => array(
