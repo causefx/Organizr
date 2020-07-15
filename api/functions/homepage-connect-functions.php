@@ -1035,7 +1035,9 @@ function rTorrentConnect()
 {
 	if ($GLOBALS['homepagerTorrentEnabled'] && (!empty($GLOBALS['rTorrentURL']) || !empty($GLOBALS['rTorrentURLOverride'])) && qualifyRequest($GLOBALS['homepagerTorrentAuth'])) {
 		try {
-			if($GLOBALS['rTorrentLimit'] == '0') { $GLOBALS['rTorrentLimit'] = '1000'; }
+			if ($GLOBALS['rTorrentLimit'] == '0') {
+				$GLOBALS['rTorrentLimit'] = '1000';
+			}
 			$torrents = array();
 			$digest = (empty($GLOBALS['rTorrentURLOverride'])) ? qualifyURL($GLOBALS['rTorrentURL'], true) : qualifyURL(checkOverrideURL($GLOBALS['rTorrentURL'], $GLOBALS['rTorrentURLOverride']), true);
 			$passwordInclude = ($GLOBALS['rTorrentUsername'] !== '' && $GLOBALS['rTorrentPassword'] !== '') ? $GLOBALS['rTorrentUsername'] . ':' . decrypt($GLOBALS['rTorrentPassword']) . "@" : '';
@@ -2336,7 +2338,6 @@ function ombiAction($id, $action, $type, $fullArray = null)
 				$add = array("theMovieDbId" => (int)$id);
 				break;
 		}
-		$success['head'] = $headers;
 		$success['act'] = $action;
 		$success['data'] = $data;
 		$success['add'] = $add;
@@ -2355,7 +2356,64 @@ function ombiAction($id, $action, $type, $fullArray = null)
 					} else {
 						return false;
 					}
-					$response = Requests::post($url . "/api/v1/Request/" . $type, $headers, json_encode($add), $options);
+					//https://api.themoviedb.org/3/movie/157336?api_key=83cf4ee97bb728eeaf9d4a54e64356a1
+					// Lets check if it exists inside Ombi first... but since I can't search with ID - i have to query title from id
+					$tmdbResponse = Requests::get('https://api.themoviedb.org/3/' . $type . '/' . $id . '?api_key=83cf4ee97bb728eeaf9d4a54e64356a1', [], $options);
+					if ($tmdbResponse->success) {
+						$details = json_decode($tmdbResponse->body, true);
+						if (count($details) > 0) {
+							switch ($type) {
+								case 'tv':
+									$title = $details['name'];
+									$idType = 'theTvDbId';
+									$tmdbResponseID = Requests::get('https://api.themoviedb.org/3/tv/' . $id . '/external_ids?api_key=83cf4ee97bb728eeaf9d4a54e64356a1', [], $options);
+									if ($tmdbResponseID->success) {
+										$detailsID = json_decode($tmdbResponseID->body, true);
+										if (count($detailsID) > 0) {
+											if (isset($detailsID['tvdb_id'])) {
+												$id = $detailsID['tvdb_id'];
+											} else {
+												return false;
+											}
+										}
+									}
+									break;
+								case 'movie':
+									$title = $details['title'];
+									$idType = 'theMovieDbId';
+									break;
+								default:
+									return false;
+							}
+						} else {
+							return false;
+						}
+					}
+					$searchResponse = Requests::get($url . '/api/v1/Search/' . $type . '/' . urlencode($title), $headers, $options);
+					if ($searchResponse->success) {
+						$details = json_decode($searchResponse->body, true);
+						if (count($details) > 0) {
+							foreach ($details as $k => $v) {
+								if ($v[$idType] == $id) {
+									if ($v['available']) {
+										$success['api'] = $searchResponse;
+										$success['bd']['isError'] = true;
+										$success['bd']['errorMessage'] = 'Request is already available';
+										$success['bd'] = json_encode($success['bd']);
+										$success['ok'] = true;
+									} elseif ($v['requested']) {
+										$success['api'] = $searchResponse;
+										$success['bd']['isError'] = true;
+										$success['bd']['errorMessage'] = 'Request is already requested';
+										$success['bd'] = json_encode($success['bd']);
+										$success['ok'] = true;
+									} else {
+										$response = Requests::post($url . "/api/v1/Request/" . $type, $headers, json_encode($add), $options);
+									}
+								}
+							}
+						}
+					}
 					break;
 				default:
 					if (qualifyRequest(1)) {
@@ -2381,11 +2439,12 @@ function ombiAction($id, $action, $type, $fullArray = null)
 					}
 					break;
 			}
-			$success['api'] = $response;
-			$success['bd'] = $response->body;
-			$success['hd'] = $response->headers;
-			if ($response->success) {
-				$success['ok'] = true;
+			if (!$success['ok']) {
+				$success['api'] = $response;
+				$success['bd'] = $response->body;
+				if ($response->success) {
+					$success['ok'] = true;
+				}
 			}
 		} catch (Requests_Exception $e) {
 			writeLog('error', 'OMBI Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
@@ -2695,9 +2754,9 @@ function getMonitorr()
 						}
 					}
 				}
-				foreach($statuses as $status){
-					foreach($status as $key=>$value){
-						if(!isset($sortArray[$key])){
+				foreach ($statuses as $status) {
+					foreach ($status as $key => $value) {
+						if (!isset($sortArray[$key])) {
 							$sortArray[$key] = array();
 						}
 						$sortArray[$key][] = $value;
