@@ -3,6 +3,9 @@
 function homepageConnect($array)
 {
 	switch ($array['data']['action']) {
+		case 'getSonarrQueue':
+			return (qualifyRequest($GLOBALS['homepageSonarrAuth'])) ? sonarrConnectQueue() : false;
+			break;
 		case 'getPlexStreams':
 			return (qualifyRequest($GLOBALS['homepagePlexStreamsAuth'])) ? plexConnect('streams') : false;
 			break;
@@ -1235,7 +1238,45 @@ function delugeConnect()
 	$api['content'] = isset($api['content']) ? $api['content'] : false;
 	return $api;
 }
-
+function sonarrConnectQueue()
+{
+	$sonarrQueueItems = array();
+	if ($GLOBALS['homepageSonarrEnabled'] && qualifyRequest($GLOBALS['homepageSonarrAuth']) && !empty($GLOBALS['sonarrURL']) && !empty($GLOBALS['sonarrToken'])) {
+		$sonarrs = array();
+		$sonarrURLList = explode(',', $GLOBALS['sonarrURL']);
+		$sonarrTokenList = explode(',', $GLOBALS['sonarrToken']);
+		if (count($sonarrURLList) == count($sonarrTokenList)) {
+			foreach ($sonarrURLList as $key => $value) {
+				$sonarrs[$key] = array(
+					'url' => $value,
+					'token' => $sonarrTokenList[$key]
+				);
+			}
+			foreach ($sonarrs as $key => $value) {
+				try {
+					$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+					$sonarr = $sonarr->getQueue();
+					$downloadList = json_decode($sonarr, true);
+					if (is_array($downloadList) || is_object($downloadList)) {
+						$sonarrQueue = (array_key_exists('error', $downloadList)) ? '' : $downloadList;
+					} else {
+						$sonarrQueue = '';
+					}
+					if (!empty($sonarrQueue)) {
+						$sonarrQueueItems = array_merge($sonarrQueueItems, $sonarrQueue);
+					}
+				} catch (Exception $e) {
+					writeLog('error', 'Sonarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				}
+			}
+			$api['content']['queueItems'] = $sonarrQueueItems;
+			$api['content']['historyItems'] = false;
+			$api['content'] = isset($api['content']) ? $api['content'] : false;
+			return $api;
+		}
+	}
+	return false;
+}
 function getCalendar()
 {
 	$startDate = date('Y-m-d', strtotime("-" . $GLOBALS['calendarStart'] . " days"));

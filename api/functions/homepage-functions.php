@@ -28,6 +28,7 @@ function homepageOrder()
 		"homepageOrderWeatherAndAir" => $GLOBALS['homepageOrderWeatherAndAir'],
 		"homepageOrderSpeedtest" => $GLOBALS['homepageOrderSpeedtest'],
 		"homepageOrderNetdata" => $GLOBALS['homepageOrderNetdata'],
+		"homepageOrderSonarrQueue" => $GLOBALS['homepageOrderSonarrQueue'],
 	);
 	asort($homepageOrder);
 	return $homepageOrder;
@@ -407,6 +408,30 @@ function buildHomepageItem($homepageItem)
 				// End Netdata
 				</script>
 				';
+			}
+			break;
+		case 'homepageOrderSonarrQueue':
+			if ($GLOBALS['homepageSonarrQueueEnabled'] && qualifyRequest($GLOBALS['homepageSonarrQueueAuth'])) {
+				if ($GLOBALS['homepageSonarrQueueCombine']) {
+					$item .= '
+					<script>
+					// Sonarr Queue
+					buildDownloaderCombined(\'sonarr\');
+					homepageDownloader("sonarr", "' . $GLOBALS['homepageSonarrQueueRefresh'] . '");
+					// End Sonarr Queue
+					</script>
+					';
+				} else {
+					$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+					$item .= '
+					<script>
+					// Sonarr Queue
+					$("#' . $homepageItem . '").html(buildDownloader("sonarr"));
+					homepageDownloader("sonarr", "' . $GLOBALS['homepageDownloadRefresh'] . '");
+					// End Sonarr Queue
+					</script>
+					';
+				}
 			}
 			break;
 		default:
@@ -1774,7 +1799,35 @@ function getHomepageList()
 						'value' => $GLOBALS['sonarrToken']
 					)
 				),
-				'Misc Options' => array(
+				'Queue' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageSonarrQueueEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepageSonarrQueueEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageSonarrQueueAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageSonarrQueueAuth'],
+						'options' => $groups
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageSonarrQueueCombine',
+						'label' => 'Add to Combined Downloader',
+						'value' => $GLOBALS['homepageSonarrQueueCombine']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageSonarrQueueRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageSonarrQueueRefresh'],
+						'options' => optionTime()
+					),
+				),
+				'Calendar' => array(
 					array(
 						'type' => 'number',
 						'name' => 'calendarStart',
@@ -3160,6 +3213,13 @@ function buildHomepageSettings()
 				$class = 'bg-success';
 				$image = 'plugins/images/tabs/netdata.png';
 				if (!$GLOBALS['homepageNetdataEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderSonarrQueue':
+				$class = 'bg-success';
+				$image = 'plugins/images/tabs/sonarr.png';
+				if (!$GLOBALS['homepageOrderSonarrQueue']) {
 					$class .= ' faded';
 				}
 				break;
