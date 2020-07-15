@@ -600,7 +600,7 @@ function getSettingsMain()
 			array(
 				'type' => 'input',
 				'name' => 'plexAdmin',
-				'label' => 'Admin Username',
+				'label' => 'Plex Admin Username',
 				'class' => 'plexAuth switchAuth',
 				'value' => $GLOBALS['plexAdmin'],
 				'placeholder' => 'Admin username for Plex'
