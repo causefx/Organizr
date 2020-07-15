@@ -2007,7 +2007,6 @@ function settingsAPI(post, callbacks=null){
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		//console.log(response);
 		message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
@@ -3152,6 +3151,11 @@ function submitHomepageOrder(){
 	}
 }
 function submitTabOrder(newTabs){
+	$.each(newTabs.tab, function(i,v) {
+		if(v.originalOrder == v.order){
+			delete newTabs.tab[i];
+		}
+	})
 	var post = {
 		action:'changeOrder',
 		api:'api/?v1/settings/tab/editor/tabs',
@@ -3701,6 +3705,7 @@ function organizrAPI(type,path,data=null){
 			return $.ajax({
 				url:path,
 				method:"POST",
+				async: false,
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
                     request.setRequestHeader("formKey", local('g','formKey'));
