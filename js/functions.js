@@ -1998,8 +1998,8 @@ function buildCategoryEditor(){
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
-function settingsAPI(post, callbacks=null){
-	organizrAPI('POST',post.api,post).success(function(data) {
+function settingsAPI(post, callbacks=null, asyncValue=true){
+	organizrAPI('POST',post.api,post,asyncValue).success(function(data) {
         try {
             var response = JSON.parse(data);
         }catch(e) {
@@ -3166,7 +3166,7 @@ function submitTabOrder(newTabs){
 	};
 	var callbacks = $.Callbacks();
     callbacks.add( buildTabEditor );
-	settingsAPI(post,callbacks);
+	settingsAPI(post,callbacks, false);
 	$('.saveTabOrderButton').addClass('hidden');
 }
 function submitCategoryOrder(){
@@ -3674,7 +3674,7 @@ function updateNow(){
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
-function organizrAPI(type,path,data=null){
+function organizrAPI(type,path,data=null,asyncValue=true){
 	var timeout = 10000;
     switch(path){
         case 'api/?v1/windows/update':
@@ -3705,7 +3705,7 @@ function organizrAPI(type,path,data=null){
 			return $.ajax({
 				url:path,
 				method:"POST",
-				async: false,
+				async: asyncValue,
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
                     request.setRequestHeader("formKey", local('g','formKey'));
