@@ -4988,12 +4988,13 @@ function buildRequestResult(array,media_type=null,list=null,page=null,search=fal
 }
 function processRequest(id,type){
 	if(type == 'tv'){
-		requestNewID(id).success(function(data) {
+		/*requestNewID(id).success(function(data) {
 			var newID = data.tvdb_id;
 			ombiActions(newID,'add',type);
 		}).fail(function(xhr) {
 			console.error("Organizr Function: TMDB Connection Failed");
-		});
+		});*/
+		ombiActions(id,'add',type);
 	}else{
 		ombiActions(id,'add',type);
 	}
