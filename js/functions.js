@@ -5433,7 +5433,6 @@ function buildDownloaderItem(array, source, type='none'){
 			if(array.content.queueItems == 0){
 				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
 			}
-			//console.log(array);
 			$.each(array.content.queueItems, function(i,v) {
 				count = count + 1;
 				var percent = Math.floor(((v.size - v.sizeleft) / v.size) * 100);
@@ -5445,6 +5444,35 @@ function buildDownloaderItem(array, source, type='none'){
                     <td class="">`+v.name+`</td>
                     <td class="">S`+pad(v.episode.seasonNumber,2)+`E`+pad(v.episode.episodeNumber,2)+`</td>
                     <td class="max-texts">`+v.episode.title+`</td>
+                    <td class="hidden-xs sonarr-`+cleanClass(v.status)+`">`+v.status+`</td>
+                    <td class="hidden-xs">`+size+`</td>
+                    <td class="hidden-xs"><span class="label label-info">`+v.protocol+`</span></td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+			});
+			break;
+		case 'radarr':
+			if(array.content === false){
+				queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+				break;
+			}
+			if(array.content.queueItems == 0){
+				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+			}
+			$.each(array.content.queueItems, function(i,v) {
+				count = count + 1;
+				var percent = Math.floor(((v.size - v.sizeleft) / v.size) * 100);
+				percent = (isNaN(percent)) ? '0' : percent;
+				var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
+				v.name = v.movie.title;
+				queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
                     <td class="hidden-xs sonarr-`+cleanClass(v.status)+`">`+v.status+`</td>
                     <td class="hidden-xs">`+size+`</td>
                     <td class="hidden-xs"><span class="label label-info">`+v.protocol+`</span></td>
@@ -5578,6 +5606,7 @@ function buildDownloader(source){
         case 'deluge':
         case 'rTorrent':
 	    case 'sonarr':
+	    case 'radarr':
             var queue = true;
             var history = false;
             queueButton = 'REFRESH';
@@ -5679,6 +5708,7 @@ function buildDownloaderCombined(source){
         case 'deluge':
         case 'rTorrent':
 	    case 'sonarr':
+	    case 'radarr':
             var queue = true;
             var history = false;
             queueButton = 'REFRESH';
@@ -6336,6 +6366,9 @@ function homepageDownloader(type, timeout){
 			break;
 		case 'sonarr':
 			var action = 'getSonarrQueue';
+			break;
+		case 'radarr':
+			var action = 'getRadarrQueue';
 			break;
 		case 'qBittorrent':
 			var action = 'getqBittorrent';
