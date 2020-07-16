@@ -15,6 +15,7 @@ function checkPlexAdminFilled()
 function organizrSpecialSettings()
 {
 	$refreshSearch = "Refresh";
+	$homepageOrderSearch = "homepageOrder";
 	$tautulliSearch = "tautulli_token";
 	$tautulli = array_filter($_COOKIE, function ($k) use ($tautulliSearch) {
 		return stripos($k, $tautulliSearch) !== false;
@@ -23,6 +24,9 @@ function organizrSpecialSettings()
 		'homepage' => array(
 			'refresh' => array_filter($GLOBALS, function ($k) use ($refreshSearch) {
 				return stripos($k, $refreshSearch) !== false;
+			}, ARRAY_FILTER_USE_KEY),
+			'order' => array_filter($GLOBALS, function ($k) use ($homepageOrderSearch) {
+				return strpos($k, $homepageOrderSearch) !== false;
 			}, ARRAY_FILTER_USE_KEY),
 			'search' => array(
 				'enabled' => (qualifyRequest($GLOBALS['mediaSearchAuth']) && $GLOBALS['mediaSearch'] == true && $GLOBALS['plexToken']) ? true : false,
