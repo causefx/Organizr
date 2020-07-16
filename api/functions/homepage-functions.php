@@ -2,7 +2,7 @@
 //homepage order
 function homepageOrder()
 {
-	$homepageOrder = array(
+	/*$homepageOrder = array(
 		"homepageOrdercustomhtml" => $GLOBALS['homepageOrdercustomhtml'],
 		"homepageOrdercustomhtmlTwo" => $GLOBALS['homepageOrdercustomhtmlTwo'],
 		"homepageOrdernzbget" => $GLOBALS['homepageOrdernzbget'],
@@ -29,9 +29,14 @@ function homepageOrder()
 		"homepageOrderSpeedtest" => $GLOBALS['homepageOrderSpeedtest'],
 		"homepageOrderNetdata" => $GLOBALS['homepageOrderNetdata'],
 		"homepageOrderSonarrQueue" => $GLOBALS['homepageOrderSonarrQueue'],
-	);
-	asort($homepageOrder);
-	return $homepageOrder;
+		"homepageOrderRadarrQueue" => $GLOBALS['homepageOrderRadarrQueue'],
+	);*/
+	$hpOrderSearch = 'homepageOrder';
+	$homepageItems =  array_filter($GLOBALS, function ($k) use ($hpOrderSearch) {
+		return strpos($k, $hpOrderSearch) !== false;
+	}, ARRAY_FILTER_USE_KEY);
+	asort($homepageItems);
+	return $homepageItems;
 }
 
 function buildHomepage()
@@ -427,8 +432,32 @@ function buildHomepageItem($homepageItem)
 					<script>
 					// Sonarr Queue
 					$("#' . $homepageItem . '").html(buildDownloader("sonarr"));
-					homepageDownloader("sonarr", "' . $GLOBALS['homepageDownloadRefresh'] . '");
+					homepageDownloader("sonarr", "' . $GLOBALS['homepageSonarrQueueRefresh'] . '");
 					// End Sonarr Queue
+					</script>
+					';
+				}
+			}
+			break;
+		case 'homepageOrderRadarrQueue':
+			if ($GLOBALS['homepageRadarrQueueEnabled'] && qualifyRequest($GLOBALS['homepageRadarrQueueAuth'])) {
+				if ($GLOBALS['homepageRadarrQueueCombine']) {
+					$item .= '
+					<script>
+					// Radarr Queue
+					buildDownloaderCombined(\'radarr\');
+					homepageDownloader("radarr", "' . $GLOBALS['homepageRadarrQueueRefresh'] . '");
+					// End Radarr Queue
+					</script>
+					';
+				} else {
+					$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+					$item .= '
+					<script>
+					// Radarr Queue
+					$("#' . $homepageItem . '").html(buildDownloader("radarr"));
+					homepageDownloader("radarr", "' . $GLOBALS['homepageRadarrQueueRefresh'] . '");
+					// End Radarr Queue
 					</script>
 					';
 				}
@@ -2041,7 +2070,35 @@ function getHomepageList()
 						'value' => $GLOBALS['radarrToken']
 					)
 				),
-				'Misc Options' => array(
+				'Queue' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageRadarrQueueEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepageRadarrQueueEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageRadarrQueueAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageRadarrQueueAuth'],
+						'options' => $groups
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageRadarrQueueCombine',
+						'label' => 'Add to Combined Downloader',
+						'value' => $GLOBALS['homepageRadarrQueueCombine']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageRadarrQueueRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $GLOBALS['homepageRadarrQueueRefresh'],
+						'options' => optionTime()
+					),
+				),
+				'Calendar' => array(
 					array(
 						'type' => 'number',
 						'name' => 'calendarStart',
@@ -3217,9 +3274,16 @@ function buildHomepageSettings()
 				}
 				break;
 			case 'homepageOrderSonarrQueue':
-				$class = 'bg-success';
+				$class = 'bg-sonarr';
 				$image = 'plugins/images/tabs/sonarr.png';
-				if (!$GLOBALS['homepageOrderSonarrQueue']) {
+				if (!$GLOBALS['homepageSonarrQueueEnabled']) {
+					$class .= ' faded';
+				}
+				break;
+			case 'homepageOrderRadarrQueue':
+				$class = 'bg-radarr';
+				$image = 'plugins/images/tabs/radarr.png';
+				if (!$GLOBALS['homepageRadarrQueueEnabled']) {
 					$class .= ' faded';
 				}
 				break;
