@@ -397,6 +397,7 @@ function buildHomepageItem($homepageItem)
 				</script>
 				';
 			}
+			break;
 		case 'homepageOrderSonarrQueue':
 			if ($GLOBALS['homepageSonarrQueueEnabled'] && qualifyRequest($GLOBALS['homepageSonarrQueueAuth'])) {
 				if ($GLOBALS['homepageSonarrQueueCombine']) {
