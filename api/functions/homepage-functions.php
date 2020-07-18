@@ -29,10 +29,6 @@ function homepageOrder()
 		"homepageOrderSpeedtest" => $GLOBALS['homepageOrderSpeedtest'],
 		"homepageOrderNetdata" => $GLOBALS['homepageOrderNetdata'],
 		"homepageOrderOctoprint" => $GLOBALS['homepageOrderOctoprint'],
-	);
-	asort($homepageOrder);
-	return $homepageOrder;
-=======
 		"homepageOrderSonarrQueue" => $GLOBALS['homepageOrderSonarrQueue'],
 		"homepageOrderRadarrQueue" => $GLOBALS['homepageOrderRadarrQueue'],
 	);*/
