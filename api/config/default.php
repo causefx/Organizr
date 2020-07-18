@@ -193,6 +193,7 @@ return array(
 	'homepageOrderNetdata' => '25',
 	'homepageOrderSonarrQueue' => '26',
 	'homepageOrderRadarrQueue' => '27',
+  'homepageOrderOctoprint' => '28',
 	'homepageShowStreamNames' => false,
 	'homepageShowStreamNamesAuth' => '1',
 	'homepageStreamRefresh' => '60000',
@@ -397,8 +398,15 @@ return array(
 	'netdata6Enabled' => false,
 	'netdata7Enabled' => false,
 	'netdataCustom' => '{
-    
+
 	}',
+	'homepageOctoprintEnabled' => true,
+	'homepageOctoprintAuth' => '1',
+	'homepageOctoprintRefresh' => 10000,
+	'octoprintURL' => 'http://octopi.local',
+	'octoprintToken' => '',
+	'octoprintHeaderToggle' => true,
+	'octoprintHeader' => 'Octoprint',
 	'githubMenuLink' => true,
 	'organizrSupportMenuLink' => true,
 	'organizrDocsMenuLink' => true,

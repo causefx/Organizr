@@ -28,6 +28,7 @@ function homepageOrder()
 		"homepageOrderWeatherAndAir" => $GLOBALS['homepageOrderWeatherAndAir'],
 		"homepageOrderSpeedtest" => $GLOBALS['homepageOrderSpeedtest'],
 		"homepageOrderNetdata" => $GLOBALS['homepageOrderNetdata'],
+		"homepageOrderOctoprint" => $GLOBALS['homepageOrderOctoprint'],
 		"homepageOrderSonarrQueue" => $GLOBALS['homepageOrderSonarrQueue'],
 		"homepageOrderRadarrQueue" => $GLOBALS['homepageOrderRadarrQueue'],
 	);*/
@@ -415,6 +416,17 @@ function buildHomepageItem($homepageItem)
 				';
 			}
 			break;
+		case 'homepageOrderOctoprint':
+			if ($GLOBALS['homepageOctoprintEnabled']) {
+				$item .= '<div class="white-box"><h2 class="text-center" lang="en">Loading Octoprint...</h2></div>';
+				$item .= '
+				<script>
+				// Octoprint
+				homepageOctoprint("' . $GLOBALS['homepageOctoprintRefresh'] . '");
+				// End Octoprint
+				</script>
+				';
+      }
 		case 'homepageOrderSonarrQueue':
 			if ($GLOBALS['homepageSonarrQueueEnabled'] && qualifyRequest($GLOBALS['homepageSonarrQueueAuth'])) {
 				if ($GLOBALS['homepageSonarrQueueCombine']) {
@@ -3105,7 +3117,62 @@ function getHomepageList()
 				),
 			)
 		),
-		netdataSettngsArray()
+		netdataSettngsArray(),
+		array(
+			'name' => 'Octoprint',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/octoprint.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageOctoprintEnabled',
+						'label' => 'Enable',
+						'value' => $GLOBALS['homepageOctoprintEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageOctoprintAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $GLOBALS['homepageOctoprintAuth'],
+						'options' => $groups
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'octoprintURL',
+						'label' => 'URL',
+						'value' => $GLOBALS['octoprintURL'],
+						'help' => 'Enter the IP:PORT of your Octoprint instance e.g. http://octopi.local'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'octoprintToken',
+						'label' => 'API Key',
+						'value' => $GLOBALS['octoprintToken'],
+						'help' => 'Enter your Octoprint API key, found in Octoprints settings page.'
+					),
+				),
+				'Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'octoprintHeader',
+						'label' => 'Title',
+						'value' => $GLOBALS['octoprintHeader'],
+						'help' => 'Sets the title of this homepage module',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'octoprintToggle',
+						'label' => 'Toggle Title',
+						'value' => $GLOBALS['octoprintHeaderToggle'],
+						'help' => 'Shows/hides the title of this homepage module'
+					),
+				),
+			)
+		),
 	);
 }
 
@@ -3273,6 +3340,13 @@ function buildHomepageSettings()
 					$class .= ' faded';
 				}
 				break;
+			case 'homepageOrderOctoprint':
+				$class = 'bg-success';
+				$image = 'plugins/images/tabs/octoprint.png';
+				if (!$GLOBALS['homepageOctoprintEnabled']) {
+          	$class .= ' faded';
+				}
+        break;
 			case 'homepageOrderSonarrQueue':
 				$class = 'bg-sonarr';
 				$image = 'plugins/images/tabs/sonarr.png';

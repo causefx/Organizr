@@ -83,6 +83,9 @@ function homepageConnect($array)
 		case 'getNetdata':
 			return getNetdata();
 			break;
+		case 'getOctoprint':
+		  return getOctoprint();
+			break;
 		default:
 			# code...
 			break;
@@ -2965,6 +2968,37 @@ function getNetdata()
 				$data['sm'] = $GLOBALS['netdata' . ($i) . 'sm'];
 				array_push($api['data'], $data);
 			}
+		}
+		$api = isset($api) ? $api : false;
+		return $api;
+	}
+}
+
+function getOctoprint()
+{
+	if ($GLOBALS['homepageOctoprintEnabled'] && !empty($GLOBALS['octoprintURL']) && !empty($GLOBALS['octoprintToken']) && qualifyRequest($GLOBALS['homepageOctoprintAuth'])) {
+		$api = [];
+		$url = qualifyURL($GLOBALS['octoprintURL']);
+		$endpoints = ['job', 'settings'];
+		$api['data']['url'] = $GLOBALS['octoprintURL'];
+		foreach ($endpoints as $endpoint) {
+			$dataUrl = $url . '/api/' . $endpoint;
+			try {
+				$headers = array('X-API-KEY' => $GLOBALS['octoprintToken']);
+				$response = Requests::get($dataUrl, $headers);
+				if ($response->success) {
+					$json = json_decode($response->body, true);
+
+					$api['data'][$endpoint] = $json;
+
+					$api['options'] = [
+						'title' => $GLOBALS['octoprintHeader'],
+						'titleToggle' => $GLOBALS['octoprintHeaderToggle'],
+					];
+				}
+			} catch (Requests_Exception $e) {
+				writeLog('error', 'Octoprint Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			};
 		}
 		$api = isset($api) ? $api : false;
 		return $api;

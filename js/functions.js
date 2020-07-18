@@ -7980,6 +7980,130 @@ function tryUpdateNetdata(array){
     });
     return existing;
 }
+function homepageOctoprint(timeout){
+    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageOctoprintRefresh;
+    organizrAPI('POST','api/?v1/homepage/connect',{action:'getOctoprint'}).success(function(data) {
+        try {
+            var response = JSON.parse(data);
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
+        }
+        document.getElementById('homepageOrderOctoprint').innerHTML = '';
+        if(response.data !== null){
+            $('#homepageOrderOctoprint').html(buildOctoprint(response.data));
+        }
+    }).fail(function(xhr) {
+        console.error("Organizr Function: API Connection Failed");
+    });
+    var timeoutTitle = 'Octoprint-Homepage';
+    if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
+    timeouts[timeoutTitle] = setTimeout(function(){ homepageOctoprint(timeout); }, timeout);
+}
+function buildOctoprint(array){
+	var menu = `<ul class="nav customtab nav-tabs pull-right" role="tablist">`;
+	var headerAlt = '';
+	var header = '';
+	var content = '';
+	var webcamUrl = '';
+	var webcamHtml = '';
+	var css = `
+	<style>
+	.octoprint-webcam {
+		max-height: 400px;
+		max-width: 100%;
+		float: right;
+	}
+	.octoprint-block {
+		margin-left: 0px;
+		margin-right: 0px;
+	}
+	.octoprint-button-spacer {
+		padding-right: 46px;
+	}
+	</style>
+	`;
+	menu += `
+		<li role="presentation" class="active" ><a href="" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true" onclick="homepageOctoprint();"><span class="visible-xs"><i class="ti-download"></i></span><span class="hidden-xs">REFRESH</span></a></li>
+		`;
+	menu += '</ul>';
+	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
+		var headerAlt = `
+		<div class="col-md-12">
+			<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/octoprint.png">  &nbsp; </h2>
+			`+menu+`
+			<hr class="hidden-xs"><div class="clearfix"></div>
+		</div>
+		<div class="clearfix"></div>
+		`;
+	}else{
+		var header = `
+		<div class="white-box bg-info m-b-0 p-b-0 p-t-10 mailbox-widget">
+			<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/octoprint.png">  &nbsp; </h2>
+			`+menu+`
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
+	content = '<p>State: '+array.data.job.state+'</p>';
+	if (array.data.job.state == "Printing") {
+		content += '<p>File: '+array.data.job.job.file.display+'</p>';
+		content += '<p>Progress: '+parseFloat(array.data.job.progress.completion).toFixed(0)+'%</p>';
+		content += '<p>Approx. Total Print Time: '+octoprintFormatTime(array.data.job.job.estimatedPrintTime)+'</p>';
+		content += '<p>Print Time Left: '+octoprintFormatTime(array.data.job.progress.printTimeLeft)+'</p>';
+	}
+	if (array.data.settings.webcam.webcamEnabled) {
+		webcamUrl = array.data.settings.webcam.streamUrl;
+		if (webcamUrl[0] == "/") {
+			webcamUrl = array.data.url + webcamUrl;
+		}
+	}
+	if (webcamUrl) {
+		var webcamHtml = `<div class="col-lg-4"><img class="octoprint-webcam" src="`+webcamUrl+`"></div>`;
+	}
+	return css+`
+	<div class="row">
+		`+headerAlt+`
+		<div class="col-lg-12">
+			`+header+`
+			<div class="row octoprint-block white-box">
+				<div class="col-lg-8 text-white">
+						<div class="tab-content m-t-0">`+content+`</div>
+				</div>
+				`+webcamHtml+`
+			</div>
+		</div>
+	</div>
+	`;
+}
+function octoprintFormatTime(seconds) {
+	var format = "";
+	var days = Math.floor(moment.duration(seconds,'seconds').asDays());
+	var hours = Math.floor(moment.duration(seconds,'seconds').asHours());
+	var minutes = moment.duration(seconds,'seconds').minutes()
+	var seconds = moment.duration(seconds,'seconds').seconds()
+	if (days > 0) {
+		format += days + " "+octoprintPluralize("day", days)+" ";
+	}
+	if (hours > 0) {
+		format += hours + " "+octoprintPluralize("hour", hours)+" ";
+	}
+	if (minutes > 0) {
+		format += minutes + " "+octoprintPluralize("minute", minutes)+" ";
+	}
+	if (seconds > 0) {
+		format += seconds + " "+octoprintPluralize("second", seconds)+" ";
+	}
+	return format;
+}
+
+function octoprintPluralize(s, n) {
+	if (n > 1) {
+		return s+"s";
+	}
+	return s
+}
 function pad(n, width, z) {
 	z = z || '0';
 	n = n + '';
