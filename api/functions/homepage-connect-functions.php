@@ -84,7 +84,7 @@ function homepageConnect($array)
 			return getNetdata();
 			break;
 		case 'getOctoprint':
-		  return getOctoprint();
+			return getOctoprint();
 			break;
 		default:
 			# code...
@@ -1244,6 +1244,7 @@ function delugeConnect()
 	$api['content'] = isset($api['content']) ? $api['content'] : false;
 	return $api;
 }
+
 function sonarrConnectQueue()
 {
 	$sonarrQueueItems = array();
@@ -1283,6 +1284,7 @@ function sonarrConnectQueue()
 	}
 	return false;
 }
+
 function radarrConnectQueue()
 {
 	$radarrQueueItems = array();
@@ -1322,6 +1324,7 @@ function radarrConnectQueue()
 	}
 	return false;
 }
+
 function getCalendar()
 {
 	$startDate = date('Y-m-d', strtotime("-" . $GLOBALS['calendarStart'] . " days"));
@@ -2988,9 +2991,7 @@ function getOctoprint()
 				$response = Requests::get($dataUrl, $headers);
 				if ($response->success) {
 					$json = json_decode($response->body, true);
-
 					$api['data'][$endpoint] = $json;
-
 					$api['options'] = [
 						'title' => $GLOBALS['octoprintHeader'],
 						'titleToggle' => $GLOBALS['octoprintHeaderToggle'],
