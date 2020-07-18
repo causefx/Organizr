@@ -2,38 +2,8 @@
 //homepage order
 function homepageOrder()
 {
-	/*$homepageOrder = array(
-		"homepageOrdercustomhtml" => $GLOBALS['homepageOrdercustomhtml'],
-		"homepageOrdercustomhtmlTwo" => $GLOBALS['homepageOrdercustomhtmlTwo'],
-		"homepageOrdernzbget" => $GLOBALS['homepageOrdernzbget'],
-		"homepageOrderjdownloader" => $GLOBALS['homepageOrderjdownloader'],
-		"homepageOrdersabnzbd" => $GLOBALS['homepageOrdersabnzbd'],
-		"homepageOrderplexnowplaying" => $GLOBALS['homepageOrderplexnowplaying'],
-		"homepageOrderplexrecent" => $GLOBALS['homepageOrderplexrecent'],
-		"homepageOrderplexplaylist" => $GLOBALS['homepageOrderplexplaylist'],
-		"homepageOrderembynowplaying" => $GLOBALS['homepageOrderembynowplaying'],
-		"homepageOrderembyrecent" => $GLOBALS['homepageOrderembyrecent'],
-		"homepageOrderombi" => $GLOBALS['homepageOrderombi'],
-		"homepageOrdercalendar" => $GLOBALS['homepageOrdercalendar'],
-		"homepageOrdertransmission" => $GLOBALS['homepageOrdertransmission'],
-		"homepageOrderqBittorrent" => $GLOBALS['homepageOrderqBittorrent'],
-		"homepageOrderdeluge" => $GLOBALS['homepageOrderdeluge'],
-		"homepageOrderrTorrent" => $GLOBALS['homepageOrderrTorrent'],
-		"homepageOrderdownloader" => $GLOBALS['homepageOrderdownloader'],
-		"homepageOrderhealthchecks" => $GLOBALS['homepageOrderhealthchecks'],
-		"homepageOrderunifi" => $GLOBALS['homepageOrderunifi'],
-		"homepageOrdertautulli" => $GLOBALS['homepageOrdertautulli'],
-		"homepageOrderPihole" => $GLOBALS['homepageOrderPihole'],
-		"homepageOrderMonitorr" => $GLOBALS['homepageOrderMonitorr'],
-		"homepageOrderWeatherAndAir" => $GLOBALS['homepageOrderWeatherAndAir'],
-		"homepageOrderSpeedtest" => $GLOBALS['homepageOrderSpeedtest'],
-		"homepageOrderNetdata" => $GLOBALS['homepageOrderNetdata'],
-		"homepageOrderOctoprint" => $GLOBALS['homepageOrderOctoprint'],
-		"homepageOrderSonarrQueue" => $GLOBALS['homepageOrderSonarrQueue'],
-		"homepageOrderRadarrQueue" => $GLOBALS['homepageOrderRadarrQueue'],
-	);*/
 	$hpOrderSearch = 'homepageOrder';
-	$homepageItems =  array_filter($GLOBALS, function ($k) use ($hpOrderSearch) {
+	$homepageItems = array_filter($GLOBALS, function ($k) use ($hpOrderSearch) {
 		return strpos($k, $hpOrderSearch) !== false;
 	}, ARRAY_FILTER_USE_KEY);
 	asort($homepageItems);
@@ -426,7 +396,7 @@ function buildHomepageItem($homepageItem)
 				// End Octoprint
 				</script>
 				';
-      }
+			}
 		case 'homepageOrderSonarrQueue':
 			if ($GLOBALS['homepageSonarrQueueEnabled'] && qualifyRequest($GLOBALS['homepageSonarrQueueAuth'])) {
 				if ($GLOBALS['homepageSonarrQueueCombine']) {
@@ -3344,9 +3314,9 @@ function buildHomepageSettings()
 				$class = 'bg-success';
 				$image = 'plugins/images/tabs/octoprint.png';
 				if (!$GLOBALS['homepageOctoprintEnabled']) {
-          	$class .= ' faded';
+					$class .= ' faded';
 				}
-        break;
+				break;
 			case 'homepageOrderSonarrQueue':
 				$class = 'bg-sonarr';
 				$image = 'plugins/images/tabs/sonarr.png';
