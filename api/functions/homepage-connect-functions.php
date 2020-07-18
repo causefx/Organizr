@@ -3,6 +3,12 @@
 function homepageConnect($array)
 {
 	switch ($array['data']['action']) {
+		case 'getSonarrQueue':
+			return (qualifyRequest($GLOBALS['homepageSonarrQueueAuth'])) ? sonarrConnectQueue() : false;
+			break;
+		case 'getRadarrQueue':
+			return (qualifyRequest($GLOBALS['homepageRadarrQueueAuth'])) ? radarrConnectQueue() : false;
+			break;
 		case 'getPlexStreams':
 			return (qualifyRequest($GLOBALS['homepagePlexStreamsAuth'])) ? plexConnect('streams') : false;
 			break;
@@ -1238,7 +1244,84 @@ function delugeConnect()
 	$api['content'] = isset($api['content']) ? $api['content'] : false;
 	return $api;
 }
-
+function sonarrConnectQueue()
+{
+	$sonarrQueueItems = array();
+	if ($GLOBALS['homepageSonarrEnabled'] && qualifyRequest($GLOBALS['homepageSonarrAuth']) && !empty($GLOBALS['sonarrURL']) && !empty($GLOBALS['sonarrToken'])) {
+		$sonarrs = array();
+		$sonarrURLList = explode(',', $GLOBALS['sonarrURL']);
+		$sonarrTokenList = explode(',', $GLOBALS['sonarrToken']);
+		if (count($sonarrURLList) == count($sonarrTokenList)) {
+			foreach ($sonarrURLList as $key => $value) {
+				$sonarrs[$key] = array(
+					'url' => $value,
+					'token' => $sonarrTokenList[$key]
+				);
+			}
+			foreach ($sonarrs as $key => $value) {
+				try {
+					$sonarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+					$sonarr = $sonarr->getQueue();
+					$downloadList = json_decode($sonarr, true);
+					if (is_array($downloadList) || is_object($downloadList)) {
+						$sonarrQueue = (array_key_exists('error', $downloadList)) ? '' : $downloadList;
+					} else {
+						$sonarrQueue = '';
+					}
+					if (!empty($sonarrQueue)) {
+						$sonarrQueueItems = array_merge($sonarrQueueItems, $sonarrQueue);
+					}
+				} catch (Exception $e) {
+					writeLog('error', 'Sonarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				}
+			}
+			$api['content']['queueItems'] = $sonarrQueueItems;
+			$api['content']['historyItems'] = false;
+			$api['content'] = isset($api['content']) ? $api['content'] : false;
+			return $api;
+		}
+	}
+	return false;
+}
+function radarrConnectQueue()
+{
+	$radarrQueueItems = array();
+	if ($GLOBALS['homepageRadarrEnabled'] && qualifyRequest($GLOBALS['homepageRadarrAuth']) && !empty($GLOBALS['radarrURL']) && !empty($GLOBALS['radarrToken'])) {
+		$radarrs = array();
+		$radarrURLList = explode(',', $GLOBALS['radarrURL']);
+		$radarrTokenList = explode(',', $GLOBALS['radarrToken']);
+		if (count($radarrURLList) == count($radarrTokenList)) {
+			foreach ($radarrURLList as $key => $value) {
+				$radarrs[$key] = array(
+					'url' => $value,
+					'token' => $radarrTokenList[$key]
+				);
+			}
+			foreach ($radarrs as $key => $value) {
+				try {
+					$radarr = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+					$radarr = $radarr->getQueue();
+					$downloadList = json_decode($radarr, true);
+					if (is_array($downloadList) || is_object($downloadList)) {
+						$radarrQueue = (array_key_exists('error', $downloadList)) ? '' : $downloadList;
+					} else {
+						$radarrQueue = '';
+					}
+					if (!empty($radarrQueue)) {
+						$radarrQueueItems = array_merge($radarrQueueItems, $radarrQueue);
+					}
+				} catch (Exception $e) {
+					writeLog('error', 'Radarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				}
+			}
+			$api['content']['queueItems'] = $radarrQueueItems;
+			$api['content']['historyItems'] = false;
+			$api['content'] = isset($api['content']) ? $api['content'] : false;
+			return $api;
+		}
+	}
+	return false;
+}
 function getCalendar()
 {
 	$startDate = date('Y-m-d', strtotime("-" . $GLOBALS['calendarStart'] . " days"));

@@ -1998,8 +1998,8 @@ function buildCategoryEditor(){
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
-function settingsAPI(post, callbacks=null){
-	organizrAPI('POST',post.api,post).success(function(data) {
+function settingsAPI(post, callbacks=null, asyncValue=true){
+	organizrAPI('POST',post.api,post,asyncValue).success(function(data) {
         try {
             var response = JSON.parse(data);
         }catch(e) {
@@ -2007,7 +2007,6 @@ function settingsAPI(post, callbacks=null){
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		//console.log(response);
 		message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
@@ -3152,6 +3151,11 @@ function submitHomepageOrder(){
 	}
 }
 function submitTabOrder(newTabs){
+	$.each(newTabs.tab, function(i,v) {
+		if(v.originalOrder == v.order){
+			delete newTabs.tab[i];
+		}
+	})
 	var post = {
 		action:'changeOrder',
 		api:'api/?v1/settings/tab/editor/tabs',
@@ -3162,7 +3166,7 @@ function submitTabOrder(newTabs){
 	};
 	var callbacks = $.Callbacks();
     callbacks.add( buildTabEditor );
-	settingsAPI(post,callbacks);
+	settingsAPI(post,callbacks, false);
 	$('.saveTabOrderButton').addClass('hidden');
 }
 function submitCategoryOrder(){
@@ -3670,7 +3674,7 @@ function updateNow(){
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
-function organizrAPI(type,path,data=null){
+function organizrAPI(type,path,data=null,asyncValue=true){
 	var timeout = 10000;
     switch(path){
         case 'api/?v1/windows/update':
@@ -3701,6 +3705,7 @@ function organizrAPI(type,path,data=null){
 			return $.ajax({
 				url:path,
 				method:"POST",
+				async: asyncValue,
 				beforeSend: function(request) {
 					request.setRequestHeader("Token", activeInfo.token);
                     request.setRequestHeader("formKey", local('g','formKey'));
@@ -5420,6 +5425,66 @@ function buildDownloaderItem(array, source, type='none'){
                 `;
             });
             break;
+		case 'sonarr':
+			if(array.content === false){
+				queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+				break;
+			}
+			if(array.content.queueItems == 0){
+				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+			}
+			$.each(array.content.queueItems, function(i,v) {
+				count = count + 1;
+				var percent = Math.floor(((v.size - v.sizeleft) / v.size) * 100);
+				percent = (isNaN(percent)) ? '0' : percent;
+				var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
+				v.name = v.series.title;
+				queue += `
+                <tr>
+                    <td class="">`+v.name+`</td>
+                    <td class="">S`+pad(v.episode.seasonNumber,2)+`E`+pad(v.episode.episodeNumber,2)+`</td>
+                    <td class="max-texts">`+v.episode.title+`</td>
+                    <td class="hidden-xs sonarr-`+cleanClass(v.status)+`">`+v.status+`</td>
+                    <td class="hidden-xs">`+size+`</td>
+                    <td class="hidden-xs"><span class="label label-info">`+v.protocol+`</span></td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+			});
+			break;
+		case 'radarr':
+			if(array.content === false){
+				queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
+				break;
+			}
+			if(array.content.queueItems == 0){
+				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+			}
+			$.each(array.content.queueItems, function(i,v) {
+				count = count + 1;
+				var percent = Math.floor(((v.size - v.sizeleft) / v.size) * 100);
+				percent = (isNaN(percent)) ? '0' : percent;
+				var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
+				v.name = v.movie.title;
+				queue += `
+                <tr>
+                    <td class="max-texts">`+v.name+`</td>
+                    <td class="hidden-xs sonarr-`+cleanClass(v.status)+`">`+v.status+`</td>
+                    <td class="hidden-xs">`+size+`</td>
+                    <td class="hidden-xs"><span class="label label-info">`+v.protocol+`</span></td>
+                    <td class="text-right">
+                        <div class="progress progress-lg m-b-0">
+                            <div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+			});
+			break;
 		case 'qBittorrent':
 		    if(array.content === false){
                 queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
@@ -5540,6 +5605,8 @@ function buildDownloader(source){
         case 'qBittorrent':
         case 'deluge':
         case 'rTorrent':
+	    case 'sonarr':
+	    case 'radarr':
             var queue = true;
             var history = false;
             queueButton = 'REFRESH';
@@ -5640,6 +5707,8 @@ function buildDownloaderCombined(source){
         case 'qBittorrent':
         case 'deluge':
         case 'rTorrent':
+	    case 'sonarr':
+	    case 'radarr':
             var queue = true;
             var history = false;
             queueButton = 'REFRESH';
@@ -6294,6 +6363,12 @@ function homepageDownloader(type, timeout){
 			break;
 		case 'transmission':
 			var action = 'getTransmission';
+			break;
+		case 'sonarr':
+			var action = 'getSonarrQueue';
+			break;
+		case 'radarr':
+			var action = 'getRadarrQueue';
 			break;
 		case 'qBittorrent':
 			var action = 'getqBittorrent';
@@ -8028,6 +8103,11 @@ function octoprintPluralize(s, n) {
 		return s+"s";
 	}
 	return s
+}
+function pad(n, width, z) {
+	z = z || '0';
+	n = n + '';
+	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 // Thanks Swifty!
 function PopupCenter(url, title, w, h) {

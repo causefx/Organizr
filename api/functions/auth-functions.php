@@ -106,7 +106,7 @@ function checkPlexUser($username)
 	return false;
 }
 
-function allPlexUsers($newOnly = false)
+function allPlexUsers($newOnly = false, $friendsOnly = false)
 {
 	try {
 		if (!empty($GLOBALS['plexToken'])) {
@@ -127,13 +127,29 @@ function allPlexUsers($newOnly = false)
 								if (!$taken) {
 									$results[] = array(
 										'username' => (string)$child['username'],
-										'email' => (string)$child['email']
+										'email' => (string)$child['email'],
+										'id' => (string)$child['id'],
 									);
 								}
-							} else {
+							} elseif ($friendsOnly) {
+								$machineMatches = false;
+								foreach ($child->Server as $server) {
+									if ((string)$server['machineIdentifier'] == $GLOBALS['plexID']) {
+										$machineMatches = true;
+									}
+								}
+								if($machineMatches){
+									$results[] = array(
+										'username' => (string)$child['username'],
+										'email' => (string)$child['email'],
+										'id' => (string)$child['id'],
+									);
+								}
+							}else{
 								$results[] = array(
 									'username' => (string)$child['username'],
 									'email' => (string)$child['email'],
+									'id' => (string)$child['id'],
 								);
 							}
 							

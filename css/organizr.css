@@ -643,6 +643,14 @@ input#inviteCodeInput {
 .bg-org-alt {
     background: #2d2c2c;
 }
+.bg-sonarr {
+    background: #35c5f2;
+}
+
+.bg-radarr {
+    background: #8f7128;
+}
+
 .bg-plex {
     background: #E5A00D;
 }
