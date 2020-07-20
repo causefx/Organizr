@@ -35,6 +35,13 @@ function upgradeCheck()
 			$updateDB = true;
 			$oldVer = $versionCheck;
 		}
+		// Upgrade check start for version below
+		$versionCheck = '2.0.651';
+		if ($compare->lessThan($oldVer, $versionCheck)) {
+			$updateDB = true;
+			$oldVer = $versionCheck;
+		}
+		// End Upgrade check start for version above
 		// End Upgrade check start for version above
 		if ($updateDB == true) {
 			//return 'Upgraded Needed - Current Version '.$oldVer.' - New Version: '.$versionCheck;

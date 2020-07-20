@@ -2621,52 +2621,28 @@ function frameTest($url)
 	}
 }
 
-function ping($pings)
+function ping()
 {
 	if (qualifyRequest($GLOBALS['pingAuth'])) {
-		$type = gettype($pings);
-		$ping = new Ping("");
-		$ping->setTtl(128);
-		$ping->setTimeout(2);
-		switch ($type) {
-			case "array":
-				$results = [];
-				foreach ($pings as $k => $v) {
-					if (strpos($v, ':') !== false) {
-						$domain = explode(':', $v)[0];
-						$port = explode(':', $v)[1];
-						$ping->setHost($domain);
-						$ping->setPort($port);
-						$latency = $ping->ping('fsockopen');
-					} else {
-						$ping->setHost($v);
-						$latency = $ping->ping();
-					}
-					if ($latency || $latency === 0) {
-						$results[$v] = $latency;
-					} else {
-						$results[$v] = false;
-					}
-				}
-				break;
-			case "string":
-				if (strpos($pings, ':') !== false) {
-					$domain = explode(':', $pings)[0];
-					$port = explode(':', $pings)[1];
-					$ping->setHost($domain);
-					$ping->setPort($port);
-					$latency = $ping->ping('fsockopen');
-				} else {
-					$ping->setHost($pings);
-					$latency = $ping->ping();
-				}
-				if ($latency || $latency === 0) {
-					$results = $latency;
-				} else {
-					$results = false;
-				}
-				break;
+		$connect = new Dibi\Connection([
+			'driver' => 'sqlite3',
+			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
+		]);
+		$tabs = $connect->fetchAll('SELECT ping_url, ping_codes FROM tabs WHERE ping = 1 AND ping_url IS NOT NULL AND ping_url <> ""');
+		$valid_codes = array();
+		$urls = array();
+		$original_urls = array(); // Since we need to support legacy host:port entries, we must keep the originals around to pass to the frontend
+		foreach ($tabs as $tab) {
+			$url = $tab['ping_url'];
+			if (strtolower(substr($url, 0, 8)) != 'https://' && strtolower(substr($url, 0, 7) != 'http://')) {
+				$url = 'http://' . $url;
+			}
+			$index = array_push($urls, array('url' => $url))-1;
+			$valid_codes[$index] = $tab['ping_codes'];
+			$original_urls[$index] = $tab['ping_url'];
 		}
+		$ping = new Ping($urls, $original_urls, $valid_codes);
+		$results = $ping->send_pings();
 		return $results;
 	}
 	return false;

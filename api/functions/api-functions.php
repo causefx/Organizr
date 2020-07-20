@@ -314,7 +314,8 @@ function createDB($path, $filename)
     		`type`	INTEGER,
     		`splash`	INTEGER,
     		`ping`		INTEGER,
-    		`ping_url`	TEXT,
+				`ping_url`	TEXT,
+				`ping_codes`	TEXT,
     		`timeout`	INTEGER,
     		`timeout_ms`	INTEGER,
     		`preload`	INTEGER

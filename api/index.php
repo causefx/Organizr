@@ -786,7 +786,7 @@ switch ($function) {
 			case 'POST':
 				$result['status'] = 'success';
 				$result['statusText'] = 'success';
-				$result['data'] = ping($_POST['data']['pingList']);
+				$result['data'] = ping();
 				break;
 			default:
 				$result['status'] = 'error';

@@ -6133,23 +6133,23 @@ function buildPiholeItem(array){
     .bg-green {
         background-color: #00a65a !important;
     }
-    
+
     .bg-aqua {
         background-color: #00c0ef!important;
     }
-    
+
     .bg-yellow {
         background-color: #f39c12!important;
     }
-    
+
     .bg-red {
         background-color: #dd4b39!important;
     }
-    
+
     .pihole-stat {
         color: #fff !important;
     }
-    
+
     .pihole-stat .card-body h3 {
         font-size: 38px;
         font-weight: 700;
@@ -7393,7 +7393,7 @@ function buildSpeedtest(array){
     var average = array.data.average;
     var max = array.data.max;
     var options = array.options;
-  
+
     html += `
     <div id="allSpeedtest">
     `;
@@ -7717,7 +7717,7 @@ function buildNetdataItem(array){
                 strokeColor: '#636363',  // to see which ones work best for you
                 generateGradient: true,
                 highDpiSupport: true,     // High resolution support
-            
+
             };
             var target = document.getElementById('gaugeChart`+(i+1)+`'); // your canvas element
             var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
@@ -7776,7 +7776,7 @@ function buildNetdataItem(array){
             html += buildGaugeChart(e,i,size,easySize,display);
         }
     });
-    
+
     return html;
 }
 function buildNetdata(array){
@@ -7797,23 +7797,23 @@ function buildNetdata(array){
       .all-netdata .clearfix:after {
         clear: both;
       }
-      
+
       .all-netdata .easyPieChart {
           position: relative;
           text-align: center;
       }
-      
+
       .all-netdata .easyPieChart canvas {
           position: absolute;
           top: 0;
           left: 0;
       }
-      
+
       .all-netdata .chart {
           float: left;
           //margin: 10px;
       }
-      
+
       .all-netdata .percentage,
       .all-netdata .label {
           text-align: center;
@@ -7822,21 +7822,21 @@ function buildNetdata(array){
           font-size: 1.2em;
           margin-bottom: 0.3em;
       }
-      
+
       .all-netdata .credits {
           padding-top: 0.5em;
           clear: both;
           color: #999;
       }
-      
+
       .all-netdata .credits a {
           color: #333;
       }
-      
+
       .all-netdata .dark {
           background: #333;
       }
-      
+
       .all-netdata .dark .percentage-light,
       .all-netdata .dark .label {
           text-align: center;
@@ -7845,8 +7845,8 @@ function buildNetdata(array){
           font-size: 1.2em;
           margin-bottom: 0.3em;
       }
-      
-      
+
+
       .all-netdata .button {
         -webkit-box-shadow: inset 0 0 1px #000, inset 0 1px 0 1px rgba(255,255,255,0.2), 0 1px 1px -1px rgba(0, 0, 0, .5);
         -moz-box-shadow: inset 0 0 1px #000, inset 0 1px 0 1px rgba(255,255,255,0.2), 0 1px 1px -1px rgba(0, 0, 0, .5);
@@ -7920,15 +7920,15 @@ function buildNetdata(array){
 
     html += `
     <div class="row">
-        
+
             <div class="d-block text-center all-netdata">
     `;
     html += buildNetdataItem(data);
     html += `
             </div>
-        
+
     </div>`;
-   
+
     return (array) ? html : '';
 }
 function homepageNetdata(timeout){
@@ -8658,20 +8658,9 @@ function buildMediaResults(array,source,term){
     `;
     return buttons+results;
 }
-function getPingList(arrayItems){
-    var pingList = [];
-    var timeout = (activeInfo.user.groupID <= 1) ? activeInfo.settings.homepage.refresh.adminPingRefresh : activeInfo.settings.homepage.refresh.otherPingRefresh;
-    if (Array.isArray(arrayItems['data']['tabs']) && arrayItems['data']['tabs'].length > 0) {
-        $.each(arrayItems['data']['tabs'], function(i,v) {
-            if(v.ping && v.ping_url !== null){
-                pingList.push(v.ping_url);
-            }
-        });
-    }
-    return (pingList.length > 0) ? pingUpdate(pingList,timeout): false;
-}
-function pingUpdate(pingList,timeout){
-    organizrAPI('POST','api/?v1/ping/list',{pingList:pingList}).success(function(data) {
+function pingUpdate(){
+		var timeout = (activeInfo.user.groupID <= 1) ? activeInfo.settings.homepage.refresh.adminPingRefresh : activeInfo.settings.homepage.refresh.otherPingRefresh;
+    organizrAPI('POST','api/?v1/ping/list', {}).success(function(data) {
         try {
             var response = JSON.parse(data);
         }catch(e) {
@@ -8724,7 +8713,7 @@ function pingUpdate(pingList,timeout){
     });
     var timeoutTitle = 'ping';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
-    timeouts[timeoutTitle] = setTimeout(function(){ pingUpdate(pingList,timeout); }, timeout);
+    timeouts[timeoutTitle] = setTimeout(function(){ pingUpdate(timeout); }, timeout);
 }
 function include(filename) {
     var type = filename.split('.').pop();
@@ -9475,7 +9464,7 @@ function launch(){
                     buildSplashScreen(json);
                     accountManager(json);
                     organizrSpecialSettings(json);
-                    getPingList(json);
+                    pingUpdate();
                     checkLocalForwardStatus(json);
                 }
                 loadCustomJava(json.appearance);

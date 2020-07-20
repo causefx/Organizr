@@ -91,9 +91,13 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	            <label class="control-label" for="new-tab-form-inputURLLocalNew" lang="en">Tab Local URL</label>
 	            <input type="text" class="form-control" id="new-tab-form-inputURLLocalNew" name="tabLocalURL">
 	        </div>
-	        <div class="form-group">
+					<div class="form-group">
 	            <label class="control-label" for="new-tab-form-inputPingURLNew" lang="en">Ping URL</label>
-	            <input type="text" class="form-control" id="new-tab-form-inputPingURLNew" name="pingURL"  placeholder="host/ip:port">
+	            <input type="text" class="form-control" id="new-tab-form-inputPingURLNew" name="pingURL">
+	        </div>
+					<div class="form-group">
+	            <label class="control-label" for="new-tab-form-inputPingCodes" lang="en">Ping Valid Response Codes</label>
+	            <input type="text" class="form-control" id="new-tab-form-inputPingCodes" name="pingCodes" placeholder="2xx,3xx">
 	        </div>
 	        <div class="row">
 		        <div class="form-group col-lg-6">
@@ -156,6 +160,10 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	        <div class="form-group">
 	            <label class="control-label" for="edit-tab-form-pingURL" lang="en">Ping URL</label>
 	            <input type="text" class="form-control" id="edit-tab-form-pingURL" name="pingURL" placeholder="host/ip:port">
+	        </div>
+					<div class="form-group">
+	            <label class="control-label" for="new-tab-form-inputPingCodes" lang="en">Ping Valid Response Codes</label>
+	            <input type="text" class="form-control" id="new-tab-form-inputPingCodes" name="pingCodes" placeholder="2xx,3xx">
 	        </div>
 	        <div class="row">
 		        <div class="form-group col-lg-6">
