@@ -11,6 +11,7 @@
     "pusher/pusher-php-server": "^4.0",
     "pragmarx/google2fa": "^3.0",
     "psr/log": "^1.1",
-    "adldap2/adldap2": "^10.0"
+    "adldap2/adldap2": "^10.0",
+    "slim/slim": "4.0"
   }
 }
