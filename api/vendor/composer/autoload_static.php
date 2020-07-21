@@ -35,6 +35,7 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Component\\VarDumper\\' => 28,
             'Slim\\Tests\\' => 11,
+            'Slim\\Psr7\\' => 10,
             'Slim\\' => 5,
         ),
         'P' => 
@@ -72,6 +73,7 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         ),
         'F' => 
         array (
+            'Fig\\Http\\Message\\' => 17,
             'FastRoute\\' => 10,
         ),
         'C' => 
@@ -112,6 +114,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'Slim\\Tests\\' => 
         array (
             0 => __DIR__ . '/..' . '/slim/slim/tests',
+        ),
+        'Slim\\Psr7\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/slim/psr7/src',
         ),
         'Slim\\' => 
         array (
@@ -190,6 +196,10 @@ class ComposerStaticInitcbdc783d76f8e7563dcce7d8af053ecb
         'GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'Fig\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/fig/http-message-util/src',
         ),
         'FastRoute\\' => 
         array (

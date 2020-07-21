@@ -12,6 +12,7 @@
     "pragmarx/google2fa": "^3.0",
     "psr/log": "^1.1",
     "adldap2/adldap2": "^10.0",
-    "slim/slim": "4.0"
+    "slim/slim": "4.0",
+    "slim/psr7": "^1.1"
   }
 }
