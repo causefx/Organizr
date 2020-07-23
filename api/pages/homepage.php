@@ -1,5 +1,5 @@
 <?php
-if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+if (file_exists($GLOBALS['userConfigPath'])) {
 	$pageHomepage = '
 <script>
 !function($) {

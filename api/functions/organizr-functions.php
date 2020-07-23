@@ -484,7 +484,7 @@ function organizrStatus()
 			array_push($dependenciesInactive, $check);
 		}
 	}
-	if (!file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+	if (!file_exists($GLOBALS['userConfigPath'])) {
 		$status['status'] = "wizard";//wizard - ok for test
 	}
 	if (count($dependenciesInactive) > 0 || !is_writable(dirname(__DIR__, 2)) || !(version_compare(PHP_VERSION, $GLOBALS['minimumPHP']) >= 0)) {
@@ -498,6 +498,7 @@ function organizrStatus()
 	$status['version'] = $GLOBALS['installedVersion'];
 	$status['os'] = getOS();
 	$status['php'] = phpversion();
+	$status['userConfigPath'] = $GLOBALS['userConfigPath'];
 	return $status;
 }
 

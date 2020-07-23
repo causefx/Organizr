@@ -1169,7 +1169,7 @@ function importUsersType($array)
 
 function allTabs()
 {
-	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+	if (file_exists($GLOBALS['userConfigPath'])) {
 		try {
 			$connect = new Dibi\Connection([
 				'driver' => 'sqlite3',
@@ -1188,7 +1188,7 @@ function allTabs()
 
 function allGroups()
 {
-	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+	if (file_exists($GLOBALS['userConfigPath'])) {
 		try {
 			$connect = new Dibi\Connection([
 				'driver' => 'sqlite3',
@@ -1205,7 +1205,7 @@ function allGroups()
 
 function loadTabs($type = null)
 {
-	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php') && $type) {
+	if (file_exists($GLOBALS['userConfigPath']) && $type) {
 		try {
 			$connect = new Dibi\Connection([
 				'driver' => 'sqlite3',
@@ -1273,7 +1273,7 @@ function revokeToken($array)
 
 function getSchema()
 {
-	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+	if (file_exists($GLOBALS['userConfigPath'])) {
 		try {
 			$connect = new Dibi\Connection([
 				'driver' => 'sqlite3',

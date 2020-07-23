@@ -1,5 +1,5 @@
 <?php
-if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+if (file_exists($GLOBALS['userConfigPath'])) {
 	$hideOrganizrLogin = (checkoAuth()) ? 'collapse' : 'collapse in';
 	$hideOrganizrLoginHeader = (checkoAuthOnly()) ? 'hidden' : '';
 	$hideOrganizrLoginHeader2 = (checkoAuth()) ? '' : 'hidden';

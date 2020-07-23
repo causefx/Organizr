@@ -1,6 +1,6 @@
 <?php
-if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
-    $pageSettingsSettingsLogs = '
+if (file_exists($GLOBALS['userConfigPath'])) {
+	$pageSettingsSettingsLogs = '
     <script>
     $(document).on("click", ".swapLog", function(e) {
         var log = $(this).attr(\'data-name\')+\'Div\';
@@ -11,8 +11,8 @@ if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
     });
     </script>
     <div class="btn-group m-b-20 pull-left">
-        <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog active" data-name="loginLog" data-path="'.$GLOBALS['organizrLoginLog'].'" lang="en">Login Log</button>
-        <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog" data-name="orgLog" data-path="'.$GLOBALS['organizrLog'].'" lang="en">Organizr Log</button>
+        <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog active" data-name="loginLog" data-path="' . $GLOBALS['organizrLoginLog'] . '" lang="en">Login Log</button>
+        <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog" data-name="orgLog" data-path="' . $GLOBALS['organizrLog'] . '" lang="en">Organizr Log</button>
     </div>
     <button class="btn btn-danger btn-sm waves-effect waves-light pull-right purgeLog" type="button"><span class="btn-label"><i class="fa fa-trash"></i></span>Purge Log</button>
     <div class="clearfix"></div>

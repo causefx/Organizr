@@ -1,7 +1,7 @@
 <?php
 function upgradeCheck()
 {
-	if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+	if (file_exists($GLOBALS['userConfigPath'])) {
 		$tempLock = $GLOBALS['dbLocation'] . 'DBLOCK.txt';
 		$updateComplete = $GLOBALS['dbLocation'] . 'completed.txt';
 		$cleanup = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "upgrade" . DIRECTORY_SEPARATOR;

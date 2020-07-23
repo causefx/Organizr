@@ -1013,7 +1013,7 @@ switch ($function) {
 	case 'v1_wizard_page':
 		switch ($method) {
 			case 'GET':
-				if (!file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+				if (!file_exists($GLOBALS['userConfigPath'])) {
 					$result['status'] = 'success';
 					$result['statusText'] = 'success';
 					$result['data'] = $pageWizard;
@@ -1045,7 +1045,7 @@ switch ($function) {
 	case 'v1_wizard_config':
 		switch ($method) {
 			case 'POST':
-				if (!file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+				if (!file_exists($GLOBALS['userConfigPath'])) {
 					$result['status'] = 'success';
 					$result['statusText'] = 'success';
 					$result['data'] = wizardConfig($_POST);
@@ -1064,7 +1064,7 @@ switch ($function) {
 	case 'v1_wizard_path':
 		switch ($method) {
 			case 'POST':
-				if (!file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+				if (!file_exists($GLOBALS['userConfigPath'])) {
 					$result['status'] = 'success';
 					$result['statusText'] = 'success';
 					$result['data'] = wizardPath($_POST);
@@ -1911,8 +1911,8 @@ if ($pretty) {
 	echo '<pre>' . safe_json_encode($result, JSON_PRETTY_PRINT) . '</pre>';
 } else {
 	// will add switch case lil later :/
-	if(isset(getallheaders()['Accept'])){
-		if(strtolower(getallheaders()['Accept']) == 'application/json'){
+	if (isset(getallheaders()['Accept'])) {
+		if (strtolower(getallheaders()['Accept']) == 'application/json') {
 			header('Content-Type: application/json; charset=utf-8');
 		}
 	}

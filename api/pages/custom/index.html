@@ -4,7 +4,7 @@ make sure to start page contents like so:
 <pre>
 &lt;?php
 // This is a check to make sure organizr is setup already...
-if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
+if (file_exists($GLOBALS['userConfigPath'])) {
     // All variables need to start with $customPage .... Make sure to change Simple to any word (First Letter needs to be capital)... i.e. $customPageNewish
 	// Also make sure to escape single quotes
 	$customPageSimple = '
