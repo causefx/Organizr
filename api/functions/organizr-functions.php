@@ -404,11 +404,16 @@ function logout()
 	return true;
 }
 
-function qualifyRequest($accessLevelNeeded)
+function qualifyRequest($accessLevelNeeded, $api = false)
 {
 	if (getUserLevel() <= $accessLevelNeeded && getUserLevel() !== null) {
 		return true;
 	} else {
+		if ($api) {
+			$GLOBALS['api']['response']['result'] = 'error';
+			$GLOBALS['api']['response']['message'] = 'Not Authorized';
+			$GLOBALS['responseCode'] = 401;
+		}
 		return false;
 	}
 }
