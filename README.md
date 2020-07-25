@@ -18,7 +18,7 @@ Do you have quite a bit of services running on your computer or server?  Do you 
 - [Official Site](https://organizr.app) - Will be refreshed soon!
 - [Official Discord](https://organizr.app/discord)
 - [See Wiki](https://github.com/causefx/Organizr/wiki) - Will be updated soon!
-- [Docker](https://hub.docker.com/r/organizrtools/organizr-v2/)
+- [Docker](https://github.com/Organizr/docker-organizr)
 
 <img src="https://user-images.githubusercontent.com/16184466/53614284-a9b73480-3b96-11e9-9bea-d7a30b294267.png">
 
@@ -59,28 +59,38 @@ Do you have quite a bit of services running on your computer or server?  Do you 
 
 <img src="https://user-images.githubusercontent.com/16184466/53667702-fcdcc600-3c2e-11e9-8828-860e531e8096.png">
 
+[![Repository](https://img.shields.io/github/stars/organizr/docker-organizr?color=402885&style=for-the-badge&logo=github&logoColor=41add3&)](https://github.com/Organizr/docker-organizr)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/organizr/docker-organizr/Build%20Container?color=402885&style=for-the-badge&logo=github&logoColor=41add3)](https://github.com/organizr/docker-organizr/actions?query=workflow%3A%22Build+Container%22)
+[![Docker Pulls](https://img.shields.io/docker/pulls/organizr/organizr?color=402885&style=for-the-badge&logo=docker&logoColor=41add3)](https://hub.docker.com/r/organizr/organizr/)
+
 ##### Usage
-```
+
+```bash
 docker create \
   --name=organizr \
   -v <path to data>:/config \
   -e PGID=<gid> -e PUID=<uid>  \
   -p 80:80 \
-  organizrtools/organizr-v2
+  -e fpm="false" `#optional` \
+  -e branch="v2-master" `#optional` \
+  organizr/organizr
 ```
+
 ##### Parameters
+
 The parameters are split into two halves, separated by a colon, the left hand side representing the host and the right the container side. For example with a port -p external:internal - what this shows is the port mapping from internal to external of the container. So `-p 8080:80` would expose port 80 from inside the container to be accessible from the host's IP on port 8080 and `http://192.168.x.x:8080` would show you what's running INSIDE the container on port 80.
 
-* `-p 80` - The port(s)
-* `-v /config` - Mapping the config files for Organizr
-* `-e PGID` Used for GroupID - see below for explanation
-* `-e PUID` Used for UserID - see below for explanation
+- `-p 80` - The port(s)
+- `-v /config` - Mapping the config files for Organizr
+- `-e PGID` Used for GroupID - see below for link
+- `-e PUID` Used for UserID - see below for link
+
+The optional parameters and GID and UID are described in the [readme](https://github.com/Organizr/docker-organizr#parameters) for the container.
 
 ##### Info
-* Shell access whilst the container is running: `docker exec -it organizr /bin/bash`
-* To monitor the logs of the container in realtime: `docker logs -f organizr`
-* Container version number: `docker inspect -f '{{ index .Config.Labels "build_version" }}' organizr`
-* Image version number: `docker inspect -f '{{ index .Config.Labels "build_version" }}' organizrtools/docker-organizr-v2`
+
+- Shell access whilst the container is running: `docker exec -it organizr /bin/bash`
+- To monitor the logs of the container in realtime: `docker logs -f organizr`
 
 <img src="https://user-images.githubusercontent.com/16184466/53614287-a9b73480-3b96-11e9-9c8e-e32b4ae20c0d.png">
 
