@@ -1,5 +1,12 @@
 [
   {
+    "title": "New container",
+    "subTitle": "Deprecating organizrtools/organizr-v2",
+    "date": "2020-07-25 20:30",
+    "body": "Organizrtools/organizr-v2 is being deprecated, breaking changes are coming to Organizr, which this container wont be updated to handle. Please refer to the migration note for details <a href=\"https:\/\/github.com\/Organizr\/docker-organizr#migration\" target=\"_blank\" rel=\"noopener noreferrer\">Container migration note<\/a>",
+    "author": "Roxedus"
+  },
+  {
     "title": "Plex OAuth Patch",
     "subTitle": "You server hostname will now be listed on OAuth box",
     "date": "2020-06-18 16:30",
