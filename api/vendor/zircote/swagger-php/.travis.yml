@@ -1,0 +1,26 @@
+language: php
+
+php:
+  - 7.2
+  - 7.3
+  - 7.4
+
+sudo: false
+
+env:
+  global:
+    - PHPUNIT=1
+
+matrix:
+  include:
+    - php: 7.4
+      env: PHPCS=1 PHPUNIT=0
+
+before_script:
+  - composer self-update
+  - composer install --prefer-dist --no-interaction
+
+script:
+  - sh -c "if [ '$PHPUNIT' = '1' ]; then ./bin/phpunit; fi"
+
+  - sh -c "if [ '$PHPCS' = '1' ]; then ./bin/phpcs -p --extensions=php --standard=PSR2 --error-severity=1 --warning-severity=0 ./src ./tests; fi"
