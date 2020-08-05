@@ -41,44 +41,22 @@ function apiLogin()
 			),
 		)
 	);
-	foreach ($array['data'] as $items) {
-		foreach ($items as $key => $value) {
-			if ($key == 'name') {
-				$newKey = $value;
-			}
-			if ($key == 'value') {
-				$newValue = $value;
-			}
-			if (isset($newKey) && isset($newValue)) {
-				$$newKey = $newValue;
-			}
-		}
-	}
 	return login($array);
 }
 
 function login($array)
 {
 	// Grab username and Password from login form
-	$username = $password = $oAuth = $oAuthType = '';
-	foreach ($array['data'] as $items) {
-		foreach ($items as $key => $value) {
-			if ($key == 'name') {
-				$newKey = $value;
-			}
-			if ($key == 'value') {
-				$newValue = $value;
-			}
-			if (isset($newKey) && isset($newValue)) {
-				$$newKey = $newValue;
-			}
-		}
-	}
+	$username = $array['data']['username'] ?? null;
+	$password = $array['data']['password'] ?? null;
+	$oAuth = $array['data']['oAuth'] ?? null;
+	$oAuthType = $array['data']['oAuthType'] ?? null;
+	$remember = $array['data']['remember'] ?? null;
+	$tfaCode = $array['data']['tfaCode'] ?? null;
+	$loginAttempts = $array['data']['loginAttempts'] ?? null;
+	$output = $array['data']['output'] ?? null;
 	$username = (strpos($GLOBALS['authBackend'], 'emby') !== false) ? $username : strtolower($username);
 	$days = (isset($remember)) ? $GLOBALS['rememberMeDays'] : 1;
-	$oAuth = (isset($oAuth)) ? $oAuth : false;
-	$output = (isset($output)) ? $output : false;
-	$loginAttempts = (isset($loginAttempts)) ? $loginAttempts : false;
 	if ($loginAttempts > $GLOBALS['loginAttempts'] || isset($_COOKIE['lockout'])) {
 		coookieSeconds('set', 'lockout', $GLOBALS['loginLockout'], $GLOBALS['loginLockout']);
 		return 'lockout';
