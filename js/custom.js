@@ -358,7 +358,7 @@ $(document).on("click", ".login-button", function(e) {
                 backgroundColor: '#2cabe3'
             }
         });
-        var post = $('#loginform').serializeArray();
+        var post = $('#loginform').serializeObject();
         organizrAPI('POST', 'api/?v1/login', post).success(function (data) {
             var html = JSON.parse(data);
             if (html.data == true) {
@@ -724,7 +724,7 @@ $(document).on("change", ".tabGroupSelect", function () {
         error:'Organizr Function: Tab API Connection Failed'
     };
     var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
+    //callbacks.add( buildTabEditor );
     settingsAPI(post,callbacks);
 });
 // CHANGE TAB CATEGORY
@@ -742,7 +742,7 @@ $(document).on("change", ".tabCategorySelect", function () {
         error:'Organizr Function: Tab API Connection Failed'
     };
     var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
+    //callbacks.add( buildTabEditor );
     settingsAPI(post,callbacks);
 });
 // CHANGE TAB TYPE
@@ -760,7 +760,7 @@ $(document).on("change", ".tabTypeSelect", function () {
         error:'Organizr Function: Tab API Connection Failed'
     };
     var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
+    //callbacks.add( buildTabEditor );
     settingsAPI(post,callbacks);
 });
 // CHANGE ENABLED TAB
@@ -778,7 +778,7 @@ $(document).on("change", ".enabledSwitch", function () {
         error:'Organizr Function: Tab API Connection Failed'
     };
     var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
+    //callbacks.add( buildTabEditor );
     settingsAPI(post,callbacks);
 });
 // CHANGE SPLASH TAB
@@ -793,10 +793,10 @@ $(document).on("change", ".splashSwitch", function () {
         tabSplashWord:$(this).prop("checked") ? "On" : "Off",
         messageTitle:'',
         messageBody:'Tab Info updated for '+$(this).parent().parent().attr("data-name"),
-        error:'Organizr Function: Tab API Connection Failed'
+        error:'Organizr Function: Tab API Connection Failed',
     };
     var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
+    //callbacks.add( buildTabEditor );
     settingsAPI(post,callbacks);
 });
 // CHANGE SPLASH TAB
@@ -814,7 +814,7 @@ $(document).on("change", ".pingSwitch", function () {
         error:'Organizr Function: Tab API Connection Failed'
     };
     var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
+    //callbacks.add( buildTabEditor );
     settingsAPI(post,callbacks);
 });
 // CHANGE PRELOAD TAB
@@ -832,7 +832,7 @@ $(document).on("change", ".preloadSwitch", function () {
         error:'Organizr Function: Tab API Connection Failed'
     };
     var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
+    //callbacks.add( buildTabEditor );
     settingsAPI(post,callbacks);
 });
 // CHANGE DEFAULT TAB
@@ -848,7 +848,7 @@ $(document).on("change", ".defaultSwitch", function () {
         error:'Organizr Function: Tab API Connection Failed'
     };
     var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
+    //callbacks.add( buildTabEditor );
     settingsAPI(post,callbacks);
 });
 //DELETE TAB
