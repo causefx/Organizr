@@ -22,6 +22,23 @@ var tabActionsList = [];
 tabActionsList['refresh'] = [];
 tabActionsList['close'] = [];
 
+// Add new jquery serializeObject function
+$.fn.serializeObject = function()
+{
+	var o = {};
+	var a = this.serializeArray();
+	$.each(a, function() {
+		if (o[this.name] !== undefined) {
+			if (!o[this.name].push) {
+				o[this.name] = [o[this.name]];
+			}
+			o[this.name].push(this.value || '');
+		} else {
+			o[this.name] = this.value || '';
+		}
+	});
+	return o;
+};
 // Start Organizr
 $(document).ready(function () {
     if(getCookie('organizrOAuth')){
@@ -2532,6 +2549,8 @@ function accountManager(user){
 	}
 }
 function userMenu(user){
+	$('body').attr('data-active-user-group-name',user.data.user.group);
+	$('body').attr('data-active-user-group-id',user.data.user.groupID);
 	var menuList = '<li class="hidden-xs" onclick="toggleFullScreen();"><a class="waves-effect waves-light"> <i class="ti-fullscreen fullscreen-icon"></i></a></li>';
 	var showDebug = (activeInfo.settings.misc.debugArea) ? '<li><a href="javascript:void(0)" onclick="toggleDebug();getDebugPreInfo();"><i class="mdi mdi-bug fa-fw"></i> <span lang="en">Debug Area</span></a></li>' : '';
 	menuList += buildLanguage();
@@ -3673,6 +3692,61 @@ function updateNow(){
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
+}
+function organizrAPI2(type,path,data=null,asyncValue=true){
+	var timeout = 10000;
+	switch(path){
+		case 'api/v2/windows/update':
+		case 'api/v2/docker/update':
+			timeout = 120000;
+			break;
+		default:
+			timeout = 60000;
+	}
+	switch (type) {
+		case 'get':
+		case 'GET':
+		case 'g':
+			return $.ajax({
+				url:path,
+				method:"GET",
+				beforeSend: function(request) {
+					request.setRequestHeader("Token", activeInfo.token);
+					request.setRequestHeader("formKey", local('g','formKey'));
+				},
+				timeout: timeout,
+			});
+			break;
+		case 'delete':
+		case 'DELETE':
+		case 'd':
+			return $.ajax({
+				url:path,
+				method:"DELETE",
+				beforeSend: function(request) {
+					request.setRequestHeader("Token", activeInfo.token);
+					request.setRequestHeader("formKey", local('g','formKey'));
+				},
+				timeout: timeout,
+			});
+			break;
+		case 'post':
+		case 'POST':
+		case 'p':
+			data.formKey = local('g','formKey');
+			return $.ajax({
+				url:path,
+				method:"POST",
+				async: asyncValue,
+				beforeSend: function(request) {
+					request.setRequestHeader("Token", activeInfo.token);
+					request.setRequestHeader("formKey", local('g','formKey'));
+				},
+				data:data
+			});
+		default:
+			console.warn('Organizr API: Method Not Supported');
+	}
 }
 function organizrAPI(type,path,data=null,asyncValue=true){
 	var timeout = 10000;
