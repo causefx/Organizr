@@ -1,4 +1,7 @@
-<?php include 'api/functions/static-globals.php'; ?>
+<?php
+include 'api/functions.php';
+$Organizr = new Organizr();
+?>
 <!DOCTYPE html>
 <html lang="en" ontouchmove>
 
@@ -6,11 +9,11 @@
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <meta content="<?php echo $GLOBALS['organizrIndexDescription']; ?>"
+    <meta content="<?php echo $Organizr->config['description']; ?>"
           name="description">
     <meta content="CauseFX" name="author">
-	<?php echo favIcons(); ?>
-    <title><?php echo $GLOBALS['organizrIndexTitle']; ?></title>
+	<?php echo $Organizr->favIcons(); ?>
+    <title><?php echo $Organizr->config['title']; ?></title>
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css" rel="stylesheet">
     <link href="plugins/bower_components/jquery-wizard-master/css/wizard.css" rel="stylesheet">
@@ -34,10 +37,10 @@
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/simplebar.css" rel="stylesheet">
     <link href="css/plyr.css" rel="stylesheet">
-    <link id="style" href="css/dark.css?v=<?php echo $GLOBALS['fileHash']; ?>" rel="stylesheet">
-    <link href="css/organizr.min.css?v=<?php echo $GLOBALS['fileHash']; ?>" rel="stylesheet">
-	<?php echo pluginFiles('css'); ?>
-    <link id="theme" href="css/themes/Organizr.css?v=<?php echo $GLOBALS['fileHash']; ?>" rel="stylesheet">
+    <link id="style" href="css/dark.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
+    <link href="css/organizr.min.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
+	<?php echo $Organizr->pluginFiles('css'); ?>
+    <link id="theme" href="css/themes/Organizr.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
     <style id="user-appearance"></style>
     <style id="custom-theme-css"></style>
     <style id="custom-css"></style>
@@ -96,7 +99,7 @@
         <div class="dropdown-menu animated bounceInDown bg-danger text-white" id="main-org-error-container">
             <div class="mega-dropdown-menu row">
                 <div class="col-lg-12 mb-4">
-                    <h3 class="mb-3 pull-left"><i class="fa fa-close text-white"></i>&nbsp; <span lang="en">An Error Occured</span>
+                    <h3 class="mb-3 pull-left"><i class="fa fa-close text-white"></i>&nbsp; <span lang="en">An Error Occurred</span>
                     </h3>
                     <h3 class="mb-3 pull-right mouse" onclick="closeOrgError();"><i
                                 class="fa fa-check text-success"></i>&nbsp;
@@ -242,8 +245,9 @@
 <!-- /#wrapper -->
 <!-- jQuery -->
 <!--<script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>-->
-<?php echo "<script>languageList = " . languagePacks(true) . ";\n</script>"; ?>
+<?php echo "<script>languageList = " . $Organizr->languagePacks(true) . ";\n</script>"; ?>
 <script src="js/jquery-2.2.4.min.js"></script>
+<!--<script src="js/jquery-migrate-3.3.0.js"></script>-->
 <script src="bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.js"></script>
 <script src="js/jquery.slimscroll.js"></script>
@@ -256,7 +260,7 @@
 <script src="plugins/bower_components/jquery-wizard-master/libs/formvalidation/bootstrap.min.js"></script>
 <script src="js/bowser.min.js"></script>
 <script src="js/jasny-bootstrap.js"></script>
-<script src="js/cbpFWTabs.js?v=<?php echo $GLOBALS['fileHash']; ?>"></script>
+<script src="js/cbpFWTabs.js?v=<?php echo $Organizr->fileHash; ?>"></script>
 <script src="js/js.cookie.js"></script>
 <script src="js/jquery-lang.min.js"></script>
 <script src="js/jquery-ui.min.js"></script>
@@ -273,7 +277,7 @@
 <script src="plugins/bower_components/datatables/jquery.dataTables.min.js"></script>
 <script src="plugins/bower_components/datatables-plugins/sorting/datetime-moment.js"></script>
 <script src="plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min.js"></script>
-<script src="plugins/bower_components/sweetalert/sweetalert.min.js?v=<?php echo $GLOBALS['fileHash']; ?>"></script>
+<script src="plugins/bower_components/sweetalert/sweetalert.min.js?v=<?php echo $Organizr->fileHash; ?>"></script>
 <script src="plugins/bower_components/switchery/dist/switchery.min.js"></script>
 <script src="js/tinycolor.min.js"></script>
 <script src="plugins/bower_components/bootstrap-colorpicker-sliders/bootstrap.colorpickersliders.min.js"></script>
@@ -293,17 +297,17 @@
 <script src="js/plyr.js"></script>
 <script src="js/simplebar.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
-<script src="js/functions.js?v=<?php echo $GLOBALS['fileHash']; ?>"></script>
-<script src="js/custom.min.js?v=<?php echo $GLOBALS['fileHash']; ?>"></script>
+<script src="js/functions.js?v=<?php echo $Organizr->fileHash; ?>"></script>
+<script src="js/custom.min.js?v=<?php echo $Organizr->fileHash; ?>"></script>
 <script id="custom-theme-javascript"></script>
 <script id="custom-javascript"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"
         integrity="sha384-e9MoFh6Cw/uluf+NZ6MJwfJ1Dm7UOvJf9oTBxxCYDyStJeeAF0q53ztnEbLLDSQP"
         crossorigin="anonymous"></script>
 <?php
-echo googleTracking();
-echo pluginFiles('js');
-echo formKey();
+echo $Organizr->googleTracking();
+echo $Organizr->pluginFiles('js');
+echo $Organizr->formKey();
 ?>
 </body>
 
