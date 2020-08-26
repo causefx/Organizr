@@ -1,9 +1,17 @@
 <?php
-if (file_exists($GLOBALS['userConfigPath'])) {
-	$hideOrganizrLogin = (checkoAuth()) ? 'collapse' : 'collapse in';
-	$hideOrganizrLoginHeader = (checkoAuthOnly()) ? 'hidden' : '';
-	$hideOrganizrLoginHeader2 = (checkoAuth()) ? '' : 'hidden';
-	$pageLogin = '
+$GLOBALS['organizrPages'][] = 'login';
+function get_page_login($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	$hideOrganizrLogin = ($Organizr->checkoAuth()) ? 'collapse' : 'collapse in';
+	$hideOrganizrLoginHeader = ($Organizr->checkoAuthOnly()) ? 'hidden' : '';
+	$hideOrganizrLoginHeader2 = ($Organizr->checkoAuth()) ? '' : 'hidden';
+	return '
 <script>
 if(activeInfo.settings.login.rememberMe){
 	$(\'#checkbox-login\').prop(\'checked\',true);
@@ -14,7 +22,7 @@ if(activeInfo.settings.login.rememberMe){
     <div class="white-box">
       <form class="form-horizontal" id="loginform" onsubmit="return false;">
       	<input id="login-attempts" class="form-control" name="loginAttempts" type="hidden">
-        <a href="javascript:void(0)" class="text-center db visible-xs" id="login-logo">' . logoOrText() . '</a>
+        <a href="javascript:void(0)" class="text-center db visible-xs" id="login-logo">' . $Organizr->logoOrText() . '</a>
         <div id="oAuth-div" class="form-group hidden">
           <div class="col-xs-12">
             <div class="panel panel-success animated tada">
@@ -80,7 +88,7 @@ if(activeInfo.settings.login.rememberMe){
 				          <div class="col-sm-12 text-center">
 				            <input id="oAuth-Input" class="form-control" name="oAuth" type="hidden">
 				            <input id="oAuthType-Input" class="form-control" name="oAuthType" type="hidden">
-				            ' . showLogin() . '
+				            ' . $Organizr->showLogin() . '
 				          </div>
 				        </div>
 	                </div>
@@ -88,7 +96,7 @@ if(activeInfo.settings.login.rememberMe){
 	        </div>
 	        <!-- END ORGANIZR LOGIN -->
         	<!-- PLEX OAUTH LOGIN -->
-	        ' . showoAuth() . '
+	        ' . $Organizr->showoAuth() . '
 	        <!-- END PLEX OAUTH LOGIN -->
         </div>
       </form>

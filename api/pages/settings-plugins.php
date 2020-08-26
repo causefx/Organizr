@@ -1,6 +1,17 @@
 <?php
-if (file_exists($GLOBALS['userConfigPath'])) {
-	$pageSettingsPlugins = '
+$GLOBALS['organizrPages'][] = 'settings_plugins';
+function get_page_settings_plugins($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	return '
 <script>
 	buildPlugins();
 </script>

@@ -1,6 +1,17 @@
 <?php
-
-$pageSettingsUserManageUsers = '
+$GLOBALS['organizrPages'][] = 'settings_user_manage_users';
+function get_page_settings_user_manage_users($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	return '
 <script>
     buildUserManagement();
 </script>
@@ -70,3 +81,4 @@ $pageSettingsUserManageUsers = '
     <div class="clearfix"></div>
 </form>
 ';
+}

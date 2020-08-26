@@ -1,6 +1,17 @@
 <?php
-
-$pageSettingsTabEditorHomepage = '
+$GLOBALS['organizrPages'][] = 'settings_tab_editor_homepage';
+function get_page_settings_tab_editor_homepage($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	return '
 <script>
 	buildHomepage();
 </script>
@@ -17,3 +28,4 @@ $pageSettingsTabEditorHomepage = '
 </div>
 
 ';
+}

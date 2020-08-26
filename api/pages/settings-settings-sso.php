@@ -1,5 +1,17 @@
 <?php
-$pageSettingsSettingsSSO = '
+$GLOBALS['organizrPages'][] = 'settings_settings_sso';
+function get_page_settings_settings_sso($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	return '
 <script>
 	buildSSO();
 </script>
@@ -10,7 +22,7 @@ $pageSettingsSettingsSSO = '
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org">
-            <form id="sso-form" class="addFormTick" onsbumit="return false;"></form>
+            <form id="sso-form" class="addFormTick" onsubmit="return false;"></form>
         </div>
     </div>
 </div>
@@ -46,3 +58,4 @@ $pageSettingsSettingsSSO = '
     <div class="clearfix"></div>
 </form>
 ';
+}
