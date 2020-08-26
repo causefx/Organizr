@@ -1,299 +1,127 @@
 <?php
-function authRegister($username, $password, $defaults, $email, $token = null)
-{
-	if ($GLOBALS['authBackend'] !== '') {
-		ombiImport($GLOBALS['authBackend']);
-	}
-	ssoCheck($username, $password, $token);
-	if (createUser($username, $password, $defaults, $email)) {
-		writeLog('success', 'Registration Function - A User has registered', $username);
-		if ($GLOBALS['PHPMAILER-enabled'] && $email !== '') {
-			$emailTemplate = array(
-				'type' => 'registration',
-				'body' => $GLOBALS['PHPMAILER-emailTemplateRegisterUser'],
-				'subject' => $GLOBALS['PHPMAILER-emailTemplateRegisterUserSubject'],
-				'user' => $username,
-				'password' => null,
-				'inviteCode' => null,
-			);
-			$emailTemplate = phpmEmailTemplate($emailTemplate);
-			$sendEmail = array(
-				'to' => $email,
-				'user' => $username,
-				'subject' => $emailTemplate['subject'],
-				'body' => phpmBuildEmail($emailTemplate),
-			);
-			phpmSendEmail($sendEmail);
-		}
-		if (createToken($username, $email, gravatar($email), $defaults['group'], $defaults['group_id'], $GLOBALS['organizrHash'], $GLOBALS['rememberMeDays'])) {
-			writeLoginLog($username, 'success');
-			writeLog('success', 'Login Function - A User has logged in', $username);
-			return true;
-		}
-	} else {
-		writeLog('error', 'Registration Function - An error occurred', $username);
-		return 'username taken';
-	}
-	return false;
-}
 
-function checkPlexToken($token = '')
+trait AuthFunctions
 {
-	try {
-		if (($token !== '')) {
-			$url = 'https://plex.tv/users/account.json';
-			$headers = array(
-				'X-Plex-Token' => $token,
-				'Content-Type' => 'application/json',
-				'Accept' => 'application/json'
-			);
-			$response = Requests::get($url, $headers);
-			if ($response->success) {
-				return json_decode($response->body, true);
-			}
-		} else {
-			return false;
-		}
-		
-	} catch (Requests_Exception $e) {
-		writeLog('success', 'Plex Token Check Function - Error: ' . $e->getMessage(), SYSTEM);
-	}
-	return false;
-}
-
-function checkPlexUser($username)
-{
-	try {
-		if (!empty($GLOBALS['plexToken'])) {
-			$url = 'https://plex.tv/api/users';
-			$headers = array(
-				'X-Plex-Token' => $GLOBALS['plexToken'],
-			);
-			$response = Requests::get($url, $headers);
-			if ($response->success) {
-				libxml_use_internal_errors(true);
-				$userXML = simplexml_load_string($response->body);
-				if (is_array($userXML) || is_object($userXML)) {
-					$usernameLower = strtolower($username);
-					foreach ($userXML as $child) {
-						if (isset($child['username']) && strtolower($child['username']) == $usernameLower || isset($child['email']) && strtolower($child['email']) == $usernameLower) {
-							writeLog('success', 'Plex User Check - Found User on Friends List', $username);
-							$machineMatches = false;
-							if ($GLOBALS['plexStrictFriends']) {
-								foreach ($child->Server as $server) {
-									if ((string)$server['machineIdentifier'] == $GLOBALS['plexID']) {
-										$machineMatches = true;
-									}
-								}
-							} else {
-								$machineMatches = true;
-							}
-							if ($machineMatches) {
-								writeLog('success', 'Plex User Check - User Approved for Login', $username);
-								return true;
-							} else {
-								writeLog('error', 'Plex User Check - User not Approved User', $username);
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	} catch (Requests_Exception $e) {
-		writeLog('error', 'Plex User Check Function - Error: ' . $e->getMessage(), $username);
-	}
-	return false;
-}
-
-function allPlexUsers($newOnly = false, $friendsOnly = false)
-{
-	try {
-		if (!empty($GLOBALS['plexToken'])) {
-			$url = 'https://plex.tv/api/users';
-			$headers = array(
-				'X-Plex-Token' => $GLOBALS['plexToken'],
-			);
-			$response = Requests::get($url, $headers);
-			if ($response->success) {
-				libxml_use_internal_errors(true);
-				$userXML = simplexml_load_string($response->body);
-				if (is_array($userXML) || is_object($userXML)) {
-					$results = array();
-					foreach ($userXML as $child) {
-						if (((string)$child['restricted'] == '0')) {
-							if ($newOnly) {
-								$taken = usernameTaken((string)$child['username'], (string)$child['email']);
-								if (!$taken) {
-									$results[] = array(
-										'username' => (string)$child['username'],
-										'email' => (string)$child['email'],
-										'id' => (string)$child['id'],
-									);
-								}
-							} elseif ($friendsOnly) {
-								$machineMatches = false;
-								foreach ($child->Server as $server) {
-									if ((string)$server['machineIdentifier'] == $GLOBALS['plexID']) {
-										$machineMatches = true;
-									}
-								}
-								if($machineMatches){
-									$results[] = array(
-										'username' => (string)$child['username'],
-										'email' => (string)$child['email'],
-										'id' => (string)$child['id'],
-									);
-								}
-							}else{
-								$results[] = array(
-									'username' => (string)$child['username'],
-									'email' => (string)$child['email'],
-									'id' => (string)$child['id'],
-								);
-							}
-							
-						}
-					}
-					return $results;
-				}
-			}
-		}
-		return false;
-	} catch (Requests_Exception $e) {
-		writeLog('success', 'Plex Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
-	}
-	return false;
-}
-
-function allJellyfinUsers($newOnly = false)
-{
-	try {
-		if (!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken'])) {
-			$url = qualifyURL($GLOBALS['embyURL']) . '/Users?api_key=' . $GLOBALS['embyToken'];
-			$headers = array();
-			$response = Requests::get($url, $headers);
-			if ($response->success) {
-				$users = json_decode($response->body, true);
-				if (is_array($users) || is_object($users)) {
-					$results = array();
-					foreach ($users as $child) {
-						// Jellyfin doesn't list emails for some reason
-						$email = random_ascii_string(10) . '@placeholder.eml';
-						if ($newOnly) {
-							$taken = usernameTaken((string)$child['Name'], $email);
-							if (!$taken) {
-								$results[] = array(
-									'username' => (string)$child['Name'],
-									'email' => $email
-								);
-							}
-						} else {
-							$results[] = array(
-								'username' => (string)$child['Name'],
-								'email' => $email,
-							);
-						}
-					}
-					return $results;
-				}
-			}
-		}
-		return false;
-	} catch (Requests_Exception $e) {
-		writeLog('success', 'Jellyfin Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
-	}
-	return false;
-}
-
-function allEmbyUsers($newOnly = false)
-{
-	try {
-		if (!empty($GLOBALS['embyURL']) && !empty($GLOBALS['embyToken'])) {
-			$url = qualifyURL($GLOBALS['embyURL']) . '/Users?api_key=' . $GLOBALS['embyToken'];
-			$headers = array();
-			$response = Requests::get($url, $headers);
-			if ($response->success) {
-				$users = json_decode($response->body, true);
-				if (is_array($users) || is_object($users)) {
-					$results = array();
-					foreach ($users as $child) {
-						// Emby doesn't list emails for some reason
-						$email = random_ascii_string(10) . '@placeholder.eml';
-						if ($newOnly) {
-							$taken = usernameTaken((string)$child['Name'], $email);
-							if (!$taken) {
-								$results[] = array(
-									'username' => (string)$child['Name'],
-									'email' => $email
-								);
-							}
-						} else {
-							$results[] = array(
-								'username' => (string)$child['Name'],
-								'email' => $email,
-							);
-						}
-					}
-					return $results;
-				}
-			}
-		}
-		return false;
-	} catch (Requests_Exception $e) {
-		writeLog('success', 'Emby Import User Function - Error: ' . $e->getMessage(), 'SYSTEM');
-	}
-	return false;
-}
-
-function plugin_auth_plex($username, $password)
-{
-	try {
-		$usernameLower = strtolower($username);
-		//Login User
-		$url = 'https://plex.tv/users/sign_in.json';
-		$headers = array(
-			'Accept' => 'application/json',
-			'Content-Type' => 'application/x-www-form-urlencoded',
-			'X-Plex-Product' => 'Organizr',
-			'X-Plex-Version' => '2.0',
-			'X-Plex-Client-Identifier' => $GLOBALS['uuid'],
-		);
-		$data = array(
-			'user[login]' => $username,
-			'user[password]' => $password,
-		);
-		$options = array('timeout' => 30);
-		$response = Requests::post($url, $headers, $data, $options);
-		if ($response->success) {
-			$json = json_decode($response->body, true);
-			if ((is_array($json) && isset($json['user']) && isset($json['user']['username'])) && strtolower($json['user']['username']) == $usernameLower || strtolower($json['user']['email']) == $usernameLower) {
-				//writeLog("success", $json['user']['username']." was logged into organizr using plex credentials");
-				if ((!empty($GLOBALS['plexAdmin']) && (strtolower($GLOBALS['plexAdmin']) == strtolower($json['user']['username']) || strtolower($GLOBALS['plexAdmin']) == strtolower($json['user']['email']))) || checkPlexUser($json['user']['username'])) {
-					return array(
-						'username' => $json['user']['username'],
-						'email' => $json['user']['email'],
-						'image' => $json['user']['thumb'],
-						'token' => $json['user']['authToken']
-					);
-				}
-			}
-		}
-		return false;
-	} catch (Requests_Exception $e) {
-		writeLog('success', 'Plex Auth Function - Error: ' . $e->getMessage(), $username);
-	}
-	return false;
-}
-
-if (function_exists('ldap_connect')) {
-	// Pass credentials to LDAP backend
-	function plugin_auth_ldap($username, $password)
+	public function testing()
 	{
-		if (!empty($GLOBALS['authBaseDN']) && !empty($GLOBALS['authBackendHost'])) {
+		return 'wasssup';
+	}
+	
+	public function checkPlexToken($token = '')
+	{
+		try {
+			if (($token !== '')) {
+				$url = 'https://plex.tv/users/account.json';
+				$headers = array(
+					'X-Plex-Token' => $token,
+					'Content-Type' => 'application/json',
+					'Accept' => 'application/json'
+				);
+				$response = Requests::get($url, $headers);
+				if ($response->success) {
+					return json_decode($response->body, true);
+				}
+			} else {
+				return false;
+			}
+			
+		} catch (Requests_Exception $e) {
+			$this->writeLog('success', 'Plex Token Check Function - Error: ' . $e->getMessage(), SYSTEM);
+		}
+		return false;
+	}
+	
+	public function checkPlexUser($username)
+	{
+		try {
+			if (!empty($this->config['plexToken'])) {
+				$url = 'https://plex.tv/api/users';
+				$headers = array(
+					'X-Plex-Token' => $this->config['plexToken'],
+				);
+				$response = Requests::get($url, $headers);
+				if ($response->success) {
+					libxml_use_internal_errors(true);
+					$userXML = simplexml_load_string($response->body);
+					if (is_array($userXML) || is_object($userXML)) {
+						$usernameLower = strtolower($username);
+						foreach ($userXML as $child) {
+							if (isset($child['username']) && strtolower($child['username']) == $usernameLower || isset($child['email']) && strtolower($child['email']) == $usernameLower) {
+								$this->writeLog('success', 'Plex User Check - Found User on Friends List', $username);
+								$machineMatches = false;
+								if ($this->config['plexStrictFriends']) {
+									foreach ($child->Server as $server) {
+										if ((string)$server['machineIdentifier'] == $this->config['plexID']) {
+											$machineMatches = true;
+										}
+									}
+								} else {
+									$machineMatches = true;
+								}
+								if ($machineMatches) {
+									$this->writeLog('success', 'Plex User Check - User Approved for Login', $username);
+									return true;
+								} else {
+									$this->writeLog('error', 'Plex User Check - User not Approved User', $username);
+								}
+							}
+						}
+					}
+				}
+			}
+			return false;
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Plex User Check Function - Error: ' . $e->getMessage(), $username);
+		}
+		return false;
+	}
+	
+	public function plugin_auth_plex($username, $password)
+	{
+		try {
+			$usernameLower = strtolower($username);
+			//Login User
+			$url = 'https://plex.tv/users/sign_in.json';
+			$headers = array(
+				'Accept' => 'application/json',
+				'Content-Type' => 'application/x-www-form-urlencoded',
+				'X-Plex-Product' => 'Organizr',
+				'X-Plex-Version' => '2.0',
+				'X-Plex-Client-Identifier' => $this->config['uuid'],
+			);
+			$data = array(
+				'user[login]' => $username,
+				'user[password]' => $password,
+			);
+			$options = array('timeout' => 30);
+			$response = Requests::post($url, $headers, $data, $options);
+			if ($response->success) {
+				$json = json_decode($response->body, true);
+				if ((is_array($json) && isset($json['user']) && isset($json['user']['username'])) && strtolower($json['user']['username']) == $usernameLower || strtolower($json['user']['email']) == $usernameLower) {
+					if ((!empty($this->config['plexAdmin']) && (strtolower($this->config['plexAdmin']) == strtolower($json['user']['username']) || strtolower($this->config['plexAdmin']) == strtolower($json['user']['email']))) || $this->checkPlexUser($json['user']['username'])) {
+						return array(
+							'username' => $json['user']['username'],
+							'email' => $json['user']['email'],
+							'image' => $json['user']['thumb'],
+							'token' => $json['user']['authToken']
+						);
+					}
+				}
+			}
+			return false;
+		} catch (Requests_Exception $e) {
+			$this->writeLog('success', 'Plex Auth Function - Error: ' . $e->getMessage(), $username);
+		}
+		return false;
+	}
+	
+	// Pass credentials to LDAP backend
+	public function plugin_auth_ldap($username, $password)
+	{
+		if (!empty($this->config['authBaseDN']) && !empty($this->config['authBackendHost'])) {
 			$ad = new \Adldap\Adldap();
 			// Create a configuration array.
-			$ldapServers = explode(',', $GLOBALS['authBackendHost']);
+			$ldapServers = explode(',', $this->config['authBackendHost']);
 			$i = 0;
 			foreach ($ldapServers as $key => $value) {
 				// Calculate parts
@@ -312,17 +140,17 @@ if (function_exists('ldap_connect')) {
 			$config = [
 				// Mandatory Configuration Options
 				'hosts' => $ldapHosts,
-				'base_dn' => $GLOBALS['authBaseDN'],
-				'username' => (empty($GLOBALS['ldapBindUsername'])) ? null : $GLOBALS['ldapBindUsername'],
-				'password' => (empty($GLOBALS['ldapBindPassword'])) ? null : decrypt($GLOBALS['ldapBindPassword']),
+				'base_dn' => $this->config['authBaseDN'],
+				'username' => (empty($this->config['ldapBindUsername'])) ? null : $this->config['ldapBindUsername'],
+				'password' => (empty($this->config['ldapBindPassword'])) ? null : $this->decrypt($this->config['ldapBindPassword']),
 				// Optional Configuration Options
 				'schema' => (($GLOBALS['ldapType'] == '1') ? Adldap\Schemas\ActiveDirectory::class : (($GLOBALS['ldapType'] == '2') ? Adldap\Schemas\OpenLDAP::class : Adldap\Schemas\FreeIPA::class)),
-				'account_prefix' => (empty($GLOBALS['authBackendHostPrefix'])) ? null : $GLOBALS['authBackendHostPrefix'],
-				'account_suffix' => (empty($GLOBALS['authBackendHostSuffix'])) ? null : $GLOBALS['authBackendHostSuffix'],
+				'account_prefix' => (empty($this->config['authBackendHostPrefix'])) ? null : $this->config['authBackendHostPrefix'],
+				'account_suffix' => (empty($this->config['authBackendHostSuffix'])) ? null : $this->config['authBackendHostSuffix'],
 				'port' => $ldapPort,
 				'follow_referrals' => false,
-				'use_ssl' => $GLOBALS['ldapSSL'],
-				'use_tls' => $GLOBALS['ldapTLS'],
+				'use_ssl' => $this->config['ldapSSL'],
+				'use_tls' => $this->config['ldapTLS'],
 				'version' => 3,
 				'timeout' => 5,
 				// Custom LDAP Options
@@ -340,7 +168,7 @@ if (function_exists('ldap_connect')) {
 				if ($provider->auth()->attempt($username, $password)) {
 					try {
 						// Try and get email from LDAP server
-						$accountDN = ((empty($GLOBALS['authBackendHostPrefix'])) ? null : $GLOBALS['authBackendHostPrefix']) . $username . ((empty($GLOBALS['authBackendHostSuffix'])) ? null : $GLOBALS['authBackendHostSuffix']);
+						$accountDN = ((empty($this->config['authBackendHostPrefix'])) ? null : $this->config['authBackendHostPrefix']) . $username . ((empty($this->config['authBackendHostSuffix'])) ? null : $this->config['authBackendHostSuffix']);
 						$record = $provider->search()->findByDnOrFail($accountDN);
 						$email = $record->getFirstAttribute('mail');
 					} catch (Adldap\Models\ModelNotFoundException $e) {
@@ -356,198 +184,200 @@ if (function_exists('ldap_connect')) {
 					return false;
 				}
 			} catch (\Adldap\Auth\BindException $e) {
-				writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
+				$this->writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
 				// There was an issue binding / connecting to the server.
 			} catch (Adldap\Auth\UsernameRequiredException $e) {
-				writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
+				$this->writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
 				// The user didn't supply a username.
 			} catch (Adldap\Auth\PasswordRequiredException $e) {
-				writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
+				$this->writeLog('error', 'LDAP Function - Error: ' . $e->getMessage(), $username);
 				// The user didn't supply a password.
 			}
 		}
 		return false;
 	}
-} else {
+	
 	// Ldap Auth Missing Dependency
-	function plugin_auth_ldap_disabled()
+	public function plugin_auth_ldap_disabled()
 	{
 		return 'LDAP - Disabled (Dependency: php-ldap missing!)';
 	}
-}
-// Pass credentials to FTP backend
-function plugin_auth_ftp($username, $password)
-{
-	// Calculate parts
-	$digest = parse_url($GLOBALS['authBackendHost']);
-	$scheme = strtolower((isset($digest['scheme']) ? $digest['scheme'] : (function_exists('ftp_ssl_connect') ? 'ftps' : 'ftp')));
-	$host = (isset($digest['host']) ? $digest['host'] : (isset($digest['path']) ? $digest['path'] : ''));
-	$port = (isset($digest['port']) ? $digest['port'] : 21);
-	// Determine Connection Type
-	if ($scheme == 'ftps') {
-		$conn_id = ftp_ssl_connect($host, $port, 20);
-	} elseif ($scheme == 'ftp') {
-		$conn_id = ftp_connect($host, $port, 20);
-	} else {
-		return false;
-	}
-	// Check if valid FTP connection
-	if ($conn_id) {
-		// Attempt login
-		@$login_result = ftp_login($conn_id, $username, $password);
-		ftp_close($conn_id);
-		// Return Result
-		if ($login_result) {
-			return true;
+	
+	// Pass credentials to FTP backend
+	public function plugin_auth_ftp($username, $password)
+	{
+		// Calculate parts
+		$digest = parse_url($this->config['authBackendHost']);
+		$scheme = strtolower((isset($digest['scheme']) ? $digest['scheme'] : (function_exists('ftp_ssl_connect') ? 'ftps' : 'ftp')));
+		$host = (isset($digest['host']) ? $digest['host'] : (isset($digest['path']) ? $digest['path'] : ''));
+		$port = (isset($digest['port']) ? $digest['port'] : 21);
+		// Determine Connection Type
+		if ($scheme == 'ftps') {
+			$conn_id = ftp_ssl_connect($host, $port, 20);
+		} elseif ($scheme == 'ftp') {
+			$conn_id = ftp_connect($host, $port, 20);
 		} else {
 			return false;
 		}
-	} else {
-		return false;
-	}
-}
-
-// Pass credentials to Emby Backend
-function plugin_auth_emby_local($username, $password)
-{
-	try {
-		$url = qualifyURL($GLOBALS['embyURL']) . '/Users/AuthenticateByName';
-		$headers = array(
-			'Authorization' => 'Emby UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
-			'Content-Type' => 'application/json',
-		);
-		$data = array(
-			'Username' => $username,
-			'pw' => $password,
-			'Password' => sha1($password),
-			'PasswordMd5' => md5($password),
-		);
-		$response = Requests::post($url, $headers, json_encode($data));
-		if ($response->success) {
-			$json = json_decode($response->body, true);
-			if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
-				// Login Success - Now Logout Emby Session As We No Longer Need It
-				$headers = array(
-					'X-Emby-Token' => $json['AccessToken'],
-					'X-Mediabrowser-Token' => $json['AccessToken'],
-				);
-				$response = Requests::post(qualifyURL($GLOBALS['embyURL']) . '/Sessions/Logout', $headers, array());
-				if ($response->success) {
-					return true;
-				}
+		// Check if valid FTP connection
+		if ($conn_id) {
+			// Attempt login
+			@$login_result = ftp_login($conn_id, $username, $password);
+			ftp_close($conn_id);
+			// Return Result
+			if ($login_result) {
+				return true;
+			} else {
+				return false;
 			}
+		} else {
+			return false;
 		}
-		return false;
-	} catch (Requests_Exception $e) {
-		writeLog('error', 'Emby Local Auth Function - Error: ' . $e->getMessage(), $username);
 	}
-	return false;
-}
-
-// Pass credentials to JellyFin Backend
-function plugin_auth_jellyfin($username, $password)
-{
-	try {
-		$url = qualifyURL($GLOBALS['embyURL']) . '/Users/authenticatebyname';
-		$headers = array(
-			'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0"',
-			'Content-Type' => 'application/json',
-		);
-		$data = array(
-			'Username' => $username,
-			'Pw' => $password
-		);
-		$response = Requests::post($url, $headers, json_encode($data));
-		if ($response->success) {
-			$json = json_decode($response->body, true);
-			if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
-				writeLog('success', 'JellyFin Auth Function - Found User and Logged In', $username);
-				// Login Success - Now Logout JellyFin Session As We No Longer Need It
-				$headers = array(
-					'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0", Token="' . $json['AccessToken'] . '"',
-					'Content-Type' => 'application/json',
-				);
-				$response = Requests::post(qualifyURL($GLOBALS['embyURL']) . '/Sessions/Logout', $headers, array());
-				if ($response->success) {
-					return true;
-				}
-			}
-		}
-		return false;
-	} catch (Requests_Exception $e) {
-		writeLog('error', 'JellyFin Auth Function - Error: ' . $e->getMessage(), $username);
-	}
-	return false;
-}
-
-// Authenticate against emby connect
-function plugin_auth_emby_connect($username, $password)
-{
-	// Emby disabled EmbyConnect on their API
-	// https://github.com/MediaBrowser/Emby/issues/3553
-	//return plugin_auth_emby_local($username, $password);
-	try {
-		// Get A User
-		$connectUserName = '';
-		$url = qualifyURL($GLOBALS['embyURL']) . '/Users?api_key=' . $GLOBALS['embyToken'];
-		$response = Requests::get($url);
-		if ($response->success) {
-			$json = json_decode($response->body, true);
-			if (is_array($json)) {
-				foreach ($json as $key => $value) { // Scan for this user
-					if (isset($value['ConnectUserName']) && isset($value['ConnectLinkType'])) { // Qualify as connect account
-						if (strtolower($value['ConnectUserName']) == $username || strtolower($value['Name']) == $username) {
-							$connectUserName = $value['ConnectUserName'];
-							writeLog('success', 'Emby Connect Auth Function - Found User', $username);
-							break;
-						}
-					}
-				}
-				if ($connectUserName) {
-					writeLog('success', 'Emby Connect Auth Function - Attempting to Login with Emby ID: ' . $connectUserName, $username);
-					$connectURL = 'https://connect.emby.media/service/user/authenticate';
+	
+	// Pass credentials to Emby Backend
+	public function plugin_auth_emby_local($username, $password)
+	{
+		try {
+			$url = $this->qualifyURL($this->config['embyURL']) . '/Users/AuthenticateByName';
+			$headers = array(
+				'Authorization' => 'Emby UserId="e8837bc1-ad67-520e-8cd2-f629e3155721", Client="None", Device="Organizr", DeviceId="xxx", Version="1.0.0.0"',
+				'Content-Type' => 'application/json',
+			);
+			$data = array(
+				'Username' => $username,
+				'pw' => $password,
+				'Password' => sha1($password),
+				'PasswordMd5' => md5($password),
+			);
+			$response = Requests::post($url, $headers, json_encode($data));
+			if ($response->success) {
+				$json = json_decode($response->body, true);
+				if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
+					// Login Success - Now Logout Emby Session As We No Longer Need It
 					$headers = array(
-						'Accept' => 'application/json',
-						'X-Application' => 'Organizr/2.0'
+						'X-Emby-Token' => $json['AccessToken'],
+						'X-Mediabrowser-Token' => $json['AccessToken'],
 					);
-					$data = array(
-						'nameOrEmail' => $username,
-						'rawpw' => $password,
-					);
-					$response = Requests::post($connectURL, $headers, $data);
+					$response = Requests::post($this->qualifyURL($this->config['embyURL']) . '/Sessions/Logout', $headers, array());
 					if ($response->success) {
-						$json = json_decode($response->body, true);
-						if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Name'] == $connectUserName) {
-							return array(
-								'email' => $json['User']['Email'],
-								//'image' => $json['User']['ImageUrl'],
-							);
-						} else {
-							writeLog('error', 'Emby Connect Auth Function - Bad Response', $username);
-						}
-					} else {
-						writeLog('error', 'Emby Connect Auth Function - 401 From Emby Connect', $username);
+						return true;
 					}
 				}
 			}
+			return false;
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Emby Local Auth Function - Error: ' . $e->getMessage(), $username);
 		}
 		return false;
-	} catch (Requests_Exception $e) {
-		writeLog('error', 'Emby Connect Auth Function - Error: ' . $e->getMessage(), $username);
+	}
+	
+	// Pass credentials to JellyFin Backend
+	public function plugin_auth_jellyfin($username, $password)
+	{
+		try {
+			$url = $this->qualifyURL($this->config['embyURL']) . '/Users/authenticatebyname';
+			$headers = array(
+				'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0"',
+				'Content-Type' => 'application/json',
+			);
+			$data = array(
+				'Username' => $username,
+				'Pw' => $password
+			);
+			$response = Requests::post($url, $headers, json_encode($data));
+			if ($response->success) {
+				$json = json_decode($response->body, true);
+				if (is_array($json) && isset($json['SessionInfo']) && isset($json['User']) && $json['User']['HasPassword'] == true) {
+					$this->writeLog('success', 'JellyFin Auth Function - Found User and Logged In', $username);
+					// Login Success - Now Logout JellyFin Session As We No Longer Need It
+					$headers = array(
+						'X-Emby-Authorization' => 'MediaBrowser Client="Organizr Auth", Device="Organizr", DeviceId="orgv2", Version="2.0", Token="' . $json['AccessToken'] . '"',
+						'Content-Type' => 'application/json',
+					);
+					$response = Requests::post($this->qualifyURL($this->config['embyURL']) . '/Sessions/Logout', $headers, array());
+					if ($response->success) {
+						return true;
+					}
+				}
+			}
+			return false;
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'JellyFin Auth Function - Error: ' . $e->getMessage(), $username);
+		}
 		return false;
 	}
-}
-
-// Authenticate Against Emby Local (first) and Emby Connect
-function plugin_auth_emby_all($username, $password)
-{
-	// Emby disabled EmbyConnect on their API
-	// https://github.com/MediaBrowser/Emby/issues/3553
-	$localResult = plugin_auth_emby_local($username, $password);
-	//return $localResult;
-	if ($localResult) {
-		return $localResult;
-	} else {
-		return plugin_auth_emby_connect($username, $password);
+	
+	// Authenticate against emby connect
+	public function plugin_auth_emby_connect($username, $password)
+	{
+		// Emby disabled EmbyConnect on their API
+		// https://github.com/MediaBrowser/Emby/issues/3553
+		//return plugin_auth_emby_local($username, $password);
+		try {
+			// Get A User
+			$connectUserName = '';
+			$url = $this->qualifyURL($this->config['embyURL']) . '/Users?api_key=' . $this->config['embyToken'];
+			$response = Requests::get($url);
+			if ($response->success) {
+				$json = json_decode($response->body, true);
+				if (is_array($json)) {
+					foreach ($json as $key => $value) { // Scan for this user
+						if (isset($value['ConnectUserName']) && isset($value['ConnectLinkType'])) { // Qualify as connect account
+							if (strtolower($value['ConnectUserName']) == $username || strtolower($value['Name']) == $username) {
+								$connectUserName = $value['ConnectUserName'];
+								$this->writeLog('success', 'Emby Connect Auth Function - Found User', $username);
+								break;
+							}
+						}
+					}
+					if ($connectUserName) {
+						$this->writeLog('success', 'Emby Connect Auth Function - Attempting to Login with Emby ID: ' . $connectUserName, $username);
+						$connectURL = 'https://connect.emby.media/service/user/authenticate';
+						$headers = array(
+							'Accept' => 'application/json',
+							'X-Application' => 'Organizr/2.0'
+						);
+						$data = array(
+							'nameOrEmail' => $username,
+							'rawpw' => $password,
+						);
+						$response = Requests::post($connectURL, $headers, $data);
+						if ($response->success) {
+							$json = json_decode($response->body, true);
+							if (is_array($json) && isset($json['AccessToken']) && isset($json['User']) && $json['User']['Name'] == $connectUserName) {
+								return array(
+									'email' => $json['User']['Email'],
+									//'image' => $json['User']['ImageUrl'],
+								);
+							} else {
+								$this->writeLog('error', 'Emby Connect Auth Function - Bad Response', $username);
+							}
+						} else {
+							$this->writeLog('error', 'Emby Connect Auth Function - 401 From Emby Connect', $username);
+						}
+					}
+				}
+			}
+			return false;
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Emby Connect Auth Function - Error: ' . $e->getMessage(), $username);
+			return false;
+		}
 	}
+	
+	// Authenticate Against Emby Local (first) and Emby Connect
+	public function plugin_auth_emby_all($username, $password)
+	{
+		// Emby disabled EmbyConnect on their API
+		// https://github.com/MediaBrowser/Emby/issues/3553
+		$localResult = $this->plugin_auth_emby_local($username, $password);
+		//return $localResult;
+		if ($localResult) {
+			return $localResult;
+		} else {
+			return $this->plugin_auth_emby_connect($username, $password);
+		}
+	}
+	
 }
