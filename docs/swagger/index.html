@@ -39,7 +39,7 @@
     window.onload = function() {
       // Begin Swagger UI call region
       const ui = SwaggerUIBundle({
-        url: "swagger.json",
+        url: "../api.json",
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [
@@ -49,7 +49,16 @@
         plugins: [
           SwaggerUIBundle.plugins.DownloadUrl
         ],
-        layout: "StandaloneLayout"
+        layout: "BaseLayout",
+		tagsSorter:'alpha',
+		operationsSorter:'alpha',
+		filter: true,
+		syntaxHighlight: {
+			'activate':true,
+			'theme':'monokai'
+		},
+		defaultModelRendering:'example'
+		
       })
       // End Swagger UI call region
 
