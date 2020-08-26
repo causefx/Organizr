@@ -13,12 +13,12 @@ return array(
 	'PHPMAILER-domain' => '',
 	'PHPMAILER-template' => 'default',
 	'PHPMAILER-logo' => 'https://raw.githubusercontent.com/causefx/Organizr/v2-develop/plugins/images/organizr/logo-wide.png',
-	'PHPMAILER-emailTemplateResetPassword' => '
+	'PHPMAILER-emailTemplateReset' => '
 	<h2>Hey there {user}!</h2><br />
 	Looks like you forgot your password.  Well, I got you...  Here is your new password: {password}<br />
 	If you want to change it once you log in, you can.  Head over to my website: {domain}<br />
 	',
-	'PHPMAILER-emailTemplateResetPasswordSubject' => 'Password Reset',
+	'PHPMAILER-emailTemplateResetSubject' => 'Password Reset',
 	'PHPMAILER-emailTemplateInviteUser' => '
 	<h2>Hey there {user}!</h2><br />
 	Here is the invite code to join my cool media server: {inviteCode}<br/>

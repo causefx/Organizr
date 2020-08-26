@@ -1,24 +1,24 @@
 <?php
 switch ($extra) {
-    case 'invite':
-        $button = '
+	case 'invite':
+		$button = '
 		<center>
-			<a href="'.getServerPath(true).'?invite='.$email['inviteCode'].'" style="display: inline-block; padding: 11px 30px; margin: 20px 0px 30px; font-size: 15px; color: #fff; background: #1e88e5; border-radius: 60px; text-decoration:none;">Use Invite Code</a>
+			<a href="' . $this->getServerPath(true) . '?invite=' . $email['inviteCode'] . '" style="display: inline-block; padding: 11px 30px; margin: 20px 0px 30px; font-size: 15px; color: #fff; background: #1e88e5; border-radius: 60px; text-decoration:none;">Use Invite Code</a>
 		</center>
         ';
-        break;
-    case 'reset':
-        $button = '
+		break;
+	case 'reset':
+		$button = '
 		<center>
-			<a href="'.getServerPath(true).'" style="display: inline-block; padding: 11px 30px; margin: 20px 0px 30px; font-size: 15px; color: #fff; background: #1e88e5; border-radius: 60px; text-decoration:none;">Goto My Site</a>
+			<a href="' . $this->getServerPath(true) . '" style="display: inline-block; padding: 11px 30px; margin: 20px 0px 30px; font-size: 15px; color: #fff; background: #1e88e5; border-radius: 60px; text-decoration:none;">Goto My Site</a>
 		</center>
         ';
-        break;
-    default:
-        $button = null;
-        break;
+		break;
+	default:
+		$button = null;
+		break;
 }
- $email = '
+$email = '
  <!DOCTYPE html>
  <html>
  <head>
@@ -33,14 +33,14 @@ switch ($extra) {
  				<tbody>
  					<tr>
  						<td align="center" style="vertical-align: top; padding-bottom:30px;"><a href="javascript:void(0)" target="_blank"><br>
- 						<img alt="admin Responsive web app kit" src="'.$GLOBALS['PHPMAILER-logo'].'" style="border:none;width: 100%;"></a></td>
+ 						<img alt="admin Responsive web app kit" src="' . $this->config['PHPMAILER-logo'] . '" style="border:none;width: 100%;"></a></td>
  					</tr>
  				</tbody>
  			</table>
  			<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
  				<tbody>
  					<tr>
- 						<td style="background: #1e88e5;padding:20px;color:#fff;text-align:center;">'.$subject.'</td>
+ 						<td style="background: #1e88e5;padding:20px;color:#fff;text-align:center;">' . $subject . '</td>
  					</tr>
  				</tbody>
  			</table>
@@ -49,8 +49,8 @@ switch ($extra) {
  					<tbody>
  						<tr>
  							<td>
- 								<p>'.$body.'</p>
- 								'.$button.'
+ 								<p>' . $body . '</p>
+ 								' . $button . '
  							</td>
  						</tr>
  					</tbody>

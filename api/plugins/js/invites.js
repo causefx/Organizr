@@ -1,23 +1,4 @@
-/* PHP MAILER JS FILE */
-/*
-$(document).on('click', '#PHPMAILER-settings-button', function() {
-	var post = {
-        plugin:'PHPMailer/settings/get', // used for switch case in your API call
-        api:'api/?v1/plugin', // API Endpoint will always be this for custom plugin API calls
-        name:$(this).attr('data-plugin-name'),
-        configName:$(this).attr('data-config-name'),
-        messageTitle:'', // Send succees message title (top line)
-        messageBody:'Disabled '+$(this).attr('data-plugin-name'), // Send succees message body (bottom line)
-        error:'Organizr Function: API Connection Failed' // conole error message
-    };
-	var callbacks = $.Callbacks(); // init callbacks var
-    //callbacks.add(  ); // add function to callback to be fired after API call
-    //settingsAPI(post,callbacks); // exec API call
-    //ajaxloader(".content-wrap","in");
-    //setTimeout(function(){ buildPlugins();ajaxloader(); }, 3000);
-});
-*/
-
+/* INVITES JS FILE */
 // FUNCTIONS
 inviteLaunch()
 function inviteLaunch(){
@@ -92,19 +73,19 @@ function joinPlex(){
         message('Invite Error',' Please Enter Email',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }else if(password.val() == ''){
         password.focus();
-        message('Invite Error',' Please Enter Passowrd',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+        message('Invite Error',' Please Enter Password',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(email.val() !== '' && username.val() !== '' && password.val() !== ''){
-        organizrAPI('POST','api/?v1/plex/join',{username:username.val(), email:email.val(), password:password.val()}).success(function(data) {
-    		var response = JSON.parse(data);
-            if(response.data === true){
+        organizrAPI2('POST','api/v2/plex/register',{username:username.val(), email:email.val(), password:password.val()}).success(function(data) {
+    		var response = data.response;
+            if(response.result === 'success'){
                 $('.invite-step-3-plex-no').toggleClass('hidden');
                 $('.invite-step-3-plex-yes').toggleClass('hidden');
                 message('Invite Function',' User Created',activeInfo.settings.notifications.position,'#FFF','success','5000');
                 $('#inviteUsernameInvite').val(username.val());
                 hasPlexUsername();
             }else{
-                message('Invite Error',' '+response.data,activeInfo.settings.notifications.position,'#FFF','warning','5000');
+                message('Invite Error',' '+response.message,activeInfo.settings.notifications.position,'#FFF','warning','5000');
             }
     	}).fail(function(xhr) {
     		console.error("Organizr Function: API Connection Failed");
@@ -124,19 +105,19 @@ function joinEmby(){
         message('Invite Error',' Please Enter Email',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }else if(password.val() == ''){
         password.focus();
-        message('Invite Error',' Please Enter Passowrd',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+        message('Invite Error',' Please Enter Password',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }
     if(email.val() !== '' && username.val() !== '' && password.val() !== ''){
-        organizrAPI('POST','api/?v1/emby/join',{username:username.val(), email:email.val(), password:password.val()}).success(function(data) {
-    		var response = JSON.parse(data);
-            if(response.data === true){
+        organizrAPI2('POST','api/v2/emby/register',{username:username.val(), email:email.val(), password:password.val()}).success(function(data) {
+    		var response = data.response;
+            if(response.result === 'success'){
                 $('.invite-step-3-emby-no').toggleClass('hidden');
                 $('.invite-step-3-emby-yes').toggleClass('hidden');
                 message('Invite Function',' User Created',activeInfo.settings.notifications.position,'#FFF','success','5000');
                 $('#inviteUsernameInviteEmby').val(username.val());
                 hasEmbyUsername();
             }else{
-                message('Invite Error',' '+response.data,activeInfo.settings.notifications.position,'#FFF','warning','5000');
+                message('Invite Error',' '+response.message,activeInfo.settings.notifications.position,'#FFF','warning','5000');
             }
     	}).fail(function(xhr) {
     		console.error("Organizr Function: API Connection Failed");
@@ -176,22 +157,19 @@ function hasPlexUsername(){
         message('Invite Error',' Please Enter Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }else{
         var post = {
-            plugin:'Invites/codes',
-            action:'use',
-            code:code,
             usedby:username.val()
         };
         ajaxloader(".content-wrap","in");
-        organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-            var response = JSON.parse(data);
-            if(response.data === true){
+        organizrAPI2('POST','api/v2/plugins/invites/' + code,post).success(function(data) {
+            var response = data.response;
+            if(response.result === 'success'){
                 $('.invite-step-3-plex-yes').toggleClass('hidden');
                 $('.invite-step-4-plex-accept').toggleClass('hidden');
                 if(local('get', 'invite')){
             		local('remove', 'invite');
             	}
             }else{
-                message('Invite Error',' Code Incorrect',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+                message('Invite Error',response.message,activeInfo.settings.notifications.position,'#FFF','warning','5000');
             }
             ajaxloader();;
         }).fail(function(xhr) {
@@ -208,22 +186,19 @@ function hasEmbyUsername(){
         message('Invite Error',' Please Enter Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
     }else{
         var post = {
-            plugin:'Invites/codes',
-            action:'use',
-            code:code,
             usedby:username.val()
         };
         ajaxloader(".content-wrap","in");
-        organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-            var response = JSON.parse(data);
-            if(response.data === true){
+        organizrAPI2('POST','api/v2/plugins/invites/' + code,post).success(function(data) {
+	        var response = data.response;
+	        if(response.result === 'success'){
                 $('.invite-step-3-emby-yes').toggleClass('hidden');
                 $('.invite-step-4-emby-accept').toggleClass('hidden');
                 if(local('get', 'invite')){
             		local('remove', 'invite');
             	}
             }else{
-                message('Invite Error',' Code Incorrect',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+                message('Invite Error',response.message,activeInfo.settings.notifications.position,'#FFF','warning','5000');
             }
             ajaxloader();;
         }).fail(function(xhr) {
@@ -234,19 +209,14 @@ function hasEmbyUsername(){
 }
 function verifyInvite(){
     var code = $('#inviteCodeInput').val().toUpperCase();
-    var post = {
-        plugin:'Invites/codes',
-        action:'check',
-        code:code
-    };
     ajaxloader(".content-wrap","in");
-    organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-        var response = JSON.parse(data);
-        if(response.data === true){
+    organizrAPI2('GET','api/v2/plugins/invites/'+code).success(function(data) {
+        var response = data.response;
+        if(response.result === 'success'){
             $('.invite-step-1').toggleClass('hidden');
             $('.invite-step-2').toggleClass('hidden');
         }else{
-            message('Invite Error',' Code Incorrect',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+            message('Invite Error',response.message,activeInfo.settings.notifications.position,'#FFF','warning','5000');
         }
         if(local('get', 'invite')){
             local('remove', 'invite');
@@ -286,15 +256,13 @@ function createNewInvite(){
 
     if(email.val() !== '' && username.val() !== ''){
         var post = {
-            plugin:'Invites/codes',
-            action:'create',
             code:createRandomString(6).toUpperCase(),
             email:email.val(),
             username:username.val(),
         };
         ajaxloader(".content-wrap","in");
-        organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-            var response = JSON.parse(data);
+        organizrAPI2('POST','api/v2/plugins/invites',post).success(function(data) {
+            var response = data.response;
             $.magnificPopup.close();
             ajaxloader();
             message('Invite',' Invite Created',activeInfo.settings.notifications.position,'#FFF','success','5000');
@@ -306,15 +274,10 @@ function createNewInvite(){
     }
 
 }
-function deleteInvite(id){
-    var post = {
-        plugin:'Invites/codes',
-        action:'delete',
-        id:id,
-    };
+function deleteInvite(code, id){
     ajaxloader(".content-wrap","in");
-    organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-        var response = JSON.parse(data);
+    organizrAPI2('DELETE','api/v2/plugins/invites/' + code).success(function(data) {
+        var response = data.response;
         $('#inviteItem-'+id).remove();
         //$.magnificPopup.close();
         ajaxloader();
@@ -347,7 +310,7 @@ function buildInvites(array){
             <td>`+v.usedby+`</td>
             <td>`+v.ip+`</td>
             <td>`+v.valid+`</td>
-            <td><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5" onclick="deleteInvite('`+v.id+`');"><i class="ti-trash"></i></button></td>
+            <td><button type="button" class="btn btn-danger btn-outline btn-circle btn-lg m-r-5" onclick="deleteInvite('`+v.code+`','`+v.id+`');"><i class="ti-trash"></i></button></td>
         </tr>
         `;
     });
@@ -356,13 +319,9 @@ function buildInvites(array){
 $(document).on('click', '.inviteModal', function() {
     var htmlDOM = '';
     if (activeInfo.user.loggedin === true && activeInfo.user.groupID <= 1) {
-        var post = {
-            plugin:'Invites/codes',
-            action:'get',
-        };
         ajaxloader(".content-wrap","in");
-        organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-            var response = JSON.parse(data);
+        organizrAPI2('GET','api/v2/plugins/invites').success(function(data) {
+            var response = data.response;
             var htmlDOM = '';
             htmlDOM = `
             <div class="col-md-12">
@@ -496,47 +455,10 @@ $(document).on('click', '.inviteModal', function() {
     }
 });
 
-// CHANGE CUSTOMIZE Options
-$(document).on('change asColorPicker::close', '#INVITES-settings-page1 :input', function(e) {
-    var input = $(this);
-    switch ($(this).attr('type')) {
-        case 'switch':
-        case 'checkbox':
-            var value = $(this).prop("checked") ? true : false;
-            break;
-        default:
-            var value = $(this).val().toString();
-    }
-	var post = {
-        api:'api/?v1/update/config',
-        name:$(this).attr("name"),
-        type:$(this).attr("data-type"),
-        value:value,
-        messageTitle:'',
-        messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
-        error:'Organizr Function: API Connection Failed'
-    };
-	var callbacks = $.Callbacks();
-    //callbacks.add( buildCustomizeAppearance );
-    settingsAPI(post,callbacks);
-    //disable button then renable
-    $('#INVITES-settings-page :input').prop('disabled', 'true');
-    setTimeout(
-        function(){
-            $('#INVITES-settings-page :input').prop('disabled', null);
-            input.emulateTab();
-        },
-        2000
-    );
-
-});
 $(document).on('click', '#INVITES-settings-button', function() {
-    var post = {
-        plugin:'Invites/settings/get', // used for switch case in your API call
-    };
     ajaxloader(".content-wrap","in");
-    organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-        var response = JSON.parse(data);
+    organizrAPI2('GET','api/v2/plugins/invites/settings').success(function(data) {
+        var response = data.response;
         $('#INVITES-settings-items').html(buildFormGroup(response.data));
         $('.selectpicker').selectpicker();
     }).fail(function(xhr) {
