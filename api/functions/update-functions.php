@@ -7,7 +7,8 @@ trait UpdateFunctions
 		$dockerUpdate = null;
 		chdir('/etc/cont-init.d/');
 		if (file_exists('./30-install')) {
-			$dockerUpdate = shell_exec('./30-install');
+			$this->setAPIResponse('error', 'Update failed - OrgTools is deprecated - please use organizr/organizr', 500);
+			return false;
 		} elseif (file_exists('./40-install')) {
 			$dockerUpdate = shell_exec('./40-install');
 		}
