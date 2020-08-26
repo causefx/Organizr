@@ -78,9 +78,9 @@ function highlightObject(json) {
         return '<span class="' + cls + '">' + match + '</span>';
     });
 }
-function orgDebug(cmd) {
-    var cmd = $('#debug-input').val();
-    var result = '';
+function orgDebug() {
+    let cmd = $('#debug-input').val();
+    let result = '';
     if (cmd !== '') {
         result = eval(cmd);
     }
@@ -114,7 +114,6 @@ function copyDebug(){
     var pre = $('#debugPreInfo').find('.whitebox').text();
     var debug = $('#debugResults').find('.whitebox').text();
     clipboard(true, pre + debug);
-    console.log('copied');
     console.log(pre + debug);
 }
 function formatDebug(result){
@@ -180,7 +179,7 @@ function clipboard(trigger = true, string = null){
 function getLangStrings(){
     let strings = JSON.stringify(window.langStrings, null, '\t');
     clipboard(true,strings);
-    console.log('Copied JSON Strings to clipboard');
+	organizrConsole('JSON Function','Copied JSON Strings to clipboard');
 }
 function getHiddenProp(){
     var prefixes = ['webkit','moz','ms','o'];
@@ -256,7 +255,7 @@ function tabTimerAction(){
                     tabInformation[tab]['increments'] = tabInformation[tab]['increments'] + 1;
                     if(tabInformation[tab]['increments'] >= minutes){
                         tabInformation[tab]['increments'] = 0;
-                        console.log('Tab Function: Auto Closing tab: '+tab);
+	                    organizrConsole('Tab Function','Auto Closing tab: '+tab);
                         closeTab(tab);
                     }
                 }
@@ -273,7 +272,7 @@ function tabTimerAction(){
                 tabInformation[tab]['increments'] = tabInformation[tab]['increments'] + 1;
                 if(tabInformation[tab]['increments'] >= minutes){
                     tabInformation[tab]['increments'] = 0;
-                    console.log('Tab Function: Auto Reloading tab: '+tab);
+	                organizrConsole('Tab Function','Auto Reloading tab: '+tab);
                     reloadTab(tab, tabInformation[tab]['tabInfo']['type']);
                 }
             }
@@ -358,9 +357,7 @@ function setHash(hash){
 }
 function getQueryVariable(variable){
    var query = window.location.search.substring(1);
-   console.log(query);
    var vars = query.split("&");
-   console.log(vars);
    for (var i=0;i<vars.length;i++) {
        var pair = vars[i].split("=");
        if(pair[0] == variable){return pair[1];}
@@ -414,6 +411,7 @@ function iconPrefixSplash(source){
 function cleanClass(string){
 	return string.replace(/ +/g, "-").replace(/\W+/g, "-");
 }
+// What the hell is this?  I don't remember this lol
 function noTabs(arrayItems){
 	if (arrayItems.data.user.loggedin === true) {
 		organizrConnect('api/?v1/no_tabs').success(function(data) {
@@ -454,22 +452,19 @@ function formatIcon (icon) {
 }
 function logout(){
 	message('',' Goodbye!',activeInfo.settings.notifications.position,'#FFF','success','10000');
-	organizrAPI('GET','api/?v1/logout').success(function(data) {
+	organizrAPI2('GET','api/v2/logout').success(function(data) {
         try {
-            var html = JSON.parse(data);
+            var html = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		if(html.data == true){
+
             local('set','message','Goodbye|Logout Successful|success');
             history.replaceState(null, null, ' ');
 			location.reload();
-		}else{
-			message('Logout Error',' An Error Occured',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-			console.error('Organizr Function: Logout failed');
-		}
+
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Logout Failed");
 	});
@@ -568,12 +563,12 @@ function switchTab(tab, type){
 			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
             editPageTitle(tab);
 			if(newTab.hasClass('loaded')){
-				console.log('Tab Function: Switching to tab: '+tab);
+				organizrConsole('Tab Function','Switching to tab: '+tab);
 				newTab.addClass("show").removeClass('hidden');
                 setTabInfo(cleanClass(tab),'active',true);
 			}else{
 				$("#preloader").fadeIn();
-				console.log('Tab Function: Loading new tab for: '+tab);
+				organizrConsole('Tab Function','Loading new tab for: '+tab);
 				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
 				loadInternal(tabURL,cleanClass(tab));
@@ -591,12 +586,12 @@ function switchTab(tab, type){
 			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
             editPageTitle(tab);
 			if(newTab.hasClass('loaded')){
-				console.log('Tab Function: Switching to tab: '+tab);
+				organizrConsole('Tab Function','Switching to tab: '+tab);
 				newTab.addClass("show").removeClass('hidden');
                 setTabInfo(cleanClass(tab),'active',true);
 			}else{
 				$("#preloader").fadeIn();
-				console.log('Tab Function: Loading new tab for: '+tab);
+				organizrConsole('Tab Function','Loading new tab for: '+tab);
 				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
 				$(buildFrame(tab,tabURL)).appendTo(newTab);
@@ -619,7 +614,7 @@ function switchTab(tab, type){
             $('#container-plugin-'+tab).addClass("show").removeClass('hidden');
             break;
 		default:
-			console.error('Tab Function: Action not set');
+			organizrConsole('Tab Function','Action not set', 'error');
 	}
 
 }
@@ -639,12 +634,12 @@ function popTab(tab, type){
 		case '3':
 		case '_blank':
 		case 'popout':
-			console.log('Tab Function: Creating New Window for tab: '+tab);
+			organizrConsole('Tab Function','Creating New Window for tab: '+tab);
 			var url = $('#menu-'+cleanClass(tab)).attr('data-url');
 			window.open(url, '_blank');
 			break;
 		default:
-			console.error('Tab Function: Action not set');
+			organizrConsole('Tab Function','Action not set', 'error');
 	}
 }
 function closeTab(tab){
@@ -660,11 +655,11 @@ function closeTab(tab){
                case '0':
                case 'internal':
                    // quick check if homepage
-                   if($('#menu-'+tab).attr('data-url') == 'api/?v1/homepage/page'){
-                       console.log('Organizr Function - Clearing All Homepage AJAX calls');
+                   if($('#menu-'+tab).attr('data-url') == 'api/v2/page/homepage'){
+	                   organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
                        clearAJAX('homepage');
                    }
-                   console.log('Tab Function: Closing tab: '+tab);
+	               organizrConsole('Tab Function','Closing tab: '+tab);
                    $('#internal-'+cleanClass(tab)).html('');
                    $('#menu-'+cleanClass(tab)+' a').removeClass("active");
                    $('#menu-'+tab+' a').children().removeClass('tabLoaded');
@@ -675,7 +670,7 @@ function closeTab(tab){
                case 1:
                case '1':
                case 'iframe':
-                   console.log('Tab Function: Closing tab: '+tab);
+	               organizrConsole('Tab Function','Closing tab: '+tab);
                    $('#menu-'+cleanClass(tab)+' a').removeClass("active");
                    $('#menu-'+tab+' a').children().removeClass('tabLoaded');
                    $('#container-'+cleanClass(tab)).removeClass("loaded show");
@@ -691,14 +686,14 @@ function closeTab(tab){
 
                    break;
                default:
-                   console.error('Tab Function: Action not set');
+	               organizrConsole('Tab Function','Action not set', 'error');
            }
         }
     }
 }
 function reloadTab(tab, type){
 	$("#preloader").fadeIn();
-	console.log('Tab Function: Reloading tab: '+tab);
+	organizrConsole('Tab Function','Reloading tab: '+tab);
 	switch (type) {
 		case 0:
 		case '0':
@@ -722,13 +717,13 @@ function reloadTab(tab, type){
 
 			break;
 		default:
-			console.error('Tab Function: Action not set');
+			organizrConsole('Tab Function','Action not set', 'error');
 	}
 	$("#preloader").fadeOut();
 }
 function reloadCurrentTab(){
 	$("#preloader").fadeIn();
-	console.log('Tab Function: Reloading Current tab');
+	organizrConsole('Tab Function','Reloading Current tab');
 	var iframe = $('.iFrame-listing').find('.show');
 	var internal = $('.internal-listing').find('.show');
 	if(iframe.length > 0){
@@ -750,7 +745,11 @@ function reloadCurrentTab(){
 		case '1':
 		case 'iframe':
 			var activeFrame = $('.iFrame-listing').find('.show').children('iframe');
-			activeFrame.attr('src', activeFrame.attr('src'));
+			if(RegExp('^\/.*').test(activeFrame.attr('src'))) {
+				activeFrame.attr('src', activeFrame[0].contentWindow.location.href);
+			} else {
+				activeFrame.attr('src', activeFrame.attr('src'));
+			}
 			break;
 		case 2:
 		case 3:
@@ -775,7 +774,7 @@ function loadNextTab(){
         }
 		switchTab(next,type);
 	}else{
-		console.log("Tab Function: No Available Tab to open");
+		organizrConsole('Tab Function','No Available Tab to open', 'error');
 	}
 }
 function closeCurrentTab(){
@@ -794,11 +793,11 @@ function closeCurrentTab(){
 		case 'internal':
 			var tab = $('.internal-listing').find('.show').attr('data-name');
             // quick check if homepage
-            if($('#menu-'+cleanClass(tab)).attr('data-url') == 'api/?v1/homepage/page'){
-                console.log('Organizr Function - Clearing All Homepage AJAX calls');
+            if($('#menu-'+cleanClass(tab)).attr('data-url') == 'api/v2/page/homepage'){
+	            organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
                 clearAJAX('homepage');
             }
-			console.log('Tab Function: Closing tab: '+tab);
+			organizrConsole('Organizr Function','Closing tab: '+tab);
 			$('#internal-'+cleanClass(tab)).html('');
 			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
 			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
@@ -812,7 +811,7 @@ function closeCurrentTab(){
 		case '1':
 		case 'iframe':
 			var tab = $('.iFrame-listing').find('.show').children('iframe').attr('data-name');
-			console.log('Tab Function: Closing tab: '+tab);
+			organizrConsole('Organizr Function','Closing tab: '+tab);
 			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
 			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
 			$('#container-'+cleanClass(tab)).removeClass("loaded show");
@@ -830,7 +829,7 @@ function closeCurrentTab(){
 
 			break;
 		default:
-			console.error('Tab Function: Action not set');
+			organizrConsole('Tab Function','No Available Tab to open', 'error');
 	}
 }
 function tabActions(event,name, type){
@@ -889,7 +888,6 @@ function selectOptions(options, active){
 	return selectOptions;
 }
 function accordionOptions(options, parentID){
-	//console.log(options);
 	var accordionOptions = '';
 	$.each(options, function(i,v) {
 		var id = v.id;
@@ -1183,8 +1181,8 @@ function loadMarketplacePluginsItems(plugins){
                 <td>`+v.category+`</td>
                 <td>`+v.status+`</td>
                 <td style="text-align:center"><button type="button" onclick='aboutPlugin(`+JSON.stringify(v)+`);' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-plugin-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
-                <td style="text-align:center"><button type="button" onclick='installPlugin(`+JSON.stringify(v)+`);' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
-                <td style="text-align:center"><button type="button" onclick='removePlugin(`+JSON.stringify(v)+`);' class="btn btn-danger btn-outline btn-circle btn-lg" `+removeButton+`><i class="fa fa-trash"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='installPlugin("`+cleanClass(i)+`");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='removePlugin("`+cleanClass(i)+`");' class="btn btn-danger btn-outline btn-circle btn-lg" `+removeButton+`><i class="fa fa-trash"></i></button></td>
             </tr>
         `;
 
@@ -1215,8 +1213,8 @@ function loadMarketplaceThemesItems(themes){
                 <td>`+v.category+`</td>
                 <td>`+v.status+`</td>
                 <td style="text-align:center"><button type="button" onclick='aboutTheme(`+JSON.stringify(v)+`);' class="btn btn-success btn-outline btn-circle btn-lg popup-with-form" href="#about-theme-form" data-effect="mfp-3d-unfold"><i class="fa fa-info"></i></button></td>
-                <td style="text-align:center"><button type="button" onclick='installTheme(`+JSON.stringify(v)+`);themeAnalytics("`+ v.name +`");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
-                <td style="text-align:center"><button type="button" onclick='removeTheme(`+JSON.stringify(v)+`);' class="btn btn-danger btn-outline btn-circle btn-lg" `+removeButton+`><i class="fa fa-trash"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='installTheme("`+cleanClass(i)+`");themeAnalytics("`+ v.name +`");' class="btn btn-info btn-outline btn-circle btn-lg"><i class="`+installButton+`"></i></button></td>
+                <td style="text-align:center"><button type="button" onclick='removeTheme("`+cleanClass(i)+`");' class="btn btn-danger btn-outline btn-circle btn-lg" `+removeButton+`><i class="fa fa-trash"></i></button></td>
             </tr>
         `;
 
@@ -1424,107 +1422,87 @@ function removePlugin(plugin=null){
     if(plugin == null){
         return false;
     }
-    message('Removing Plugin',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
-    plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder,'plugins');
-    organizrAPI('POST','api/?v1/plugin/remove',{plugin:plugin}).success(function(data) {
-        try {
-            var html = JSON.parse(data);
-        }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
-        }
-        if(html.data.substr(0, 7) == 'Success'){
-            var newPlugins = html.data.split('!@!');
-            activeInfo.settings.misc.installedPlugins = newPlugins[1];
-            loadMarketplace('plugins');
-            message(plugin.name+' Removed','Please Click Plugins Above to refresh',activeInfo.settings.notifications.position,"#FFF","success","5000");
-        }else{
-            message('Remove Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
-        }
-    }).fail(function(xhr) {
-        message('Remove Failed',plugin.name,activeInfo.settings.notifications.position,"#FFF","warning","5000");
-        console.error("Organizr Function: Connection Failed");
-    });
+    message('Removing Plugin',plugin,activeInfo.settings.notifications.position,"#FFF","success","5000");
+	organizrAPI2('DELETE','api/v2/plugins/manage/' + plugin, {}).success(function(data) {
+		try {
+			var html = data.response;
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		activeInfo.settings.misc.installedPlugins = (html.data == null) ? '' : html.data;
+		loadMarketplace('plugins');
+		message(plugin+' Removed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+
+	}).fail(function(xhr) {
+		message('Removal Failed',xhr.responseJSON.response.message,activeInfo.settings.notifications.position,"#FFF","warning","5000");
+		console.error("Organizr Function: Connection Failed");
+	});
 }
 function removeTheme(theme=null){
-    if(theme == null){
-        return false;
-    }
-    message('Removing Plugin',theme.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
-    theme.downloadList = pluginFileList(theme.files,theme.github_folder,'plugins');
-    organizrAPI('POST','api/?v1/theme/remove',{theme:theme}).success(function(data) {
-        try {
-            var html = JSON.parse(data);
-        }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
-        }
-        if(html.data.substr(0, 7) == 'Success'){
-            var newThemes = html.data.split('!@!');
-            activeInfo.settings.misc.installedThemes = newThemes[1];
-            loadMarketplace('themes');
-            message(theme.name+' Removed','Please Click Customize Above to refresh',activeInfo.settings.notifications.position,"#FFF","success","5000");
-        }else{
-            message('Remove Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
-        }
-    }).fail(function(xhr) {
-        message('Remove Failed',theme.name,activeInfo.settings.notifications.position,"#FFF","warning","5000");
-        console.error("Organizr Function: Connection Failed");
-    });
+	if(theme == null){
+		return false;
+	}
+	message('Removing Theme',theme,activeInfo.settings.notifications.position,"#FFF","success","5000");
+	organizrAPI2('DELETE','api/v2/themes/manage/' + theme, {}).success(function(data) {
+		try {
+			var html = data.response;
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		activeInfo.settings.misc.installedThemes = (html.data == null) ? '' : html.data;
+		loadMarketplace('themes');
+		message(theme+' Removed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+
+	}).fail(function(xhr) {
+		message('Removal Failed',xhr.responseJSON.response.message,activeInfo.settings.notifications.position,"#FFF","warning","5000");
+		console.error("Organizr Function: Connection Failed");
+	});
 }
 function installPlugin(plugin=null){
     if(plugin == null){
         return false;
     }
-    message('Installing Plugin',plugin.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
-    plugin.downloadList = pluginFileList(plugin.files,plugin.github_folder,'plugins');
-    organizrAPI('POST','api/?v1/plugin/install',{plugin:plugin}).success(function(data) {
-        try {
-            var html = JSON.parse(data);
-        }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
-        }
-        if(html.data.substr(0, 7) == 'Success'){
-            var newPlugins = html.data.split('!@!');
-            activeInfo.settings.misc.installedPlugins = newPlugins[1];
-            loadMarketplace('plugins');
-            message(plugin.name+' Installed','Please Click Plugins Above to refresh',activeInfo.settings.notifications.position,"#FFF","success","5000");
-        }else{
-            message('Install Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
-        }
-    }).fail(function(xhr) {
-        message('Install Failed',plugin.name,activeInfo.settings.notifications.position,"#FFF","warning","5000");
-        console.error("Organizr Function: Connection Failed");
-    });
+    message('Installing Plugin',plugin,activeInfo.settings.notifications.position,"#FFF","success","5000");
+	organizrAPI2('POST','api/v2/plugins/manage/' + plugin, {}).success(function(data) {
+		try {
+			var html = data.response;
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		activeInfo.settings.misc.installedPlugins = html.data;
+		loadMarketplace('plugins');
+		message(plugin+' Installed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+
+	}).fail(function(xhr) {
+		message('Install Failed',xhr.responseJSON.response.message,activeInfo.settings.notifications.position,"#FFF","warning","5000");
+		console.error("Organizr Function: Connection Failed");
+	});
 }
 function installTheme(theme=null){
     if(theme == null){
         return false;
     }
-    message('Installing Theme',theme.name,activeInfo.settings.notifications.position,"#FFF","success","5000");
-    theme.downloadList = pluginFileList(theme.files,theme.github_folder,'themes');
-    organizrAPI('POST','api/?v1/theme/install',{theme:theme}).success(function(data) {
+    message('Installing Theme',theme,activeInfo.settings.notifications.position,"#FFF","success","5000");
+    organizrAPI2('POST','api/v2/themes/manage/' + theme, {}).success(function(data) {
         try {
-            var html = JSON.parse(data);
+            var html = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        if(html.data.substr(0, 7) == 'Success'){
-            var newThemes = html.data.split('!@!');
-            activeInfo.settings.misc.installedThemes = newThemes[1];
-            loadMarketplace('themes');
-            message(theme.name+' Installed','Please Click Customize Above to refresh',activeInfo.settings.notifications.position,"#FFF","success","5000");
-        }else{
-            message('Install Failed',html.data,activeInfo.settings.notifications.position,"#FFF","warning","10000");
-        }
+        activeInfo.settings.misc.installedThemes = html.data;
+        loadMarketplace('themes');
+        message(theme+' Installed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+
     }).fail(function(xhr) {
-        message('Install Failed',theme.name,activeInfo.settings.notifications.position,"#FFF","warning","5000");
+        message('Install Failed',xhr.responseJSON.response.message,activeInfo.settings.notifications.position,"#FFF","warning","5000");
         console.error("Organizr Function: Connection Failed");
     });
 }
@@ -1615,9 +1593,9 @@ function buildHomepageItem(array){
 	return listing;
 }
 function buildPlugins(){
-	organizrAPI('GET','api/?v1/settings/plugins/list').success(function(data) {
+	organizrAPI2('GET','api/v2/plugins').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
@@ -1629,9 +1607,9 @@ function buildPlugins(){
 	});
 }
 function buildHomepage(){
-	organizrAPI('GET','api/?v1/settings/homepage/list').success(function(data) {
+	organizrAPI2('GET','api/v2/settings/homepage').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
@@ -1756,7 +1734,7 @@ function buildImageManagerViewItem(array){
 							<div class="el-overlay">
 								<ul class="el-info">
 									<li><a class="btn default btn-outline clipboard p-a-5" data-clipboard-text="`+clipboardText+`" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
-									<li><a class="btn default btn-outline deleteImage p-a-5" href="javascript:void(0);" data-image-path="`+v+`" data-image-name="`+name[0]+`"><i class="icon-trash"></i></a></li>
+									<li><a class="btn default btn-outline deleteImage p-a-5" href="javascript:void(0);" data-image-path="`+v+`" data-image-name="`+name[0]+`" data-image-name-ext="`+filepath[3]+`"><i class="icon-trash"></i></a></li>
 								</ul>
 							</div>
 						</div>
@@ -1772,9 +1750,9 @@ function buildImageManagerViewItem(array){
 	return imageListing;
 }
 function buildImageManagerView(){
-	organizrAPI('GET','api/?v1/image/list').success(function(data) {
+	organizrAPI2('GET','api/v2/image').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
@@ -1786,9 +1764,9 @@ function buildImageManagerView(){
 	});
 }
 function buildCustomizeAppearance(){
-	organizrAPI('GET','api/?v1/customize/appearance').success(function(data) {
+	organizrAPI2('GET','api/v2/settings/appearance').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
@@ -1842,9 +1820,9 @@ function buildCustomizeAppearance(){
 	});
 }
 function buildSSO(){
-	organizrAPI('GET','api/?v1/sso').success(function(data) {
+	organizrAPI2('GET','api/v2/settings/sso').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
@@ -1856,9 +1834,9 @@ function buildSSO(){
 	});
 }
 function buildSettingsMain(){
-	organizrAPI('GET','api/?v1/settings/main').success(function(data) {
+	organizrAPI2('GET','api/v2/settings/main').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
@@ -1871,9 +1849,9 @@ function buildSettingsMain(){
 	});
 }
 function buildUserManagement(){
-	organizrAPI('GET','api/?v1/user/list').success(function(data) {
+	organizrAPI2('GET','api/v2/users?includeGroups').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
@@ -1885,9 +1863,9 @@ function buildUserManagement(){
 	});
 }
 function buildGroupManagement(){
-	organizrAPI('GET','api/?v1/user/list').success(function(data) {
+	organizrAPI2('GET','api/v2/groups?includeUsers').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
@@ -1899,16 +1877,16 @@ function buildGroupManagement(){
 	});
 }
 function buildTabEditor(){
-	organizrAPI('GET','api/?v1/tab/list').success(function(data) {
+	organizrAPI2('GET','api/v2/tabs').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
-        loadSettingsPage('api/?v1/settings/tab/editor/homepage','#settings-tab-editor-homepage','Homepage Items');
+        loadSettingsPage2('api/v2/page/settings_tab_editor_homepage','#settings-tab-editor-homepage','Homepage Items');
         setTimeout(function(){ sortHomepageItemHrefs() }, 1000);
         setTimeout(function(){ checkTabHomepageItems(); }, 1500);
 
@@ -2002,9 +1980,9 @@ function addEditHomepageItem(id, type){
     return false;
 }
 function buildCategoryEditor(){
-	organizrAPI('GET','api/?v1/tab/list').success(function(data) {
+	organizrAPI2('GET','api/v2/tabs').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
@@ -2013,21 +1991,6 @@ function buildCategoryEditor(){
 		$('#categoryEditorTable').html(buildCategoryEditorItem(response.data));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
-	});
-}
-function settingsAPI(post, callbacks=null, asyncValue=true){
-	organizrAPI('POST',post.api,post,asyncValue).success(function(data) {
-        try {
-            var response = JSON.parse(data);
-        }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
-        }
-		message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
-		if(callbacks){ callbacks.fire(); }
-	}).fail(function(xhr) {
-		console.error(post.error);
 	});
 }
 /* END ORGANIZR API FUNCTIONS */
@@ -2070,32 +2033,7 @@ function buildLanguage(replace=false,newLang=null){
 		return lang;
 	}
 }
-function removeFile(path,name){
-	if(path !== '' && name !== ''){
-		var post = {
-			path:path,
-			name:name
-		};
-		ajaxloader(".content-wrap","in");
-		organizrAPI('POST','api/?v1/remove/file',post).success(function(data) {
-            try {
-                var response = JSON.parse(data);
-            }catch(e) {
-                console.log(e + ' error: ' + data);
-                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                return false;
-            }
-			if(response.data == true){
-				messageSingle('',window.lang.translate('Removed File')+' - '+name,activeInfo.settings.notifications.position,'#FFF','success','5000');
-			}else{
-				messageSingle('','File Removal Error',activeInfo.settings.notifications.position,'#FFF','error','5000');
-			}
-		}).fail(function(xhr) {
-			console.error("Organizr Function: API Connection Failed");
-		});
-		ajaxloader();
-	}
-}
+
 function updateUserInformation(){
 	var passwordMatch = true;
 	var username = $('#accountUsername').val();
@@ -2105,40 +2043,42 @@ function updateUserInformation(){
 	if(password1 != password2){
 		passwordMatch = false;
 		messageSingle('','Passwords do not match',activeInfo.settings.notifications.position,'#FFF','error','5000');
+		return false;
 	}
 	if(username !== '' && email !== '' && passwordMatch == true){
 		var post = {
 			username:username,
-			email:email,
-			password:password1
+			email:email
 		};
+		if(password1 !== ''){
+			post['password'] = password1
+		}
 		ajaxloader(".content-wrap","in");
-		organizrAPI('POST','api/?v1/manage/user',post).success(function(data) {
+		organizrAPI2('PUT','api/v2/users/' + activeInfo.user.userID,post).success(function(data) {
             try {
-                var response = JSON.parse(data);
+                var response = data.response;
+	            $.magnificPopup.close();
+	            messageSingle('',window.lang.translate('User Info Updated'),activeInfo.settings.notifications.position,'#FFF','success','5000');
             }catch(e) {
                 console.log(e + ' error: ' + data);
                 orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                 return false;
             }
-			if(response.data == true){
-				$.magnificPopup.close();
-				messageSingle('',window.lang.translate('User Info Updated'),activeInfo.settings.notifications.position,'#FFF','success','5000');
-			}else{
-				messageSingle('',response.data,activeInfo.settings.notifications.position,'#FFF','error','5000');
-			}
+			ajaxloader();
 		}).fail(function(xhr) {
-			console.error("Organizr Function: API Connection Failed");
+			message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+			console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+			ajaxloader();
 		});
-		ajaxloader();
+
 	}
 }
 function twoFA(action, type, secret = null){
     switch(action){
         case 'activate':
-            organizrAPI('POST','api/?v1/2fa/create',{type:type}).success(function(data) {
+            organizrAPI2('POST','api/v2/2fa/' + type,{}).success(function(data) {
                 try {
-                    var html = JSON.parse(data);
+                    var html = data.response;
                 }catch(e) {
                     console.log(e + ' error: ' + data);
                     orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
@@ -2149,67 +2089,62 @@ function twoFA(action, type, secret = null){
                 $('.twofa-modal-secret').html(html.data.secret);
                 $('#twofa-modal').modal('show');
             }).fail(function(xhr) {
-                console.error("Organizr Function: Connection Failed");
+	            message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	            console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
             });
             break;
         case 'deactivate':
-            organizrAPI('GET','api/?v1/2fa/remove').success(function(data) {
+            organizrAPI2('DELETE','api/v2/2fa').success(function(data) {
                 try {
-                    var html = JSON.parse(data);
+	                message('2FA Removed','',activeInfo.settings.notifications.position,'#FFF','success','5000');
+	                $('.2fa-list').replaceWith(buildTwoFA('internal'));
                 }catch(e) {
                     console.log(e + ' error: ' + data);
                     orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                     return false;
                 }
-                $('.2fa-list').replaceWith(buildTwoFA('internal'));
             }).fail(function(xhr) {
-                console.error("Organizr Function: Connection Failed");
+	            message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	            console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
             });
             break;
         case 'verify':
             var secret = $('.twofa-modal-secret').text();
             var code = $('#twofa-verify').val();
             if(type !== '' && secret !== '' && code !== ''){
-                organizrAPI('POST','api/?v1/2fa/verify',{type:type, secret:secret, code:code}).success(function(data) {
+                organizrAPI2('POST','api/v2/2fa',{type:type, secret:secret, code:code}).success(function(data) {
                     try {
-                        var html = JSON.parse(data);
+                        var html = data.response;
+	                    message('2FA Success','Input Code Validated! Saving...',activeInfo.settings.notifications.position,"#FFF","success","5000");
+	                    $('#twofa-modal').modal('hide');
+	                    twoFA('save', type, secret);
                     }catch(e) {
                         console.log(e + ' error: ' + data);
                         orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                         return false;
                     }
-                    if(html.data == true){
-                        message('2FA Success','Input Code Validated! Saving...',activeInfo.settings.notifications.position,"#FFF","success","5000");
-                        $('#twofa-modal').modal('hide');
-                        twoFA('save', type, secret);
-                    }else{
-                        message('2FA Failed','Code Incorrect',activeInfo.settings.notifications.position,"#FFF","warning","5000");
-                    }
                 }).fail(function(xhr) {
-                    console.error("Organizr Function: Connection Failed");
+	                message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	                console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
                 });
             }else{
                 message('2FA Failed','Input Code',activeInfo.settings.notifications.position,"#FFF","warning","5000");
             }
             break;
         case 'save':
-            organizrAPI('POST','api/?v1/2fa/save',{type:type, secret:secret}).success(function(data) {
+            organizrAPI2('PUT','api/v2/2fa',{type:type, secret:secret}).success(function(data) {
                 try {
-                    var html = JSON.parse(data);
+                    var html = data.response;
+	                message('2FA Success','2FA Saved',activeInfo.settings.notifications.position,"#FFF","success","5000");
+	                $('.2fa-list').replaceWith(buildTwoFA(type));
                 }catch(e) {
                     console.log(e + ' error: ' + data);
                     orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                     return false;
                 }
-                //console.log(html);
-                if(html.data == true){
-                    message('2FA Success','2FA Saved',activeInfo.settings.notifications.position,"#FFF","success","5000");
-                    $('.2fa-list').replaceWith(buildTwoFA(type));
-                }else{
-                    message('2FA Failed','2FA Error!',activeInfo.settings.notifications.position,"#FFF","warning","5000");
-                }
             }).fail(function(xhr) {
-                console.error("Organizr Function: Connection Failed");
+	            message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	            console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
             });
             break;
     }
@@ -2292,40 +2227,35 @@ function scrapeAPI(url, callbacks = null, type = null){
         console.log('error');
         return false;
     }
-    organizrAPI('POST','api/?v1/scrape',{url:url, type:type}).success(function(data) {
+    organizrAPI2('POST','api/v2/homepage/scrape',{url:url, type:type}).success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        if(response){
+		        if(callbacks){ callbacks.fire(response); }
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        if(response){
-            if(callbacks){ callbacks.fire(response); }
-        }
     }).fail(function(xhr) {
-        ajaxloader();
-        console.error("Organizr Function: API Connection Failed");
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
 }
-function revokeToken(token,id){
-    organizrAPI('POST','api/?v1/token/revoke',{token:token}).success(function(data) {
+function revokeToken(id){
+    organizrAPI2('DELETE','api/v2/token/' + id,{}).success(function(data) {
         try {
-            var response = JSON.parse(data);
+	        $('#token-'+id).fadeOut();
+	        message(window.lang.translate('Removed Token'),"",activeInfo.settings.notifications.position,"#FFF","success","3500");
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        if(response.data == true){
-            $('#token-'+id).fadeOut();
-            message(window.lang.translate('Removed Token'),"",activeInfo.settings.notifications.position,"#FFF","success","3500");
-        }else{
-            message(window.lang.translate('Error: Removing Token'),"",activeInfo.settings.notifications.position,"#FFF","error","3500");
-        }
     }).fail(function(xhr) {
         ajaxloader();
-        console.error("Organizr Function: API Connection Failed");
+	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
 }
 function buildActiveTokens(array) {
@@ -2368,7 +2298,7 @@ function buildActiveTokens(array) {
 </td>
                 <td>`+(v.ip)+`</td>
                 <td>
-                    <button class="btn btn-danger waves-effect waves-light" type="button" onclick="revokeToken('`+v.token+`', '`+v.id+`');"><i class="fa fa-ban"></i></button>
+                    <button class="btn btn-danger waves-effect waves-light" type="button" onclick="revokeToken('`+v.id+`');"><i class="fa fa-ban"></i></button>
                 </td>
             </tr>
         `;
@@ -2596,7 +2526,7 @@ function userMenu(user){
 	}
 	$(menuList).appendTo('.navbar-right').html;
 	//message("",window.lang.translate('Welcome')+" "+user.data.user.username,activeInfo.settings.notifications.position,"#FFF","success","3500");
-	console.log(window.lang.translate('Welcome')+" "+user.data.user.username);
+	console.info("%c "+window.lang.translate('Welcome')+" %c ".concat(user.data.user.username, " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
 }
 function menuExtras(active){
     var supportFrame = buildFrameContainer('Organizr Support','https://organizr.app/support',1);
@@ -2702,7 +2632,7 @@ function tabProcess(arrayItems) {
 						$(internalList).appendTo($('.internal-listing'));
                         if(v.preload){
                             var newTab = $('#internal-'+cleanClass(v.name));
-                            console.log('Tab Function: Preloading new tab for: '+cleanClass(v.name));
+	                        organizrConsole('Tab Function','Preloading new tab for: '+cleanClass(v.name));
                             $('#menu-'+cleanClass(v.name)+' a').children().addClass('tabLoaded');
                             newTab.addClass("loaded");
                             loadInternal(v.access_url,cleanClass(v.name));
@@ -2716,7 +2646,7 @@ function tabProcess(arrayItems) {
                         if(v.preload){
                             var newTab = $('#container-'+cleanClass(v.name));
                             var tabURL = newTab.attr('data-url');
-                            console.log('Tab Function: Preloading new tab for: '+cleanClass(v.name));
+	                        organizrConsole('Tab Function','Preloading new tab for: '+cleanClass(v.name));
                             $('#menu-'+cleanClass(v.name)+' a').children().addClass('tabLoaded');
                             newTab.addClass("loaded");
                             $(buildFrame(cleanClass(v.name),tabURL)).appendTo(newTab);
@@ -2730,7 +2660,7 @@ function tabProcess(arrayItems) {
 					case 'popout':
 						break;
 					default:
-						console.error('Tab Process: Action not set');
+						organizrConsole('Tab Function','Action not set', 'error');
 				}
 			}
 		});
@@ -2746,16 +2676,16 @@ function buildLogin(){
 	closeSideMenu();
 	removeMenuActive();
 	$('#menu-login a').addClass('active');
-	organizrConnect('api/?v1/login_page').success(function(data) {
+	organizrAPI2('GET', 'api/v2/page/login').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
+	        organizrConsole('Organizr Function','Opening Login Page');
+	        $('.login-area').html(response.data);
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		console.log("Organizr Function: Opening Login Page");
-		$('.login-area').html(response.data);
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Login Connection Failed");
 	});
@@ -2764,16 +2694,16 @@ function buildLogin(){
 function buildLockscreen(){
 	$("#preloader").fadeIn();
 	closeSideMenu();
-	organizrConnect('api/?v1/lockscreen').success(function(data) {
+	organizrAPI2('GET', 'api/v2/page/lockscreen').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
+	        organizrConsole('Organizr Function','Adding Lockscreen');
+	        $(response.data).appendTo($('body'));
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		console.log("Organizr Function: Adding Lockscreen");
-		$(response.data).appendTo($('body'));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Lockscreen Connection Failed");
 	});
@@ -2811,7 +2741,7 @@ function buildSplashScreen(json){
     var menu = '<li ><a href="javascript:void(0)" onclick="$(\'.splash-screen\').removeClass(\'hidden\').addClass(\'in\')"><i class="ti-layout-grid2 fa-fw"></i> <span lang="en">Splash Page</span></a></li>';
     if(items){
         closeSideMenu();
-        console.log("Organizr Function: Adding Splash Screen");
+	    organizrConsole('Organizr Function','Adding Splash Screen');
         var splash = `
         <section id="splashScreen" class="lock-screen splash-screen fade in">
             <div class="row p-20 flexbox">`+items+`</div>
@@ -3002,9 +2932,9 @@ function buildCategoryEditorItem(array){
 function buildTabEditorItem(array){
 	var tabList = '';
 	$.each(array.tabs, function(i,v) {
-		var deleteDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : 'deleteTab';
-		var buttonDisabled = v.url.indexOf('/settings/') > 0 ? 'disabled' : '';
-        var typeDisabled = v.url.indexOf('/?v1/') > 0 ? 'disabled' : '';
+		var deleteDisabled = v.url.indexOf('/page/settings') > 0 ? 'disabled' : 'deleteTab';
+		var buttonDisabled = v.url.indexOf('/page/settings') > 0 ? 'disabled' : '';
+        var typeDisabled = v.url.indexOf('/v2/page/') > 0 ? 'disabled' : '';
 		tabList += `
 		<tr class="tabEditor" data-order="`+v.order+`" data-id="`+v.id+`" data-group-id="`+v.group_id+`" data-category-id="`+v.category_id+`" data-name="`+v.name+`" data-url="`+v.url+`" data-local-url="`+v.url_local+`" data-ping-url="`+v.ping_url+`" data-image="`+v.image+`" data-tab-action-type="`+v.timeout+`" data-tab-action-time="`+v.timeout_ms+`">
 			<input type="hidden" class="form-control" name="tab[`+v.id+`].id" value="`+v.id+`">
@@ -3101,7 +3031,6 @@ function submitSettingsForm(form){
     var list = $( "#"+form ).serializeToJSON();
     var size = 0;
     var submit = {};
-    console.log(list);
     $.each(list, function(i,v) {
         var values = false;
         if(typeof v === 'object' && typeof v.length === 'undefined'){
@@ -3111,37 +3040,42 @@ function submitSettingsForm(form){
         }
         size++;
         if(values){
-            submit[i] = {name: values.name , value: values.value, type: values.type};
+	        submit[i] = values.value;
         }
     });
-    var post = {
-        api:'api/?v1/update/config/multiple/form',
-        payload:submit,
-        messageTitle:'',
-        messageBody:'Updated Items',
-        error:'Organizr Function: API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    // Custom Callbacks
-    switch(form){
-        case 'customize-appearance-form':
-            //callbacks.add( buildCustomizeAppearance );
-            break;
-        default:
-    }
-    if(size > 0){
-        settingsAPI(post,callbacks);
-        $("#"+form+" :input").each(function(){
-            var input = $(this);
-            input.closest('.form-group').removeClass('has-success').removeClass('has-error');
-        });
-        $('#'+form+'-save').addClass('hidden');
-    }else{
-        $("#"+form+" :input").each(function(){
-            var input = $(this);
-            input.closest('.form-group').removeClass('has-success').addClass('has-error');
-        });
-    }
+	var callbacks = $.Callbacks();
+	// Custom Callbacks
+	switch(form){
+		case 'customize-appearance-form':
+			break;
+		default:
+	}
+	if(size > 0){
+		organizrAPI2('PUT','api/v2/config', submit,true).success(function(data) {
+			try {
+				var response = data.response;
+			}catch(e) {
+				console.log(e + ' error: ' + data);
+				orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+				return false;
+			}
+			message('Updated Items',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+			if(callbacks){ callbacks.fire(); }
+		}).fail(function(xhr) {
+			message('Item Update Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+			console.error("Organizr Function: API Connection Failed");
+		});
+		$("#"+form+" :input").each(function(){
+			var input = $(this);
+			input.closest('.form-group').removeClass('has-success').removeClass('has-error');
+		});
+		$('#'+form+'-save').addClass('hidden');
+	}else{
+		$("#"+form+" :input").each(function(){
+			var input = $(this);
+			input.closest('.form-group').removeClass('has-success').addClass('has-error');
+		});
+	}
 }
 function submitHomepageOrder(){
 	var list = $( "#homepage-values" ).serializeToJSON();
@@ -3153,53 +3087,89 @@ function submitHomepageOrder(){
 			submit[i] = v;
 		}
 	});
-    var post = {
-        api:'api/?v1/update/config/multiple',
-        payload:submit,
-        messageTitle:'',
-        messageBody:'Updated Homepage Order',
-        error:'Organizr Function: API Connection Failed'
-    };
     var callbacks = $.Callbacks();
-    //callbacks.add( buildCustomizeAppearance );
 	if(size > 0){
-		settingsAPI(post,callbacks);
-        $('#submitHomepageOrder-save').addClass('hidden');
+		organizrAPI2('PUT','api/v2/config', submit,true).success(function(data) {
+			try {
+				var response = data.response;
+				$('#submitHomepageOrder-save').addClass('hidden');
+			}catch(e) {
+				console.log(e + ' error: ' + data);
+				orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+				return false;
+			}
+			message('Updated Homepage Order',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+			if(callbacks){ callbacks.fire(); }
+		}).fail(function(xhr) {
+			message('Update Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+			console.error("Organizr Function: API Connection Failed");
+		});
 	}else{
 	    console.log('add error');
 	}
 }
 function submitTabOrder(newTabs){
+	var data = [];
 	$.each(newTabs.tab, function(i,v) {
 		if(v.originalOrder == v.order){
 			delete newTabs.tab[i];
+		}else{
+			let temp = {
+				"order":v.order,
+				"id":v.id
+			}
+			data.push(temp);
 		}
 	})
-	var post = {
-		action:'changeOrder',
-		api:'api/?v1/settings/tab/editor/tabs',
-		tabs:newTabs,
-		messageTitle:'',
-		messageBody:window.lang.translate('Tab Order Saved'),
-		error:'Organizr Function: API Connection Failed'
-	};
 	var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
-	settingsAPI(post,callbacks, false);
-	$('.saveTabOrderButton').addClass('hidden');
+	callbacks.add( buildTabEditor );
+	organizrAPI2('PUT','api/v2/tabs',data,true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		message('Tab Order Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+		$('.saveTabOrderButton').addClass('hidden');
+	}).fail(function(xhr) {
+		message('Tab Order Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+		console.error("Organizr Function: API Connection Failed");
+	});
 }
 function submitCategoryOrder(){
-	var post = {
-		action:'changeOrder',
-		api:'api/?v1/settings/tab/editor/categories',
-		categories:$( "#submit-categories-form" ).serializeToJSON(),
-		messageTitle:'',
-		messageBody:window.lang.translate('Category Order Saved'),
-		error:'Organizr Function: API Connection Failed'
-	};
+	var data = [];
+	var categories = $( "#submit-categories-form" ).serializeToJSON();
 	var callbacks = $.Callbacks();
-    callbacks.add( buildCategoryEditor );
-	settingsAPI(post,callbacks);
+	callbacks.add( buildCategoryEditor );
+	$.each(categories.category, function(i,v) {
+		if(v.originalOrder == v.order){
+			delete categories.category[i];
+		}else{
+			let temp = {
+				"order":v.order,
+				"id":v.id
+			}
+			data.push(temp);
+		}
+	})
+	organizrAPI2('PUT','api/v2/categories',data,true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		message('Category Order Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+		$('.saveTabOrderButton').addClass('hidden');
+	}).fail(function(xhr) {
+		message('Category Order Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+		console.error("Organizr Function: API Connection Failed");
+	});
 }
 function buildTR(array,type,badge){
 	var listing = '';
@@ -3261,35 +3231,7 @@ function buildVersion(array){
 	});
 	return versions;
 }
-function loadInternal(url,tabName){
-	organizrAPI('get',url).success(function(data) {
-        try {
-            var html = JSON.parse(data);
-        }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
-        }
-		$('#internal-'+tabName).html(html.data);
-	}).fail(function(xhr) {
-		console.error("Organizr Function: Connection Failed");
-	});
-}
-function loadSettingsPage(api,element,organizrFn){
-	organizrAPI('get',api).success(function(data) {
-        try {
-            var response = JSON.parse(data);
-        }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
-        }
-		console.log('Organizr Function: Loading '+organizrFn);
-		$(element).html(response.data);
-	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
-	});
-}
+
 function manualUpdateCheck(){
     $('.buttonManualUpdateCheck').addClass('disabled');
     $('.buttonManualUpdateCheck i').removeClass('fa-globe').addClass('fa-refresh fa-spin');
@@ -3314,7 +3256,7 @@ function updateCheck(){
 			break;
 		}
 		if(latest !== currentVersion) {
-            console.log('Update Function: Update to ' + latest + ' is available');
+			organizrConsole('Update Function','Update to ' + latest + ' is available', 'warning');
             if (activeInfo.settings.misc.docker === false) {
                 messageSingle(window.lang.translate('Update Available'), latest + ' ' + window.lang.translate('is available, goto') + ' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);clickPath(\'update\')"><span lang="en">Update Tab</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '60000');
             }
@@ -3359,7 +3301,7 @@ function newsLoad(){
     });
 }
 function checkCommitLoad(){
-    if(activeInfo.settings.misc.docker && activeInfo.settings.misc.githubCommit !== 'n/a') {
+    if(activeInfo.settings.misc.docker && activeInfo.settings.misc.githubCommit !== 'n/a' && activeInfo.settings.misc.githubCommit !== null) {
         getLatestCommitJSON().success(function (data) {
             try {
                 var latest = data.sha.toString().trim();
@@ -3368,7 +3310,7 @@ function checkCommitLoad(){
                 if(latest !== current) {
                     messageSingle(window.lang.translate('Update Available'),' <a href="'+link+'" target="_blank"><span lang="en">Compare Difference</span></a> <span lang="en">or</span> <a href="javascript:void(0)" onclick="updateNow()"><span lang="en">Update Now</span></a>', activeInfo.settings.notifications.position, '#FFF', 'update', '600000');
                 }else{
-                    console.log('Organizr Docker - Up to date');
+	                organizrConsole('Update Function','Organizr Docker - Up to date');
                 }
             } catch (e) {
                 console.log(e + ' error: ' + data);
@@ -3389,14 +3331,6 @@ function sponsorLoad(){
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        /*for (var a in reverseObject(json)){
-            var latest = a;
-            break;
-        }
-        if(latest !== currentVersion){
-            console.log('Update Function: Update to '+latest+' is available');
-            message(window.lang.translate('Update Available'),latest+' '+window.lang.translate('is available, goto')+' <a href="javascript:void(0)" onclick="tabActions(event,\'Settings\',0);$(\'#update-button\').click()"><span lang="en">Update Tab</span></a>',activeInfo.settings.notifications.position,'#FFF','update','60000');
-        }*/
         $('#sponsorList').html(buildSponsor(response));
         $('#sponsorListModals').html(buildSponsorModal(response));
         $('.sponsor-items').owlCarousel({
@@ -3504,8 +3438,7 @@ function sponsorAnalytics(sponsor_name){
         async: true,
         complete: function(xhr, status) {
             if (xhr.status === 200) {
-                var result = $.parseJSON(xhr.responseText);
-                console.log(result.response.message);
+                let result = $.parseJSON(xhr.responseText);
             }
         }
     });
@@ -3524,8 +3457,7 @@ function themeAnalytics(theme_name){
         async: true,
         complete: function(xhr, status) {
             if (xhr.status === 200) {
-                var result = $.parseJSON(xhr.responseText);
-                console.log(result.response.message);
+                let result = $.parseJSON(xhr.responseText);
             }
         }
     });
@@ -3567,18 +3499,12 @@ function dockerUpdate(){
         $(updateBar()).appendTo('.organizr-area');
         updateUpdateBar('Starting Download','20%');
         messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
-        organizrAPI('GET','api/?v1/docker/update').success(function(data) {
-            try {
-                var json = JSON.parse(data);
-            }catch(e) {
-                console.log(e + ' error: ' + data);
-                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                return false;
-            }
+        organizrAPI2('GET','api/v2/update/docker').success(function(data) {
             updateUpdateBar('Restarting Organizr in', '100%', true);
-            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),json.data,activeInfo.settings.notifications.position,'#FFF','success','60000');
+            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),'Update complete',activeInfo.settings.notifications.position,'#FFF','success','60000');
         }).fail(function(xhr) {
-            console.error("Organizr Function: Reboot Failed");
+	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
         });
     }
 }
@@ -3587,18 +3513,12 @@ function windowsUpdate(){
         $(updateBar()).appendTo('.organizr-area');
         updateUpdateBar('Starting Download','20%');
         messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
-        organizrAPI('GET','api/?v1/windows/update').success(function(data) {
-            try {
-                var json = JSON.parse(data);
-            }catch(e) {
-                console.log(e + ' error: ' + data);
-                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                return false;
-            }
+        organizrAPI2('GET','api/v2/update/windows').success(function(data) {
             updateUpdateBar('Restarting Organizr in', '100%', true);
-            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),json.data,activeInfo.settings.notifications.position,'#FFF','success','60000');
+            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),'Update complete',activeInfo.settings.notifications.position,'#FFF','success','60000');
         }).fail(function(xhr) {
-            console.error("Organizr Function: Reboot Failed");
+	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
         });
     }
 }
@@ -3612,85 +3532,52 @@ function updateNow(){
         windowsUpdate();
         return false;
     }
-	console.log('Organizr Function: Starting Update Process');
+	organizrConsole('Update Function','Starting Update Process');
 	$(updateBar()).appendTo('.organizr-area');
 	updateUpdateBar('Starting Download','5%');
 	messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
-	organizrAPI('POST','api/?v1/update', {branch:activeInfo.branch,stage:1}).success(function(data) {
-        try {
-            var json = JSON.parse(data);
-        }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
-        }
-		if(json.data == true) {
-            updateUpdateBar('Starting Unzip', '50%');
-            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update File Downloaded'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
-            organizrAPI('POST', 'api/?v1/update', {branch: activeInfo.branch, stage: 2}).success(function (data) {
-                try {
-                    var json = JSON.parse(data);
-                }catch(e) {
-                    console.log(e + ' error: ' + data);
-                    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                    return false;
-                }
-                if (json.data == true) {
-                    updateUpdateBar('Starting Copy', '70%');
-                    messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update File Unzipped'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
-                    organizrAPI('POST', 'api/?v1/update', {
-                        branch: activeInfo.branch,
-                        stage: 3
-                    }).success(function (data) {
-                        try {
-                            var json = JSON.parse(data);
-                        }catch(e) {
-                            console.log(e + ' error: ' + data);
-                            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                            return false;
-                        }
-                        if (json.data == true) {
-                            updateUpdateBar('Starting Cleanup', '90%');
-                            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update Files Copied'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
-                            organizrAPI('POST', 'api/?v1/update', {
-                                branch: activeInfo.branch,
-                                stage: 4
-                            }).success(function (data) {
-                                try {
-                                    var json = JSON.parse(data);
-                                }catch(e) {
-                                    console.log(e + ' error: ' + data);
-                                    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                                    return false;
-                                }
-                                if (json.data == true) {
-                                    updateUpdateBar('Restarting Organizr in', '100%', true);
-                                    messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update Cleanup Finished'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
-                                } else {
-                                    message('', window.lang.translate('Update Cleanup Failed'), activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-                                }
-                            }).fail(function (xhr) {
-                                console.error("Organizr Function: API Connection Failed");
-                            });
-                        } else {
-                            message('', window.lang.translate('Update File Copy Failed'), activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-                        }
-                    }).fail(function (xhr) {
-                        console.error("Organizr Function: API Connection Failed");
-                    });
-                } else {
-                    message('', window.lang.translate('Update File Unzip Failed'), activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-                }
+	organizrAPI2('GET','api/v2/update/download/'+ activeInfo.branch).success(function(data) {
+        updateUpdateBar('Starting Unzip', '50%');
+        messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update File Downloaded'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
+		organizrAPI2('GET','api/v2/update/unzip/'+ activeInfo.branch).success(function(data) {
+            updateUpdateBar('Starting Copy', '70%');
+            messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update File Unzipped'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
+			organizrAPI2('GET','api/v2/update/move/'+ activeInfo.branch).success(function(data) {
+                updateUpdateBar('Starting Cleanup', '90%');
+                messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update Files Copied'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
+				organizrAPI2('GET','api/v2/update/cleanup/'+ activeInfo.branch).success(function(data) {
+                    updateUpdateBar('Restarting Organizr in', '100%', true);
+                    messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update Cleanup Finished'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
+                }).fail(function (xhr) {
+					message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+					console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+                });
             }).fail(function (xhr) {
-                console.error("Organizr Function: API Connection Failed");
+				message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+				console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
             });
-        }else if(json.data == 'permissions'){
-            message('',window.lang.translate('Organizr does not have permissions to download the update'),activeInfo.settings.notifications.position,'#FFF','error','10000');
-		}else{
-			message('',window.lang.translate('Update File Download Failed'),activeInfo.settings.notifications.position,'#FFF','error','10000');
-		}
+        }).fail(function (xhr) {
+			message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+			console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+        });
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	});
+}
+function settingsAPI2(post, callbacks=null, asyncValue=true){
+	organizrAPI2('POST',post.api,post.data,asyncValue).success(function(data) {
+		try {
+			var response = JSON.parse(data);
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		console.error(post.error);
 	});
 }
 function organizrAPI2(type,path,data=null,asyncValue=true){
@@ -3716,7 +3603,6 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				},
 				timeout: timeout,
 			});
-			break;
 		case 'delete':
 		case 'DELETE':
 		case 'd':
@@ -3729,7 +3615,6 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				},
 				timeout: timeout,
 			});
-			break;
 		case 'post':
 		case 'POST':
 		case 'p':
@@ -3744,9 +3629,96 @@ function organizrAPI2(type,path,data=null,asyncValue=true){
 				},
 				data:data
 			});
+		case 'put':
+		case 'PUT':
+			data.formKey = local('g','formKey');
+			return $.ajax({
+				url:path,
+				method:"PUT",
+				async: asyncValue,
+				beforeSend: function(request) {
+					request.setRequestHeader("Token", activeInfo.token);
+					request.setRequestHeader("formKey", local('g','formKey'));
+				},
+				data:JSON.stringify(data),
+				contentType: "application/json"
+			});
 		default:
 			console.warn('Organizr API: Method Not Supported');
 	}
+}
+function loadSettingsPage2(api,element,organizrFn){
+	organizrAPI2('get',api).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		organizrConsole('Organizr Function','Loading '+organizrFn);
+		$(element).html(response.data);
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+}
+function loadInternal(url,tabName){
+	organizrAPI2('get',url).success(function(data) {
+		try {
+			var html = data.response;
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		$('#internal-'+tabName).html(html.data);
+	}).fail(function(xhr) {
+		console.error("Organizr Function: Connection Failed");
+	});
+}
+function loadInternalOriginal(url,tabName){
+	organizrAPI('get',url).success(function(data) {
+		try {
+			var html = JSON.parse(data);
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		$('#internal-'+tabName).html(html.data);
+	}).fail(function(xhr) {
+		console.error("Organizr Function: Connection Failed");
+	});
+}
+function loadSettingsPage(api,element,organizrFn){
+	organizrAPI('get',api).success(function(data) {
+		try {
+			var response = JSON.parse(data);
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		organizrConsole('Organizr Function','Loading '+organizrFn);
+		$(element).html(response.data);
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+}
+function settingsAPI(post, callbacks=null, asyncValue=true){
+	organizrAPI('POST',post.api,post,asyncValue).success(function(data) {
+		try {
+			var response = JSON.parse(data);
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		console.error(post.error);
+	});
 }
 function organizrAPI(type,path,data=null,asyncValue=true){
 	var timeout = 10000;
@@ -3838,15 +3810,15 @@ function changeSettingsMenu(path){
 	$('#settingsBreadcrumb').html(menu);
 }
 function buildWizard(){
-	organizrConnect('api/?v1/wizard_page').success(function(data) {
+	organizrAPI2('GET','api/v2/page/wizard').success(function(data) {
         try {
-            var json = JSON.parse(data);
+            var json = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		console.log("Organizr Function: Starting Install Wizard");
+		organizrConsole('Organizr Function','Starting Install Wizard');
 		$(json.data).appendTo($('.organizr-area'));
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Wizard Connection Failed");
@@ -3854,15 +3826,15 @@ function buildWizard(){
 	$("#preloader").fadeOut();
 }
 function buildDependencyCheck(orgdata){
-	organizrConnect('api/?v1/dependencies_page').success(function(data) {
+	organizrAPI2('GET', 'api/v2/page/dependencies').success(function(data) {
         try {
-            var json = JSON.parse(data);
+            var json = data.response;
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		console.log("Organizr Function: Starting Dependencies Check");
+		organizrConsole('Organizr Function','Starting Dependencies Check');
 		$(json.data).appendTo($('.organizr-area'));
 		$(buildBrowserInfo()).appendTo($('#browser-info'));
 		$('#web-folder').html(buildWebFolder(orgdata));
@@ -4024,7 +3996,6 @@ function radioLoop(element){
 	$('[type=radio][id!="'+element.id+'"]').each(function() { this.checked=false });
 }
 function loadAppearance(appearance){
-	//console.log(appearance);
 	var cssSettings = '';
 	document.title = appearance.title;
 	if(appearance.useLogo === false){
@@ -4280,7 +4251,7 @@ function changeTheme(theme){
         href: 'css/themes/' + theme + '.css?v='+activeInfo.version
     });
 	//$("#preloader").fadeOut();
-	console.log('Theme: '+theme);
+	console.info("%c Theme %c ".concat(theme, " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
 }
 function changeStyle(style){
 	//$("#preloader").fadeIn();
@@ -4288,7 +4259,7 @@ function changeStyle(style){
         href: 'css/' + style + '.css?v='+activeInfo.version
     });
 	//$("#preloader").fadeOut();
-	console.log('Style: '+style);
+	console.info("%c Style %c ".concat(style, " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
 }
 function setSSO(){
 	$.each(activeInfo.sso, function(i,v) {
@@ -5080,50 +5051,58 @@ function processRequest(id,type){
 }
 //Ombi actions
 function ombiActions(id,action,type){
-	//console.log(id,action,type);
 	var msg = (activeInfo.user.groupID <= 1) ? '<a href="https://github.com/tidusjar/Ombi/issues/2176" target="_blank">Not Org Fault - Ask Ombi</a>' : 'Connection Error to Request Server';
 	ajaxloader('.request-' + id + '-div', 'in')
-    $.magnificPopup.close();
-    message(window.lang.translate('Submitting Action to Ombi'),'',activeInfo.settings.notifications.position,"#FFF",'success',"3500");
-	organizrAPI('POST','api/?v1/ombi',{id:id, action:action, type:type}).success(function(data) {
+    //$.magnificPopup.close();
+    messageSingle(window.lang.translate('Submitting Action to Ombi'),'',activeInfo.settings.notifications.position,"#FFF",'success',"10000");
+	var callbacks = $.Callbacks();
+
+    switch (action){
+	    case 'add':
+	    	var method = 'POST';
+	    	var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id;
+	    	var data = {};
+		    callbacks.add( homepageRequests );
+	    	break;
+	    case 'available':
+	    case 'unavailable':
+	    case 'approve':
+		    var method = 'POST';
+		    var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id + '/' + action;
+		    var data = {};
+		    callbacks.add( homepageRequests );
+		    break;
+	    case 'deny':
+		    var method = 'PUT';
+		    var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id + '/' + action;
+		    var data = {};
+		    callbacks.add( homepageRequests );
+		    break;
+	    case 'delete':
+		    var method = 'DELETE';
+		    var apiUrl = 'api/v2/homepage/ombi/requests/'+type+'/' + id;
+		    var data = {};
+		    callbacks.add( homepageRequests );
+		    break;
+	    default:
+		    console.log(id,action,type);
+	    	return false;
+    }
+	organizrAPI2(method,apiUrl,data).success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        messageSingle(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
+	        if(callbacks){ callbacks.fire(); }
+	        ajaxloader();
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		//console.log(response.data);
-		if(response.data !== false){
-            if(action == 'delete'){
-                homepageRequests();
-                message(window.lang.translate('Deleted Request Item'),'',activeInfo.settings.notifications.position,"#FFF",'success',"3500");
-                return true;
-            }
-            try {
-                var responseData = JSON.parse(response.data.bd);
-            }catch(e) {
-                console.log(e + ' error: ' + response.data.bd);
-                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(response.data.bd));
-                return false;
-            }
-            //console.log(responseData);
-            var responseMessage = (responseData.isError == true) ? responseData.errorMessage : 'Success';
-            var responseType = (responseData.isError == true) ? 'error' : 'success';
-			homepageRequests();
-			if(action !== 'add'){
-				message(window.lang.translate('Updated Request Item'),responseMessage,activeInfo.settings.notifications.position,"#FFF",responseType,"3500");
-			}else{
-				ajaxloader();
-				message(window.lang.translate('Added Request Item'),responseMessage,activeInfo.settings.notifications.position,"#FFF",responseType,"3500");
-			}
-		}else{
-			ajaxloader();
-			message("",msg,activeInfo.settings.notifications.position,"#FFF","error","3500");
-		}
 	}).fail(function(xhr) {
 		ajaxloader();
-		console.error("Organizr Function: API Connection Failed");
+		messageSingle('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
 	});
 }
 function doneTyping () {
@@ -5183,7 +5162,6 @@ function requestList (list, type, page=1) {
 	});
 }
 function buildDownloaderItem(array, source, type='none'){
-    //console.log(array);
     var queue = '';
     var count = 0;
     var history = '';
@@ -5200,17 +5178,17 @@ function buildDownloaderItem(array, source, type='none'){
                 if(array.content.$status[0] == 'RUNNING') {
                     queue += `
                         <tr><td>
-                            <a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>
-                            <a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="stop" data-target="main"><i class="fa fa-stop"></i></span></a>
+                            <a href="#" onclick="return false;"><span class="downloader mouse" data-source="jdownloader" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>
+                            <a href="#" onclick="return false;"><span class="downloader mouse" data-source="jdownloader" data-action="stop" data-target="main"><i class="fa fa-stop"></i></span></a>
                         </td></tr>
                         `;
                 }else if(array.content.$status[0] == 'PAUSE'){
-                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-fast-forward"></i></span></a></td></tr>`;
+                    queue += `<tr><td><a href="#" onclick="return false;"><span class="downloader mouse" data-source="jdownloader" data-action="resume" data-target="main"><i class="fa fa-fast-forward"></i></span></a></td></tr>`;
                 }else{
-                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="start" data-target="main"><i class="fa fa-play"></i></span></a></td></tr>`;
+                    queue += `<tr><td><a href="#" onclick="return false;"><span class="downloader mouse" data-source="jdownloader" data-action="start" data-target="main"><i class="fa fa-play"></i></span></a></td></tr>`;
                 }
                 if(array.content.$status[1]) {
-                    queue += `<tr><td><a href="#"><span class="downloader mouse" data-source="jdownloader" data-action="update" data-target="main"><i class="fa fa-globe"></i></span></a></td></tr>`;
+                    queue += `<tr><td><a href="#" onclick="return false;"><span class="downloader mouse" data-source="jdownloader" data-action="update" data-target="main"><i class="fa fa-globe"></i></span></a></td></tr>`;
                 }
             }
             $.each(array.content.queueItems, function(i,v) {
@@ -5298,10 +5276,10 @@ function buildDownloaderItem(array, source, type='none'){
                 break;
             }
             if(array.content.queueItems.queue.paused){
-                var state = `<a href="#"><span class="downloader mouse" data-source="sabnzbd" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a>`;
+                var state = `<a href="#" onclick="return false;"><span class="downloader mouse" data-source="sabnzbd" data-action="resume" data-target="main"><i class="fa fa-play"></i></span></a>`;
                 var active = 'grayscale';
             }else{
-                var state = `<a href="#"><span class="downloader mouse" data-source="sabnzbd" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>`;
+                var state = `<a href="#" onclick="return false;"><span class="downloader mouse" data-source="sabnzbd" data-action="pause" data-target="main"><i class="fa fa-pause"></i></span></a>`;
                 var active = '';
             }
             $('.sabnzbd-downloader-action').html(state);
@@ -5404,10 +5382,10 @@ function buildDownloaderItem(array, source, type='none'){
                 queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
                 break;
             }
-            if(array.content.queueItems.arguments.torrents == 0){
+            if(array.content.queueItems == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
-            $.each(array.content.queueItems.arguments.torrents, function(i,v) {
+            $.each(array.content.queueItems, function(i,v) {
                 count = count + 1;
                 switch (v.status) {
                     case 7:
@@ -5470,7 +5448,6 @@ function buildDownloaderItem(array, source, type='none'){
             if(array.content.queueItems == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
-            //console.log(array);
             $.each(array.content.queueItems, function(i,v) {
                 count = count + 1;
                 var percent = Math.floor((v.downloaded / v.size) * 100);
@@ -5564,10 +5541,10 @@ function buildDownloaderItem(array, source, type='none'){
                 queue = '<tr><td class="max-texts" lang="en">Connection Error to ' + source + '</td></tr>';
                 break;
             }
-            if(array.content.queueItems.arguments.torrents == 0){
+            if(array.content.queueItems == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
-            $.each(array.content.queueItems.arguments.torrents, function(i,v) {
+            $.each(array.content.queueItems, function(i,v) {
                 count = count + 1;
                 switch (v.state) {
                     case 'stalledDL':
@@ -6044,7 +6021,6 @@ function buildUnifi(array){
 function buildUnifiItem(array){
     var items = '';
     $.each(array, function(i,v) {
-        //console.log(v);
         var name = (typeof v.subsystem !== 'undefined') ? v.subsystem : '';
         var stats = {};
         var panelColor = '';
@@ -6358,73 +6334,80 @@ function buildPiholeItem(array){
 }
 function homepagePihole(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepagePiholeRefresh;
-    organizrAPI('POST','api/?v1/homepage/connect',{action:'getPihole'}).success(function(data) {
+    organizrAPI2('GET','api/v2/homepage/pihole/stats').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        document.getElementById('homepageOrderPihole').innerHTML = '';
+	        if(response.data !== null){
+		        buildPihole(response.data)
+		        $('#homepageOrderPihole').html(buildPihole(response.data));
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        document.getElementById('homepageOrderPihole').innerHTML = '';
-        if(response.data !== null){
-            buildPihole(response.data)
-            $('#homepageOrderPihole').html(buildPihole(response.data));
-        }
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
-    var timeoutTitle = 'PiHole-Homepage';
+    let timeoutTitle = 'PiHole-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepagePihole(timeout); }, timeout);
+    delete timeout;
 }
 function homepageHealthChecks(tags, timeout){
-    var tags = (typeof tags !== 'undefined') ? tags : activeInfo.settings.homepage.options.healthChecksTags;
-    var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageHealthChecksRefresh;
-    organizrAPI('POST','api/?v1/homepage/connect',{action:'getHealthChecks',tags:tags}).success(function(data) {
+    tags = (typeof tags !== 'undefined') ? tags : activeInfo.settings.homepage.options.healthChecksTags;
+    if(tags == ''){
+	    var apiUrl = 'api/v2/homepage/healthchecks';
+    }else{
+	    var apiUrl = 'api/v2/homepage/healthchecks/' + tags;
+    }
+    timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageHealthChecksRefresh;
+    organizrAPI2('GET',apiUrl).success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
+	        document.getElementById('homepageOrderhealthchecks').innerHTML = '';
+	        if(response.data !== null){
+		        $('#homepageOrderhealthchecks').html(buildHealthChecks(response.data));
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        document.getElementById('homepageOrderhealthchecks').innerHTML = '';
-        if(response.data !== null){
-            $('#homepageOrderhealthchecks').html(buildHealthChecks(response.data));
-        }
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
-    var timeoutTitle = 'HealthChecks-Homepage';
+    let timeoutTitle = 'HealthChecks-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageHealthChecks(tags,timeout); }, timeout);
+    delete timeout;
 }
 function homepageUnifi(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageUnifiRefresh;
-    organizrAPI('POST','api/?v1/homepage/connect',{action:'getUnifi'}).success(function(data) {
+    organizrAPI2('GET','api/v2/homepage/unifi/data').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        document.getElementById('homepageOrderunifi').innerHTML = '';
+	        if(response.data !== null){
+		        $('#homepageOrderunifi').html(buildUnifi(response.data));
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        document.getElementById('homepageOrderunifi').innerHTML = '';
-        //console.log(response.data);
-        if(response.data !== null){
-            $('#homepageOrderunifi').html(buildUnifi(response.data));
-        }
+
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
     var timeoutTitle = 'Unifi-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageUnifi(timeout); }, timeout);
+    delete timeout;
 }
 function homepageDownloader(type, timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageDownloadRefresh;
-	//if(isHidden()){ return; }
 	switch (type) {
         case 'jdownloader':
             var action = 'getJdownloader';
@@ -6456,57 +6439,48 @@ function homepageDownloader(type, timeout){
 		default:
 
 	}
-	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
+	let lowerType = type.toLowerCase();
+	organizrAPI2('GET','api/v2/homepage/'+lowerType+'/queue').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        if(response.data !== null){
+		        buildDownloaderItem(response.data, type);
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		//document.getElementById('homepageOrder'+type).innerHTML = '';
-		if(response.data !== null){
-			buildDownloaderItem(response.data, type);
-		}
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
 	});
-	var timeoutTitle = type+'-Downloader-Homepage';
+	let timeoutTitle = type+'-Downloader-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
 	timeouts[timeoutTitle] = setTimeout(function(){ homepageDownloader(type,timeout); }, timeout);
+	delete timeout;
 }
 function homepageStream(type, timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageStreamRefresh;
-	switch (type) {
-		case 'plex':
-			var action = 'getPlexStreams';
-			break;
-		case 'emby':
-			var action = 'getEmbyStreams';
-			break;
-		default:
-
-	}
-	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
+	organizrAPI2('GET','api/v2/homepage/'+type+'/streams').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        document.getElementById('homepageOrder'+type+'nowplaying').innerHTML = '';
+	        $('#homepageOrder'+type+'nowplaying').html(buildStream(response.data, type));
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		document.getElementById('homepageOrder'+type+'nowplaying').innerHTML = '';
-		$('#homepageOrder'+type+'nowplaying').html(buildStream(response.data, type));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
 	});
-	var timeoutTitle = type+'-Stream-Homepage';
+	let timeoutTitle = type+'-Stream-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
 	timeouts[timeoutTitle] = setTimeout(function(){ homepageStream(type,timeout); }, timeout);
+	delete timeout;
 }
 function homepageRecent(type, timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageRecentRefresh;
-	//if(isHidden()){ return; }
 	switch (type) {
 		case 'plex':
 			var action = 'getPlexRecent';
@@ -6519,60 +6493,54 @@ function homepageRecent(type, timeout){
 		default:
 
 	}
-	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
+	organizrAPI2('GET','api/v2/homepage/'+type+'/recent').success(function(data) {
         try {
-            var response = JSON.parse(data);
+	        let response = data.response;
+	        document.getElementById('homepageOrder'+type+'recent').innerHTML = '';
+	        $('#homepageOrder'+type+'recent').html(buildRecent(response.data, type));
+	        $('.recent-items').owlCarousel({
+		        nav:false,
+		        autoplay:false,
+		        dots:false,
+		        margin:10,
+		        autoWidth:true,
+		        items:4
+	        })
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		document.getElementById('homepageOrder'+type+'recent').innerHTML = '';
-		$('#homepageOrder'+type+'recent').html(buildRecent(response.data, type));
-		$('.recent-items').owlCarousel({
-    	    nav:false,
-    		autoplay:false,
-            dots:false,
-			margin:10,
-		    autoWidth:true,
-		    items:4
-    	})
+
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
 	});
-	var timeoutTitle = type+'-Recent-Homepage';
+	let timeoutTitle = type+'-Recent-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
 	timeouts[timeoutTitle] = setTimeout(function(){ homepageRecent(type,timeout); }, timeout);
+	delete timeout;
 }
 function homepagePlaylist(type, timeout=30000){
-	//if(isHidden()){ return; }
-	switch (type) {
-		case 'plex':
-			var action = 'getPlexPlaylists';
-			break;
-		default:
-
-	}
-	organizrAPI('POST','api/?v1/homepage/connect',{action:action}).success(function(data) {
+	organizrAPI2('GET','api/v2/homepage/'+type+'/playlists').success(function(data) {
         try {
-            var response = JSON.parse(data);
+	        let response = data.response;
+	        document.getElementById('homepageOrder'+type+'playlist').innerHTML = '';
+	        $('#homepageOrder'+type+'playlist').html(buildPlaylist(response.data, type));
+	        $('.playlist-items').owlCarousel({
+		        nav:false,
+		        autoplay:false,
+		        dots:false,
+		        margin:10,
+		        autoWidth:true,
+		        items:4
+	        })
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		document.getElementById('homepageOrder'+type+'playlist').innerHTML = '';
-		$('#homepageOrder'+type+'playlist').html(buildPlaylist(response.data, type));
-		$('.playlist-items').owlCarousel({
-			nav:false,
-			autoplay:false,
-			dots:false,
-			margin:10,
-			autoWidth:true,
-			items:4
-    	})
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
 	});
 }
 function defaultOmbiFilter(){
@@ -6591,75 +6559,66 @@ function defaultOmbiFilter(){
 }
 function homepageRequests(timeout){
 	var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.ombiRefresh;
-	organizrAPI('POST','api/?v1/homepage/connect',{action:'getRequests'}).success(function(data) {
+	organizrAPI2('GET','api/v2/homepage/ombi/requests').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        document.getElementById('homepageOrderombi').innerHTML = '';
+	        if(response.data.content !== false){
+		        $('#homepageOrderombi').html(buildRequest(response.data));
+	        }
+	        $('.request-items').owlCarousel({
+		        nav:false,
+		        autoplay:false,
+		        dots:false,
+		        margin:10,
+		        autoWidth:true,
+		        items:4
+	        })
+	        // Default Ombi Filter
+	        defaultOmbiFilter();
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		document.getElementById('homepageOrderombi').innerHTML = '';
-		if(response.data.content !== false){
-			$('#homepageOrderombi').html(buildRequest(response.data));
-		}
-		$('.request-items').owlCarousel({
-			nav:false,
-			autoplay:false,
-			dots:false,
-			margin:10,
-			autoWidth:true,
-			items:4
-    	})
-        // Default Ombi Filter
-        defaultOmbiFilter();
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
 	});
 	if(typeof timeouts['ombi-Homepage'] !== 'undefined'){ clearTimeout(timeouts['ombi-Homepage']); }
 	timeouts['ombi-Homepage'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
+	delete timeout;
 }
 function testAPIConnection(service, data = ''){
     messageSingle('',' Testing now...',activeInfo.settings.notifications.position,'#FFF','info','10000');
-    organizrAPI('POST','api/?v1/test/api/connection',{action:service, data:data}).success(function(data) {
+    organizrAPI2('POST','api/v2/test/' + service,data).success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        messageSingle('',' API Connection Success',activeInfo.settings.notifications.position,'#FFF','success','10000');
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        if(response.data == true){
-            messageSingle('',' API Connection Success',activeInfo.settings.notifications.position,'#FFF','success','10000');
-        }else{
-            messageSingle('API Connection Failed',response.data,activeInfo.settings.notifications.position,'#FFF','error','10000');
-        }
-        console.log(response);
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
-        message('',' Organizr Error',activeInfo.settings.notifications.position,'#FFF','error','10000');
+	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
 }
-function getUnifiSite(service, data = ''){
+function getUnifiSite(){
     messageSingle('',' Grabbing now...',activeInfo.settings.notifications.position,'#FFF','info','10000');
-    organizrAPI('POST','api/?v1/test/api/connection',{action:service, data:data}).success(function(data) {
+    organizrAPI2('POST','api/v2/test/unifi/site', {}).success(function(data) {
         try {
-            var response = JSON.parse(data);
-        }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
-        }
-        if(response.data !== false){
-            var sites = '';
-            if(response.data.data){
-                $.each(response.data.data, function(i,v) {
-                    sites += '<div class="form-group row"><div class="col-sm-12"><h4 class="mouse" onclick="unifiSiteApply(\''+v.name+'\')">'+v.desc+'</h4></div></div>';
-                });
-            }else{
-                console.log('no');
-            }
-            var div = `
+            var response = data.response;
+	        if(response.data !== false){
+		        var sites = '';
+		        if(response.data.data){
+			        $.each(response.data.data, function(i,v) {
+				        sites += '<div class="form-group row"><div class="col-sm-12"><h4 class="mouse" onclick="unifiSiteApply(\''+v.name+'\')">'+v.desc+'</h4></div></div>';
+			        });
+		        }else{
+			        //console.log('no');
+		        }
+		        var div = `
                 <div class="row">
                     <div class="col-12">
                         <div class="card m-b-0">
@@ -6673,18 +6632,22 @@ function getUnifiSite(service, data = ''){
                     </div>
                 </div>
             `;
-            swal({
-                content: createElementFromHTML(div),
-                buttons: false,
-                className: 'bg-org'
-            })
-        }else{
-            messageSingle('API Connection Failed',response.data,activeInfo.settings.notifications.position,'#FFF','error','10000');
+		        swal({
+			        content: createElementFromHTML(div),
+			        buttons: false,
+			        className: 'bg-org'
+		        })
+	        }else{
+		        messageSingle('API Connection Failed',response.data,activeInfo.settings.notifications.position,'#FFF','error','10000');
+	        }
+        }catch(e) {
+            console.log(e + ' error: ' + data);
+            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+            return false;
         }
-        console.log(response);
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
-        message('',' Organizr Error',activeInfo.settings.notifications.position,'#FFF','error','10000');
+	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
 }
 function unifiSiteApply(name){
@@ -6698,24 +6661,24 @@ function homepageCalendar(timeout){
     if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
         $('.fc-toolbar').addClass('fc-alternate');
     }
-	organizrAPI('POST','api/?v1/homepage/connect',{action:'getCalendar'}).success(function(data) {
+	organizrAPI2('GET','api/v2/homepage/calendar').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        $('#calendar').fullCalendar('removeEvents');
+	        $('#calendar').fullCalendar('addEventSource', response.data.events);
+	        $('#calendar').fullCalendar('addEventSource', response.data.ical);
+	        $('#calendar').fullCalendar('today');
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        $('#calendar').fullCalendar('removeEvents');
-        $('#calendar').fullCalendar('addEventSource', response.data.events);
-        $('#calendar').fullCalendar('addEventSource', response.data.ical);
-        $('#calendar').fullCalendar('today');
-		response = '';
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
 	if(typeof timeouts['calendar-Homepage'] !== 'undefined'){ clearTimeout(timeouts['calendar-Homepage']); }
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
+	delete timeout;
 }
 function buildTautulliItem(array){
     var cards = ""
@@ -6930,24 +6893,25 @@ function buildTautulli(array){
 }
 function homepageTautulli(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageTautulliRefresh;
-    organizrAPI('POST','api/?v1/homepage/connect',{action:'getTautulli'}).success(function(data) {
+    organizrAPI2('GET','api/v2/homepage/tautulli/data').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        document.getElementById('homepageOrdertautulli').innerHTML = '';
+	        if(response.data !== null){
+		        $('#homepageOrdertautulli').html(buildTautulli(response.data));
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        document.getElementById('homepageOrdertautulli').innerHTML = '';
-        if(response.data !== null){
-            $('#homepageOrdertautulli').html(buildTautulli(response.data));
-        }
     }).fail(function(xhr) {
         console.error("Organizr Function: API Connection Failed");
     });
-    var timeoutTitle = 'Tautulli-Homepage';
+    let timeoutTitle = 'Tautulli-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageTautulli(timeout); }, timeout);
+    delete timeout;
 }
 function weatherIcon(code, daytime = true){
     switch (code) {
@@ -7151,12 +7115,10 @@ function buildWeatherAndAir(array){
             `;
             airItems += '</div>';
             returnData += airItems;
-            console.log('load air')
         }
     }
     if(array.content.pollen !== false){
         if(array.content.pollen.error === null){
-            console.log('load pollen')
         }
     }
     return returnData;
@@ -7269,24 +7231,25 @@ function buildPollutant(array){
 }
 function homepageWeatherAndAir(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageWeatherAndAirRefresh;
-    organizrAPI('POST','api/?v1/homepage/connect',{action:'getWeatherAndAir'}).success(function(data) {
+    organizrAPI2('GET','api/v2/homepage/weather/data').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        if(response.data !== null){
+		        document.getElementById('homepageOrderWeatherAndAir').innerHTML = '';
+		        $('#homepageOrderWeatherAndAir').html(buildWeatherAndAir(response.data));
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        document.getElementById('homepageOrderWeatherAndAir').innerHTML = '';
-        if(response.data !== null){
-            $('#homepageOrderWeatherAndAir').html(buildWeatherAndAir(response.data));
-        }
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
-    var timeoutTitle = 'WeatherAndAir-Homepage';
+    let timeoutTitle = 'WeatherAndAir-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageWeatherAndAir(timeout); }, timeout);
+    delete timeout;
 }
 function buildMonitorrItem(array){
     var cards = '';
@@ -7355,7 +7318,7 @@ function buildMonitorrItem(array){
 function buildMonitorr(array){
     if(array === false){ return ''; }
     if(array.error != undefined) {
-        console.log('Monitorr error: ' + array.error);
+	    organizrConsole('Monitorr Function',array.error, 'error');
     } else {
         var services = (typeof array.services !== 'undefined') ? Object.keys(array.services).length : false;
         var html = `
@@ -7383,46 +7346,48 @@ function buildMonitorr(array){
 }
 function homepageMonitorr(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepagePiholeRefresh;
-    organizrAPI('POST','api/?v1/homepage/connect',{action:'getMonitorr'}).success(function(data) {
+    organizrAPI2('GET','api/v2/homepage/monitorr/data').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        document.getElementById('homepageOrderMonitorr').innerHTML = '';
+	        if(response.data !== null){
+		        buildMonitorr(response.data)
+		        $('#homepageOrderMonitorr').html(buildMonitorr(response.data));
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        document.getElementById('homepageOrderMonitorr').innerHTML = '';
-        if(response.data !== null){
-            buildMonitorr(response.data)
-            $('#homepageOrderMonitorr').html(buildMonitorr(response.data));
-        }
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
-    var timeoutTitle = 'Monitorr-Homepage';
+    let timeoutTitle = 'Monitorr-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageMonitorr(timeout); }, timeout);
+    delete timeout;
 }
 function homepageSpeedtest(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageSpeedtestRefresh;
-    organizrAPI('POST','api/?v1/homepage/connect',{action:'getSpeedtest'}).success(function(data) {
+    organizrAPI2('GET','api/v2/homepage/speedtest/data').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        document.getElementById('homepageOrderSpeedtest').innerHTML = '';
+	        if(response.data !== null){
+		        $('#homepageOrderSpeedtest').html(buildSpeedtest(response.data));
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        document.getElementById('homepageOrderSpeedtest').innerHTML = '';
-        if(response.data !== null){
-            $('#homepageOrderSpeedtest').html(buildSpeedtest(response.data));
-        }
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
-    var timeoutTitle = 'Speedtest-Homepage';
+    let timeoutTitle = 'Speedtest-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageSpeedtest(timeout); }, timeout);
+	delete timeout;
 }
 function buildSpeedtest(array){
     if(array === false){ return ''; }
@@ -7432,7 +7397,6 @@ function buildSpeedtest(array){
         -webkit-box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
         box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
     }
-
     .speedtest-card {
         background-color: #2d2c2c;
     }
@@ -7843,7 +7807,7 @@ function buildNetdataItem(array){
         display += ' ';
 
         if(e.error) {
-            console.log('Netdata error (Chart ' + (i+1) + '): ' + e.error);
+	        organizrConsole('Netdata Function','(Chart ' + (i+1) + '): ' + e.error, 'error');
         } else if(e.chart == 'easypiechart') {
             html += buildEasyPieChart(e,i,size,easySize,display);
         } else if(e.chart == 'gauge') {
@@ -8007,26 +7971,27 @@ function buildNetdata(array){
 }
 function homepageNetdata(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageNetdataRefresh;
-    organizrAPI('POST','api/?v1/homepage/connect',{action:'getNetdata'}).success(function(data) {
+    organizrAPI2('GET','api/v2/homepage/netdata/data').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        if(!tryUpdateNetdata(response.data.data)) {
+		        document.getElementById('homepageOrderNetdata').innerHTML = '';
+		        if(response.data !== null){
+			        $('#homepageOrderNetdata').html(buildNetdata(response.data));
+		        }
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        if(!tryUpdateNetdata(response.data.data)) {
-            document.getElementById('homepageOrderNetdata').innerHTML = '';
-            if(response.data !== null){
-                $('#homepageOrderNetdata').html(buildNetdata(response.data));
-            }
-        }
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
     var timeoutTitle = 'Netdata-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageNetdata(timeout); }, timeout);
+    delete timeout;
 }
 function tryUpdateNetdata(array){
     var existing = false;
@@ -8056,24 +8021,25 @@ function tryUpdateNetdata(array){
 }
 function homepageOctoprint(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageOctoprintRefresh;
-    organizrAPI('POST','api/?v1/homepage/connect',{action:'getOctoprint'}).success(function(data) {
+    organizrAPI2('GET','api/v2/homepage/octoprint/data').success(function(data) {
         try {
-            var response = JSON.parse(data);
+            let response = data.response;
+	        document.getElementById('homepageOrderOctoprint').innerHTML = '';
+	        if(response.data !== null){
+		        $('#homepageOrderOctoprint').html(buildOctoprint(response.data));
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        document.getElementById('homepageOrderOctoprint').innerHTML = '';
-        if(response.data !== null){
-            $('#homepageOrderOctoprint').html(buildOctoprint(response.data));
-        }
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
-    var timeoutTitle = 'Octoprint-Homepage';
+    let timeoutTitle = 'Octoprint-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ homepageOctoprint(timeout); }, timeout);
+    delete timeout;
 }
 function buildOctoprint(array){
 	var menu = `<ul class="nav customtab nav-tabs pull-right" role="tablist">`;
@@ -8423,13 +8389,12 @@ function humanFileSize(bytes, si) {
 //youtube search
 function youtubeSearch(searchQuery) {
 	return $.ajax({
-		url: "api/?v1/youtube/search&q="+searchQuery,
+		url: "api/v2/homepage/youtube/"+searchQuery,
 	});
 }
 function youtubeCheck(title,link){
 	youtubeSearch(title).success(function(data) {
-        var response = JSON.parse(data);
-        console.log(data)
+        var response = data.response;
 		if(response.data){
 			inlineLoad();
 			var id = response.data.items["0"].id.videoId;
@@ -8440,11 +8405,10 @@ function youtubeCheck(title,link){
 			$('.youtube-div').html(div);
 			$('.'+link).trigger('click');
 			player = new Plyr('#player-'+link);
-		}else{
-			messageSingle('API Limit Reached','YouTube API Error',activeInfo.settings.notifications.position,'#FFF','error','5000');
 		}
 
 	}).fail(function(xhr) {
+		messageSingle('API Limit Reached','YouTube API Error',activeInfo.settings.notifications.position,'#FFF','error','5000');
 		console.error("Organizr Function: YouTube Connection Failed");
 	});
 }
@@ -8505,7 +8469,6 @@ function inlineLoad(){
 	   },
 	   close: function() {
 		  if(typeof player !== 'undefined'){
-              console.log('STOP STOP STOP');
 			  player.destroy();
 		  }
 		}
@@ -8517,22 +8480,19 @@ function inlineLoad(){
 function importUsers(type){
     $('.importUsersButton').attr('disabled', true);
     messageSingle('',window.lang.translate('Importing Users'),activeInfo.settings.notifications.position,'#FFF','success','5000');
-    organizrAPI('POST','api/?v1/import/users',{type:type}).success(function(data) {
+    organizrAPI2('POST','api/v2/users/import/'+type,{type:type}).success(function(data) {
         try {
-            var response = JSON.parse(data);
+            var response = data.response;
+	        message('User Import',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+	        $('.importUsersButton').attr('disabled', false);
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        if(response.data !== false){
-            messageSingle('',window.lang.translate('Imported [' + response.data + '] Users'),activeInfo.settings.notifications.position,'#FFF','success','5000');
-            $('.importUsersButton').attr('disabled', false);
-        }else{
-            messageSingle('','Imported Users Error',activeInfo.settings.notifications.position,'#FFF','error','5000');
-        }
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    message('Category Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	    console.error("Organizr Function: API Connection Failed");
     });
 }
 //Settings change auth
@@ -8597,31 +8557,29 @@ function organizrSpecialSettings(array){
 function checkLocalForwardStatus(array){
     if(array.settings.login.enableLocalAddressForward == true && typeof array.settings.login.enableLocalAddressForward !== 'undefined'){
         if(array.settings.login.wanDomain !== '' && array.settings.login.localAddress !== ''){
-            console.log('Local Login Enabled');
-            console.log('Local Login Testing...');
+	        organizrConsole('Organizr Function','Local Login Enabled');
+	        organizrConsole('Organizr Function','Local Login Testing...');
             let remoteSite = array.settings.login.wanDomain;
             let localSite = array.settings.login.localAddress;
             try {
                 let currentURL = decodeURI(window.location.href)
                 let currentSite = window.location.host;
                 if(activeInfo.settings.user.local && currentSite.indexOf(remoteSite) !== -1 && currentURL.indexOf('override') === -1){
-                    console.log('Local Login Status: Local | Forwarding Now');
+	                organizrConsole('Organizr Function','Local Login Status: Local | Forwarding Now');
                     window.location = localSite;
                 }
             } catch(e) {
                 console.error(e);
             }
-            console.log('Local Login Status: Not Local');
-
+	        organizrConsole('Organizr Function','Local Login Status: Not Local');
         }
     }
 }
 function forceSearch(term){
     $.magnificPopup.close();
-    var tabName = $("li[data-url^='api/?v1/homepage/page']").find('span').html();
-    if($("li[data-url^='api/?v1/homepage/page']").find('i').hasClass('tabLoaded')){
-        console.log('yup');
-        if($("li[data-url^='api/?v1/homepage/page']").find('a').hasClass('active')){
+    var tabName = $("li[data-url^='api/v2/page/homepage']").find('span').html();
+    if($("li[data-url^='api/v2/page/homepage']").find('i').hasClass('tabLoaded')){
+        if($("li[data-url^='api/v2/page/homepage']").find('a').hasClass('active')){
             setTimeout(
                 function(){
                     $('#newRequestButton').trigger('click');
@@ -8744,58 +8702,60 @@ function getPingList(arrayItems){
     }
     return (pingList.length > 0) ? pingUpdate(pingList,timeout): false;
 }
+function pingUpdateItem(ping){
+	organizrAPI2('GET','api/v2/ping/' + ping,).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		var i = ping;
+		if (response.data !== false || response.data !== null) {
+			var v = response.data;
+			var elm = $('.menu-'+cleanClass(i)+'-ping');
+			var elmMs = $('.menu-'+cleanClass(i)+'-ping-ms');
+			var catElm = elm.parent().parent().parent().parent().children('a').find('.menu-category-ping');
+			var error = '<div class="ping"><span class="heartbit"></span><span class="point"></span></div>';
+			var success = '';
+			var badCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-bad')) : 0;
+			var goodCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-good')) : 0;
+			var previousState = (elm.attr('data-previous-state') == "") ? '' : elm.attr('data-previous-state');
+			var tabName = elm.attr('data-tab-name');
+			var status = (v == false) ? 'down' : 'up';
+			var ms = (v == false) ? 'down' : v+'ms';
+			var sendMessage = (previousState !== status && previousState !== '' && activeInfo.user.groupID <= activeInfo.settings.ping.authMessage) ? true : false;
+			var audioDown = (sendMessage) ? new Audio(activeInfo.settings.ping.offlineSound) : '';
+			var audioUp = (sendMessage) ? new Audio(activeInfo.settings.ping.onlineSound) : '';
+			elm.attr('data-previous-state', status);
+			if(activeInfo.user.groupID <= activeInfo.settings.ping.authMs && activeInfo.settings.ping.ms){ elmMs.removeClass('hidden').html(ms); }
+			switch (status){
+				case 'down':
+					if(catElm.length > 0){ badCount = badCount + 1; catElm.attr('data-bad', badCount); }
+					elm.html(error);
+					catElm.html(error);
+					elm.parent().find('img').addClass('grayscale');
+					var msg = (sendMessage) ? message(tabName,'Server Down',activeInfo.settings.notifications.position,'#FFF','error','600000') : '';
+					var audio = (sendMessage && activeInfo.settings.ping.statusSounds) ? audioDown.play() : '';
+					break;
+				default:
+					if(catElm.length > 0){ goodCount = goodCount + 1; catElm.attr('data-good', goodCount); if(badCount == 0){ catElm.html(success); } }
+					elm.html(success);
+					elm.parent().find('img').removeClass('grayscale');
+					var msg = (sendMessage) ? message(tabName,'Server Back Online',activeInfo.settings.notifications.position,'#FFF','success','600000') : '';
+					var audio = (sendMessage && activeInfo.settings.ping.statusSounds) ? audioUp.play() : '';
+			}
+
+		}
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+}
 function pingUpdate(pingList,timeout){
-    organizrAPI('POST','api/?v1/ping/list',{pingList:pingList}).success(function(data) {
-        try {
-            var response = JSON.parse(data);
-        }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
-        }
-        if (response.data !== false || response.data !== null) {
-            $('.menu-category-ping').each(function( index ) {
-                $(this).attr('data-good','0');
-                $(this).attr('data-bad','0');
-            });
-            $.each(response.data, function(i,v) {
-                var elm = $('.menu-'+cleanClass(i)+'-ping');
-                var elmMs = $('.menu-'+cleanClass(i)+'-ping-ms');
-                var catElm = elm.parent().parent().parent().parent().children('a').find('.menu-category-ping');
-                var error = '<div class="ping"><span class="heartbit"></span><span class="point"></span></div>';
-                var success = '';
-                var badCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-bad')) : 0;
-                var goodCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-good')) : 0;
-                var previousState = (elm.attr('data-previous-state') == "") ? '' : elm.attr('data-previous-state');
-                var tabName = elm.attr('data-tab-name');
-                var status = (v == false) ? 'down' : 'up';
-                var ms = (v == false) ? 'down' : v+'ms';
-                var sendMessage = (previousState !== status && previousState !== '' && activeInfo.user.groupID <= activeInfo.settings.ping.authMessage) ? true : false;
-                var audioDown = (sendMessage) ? new Audio(activeInfo.settings.ping.offlineSound) : '';
-                var audioUp = (sendMessage) ? new Audio(activeInfo.settings.ping.onlineSound) : '';
-                elm.attr('data-previous-state', status);
-                if(activeInfo.user.groupID <= activeInfo.settings.ping.authMs && activeInfo.settings.ping.ms){ elmMs.removeClass('hidden').html(ms); }
-                switch (status){
-                    case 'down':
-                        if(catElm.length > 0){ badCount = badCount + 1; catElm.attr('data-bad', badCount); }
-                        elm.html(error);
-                        catElm.html(error);
-                        elm.parent().find('img').addClass('grayscale');
-                        var msg = (sendMessage) ? message(tabName,'Server Down',activeInfo.settings.notifications.position,'#FFF','error','600000') : '';
-                        var audio = (sendMessage && activeInfo.settings.ping.statusSounds) ? audioDown.play() : '';
-                        break;
-                    default:
-                        if(catElm.length > 0){ goodCount = goodCount + 1; catElm.attr('data-good', goodCount); if(badCount == 0){ catElm.html(success); } }
-                        elm.html(success);
-                        elm.parent().find('img').removeClass('grayscale');
-                        var msg = (sendMessage) ? message(tabName,'Server Back Online',activeInfo.settings.notifications.position,'#FFF','success','600000') : '';
-                        var audio = (sendMessage && activeInfo.settings.ping.statusSounds) ? audioUp.play() : '';
-                }
-            });
-        }
-    }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
-    });
+	$.each(pingList, function(i,v) {
+		pingUpdateItem(v);
+	})
     var timeoutTitle = 'ping';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
     timeouts[timeoutTitle] = setTimeout(function(){ pingUpdate(pingList,timeout); }, timeout);
@@ -9089,7 +9049,7 @@ function message(heading,text,position,color,icon,timeout){
                 }).show();
                 break;
             default:
-                console.log('msg not setup')
+	            organizrConsole('Organizr Function','Message case not setup');
         }
 
     }else{
@@ -9156,31 +9116,26 @@ function lock(){
         message('Lock Disabled','Lock function disabled if logged in via oAuth',activeInfo.settings.notifications.position,'#FFF','warning','5000');
         return false;
     }
-    organizrAPI('POST','api/?v1/lock','').success(function(data) {
+    organizrAPI2('POST','api/v2/users/lock','').success(function(data) {
         try {
-            var html = JSON.parse(data);
+            let html = data.response;
+	        location.reload();
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        console.log(html);
-        if(html.data == true){
-            location.reload();
-        }else{
-            message('Login Error',html.data,activeInfo.settings.notifications.position,'#FFF','warning','10000');
-            console.error('Organizr Function: Login failed');
-        }
     }).fail(function(xhr) {
-        console.error("Organizr Function: Login Failed");
+	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
 }
 function openSettings(){
-    var tab = $("li[data-url='api/?v1/settings/page']").find('span').text();
+    var tab = $("li[data-url='api/v2/page/settings']").find('span').text();
     tabActions('click',tab,0);
 }
 function openHomepage(){
-    var tab = $("li[data-url='api/?v1/homepage/page']").find('span').text();
+    var tab = $("li[data-url='api/v2/page/homepage']").find('span').text();
     tabActions('click',tab,0);
 }
 function toggleFullScreen() {
@@ -9295,57 +9250,58 @@ function addCoordinatesToInput(latitude, longitude){
     message('Coordinates Added','Please Save',activeInfo.settings.notifications.position,'#FFF','success','10000');
 }
 function searchCoordinatesAPI(query){
-    organizrAPI('POST','api/?v1/coordinates/search',{query:query}).success(function(data) {
+	messageSingle('Submitting Query','',activeInfo.settings.notifications.position,'#FFF','info','5000');
+    organizrAPI2('POST','api/v2/homepage/weather/coordinates',{query:query}).success(function(data) {
         try {
-            var html = JSON.parse(data);
+            let html = data.response;
+	        if(html.data.type == 'FeatureCollection'){
+		        var entries = '';
+		        $.each(html.data.features, function(i,v) {
+			        entries += '<li class="text-left"><i class="fa fa-caret-right text-info"></i><span class="mouse" onclick="addCoordinatesToInput(\''+v.center[1]+'\',\''+v.center[0]+'\')">'+v.place_name+'</span></li>';
+		        })
+		        var div = `
+		        <div class="row">
+		            <div class="col-12">
+		                <div class="card m-b-0">
+		                    <div class="form-horizontal">
+		                        <div class="card-body">
+		                            <h4 class="card-title" lang="en">Select Place</h4>
+		                            <div class="form-group row">
+		                                <div class="col-sm-12">
+		                                    <ul class="list-icons">
+		                                        `+entries+`
+		                                    </ul>
+		                                </div>
+		                            </div>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+		        `;
+		        if(entries !== ''){
+			        swal.close();
+			        swal({
+				        content: createElementFromHTML(div),
+				        buttons: false,
+				        className: 'bg-org'
+			        })
+		        }else{
+			        message('API Error','No results found...',activeInfo.settings.notifications.position,'#FFF','warning','10000');
+		        }
+
+	        }else{
+		        message('API Error','',activeInfo.settings.notifications.position,'#FFF','warning','10000');
+		        console.error('Organizr Function: API failed');
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-        console.log(html.data);
-        if(html.data.type == 'FeatureCollection'){
-            var entries = '';
-            $.each(html.data.features, function(i,v) {
-                entries += '<li class="text-left"><i class="fa fa-caret-right text-info"></i><span class="mouse" onclick="addCoordinatesToInput(\''+v.center[1]+'\',\''+v.center[0]+'\')">'+v.place_name+'</span></li>';
-            })
-            var div = `
-            <div class="row">
-                <div class="col-12">
-                    <div class="card m-b-0">
-                        <div class="form-horizontal">
-                            <div class="card-body">
-                                <h4 class="card-title" lang="en">Select Place</h4>
-                                <div class="form-group row">
-                                    <div class="col-sm-12">
-                                        <ul class="list-icons">
-                                            `+entries+`
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            `;
-            if(entries !== ''){
-                swal.close();
-                swal({
-                    content: createElementFromHTML(div),
-                    buttons: false,
-                    className: 'bg-org'
-                })
-            }else{
-                message('API Error','No results found...',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-            }
-
-        }else{
-            message('API Error','',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-            console.error('Organizr Function: API failed');
-        }
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Failed");
+	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
 }
 function showLookupCoordinatesModal(){
@@ -9418,7 +9374,7 @@ function oAuthLoginNeededCheck() {
         }
     }
     message('OAuth', ' Proceeding to login', activeInfo.settings.notifications.position, '#FFF', 'info', '10000');
-    organizrAPI('POST', 'api/?v1/login', '').success(function (data) {
+    organizrAPI2('POST', 'api/v2/login', '').success(function (data) {
         var html = JSON.parse(data);
         if (html.data == true) {
             local('set', 'message', 'Welcome|Login Successful|success');
@@ -9482,10 +9438,28 @@ function checkToken(activate = false){
         }
     }
 }
+function organizrConsole(subject,msg,type = 'info'){
+
+	let color;
+	switch (type){
+		case 'error':
+			color = '#ed2e72';
+			break;
+		case 'warning':
+			color = '#272361';
+			break;
+		default:
+			color = '#2cabe3';
+			break;
+
+	}
+
+	console.info("%c "+subject+" %c ".concat(msg, " "), "color: white; background: "+color+"; font-weight: 700;", "color: "+color+"; background: white; font-weight: 700;");
+}
 function launch(){
-	organizrConnect('api/?v1/launch_organizr').success(function (data) {
+	organizrConnect('api/v2/launch').success(function (data) {
         try {
-            var json = JSON.parse(data);
+            var json = data.response;
         } catch (e) {
             orgErrorCode(data);
             defineNotification();
@@ -9493,7 +9467,7 @@ function launch(){
             return false;
         }
 		if(json.data.user == false){ location.reload(); }
-		currentVersion = json.data.status.version;
+		currentVersion = json.data.version;
 		activeInfo = {
 			timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,
 			offest:new Date().getTimezoneOffset(),
@@ -9509,17 +9483,16 @@ function launch(){
 			token:json.data.user.token,
 			user:json.data.user,
 			plugins:json.data.plugins,
-			branch:json.branch,
-			sso:json.sso,
-			settings:json.settings,
-            appearance:json.appearance,
-			theme:json.theme,
-			style:json.style,
-			version:json.version
+			branch:json.data.branch,
+			sso:json.data.sso,
+			settings:json.data.settings,
+            appearance:json.data.appearance,
+			theme:json.data.theme,
+			style:json.data.style,
+			version:json.data.version
 		};
-		console.log("%cOrganizr","color: #66D9EF; font-size: 24px; font-family: Monospace;");
-		console.log("%cVersion: "+currentVersion,"color: #AD80FD; font-size: 12px; font-family: Monospace;");
-		console.log("%cStarting Up...","color: #F92671; font-size: 12px; font-family: Monospace;");
+		console.info("%c Organizr %c ".concat(currentVersion, " "), "color: white; background: #66D9EF; font-weight: 700; font-size: 24px; font-family: Monospace;", "color: #66D9EF; background: white; font-weight: 700; font-size: 24px; font-family: Monospace;");
+		console.info("%c Status %c ".concat("Starting Up...", " "), "color: white; background: #F92671; font-weight: 700;", "color: #F92671; background: white; font-weight: 700;");
         local('set','initial',true);
         setTimeout(function(){ local('r','initial'); }, 3000);
 		defineNotification();
@@ -9536,10 +9509,10 @@ function launch(){
 				buildLanguage('wizard');
 				break;
 			case "dependencies":
-				buildDependencyCheck(json);
+				buildDependencyCheck(json.data);
 				break;
 			case "ok":
-				loadAppearance(json.appearance);
+				loadAppearance(json.data.appearance);
                 if(activeInfo.user.locked == 1){
                     buildLockscreen();
                 }else{
@@ -9548,11 +9521,11 @@ function launch(){
                     tabProcess(json);
                     buildSplashScreen(json);
                     accountManager(json);
-                    organizrSpecialSettings(json);
+                    organizrSpecialSettings(json.data);
                     getPingList(json);
-                    checkLocalForwardStatus(json);
+                    checkLocalForwardStatus(json.data);
                 }
-                loadCustomJava(json.appearance);
+                loadCustomJava(json.data.appearance);
                 if(getCookie('lockout')){
                     $('.show-login').click();
                     setTimeout(function(){
@@ -9571,7 +9544,7 @@ function launch(){
 			default:
 				console.error('Organizr Function: Action not set or defined');
 		}
-		console.log('Organizr DOM Fully loaded');
+		console.info("%c Organizr %c ".concat("DOM Fully loaded", " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
         oAuthLoginNeededCheck();
 	});
 }
