@@ -461,9 +461,7 @@ class Organizr
 			if ($compare->lessThan($oldVer, $versionCheck)) {
 				$updateDB = false;
 				$oldVer = $versionCheck;
-				$this->upgradeSettingsTabURL();
-				$this->upgradeHomepageTabURL();
-				
+				$this->upgradeToVersion($versionCheck);
 			}
 			// End Upgrade check start for version above
 			if ($updateDB == true) {

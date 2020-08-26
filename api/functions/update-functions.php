@@ -33,7 +33,7 @@ trait UpdateFunctions
 			$this->setAPIResponse('success', $windowsUpdate, 200);
 			return true;
 		} else {
-			$this->setAPIResponse('error', 'Update Complete - check log.txt for output', 500);
+			$this->setAPIResponse('success', 'Update Complete - check log.txt for output', 200);
 			return false;
 		}
 	}

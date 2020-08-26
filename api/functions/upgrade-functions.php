@@ -2,6 +2,19 @@
 
 trait UpgradeFunctions
 {
+	public function upgradeToVersion($version = '2.1.0')
+	{
+		switch ($version) {
+			case '2.1.0':
+				$this->upgradeSettingsTabURL();
+				$this->upgradeHomepageTabURL();
+				$this->setAPIResponse('success', 'Ran update function for version: ' . $version, 200);
+				return true;
+			default:
+				return true;
+		}
+	}
+	
 	public function upgradeSettingsTabURL()
 	{
 		$response = [
