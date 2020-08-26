@@ -6227,10 +6227,13 @@ function buildPiholeItem(array){
                         <p class="d-inline mr-1">Total queries</p>`;
         for(var key in data) {
             var e = data[key];
-            if(length > 1 && !combine) {
-                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+            if(typeof e['FTLnotrunning'] == 'undefined'){
+	            if(length > 1 && !combine) {
+		            card += `<p class="d-inline text-muted">(`+key+`)</p>`;
+	            }
+	            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
             }
-            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['dns_queries_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+
         };
         card += `
                     </div>
@@ -6250,10 +6253,12 @@ function buildPiholeItem(array){
                         <p class="d-inline mr-1">Queries Blocked</p>`;
         for(var key in data) {
             var e = data[key];
-            if(length > 1 && !combine) {
-                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
-            }
-            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+	        if(typeof e['FTLnotrunning'] == 'undefined') {
+		        if (length > 1 && !combine) {
+			        card += `<p class="d-inline text-muted">(` + key + `)</p>`;
+		        }
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="` + key + `">` + e['ads_blocked_today'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + `</h3>`;
+	        }
         };
         card += `
                     </div>
@@ -6273,10 +6278,12 @@ function buildPiholeItem(array){
                         <p class="d-inline mr-1">Percent Blocked</p>`;
         for(var key in data) {
             var e = data[key];
-            if(length > 1 && !combine) {
-                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
-            }
-            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['ads_percentage_today'].toFixed(1)+`%</h3>`
+	        if(typeof e['FTLnotrunning'] == 'undefined') {
+		        if (length > 1 && !combine) {
+			        card += `<p class="d-inline text-muted">(` + key + `)</p>`;
+		        }
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="` + key + `">` + e['ads_percentage_today'].toFixed(1) + `%</h3>`
+	        }
         };
         card += `
                     </div>
@@ -6296,10 +6303,12 @@ function buildPiholeItem(array){
                         <p class="d-inline mr-1">Domains on Blocklist</p>`;
         for(var key in data) {
             var e = data[key];
-            if(length > 1 && !combine) {
-                card += `<p class="d-inline text-muted">(`+key+`)</p>`;
-            }
-            card += `<h3 data-toggle="tooltip" data-placement="right" title="`+key+`">`+e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+`</h3>`;
+	        if(typeof e['FTLnotrunning'] == 'undefined') {
+		        if (length > 1 && !combine) {
+			        card += `<p class="d-inline text-muted">(` + key + `)</p>`;
+		        }
+		        card += `<h3 data-toggle="tooltip" data-placement="right" title="` + key + `">` + e['domains_being_blocked'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + `</h3>`;
+	        }
         };
         card += `
                     </div>
