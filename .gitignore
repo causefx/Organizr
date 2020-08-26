@@ -145,6 +145,7 @@ api/plugins/*
 !api/plugins/misc/emailTemplates/default.php
 !api/plugins/misc/emailTemplates/gray.php
 !api/plugins/misc/emailTemplates/light.php
+!api/plugins/misc/emailTemplates/dark.php
 !api/plugins/misc/emailTemplates/plehex.php
 !api/plugins/misc/speedTest/empty.php
 !api/plugins/misc/speedTest/garbage.php
