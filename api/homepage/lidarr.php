@@ -130,7 +130,7 @@ trait LidarrHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], true);
-				$results = $downloader->getCalendar($startDate, $endDate, );
+				$results = $downloader->getCalendar($startDate, $endDate);
 				$result = json_decode($results, true);
 				if (is_array($result) || is_object($result)) {
 					$calendar = (array_key_exists('error', $result)) ? '' : $this->formatLidarrCalendar($results, $key);
