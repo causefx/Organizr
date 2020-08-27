@@ -110,16 +110,8 @@ trait SonarrHomepageItem
 			$this->setAPIResponse('error', 'Sonarr homepage item is not enabled', 409);
 			return false;
 		}
-		if (!$this->config['homepageSonarrQueueEnabled']) {
-			$this->setAPIResponse('error', 'Sonarr homepage module is not enabled', 409);
-			return false;
-		}
 		if (!$this->qualifyRequest($this->config['homepageSonarrAuth'])) {
 			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSonarrQueueAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
 			return false;
 		}
 		if (empty($this->config['sonarrURL'])) {

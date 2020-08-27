@@ -51,35 +51,35 @@ trait LidarrHomepageItem
 	
 	public function getLidarrQueue()
 	{
-		if (!$this->config['homepageRadarrEnabled']) {
-			$this->setAPIResponse('error', 'Radarr homepage item is not enabled', 409);
+		if (!$this->config['homepageLidarrEnabled']) {
+			$this->setAPIResponse('error', 'Lidarr homepage item is not enabled', 409);
 			return false;
 		}
-		if (!$this->config['homepageRadarrQueueEnabled']) {
-			$this->setAPIResponse('error', 'Radarr homepage module is not enabled', 409);
+		if (!$this->config['homepageLidarrQueueEnabled']) {
+			$this->setAPIResponse('error', 'Lidarr homepage module is not enabled', 409);
 			return false;
 		}
-		if (!$this->qualifyRequest($this->config['homepageRadarrAuth'])) {
+		if (!$this->qualifyRequest($this->config['homepageLidarrAuth'])) {
 			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
 			return false;
 		}
-		if (!$this->qualifyRequest($this->config['homepageRadarrQueueAuth'])) {
+		if (!$this->qualifyRequest($this->config['homepageLidarrQueueAuth'])) {
 			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
 			return false;
 		}
-		if (empty($this->config['radarrURL'])) {
-			$this->setAPIResponse('error', 'Radarr URL is not defined', 422);
+		if (empty($this->config['lidarrURL'])) {
+			$this->setAPIResponse('error', 'Lidarr URL is not defined', 422);
 			return false;
 		}
-		if (empty($this->config['radarrToken'])) {
-			$this->setAPIResponse('error', 'Radarr Token is not defined', 422);
+		if (empty($this->config['lidarrToken'])) {
+			$this->setAPIResponse('error', 'Lidarr Token is not defined', 422);
 			return false;
 		}
 		$queueItems = array();
-		$list = $this->csvHomepageUrlToken($this->config['radarrURL'], $this->config['radarrToken']);
+		$list = $this->csvHomepageUrlToken($this->config['lidarrURL'], $this->config['lidarrToken']);
 		foreach ($list as $key => $value) {
 			try {
-				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
+				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token'], true);
 				$results = $downloader->getQueue();
 				$downloadList = json_decode($results, true);
 				if (is_array($downloadList) || is_object($downloadList)) {
@@ -91,7 +91,7 @@ trait LidarrHomepageItem
 					$queueItems = array_merge($queueItems, $queue);
 				}
 			} catch (Exception $e) {
-				$this->writeLog('error', 'Radarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+				$this->writeLog('error', 'Lidarr Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
 			}
 		}
 		$api['content']['queueItems'] = $queueItems;
@@ -106,15 +106,11 @@ trait LidarrHomepageItem
 		$startDate = ($startDate) ?? $_GET['start'];
 		$endDate = ($endDate) ?? $_GET['end'];
 		if (!$this->config['homepageLidarrEnabled']) {
-			$this->setAPIResponse('error', 'Radarr homepage item is not enabled', 409);
+			$this->setAPIResponse('error', 'Lidarr homepage item is not enabled', 409);
 			return false;
 		}
 		if (!$this->qualifyRequest($this->config['homepageLidarrAuth'])) {
 			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageRadarrQueueAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
 			return false;
 		}
 		if (empty($this->config['lidarrURL'])) {

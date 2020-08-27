@@ -109,16 +109,8 @@ trait RadarrHomepageItem
 			$this->setAPIResponse('error', 'Radarr homepage item is not enabled', 409);
 			return false;
 		}
-		if (!$this->config['homepageRadarrQueueEnabled']) {
-			$this->setAPIResponse('error', 'Radarr homepage module is not enabled', 409);
-			return false;
-		}
 		if (!$this->qualifyRequest($this->config['homepageRadarrAuth'])) {
 			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageRadarrQueueAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
 			return false;
 		}
 		if (empty($this->config['radarrURL'])) {
