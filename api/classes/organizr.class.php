@@ -174,7 +174,7 @@ class Organizr
 			$whitelist = isset($_GET['whitelist']) ? $_GET['whitelist'] : false;
 			$blacklist = isset($_GET['blacklist']) ? $_GET['blacklist'] : false;
 			$group = 0;
-			$groupParam = $_GET['group'];
+			$groupParam = ($_GET['group']) ?? 0;
 			$redirect = false;
 			if (isset($groupParam)) {
 				if (is_numeric($groupParam)) {

@@ -91,6 +91,15 @@ $app->get('/auth', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
+$app->get('/auth-{group}', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$_GET['group'] = $args['group'];
+	$Organizr->auth();
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+});
 $app->get('/launch', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$tabInfo = $Organizr->getUserTabsAndCategories();
