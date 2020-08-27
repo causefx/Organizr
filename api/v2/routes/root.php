@@ -36,7 +36,7 @@ $app->get('/status', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-$app->get('/auth', function ($request, $response, $args) {
+$app->any('/auth', function ($request, $response, $args) {
 	/**
 	 * @OA\Get(
 	 *     path="/api/v2/auth",
@@ -91,7 +91,7 @@ $app->get('/auth', function ($request, $response, $args) {
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
 		->withStatus($GLOBALS['responseCode']);
 });
-$app->get('/auth-{group}', function ($request, $response, $args) {
+$app->any('/auth-{group}', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$_GET['group'] = $args['group'];
 	$Organizr->auth();
