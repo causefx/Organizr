@@ -101,12 +101,33 @@ function jsonE($json)
 	return safe_json_encode($json, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 }
 
+function getBasePath()
+{
+	$uri = $_SERVER['REQUEST_URI'];
+	if (stripos($uri, 'api/v2') !== false) {
+		return '/api/v2';
+	} else {
+		return '';
+	}
+}
+
+function overWriteURI()
+{
+	$uri = $_SERVER['REQUEST_URI'];
+	$query = $_SERVER['QUERY_STRING'];
+	if (stripos($uri, 'api/v2') === false && stripos($query, 'group=') !== false) {
+		$group = explode('group=', $query);
+		$_SERVER['REQUEST_URI'] = 'auth-' . $group[1];
+	}
+}
+
+overWriteURI();
 // Instantiate App
 $app = AppFactory::create();
 // Add error middleware
 $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
-$app->setBasePath('/api/v2');
+$app->setBasePath(getBasePath());
 $app->add(function ($request, $handler) {
 	// add the organizr to your request as [READ-ONLY]
 	$Organizr = new Organizr();
