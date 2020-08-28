@@ -2481,6 +2481,7 @@ function accountManager(user){
 function userMenu(user){
 	$('body').attr('data-active-user-group-name',user.data.user.group);
 	$('body').attr('data-active-user-group-id',user.data.user.groupID);
+	var sideMenu = '';
 	var menuList = '<li class="hidden-xs" onclick="toggleFullScreen();"><a class="waves-effect waves-light"> <i class="ti-fullscreen fullscreen-icon"></i></a></li>';
 	var showDebug = (activeInfo.settings.misc.debugArea) ? '<li><a href="javascript:void(0)" onclick="toggleDebug();getDebugPreInfo();"><i class="mdi mdi-bug fa-fw"></i> <span lang="en">Debug Area</span></a></li>' : '';
 	menuList += buildLanguage();
@@ -2495,9 +2496,6 @@ function userMenu(user){
 							<div class="u-text"><h4>`+user.data.user.username+`</h4><p class="text-muted">`+user.data.user.email+`</p><p class="text-muted">`+user.data.user.group+`</p></div>
 						</div>
 					</li>
-					<!--<li class="divider" role="separator"></li>
-					<li><a href="javascript:void(0)"><i class="ti-user fa-fw"></i> <span lang="en">My Profile</span></a></li>
-					<li><a href="javascript:void(0)"><i class="ti-email fa-fw"></i> <span lang="en">Inbox</span></a></li>-->
 					<li class="divider" role="separator"></li>
 					<li class="append-menu"><a class="inline-popups" href="#account-area" data-effect="mfp-zoom-out"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
 					<li class="divider" role="separator"></li>
@@ -2506,6 +2504,20 @@ function userMenu(user){
 					<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
 				</ul><!-- /.dropdown-user -->
 			</li><!-- /.dropdown -->
+		`;
+		sideMenu += `
+		<li class="user-pro">
+			<a href="#" class="waves-effect">
+				<img src="`+user.data.user.image+`" alt="user-img" class="img-circle">
+				<span class="hide-menu">`+user.data.user.username+`<span class="fa arrow"></span></span>
+			</a>
+			<ul class="nav nav-second-level collapse" aria-expanded="false" style="height: 0px;">
+				<li class="append-menu"><a class="inline-popups" href="#account-area" data-effect="mfp-zoom-out"><i class="ti-settings fa-fw"></i> <span lang="en">Account Settings</span></a></li>
+				<li><a href="javascript:void(0)" onclick="lock();"><i class="ti-lock fa-fw"></i> <span lang="en">Lock Screen</span></a></li>
+				` + showDebug + `
+				<li><a href="javascript:void(0)" onclick="logout();"><i class="fa fa-sign-out fa-fw"></i> <span lang="en">Logout</span></a></li>
+			</ul>
+		</li>
 		`;
 	}else{
 		menuList += `
@@ -2523,8 +2535,20 @@ function userMenu(user){
 					</ul><!-- /.dropdown-user -->
 				</li><!-- /.dropdown -->
 		`;
+		sideMenu += `
+		<li class="user-pro">
+			<a href="#" class="waves-effect">
+				<img src="`+user.data.user.image+`" alt="user-img" class="img-circle">
+				<span class="hide-menu">`+user.data.user.username+`<span class="fa arrow"></span></span>
+			</a>
+			<ul class="nav nav-second-level collapse" aria-expanded="false" style="height: 0px;">
+				<li class="append-menu"><a href="javascript:void(0)" class="show-login"><i class="fa fa-sign-in fa-fw"></i> <span lang="en">Login/Register</span></a></li>
+			</ul>
+		</li>
+		`;
 	}
 	$(menuList).appendTo('.navbar-right').html;
+	//$(sideMenu).appendTo('#side-menu').html;
 	//message("",window.lang.translate('Welcome')+" "+user.data.user.username,activeInfo.settings.notifications.position,"#FFF","success","3500");
 	console.info("%c "+window.lang.translate('Welcome')+" %c ".concat(user.data.user.username, " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
 }

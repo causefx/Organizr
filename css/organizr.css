@@ -40,7 +40,12 @@
 #side-menu .fa-fw {
     width: 30px !important;
 }
-
+.sidebar:hover #side-menu .user-pro ul li a {
+    padding-left: 30px;
+}
+.sidebar #side-menu .user-pro ul li a {
+    padding: 14px 10px 14px 17px;
+}
 .sttabs nav a {
     position: relative;
     display: block;
