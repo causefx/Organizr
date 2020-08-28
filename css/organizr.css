@@ -25,6 +25,12 @@
     position: inherit;
     display: block;
 }
+.orgErrorAlert {
+    min-width: 478px;
+    width: calc(100% - 40px);
+    max-width: 1200px;
+    background-color: #1f1f1f !important;
+}
 
 /* Larger Images */
 

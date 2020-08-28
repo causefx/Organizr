@@ -9252,8 +9252,22 @@ function checkIfTabNameExists(tabName){
 }
 function orgErrorAlert(error){
     if(activeInfo.settings.misc.debugErrors) {
-        $('#main-org-error-container').addClass('show');
-        $('#main-org-error').html(error);
+        //$('#main-org-error-container').addClass('show');
+        //$('#main-org-error').html(error);
+	    var div = `
+	    <div class="panel">
+            <div class="bg-org2">
+                <div class="panel-heading">ERROR</div>
+                <div class="panel-body text-left">`+error+`</div>
+            </div>
+        </div>
+	    `;
+	    swal({
+		    content: createElementFromHTML(div),
+		    button: "OK",
+		    className: 'orgErrorAlert',
+		    dangerMode: true
+	    });
     }
 }
 function closeOrgError(){
