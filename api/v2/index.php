@@ -103,9 +103,9 @@ function jsonE($json)
 
 function getBasePath()
 {
-	$uri = $_SERVER['REQUEST_URI'];
+	$uri = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 	if (stripos($uri, 'api/v2') !== false) {
-		return '/api/v2';
+		return $uri;
 	} else {
 		return '';
 	}
@@ -134,7 +134,7 @@ $app->add(function ($request, $handler) {
 	$request = $request->withAttribute('Organizr', $Organizr);
 	return $handler->handle($request);
 });
-$app->add(new Lowercase());
+//$app->add(new Lowercase());
 /*
  * Include all routes
  */
