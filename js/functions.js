@@ -54,9 +54,7 @@ function setLangCookie(lang){
         path: '/'
     });
 }
-function toggleDebug(){
-    $('.debugModal').modal('show')
-}
+
 function highlightObject(json) {
     if (typeof json != 'string') {
         json = JSON.stringify(json, undefined, '\t');
@@ -2545,7 +2543,7 @@ function userMenu(user){
 	$('body').attr('data-active-user-group-id',user.data.user.groupID);
 	var sideMenu = '';
 	var menuList = '<li class="hidden-xs" onclick="toggleFullScreen();"><a class="waves-effect waves-light"> <i class="ti-fullscreen fullscreen-icon"></i></a></li>';
-	var showDebug = (activeInfo.settings.misc.debugArea) ? '<li><a href="javascript:void(0)" onclick="toggleDebug();getDebugPreInfo();"><i class="mdi mdi-bug fa-fw"></i> <span lang="en">Debug Area</span></a></li>' : '';
+	var showDebug = (activeInfo.settings.misc.debugArea) ? '<li><a href="javascript:void(0)" onclick="toggleDebug();"><i class="mdi mdi-bug fa-fw"></i> <span lang="en">Debug Area</span></a></li>' : '';
 	menuList += buildLanguage();
 	if (user.data.user.loggedin === true) {
 		menuList += `
@@ -9332,7 +9330,7 @@ function orgErrorAlert(error){
 	    });
     }
 }
-function newDebugArea(){
+function toggleDebug(){
 	var div = `
 	<div class="white-box m-0">
 	    <div class="steamline">
