@@ -95,21 +95,83 @@ function orgDebug() {
 
     }
 }
-function jsonToHTML(json){
-    var html = '';
-    $.each(json, function(i,v) {
+function getDepth(object) {
+	var level = 1;
+	for(var key in object) {
+		if (!object.hasOwnProperty(key)) continue;
 
-        if(typeof v === 'object'){
-            html += i + ': <br/>';
-                $.each(v, function(index,value) {
-                html += '&nbsp; &nbsp; &nbsp; &nbsp;' + index + ': ' + value + '<br/>';
-            });
-        }else{
-            html += i + ': ' + v + '<br/>';
-        }
-    });
-    return html;
+		if(typeof object[key] == 'object'){
+			var depth = getDepth(object[key]) + 1;
+			level = Math.max(depth, level);
+		}
+	}
+	return level;
 }
+function jsonToHTML(json){
+	var html = '';
+	$.each(json, function(i,v) {
+
+		if(typeof v === 'object'){
+			html += '<p class="tab0">' + i + ':</p>';
+			$.each(v, function(index,value) {
+				if(typeof value === 'object'){
+					html += '<p class="tab1">' + index + ':</p>';
+					html += jsonToHTML2(value);
+				}else{
+					html += '<p class="tab1">' + index + ': ' + value + '</p>';
+				}
+
+			});
+		}else{
+			html += '<p class="tab0">' + i + ': ' + v + '</p>';
+		}
+	});
+	return html;
+}
+function jsonToHTML2(json){
+	var html = '';
+	$.each(json, function(i,v) {
+
+		if(typeof v === 'object'){
+			html += '<p class="tab2">' + i + ':</p>';
+			$.each(v, function(index,value) {
+				if(typeof value === 'object'){
+					html += '<p class="tab3">' + index + ':</p>';
+					html += jsonToHTML3(value);
+				}else{
+					html += '<p class="tab3">' + index + ': ' + value + '</p>';
+				}
+
+			});
+		}else{
+			html += '<p class="tab2">' + i + ': ' + v + '</p>';
+		}
+	});
+	return html;
+}
+function jsonToHTML3(json){
+	var html = '';
+	$.each(json, function(i,v) {
+
+		if(typeof v === 'object'){
+			html += '<p class="tab4">' + i + ':</p>';
+			$.each(v, function(index,value) {
+				if(typeof value === 'object'){
+					html += '<p class="tab5">' + index + ':</p>';
+					html += jsonToHTML2(value);
+				}else{
+					html += '<p class="tab5">' + index + ': ' + value + '</p>';
+				}
+
+			});
+		}else{
+			html += '<p class="tab4">' + i + ': ' + v + '</p>';
+		}
+	});
+	return html;
+}
+
+
 function copyDebug(){
     var pre = $('#debugPreInfo').find('.whitebox').text();
     var debug = $('#debugResults').find('.whitebox').text();
@@ -118,9 +180,9 @@ function copyDebug(){
 }
 function formatDebug(result){
     var formatted = '';
+    console.log(typeof result);
     switch (typeof result) {
         case 'object':
-            //formatted = highlightObject(result);
             formatted = jsonToHTML(result);
             break;
         default:
@@ -9269,6 +9331,75 @@ function orgErrorAlert(error){
 		    dangerMode: true
 	    });
     }
+}
+function newDebugArea(){
+	var div = `
+	<div class="white-box m-0">
+	    <div class="steamline">
+	        <div class="sl-item">
+	            <div class="sl-left bg-success"><i class="mdi mdi-code-tags"></i></div>
+	            <div class="sl-right">
+	                <div class="form-group">
+	                    <div id="" class="input-group">
+	                        <input id="debug-input" lang="en" placeholder="Input Command" type="text"
+	                               class="form-control inline-focus">
+	                        <div class="input-group-btn">
+	                            <button type="button"
+	                                    class="btn waves-effect waves-light btn-info dropdown-toggle"
+	                                    data-toggle="dropdown" aria-expanded="false"><span lang="en">Commands</span>
+	                                <span class="caret"></span></button>
+	                            <ul class="dropdown-menu dropdown-menu-right">
+	                                <li><a onclick="orgDebugList('activeInfo.settings.sso');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">SSO</a></li>
+	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.ombi');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">Ombi SSO</a></li>
+	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.plex');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">Plex SSO</a></li>
+	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.tautulli');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">Tautulli SSO</a></li>
+	                                <li><a onclick="orgDebugList('activeInfo.settings.sso.misc');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">Misc SSO</a></li>
+	                                <li><a onclick="orgDebugList('activeInfo.settings.misc.schema');"
+	                                       href="javascript:void(0)"
+	                                       lang="en">DB Schema</a></li>
+	                            </ul>
+	                        </div>
+	                    </div>
+	                    <div class="clearfix"></div>
+	                </div>
+	            </div>
+	        </div>
+	        <div id="debugPreInfoBox" class="sl-item text-left">
+	            <div class="sl-left bg-info"><i class="mdi mdi-package-variant-closed"></i></div>
+	            <div class="sl-right">
+	                <div>
+	                    <span lang="en">Organizr Information:</span>&nbsp;
+	                </div>
+	                <div id="debugPreInfo" class="desc"></div>
+	            </div>
+	        </div>
+	        <div id="debugResultsBox" class="sl-item hidden text-left">
+	            <div class="sl-left bg-info"><i class="mdi mdi-receipt"></i></div>
+	            <div class="sl-right">
+	                <div><span lang="en">Results For cmd:</span>&nbsp;<span class="cmdName"></span>
+	                </div>
+	                <div id="debugResults" class="desc"></div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	`;
+	swal({
+		content: createElementFromHTML(div),
+		button: "OK",
+		className: 'orgErrorAlert',
+	});
+	getDebugPreInfo();
 }
 function closeOrgError(){
     $('#main-org-error-container').removeClass('show');
