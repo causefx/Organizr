@@ -3363,12 +3363,14 @@ class Organizr
 		switch ($log) {
 			case 'login':
 			case 'loginLog':
+			case 'loginlog':
 				$file = $this->organizrLoginLog;
 				break;
 			case 'org':
 			case 'organizr':
 			case 'organizrLog':
 			case 'orgLog':
+			case 'orglog':
 				$file = $this->organizrLog;
 				break;
 			default:
