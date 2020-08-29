@@ -103,9 +103,10 @@ function jsonE($json)
 
 function getBasePath()
 {
-	$uri = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+	$uri = $_SERVER['REQUEST_URI'];
+	$uriUse = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 	if (stripos($uri, 'api/v2') !== false) {
-		return $uri;
+		return $uriUse;
 	} else {
 		return '';
 	}
