@@ -161,7 +161,8 @@ class Chat extends Organizr
 			array(
 				'function' => 'fetchAll',
 				'query' => array(
-					'SELECT `username`, `gravatar`, `uid`, `date`, `message` FROM chatroom LIMIT ' . $this->config['CHAT-messageLoadLimit']
+					'SELECT `username`, `gravatar`, `uid`, `date`, `message` FROM (SELECT `username`, `gravatar`, `uid`, `date`, `message` FROM chatroom ORDER BY date DESC LIMIT ?) ORDER BY date ASC',
+					$this->config['CHAT-messageLoadLimit']
 				)
 			),
 		];
