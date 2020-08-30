@@ -4799,7 +4799,7 @@ function cleanPlaylistTitle(string){
 	return string;
 }
 function buildPlaylist(array, type){
-	var playlist = (typeof array.content !== 'undefined') ? true : false;
+	var playlist = (typeof array.content !== 'undefined') ? Object.keys(array.content).length : false;
 	var dropdown = '';
 	var first = '';
     var firstButton = '';
