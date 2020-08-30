@@ -364,11 +364,12 @@ $app->get('/homepage/healthchecks/{tags}', function ($request, $response, $args)
 		->withStatus($GLOBALS['responseCode']);
 	
 });
-$app->get('/homepage/ombi/requests[/{type}[/{limit}]]', function ($request, $response, $args) {
+$app->get('/homepage/ombi/requests[/{type}[/{limit}[/{offset}]]]', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$args['type'] = $args['type'] ?? 'both';
 	$args['limit'] = $args['limit'] ?? $Organizr->config['ombiLimit'];
-	$Organizr->getOmbiRequests($args['type'], $args['limit']);
+	$args['offset'] = $args['offset'] ?? 0;
+	$Organizr->getOmbiRequests($args['type'], $args['limit'], $args['offset']);
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')

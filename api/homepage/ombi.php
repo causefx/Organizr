@@ -37,7 +37,7 @@ trait OmbiHomepageItem
 		return $type == $this->config['ombiTvDefault'];
 	}
 	
-	public function getOmbiRequests($type = "both", $limit = 50)
+	public function getOmbiRequests($type = "both", $limit = 50, $offset = 0)
 	{
 		if (!$this->config['homepageOmbiEnabled']) {
 			$this->setAPIResponse('error', 'Ombi homepage item is not enabled', 409);
@@ -58,7 +58,8 @@ trait OmbiHomepageItem
 		$api['count'] = array(
 			'movie' => 0,
 			'tv' => 0,
-			'limit' => (integer)$limit
+			'limit' => (integer)$limit,
+			'offset' => (integer)$offset
 		);
 		$headers = array(
 			"Accept" => "application/json",
@@ -153,7 +154,7 @@ trait OmbiHomepageItem
 			$this->setAPIResponse('error', $e->getMessage(), 500);
 			return false;
 		};
-		$api['content'] = isset($requests) ? array_slice($requests, 0, $limit) : false;
+		$api['content'] = isset($requests) ? array_slice($requests, $offset, $limit) : false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
 	}
