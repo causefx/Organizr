@@ -31,22 +31,22 @@
     max-width: 1200px;
     background-color: #1f1f1f !important;
 }
-.tab1 { padding-left: 4em; }
-.tab2 { padding-left: 8em; }
-.tab3 { padding-left: 12em; }
-.tab4 { padding-left: 16em; }
-.tab5 { padding-left: 20em; }
-.tab6 { padding-left: 24em; }
-.tab7 { padding-left: 28em; }
-.tab8 { padding-left: 32em; }
-.tab9 { padding-left: 36em; }
-.tab10 { padding-left: 40em; }
-.tab11 { padding-left: 44em; }
-.tab12 { padding-left: 48em; }
-.tab13 { padding-left: 52em; }
-.tab14 { padding-left: 56em; }
-.tab15 { padding-left: 60em; }
-.tab16 { padding-left: 64em; }
+.tab1 { padding-left: 1em; }
+.tab2 { padding-left: 2em; }
+.tab3 { padding-left: 3em; }
+.tab4 { padding-left: 4em; }
+.tab5 { padding-left: 5em; }
+.tab6 { padding-left: 6em; }
+.tab7 { padding-left: 7em; }
+.tab8 { padding-left: 8em; }
+.tab9 { padding-left: 9em; }
+.tab10 { padding-left: 10em; }
+.tab11 { padding-left: 11em; }
+.tab12 { padding-left: 12em; }
+.tab13 { padding-left: 13em; }
+.tab14 { padding-left: 14em; }
+.tab15 { padding-left: 15em; }
+.tab16 { padding-left: 16em; }
 /* Larger Images */
 
 #side-menu>li>a {
