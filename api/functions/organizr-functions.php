@@ -193,10 +193,10 @@ trait OrganizrFunctions
 		if (!empty($this->config['plexToken'])) {
 			$buttons .= '<button class="btn m-b-20 m-r-20 bg-plex text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'plex\')" type="button"><span class="btn-label"><i class="mdi mdi-plex"></i></span><span lang="en">Import Plex Users</span></button>';
 		}
-		if (!empty($this->config['embyURL']) && !empty($this->config['embyToken']) && ($this->config['homepageJellyfinInstead'])) {
+		if (!empty($this->config['jellyfinURL']) && !empty($this->config['jellyfinToken'])) {
 			$buttons .= '<button class="btn m-b-20 m-r-20 bg-primary text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'jellyfin\')" type="button"><span class="btn-label"><i class="mdi mdi-fish"></i></span><span lang="en">Import Jellyfin Users</span></button>';
 		}
-		if (!empty($this->config['embyURL']) && !empty($this->config['embyToken']) && (!$this->config['homepageJellyfinInstead'])) {
+		if (!empty($this->config['embyURL']) && !empty($this->config['embyToken'])) {
 			$buttons .= '<button class="btn m-b-20 m-r-20 bg-emby text-muted waves-effect waves-light importUsersButton" onclick="importUsers(\'emby\')" type="button"><span class="btn-label"><i class="mdi mdi-emby"></i></span><span lang="en">Import Jellyfin Users</span></button>';
 		}
 		return ($buttons !== '') ? $buttons : $emptyButtons;
@@ -234,6 +234,17 @@ trait OrganizrFunctions
 					$imgParams['width'] = 'maxWidth=' . $_GET['width'];
 				}
 				$image_src = $embyAddress . '/Items/' . $image_url . '/Images/' . $itemType . '?' . implode('&', $imgParams);
+				break;
+			case 'jellyfin':
+				$jellyfinAddress = $this->qualifyURL($this->config['jellyfinURL']);
+				$imgParams = array();
+				if (isset($_GET['height'])) {
+					$imgParams['height'] = 'maxHeight=' . $_GET['height'];
+				}
+				if (isset($_GET['width'])) {
+					$imgParams['width'] = 'maxWidth=' . $_GET['width'];
+				}
+				$image_src = $jellyfinAddress . '/Items/' . $image_url . '/Images/' . $itemType . '?' . implode('&', $imgParams);
 				break;
 			default:
 				# code...

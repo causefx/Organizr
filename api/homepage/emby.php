@@ -140,7 +140,7 @@ trait EmbyHomepageItem
 		$embyItem['user'] = ($this->config['homepageShowStreamNames'] && $this->qualifyRequest($this->config['homepageShowStreamNamesAuth'])) ? @(string)$itemDetails['UserName'] : "";
 		$embyItem['userThumb'] = '';
 		$embyItem['userAddress'] = (isset($itemDetails['RemoteEndPoint']) ? $itemDetails['RemoteEndPoint'] : "x.x.x.x");
-		$embyURL = ($this->config['homepageJellyfinInstead']) ? $this->config['embyURL'] . '/web/index.html#!/itemdetails.html?id=' : 'https://app.emby.media/#!/item/item.html?id=';
+		$embyURL = 'https://app.emby.media/#!/item/item.html?id=';
 		$embyItem['address'] = $this->config['embyTabURL'] ? rtrim($this->config['embyTabURL'], '/') . "/web/#!/item/item.html?id=" . $embyItem['uid'] : $embyURL . $embyItem['uid'] . "&serverId=" . $embyItem['id'];
 		$embyItem['nowPlayingOriginalImage'] = 'api/v2/homepage/image?source=emby&type=' . $embyItem['nowPlayingImageType'] . '&img=' . $embyItem['nowPlayingThumb'] . '&height=' . $nowPlayingHeight . '&width=' . $nowPlayingWidth . '&key=' . $embyItem['nowPlayingKey'] . '$' . $this->randString();
 		$embyItem['originalImage'] = 'api/v2/homepage/image?source=emby&type=' . $embyItem['imageType'] . '&img=' . $embyItem['thumb'] . '&height=' . $height . '&width=' . $width . '&key=' . $embyItem['key'] . '$' . $this->randString();
@@ -381,7 +381,7 @@ trait EmbyHomepageItem
 		}
 		$key = $array['key'] ?? null;
 		if (!$key) {
-			$this->setAPIResponse('error', 'Plex Metadata key is not defined', 422);
+			$this->setAPIResponse('error', 'Emby Metadata key is not defined', 422);
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['embyURL']);

@@ -36,6 +36,15 @@ $app->get('/homepage/emby/streams', function ($request, $response, $args) {
 		->withStatus($GLOBALS['responseCode']);
 	
 });
+$app->get('/homepage/jellyfin/streams', function ($request, $response, $args) {
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	$Organizr->getJellyfinHomepageStreams();
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+	
+});
 $app->get('/homepage/plex/recent', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$Organizr->getPlexHomepageRecent();
@@ -56,7 +65,7 @@ $app->get('/homepage/emby/recent', function ($request, $response, $args) {
 });
 $app->get('/homepage/jellyfin/recent', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-	$Organizr->getEmbyHomepageRecent();
+	$Organizr->getJellyfinHomepageRecent();
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')
@@ -92,7 +101,7 @@ $app->post('/homepage/emby/metadata', function ($request, $response, $args) {
 });
 $app->post('/homepage/jellyfin/metadata', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
-	$Organizr->getEmbyHomepageMetadata($Organizr->apiData($request));
+	$Organizr->getJellyfinHomepageMetadata($Organizr->apiData($request));
 	$response->getBody()->write(jsonE($GLOBALS['api']));
 	return $response
 		->withHeader('Content-Type', 'application/json;charset=UTF-8')

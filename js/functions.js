@@ -4358,7 +4358,7 @@ function buildStreamItem(array,source){
 	var cards = '';
 	var count = 0;
 	var total = array.length;
-    var sourceIcon = (source === 'jellyfin' && activeInfo.settings.homepage.media.jellyfin) ? 'play' : source;
+    var sourceIcon = (source === 'jellyfin') ? 'play' : source;
     var streamDetails = {
         direct: 0,
         transcode: 0
@@ -4694,7 +4694,7 @@ function buildRequestItem(array, extra=null){
 function buildStream(array, type){
 	var streams = (typeof array.content !== 'undefined') ? array.content.length : false;
 	var originalType = type;
-    type = (type === 'emby' && activeInfo.settings.homepage.media.jellyfin) ? 'jellyfin' : type;
+    //type = (type === 'emby' && activeInfo.settings.homepage.media.jellyfin) ? 'jellyfin' : type;
 	return (streams) ? `
 	<div id="`+type+`Streams">
 		<div class="el-element-overlay row">
@@ -4722,7 +4722,7 @@ function buildRecent(array, type){
 	var header = '';
 	var headerAlt = '';
 	var refreshType = type;
-	type = (type === 'emby' && activeInfo.settings.homepage.media.jellyfin) ? 'jellyfin' : type;
+	//type = (type === 'emby' && activeInfo.settings.homepage.media.jellyfin) ? 'jellyfin' : type;
 	dropdown += (recent && movie) ? `<li><a data-filter="recent-movie" server-filter="`+type+`" href="javascript:void(0);">Movies</a></li>` : '';
 	dropdown += (recent && tv) ? `<li><a data-filter="recent-tv" server-filter="`+type+`" href="javascript:void(0);">Shows</a></li>` : '';
 	dropdown += (recent && video) ? `<li><a data-filter="recent-video" server-filter="`+type+`" href="javascript:void(0);">Videos</a></li>` : '';
@@ -5932,7 +5932,7 @@ function buildMetadata(array, source){
 	var genres = '';
 	var actors = '';
 	var rating = '<div class="col-xs-2 p-10"></div>';
-    var sourceIcon = (source === 'jellyfin' && activeInfo.settings.homepage.media.jellyfin) ? 'play' : source;
+    var sourceIcon = (source === 'jellyfin') ? 'play' : source;
 	$.each(array.content, function(i,v) {
 		var hasActor = (typeof v.metadata.actors !== 'string') ? true : false;
 		var hasGenre = (typeof v.metadata.genres !== 'string') ? true : false;
@@ -6580,7 +6580,6 @@ function homepageRecent(type, timeout){
 			break;
 		case 'emby':
 		case 'jellyfin':
-			type = 'emby';
 			var action = 'getEmbyRecent';
 			break;
 		default:
@@ -8601,11 +8600,15 @@ function changeAuth(){
         case 'emby_local':
         case 'emby_connect':
         case 'emby_all':
-	    case 'jellyfin':
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();
             $('.embyAuth').parent().parent().parent().show();
             break;
+	    case 'jellyfin':
+		    $('.switchAuth').parent().parent().parent().hide();
+		    $('.backendAuth').parent().parent().parent().show();
+		    $('.jellyfinAuth').parent().parent().parent().show();
+		    break;
         case 'ftp':
             $('.switchAuth').parent().parent().parent().hide();
             $('.backendAuth').parent().parent().parent().show();

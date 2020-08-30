@@ -32,6 +32,7 @@ class Organizr
 	use HealthChecksHomepageItem;
 	use ICalHomepageItem;
 	use JDownloaderHomepageItem;
+	use JellyfinHomepageItem;
 	use LidarrHomepageItem;
 	use MonitorrHomepageItem;
 	use NetDataHomepageItem;
@@ -1805,7 +1806,7 @@ class Organizr
 					'type' => 'input',
 					'name' => 'embyURL',
 					'class' => 'embyAuth switchAuth',
-					'label' => 'Emby/Jellyfin URL',
+					'label' => 'Emby URL',
 					'value' => $this->config['embyURL'],
 					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
 					'placeholder' => 'http(s)://hostname:port'
@@ -1814,8 +1815,25 @@ class Organizr
 					'type' => 'password-alt',
 					'name' => 'embyToken',
 					'class' => 'embyAuth switchAuth',
-					'label' => 'Emby/Jellyfin Token',
+					'label' => 'Emby Token',
 					'value' => $this->config['embyToken'],
+					'placeholder' => ''
+				),
+				array(
+					'type' => 'input',
+					'name' => 'jellyfinURL',
+					'class' => 'jellyfinAuth switchAuth',
+					'label' => 'Jellyfin URL',
+					'value' => $this->config['jellyfinURL'],
+					'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+					'placeholder' => 'http(s)://hostname:port'
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'jellyfinToken',
+					'class' => 'jellyfinAuth switchAuth',
+					'label' => 'Jellyfin Token',
+					'value' => $this->config['jellyfinToken'],
 					'placeholder' => ''
 				),
 			),
@@ -3743,6 +3761,30 @@ class Organizr
 				';
 				}
 				break;
+			case 'homepageOrderjellyfinnowplaying':
+				if ($this->config['homepageJellyfinStreams'] && $this->config['homepageJellyfinEnabled']) {
+					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Now Playing...</h2></div>';
+					$item .= '
+				<script>
+				// Jellyfin Stream
+				homepageStream("jellyfin", "' . $this->config['homepageStreamRefresh'] . '");
+				// End Jellyfin Stream
+				</script>
+				';
+				}
+				break;
+			case 'homepageOrderjellyfinrecent':
+				if ($this->config['homepageJellyfinRecent'] && $this->config['homepageJellyfinEnabled']) {
+					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Recent...</h2></div>';
+					$item .= '
+				<script>
+				// Jellyfin Recent
+				homepageRecent("jellyfin", "' . $this->config['homepageRecentRefresh'] . '");
+				// End Jellyfin Recent
+				</script>
+				';
+				}
+				break;
 			case 'homepageOrderombi':
 				if ($this->config['homepageOmbiEnabled']) {
 					$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Requests...</h2></div>';
@@ -4687,7 +4729,7 @@ class Organizr
 				)
 			),
 			array(
-				'name' => 'Emby-Jellyfin',
+				'name' => 'Emby',
 				'enabled' => strpos('personal', $this->config['license']) !== false,
 				'image' => 'plugins/images/tabs/emby.png',
 				'category' => 'Media Server',
@@ -4721,12 +4763,6 @@ class Organizr
 							'name' => 'embyToken',
 							'label' => 'Token',
 							'value' => $this->config['embyToken']
-						),
-						array(
-							'type' => 'switch',
-							'name' => 'homepageJellyfinInstead',
-							'label' => 'Jellyfin',
-							'value' => $this->config['homepageJellyfinInstead']
 						)
 					),
 					'Active Streams' => array(
@@ -4844,6 +4880,162 @@ class Organizr
 							'class' => 'pull-right',
 							'text' => 'Test Connection',
 							'attr' => 'onclick="testAPIConnection(\'emby\')"'
+						),
+					)
+				)
+			),
+			array(
+				'name' => 'Jellyfin',
+				'enabled' => strpos('personal', $this->config['license']) !== false,
+				'image' => 'plugins/images/tabs/jellyfin.png',
+				'category' => 'Media Server',
+				'settings' => array(
+					'Enable' => array(
+						array(
+							'type' => 'switch',
+							'name' => 'homepageJellyfinEnabled',
+							'label' => 'Enable',
+							'value' => $this->config['homepageJellyfinEnabled']
+						),
+						array(
+							'type' => 'select',
+							'name' => 'homepageJellyfinAuth',
+							'label' => 'Minimum Authentication',
+							'value' => $this->config['homepageJellyfinAuth'],
+							'options' => $groups
+						)
+					),
+					'Connection' => array(
+						array(
+							'type' => 'input',
+							'name' => 'jellyfinURL',
+							'label' => 'URL',
+							'value' => $this->config['jellyfinURL'],
+							'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+							'placeholder' => 'http(s)://hostname:port'
+						),
+						array(
+							'type' => 'password-alt',
+							'name' => 'jellyfinToken',
+							'label' => 'Token',
+							'value' => $this->config['jellyfinToken']
+						)
+					),
+					'Active Streams' => array(
+						array(
+							'type' => 'switch',
+							'name' => 'homepageJellyfinStreams',
+							'label' => 'Enable',
+							'value' => $this->config['homepageJellyfinStreams']
+						),
+						array(
+							'type' => 'select',
+							'name' => 'homepageJellyStreamsAuth',
+							'label' => 'Minimum Authorization',
+							'value' => $this->config['homepageJellyStreamsAuth'],
+							'options' => $groups
+						),
+						array(
+							'type' => 'switch',
+							'name' => 'homepageShowStreamNames',
+							'label' => 'User Information',
+							'value' => $this->config['homepageShowStreamNames']
+						),
+						array(
+							'type' => 'select',
+							'name' => 'homepageShowStreamNamesAuth',
+							'label' => 'Minimum Authorization',
+							'value' => $this->config['homepageShowStreamNamesAuth'],
+							'options' => $groups
+						),
+						array(
+							'type' => 'select',
+							'name' => 'homepageStreamRefresh',
+							'label' => 'Refresh Seconds',
+							'value' => $this->config['homepageStreamRefresh'],
+							'options' => $this->optionTime()
+						),
+					),
+					'Recent Items' => array(
+						array(
+							'type' => 'switch',
+							'name' => 'homepageJellyfinRecent',
+							'label' => 'Enable',
+							'value' => $this->config['homepageJellyfinRecent']
+						),
+						array(
+							'type' => 'select',
+							'name' => 'homepageJellyfinRecentAuth',
+							'label' => 'Minimum Authorization',
+							'value' => $this->config['homepageJellyfinRecentAuth'],
+							'options' => $groups
+						),
+						array(
+							'type' => 'number',
+							'name' => 'homepageRecentLimit',
+							'label' => 'Item Limit',
+							'value' => $this->config['homepageRecentLimit'],
+						),
+						array(
+							'type' => 'select',
+							'name' => 'homepageRecentRefresh',
+							'label' => 'Refresh Seconds',
+							'value' => $this->config['homepageRecentRefresh'],
+							'options' => $this->optionTime()
+						),
+					),
+					'Misc Options' => array(
+						array(
+							'type' => 'input',
+							'name' => 'jellyfinTabName',
+							'label' => 'Jellyfin Tab Name',
+							'value' => $this->config['jellyfinTabName'],
+							'placeholder' => 'Only use if you have Jellyfin in a reverse proxy'
+						),
+						array(
+							'type' => 'input',
+							'name' => 'jellyfinTabURL',
+							'label' => 'Jellyfin Tab WAN URL',
+							'value' => $this->config['jellyfinTabURL'],
+							'placeholder' => 'http(s)://hostname:port'
+						),
+						array(
+							'type' => 'select',
+							'name' => 'cacheImageSize',
+							'label' => 'Image Cache Size',
+							'value' => $this->config['cacheImageSize'],
+							'options' => array(
+								array(
+									'name' => 'Low',
+									'value' => '.5'
+								),
+								array(
+									'name' => '1x',
+									'value' => '1'
+								),
+								array(
+									'name' => '2x',
+									'value' => '2'
+								),
+								array(
+									'name' => '3x',
+									'value' => '3'
+								)
+							)
+						)
+					),
+					'Test Connection' => array(
+						array(
+							'type' => 'blank',
+							'label' => 'Please Save before Testing'
+						),
+						array(
+							'type' => 'button',
+							'label' => '',
+							'icon' => 'fa fa-flask',
+							'class' => 'pull-right',
+							'text' => 'Test Connection',
+							'attr' => 'onclick="testAPIConnection(\'jellyfin\')"'
 						),
 					)
 				)
@@ -8123,8 +8315,8 @@ class Organizr
 	public function allJellyfinUsers($newOnly = false)
 	{
 		try {
-			if (!empty($this->config['embyURL']) && !empty($this->config['embyToken'])) {
-				$url = $this->qualifyURL($this->config['embyURL']) . '/Users?api_key=' . $this->config['embyToken'];
+			if (!empty($this->config['jellyfinURL']) && !empty($this->config['jellyfinToken'])) {
+				$url = $this->qualifyURL($this->config['jellyfinURL']) . '/Users?api_key=' . $this->config['jellyfinToken'];
 				$headers = array();
 				$response = Requests::get($url, $headers);
 				if ($response->success) {
