@@ -4358,7 +4358,7 @@ function buildStreamItem(array,source){
 	var cards = '';
 	var count = 0;
 	var total = array.length;
-    var sourceIcon = (source === 'jellyfin') ? 'play' : source;
+    var sourceIcon = (source === 'jellyfin') ? 'fish' : source;
     var streamDetails = {
         direct: 0,
         transcode: 0
@@ -5932,7 +5932,7 @@ function buildMetadata(array, source){
 	var genres = '';
 	var actors = '';
 	var rating = '<div class="col-xs-2 p-10"></div>';
-    var sourceIcon = (source === 'jellyfin') ? 'play' : source;
+    var sourceIcon = (source === 'jellyfin') ? 'fish' : source;
 	$.each(array.content, function(i,v) {
 		var hasActor = (typeof v.metadata.actors !== 'string') ? true : false;
 		var hasGenre = (typeof v.metadata.genres !== 'string') ? true : false;
