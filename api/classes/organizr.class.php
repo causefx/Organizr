@@ -5734,6 +5734,36 @@ class Organizr
 							'value' => $this->config['sonarrToken']
 						)
 					),
+					'API SOCKS' => array(
+						array(
+							'type' => 'html',
+							'override' => 12,
+							'label' => '',
+							'html' => '
+							<div class="panel panel-default">
+								<div class="panel-wrapper collapse in">
+									<div class="panel-body">
+										<h3 lang="en">Sonarr SOCKS API Connection</h3>
+										<p>Using this feature allows you to access the Sonarr API without having to reverse proxy it.  Just access it from: </p>
+										<code>' . $this->getServerPath() . 'api/v2/socks/sonarr/</code>
+									</div>
+								</div>
+							</div>'
+						),
+						array(
+							'type' => 'switch',
+							'name' => 'sonarrSocksEnabled',
+							'label' => 'Enable',
+							'value' => $this->config['sonarrSocksEnabled']
+						),
+						array(
+							'type' => 'select',
+							'name' => 'sonarrSocksAuth',
+							'label' => 'Minimum Authentication',
+							'value' => $this->config['sonarrSocksAuth'],
+							'options' => $groups
+						),
+					),
 					'Queue' => array(
 						array(
 							'type' => 'switch',

@@ -57,6 +57,8 @@ return array(
 	'sonarrURL' => '',
 	'sonarrUnmonitored' => false,
 	'sonarrToken' => '',
+	'sonarrSocksEnabled' => false,
+	'sonarrSocksAuth' => '999',
 	'lidarrURL' => '',
 	'lidarrToken' => '',
 	'radarrURL' => '',
