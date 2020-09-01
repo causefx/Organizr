@@ -806,7 +806,7 @@ function reloadCurrentTab(){
 		case 'iframe':
 			var activeFrame = $('.iFrame-listing').find('.show').children('iframe');
 			if(RegExp('^\/.*').test(activeFrame.attr('src'))) {
-				activeFrame.attr('src', activeFrame[0].contentWindow.location.href);
+				activeFrame.attr('src', activeFrame[0].contentWindow.location.pathname);
 			} else {
 				activeFrame.attr('src', activeFrame.attr('src'));
 			}
