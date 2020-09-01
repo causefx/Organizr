@@ -9081,6 +9081,53 @@ class Organizr
 		}
 	}
 	
+	public function socks($url, $enabled, $auth, $requestObject, $header = null)
+	{
+		$error = false;
+		if (!$this->config[$enabled]) {
+			$error = true;
+			$this->setAPIResponse('error', 'SOCKS module is not enabled', 409);
+		}
+		if (!$this->qualifyRequest($this->config[$auth], true)) {
+			$error = true;
+		}
+		if (!$error) {
+			$pre = explode('/api/v2/socks/', $requestObject->getUri()->getPath());
+			$endpoint = explode('/', $pre[1]);
+			$new = str_ireplace($endpoint[0], '', $requestObject->getUri()->getPath());
+			$getParams = ($_GET) ? '?' . http_build_query($_GET) : '';
+			$url = $this->qualifyURL($this->config[$url]) . $new . $getParams;
+			$url = $this->cleanPath($url);
+			$options = ($this->localURL($url)) ? array('verify' => false) : array();
+			$headers = [];
+			if ($header) {
+				if ($requestObject->hasHeader($header)) {
+					$headerKey = $requestObject->getHeaderLine($header);
+					$headers[$header] = $headerKey;
+				}
+			}
+			switch ($requestObject->getMethod()) {
+				case 'GET':
+					$call = Requests::get($url, $headers, $options);
+					break;
+				case 'POST':
+					$call = Requests::post($url, $headers, $this->apiData($requestObject), $options);
+					break;
+				case 'DELETE':
+					$call = Requests::delete($url, $headers, $options);
+					break;
+				case 'PUT':
+					$call = Requests::put($url, $headers, $this->apiData($requestObject), $options);
+					break;
+				default:
+					$call = Requests::get($url, $headers, $options);
+			}
+			return $call->body;
+		} else {
+			return null;
+		}
+	}
+	
 	protected function processQueries(array $request, $migration = false)
 	{
 		$results = array();
