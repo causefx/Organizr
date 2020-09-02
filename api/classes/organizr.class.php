@@ -9094,7 +9094,7 @@ class Organizr
 		if (!$error) {
 			$pre = explode('/api/v2/socks/', $requestObject->getUri()->getPath());
 			$endpoint = explode('/', $pre[1]);
-			$new = str_ireplace($endpoint[0], '', $requestObject->getUri()->getPath());
+			$new = str_ireplace($endpoint[0], '', $pre[1]);
 			$getParams = ($_GET) ? '?' . http_build_query($_GET) : '';
 			$url = $this->qualifyURL($this->config[$url]) . $new . $getParams;
 			$url = $this->cleanPath($url);
