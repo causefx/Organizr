@@ -602,7 +602,9 @@ function swapBodyClass(tab){
 function editPageTitle(title){
     document.title =  title + ' - ' + activeInfo.appearance.title;
 }
-function switchTab(tab, type){
+function switchTab(tab, type, split = null){
+	let extra = split ? 'right-' : '';
+	// need to rework for split
     if(type !== 2){
         hideFrames();
         closeSideMenu();
@@ -617,8 +619,8 @@ function switchTab(tab, type){
 		case 0:
 		case '0':
 		case 'internal':
-			swapDisplay('internal');
-			var newTab = $('#internal-'+tab);
+			swapDisplay('internal', split);
+			var newTab = $('#internal-'+extra+tab);
 			var tabURL = newTab.attr('data-url');
 			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
             editPageTitle(tab);
@@ -631,7 +633,7 @@ function switchTab(tab, type){
 				organizrConsole('Tab Function','Loading new tab for: '+tab);
 				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
-				loadInternal(tabURL,cleanClass(tab));
+				loadInternal(tabURL,cleanClass(tab), split);
                 setTabInfo(cleanClass(tab),'active',true);
                 setTabInfo(cleanClass(tab),'loaded',true);
 				$("#preloader").fadeOut();
@@ -640,7 +642,7 @@ function switchTab(tab, type){
 		case 1:
 		case '1':
 		case 'iframe':
-			swapDisplay('iframe');
+			swapDisplay('iframe', split);
 			var newTab = $('#container-'+tab);
 			var tabURL = newTab.attr('data-url');
 			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
@@ -900,8 +902,13 @@ function tabActions(event,name, type){
 	}else if(event.shiftKey && !event.ctrlKey && !event.altKey){
 		reloadTab(cleanClass(name), type);
 	}else if(event.ctrlKey && event.shiftKey && !event.altKey){
-        switchTab(cleanClass(name), type);
-    }else{
+		organizrConsole('Tab Function','Action not defined yet', 'info');
+    }else if(event.ctrlKey && event.altKey && !event.shiftKey){
+		organizrConsole('Tab Function','Action not defined yet', 'info');
+		switchTab(cleanClass(name), type, true);
+	}else if(event.shiftKey && event.altKey && !event.ctrlKey){
+		organizrConsole('Tab Function','Action not defined yet', 'info');
+	}else{
 		switchTab(cleanClass(name), type);
         $('.splash-screen').removeClass('in').addClass('hidden');
 	}
@@ -2657,11 +2664,13 @@ function buildFrame(name,url){
 		<iframe allowfullscreen="true" frameborder="0" id="frame-`+cleanClass(name)+`" data-name="`+cleanClass(name)+`" `+sandbox+` scrolling="auto" src="`+url+`" class="iframe"></iframe>
 	`;
 }
-function buildFrameContainer(name,url,type){
-	return `<div id="container-`+cleanClass(name)+`" data-type="`+type+`" class="frame-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
+function buildFrameContainer(name,url,type, split = null){
+	let extra = split ? 'right-' : '';
+	return `<div id="container-`+extra+cleanClass(name)+`" data-type="`+type+`" class="frame-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
 }
-function buildInternalContainer(name,url,type){
-	return `<div id="internal-`+cleanClass(name)+`" data-type="`+type+`" class="internal-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
+function buildInternalContainer(name,url,type, split = null){
+	let extra = split ? 'right-' : '';
+	return `<div id="internal-`+extra+cleanClass(name)+`" data-type="`+type+`" class="internal-container frame-`+cleanClass(name)+` hidden" data-url="`+url+`" data-name="`+cleanClass(name)+`"></div>`;
 }
 function buildMenuList(name,url,type,icon,ping=null,category_id = null,group_id = null){
     var ping = (ping !== null) ? `<small class="menu-`+cleanClass(ping)+`-ping-ms hidden-xs label label-rouded label-inverse pull-right pingTime hidden">
@@ -2714,6 +2723,8 @@ function tabProcess(arrayItems) {
 					case 'internal':
 						internalList = buildInternalContainer(v.name,v.access_url,v.type);
 						$(internalList).appendTo($('.internal-listing'));
+						internalList = buildInternalContainer(v.name,v.access_url,v.type, true);
+						$(internalList).appendTo($('.internal-listing-right'));
                         if(v.preload){
                             var newTab = $('#internal-'+cleanClass(v.name));
 	                        organizrConsole('Tab Function','Preloading new tab for: '+cleanClass(v.name));
@@ -2727,6 +2738,8 @@ function tabProcess(arrayItems) {
                     case 'iframe':
 						iFrameList = buildFrameContainer(v.name,v.access_url,v.type);
 						$(iFrameList).appendTo($('.iFrame-listing'));
+	                    iFrameList = buildFrameContainer(v.name,v.access_url,v.type, true);
+	                    $(iFrameList).appendTo($('.iFrame-listing-right'));
                         if(v.preload){
                             var newTab = $('#container-'+cleanClass(v.name));
                             var tabURL = newTab.attr('data-url');
@@ -3746,7 +3759,8 @@ function loadSettingsPage2(api,element,organizrFn){
 		console.error("Organizr Function: API Connection Failed");
 	});
 }
-function loadInternal(url,tabName){
+function loadInternal(url,tabName, split = null){
+	let extra = split ? 'right-' : '';
 	organizrAPI2('get',url).success(function(data) {
 		try {
 			var html = data.response;
@@ -3755,7 +3769,7 @@ function loadInternal(url,tabName){
 			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
 			return false;
 		}
-		$('#internal-'+tabName).html(html.data);
+		$('#internal-'+extra+tabName).html(html.data);
 	}).fail(function(xhr) {
 		console.error("Organizr Function: Connection Failed");
 	});

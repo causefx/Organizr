@@ -141,6 +141,12 @@ $Organizr = new Organizr();
         <div class="internal-listing p-0 hidden"></div>
         <div class="iFrame-listing p-0 hidden"></div>
     </div>
+    <div class="splitRight hidden" id="page-wrapper-right">
+        <div class="organizr-area-right"></div>
+        <div class="plugin-listing-right p-0 hidden"></div>
+        <div class="internal-listing-right p-0 hidden"></div>
+        <div class="iFrame-listing-right p-0 hidden"></div>
+    </div>
 
     <!-- help modal content -->
     <div class="modal fade help-modal-lg" tabindex="-1" role="dialog" aria-labelledby="help-modal-lg" aria-hidden="true"
