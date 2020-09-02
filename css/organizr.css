@@ -47,6 +47,15 @@
 .tab14 { padding-left: 14em; }
 .tab15 { padding-left: 15em; }
 .tab16 { padding-left: 16em; }
+.splitRight {
+    width: 50%;
+    margin-left: 50% !important;
+    position: absolute !important;
+}
+.split {
+     width: 50%;
+     position: absolute !important;
+ }
 /* Larger Images */
 
 #side-menu>li>a {
@@ -1569,6 +1578,23 @@ span.has-coupon {
     background: rgba(108, 169, 76, 0.73);
     width: 23px;
     color: white;
+}
+#page-wrapper {
+    height: calc(100% - 40px);
+    width: calc(100% - 60px);
+    overflow: auto;
+    position: absolute;
+}
+.content-wrapper #page-wrapper {
+    width: 100%;
+}
+#page-wrapper-right {
+    height: calc(100% - 40px);
+    overflow: auto;
+    position: absolute;
+}
+body{
+    overflow: hidden;
 }
 /*
 body,
