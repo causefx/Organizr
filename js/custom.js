@@ -5,7 +5,7 @@ var hasCookie = false;
 var loginAttempts = 0;
 $(document).ajaxComplete(function () {
     pageLoad();
-    //new SimpleBar($('.internal-listing')[0]);
+    new SimpleBar($('#page-wrapper')[0]);
 });
 $(document).ready(function () {
     pageLoad();
