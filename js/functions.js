@@ -9767,6 +9767,8 @@ function organizrConsole(subject,msg,type = 'info'){
 	console.info("%c "+subject+" %c ".concat(msg, " "), "color: white; background: "+color+"; font-weight: 700;", "color: "+color+"; background: white; font-weight: 700;");
 }
 function launch(){
+	organizrConsole('API V2 API','If you see a 404 Error below this line, you have not setup the new location block...', 'error');
+	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide')
 	organizrConnect('api/v2/launch').success(function (data) {
         try {
             var json = data.response;
