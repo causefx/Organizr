@@ -1596,6 +1596,10 @@ span.has-coupon {
 body{
     overflow: hidden;
 }
+.login-area {
+    position: fixed;
+    z-index: 10;
+}
 /*
 body,
 html {
