@@ -255,11 +255,25 @@ class Invites extends Organizr
 					'placeholder' => 'Use Get Token Button'
 				),
 				array(
+					'type' => 'button',
+					'label' => 'Get Plex Token',
+					'icon' => 'fa fa-ticket',
+					'text' => 'Retrieve',
+					'attr' => 'onclick="showPlexTokenForm(\'#INVITES-settings-items [name=plexToken]\')"'
+				),
+				array(
 					'type' => 'password-alt',
 					'name' => 'plexID',
 					'label' => 'Plex Machine',
 					'value' => $this->config['plexID'],
 					'placeholder' => 'Use Get Plex Machine Button'
+				),
+				array(
+					'type' => 'button',
+					'label' => 'Get Plex Machine',
+					'icon' => 'fa fa-id-badge',
+					'text' => 'Retrieve',
+					'attr' => 'onclick="showPlexMachineForm(\'#INVITES-settings-items [name=plexID]\')"'
 				),
 				array(
 					'type' => 'select2',

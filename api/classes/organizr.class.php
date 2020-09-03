@@ -1650,11 +1650,10 @@ class Organizr
 				array(
 					'type' => 'button',
 					'label' => 'Get Plex Token',
-					'class' => 'popup-with-form getPlexTokenAuth plexAuth switchAuth',
+					'class' => 'getPlexTokenAuth plexAuth switchAuth',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
-					'href' => '#auth-plex-token-form',
-					'attr' => 'data-effect="mfp-3d-unfold"'
+					'attr' => 'onclick="showPlexTokenForm(\'#settings-main-form [name=plexToken]\')"'
 				),
 				array(
 					'type' => 'password-alt',
@@ -1667,11 +1666,10 @@ class Organizr
 				array(
 					'type' => 'button',
 					'label' => 'Get Plex Machine',
-					'class' => 'popup-with-form getPlexMachineAuth plexAuth switchAuth',
+					'class' => 'getPlexMachineAuth plexAuth switchAuth',
 					'icon' => 'fa fa-id-badge',
 					'text' => 'Retrieve',
-					'href' => '#auth-plex-machine-form',
-					'attr' => 'data-effect="mfp-3d-unfold"'
+					'attr' => 'onclick="showPlexTokenForm(\'#settings-main-form [name=plexID]\')"'
 				),
 				array(
 					'type' => 'input',
@@ -2164,11 +2162,9 @@ class Organizr
 				array(
 					'type' => 'button',
 					'label' => 'Get Plex Token',
-					'class' => 'popup-with-form getPlexTokenSSO',
 					'icon' => 'fa fa-ticket',
 					'text' => 'Retrieve',
-					'href' => '#sso-plex-token-form',
-					'attr' => 'data-effect="mfp-3d-unfold"'
+					'attr' => 'onclick="showPlexTokenForm(\'#sso-form [name=plexToken]\')"'
 				),
 				array(
 					'type' => 'password-alt',
@@ -2180,11 +2176,9 @@ class Organizr
 				array(
 					'type' => 'button',
 					'label' => 'Get Plex Machine',
-					'class' => 'popup-with-form getPlexMachineSSO',
 					'icon' => 'fa fa-id-badge',
 					'text' => 'Retrieve',
-					'href' => '#sso-plex-machine-form',
-					'attr' => 'data-effect="mfp-3d-unfold"'
+					'attr' => 'onclick="showPlexMachineForm(\'#sso-form [name=plexID]\')"'
 				),
 				array(
 					'type' => 'input',
@@ -9126,6 +9120,52 @@ class Organizr
 		} else {
 			return null;
 		}
+	}
+	
+	public function getPlexServers()
+	{
+		if ($this->config['plexToken'] == '') {
+			$this->setAPIResponse('error', 'Plex Token cannot be empty', 422);
+			return false;
+		}
+		$ownedOnly = isset($_GET['owned']) ?? false;
+		$url = $this->qualifyURL('https://plex.tv/pms/servers');
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$headers = [
+			'X-Plex-Product' => 'Organizr',
+			'X-Plex-Version' => '2.0',
+			'X-Plex-Client-Identifier' => '01010101-10101010',
+			'X-Plex-Token' => $this->config['plexToken'],
+		];
+		$response = Requests::get($url, $headers, $options);
+		libxml_use_internal_errors(true);
+		if ($response->success) {
+			$items = array();
+			$plex = simplexml_load_string($response->body);
+			foreach ($plex as $server) {
+				if ($ownedOnly) {
+					if ($server['owned'] == 1) {
+						$items[] = array(
+							'name' => (string)$server['name'],
+							'address' => (string)$server['address'],
+							'machineIdentifier' => (string)$server['machineIdentifier'],
+							'owned' => (float)$server['owned'],
+						);
+					}
+				} else {
+					$items[] = array(
+						'name' => (string)$server['name'],
+						'address' => (string)$server['address'],
+						'machineIdentifier' => (string)$server['machineIdentifier'],
+						'owned' => (float)$server['owned'],
+					);
+				}
+				
+			}
+			$this->setAPIResponse('success', null, 200, $items);
+			return $items;
+		}
+		
 	}
 	
 	protected function processQueries(array $request, $migration = false)

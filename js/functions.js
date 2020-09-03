@@ -5868,7 +5868,7 @@ function buildDownloaderCombined(source){
 
     }
     var mainMenu = `<ul class="nav customtab nav-tabs combinedMenuList" role="tablist">`;
-    var addToMainMenu = `<li role="presentation" class="`+active+`"><a onclick="homepageDownloader('`+source+`')" href="#combined-`+source+`" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class=""><img src="./plugins/images/tabs/`+source+`.png" class="homepageImageTitle"><span class="badge bg-org downloaderCount" id="count-`+source+`"></span> </span></a></li>`;
+    var addToMainMenu = `<li role="presentation" class="`+active+`"><a onclick="homepageDownloader('`+source+`')" href="#combined-`+source+`" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class=""><img src="./plugins/images/tabs/`+source+`.png" class="homepageImageTitle"><span class="badge bg-org downloaderCount" id="count-`+source+`"><i class="fa fa-spinner fa-spin"></i></span></span></a></li>`;
     var listing = '';
     var headerAlt = '';
     var header = '';
@@ -9557,6 +9557,123 @@ function showLDAPLoginTest(){
         buttons: false,
         className: 'bg-org'
     })
+}
+
+function showPlexTokenForm(selector = null){
+	var div = `
+		<form id="get-plex-token-form">
+		    <h1 lang="en">Get Plex Token</h1>
+		    <div class="panel plexTokenHeader">
+		        <div class="panel-heading plexTokenMessage" lang="en">Enter Plex Details</div>
+		    </div>
+		    <fieldset style="border:0;">
+		        <div class="form-group">
+		            <label class="control-label" for="plex-token-form-username" lang="en">Plex Username</label>
+		            <input type="text" class="form-control" id="plex-token-form-username" name="username" required="" autofocus>
+		        </div>
+		        <div class="form-group">
+		            <label class="control-label" for="plex-token-form-password" lang="en">Plex Password</label>
+		            <input type="password" class="form-control" id="plex-token-form-password" name="password"  required="">
+		        </div>
+		    </fieldset>
+		    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right row b-none" onclick="getPlexToken('`+selector+`')" type="button"><span class="btn-label"><i class="fa fa-ticket"></i></span><span lang="en">Grab It</span></button>
+		    <div class="clearfix"></div>
+		</form>
+	`;
+	swal({
+		content: createElementFromHTML(div),
+		buttons: false,
+		className: 'bg-org'
+	})
+}
+function getPlexToken(selector) {
+	$('.plexTokenMessage').text("Grabbing Token");
+	$('.plexTokenHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
+	var plex_username = $('#get-plex-token-form [name=username]').val().trim();
+	var plex_password = $('#get-plex-token-form [name=password]').val().trim();
+	if ((plex_password !== '') && (plex_password !== '')) {
+		$.ajax({
+			type: 'POST',
+			headers: {
+				'X-Plex-Product':'Organizr',
+				'X-Plex-Version':'2.0',
+				'X-Plex-Client-Identifier':'01010101-10101010'
+			},
+			url: 'https://plex.tv/users/sign_in.json',
+			data: {
+				'user[login]': plex_username,
+				'user[password]': plex_password,
+				force: true
+			},
+			cache: false,
+			async: true,
+			complete: function(xhr, status) {
+				var result = $.parseJSON(xhr.responseText);
+				if (xhr.status === 201) {
+					$('.plexTokenMessage').text(xhr.statusText);
+					$('.plexTokenHeader').addClass('panel-success').removeClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
+					$(selector).val(result.user.authToken);
+					$(selector).change();
+					messageSingle('Token created','Please save...',activeInfo.settings.notifications.position,'#FFF','success','5000');
+				} else {
+					$('.plexTokenMessage').text(xhr.statusText);
+					$('.plexTokenHeader').addClass('panel-danger').removeClass('panel-info').removeClass('panel-warning');
+				}
+			}
+		});
+	} else {
+		$('.plexTokenMessage').text("Enter Username and Password");
+		$('.plexTokenHeader').addClass('panel-warning').removeClass('panel-info').removeClass('panel-danger');
+	}
+}
+function showPlexMachineForm(selector = null){
+	var div = `
+		<form id="get-plex-machine-form">
+		    <h1 lang="en">Get Plex Machine</h1>
+		    <div class="panel plexMachineHeader">
+		        <div class="panel-heading plexMachineMessage" lang="en">Contacting server...</div>
+		    </div>
+		    <fieldset style="border:0;">
+		        <div class="form-group">
+		            <label class="control-label" for="plex-machine-form-machine" lang="en">Plex Machine</label>
+		            <div class="plexMachineListing"></div>
+		        </div>
+		    </fieldset>
+		    <div class="clearfix"></div>
+		</form>
+	`;
+	swal({
+		content: createElementFromHTML(div),
+		buttons: false,
+		className: 'bg-org'
+	})
+	.then(
+		organizrAPI2('GET','api/v2/plex/servers?owned').success(function(data) {
+			try {
+				let response = data.response;
+				$('.plexMachineMessage').text('Choose Plex Server');
+				$('.plexMachineHeader').addClass('panel-success').removeClass('panel-info').removeClass('panel-warning');
+				let machines = '<option lang="en">Choose Plex Machine</option>';
+				$.each(response.data, function(i,v) {
+					let name = v.name;
+					let machine = v.machineIdentifier;
+					name = name + ' [' + machine + ']';
+					machines += '<option value="'+machine+'">'+name+'</option>';
+				})
+				let listing = '<select class="form-control" id="plexMachineSelector" data-selector="'+selector+'" data-type="select">'+machines+'</select>';
+				$('.plexMachineListing').html(listing);
+			}catch(e) {
+				console.log(e + ' error: ' + data);
+				orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+				return false;
+			}
+		}).fail(function(xhr) {
+			message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+			console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+			$('.plexMachineMessage').text("Plex Token Needed First");
+			$('.plexMachineHeader').addClass('panel-warning').removeClass('panel-info').removeClass('panel-danger');
+		})
+	);
 }
 function oAuthLoginNeededCheck() {
     if(OAuthLoginNeeded == false){
