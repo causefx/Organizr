@@ -48,14 +48,18 @@
 .tab15 { padding-left: 15em; }
 .tab16 { padding-left: 16em; }
 .splitRight {
-    width: 50%;
-    margin-left: 50% !important;
+    width: calc(50% - 60px);
+    margin-left: calc(50% - -60px) !important;
     position: absolute !important;
 }
 .split {
-     width: 50%;
-     position: absolute !important;
+    width: calc(50%) !important;
+    position: absolute !important;
  }
+
+.fix-header #page-wrapper-right {
+    margin-top: 40px;
+}
 /* Larger Images */
 
 #side-menu>li>a {
