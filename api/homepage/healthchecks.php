@@ -2,6 +2,66 @@
 
 trait HealthChecksHomepageItem
 {
+	public function healthChecksSettingsArray()
+	{
+		return array(
+			'name' => 'HealthChecks',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/healthchecks.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageHealthChecksEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageHealthChecksEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageHealthChecksAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageHealthChecksAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'healthChecksURL',
+						'label' => 'URL',
+						'value' => $this->config['healthChecksURL'],
+						'help' => 'URL for HealthChecks API',
+						'placeholder' => 'HealthChecks API URL'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'healthChecksToken',
+						'label' => 'Token',
+						'value' => $this->config['healthChecksToken']
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'healthChecksTags',
+						'label' => 'Tags',
+						'value' => $this->config['healthChecksTags'],
+						'help' => 'Pull only checks with this tag - Blank for all',
+						'placeholder' => 'Multiple tags using CSV - tag1,tag2'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageHealthChecksRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageHealthChecksRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+			)
+		);
+	}
+	
 	public function healthChecksTags($tags)
 	{
 		$return = '?tag=';

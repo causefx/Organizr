@@ -2,6 +2,162 @@
 
 trait TautulliHomepageItem
 {
+	public function tautulliSettingsArray()
+	{
+		return array(
+			'name' => 'Tautulli',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/tautulli.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageTautulliEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageTautulliEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageTautulliAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'tautulliHeader',
+						'label' => 'Title',
+						'value' => $this->config['tautulliHeader'],
+						'help' => 'Sets the title of this homepage module'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliHeaderToggle',
+						'label' => 'Toggle Title',
+						'value' => $this->config['tautulliHeaderToggle'],
+						'help' => 'Shows/hides the title of this homepage module'
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'tautulliURL',
+						'label' => 'URL',
+						'value' => $this->config['tautulliURL'],
+						'help' => 'URL for Tautulli API, include the IP, the port and the base URL (e.g. /tautulli/) in the URL',
+						'placeholder' => 'http://<ip>:<port>'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'tautulliApikey',
+						'label' => 'API Key',
+						'value' => $this->config['tautulliApikey']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageTautulliRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+				'Library Stats' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliLibraries',
+						'label' => 'Libraries',
+						'value' => $this->config['tautulliLibraries'],
+						'help' => 'Shows/hides the card with library information.',
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliLibraryAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageTautulliLibraryAuth'],
+						'options' => $this->groupOptions
+					),
+				),
+				'Viewing Stats' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliPopularMovies',
+						'label' => 'Popular Movies',
+						'value' => $this->config['tautulliPopularMovies'],
+						'help' => 'Shows/hides the card with Popular Movies information.',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliPopularTV',
+						'label' => 'Popular TV',
+						'value' => $this->config['tautulliPopularTV'],
+						'help' => 'Shows/hides the card with Popular TV information.',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliTopMovies',
+						'label' => 'Top Movies',
+						'value' => $this->config['tautulliTopMovies'],
+						'help' => 'Shows/hides the card with Top Movies information.',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliTopTV',
+						'label' => 'Top TV',
+						'value' => $this->config['tautulliTopTV'],
+						'help' => 'Shows/hides the card with Top TV information.',
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliViewsAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageTautulliViewsAuth'],
+						'options' => $this->groupOptions
+					),
+				),
+				'Misc Stats' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliTopUsers',
+						'label' => 'Top Users',
+						'value' => $this->config['tautulliTopUsers'],
+						'help' => 'Shows/hides the card with Top Users information.',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'tautulliTopPlatforms',
+						'label' => 'Top Platforms',
+						'value' => $this->config['tautulliTopPlatforms'],
+						'help' => 'Shows/hides the card with Top Platforms information.',
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTautulliMiscAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageTautulliMiscAuth'],
+						'options' => $this->groupOptions
+					),
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'tautulli\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionTautulli()
 	{
 		if (empty($this->config['tautulliURL'])) {

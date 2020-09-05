@@ -2,6 +2,79 @@
 
 trait SabNZBdHomepageItem
 {
+	
+	public function sabNZBdSettingsArray()
+	{
+		return array(
+			'name' => 'SabNZBD',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/sabnzbd.png',
+			'category' => 'Downloader',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageSabnzbdEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageSabnzbdEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageSabnzbdAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageSabnzbdAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'sabnzbdURL',
+						'label' => 'URL',
+						'value' => $this->config['sabnzbdURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'sabnzbdToken',
+						'label' => 'Token',
+						'value' => $this->config['sabnzbdToken']
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageDownloadRefresh'],
+						'options' => $this->timeOptions()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'sabnzbdCombine',
+						'label' => 'Add to Combined Downloader',
+						'value' => $this->config['sabnzbdCombine']
+					),
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'sabnzbd\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionSabNZBd()
 	{
 		if (!empty($this->config['sabnzbdURL']) && !empty($this->config['sabnzbdToken'])) {

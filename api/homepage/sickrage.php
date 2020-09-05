@@ -2,6 +2,100 @@
 
 trait SickRageHomepageItem
 {
+	public function sickrageSettingsArray()
+	{
+		return array(
+			'name' => 'SickRage',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/sickrage.png',
+			'category' => 'PVR',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageSickrageEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageSickrageEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageSickrageAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageSickrageAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'sickrageURL',
+						'label' => 'URL',
+						'value' => $this->config['sickrageURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'sickrageToken',
+						'label' => 'Token',
+						'value' => $this->config['sickrageToken']
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'calendarFirstDay',
+						'label' => 'Start Day',
+						'value' => $this->config['calendarFirstDay'],
+						'options' => $this->daysOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarDefault',
+						'label' => 'Default View',
+						'value' => $this->config['calendarDefault'],
+						'options' => $this->calendarDefaultOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarTimeFormat',
+						'label' => 'Time Format',
+						'value' => $this->config['calendarTimeFormat'],
+						'options' => $this->timeFormatOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarLimit',
+						'label' => 'Items Per Day',
+						'value' => $this->config['calendarLimit'],
+						'options' => $this->limitOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['calendarRefresh'],
+						'options' => $this->timeOptions()
+					)
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'sickrage\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionSickRage()
 	{
 		if (empty($this->config['sickrageURL'])) {

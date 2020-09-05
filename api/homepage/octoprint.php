@@ -2,6 +2,65 @@
 
 trait OctoPrintHomepageItem
 {
+	public function octoprintSettingsArray()
+	{
+		return array(
+			'name' => 'Octoprint',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/octoprint.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageOctoprintEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageOctoprintEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageOctoprintAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageOctoprintAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'octoprintURL',
+						'label' => 'URL',
+						'value' => $this->config['octoprintURL'],
+						'help' => 'Enter the IP:PORT of your Octoprint instance e.g. http://octopi.local'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'octoprintToken',
+						'label' => 'API Key',
+						'value' => $this->config['octoprintToken'],
+						'help' => 'Enter your Octoprint API key, found in Octoprint settings page.'
+					),
+				),
+				'Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'octoprintHeader',
+						'label' => 'Title',
+						'value' => $this->config['octoprintHeader'],
+						'help' => 'Sets the title of this homepage module',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'octoprintToggle',
+						'label' => 'Toggle Title',
+						'value' => $this->config['octoprintHeaderToggle'],
+						'help' => 'Shows/hides the title of this homepage module'
+					),
+				),
+			)
+		);
+	}
+	
 	public function getOctoprintHomepageData()
 	{
 		if (!$this->config['homepageOctoprintEnabled']) {

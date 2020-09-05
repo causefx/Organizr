@@ -2,6 +2,167 @@
 
 trait JellyfinHomepageItem
 {
+	
+	public function jellyfinSettingsArray()
+	{
+		return array(
+			'name' => 'Jellyfin',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/jellyfin.png',
+			'category' => 'Media Server',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageJellyfinEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageJellyfinEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageJellyfinAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageJellyfinAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'jellyfinURL',
+						'label' => 'URL',
+						'value' => $this->config['jellyfinURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'jellyfinToken',
+						'label' => 'Token',
+						'value' => $this->config['jellyfinToken']
+					)
+				),
+				'Active Streams' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageJellyfinStreams',
+						'label' => 'Enable',
+						'value' => $this->config['homepageJellyfinStreams']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageJellyStreamsAuth',
+						'label' => 'Minimum Authorization',
+						'value' => $this->config['homepageJellyStreamsAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageShowStreamNames',
+						'label' => 'User Information',
+						'value' => $this->config['homepageShowStreamNames']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageShowStreamNamesAuth',
+						'label' => 'Minimum Authorization',
+						'value' => $this->config['homepageShowStreamNamesAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageStreamRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageStreamRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+				'Recent Items' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageJellyfinRecent',
+						'label' => 'Enable',
+						'value' => $this->config['homepageJellyfinRecent']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageJellyfinRecentAuth',
+						'label' => 'Minimum Authorization',
+						'value' => $this->config['homepageJellyfinRecentAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'number',
+						'name' => 'homepageRecentLimit',
+						'label' => 'Item Limit',
+						'value' => $this->config['homepageRecentLimit'],
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageRecentRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageRecentRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'jellyfinTabName',
+						'label' => 'Jellyfin Tab Name',
+						'value' => $this->config['jellyfinTabName'],
+						'placeholder' => 'Only use if you have Jellyfin in a reverse proxy'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'jellyfinTabURL',
+						'label' => 'Jellyfin Tab WAN URL',
+						'value' => $this->config['jellyfinTabURL'],
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'cacheImageSize',
+						'label' => 'Image Cache Size',
+						'value' => $this->config['cacheImageSize'],
+						'options' => array(
+							array(
+								'name' => 'Low',
+								'value' => '.5'
+							),
+							array(
+								'name' => '1x',
+								'value' => '1'
+							),
+							array(
+								'name' => '2x',
+								'value' => '2'
+							),
+							array(
+								'name' => '3x',
+								'value' => '3'
+							)
+						)
+					)
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'jellyfin\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionJellyfin()
 	{
 		if (empty($this->config['jellyfinURL'])) {

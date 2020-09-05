@@ -2,6 +2,109 @@
 
 trait DelugeHomepageItem
 {
+	public function delugeSettingsArray()
+	{
+		return array(
+			'name' => 'Deluge',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/deluge.png',
+			'category' => 'Downloader',
+			'settings' => array(
+				'custom' => '
+				<div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+								<span lang="en">Notice</span>
+                            </div>
+                            <div class="panel-wrapper collapse in" aria-expanded="true">
+                                <div class="panel-body">
+									<ul class="list-icons">
+                                        <li><i class="fa fa-chevron-right text-danger"></i> <a href="https://github.com/idlesign/deluge-webapi/tree/master/dist" target="_blank">Download Plugin</a></li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> Open Deluge Web UI, go to "Preferences -> Plugins -> Install plugin" and choose egg file.</li>
+                                        <li><i class="fa fa-chevron-right text-danger"></i> Activate WebAPI plugin </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+				</div>
+				',
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageDelugeEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageDelugeEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageDelugeAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageDelugeAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'delugeURL',
+						'label' => 'URL',
+						'value' => $this->config['delugeURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'password',
+						'name' => 'delugePassword',
+						'label' => 'Password',
+						'value' => $this->config['delugePassword']
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'delugeHideSeeding',
+						'label' => 'Hide Seeding',
+						'value' => $this->config['delugeHideSeeding']
+					), array(
+						'type' => 'switch',
+						'name' => 'delugeHideCompleted',
+						'label' => 'Hide Completed',
+						'value' => $this->config['delugeHideCompleted']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageDownloadRefresh'],
+						'options' => $this->timeOptions()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'delugeCombine',
+						'label' => 'Add to Combined Downloader',
+						'value' => $this->config['delugeCombine']
+					),
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'deluge\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionDeluge()
 	{
 		if (empty($this->config['delugeURL'])) {

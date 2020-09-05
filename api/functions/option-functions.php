@@ -2,8 +2,77 @@
 
 trait OptionsFunction
 {
+	public function daysOptions()
+	{
+		return array(
+			array(
+				'name' => 'Sunday',
+				'value' => '0'
+			),
+			array(
+				'name' => 'Monday',
+				'value' => '1'
+			),
+			array(
+				'name' => 'Tueday',
+				'value' => '2'
+			),
+			array(
+				'name' => 'Wednesday',
+				'value' => '3'
+			),
+			array(
+				'name' => 'Thursday',
+				'value' => '4'
+			),
+			array(
+				'name' => 'Friday',
+				'value' => '5'
+			),
+			array(
+				'name' => 'Saturday',
+				'value' => '6'
+			)
+		);
+	}
 	
-	public function optionLimit()
+	public function mediaServerOptions()
+	{
+		return array(
+			array(
+				'name' => 'N/A',
+				'value' => ''
+			),
+			array(
+				'name' => 'Plex',
+				'value' => 'plex'
+			),
+			array(
+				'name' => 'Emby [Not Available]',
+				'value' => 'emby'
+			)
+		);
+	}
+	
+	public function ombiTvOptions()
+	{
+		return array(
+			array(
+				'name' => 'All Seasons',
+				'value' => 'all'
+			),
+			array(
+				'name' => 'First Season Only',
+				'value' => 'first'
+			),
+			array(
+				'name' => 'Last Season Only',
+				'value' => 'last'
+			),
+		);
+	}
+	
+	public function limitOptions()
 	{
 		return array(
 			array(
@@ -45,7 +114,7 @@ trait OptionsFunction
 		);
 	}
 	
-	public function optionNotificationTypes()
+	public function notificationTypesOptions()
 	{
 		return array(
 			array(
@@ -67,7 +136,7 @@ trait OptionsFunction
 		);
 	}
 	
-	public function optionNotificationPositions()
+	public function notificationPositionsOptions()
 	{
 		return array(
 			array(
@@ -101,7 +170,7 @@ trait OptionsFunction
 		);
 	}
 	
-	public function optionTime()
+	public function timeOptions()
 	{
 		return array(
 			array(
@@ -258,5 +327,187 @@ trait OptionsFunction
 				'value' => 'sm'
 			]
 		];
+	}
+	
+	public function timeFormatOptions()
+	{
+		return array(
+			array(
+				'name' => '6p',
+				'value' => 'h(:mm)t'
+			),
+			array(
+				'name' => '6:00p',
+				'value' => 'h:mmt'
+			),
+			array(
+				'name' => '6:00',
+				'value' => 'h:mm'
+			),
+			array(
+				'name' => '18',
+				'value' => 'H(:mm)'
+			),
+			array(
+				'name' => '18:00',
+				'value' => 'H:mm'
+			)
+		);
+	}
+	
+	public function rTorrentSortOptions()
+	{
+		return array(
+			array(
+				'name' => 'Date Desc',
+				'value' => 'dated'
+			),
+			array(
+				'name' => 'Date Asc',
+				'value' => 'datea'
+			),
+			array(
+				'name' => 'Hash Desc',
+				'value' => 'hashd'
+			),
+			array(
+				'name' => 'Hash Asc',
+				'value' => 'hasha'
+			),
+			array(
+				'name' => 'Name Desc',
+				'value' => 'named'
+			),
+			array(
+				'name' => 'Name Asc',
+				'value' => 'namea'
+			),
+			array(
+				'name' => 'Size Desc',
+				'value' => 'sized'
+			),
+			array(
+				'name' => 'Size Asc',
+				'value' => 'sizea'
+			),
+			array(
+				'name' => 'Label Desc',
+				'value' => 'labeld'
+			),
+			array(
+				'name' => 'Label Asc',
+				'value' => 'labela'
+			),
+			array(
+				'name' => 'Status Desc',
+				'value' => 'statusd'
+			),
+			array(
+				'name' => 'Status Asc',
+				'value' => 'statusa'
+			),
+		);
+	}
+	
+	public function qBittorrentApiOptions()
+	{
+		return array(
+			array(
+				'name' => 'V1',
+				'value' => '1'
+			),
+			array(
+				'name' => 'V2',
+				'value' => '2'
+			),
+		);
+	}
+	
+	public function qBittorrentSortOptions()
+	{
+		return array(
+			array(
+				'name' => 'Hash',
+				'value' => 'hash'
+			),
+			array(
+				'name' => 'Name',
+				'value' => 'name'
+			),
+			array(
+				'name' => 'Size',
+				'value' => 'size'
+			),
+			array(
+				'name' => 'Progress',
+				'value' => 'progress'
+			),
+			array(
+				'name' => 'Download Speed',
+				'value' => 'dlspeed'
+			),
+			array(
+				'name' => 'Upload Speed',
+				'value' => 'upspeed'
+			),
+			array(
+				'name' => 'Priority',
+				'value' => 'priority'
+			),
+			array(
+				'name' => 'Number of Seeds',
+				'value' => 'num_seeds'
+			),
+			array(
+				'name' => 'Number of Seeds in Swarm',
+				'value' => 'num_complete'
+			),
+			array(
+				'name' => 'Number of Leechers',
+				'value' => 'num_leechs'
+			),
+			array(
+				'name' => 'Number of Leechers in Swarm',
+				'value' => 'num_incomplete'
+			),
+			array(
+				'name' => 'Ratio',
+				'value' => 'ratio'
+			),
+			array(
+				'name' => 'ETA',
+				'value' => 'eta'
+			),
+			array(
+				'name' => 'State',
+				'value' => 'state'
+			),
+			array(
+				'name' => 'Category',
+				'value' => 'category'
+			)
+		);
+	}
+	
+	public function calendarDefaultOptions()
+	{
+		return array(
+			array(
+				'name' => 'Month',
+				'value' => 'month'
+			),
+			array(
+				'name' => 'Day',
+				'value' => 'basicDay'
+			),
+			array(
+				'name' => 'Week',
+				'value' => 'basicWeek'
+			),
+			array(
+				'name' => 'List',
+				'value' => 'list'
+			)
+		);
 	}
 }

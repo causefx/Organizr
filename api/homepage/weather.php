@@ -2,6 +2,121 @@
 
 trait WeatherHomepageItem
 {
+	public function weatherSettingsArray()
+	{
+		return array(
+			'name' => 'Weather-Air',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/wind.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageWeatherAndAirEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageWeatherAndAirEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageWeatherAndAirAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageWeatherAndAirAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'homepageWeatherAndAirLatitude',
+						'label' => 'Latitude',
+						'value' => $this->config['homepageWeatherAndAirLatitude'],
+						'help' => 'Please enter full latitude including minus if needed'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'homepageWeatherAndAirLongitude',
+						'label' => 'Longitude',
+						'value' => $this->config['homepageWeatherAndAirLongitude'],
+						'help' => 'Please enter full longitude including minus if needed'
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-search',
+						'class' => 'pull-right',
+						'text' => 'Need Help With Coordinates?',
+						'attr' => 'onclick="showLookupCoordinatesModal()"'
+					),
+				),
+				'Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'homepageWeatherAndAirWeatherHeader',
+						'label' => 'Title',
+						'value' => $this->config['homepageWeatherAndAirWeatherHeader'],
+						'help' => 'Sets the title of this homepage module',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageWeatherAndAirWeatherHeaderToggle',
+						'label' => 'Toggle Title',
+						'value' => $this->config['homepageWeatherAndAirWeatherHeaderToggle'],
+						'help' => 'Shows/hides the title of this homepage module'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageWeatherAndAirWeatherEnabled',
+						'label' => 'Enable Weather',
+						'value' => $this->config['homepageWeatherAndAirWeatherEnabled'],
+						'help' => 'Toggles the view module for Weather'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageWeatherAndAirAirQualityEnabled',
+						'label' => 'Enable Air Quality',
+						'value' => $this->config['homepageWeatherAndAirAirQualityEnabled'],
+						'help' => 'Toggles the view module for Air Quality'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageWeatherAndAirPollenEnabled',
+						'label' => 'Enable Pollen',
+						'value' => $this->config['homepageWeatherAndAirPollenEnabled'],
+						'help' => 'Toggles the view module for Pollen'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageWeatherAndAirUnits',
+						'label' => 'Unit of Measurement',
+						'value' => $this->config['homepageWeatherAndAirUnits'],
+						'options' => array(
+							array(
+								'name' => 'Imperial',
+								'value' => 'imperial'
+							),
+							array(
+								'name' => 'Metric',
+								'value' => 'metric'
+							)
+						)
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageWeatherAndAirRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageWeatherAndAirRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+			)
+		);
+	}
+	
 	public function searchCityForCoordinates($query)
 	{
 		try {

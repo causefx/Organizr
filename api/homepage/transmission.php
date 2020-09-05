@@ -2,6 +2,95 @@
 
 trait TransmissionHomepageItem
 {
+	public function transmissionSettingsArray()
+	{
+		return array(
+			'name' => 'Transmission',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/transmission.png',
+			'category' => 'Downloader',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageTransmissionEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageTransmissionEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageTransmissionAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageTransmissionAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'transmissionURL',
+						'label' => 'URL',
+						'value' => $this->config['transmissionURL'],
+						'help' => 'Please do not included /web in URL.  Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'transmissionUsername',
+						'label' => 'Username',
+						'value' => $this->config['transmissionUsername']
+					),
+					array(
+						'type' => 'password',
+						'name' => 'transmissionPassword',
+						'label' => 'Password',
+						'value' => $this->config['transmissionPassword']
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'transmissionHideSeeding',
+						'label' => 'Hide Seeding',
+						'value' => $this->config['transmissionHideSeeding']
+					), array(
+						'type' => 'switch',
+						'name' => 'transmissionHideCompleted',
+						'label' => 'Hide Completed',
+						'value' => $this->config['transmissionHideCompleted']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageDownloadRefresh'],
+						'options' => $this->timeOptions()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'transmissionCombine',
+						'label' => 'Add to Combined Downloader',
+						'value' => $this->config['transmissionCombine']
+					),
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'transmission\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionTransmission()
 	{
 		if (empty($this->config['transmissionURL'])) {

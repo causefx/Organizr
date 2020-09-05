@@ -2,6 +2,156 @@
 
 trait RTorrentHomepageItem
 {
+	public function rTorrentSettingsArray()
+	{
+		$xmlStatus = (extension_loaded('xmlrpc')) ? 'Installed' : 'Not Installed';
+		return array(
+			'name' => 'rTorrent',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/rTorrent.png',
+			'category' => 'Downloader',
+			'settings' => array(
+				'FYI' => array(
+					array(
+						'type' => 'html',
+						'label' => '',
+						'override' => 12,
+						'html' => '
+						<div class="row">
+						    <div class="col-lg-12">
+						        <div class="panel panel-info">
+						            <div class="panel-heading">
+						                <span lang="en">ATTENTION</span>
+						            </div>
+						            <div class="panel-wrapper collapse in" aria-expanded="true">
+						                <div class="panel-body">
+						                	<h4 lang="en">This module requires XMLRPC</h4>
+						                    <span lang="en">Status: [ <b>' . $xmlStatus . '</b> ]</span>
+						                    <br/></br>
+						                    <span lang="en">
+						                    	<h4><b>Note about API URL</b></h4>
+						                    	Organizr appends the url with <code>/RPC2</code> unless the URL ends in <code>.php</code><br/>
+						                    	<h5>Possible URLs:</h5>
+						                    	<li>http://localhost:8080</li>
+						                    	<li>https://domain.site/xmlrpc.php</li>
+						                    	<li>https://seedbox.site/rutorrent/plugins/httprpc/action.php</li>
+						                    </span>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+						'
+					)
+				),
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepagerTorrentEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepagerTorrentEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepagerTorrentAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepagerTorrentAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'rTorrentURL',
+						'label' => 'URL',
+						'value' => $this->config['rTorrentURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'rTorrentURLOverride',
+						'label' => 'rTorrent API URL Override',
+						'value' => $this->config['rTorrentURLOverride'],
+						'help' => 'Only use if you cannot connect.  Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port/xmlrpc'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'rTorrentUsername',
+						'label' => 'Username',
+						'value' => $this->config['rTorrentUsername']
+					),
+					array(
+						'type' => 'password',
+						'name' => 'rTorrentPassword',
+						'label' => 'Password',
+						'value' => $this->config['rTorrentPassword']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'rTorrentDisableCertCheck',
+						'label' => 'Disable Certificate Check',
+						'value' => $this->config['rTorrentDisableCertCheck']
+					),
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'rTorrentHideSeeding',
+						'label' => 'Hide Seeding',
+						'value' => $this->config['rTorrentHideSeeding']
+					), array(
+						'type' => 'switch',
+						'name' => 'rTorrentHideCompleted',
+						'label' => 'Hide Completed',
+						'value' => $this->config['rTorrentHideCompleted']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'rTorrentSortOrder',
+						'label' => 'Order',
+						'value' => $this->config['rTorrentSortOrder'],
+						'options' => $this->rTorrentSortOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageDownloadRefresh'],
+						'options' => $this->timeOptions()
+					),
+					array(
+						'type' => 'number',
+						'name' => 'rTorrentLimit',
+						'label' => 'Item Limit',
+						'value' => $this->config['rTorrentLimit'],
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'rTorrentCombine',
+						'label' => 'Add to Combined Downloader',
+						'value' => $this->config['rTorrentCombine']
+					),
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'rtorrent\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionRTorrent()
 	{
 		if (empty($this->config['rTorrentURL']) && empty($this->config['rTorrentURLOverride'])) {

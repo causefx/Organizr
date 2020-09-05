@@ -2,6 +2,73 @@
 
 trait MonitorrHomepageItem
 {
+	public function monitorrSettingsArray()
+	{
+		return array(
+			'name' => 'Monitorr',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/monitorr.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageMonitorrEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageMonitorrEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageMonitorrAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageMonitorrAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'monitorrURL',
+						'label' => 'URL',
+						'value' => $this->config['monitorrURL'],
+						'help' => 'URL for Monitorr. Please use the revers proxy URL i.e. https://domain.com/monitorr/.',
+						'placeholder' => 'http://domain.com/monitorr/'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageMonitorrRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageMonitorrRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+				'Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'monitorrHeader',
+						'label' => 'Title',
+						'value' => $this->config['monitorrHeader'],
+						'help' => 'Sets the title of this homepage module',
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'monitorrHeaderToggle',
+						'label' => 'Toggle Title',
+						'value' => $this->config['monitorrHeaderToggle'],
+						'help' => 'Shows/hides the title of this homepage module'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'monitorrCompact',
+						'label' => 'Compact view',
+						'value' => $this->config['monitorrCompact'],
+						'help' => 'Toggles the compact view of this homepage module'
+					),
+				),
+			)
+		);
+	}
+	
 	public function getMonitorrHomepageData()
 	{
 		if (!$this->config['homepageMonitorrEnabled']) {

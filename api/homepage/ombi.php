@@ -2,6 +2,143 @@
 
 trait OmbiHomepageItem
 {
+	
+	public function ombiSettingsArray()
+	{
+		return array(
+			'name' => 'Ombi',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/ombi.png',
+			'category' => 'Requests',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageOmbiEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageOmbiEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageOmbiAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageOmbiAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'ombiURL',
+						'label' => 'URL',
+						'value' => $this->config['ombiURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'ombiToken',
+						'label' => 'Token',
+						'value' => $this->config['ombiToken']
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'homepageOmbiRequestAuth',
+						'label' => 'Minimum Group to Request',
+						'value' => $this->config['homepageOmbiRequestAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'select',
+						'name' => 'ombiTvDefault',
+						'label' => 'TV Show Default Request',
+						'value' => $this->config['ombiTvDefault'],
+						'options' => $this->ombiTvOptions()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiLimitUser',
+						'label' => 'Limit to User',
+						'value' => $this->config['ombiLimitUser']
+					),
+					array(
+						'type' => 'number',
+						'name' => 'ombiLimit',
+						'label' => 'Item Limit',
+						'value' => $this->config['ombiLimit'],
+					),
+					array(
+						'type' => 'select',
+						'name' => 'ombiRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['ombiRefresh'],
+						'options' => $this->timeOptions()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiAlias',
+						'label' => 'Use Ombi Alias Names',
+						'value' => $this->config['ombiAlias'],
+						'help' => 'Use Ombi Alias Names instead of Usernames - If Alias is blank, Alias will fallback to Username'
+					)
+				),
+				'Default Filter' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterAvailable',
+						'label' => 'Show Available',
+						'value' => $this->config['ombiDefaultFilterAvailable'],
+						'help' => 'Show All Available Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterUnavailable',
+						'label' => 'Show Unavailable',
+						'value' => $this->config['ombiDefaultFilterUnavailable'],
+						'help' => 'Show All Unavailable Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterApproved',
+						'label' => 'Show Approved',
+						'value' => $this->config['ombiDefaultFilterApproved'],
+						'help' => 'Show All Approved Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterUnapproved',
+						'label' => 'Show Unapproved',
+						'value' => $this->config['ombiDefaultFilterUnapproved'],
+						'help' => 'Show All Unapproved Ombi Requests'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'ombiDefaultFilterDenied',
+						'label' => 'Show Denied',
+						'value' => $this->config['ombiDefaultFilterDenied'],
+						'help' => 'Show All Denied Ombi Requests'
+					)
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'ombi\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionOmbi()
 	{
 		if (empty($this->config['ombiURL'])) {

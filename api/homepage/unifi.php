@@ -2,6 +2,97 @@
 
 trait UnifiHomepageItem
 {
+	public function unifiSettingsArray()
+	{
+		return array(
+			'name' => 'Unifi',
+			'enabled' => true,
+			'image' => 'plugins/images/tabs/ubnt.png',
+			'category' => 'Monitor',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageUnifiEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageUnifiEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageUnifiAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageUnifiAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'unifiURL',
+						'label' => 'URL',
+						'value' => $this->config['unifiURL'],
+						'help' => 'URL for Unifi',
+						'placeholder' => 'Unifi API URL'
+					),
+					array(
+						'type' => 'blank',
+						'label' => ''
+					),
+					array(
+						'type' => 'input',
+						'name' => 'unifiUsername',
+						'label' => 'Username',
+						'value' => $this->config['unifiUsername'],
+						'help' => 'Username is case-sensitive',
+					),
+					array(
+						'type' => 'password',
+						'name' => 'unifiPassword',
+						'label' => 'Password',
+						'value' => $this->config['unifiPassword']
+					),
+					array(
+						'type' => 'input',
+						'name' => 'unifiSiteName',
+						'label' => 'Site Name (Not for UnifiOS)',
+						'value' => $this->config['unifiSiteName'],
+						'help' => 'Site Name - not Site ID nor Site Description',
+					),
+					array(
+						'type' => 'button',
+						'label' => 'Grab Unifi Site (Not for UnifiOS)',
+						'icon' => 'fa fa-building',
+						'text' => 'Get Unifi Site',
+						'attr' => 'onclick="getUnifiSite()"'
+					),
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'homepageUnifiRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageUnifiRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'unifi\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function getUnifiSiteName()
 	{
 		if (empty($this->config['unifiURL'])) {

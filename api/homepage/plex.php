@@ -2,6 +2,210 @@
 
 trait PlexHomepageItem
 {
+	
+	public function plexSettingsArray()
+	{
+		return array(
+			'name' => 'Plex',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/plex.png',
+			'category' => 'Media Server',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepagePlexEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepagePlexEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepagePlexAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepagePlexAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'plexURL',
+						'label' => 'URL',
+						'value' => $this->config['plexURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'plexToken',
+						'label' => 'Token',
+						'value' => $this->config['plexToken']
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'plexID',
+						'label' => 'Plex Machine',
+						'value' => $this->config['plexID']
+					)
+				),
+				'Active Streams' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepagePlexStreams',
+						'label' => 'Enable',
+						'value' => $this->config['homepagePlexStreams']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepagePlexStreamsAuth',
+						'label' => 'Minimum Authorization',
+						'value' => $this->config['homepagePlexStreamsAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageShowStreamNames',
+						'label' => 'User Information',
+						'value' => $this->config['homepageShowStreamNames']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageShowStreamNamesAuth',
+						'label' => 'Minimum Authorization',
+						'value' => $this->config['homepageShowStreamNamesAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageStreamRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageStreamRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+				'Recent Items' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepagePlexRecent',
+						'label' => 'Enable',
+						'value' => $this->config['homepagePlexRecent']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepagePlexRecentAuth',
+						'label' => 'Minimum Authorization',
+						'value' => $this->config['homepagePlexRecentAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'number',
+						'name' => 'homepageRecentLimit',
+						'label' => 'Item Limit',
+						'value' => $this->config['homepageRecentLimit'],
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageRecentRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageRecentRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+				'Media Search' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'mediaSearch',
+						'label' => 'Enable',
+						'value' => $this->config['mediaSearch']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'mediaSearchAuth',
+						'label' => 'Minimum Authorization',
+						'value' => $this->config['mediaSearchAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'select',
+						'name' => 'mediaSearchType',
+						'label' => 'Media Server',
+						'value' => $this->config['mediaSearchType'],
+						'options' => $this->mediaServerOptions()
+					),
+				),
+				'Playlists' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepagePlexPlaylist',
+						'label' => 'Enable',
+						'value' => $this->config['homepagePlexPlaylist']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepagePlexPlaylistAuth',
+						'label' => 'Minimum Authorization',
+						'value' => $this->config['homepagePlexPlaylistAuth'],
+						'options' => $this->groupOptions
+					),
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'plexTabName',
+						'label' => 'Plex Tab Name',
+						'value' => $this->config['plexTabName'],
+						'placeholder' => 'Only use if you have Plex in a reverse proxy'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'plexTabURL',
+						'label' => 'Plex Tab WAN URL',
+						'value' => $this->config['plexTabURL'],
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'cacheImageSize',
+						'label' => 'Image Cache Size',
+						'value' => $this->config['cacheImageSize'],
+						'options' => array(
+							array(
+								'name' => 'Low',
+								'value' => '.5'
+							),
+							array(
+								'name' => '1x',
+								'value' => '1'
+							),
+							array(
+								'name' => '2x',
+								'value' => '2'
+							),
+							array(
+								'name' => '3x',
+								'value' => '3'
+							)
+						)
+					)
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'plex\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionPlex()
 	{
 		if (!empty($this->config['plexURL']) && !empty($this->config['plexToken'])) {

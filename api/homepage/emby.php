@@ -2,6 +2,166 @@
 
 trait EmbyHomepageItem
 {
+	public function embySettingsArray()
+	{
+		return array(
+			'name' => 'Emby',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/emby.png',
+			'category' => 'Media Server',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageEmbyEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageEmbyEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageEmbyAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageEmbyAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'embyURL',
+						'label' => 'URL',
+						'value' => $this->config['embyURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'embyToken',
+						'label' => 'Token',
+						'value' => $this->config['embyToken']
+					)
+				),
+				'Active Streams' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageEmbyStreams',
+						'label' => 'Enable',
+						'value' => $this->config['homepageEmbyStreams']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageEmbyStreamsAuth',
+						'label' => 'Minimum Authorization',
+						'value' => $this->config['homepageEmbyStreamsAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageShowStreamNames',
+						'label' => 'User Information',
+						'value' => $this->config['homepageShowStreamNames']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageShowStreamNamesAuth',
+						'label' => 'Minimum Authorization',
+						'value' => $this->config['homepageShowStreamNamesAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageStreamRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageStreamRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+				'Recent Items' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageEmbyRecent',
+						'label' => 'Enable',
+						'value' => $this->config['homepageEmbyRecent']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageEmbyRecentAuth',
+						'label' => 'Minimum Authorization',
+						'value' => $this->config['homepageEmbyRecentAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'number',
+						'name' => 'homepageRecentLimit',
+						'label' => 'Item Limit',
+						'value' => $this->config['homepageRecentLimit'],
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageRecentRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageRecentRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'input',
+						'name' => 'embyTabName',
+						'label' => 'Emby Tab Name',
+						'value' => $this->config['embyTabName'],
+						'placeholder' => 'Only use if you have Emby in a reverse proxy'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'embyTabURL',
+						'label' => 'Emby Tab WAN URL',
+						'value' => $this->config['embyTabURL'],
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'cacheImageSize',
+						'label' => 'Image Cache Size',
+						'value' => $this->config['cacheImageSize'],
+						'options' => array(
+							array(
+								'name' => 'Low',
+								'value' => '.5'
+							),
+							array(
+								'name' => '1x',
+								'value' => '1'
+							),
+							array(
+								'name' => '2x',
+								'value' => '2'
+							),
+							array(
+								'name' => '3x',
+								'value' => '3'
+							)
+						)
+					)
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'emby\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionEmby()
 	{
 		if (empty($this->config['embyURL'])) {

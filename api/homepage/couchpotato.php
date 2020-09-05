@@ -2,6 +2,87 @@
 
 trait CouchPotatoHomepageItem
 {
+	
+	public function couchPotatoSettingsArray()
+	{
+		return array(
+			'name' => 'CouchPotato',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/couchpotato.png',
+			'category' => 'PVR',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageCouchpotatoEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageCouchpotatoEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageCouchpotatoAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageCouchpotatoAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'couchpotatoURL',
+						'label' => 'URL',
+						'value' => $this->config['couchpotatoURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'couchpotatoToken',
+						'label' => 'Token',
+						'value' => $this->config['couchpotatoToken']
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'calendarFirstDay',
+						'label' => 'Start Day',
+						'value' => $this->config['calendarFirstDay'],
+						'options' => $this->daysOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarDefault',
+						'label' => 'Default View',
+						'value' => $this->config['calendarDefault'],
+						'options' => $this->calendarDefaultOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarTimeFormat',
+						'label' => 'Time Format',
+						'value' => $this->config['calendarTimeFormat'],
+						'options' => $this->timeFormatOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarLimit',
+						'label' => 'Items Per Day',
+						'value' => $this->config['calendarLimit'],
+						'options' => $this->limitOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['calendarRefresh'],
+						'options' => $this->timeOptions()
+					)
+				)
+			)
+		);
+	}
+	
 	public function getCouchPotatoCalendar()
 	{
 		if (!$this->config['homepageCouchpotatoEnabled']) {

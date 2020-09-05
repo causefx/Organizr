@@ -2,6 +2,177 @@
 
 trait SonarrHomepageItem
 {
+	public function sonarrSettingsArray()
+	{
+		return array(
+			'name' => 'Sonarr',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/sonarr.png',
+			'category' => 'PVR',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageSonarrEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageSonarrEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageSonarrAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageSonarrAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'sonarrURL',
+						'label' => 'URL',
+						'value' => $this->config['sonarrURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'sonarrToken',
+						'label' => 'Token',
+						'value' => $this->config['sonarrToken']
+					)
+				),
+				'API SOCKS' => array(
+					array(
+						'type' => 'html',
+						'override' => 12,
+						'label' => '',
+						'html' => '
+							<div class="panel panel-default">
+								<div class="panel-wrapper collapse in">
+									<div class="panel-body">
+										<h3 lang="en">Sonarr SOCKS API Connection</h3>
+										<p>Using this feature allows you to access the Sonarr API without having to reverse proxy it.  Just access it from: </p>
+										<code>' . $this->getServerPath() . 'api/v2/socks/sonarr/</code>
+									</div>
+								</div>
+							</div>'
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'sonarrSocksEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['sonarrSocksEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'sonarrSocksAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['sonarrSocksAuth'],
+						'options' => $this->groupOptions
+					),
+				),
+				'Queue' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageSonarrQueueEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageSonarrQueueEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageSonarrQueueAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageSonarrQueueAuth'],
+						'options' => $this->groupOptions
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'homepageSonarrQueueCombine',
+						'label' => 'Add to Combined Downloader',
+						'value' => $this->config['homepageSonarrQueueCombine']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageSonarrQueueRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageSonarrQueueRefresh'],
+						'options' => $this->timeOptions()
+					),
+				),
+				'Calendar' => array(
+					array(
+						'type' => 'number',
+						'name' => 'calendarStart',
+						'label' => '# of Days Before',
+						'value' => $this->config['calendarStart'],
+						'placeholder' => ''
+					),
+					array(
+						'type' => 'number',
+						'name' => 'calendarEnd',
+						'label' => '# of Days After',
+						'value' => $this->config['calendarEnd'],
+						'placeholder' => ''
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarFirstDay',
+						'label' => 'Start Day',
+						'value' => $this->config['calendarFirstDay'],
+						'options' => $this->daysOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarDefault',
+						'label' => 'Default View',
+						'value' => $this->config['calendarDefault'],
+						'options' => $this->calendarDefaultOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarTimeFormat',
+						'label' => 'Time Format',
+						'value' => $this->config['calendarTimeFormat'],
+						'options' => $this->timeFormatOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarLimit',
+						'label' => 'Items Per Day',
+						'value' => $this->config['calendarLimit'],
+						'options' => $this->limitOptions()
+					),
+					array(
+						'type' => 'select',
+						'name' => 'calendarRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['calendarRefresh'],
+						'options' => $this->timeOptions()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'sonarrUnmonitored',
+						'label' => 'Show Unmonitored',
+						'value' => $this->config['sonarrUnmonitored']
+					)
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'sonarr\')"'
+					),
+				)
+			)
+		);
+	}
 	
 	public function testConnectionSonarr()
 	{

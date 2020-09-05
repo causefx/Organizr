@@ -2,6 +2,84 @@
 
 trait NZBGetHomepageItem
 {
+	public function nzbgetSettingsArray()
+	{
+		return array(
+			'name' => 'NZBGet',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/nzbget.png',
+			'category' => 'Downloader',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageNzbgetEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageNzbgetEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageNzbgetAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageNzbgetAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'nzbgetURL',
+						'label' => 'URL',
+						'value' => $this->config['nzbgetURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'input',
+						'name' => 'nzbgetUsername',
+						'label' => 'Username',
+						'value' => $this->config['nzbgetUsername']
+					),
+					array(
+						'type' => 'password',
+						'name' => 'nzbgetPassword',
+						'label' => 'Password',
+						'value' => $this->config['nzbgetPassword']
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageDownloadRefresh'],
+						'options' => $this->timeOptions()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'nzbgetCombine',
+						'label' => 'Add to Combined Downloader',
+						'value' => $this->config['nzbgetCombine']
+					),
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'nzbget\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionNZBGet()
 	{
 		if (empty($this->config['nzbgetURL'])) {

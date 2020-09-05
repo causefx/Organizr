@@ -2,6 +2,115 @@
 
 trait QBitTorrentHomepageItem
 {
+	public function qBittorrentSettingsArray()
+	{
+		return array(
+			'name' => 'qBittorrent',
+			'enabled' => strpos('personal', $this->config['license']) !== false,
+			'image' => 'plugins/images/tabs/qBittorrent.png',
+			'category' => 'Downloader',
+			'settings' => array(
+				'Enable' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'homepageqBittorrentEnabled',
+						'label' => 'Enable',
+						'value' => $this->config['homepageqBittorrentEnabled']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageqBittorrentAuth',
+						'label' => 'Minimum Authentication',
+						'value' => $this->config['homepageqBittorrentAuth'],
+						'options' => $this->groupOptions
+					)
+				),
+				'Connection' => array(
+					array(
+						'type' => 'input',
+						'name' => 'qBittorrentURL',
+						'label' => 'URL',
+						'value' => $this->config['qBittorrentURL'],
+						'help' => 'Please make sure to use local IP address and port - You also may use local dns name too.',
+						'placeholder' => 'http(s)://hostname:port'
+					),
+					array(
+						'type' => 'select',
+						'name' => 'qBittorrentApiVersion',
+						'label' => 'API Version',
+						'value' => $this->config['qBittorrentApiVersion'],
+						'options' => $this->qBittorrentApiOptions()
+					),
+					array(
+						'type' => 'input',
+						'name' => 'qBittorrentUsername',
+						'label' => 'Username',
+						'value' => $this->config['qBittorrentUsername']
+					),
+					array(
+						'type' => 'password',
+						'name' => 'qBittorrentPassword',
+						'label' => 'Password',
+						'value' => $this->config['qBittorrentPassword']
+					)
+				),
+				'Misc Options' => array(
+					array(
+						'type' => 'switch',
+						'name' => 'qBittorrentHideSeeding',
+						'label' => 'Hide Seeding',
+						'value' => $this->config['qBittorrentHideSeeding']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'qBittorrentHideCompleted',
+						'label' => 'Hide Completed',
+						'value' => $this->config['qBittorrentHideCompleted']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'qBittorrentSortOrder',
+						'label' => 'Order',
+						'value' => $this->config['qBittorrentSortOrder'],
+						'options' => $this->qBittorrentSortOptions()
+					), array(
+						'type' => 'switch',
+						'name' => 'qBittorrentReverseSorting',
+						'label' => 'Reverse Sorting',
+						'value' => $this->config['qBittorrentReverseSorting']
+					),
+					array(
+						'type' => 'select',
+						'name' => 'homepageDownloadRefresh',
+						'label' => 'Refresh Seconds',
+						'value' => $this->config['homepageDownloadRefresh'],
+						'options' => $this->timeOptions()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'qBittorrentCombine',
+						'label' => 'Add to Combined Downloader',
+						'value' => $this->config['qBittorrentCombine']
+					),
+				),
+				'Test Connection' => array(
+					array(
+						'type' => 'blank',
+						'label' => 'Please Save before Testing'
+					),
+					array(
+						'type' => 'button',
+						'label' => '',
+						'icon' => 'fa fa-flask',
+						'class' => 'pull-right',
+						'text' => 'Test Connection',
+						'attr' => 'onclick="testAPIConnection(\'qbittorrent\')"'
+					),
+				)
+			)
+		);
+	}
+	
 	public function testConnectionQBittorrent()
 	{
 		if (empty($this->config['qBittorrentURL'])) {

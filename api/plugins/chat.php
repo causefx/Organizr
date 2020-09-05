@@ -62,7 +62,7 @@ class Chat extends Organizr
 					'name' => 'CHAT-userRefreshTimeout',
 					'label' => 'Refresh Seconds',
 					'value' => $this->config['CHAT-userRefreshTimeout'],
-					'options' => $this->optionTime()
+					'options' => $this->timeOptions()
 				),
 				array(
 					'type' => 'select',

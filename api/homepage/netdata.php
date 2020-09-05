@@ -287,7 +287,7 @@ trait NetDataHomepageItem
 				'name' => 'homepageNetdataRefresh',
 				'label' => 'Refresh Seconds',
 				'value' => $this->config['homepageNetdataRefresh'],
-				'options' => $this->optionTime()
+				'options' => $this->timeOptions()
 			),
 		);
 		return $array;
