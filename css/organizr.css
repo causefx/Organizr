@@ -60,6 +60,9 @@
 .fix-header #page-wrapper-right {
     margin-top: 40px;
 }
+.fc-popover.fc-more-popover {
+    position: fixed;
+}
 /* Larger Images */
 
 #side-menu>li>a {
