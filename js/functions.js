@@ -532,10 +532,11 @@ function logout(){
 function reloadOrganizr(){
 	location.reload();
 }
-function hideFrames(){
-	$(".iFrame-listing div[class^='frame-container']").addClass("hidden").removeClass('show');
-    $(".internal-listing div[class^='internal-container']").addClass("hidden").removeClass('show');
-    $(".plugin-listing div[class^='plugin-container']").addClass("hidden").removeClass('show');
+function hideFrames(split = null){
+	let extra = split ? '-right' : '';
+	$(".iFrame-listing"+extra+" div[class^='frame-container']").addClass("hidden").removeClass('show');
+    $(".internal-listing"+extra+" div[class^='internal-container']").addClass("hidden").removeClass('show');
+    $(".plugin-listing"+extra+" div[class^='plugin-container']").addClass("hidden").removeClass('show');
 }
 function closeSideMenu(){
 	$('.content-wrapper').removeClass('show-sidebar');
@@ -543,41 +544,58 @@ function closeSideMenu(){
 function removeMenuActive(){
 	$("#side-menu a").removeClass('active');
 }
-function swapDisplay(type){
+function swapDisplay(type, split){
+	let extra = split ? '-right' : '';
 	switch (type) {
 		case 'internal':
 		    $('body').removeClass('fix-header');
-			$('.iFrame-listing').addClass('hidden').removeClass('show');
-			$('.internal-listing').addClass('show').removeClass('hidden');
+			$('.iFrame-listing' + extra).addClass('hidden').removeClass('show');
+			$('.internal-listing' + extra).addClass('show').removeClass('hidden');
 			$('.login-area').addClass('hidden').removeClass('show');
-			$('.plugin-listing').addClass('hidden').removeClass('show');
+			$('.plugin-listing' + extra).addClass('hidden').removeClass('show');
 			//$('body').removeClass('fix-header');
+			if(split){
+				$('#page-wrapper').addClass('split');
+				$('#page-wrapper-right').removeClass('hidden');
+			}
 			break;
 		case 'iframe':
 		    $('body').addClass('fix-header');
-			$('.iFrame-listing').addClass('show').removeClass('hidden');
-			$('.internal-listing').addClass('hidden').removeClass('show');
+			$('.iFrame-listing' + extra).addClass('show').removeClass('hidden');
+			$('.internal-listing' + extra).addClass('hidden').removeClass('show');
 			$('.login-area').addClass('hidden').removeClass('show');
-			$('.plugin-listing').addClass('hidden').removeClass('show');
+			$('.plugin-listing' + extra).addClass('hidden').removeClass('show');
 			//$('body').addClass('fix-header');
+			if(split){
+				$('#page-wrapper').addClass('split');
+				$('#page-wrapper-right').removeClass('hidden');
+			}
 			break;
 		case 'login':
 		    $('body').removeClass('fix-header');
-			$('.iFrame-listing').addClass('hidden').removeClass('show');
-			$('.internal-listing').addClass('hidden').removeClass('show');
+			$('.iFrame-listing' + extra).addClass('hidden').removeClass('show');
+			$('.internal-listing' + extra).addClass('hidden').removeClass('show');
 			$('.login-area').addClass('show').removeClass('hidden');
-			$('.plugin-listing').addClass('hidden').removeClass('show');
+			$('.plugin-listing' + extra).addClass('hidden').removeClass('show');
 			if(activeInfo.settings.misc.minimalLoginScreen == true){
                 $('.sidebar').addClass('hidden');
                 $('.navbar').addClass('hidden');
-                $('#pagewrapper').addClass('hidden');
+                $('#page-wrapper').addClass('hidden');
             }
+			if(split){
+				$('#page-wrapper').addClass('split');
+				$('#page-wrapper-right').removeClass('hidden');
+			}
 			break;
         case 'plugin':
-            $('.iFrame-listing').addClass('hidden').removeClass('show');
-            $('.internal-listing').addClass('hidden').removeClass('show');
+            $('.iFrame-listing' + extra).addClass('hidden').removeClass('show');
+            $('.internal-listing' + extra).addClass('hidden').removeClass('show');
             $('.login-area').addClass('hidden').removeClass('show');
-            $('.plugin-listing').addClass('show').removeClass('hidden');
+            $('.plugin-listing' + extra).addClass('show').removeClass('hidden');
+	        if(split){
+		        $('#page-wrapper').addClass('split');
+		        $('#page-wrapper-right').removeClass('hidden');
+	        }
             break;
 		default:
 	}
@@ -606,7 +624,7 @@ function switchTab(tab, type, split = null){
 	let extra = split ? 'right-' : '';
 	// need to rework for split
     if(type !== 2){
-        hideFrames();
+        hideFrames(split);
         closeSideMenu();
         removeMenuActive();
         toggleParentActive(tab);
@@ -643,7 +661,7 @@ function switchTab(tab, type, split = null){
 		case '1':
 		case 'iframe':
 			swapDisplay('iframe', split);
-			var newTab = $('#container-'+tab);
+			var newTab = $('#container-'+extra+tab);
 			var tabURL = newTab.attr('data-url');
 			$('#menu-'+cleanClass(tab)).find('a').addClass("active");
             editPageTitle(tab);
@@ -656,7 +674,7 @@ function switchTab(tab, type, split = null){
 				organizrConsole('Tab Function','Loading new tab for: '+tab);
 				$('#menu-'+tab+' a').children().addClass('tabLoaded');
 				newTab.addClass("show loaded").removeClass('hidden');
-				$(buildFrame(tab,tabURL)).appendTo(newTab);
+				$(buildFrame(tab,tabURL, extra)).appendTo(newTab);
                 setTabInfo(cleanClass(tab),'active',true);
                 setTabInfo(cleanClass(tab),'loaded',true);
 				$("#preloader").fadeOut();
@@ -708,7 +726,7 @@ function closeTab(tab){
     tab = cleanClass(tab);
     // check if current tab?
     if($('.active-tab-'+tab).length > 0){
-        closeCurrentTab();
+        closeCurrentTab(event);
     }else{
         if($('.frame-'+tab).hasClass('loaded')){
             var type = $('#menu-'+tab).attr('type');
@@ -839,9 +857,15 @@ function loadNextTab(){
 		organizrConsole('Tab Function','No Available Tab to open', 'error');
 	}
 }
-function closeCurrentTab(){
-	var iframe = $('.iFrame-listing').find('.show');
-	var internal = $('.internal-listing').find('.show');
+function closeCurrentTab(event){
+	let extra = '';
+	let split = '';
+	if(event.ctrlKey && event.altKey && !event.shiftKey){
+		extra = '-right';
+		split = true;
+	}
+	var iframe = $('.iFrame-listing'+extra).find('.show');
+	var internal = $('.internal-listing'+extra).find('.show');
 	if(iframe.length > 0){
 		var type = 'iframe';
 	}else if(internal.length > 0){
@@ -853,17 +877,17 @@ function closeCurrentTab(){
 		case 0:
 		case '0':
 		case 'internal':
-			var tab = $('.internal-listing').find('.show').attr('data-name');
+			var tab = $('.internal-listing'+extra).find('.show').attr('data-name');
             // quick check if homepage
             if($('#menu-'+cleanClass(tab)).attr('data-url') == 'api/v2/page/homepage'){
 	            organizrConsole('Organizr Function','Clearing All Homepage AJAX calls');
                 clearAJAX('homepage');
             }
 			organizrConsole('Organizr Function','Closing tab: '+tab);
-			$('#internal-'+cleanClass(tab)).html('');
+			$('#internal'+extra+'-'+cleanClass(tab)).html('');
 			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
 			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
-			$('#internal-'+cleanClass(tab)).removeClass("loaded show");
+			$('#internal'+extra+'-'+cleanClass(tab)).removeClass("loaded show");
 			$('#menu-'+cleanClass(tab)).removeClass("active");
             setTabInfo(cleanClass(tab),'loaded',false);
             setTabInfo(cleanClass(tab),'active',false);
@@ -872,12 +896,13 @@ function closeCurrentTab(){
 		case 1:
 		case '1':
 		case 'iframe':
-			var tab = $('.iFrame-listing').find('.show').children('iframe').attr('data-name');
+			var tab = $('.iFrame-listing'+extra).find('.show').children('iframe').attr('data-name');
+			console.log(tab);
 			organizrConsole('Organizr Function','Closing tab: '+tab);
 			$('#menu-'+cleanClass(tab)+' a').removeClass("active");
 			$('#menu-'+tab+' a').children().removeClass('tabLoaded');
-			$('#container-'+cleanClass(tab)).removeClass("loaded show");
-			$('#frame-'+cleanClass(tab)).remove();
+			$('#container'+extra+'-'+cleanClass(tab)).removeClass("loaded show");
+			$('#frame'+extra+'-'+cleanClass(tab)).remove();
             setTabInfo(cleanClass(tab),'loaded',false);
             setTabInfo(cleanClass(tab),'active',false);
 			loadNextTab();
@@ -2656,12 +2681,13 @@ function categoryProcess(arrayItems){
 		$(menuList).appendTo($('#side-menu'));
 	}
 }
-function buildFrame(name,url){
+function buildFrame(name,url, split = null){
+	let extra = split ? 'right-' : '';
     var sandbox = activeInfo.settings.misc.sandbox;
     sandbox = sandbox.replace(/,/gi, ' ');
     sandbox = (sandbox) ? ' sandbox="' + sandbox + '"' : '';
 	return `
-		<iframe allowfullscreen="true" frameborder="0" id="frame-`+cleanClass(name)+`" data-name="`+cleanClass(name)+`" `+sandbox+` scrolling="auto" src="`+url+`" class="iframe"></iframe>
+		<iframe allowfullscreen="true" frameborder="0" id="frame-`+extra+cleanClass(name)+`" data-name="`+cleanClass(name)+`" `+sandbox+` scrolling="auto" src="`+url+`" class="iframe"></iframe>
 	`;
 }
 function buildFrameContainer(name,url,type, split = null){
@@ -5614,25 +5640,30 @@ function buildDownloaderItem(array, source, type='none'){
 				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
 			}
 			$.each(array.content.queueItems, function(i,v) {
-				count = count + 1;
-				var percent = Math.floor(((v.size - v.sizeleft) / v.size) * 100);
-				percent = (isNaN(percent)) ? '0' : percent;
-				var size = v.size != -1 ? humanFileSize(v.size,false) : "?";
-				v.name = v.movie.title;
-				queue += `
-                <tr>
-                    <td class="max-texts">`+v.name+`</td>
-                    <td class="hidden-xs sonarr-`+cleanClass(v.status)+`">`+v.status+`</td>
-                    <td class="hidden-xs">`+size+`</td>
-                    <td class="hidden-xs"><span class="label label-info">`+v.protocol+`</span></td>
-                    <td class="text-right">
-                        <div class="progress progress-lg m-b-0">
-                            <div class="progress-bar progress-bar-info" style="width: `+percent+`%;" role="progressbar">`+percent+`%</div>
-                        </div>
-                    </td>
-                </tr>
-                `;
+				if(v.hasOwnProperty('movie')) {
+					count = count + 1;
+					var percent = Math.floor(((v.size - v.sizeleft) / v.size) * 100);
+					percent = (isNaN(percent)) ? '0' : percent;
+					var size = v.size != -1 ? humanFileSize(v.size, false) : "?";
+					v.name = v.movie.title;
+					queue += `
+	                <tr>
+	                    <td class="max-texts">` + v.name + `</td>
+	                    <td class="hidden-xs sonarr-` + cleanClass(v.status) + `">` + v.status + `</td>
+	                    <td class="hidden-xs">` + size + `</td>
+	                    <td class="hidden-xs"><span class="label label-info">` + v.protocol + `</span></td>
+	                    <td class="text-right">
+	                        <div class="progress progress-lg m-b-0">
+	                            <div class="progress-bar progress-bar-info" style="width: ` + percent + `%;" role="progressbar">` + percent + `%</div>
+	                        </div>
+	                    </td>
+	                </tr>
+	                `;
+				}
 			});
+			if(queue == ''){
+				queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
+			}
 			break;
 		case 'qBittorrent':
 		    if(array.content === false){
@@ -8549,7 +8580,7 @@ function requestSearchList(list,page=1) {
 			url = 'https://api.themoviedb.org/3/tv/airing_today?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&region=US&page='+page;
 			break;
 		case 'org-mod':
-			url = 'https://api.themoviedb.org/4/list/64438?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&region=US&page='+page;
+			url = 'https://api.themoviedb.org/4/list/64438?api_key=83cf4ee97bb728eeaf9d4a54e64356a1&language='+activeInfo.language+'&page='+page;
 			break;
 		default:
 

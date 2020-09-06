@@ -86,7 +86,7 @@ $Organizr = new Organizr();
                                 class="ti-close ti-menu fa-fw"></i></a></li>
                 <li class=""><a class="dropdown-toggle waves-effect waves-light" onclick="reloadCurrentTab();"> <i
                                 class="ti-reload"></i></a></li>
-                <li class=""><a class="dropdown-toggle waves-effect waves-light" onclick="closeCurrentTab();"> <i
+                <li class=""><a class="dropdown-toggle waves-effect waves-light" onclick="closeCurrentTab(event);"> <i
                                 class="ti-close"></i></a></li>
                 <li class=""><a class="dropdown-toggle waves-effect waves-light hidden" onclick="splashMenu();"> <i
                                 class="ti-layout-grid2"></i></a></li>

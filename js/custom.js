@@ -1719,7 +1719,7 @@ $(document).on('mousewheel', '.request-items .owl-stage', function (e) {
     }
 });
 Mousetrap.bind('r r', function() { reloadCurrentTab() });
-Mousetrap.bind("c c", function() { closeCurrentTab() });
+Mousetrap.bind("c c", function() { closeCurrentTab(event) });
 Mousetrap.bind("s s", function() { openSettings() });
 Mousetrap.bind("h h", function() { openHomepage() });
 Mousetrap.bind("f f", function() { toggleFullScreen() });
