@@ -3049,18 +3049,29 @@ class Organizr
 		}
 	}
 	
-	public function revokeTokenCurrentUser($token)
+	public function revokeTokenCurrentUser($token = null)
 	{
-		$response = [
-			array(
-				'function' => 'query',
-				'query' => array(
-					'DELETE FROM tokens WHERE user_id = ? or token = ?',
-					[$this->user['userID']],
-					[$token]
-				)
-			),
-		];
+		if ($token) {
+			$response = [
+				array(
+					'function' => 'query',
+					'query' => array(
+						'DELETE FROM tokens WHERE token = ?',
+						[$token]
+					)
+				),
+			];
+		} else {
+			$response = [
+				array(
+					'function' => 'query',
+					'query' => array(
+						'DELETE FROM tokens WHERE user_id = ?',
+						[$this->user['userID']]
+					)
+				),
+			];
+		}
 		return $this->processQueries($response);
 	}
 	
