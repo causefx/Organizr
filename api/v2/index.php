@@ -31,52 +31,6 @@ use Slim\Factory\AppFactory;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
-class JsonBodyParserMiddleware implements MiddlewareInterface
-{
-	public function process(Request $request, RequestHandler $handler): Response
-	{
-		$contentType = $request->getHeaderLine('Content-Type');
-		if (strstr($contentType, 'application/json')) {
-			$contents = json_decode(file_get_contents('php://input'), true);
-			if (json_last_error() === JSON_ERROR_NONE) {
-				$request = $request->withParsedBody($contents);
-			}
-		}
-		return $handler->handle($request);
-	}
-}
-
-class Lowercase implements MiddlewareInterface
-{
-	/**
-	 * @var ResponseFactoryInterface
-	 */
-	private $responseFactory;
-	
-	/*
-	 * Whether returns a 301 response to the new path.
-	 */
-	public function redirect(ResponseFactoryInterface $responseFactory): self
-	{
-		$this->responseFactory = $responseFactory;
-		return $this;
-	}
-	
-	/*
-	 * Process a request and return a response.
-	 */
-	public function process(Request $request, RequestHandler $handler): Response
-	{
-		$uri = $request->getUri();
-		$path = strtolower($uri->getPath());
-		if ($this->responseFactory && ($uri->getPath() !== $path)) {
-			return $this->responseFactory->createResponse(301)
-				->withHeader('Location', (string)$uri->withPath($path));
-		}
-		return $handler->handle($request->withUri($uri->withPath($path)));
-	}
-}
-
 $GLOBALS['api'] = array(
 	'response' => array(
 		'result' => 'success',

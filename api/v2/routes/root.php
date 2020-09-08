@@ -103,8 +103,8 @@ $app->any('/auth-{group}', function ($request, $response, $args) {
 $app->get('/launch', function ($request, $response, $args) {
 	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
 	$tabInfo = $Organizr->getUserTabsAndCategories();
-	$GLOBALS['api']['response']['data']['categories'] = $tabInfo['categories'];
-	$GLOBALS['api']['response']['data']['tabs'] = $tabInfo['tabs'];
+	$GLOBALS['api']['response']['data']['categories'] = ($tabInfo['categories']) ?? false;
+	$GLOBALS['api']['response']['data']['tabs'] = ($tabInfo['tabs']) ?? false;
 	$GLOBALS['api']['response']['data']['user'] = $Organizr->user;
 	$GLOBALS['api']['response']['data']['branch'] = $Organizr->config['branch'];
 	$GLOBALS['api']['response']['data']['theme'] = $Organizr->config['theme'];
