@@ -2176,10 +2176,31 @@ function twoFA(action, type, secret = null){
                     orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
                     return false;
                 }
-                $('.twofa-modal-title').html(html.data.type);
-                $('.twofa-modal-image').html('<img class="center" src="'+html.data.url+'">');
-                $('.twofa-modal-secret').html(html.data.secret);
-                $('#twofa-modal').modal('show');
+                let div = `
+				<div class="panel panel-default">
+                    <div class="panel-heading">Enable 2FA: `+html.data.type+`</div>
+                    <div class="panel-wrapper collapse in">
+                        <div class="panel-body">
+                            <p class="twofa-modal-image"><img class="center" src="`+html.data.url+`"></p>
+                            <h5 class="twofa-modal-secret text-center">`+html.data.secret+`</h5>
+	                        <div class="form-group m-t-10">
+	                            <div class="input-group" style="width: 100%;">
+	                                <div class="input-group-addon hidden-xs"><i class="ti-lock"></i></div>
+	                                <input type="text" class="form-control tfa-input" id="twofa-verify" placeholder="Code" autocomplete="off" autocorrect="off" autocapitalize="off" maxlength="6" spellcheck="false" autofocus="" required="">
+	                            </div>
+	                            <br>
+	                            <button class="btn btn-block btn-info" onclick="twoFA('verify','google');">Verify</button>
+	
+	                        </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+	            swal({
+		            content: createElementFromHTML(div),
+		            buttons: false,
+		            className: 'bg-org'
+	            })
             }).fail(function(xhr) {
 	            message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
 	            console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
@@ -2208,7 +2229,7 @@ function twoFA(action, type, secret = null){
                     try {
                         var html = data.response;
 	                    message('2FA Success','Input Code Validated! Saving...',activeInfo.settings.notifications.position,"#FFF","success","5000");
-	                    $('#twofa-modal').modal('hide');
+	                    swal.close();
 	                    twoFA('save', type, secret);
                     }catch(e) {
                         console.log(e + ' error: ' + data);
@@ -2472,36 +2493,6 @@ function accountManager(user){
 	    var twoFADisable = (buildTwoFA(user.data.user.authService) == 'internal') ? '' : 'disabled';
 	    var activeTokens = buildActiveTokens(user.data.user.tokenList);
 		var accountDiv = `
-        <!-- 2fa modal content -->
-        <div id="twofa-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="twofa-modal-label" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h4 class="modal-title" id="twofa-modal-label">Enable 2FA</h4> </div>
-                    <div class="modal-body">
-                        <h4 class="twofa-modal-title text-center text-uppercase"></h4>
-                        <p class="twofa-modal-image"></p>
-                        <h5 class="twofa-modal-secret text-center"></h5>
-                        <div class="form-group m-t-10">
-                            <div class="input-group" style="width: 100%;">
-                                <div class="input-group-addon hidden-xs"><i class="ti-lock"></i></div>
-                                <input type="text" class="form-control tfa-input" id="twofa-verify" placeholder="Code" autocomplete="off" autocorrect="off" autocapitalize="off" maxlength="6" spellcheck="false" autofocus="" required="">
-                            </div>
-                            <br>
-                            <button class="btn btn-block btn-info" onclick="twoFA('verify','google');">Verify</button>
-
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div>
-        <!-- /.modal -->
 		<div id="account-area" class="white-popup mfp-with-anim mfp-hide">
 			<div class="col-md-10 col-md-offset-1">
 				<div class="row">
