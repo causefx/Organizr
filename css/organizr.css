@@ -63,6 +63,11 @@
 .fc-popover.fc-more-popover {
     position: fixed;
 }
+.organizr-area,
+.organizr-area-right {
+    height: calc(100vh - 40px);
+    position: absolute;
+}
 /* Larger Images */
 
 #side-menu>li>a {
@@ -73,7 +78,9 @@
 .sidebar .nav-second-level li a {
     padding: 14px 10px 14px 15px;
 }
-
+.modal-backdrop {
+    z-index: 1049;
+}
 #side-menu .fa-fw {
     width: 30px !important;
 }

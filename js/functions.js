@@ -3468,7 +3468,55 @@ function sponsorLoad(){
         console.error("Organizr Function: Github Connection Failed");
     });
 }
+
+function sponsorDetails(id){
+	sponsorsJSON().success(function(data) {
+		try {
+			let response = JSON.parse(data);
+			let coupon = (response[id].coupon == null) ? false : true;
+			let couponAbout = (response[id].coupon_about == null) ? false : true;
+			let extraInfo = (coupon && couponAbout) ? `
+				<hr/>
+		        <h3>Coupon Code:</h3>
+		        <p><span class="label label-rouded label-info pull-right">`+response[id].coupon+`</span>
+		        <span class=" pull-left">`+response[id].coupon_about+`</span></p>
+		    ` : '';
+			let html = `
+		        <div class="panel panel-default">
+                    <div class="panel-heading">`+response[id].company_name+`</div>
+                    <div class="panel-wrapper collapse in">
+                        <div class="panel-body">
+                            <div class="overlay-box">
+                                <div class="user-content">
+                                    <a href="javascript:void(0)"><img src="`+response[id].logo+`" class="thumb-lg img-circle" alt="img"></a>
+                                    <h4 class="text-white">`+response[id].company_name+`</h4>
+                                    <h5 class="text-white"><a href="` + response[id].website +`" target="_blank">Website</a></h5>
+                                </div>
+                            </div>
+                            <hr/>
+                            <div class="text-left">`+response[id].about+extraInfo+`</div>
+                        </div>
+                    </div>
+                </div>
+		    `;
+			swal({
+				content: createElementFromHTML(html),
+				buttons: false,
+				className: 'bg-org'
+			})
+
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+	}).fail(function(xhr) {
+		console.error("Organizr Function: Github Connection Failed");
+	});
+}
 function sponsorAbout(id,array){
+
+
     var coupon = (array.coupon == null) ? false : true;
     var couponAbout = (array.coupon_about == null) ? false : true;
     var extraInfo = (coupon && couponAbout) ? `
@@ -3519,10 +3567,10 @@ function buildSponsor(array){
                 `;
             }
         }
-        var sponsorAboutModal = (v.about) ? 'data-toggle="modal" data-target="#sponsor-'+i+'-modal" onclick="sponsorAnalytics(\''+v.company_name+'\');"' : 'onclick="window.open(\''+ v.website +'\', \'_blank\');sponsorAnalytics(\''+v.company_name+'\');"';
+        var sponsorAboutModal = (v.about) ? 'onclick="sponsorDetails(\''+i+'\');sponsorAnalytics(\''+v.company_name+'\');"' : 'onclick="window.open(\''+ v.website +'\', \'_blank\');sponsorAnalytics(\''+v.company_name+'\');"';
         sponsors += `
             <!-- /.usercard -->
-            <div class="item lazyload recent-sponsor mouse imageSource mouse" `+sponsorAboutModal+` data-src="`+v.logo+`">
+            <div class="item lazyload recent-sponsor mouse imageSource mouse" `+sponsorAboutModal+` data-src="`+v.logo+`" data-id="`+i+`">
                 <span class="elip recent-title">`+v.company_name+`</span>
                 `+ hasCoupon +`
             </div>
