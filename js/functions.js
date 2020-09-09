@@ -9841,92 +9841,92 @@ function launch(){
 	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide')
 	organizrConnect('api/v2/launch').success(function (data) {
         try {
-            var json = data.response;
+            let json = data.response;
+	        if(json.data.user == false){ location.reload(); }
+	        currentVersion = json.data.version;
+	        activeInfo = {
+		        timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,
+		        offest:new Date().getTimezoneOffset(),
+		        language:language(moment.locale(navigator.languages[0])),
+		        browserVersion:bowser.name,
+		        browserName:bowser.version,
+		        mobile:bowser.mobile,
+		        tablet:bowser.tablet,
+		        osName:bowser.osname,
+		        osVersion:bowser.osversion,
+		        serverOS:json.data.status.os,
+		        phpVersion:json.data.status.php,
+		        token:json.data.user.token,
+		        user:json.data.user,
+		        plugins:json.data.plugins,
+		        branch:json.data.branch,
+		        sso:json.data.sso,
+		        settings:json.data.settings,
+		        appearance:json.data.appearance,
+		        theme:json.data.theme,
+		        style:json.data.style,
+		        version:json.data.version
+	        };
+	        console.info("%c Organizr %c ".concat(currentVersion, " "), "color: white; background: #66D9EF; font-weight: 700; font-size: 24px; font-family: Monospace;", "color: #66D9EF; background: white; font-weight: 700; font-size: 24px; font-family: Monospace;");
+	        console.info("%c Status %c ".concat("Starting Up...", " "), "color: white; background: #F92671; font-weight: 700;", "color: #F92671; background: white; font-weight: 700;");
+	        local('set','initial',true);
+	        setTimeout(function(){ local('r','initial'); }, 3000);
+	        defineNotification();
+	        checkMessage();
+	        errorPage();
+	        uriRedirect();
+	        changeStyle(activeInfo.style);
+	        changeTheme(activeInfo.theme);
+	        setSSO();
+	        checkToken();
+	        switch (json.data.status.status) {
+		        case "wizard":
+			        buildWizard();
+			        buildLanguage('wizard');
+			        break;
+		        case "dependencies":
+			        buildDependencyCheck(json.data);
+			        break;
+		        case "ok":
+			        loadAppearance(json.data.appearance);
+			        if(activeInfo.user.locked == 1){
+				        buildLockscreen();
+			        }else{
+				        userMenu(json);
+				        categoryProcess(json);
+				        tabProcess(json);
+				        buildSplashScreen(json);
+				        accountManager(json);
+				        organizrSpecialSettings(json.data);
+				        getPingList(json);
+				        checkLocalForwardStatus(json.data);
+			        }
+			        loadCustomJava(json.data.appearance);
+			        if(getCookie('lockout')){
+				        $('.show-login').click();
+				        setTimeout(function(){
+					        $('div.login-box').block({
+						        message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
+						        css: {
+							        color: '#fff',
+							        border: '1px solid #e91e63',
+							        backgroundColor: '#f44336'
+						        }
+					        });
+				        }, 1000);
+				        setTimeout(function(){ location.reload() }, 60000);
+			        }
+			        break;
+		        default:
+			        console.error('Organizr Function: Action not set or defined');
+	        }
+	        console.info("%c Organizr %c ".concat("DOM Fully loaded", " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
+	        oAuthLoginNeededCheck();
         } catch (e) {
             orgErrorCode(data);
             defineNotification();
             message('FATAL ERROR',data,'br','#FFF','error','60000');
             return false;
         }
-		if(json.data.user == false){ location.reload(); }
-		currentVersion = json.data.version;
-		activeInfo = {
-			timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,
-			offest:new Date().getTimezoneOffset(),
-			language:language(moment.locale(navigator.languages[0])),
-			browserVersion:bowser.name,
-			browserName:bowser.version,
-			mobile:bowser.mobile,
-			tablet:bowser.tablet,
-			osName:bowser.osname,
-			osVersion:bowser.osversion,
-			serverOS:json.data.status.os,
-			phpVersion:json.data.status.php,
-			token:json.data.user.token,
-			user:json.data.user,
-			plugins:json.data.plugins,
-			branch:json.data.branch,
-			sso:json.data.sso,
-			settings:json.data.settings,
-            appearance:json.data.appearance,
-			theme:json.data.theme,
-			style:json.data.style,
-			version:json.data.version
-		};
-		console.info("%c Organizr %c ".concat(currentVersion, " "), "color: white; background: #66D9EF; font-weight: 700; font-size: 24px; font-family: Monospace;", "color: #66D9EF; background: white; font-weight: 700; font-size: 24px; font-family: Monospace;");
-		console.info("%c Status %c ".concat("Starting Up...", " "), "color: white; background: #F92671; font-weight: 700;", "color: #F92671; background: white; font-weight: 700;");
-        local('set','initial',true);
-        setTimeout(function(){ local('r','initial'); }, 3000);
-		defineNotification();
-		checkMessage();
-		errorPage();
-		uriRedirect();
-		changeStyle(activeInfo.style);
-		changeTheme(activeInfo.theme);
-		setSSO();
-		checkToken();
-		switch (json.data.status.status) {
-			case "wizard":
-				buildWizard();
-				buildLanguage('wizard');
-				break;
-			case "dependencies":
-				buildDependencyCheck(json.data);
-				break;
-			case "ok":
-				loadAppearance(json.data.appearance);
-                if(activeInfo.user.locked == 1){
-                    buildLockscreen();
-                }else{
-                    userMenu(json);
-                    categoryProcess(json);
-                    tabProcess(json);
-                    buildSplashScreen(json);
-                    accountManager(json);
-                    organizrSpecialSettings(json.data);
-                    getPingList(json);
-                    checkLocalForwardStatus(json.data);
-                }
-                loadCustomJava(json.data.appearance);
-                if(getCookie('lockout')){
-                    $('.show-login').click();
-                    setTimeout(function(){
-                        $('div.login-box').block({
-                            message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
-                            css: {
-                                color: '#fff',
-                                border: '1px solid #e91e63',
-                                backgroundColor: '#f44336'
-                            }
-                        });
-                    }, 1000);
-                    setTimeout(function(){ location.reload() }, 60000);
-                }
-				break;
-			default:
-				console.error('Organizr Function: Action not set or defined');
-		}
-		console.info("%c Organizr %c ".concat("DOM Fully loaded", " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
-        oAuthLoginNeededCheck();
 	});
 }
