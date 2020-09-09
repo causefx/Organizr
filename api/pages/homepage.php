@@ -34,6 +34,7 @@ function get_page_homepage($Organizr = null)
 
         var $this = this;
         $this.$calendarObj = $this.$calendar.fullCalendar({
+        	locale: "' . $Organizr->config['calendarLocale'] . '",
         	customButtons: {
 			    filterCalendar: {
 			      text: \'Filter\',

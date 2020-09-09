@@ -235,6 +235,7 @@ $Organizr = new Organizr();
 echo $Organizr->googleTracking();
 echo $Organizr->pluginFiles('js');
 echo $Organizr->formKey();
+echo $Organizr->loadCalendarJS();
 ?>
 </body>
 

@@ -2,6 +2,205 @@
 
 trait OptionsFunction
 {
+	public function calendarLocaleOptions()
+	{
+		return [
+			[
+				'name' => 'Arabic (Standard)',
+				'value' => 'ar',
+			],
+			[
+				'name' => 'Arabic (Morocco)',
+				'value' => 'ar-ma',
+			],
+			[
+				'name' => 'Arabic (Saudi Arabia)',
+				'value' => 'ar-sa'
+			],
+			[
+				'value' => 'ar-tn',
+				'name' => 'Arabic (Tunisia)'
+			],
+			[
+				'value' => 'bg',
+				'name' => 'Bulgarian'
+			],
+			[
+				'value' => 'ca',
+				'name' => 'Catalan'
+			],
+			[
+				'value' => 'cs',
+				'name' => 'Czech'
+			],
+			[
+				'value' => 'da',
+				'name' => 'Danish'
+			],
+			[
+				'value' => 'de',
+				'name' => 'German (Standard)'
+			],
+			[
+				'value' => 'de-at',
+				'name' => 'German (Austria)'
+			],
+			[
+				'value' => 'el',
+				'name' => 'Greek'
+			],
+			[
+				'value' => 'en',
+				'name' => 'English'
+			],
+			[
+				'value' => 'en-au',
+				'name' => 'English (Australia)'
+			],
+			[
+				'value' => 'en-ca',
+				'name' => 'English (Canada)'
+			],
+			[
+				'value' => 'en-gb',
+				'name' => 'English (United Kingdom)'
+			],
+			[
+				'value' => 'es',
+				'name' => 'Spanish'
+			],
+			[
+				'value' => 'fa',
+				'name' => 'Farsi'
+			],
+			[
+				'value' => 'fi',
+				'name' => 'Finnish'
+			],
+			[
+				'value' => 'fr',
+				'name' => 'French (Standard)'
+			],
+			[
+				'value' => 'fr-ca',
+				'name' => 'French (Canada)'
+			],
+			[
+				'value' => 'he',
+				'name' => 'Hebrew'
+			],
+			[
+				'value' => 'hi',
+				'name' => 'Hindi'
+			],
+			[
+				'value' => 'hr',
+				'name' => 'Croatian'
+			],
+			[
+				'value' => 'hu',
+				'name' => 'Hungarian'
+			],
+			[
+				'value' => 'id',
+				'name' => 'Indonesian'
+			],
+			[
+				'value' => 'is',
+				'name' => 'Icelandic'
+			],
+			[
+				'value' => 'it',
+				'name' => 'Italian'
+			],
+			[
+				'value' => 'ja',
+				'name' => 'Japanese'
+			],
+			[
+				'value' => 'ko',
+				'name' => 'Korean'
+			],
+			[
+				'value' => 'lt',
+				'name' => 'Lithuanian'
+			],
+			[
+				'value' => 'lv',
+				'name' => 'Latvian'
+			],
+			[
+				'value' => 'nb',
+				'name' => 'Norwegian (Bokmal)'
+			],
+			[
+				'value' => 'nl',
+				'name' => 'Dutch (Standard)'
+			],
+			[
+				'value' => 'pl',
+				'name' => 'Polish'
+			],
+			[
+				'value' => 'pt',
+				'name' => 'Portuguese'
+			],
+			[
+				'value' => 'pt-br',
+				'name' => 'Portuguese (Brazil)'
+			],
+			[
+				'value' => 'ro',
+				'name' => 'Romanian'
+			],
+			[
+				'value' => 'ru',
+				'name' => 'Russian'
+			],
+			[
+				'value' => 'sk',
+				'name' => 'Slovak'
+			],
+			[
+				'value' => 'sl',
+				'name' => 'Slovenian'
+			],
+			[
+				'value' => 'sr',
+				'name' => 'Serbian'
+			],
+			[
+				'value' => 'sv',
+				'name' => 'Swedish'
+			],
+			[
+				'value' => 'th',
+				'name' => 'Thai'
+			],
+			[
+				'value' => 'tr',
+				'name' => 'Turkish'
+			],
+			[
+				'value' => 'uk',
+				'name' => 'Ukrainian'
+			],
+			[
+				'value' => 'vi',
+				'name' => 'Vietnamese'
+			],
+			[
+				'value' => 'zh-cn',
+				'name' => 'Chinese (PRC)'
+			],
+			[
+				'value' => 'zh-tw',
+				'name' => 'Chinese (Taiwan)'
+			]
+		];
+		
+	}
+	
 	public function daysOptions()
 	{
 		return array(

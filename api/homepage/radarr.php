@@ -137,6 +137,13 @@ trait RadarrHomepageItem
 					),
 					array(
 						'type' => 'select',
+						'name' => 'calendarLocale',
+						'label' => 'Locale',
+						'value' => $this->config['calendarLocale'],
+						'options' => $this->calendarLocaleOptions()
+					),
+					array(
+						'type' => 'select',
 						'name' => 'calendarLimit',
 						'label' => 'Items Per Day',
 						'value' => $this->config['calendarLimit'],

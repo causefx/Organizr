@@ -70,6 +70,13 @@ trait CalendarHomepageItem
 					),
 					array(
 						'type' => 'select',
+						'name' => 'calendarLocale',
+						'label' => 'Locale',
+						'value' => $this->config['calendarLocale'],
+						'options' => $this->calendarLocaleOptions()
+					),
+					array(
+						'type' => 'select',
 						'name' => 'calendarLimit',
 						'label' => 'Items Per Day',
 						'value' => $this->config['calendarLimit'],
@@ -85,6 +92,12 @@ trait CalendarHomepageItem
 				),
 			)
 		);
+	}
+	
+	public function loadCalendarJS()
+	{
+		$locale = ($this->config['calendarLocale'] !== 'en') ?? false;
+		return ($locale) ? '<script src="plugins/bower_components/calendar/dist/lang-all.js"></script>' : '';
 	}
 	
 	public function getCalendar()

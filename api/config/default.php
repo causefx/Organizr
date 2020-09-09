@@ -236,6 +236,7 @@ return array(
 	'calendarRefresh' => '60000',
 	'calendarTimeFormat' => 'h(:mm)t',
 	'calendarLimit' => '1000',
+	'calendarLocale' => 'en',
 	'customCss' => '',
 	'customThemeCss' => '',
 	'customHTMLone' => '',
