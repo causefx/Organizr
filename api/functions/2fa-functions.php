@@ -28,7 +28,7 @@ trait TwoFAFunctions
 		$this->setAPIResponse('success', '2FA code created - awaiting verification', 200);
 		return $result;
 	}
-	
+
 	public function verify2FA($secret, $code, $type)
 	{
 		if (!$secret || $secret == '') {
@@ -61,7 +61,7 @@ trait TwoFAFunctions
 			return false;
 		}
 	}
-	
+
 	public function save2FA($secret, $type)
 	{
 		if (!$secret || $secret == '') {
@@ -87,7 +87,7 @@ trait TwoFAFunctions
 		$this->setAPIResponse('success', '2FA Added', 200);
 		return $this->processQueries($response);
 	}
-	
+
 	public function remove2FA()
 	{
 		$response = [
