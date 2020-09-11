@@ -81,11 +81,28 @@ trait SpeedTestHomepageItem
 			$response = Requests::get($dataUrl);
 			if ($response->success) {
 				$json = json_decode($response->body, true);
+
 				$api['data'] = [
 					'current' => $json['data'],
-					'average' => $json['average'],
-					'max' => $json['max'],
 				];
+
+				$keys = [
+					'average',
+					'max',
+					'maximum',
+					'minimum'
+				];
+
+				foreach ($keys as $key) {
+					if (array_key_exists($key, $json)) {
+						if ($key == 'max') {
+							$api['data']['maximum'] = $json[$key];
+						} else {
+							$api['data'][$key] = $json[$key];
+						}
+					}
+				}
+
 				$api['options'] = [
 					'title' => $this->config['speedtestHeader'],
 					'titleToggle' => $this->config['speedtestHeaderToggle'],
