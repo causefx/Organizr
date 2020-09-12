@@ -121,6 +121,8 @@ class Organizr
 		);
 		// Connect to DB
 		$this->connectDB();
+		// Check DB Writable
+		$this->checkWritableDB();
 		// Set cookie name for Organizr Instance
 		$this->cookieName = ($this->hasDB()) ? $this->config['uuid'] !== '' ? 'organizr_token_' . $this->config['uuid'] : 'organizr_token_temp' : 'organizr_token_temp';
 		// Get token form cookie and validate
@@ -417,6 +419,16 @@ class Organizr
 	{
 		if (!(version_compare(PHP_VERSION, $this->minimumPHP) >= 0)) {
 			die('Organizr needs PHP Version: ' . $this->minimumPHP . '<br/> You have PHP Version: ' . PHP_VERSION);
+		}
+	}
+	
+	private function checkWritableDB()
+	{
+		if ($this->hasDB()) {
+			$db = is_writable($this->config['dbLocation'] . $this->config['dbName']);
+			if (!$db) {
+				die('Organizr DB is not writable!!!  Please fix...');
+			}
 		}
 	}
 	
@@ -5672,8 +5684,8 @@ class Organizr
 			}
 		}
 		if (array_key_exists('locked', $array)) {
-			$this->setAPIResponse('error', 'Cannot use endpoint to unlock or lock user - please use /users/{id}/lock', 409);
-			return false;
+			//$this->setAPIResponse('error', 'Cannot use endpoint to unlock or lock user - please use /users/{id}/lock', 409);
+			//return false;
 		}
 		if (array_key_exists('password', $array)) {
 			if ($array['password'] == '') {
@@ -5714,6 +5726,10 @@ class Organizr
 			),
 		];
 		$userInfo = $this->getUserById($id);
+		if ($id == $this->user['userID']) {
+			$this->setAPIResponse('error', 'Cannot delete your own user', 409);
+			return false;
+		}
 		if ($userInfo) {
 			$this->writeLog('success', 'User Delete Function -  Deleted User [' . $userInfo['username'] . ']', $this->user['username']);
 			$this->setAPIResponse('success', 'User deleted', 204);
