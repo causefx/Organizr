@@ -2,5 +2,5 @@
 
 trait ApiFunctions
 {
-    //   something
+	// Nothing
 }
