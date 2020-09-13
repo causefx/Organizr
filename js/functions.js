@@ -3630,7 +3630,7 @@ function updateBar(){
 	return `
 	<div class="white-box m-0">
         <div class="row">
-            <div class="col-lg-12 p-r-40">
+            <div class="col-lg-12">
                 <h3 id="update-title" class="box-title pull-left"></h3><h3 id="update-time" class="box-title pull-right hidden"><span id="update-seconds"></span>&nbsp;<span lang="en">Seconds</span></h3>
 				<div class="clearfix"></div>
                 <div class="progress progress-lg">
