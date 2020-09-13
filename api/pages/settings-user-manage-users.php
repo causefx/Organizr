@@ -184,7 +184,7 @@ function get_page_settings_user_manage_users($Organizr)
         <button type="button" class="btn btn-info btn-circle pull-right popup-with-form" href="#new-user-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
     </div>
     <div id="jsGrid-Users" class=""></div>
-    <div id="pageDiv">
+    <div id="pageDiv" class="hidden-xs">
 		<div class="item-pager-panel pull-left m-l-10">
 		        <select id="pageLength" class="form-control">
 		            <option>5</option>

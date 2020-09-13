@@ -3637,9 +3637,18 @@ function updateBar(){
                     <div id="update-bar" class="progress-bar progress-bar-primary progress-bar-striped active" style="width: 0%;" role="progressbar">0%</div>
                 </div>
             </div>
+            <h6>If error occurs - Use Esc key to close modal</h6>
         </div>
     </div>
 	`;
+}
+function showUpdateBar(){
+	swal({
+		content: createElementFromHTML(updateBar()),
+		buttons: false,
+		className: 'bg-org',
+		closeOnClickOutside: false,
+	})
 }
 function updateUpdateBar(title,percent,update=false){
 	$('#update-title').text(title);
@@ -3660,7 +3669,8 @@ function countdown(remaining) {
 }
 function dockerUpdate(){
     if(activeInfo.settings.misc.docker){
-        $(updateBar()).appendTo('.organizr-area');
+	    showUpdateBar();
+        //$(updateBar()).appendTo('.organizr-area');
         updateUpdateBar('Starting Download','20%');
         messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
         organizrAPI2('GET','api/v2/update/docker').success(function(data) {
@@ -3674,7 +3684,8 @@ function dockerUpdate(){
 }
 function windowsUpdate(){
     if(activeInfo.serverOS == 'win'){
-        $(updateBar()).appendTo('.organizr-area');
+	    showUpdateBar();
+    	//$(updateBar()).appendTo('.organizr-area');
         updateUpdateBar('Starting Download','20%');
         messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
         organizrAPI2('GET','api/v2/update/windows').success(function(data) {
@@ -3697,7 +3708,8 @@ function updateNow(){
         return false;
     }
 	organizrConsole('Update Function','Starting Update Process');
-	$(updateBar()).appendTo('.organizr-area');
+	showUpdateBar();
+	//$(updateBar()).appendTo('.organizr-area');
 	updateUpdateBar('Starting Download','5%');
 	messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),window.lang.translate('Starting Update Process'),activeInfo.settings.notifications.position,'#FFF','success','60000');
 	organizrAPI2('GET','api/v2/update/download/'+ activeInfo.branch).success(function(data) {
