@@ -14,6 +14,14 @@ function get_page_settings_user_manage_users($Organizr)
 	return '
 <script>
 	$(function() {
+		pageLength = 10;
+		function onPageSelect(newPageLength) {
+            pageLength = newPageLength;
+            $("#jsGrid-Users").jsGrid("changePageSize", pageLength);
+        }
+        $("#pageLength").on("change", function() {
+            onPageSelect(this.value);
+		});
 	    $("#jsGrid-Users").jsGrid({
 	        height: "auto",
 	        width: "100%",
@@ -29,7 +37,12 @@ function get_page_settings_user_manage_users($Organizr)
 	        autoload: true,
 	        selecting: true,
 	 		confirmDeleting: false,
-	        pageSize: 10,
+	        pageSize: pageLength,
+	        changePageSize: function (pageSize) {
+                var $this = this;
+                $this.pageSize = pageLength;
+                $this.refresh();
+            },
 	        pageButtonCount: 5,
         	pagerFormat: "&nbsp;&nbsp; {first} {prev} {pages} {next} {last} &nbsp;&nbsp;",
 	        controller: {
@@ -48,7 +61,7 @@ function get_page_settings_user_manage_users($Organizr)
 	        },
 	 
 	        fields: [
-	        	{ name: "image", title: "Avatar", type: "text", width: 45, css: "text-center hidden-xs", validate: "required",
+	        	{ name: "image", title: "Avatar", type: "text", width: 45, css: "text-center hidden-xs", filtering: false, sorting:false, validate: "required",
 	                itemTemplate: function(value) {
 	                    return \'<img alt="user-img" class="img-circle" src="\'+value+\'" width="45">\'; }
 	            },
@@ -74,13 +87,15 @@ function get_page_settings_user_manage_users($Organizr)
     				textField: "Name"
     				
 	            },
-	            { name: "password", type: "text", title: "Password", css: "text-center",
+	            { name: "password", type: "text", title: "Password", css: "text-center", filtering: false, sorting:false,
 	                itemTemplate: function(value) {
 	                    return "<i class=\"mdi mdi-account-key\"></i>"; },
+	                
 	            	editTemplate: function(item, value) {
 	            	var $result = jsGrid.fields.text.prototype.editTemplate.apply(this, arguments);
-	                    return $result; }
-	             
+	            	$result.attr("placeholder", "Enter new password");
+	            	this.editControl[0].value = "";
+	                return $result; },
 	            },
 	            { type: "control", modeSwitchButton: false, editButton: false, title: "Action",
 		             headerTemplate: function() {
@@ -122,6 +137,11 @@ function get_page_settings_user_manage_users($Organizr)
 		            alert("Could not get ID");
 		        }
 		        let diff = objDiff(args.previousItem,args.item);
+		        if(typeof diff.password !== "undefined"){
+		            if(diff.password === ""){
+		                delete diff["password"];
+		            }
+		        }
 		        let id = args.item.id;
 		        organizrAPI2("PUT","api/v2/users/" + id, diff,true).success(function(data) {
 					try {
@@ -141,10 +161,11 @@ function get_page_settings_user_manage_users($Organizr)
 		    },
 		    
 		    onRefreshed: function(){
+		    
 				$(".jsgrid-pager").addClass( "pull-right" );
 				$(".jsgrid-pager").find(".jsgrid-pager-page a").addClass( "btn btn-info" );
 				$(".jsgrid-pager").find(".jsgrid-pager-nav-button a").addClass( "btn btn-info" );
-				$(".jsgrid-pager").find(".jsgrid-pager-current-page").addClass( "btn btn-info m-r-5" );
+				$(".jsgrid-pager").find(".jsgrid-pager-current-page").addClass( "btn btn-primary m-r-5" );
 				let nav = $(".jsgrid-pager").find(".jsgrid-pager-nav-button");
 				$.each(nav, function(i,v) {
 					if(v.innerText === "..."){
@@ -153,6 +174,7 @@ function get_page_settings_user_manage_users($Organizr)
 				})
 			}
 	    });
+	    
 	});
     //buildUserManagement();
 </script>
@@ -162,6 +184,19 @@ function get_page_settings_user_manage_users($Organizr)
         <button type="button" class="btn btn-info btn-circle pull-right popup-with-form" href="#new-user-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
     </div>
     <div id="jsGrid-Users" class=""></div>
+    <div id="pageDiv">
+		<div class="item-pager-panel pull-left m-l-10">
+		        <select id="pageLength" class="form-control">
+		            <option>5</option>
+		            <option selected="">10</option>
+		            <option>15</option>
+		            <option>30</option>
+		            <option>60</option>
+		            <option>180</option>
+		        </select>
+		</div>
+	</div>
+	<div class="clearfix"></div>
     <div class="table-responsive hidden">
         <table class="table table-hover manage-u-table">
             <thead>

@@ -29,10 +29,17 @@
     border: transparent;
 }
 .jsgrid-grid-body td {
-    border-top: 1px solid #232323 !important;
+    border-bottom: 1px solid rgba(120,130,140,.13);
+    border-top: 1px solid rgba(120,130,140,.13) !important;
+    background: #1f1f1f !important;
 }
 tr.jsgrid-header-row th {
     border: transparent !important;
+    background: #1f1f1f;
+}
+.jsgrid-edit-row>td, .jsgrid-filter-row>td, .jsgrid-grid-body, .jsgrid-grid-header, .jsgrid-header-row>th, .jsgrid-insert-row>td {
+    border: transparent;
+    border-top: 1px solid rgba(120,130,140,.13) !important;
 }
 .jsgrid-selected-row td {
     background: #232323 !important;
@@ -40,7 +47,11 @@ tr.jsgrid-header-row th {
 .jsgrid-pager a {
     color: white;
 }
-span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-info{
+.item-pager-panel {
+    margin-top: -43px;
+    position: absolute;
+}
+span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
     padding: 6px 11px;
     margin-left: 9px;
     margin-right: 9px !important;
