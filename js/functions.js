@@ -352,12 +352,14 @@ function timerIncrement() {
         }
     }
     idleTime = idleTime + 1;
-    if(activeInfo.settings.lockout.enabled && activeInfo.settings.user.oAuthLogin !== true){
-        if (idleTime > activeInfo.settings.lockout.timer && $('#lockScreen').length !== 1) {
-            if(activeInfo.user.groupID <= activeInfo.settings.lockout.minGroup && activeInfo.user.groupID >= activeInfo.settings.lockout.maxGroup){
-                lock();
-            }
-        }
+    if(typeof activeInfo !== 'undefined'){
+	    if(activeInfo.settings.lockout.enabled && activeInfo.settings.user.oAuthLogin !== true){
+		    if (idleTime > activeInfo.settings.lockout.timer && $('#lockScreen').length !== 1) {
+			    if(activeInfo.user.groupID <= activeInfo.settings.lockout.minGroup && activeInfo.user.groupID >= activeInfo.settings.lockout.maxGroup){
+				    lock();
+			    }
+		    }
+	    }
     }
 }
 function ajaxloader(element=null, action='out'){
@@ -10006,8 +10008,8 @@ function organizrConsole(subject,msg,type = 'info'){
 	console.info("%c "+subject+" %c ".concat(msg, " "), "color: white; background: "+color+"; font-weight: 700;", "color: "+color+"; background: white; font-weight: 700;");
 }
 function launch(){
-	organizrConsole('API V2 API','If you see a 404 Error below this line, you have not setup the new location block...', 'error');
-	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide')
+	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
+	organizrConsole('API V2 API','If you see a 404 Error below this line, you have not setup the new location block... See URL above this line', 'error');
 	organizrConnect('api/v2/launch').success(function (data) {
         try {
             let json = data.response;
