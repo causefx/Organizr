@@ -7605,7 +7605,8 @@ function buildSpeedtest(array){
     `;
     var current = array.data.current;
     var average = array.data.average;
-    var max = array.data.max;
+    var maximum = array.data.maximum;
+    var minimum = array.data.minimum;
     var options = array.options;
   
     html += `
@@ -7632,16 +7633,32 @@ function buildSpeedtest(array){
                         <div class="text-truncate">
                             <h3 class="d-inline">`+parseFloat(current.ping).toFixed(1)+`</h3>
                             <p class="d-inline ml-1 text-white">ms (current)</p>
-                        </div>
+                        </div>`;
+    if(average != undefined) {
+        html += `
                         <div class="text-truncate text-muted">
                             <h5 class="d-inline">`+parseFloat(average.ping).toFixed(1)+`</h5>
                             <p class="d-inline ml-1">ms (average)</p>
                         </div>
+        `;
+    }
+    if(maximum != undefined) {
+        html += `
                         <div class="text-truncate text-muted">
-                            <h5 class="d-inline">`+parseFloat(max.ping).toFixed(1)+`</h5>
+                            <h5 class="d-inline">`+parseFloat(maximum.ping).toFixed(1)+`</h5>
                             <p class="d-inline ml-1">ms (maximum)</p>
                         </div>
-                    </div>
+        `;
+    }
+    if(minimum != undefined) {
+        html += `
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(minimum.ping).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">ms (minimum)</p>
+                        </div>
+        `;
+    }
+    html += `       </div>
                 </div>
             </div>
             <div class="my-2 col-lg-4 col-md-4 col-sm-12">
@@ -7654,16 +7671,32 @@ function buildSpeedtest(array){
                         <div class="text-truncate">
                             <h3 class="d-inline">`+parseFloat(current.download).toFixed(1)+`</h3>
                             <p class="d-inline ml-1 text-white">Mbit/s (current)</p>
-                        </div>
+                        </div>`;
+    if(average != undefined) {
+            html += `
                         <div class="text-truncate text-muted">
                             <h5 class="d-inline">`+parseFloat(average.download).toFixed(1)+`</h5>
                             <p class="d-inline ml-1">Mbit/s (average)</p>
                         </div>
+            `;
+        }
+    if(maximum != undefined) {
+        html += `
                         <div class="text-truncate text-muted">
-                            <h5 class="d-inline">`+parseFloat(max.download).toFixed(1)+`</h5>
+                            <h5 class="d-inline">`+parseFloat(maximum.download).toFixed(1)+`</h5>
                             <p class="d-inline ml-1">Mbit/s (maximum)</p>
                         </div>
-                    </div>
+        `;
+    }
+    if(minimum != undefined) {
+        html += `
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(minimum.download).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">Mbit/s (minimum)</p>
+                        </div>
+        `;
+    }
+    html += `       </div>
                 </div>
             </div>
             <div class="my-2 col-lg-4 col-md-4 col-sm-12">
@@ -7676,16 +7709,32 @@ function buildSpeedtest(array){
                         <div class="text-truncate">
                             <h3 class="d-inline">`+parseFloat(current.upload).toFixed(1)+`</h3>
                             <p class="d-inline ml-1 text-white">Mbit/s (current)</p>
-                        </div>
+                        </div>`;
+    if(average != undefined) {
+            html += `
                         <div class="text-truncate text-muted">
                             <h5 class="d-inline">`+parseFloat(average.upload).toFixed(1)+`</h5>
                             <p class="d-inline ml-1">Mbit/s (average)</p>
                         </div>
+            `;
+        }
+    if(maximum != undefined) {
+        html += `
                         <div class="text-truncate text-muted">
-                            <h5 class="d-inline">`+parseFloat(max.upload).toFixed(1)+`</h5>
+                            <h5 class="d-inline">`+parseFloat(maximum.upload).toFixed(1)+`</h5>
                             <p class="d-inline ml-1">Mbit/s (maximum)</p>
                         </div>
-                    </div>
+        `;
+    }
+    if(minimum != undefined) {
+        html += `
+                        <div class="text-truncate text-muted">
+                            <h5 class="d-inline">`+parseFloat(minimum.upload).toFixed(1)+`</h5>
+                            <p class="d-inline ml-1">Mbit/s (minimum)</p>
+                        </div>
+        `;
+    }
+    html += `       </div>
                 </div>
             </div>
         </div>
