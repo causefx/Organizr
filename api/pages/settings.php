@@ -291,6 +291,9 @@ function get_page_settings($Organizr)
                                                 <a href="#donate-patreon" data-toggle="tab" aria-expanded="false"> <span class=""><i class="fa mdi mdi-account-multiple mdi-18px text-danger"></i></span> <span class="hidden-xs" lang="en">Patreon</span> </a>
                                             </li>
                                             <li class="tab">
+                                                <a href="#donate-open-collective" data-toggle="tab" aria-expanded="false"> <span class=""><i class="fa fa-circle-o-notch text-primary"></i></span> <span class="hidden-xs" lang="en">Open Collective</span> </a>
+                                            </li>
+                                            <li class="tab">
                                                 <a href="#donate-ads" data-toggle="tab" aria-expanded="false"> <span class=""><i class="fa mdi mdi-google mdi-18px text-danger"></i></span> <span class="hidden-xs" lang="en">Google Ads</span> </a>
                                             </li>
                                         </ul>
@@ -329,6 +332,10 @@ function get_page_settings($Organizr)
                                             <div class="tab-pane" id="donate-patreon">
                                                 <blockquote>Need specialized support or just want to support Organizr?  If so head to Patreon...<br/>Please click the button to continue.</blockquote>
                                                 <button onclick="window.open(\'https://www.patreon.com/join/organizr?\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
+                                            </div>
+                                            <div class="tab-pane" id="donate-open-collective">
+                                                <blockquote>Need specialized support or just want to support Organizr?  If so head to Open Collective...<br/>Please click the button to continue.</blockquote>
+                                                <button onclick="window.open(\'https://opencollective.com/organizr\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
                                             </div>
                                             <div class="tab-pane" id="donate-ads">
                                                 <blockquote>Money not an option?  No problem.  Show some love to this Google Ad below:</blockquote>
