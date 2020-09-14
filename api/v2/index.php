@@ -59,7 +59,7 @@ function getBasePath()
 {
 	$uri = $_SERVER['REQUEST_URI'];
 	$uriUse = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-	if (stripos($uri, 'api/v2') !== false) {
+	if (stripos($uri, 'api/v2/') !== false) {
 		return $uriUse;
 	} else {
 		return '';
@@ -70,7 +70,7 @@ function overWriteURI()
 {
 	$uri = $_SERVER['REQUEST_URI'];
 	$query = $_SERVER['QUERY_STRING'];
-	if (stripos($uri, 'api/v2') === false && stripos($query, 'group=') !== false) {
+	if (stripos($query, 'group=') !== false) {
 		$group = explode('group=', $query);
 		$_SERVER['REQUEST_URI'] = 'auth-' . $group[1];
 	}
