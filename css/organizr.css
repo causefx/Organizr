@@ -1,14 +1,10 @@
 /*JSGrid*/
+
+
 .jsgrid-grid-body {
     overflow-x: auto;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-}
-.jsgrid-header-row .jsgrid-header-sort {
-    background: #232323;
-}
-.jsgrid-edit-row>td {
-    background: #3e3d3d;
 }
 .jsgrid-table {
     width: 100% !important;
@@ -22,28 +18,11 @@
 .jsgrid-grid-header {
     background: transparent;
 }
-.jsgrid-nodata-row td {
-    background: #181818;
-}
+
 .jsgrid-grid-body td {
     border: transparent;
 }
-.jsgrid-grid-body td {
-    border-bottom: 1px solid rgba(120,130,140,.13);
-    border-top: 1px solid rgba(120,130,140,.13) !important;
-    background: #1f1f1f !important;
-}
-tr.jsgrid-header-row th {
-    border: transparent !important;
-    background: #1f1f1f;
-}
-.jsgrid-edit-row>td, .jsgrid-filter-row>td, .jsgrid-grid-body, .jsgrid-grid-header, .jsgrid-header-row>th, .jsgrid-insert-row>td {
-    border: transparent;
-    border-top: 1px solid rgba(120,130,140,.13) !important;
-}
-.jsgrid-selected-row td {
-    background: #232323 !important;
-}
+
 .jsgrid-pager a {
     color: white;
 }

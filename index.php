@@ -39,7 +39,7 @@ $Organizr = new Organizr();
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/simplebar.css" rel="stylesheet">
     <link href="css/plyr.css" rel="stylesheet">
-    <link id="style" href="css/dark.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
+    <link id="style" href="css/dark.min.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
     <link href="css/organizr.min.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">
 	<?php echo $Organizr->pluginFiles('css'); ?>
     <link id="theme" href="css/themes/Organizr.css?v=<?php echo $Organizr->fileHash; ?>" rel="stylesheet">

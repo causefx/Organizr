@@ -4436,7 +4436,7 @@ function changeTheme(theme){
 function changeStyle(style){
 	//$("#preloader").fadeIn();
 	$('#style').attr({
-        href: 'css/' + style + '.css?v='+activeInfo.version
+        href: 'css/' + style + '.min.css?v='+activeInfo.version
     });
 	//$("#preloader").fadeOut();
 	console.info("%c Style %c ".concat(style, " "), "color: white; background: #AD80FD; font-weight: 700;", "color: #AD80FD; background: white; font-weight: 700;");
