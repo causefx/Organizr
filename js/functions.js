@@ -7234,23 +7234,29 @@ function buildWeatherAndAir(array){
     if(array.content.air !== false){
         if(array.content.air.error === null) {
             let airItems = '<div class="row">';
-            var activeClasses = {
+            let activeClasses = {
                 'poor': '',
                 'low': '',
                 'moderate': '',
                 'good': '',
-                'excellent': ''
+                'excellent': '',
+	            'text': ''
             };
             if(array.content.air.data.indexes.baqi.aqi <= 20){
                 activeClasses['poor'] = 'active';
+	            activeClasses['text'] = 'text-poor-gradient';
             }else if(array.content.air.data.indexes.baqi.aqi <= 40){
                 activeClasses['low'] = 'active';
+	            activeClasses['text'] = 'text-low-gradient';
             }else if(array.content.air.data.indexes.baqi.aqi <= 60){
                 activeClasses['moderate'] = 'active';
+	            activeClasses['text'] = 'text-moderate-gradient';
             }else if(array.content.air.data.indexes.baqi.aqi <= 80){
                 activeClasses['good'] = 'active';
+	            activeClasses['text'] = 'text-good-gradient';
             }else if(array.content.air.data.indexes.baqi.aqi <= 100){
                 activeClasses['excellent'] = 'active';
+	            activeClasses['text'] = 'text-excellent-gradient';
             }
             airItems += `
             <div class="col-lg-4 col-sm-12 col-xs-12">
@@ -7258,7 +7264,7 @@ function buildWeatherAndAir(array){
                     <div class="aqi-scale-component-wrapper">
                         <div class="aqi__header">
                             <div class="aqi__value">
-                                <div class="component-wrapper aqi-number text-good-gradient">${array.content.air.data.indexes.baqi.aqi}</div>
+                                <div class="component-wrapper aqi-number ${activeClasses['text']}">${array.content.air.data.indexes.baqi.aqi}</div>
                             </div>
                             <div class="aqi__text"><h2 >AirQuality Index</h2></div>
                         </div>
