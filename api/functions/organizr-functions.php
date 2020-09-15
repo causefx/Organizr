@@ -403,11 +403,12 @@ trait OrganizrFunctions
 	
 	public function settingsPathChecks()
 	{
+		$paths = $this->pathsWritable($this->paths);
 		$items = '';
-		$type = (array_search(false, $this->pathsWritable($this->paths))) ? 'Not Writable' : 'Writable';
+		$type = (array_search(false, $paths)) ? 'Not Writable' : 'Writable';
 		$result = '<li class="mouse" onclick="toggleWritableFolders();"><div class="bg-info"><i class="mdi mdi-folder mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Paths</span> ' . $type . '</li>';
-		foreach ($this->pathsWritable($this->paths) as $k => $v) {
-			$items .= '<li class="folders-writable hidden"><div class="bg-info"><i class="mdi mdi-folder mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">' . $k . '</span> ' . (($v) ? 'Writable' : 'Not Writable') . '</li>';
+		foreach ($paths as $k => $v) {
+			$items .= '<li class="folders-writable hidden"><div class="bg-info"><i class="mdi mdi-folder mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">' . $k . '&nbsp;&nbsp;<strong class="text-primary">' . $v['path'] . '</strong></span> ' . (($v['writable']) ? 'Writable' : 'Not Writable') . '</li>';
 		}
 		return $result . $items;
 	}
@@ -416,7 +417,10 @@ trait OrganizrFunctions
 	{
 		$results = array();
 		foreach ($paths as $k => $v) {
-			$results[$k] = is_writable($v);
+			$results[$k] = [
+				'writable' => is_writable($v),
+				'path' => $v
+			];
 		}
 		return $results;
 	}

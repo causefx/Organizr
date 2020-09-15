@@ -116,6 +116,7 @@ class Organizr
 		// Set Paths
 		$this->paths = array(
 			'Root Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR,
+			'Images Folder' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR,
 			'API Folder' => dirname(__DIR__, 1) . DIRECTORY_SEPARATOR,
 			'DB Folder' => ($this->hasDB()) ? $this->config['dbLocation'] : false
 		);
