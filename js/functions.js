@@ -3573,10 +3573,10 @@ function buildSponsor(array){
     sponsors += `
         <!-- /.usercard -->
         <div class="item lazyload recent-sponsor mouse imageSource mouse" onclick="window.open('https://www.patreon.com/bePatron?c=1320444&rid=2874514', '_blank')" data-src="plugins/images/sponsor-patreon.png">
-            <span class="elip recent-title" lang="en">Become Patreon Sponsor</span>
+            <span class="elip recent-title" lang="en">Patreon Sponsor</span>
         </div>
         <div class="item lazyload recent-sponsor mouse imageSource mouse" onclick="window.open('https://opencollective.com/organizr', '_blank')" data-src="plugins/images/sponsor-open-collective.png">
-            <span class="elip recent-title" lang="en">Become OpenCollective Sponsor</span>
+            <span class="elip recent-title" lang="en">OpenCollective Sponsor</span>
         </div>
         <!-- /.usercard-->
     `;

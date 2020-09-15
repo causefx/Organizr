@@ -408,7 +408,7 @@ trait OrganizrFunctions
 		$type = (array_search(false, $paths)) ? 'Not Writable' : 'Writable';
 		$result = '<li class="mouse" onclick="toggleWritableFolders();"><div class="bg-info"><i class="mdi mdi-folder mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Paths</span> ' . $type . '</li>';
 		foreach ($paths as $k => $v) {
-			$items .= '<li class="folders-writable hidden"><div class="bg-info"><i class="mdi mdi-folder mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">' . $k . '&nbsp;&nbsp;<strong class="text-primary">' . $v['path'] . '</strong></span> ' . (($v['writable']) ? 'Writable' : 'Not Writable') . '</li>';
+			$items .= '<li class="folders-writable hidden"><div class="bg-primary"><i class="mdi mdi-folder mdi-24px text-white"></i></div><button type="button" class="btn btn-default btn-outline popover-info pull-right" lang="en" data-container="body" title="" data-toggle="popover" data-placement="left" data-content="' . $v['path'] . '" data-original-title="File Path">' . $k . '</button> ' . (($v['writable']) ? 'Writable' : 'Not Writable') . '</li>';
 		}
 		return $result . $items;
 	}
