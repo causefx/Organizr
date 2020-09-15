@@ -19,11 +19,11 @@ function get_page_settings_user_manage_users($Organizr)
         tableClass: "jsgrid-table table table-striped table-hover"
     }), jsGrid.setDefaults("text", {
         _createTextBox: function() {
-            return $("<input>").attr("type", "text").attr("class", "form-control input-sm")
+            return $("<input>").attr("type", "text").attr("class", "form-control input-md")
         }
     }), jsGrid.setDefaults("number", {
         _createTextBox: function() {
-            return $("<input>").attr("type", "number").attr("class", "form-control input-sm")
+            return $("<input>").attr("type", "number").attr("class", "form-control input-md")
         }
     }), jsGrid.setDefaults("textarea", {
         _createTextBox: function() {
@@ -41,7 +41,7 @@ function get_page_settings_user_manage_users($Organizr)
         }
     }), jsGrid.setDefaults("select", {
         _createSelect: function() {
-            var $result = $("<select>").attr("class", "form-control input-sm"),
+            var $result = $("<select>").attr("class", "form-control input-md"),
                 valueField = this.valueField,
                 textField = this.textField,
                 selectedIndex = this.selectedIndex;
