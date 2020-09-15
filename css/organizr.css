@@ -48,8 +48,7 @@ tr.jsgrid-header-row th {
     color: white;
 }
 .item-pager-panel {
-    margin-top: -43px;
-    position: absolute;
+    margin-top: -26px;
 }
 span.jsgrid-pager-page.jsgrid-pager-current-page.btn.btn-primary{
     padding: 6px 11px;

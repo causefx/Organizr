@@ -217,26 +217,25 @@ function get_page_settings_user_manage_users($Organizr)
 	    });
 	    
 	});
-    //buildUserManagement();
 </script>
 <div class="panel bg-org panel-info">
     <div class="panel-heading">
         <span lang="en">MANAGE USERS</span>
         <button type="button" class="btn btn-info btn-circle pull-right popup-with-form" href="#new-user-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
+        <div id="pageDiv" class="hidden-xs">
+			<div class="item-pager-panel pull-right m-r-10">
+			        <select id="pageLength" class="form-control">
+			            <option>5</option>
+			            <option selected="">10</option>
+			            <option>15</option>
+			            <option>30</option>
+			            <option>60</option>
+			            <option>180</option>
+			        </select>
+			</div>
+		</div>
     </div>
     <div id="jsGrid-Users" class=""></div>
-    <div id="pageDiv" class="hidden-xs">
-		<div class="item-pager-panel pull-left m-l-10">
-		        <select id="pageLength" class="form-control">
-		            <option>5</option>
-		            <option selected="">10</option>
-		            <option>15</option>
-		            <option>30</option>
-		            <option>60</option>
-		            <option>180</option>
-		        </select>
-		</div>
-	</div>
 	<div class="clearfix"></div>
     <div class="table-responsive hidden">
         <table class="table table-hover manage-u-table">
