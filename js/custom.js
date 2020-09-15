@@ -159,7 +159,7 @@ function pageLoad(){
     /* ===== Popover Initialization ===== */
 
     $(function () {
-        $('[data-toggle="popover"]').popover();
+        $('[data-toggle="popover"]').popover({trigger: "focus"});
     });
 
     $(function () {
