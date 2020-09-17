@@ -3392,7 +3392,8 @@ function newsLoad(){
             $.each(response, function(i,v) {
                 count++;
                 let alertDefined = (typeof v.important !== 'undefined' || v.important === false);
-                let alert = (alertDefined) ? '<small class="animated loop-animation flash text-white"><i class="ti-alert"></i>Important Message</small>' : '';
+                let alert = (alertDefined) ? '<span class="animated loop-animation flash text-danger">&nbsp; <i class="ti-alert"></i>&nbsp; Important Message</span>' : '';
+                let heartBeat = (alertDefined) ? '<div class="notify m-t-20 pull-right"><span class="heartbit"></span><span class="point"></span></div>' : '';
                 let newBody = `
                 <h5 class="pull-left">`+moment(v.date).format('LLL')+`</h5>
                 <h5 class="pull-right">`+v.author+`</h5>
@@ -3402,7 +3403,7 @@ function newsLoad(){
                 `;
                 if(count <= limit){
                     items[i] = {
-                        title:v.title,
+                        title:v.title + heartBeat,
                         body:newBody
                     }
                 }
