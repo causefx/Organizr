@@ -20,6 +20,7 @@ function get_page_settings($Organizr)
         sponsorLoad();
         newsLoad();
         checkCommitLoad();
+        backersLoad();
         [].slice.call(document.querySelectorAll(\'.sttabs-main-settings-div\')).forEach(function(el) {
             new CBPFWTabs(el);
         });
@@ -229,6 +230,11 @@ function get_page_settings($Organizr)
     											<li><a href="https://organizr.app/discord" target="_blank"><i class="mdi mdi-discord mdi-24px"></i></a></li>
     											<li><a href="https://github.com/causefx/organizr" target="_blank"><i class="mdi mdi-github-box mdi-24px"></i></a></li>
     										</ul>
+    										<hr>
+    										<div class="p-20 p-t-0 text-center">
+						                        <h4 class="font-medium">Backers</h4>
+						                        <ul class="dp-table m-t-30 backers-list"></ul>
+						                    </div>
     									</div>
     									<a href="https://poeditor.com/join/project/T6l68hksTE" target="_blank">
 	                                        <div class="white-box bg-org">

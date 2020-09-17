@@ -5251,6 +5251,20 @@ class Organizr
 		return false;
 	}
 	
+	public function getOpenCollectiveBackers()
+	{
+		$url = 'https://opencollective.com/organizr/members/users.json?limit=100&offset=0';
+		$options = (localURL($url)) ? array('verify' => false) : array();
+		$response = Requests::get($url, array(), $options);
+		if ($response->success) {
+			$api = json_decode($response->body, true);
+			$this->setAPIResponse('success', '', 200, $api);
+			return $api;
+		}
+		$this->setAPIResponse('error', 'Error connecting to Open Collective', 409);
+		return false;
+	}
+	
 	public function guestHash($start, $end)
 	{
 		$ip = $_SERVER['REMOTE_ADDR'];

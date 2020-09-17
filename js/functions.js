@@ -3461,7 +3461,32 @@ function sponsorLoad(){
         console.error("Organizr Function: Github Connection Failed");
     });
 }
-
+function backersLoad(){
+	organizrAPI2('GET','api/v2/opencollective').success(function(data) {
+		try {
+			let json = data.response;
+			$('.backers-list').html(buildBackers(json.data));
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+}
+function buildBackers(array){
+	let backers = '';
+	$.each(array, function(i,v) {
+		if(v.type == 'USER' && v.role == 'BACKER' && v.isActive){
+			v.name = v.name ? v.name : 'User';
+			v.image = v.image ? v.image : 'image here';
+			backers += '<li><img src="'+v.image+'" alt="user" height="60" width="60" data-toggle="tooltip" title="" class="img-circle" data-original-title="'+v.name+'"></li>';
+		}
+	});
+	backers += '<li><a href="https://opencollective.com/organizr" target="_blank" class="circle circle-md bg-info di" data-toggle="tooltip" title="" data-original-title="Join">You</a></li>';
+	return backers;
+}
 function sponsorDetails(id){
 	sponsorsJSON().success(function(data) {
 		try {
