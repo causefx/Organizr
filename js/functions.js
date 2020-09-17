@@ -3391,11 +3391,13 @@ function newsLoad(){
             var count = 0;
             $.each(response, function(i,v) {
                 count++;
-                var newBody = `
+                let alertDefined = (typeof v.important !== 'undefined' || v.important === false);
+                let alert = (alertDefined) ? '<small class="animated loop-animation flash text-white"><i class="ti-alert"></i>Important Message</small>' : '';
+                let newBody = `
                 <h5 class="pull-left">`+moment(v.date).format('LLL')+`</h5>
                 <h5 class="pull-right">`+v.author+`</h5>
                 <div class="clearfix"></div>
-                `+((v.subTitle) ? '<h5>' + v.subTitle + '</h5>' : '' )+`
+                `+((v.subTitle) ? '<h5>' + v.subTitle + alert + '</h5>' : '' )+`
                 <p>`+v.body+`</p>
                 `;
                 if(count <= limit){

@@ -1,10 +1,19 @@
 [
   {
+    "title": "API V2 TESTING almost complete",
+    "subTitle": "Organizr API v2 changes will break installs unless changes to webserver are completed",
+    "date": "2020-09-17 20:30",
+    "body": "This is just a warning that the changes will be merged 2nd of October. If you are using docker - make sure to use organizr/organizr - DO NOT USE organizrTools image!  Also with the changes you need to update your webserver if you haven't already.  A list of fixes for each webserver along with other breaking changes are noted in the migration note here: <a href=\"https:\/\/docs.organizr.app\/books\/setup-features\/page\/api-v2-webserver-changes-needed\", target=\"_blank\" rel=\"noopener noreferrer\">API migration note<\/a>",
+    "author": "CauseFX",
+    "important": true
+  },
+  {
     "title": "Develop Branch Users - Please switch to Master for mean time",
     "subTitle": "Organizr API v2 coming this week",
     "date": "2020-08-24 15:00",
     "body": "The new API is now complete and we plan on using the develop branch to do the testing.  So if you want to test and are okay with things possibly breaking, then by all means stay on the develop branch.  The API change is coming this week for sure so please be ready and make sure everyone has done the webserver location block addition.  If you do not do this and you upgrade, it will break your install.  Please refer to the migration note for details <a href=\"https:\/\/docs.organizr.app\/books\/setup-features\/page\/api-v2-webserver-changes-needed\", target=\"_blank\" rel=\"noopener noreferrer\">API migration note<\/a>",
-    "author": "CauseFX"
+    "author": "CauseFX",
+    "important": true
   },
   {
     "title": "New Organizr API v2",
