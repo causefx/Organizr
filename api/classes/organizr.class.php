@@ -31,6 +31,7 @@ class Organizr
 	use EmbyHomepageItem;
 	use HealthChecksHomepageItem;
 	use ICalHomepageItem;
+	use JackettHomepageItem;
 	use JDownloaderHomepageItem;
 	use JellyfinHomepageItem;
 	use LidarrHomepageItem;
@@ -3992,6 +3993,20 @@ class Organizr
 					}
 				}
 				break;
+			case 'homepageOrderJackett':
+				if ($this->config['jackettURL'] && $this->config['jackettToken'] && $this->qualifyRequest($this->config['homepageJackettAuth'])) {
+					if ($this->config['homepageJackettEnabled']) {
+						$item .= '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Jackett...</h2></div>';
+						$item .= '
+					<script>
+					// Jackett
+					homepageJackett();
+					// End Jackett
+					</script>
+					';
+					}
+				}
+				break;
 			default:
 				# code...
 				break;
@@ -4083,6 +4098,14 @@ class Organizr
 					$class = 'bg-emby';
 					$image = 'plugins/images/tabs/emby.png';
 					if (!$this->config['homepageEmbyEnabled']) {
+						$class .= ' faded';
+					}
+					break;
+				case 'homepageOrderjellyfinnowplaying':
+				case 'homepageOrderjellyfinrecent':
+					$class = 'bg-jellyfin';
+					$image = 'plugins/images/tabs/jellyfin.png';
+					if (!$this->config['homepageJellyfinEnabled']) {
 						$class .= ' faded';
 					}
 					break;
@@ -4184,6 +4207,13 @@ class Organizr
 						$class .= ' faded';
 					}
 					break;
+				case 'homepageOrderJackett':
+					$class = 'bg-inverse';
+					$image = 'plugins/images/tabs/jackett.png';
+					if (!$this->config['homepageJackettEnabled']) {
+						$class .= ' faded';
+					}
+					break;
 				default:
 					$class = 'blue-bg';
 					$image = '';
@@ -4233,6 +4263,7 @@ class Organizr
 			$this->ombiSettingsArray(),
 			$this->unifiSettingsArray(),
 			$this->healthChecksSettingsArray(),
+			$this->jackettSettingsArray(),
 			$this->piholeSettingsArray(),
 			$this->tautulliSettingsArray(),
 			$this->monitorrSettingsArray(),

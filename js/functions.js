@@ -8295,6 +8295,143 @@ function tryUpdateNetdata(array){
     });
     return existing;
 }
+function homepageJackett(){
+	let html = `
+	<div id="jackettSearch" class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+			
+				<div class="panel-heading bg-info p-t-10 p-b-10">
+					<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/jackett.png" > &nbsp; <span lang="en">Jackett</span></span>
+					<div class="clearfix"></div>
+				</div>
+			
+				<div class="panel-wrapper p-b-0 collapse in">
+					<div class="white-box">
+	                    <h3 class="box-title m-b-0">Search</h3>
+	                    
+	                    <form onsubmit="searchJackett();return false;">
+	                        <div class="input-group m-b-30">
+	                            <input id="jackett-search-query" class="form-control" placeholder="Search for...">
+	                            <span class="input-group-btn"> 
+	                                <button class="btn btn-info" type="submit">Go!</button> 
+	                            </span>
+	                        </div>
+	
+	                    </form>
+	                    
+	                    <div class="jackettDataTable hidden">
+        					<h3 class="box-title m-b-0" lang="en">Results</h3>
+					        <div class="table-responsive">
+					            <table id="jackettDataTable" class="table table-striped">
+					                <thead>
+					                    <tr>
+					                        <th lang="en">Date</th>
+					                        <th lang="en">Tracker</th>
+					                        <th lang="en">Name</th>
+					                        <th lang="en">Size</th>
+					                        <th lang="en">Files</th>
+					                        <th lang="en">Grabs</th>
+					                        <th lang="en">Seeds</th>
+					                        <th lang="en">Leechers</th>
+					                        <th lang="en">Download</th>
+					                    </tr>
+					                </thead>
+					                <tbody></tbody>
+					            </table>
+					        </div>
+    					</div>
+	                </div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	`
+	$('#homepageOrderJackett').html(html);
+}
+
+function searchJackett(){
+	let query = $('#jackett-search-query').val();
+	if(query !== ''){
+		$('.jackettDataTable').removeClass('hidden');
+		ajaxloader('#jackettSearch .panel-wrapper', 'in');
+	}else{
+		return false;
+	}
+	$.fn.dataTable.ext.errMode = 'none';
+	$("#jackettDataTable").DataTable().destroy()
+	let jackettTable = $("#jackettDataTable")
+		.on( 'error.dt', function ( e, settings, techNote, message ) {
+			console.log( 'An error has been reported by DataTables: ', message );
+		} )
+		.DataTable( {
+			"ajax": {
+				"url": "api/v2/homepage/jackett/" + query,
+				"dataSrc": function ( json ) {
+					return json.response.data.content.Results;
+				}
+			},
+			"columns": [
+				{ data: 'PublishDate',
+					render: function ( data, type, row ) {
+						if ( type === 'display' || type === 'filter' ) {
+							var m = moment.tz(data, activeInfo.timezone);
+							return moment.utc(m, "YYYY-MM-DD hh:mm[Z]").local().fromNow();
+
+						}
+						return data;
+					}
+				},
+				{ "data": "Tracker" },
+				{ data: 'Title',
+					render: function ( data, type, row ) {
+						if(row.Comments !== null){
+							return '<a href="'+row.Comments+'">'+data+'</a>';
+						}else{
+							return data;
+						}
+
+					}
+				},
+				{ data: 'Size',
+					render: function ( data, type, row ) {
+						if ( type === 'display' || type === 'filter' ) {
+							return humanFileSize(data, false);
+						}
+						return humanFileSize(data, false);
+					}
+				},
+				{ "data": "Files" },
+				{ "data": "Grabs" },
+				{ "data": "Seeders" },
+				{ "data": "Peers" },
+				{ data: 'MagnetUri',
+					render: function ( data, type, row ) {
+						if ( type === 'display' || type === 'filter' ) {
+							if(data !== null){
+								return '<a href="'+data+'"><i class="fa fa-magnet"></i></a>';
+							}else if(row.Comments !== null){
+								return '<a href="'+row.Comments+'"><i class="fa fa-cloud-download"></i></a>';
+							}else if(row.Guid !== null){
+								return '<a href="'+row.Guid+'"><i class="fa fa-cloud-download"></i></a>';
+							}else if(row.Link !== null){
+								return '<a href="'+row.Link+'"><i class="fa fa-download"></i></a>';
+							}else{
+								return 'No Download Link';
+							}
+						}
+						return data;
+					}
+				},
+			],
+			"order": [[ 0, 'desc' ]],
+			"initComplete": function(settings, json) {
+				ajaxloader();
+			}
+		} );
+
+}
 function homepageOctoprint(timeout){
     var timeout = (typeof timeout !== 'undefined') ? timeout : activeInfo.settings.homepage.refresh.homepageOctoprintRefresh;
     organizrAPI2('GET','api/v2/homepage/octoprint/data').success(function(data) {
