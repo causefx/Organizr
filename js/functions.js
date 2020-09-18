@@ -8296,16 +8296,28 @@ function tryUpdateNetdata(array){
     return existing;
 }
 function homepageJackett(){
+	if(activeInfo.settings.homepage.options.alternateHomepageHeaders){
+		var header = `
+		<div class="col-md-12">
+			<h2 class="text-white m-0 pull-left text-uppercase"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/jackett.png"> &nbsp; <span lang="en">Jackett</span>&nbsp;</h2>
+			<hr class="hidden-xs"><div class="clearfix"></div>
+		</div>
+		<div class="clearfix"></div>
+		<script>$('.jackett-panel').removeClass('panel panel-default');</script>
+		`;
+	}else{
+		var header = `
+		<div class="panel-heading bg-info p-t-10 p-b-10">
+			<span class="pull-left m-t-5 text-white"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/jackett.png" > &nbsp; <span lang="en">Jackett</span></span>
+			<div class="clearfix"></div>
+		</div>
+		`;
+	}
 	let html = `
 	<div id="jackettSearch" class="row">
 		<div class="col-lg-12">
-			<div class="panel panel-default">
-			
-				<div class="panel-heading bg-info p-t-10 p-b-10">
-					<span class="pull-left m-t-5"><img class="lazyload homepageImageTitle" data-src="plugins/images/tabs/jackett.png" > &nbsp; <span lang="en">Jackett</span></span>
-					<div class="clearfix"></div>
-				</div>
-			
+			<div class="jackett-panel panel panel-default">
+				`+header+`
 				<div class="panel-wrapper p-b-0 collapse in">
 					<div class="white-box">
 	                    <h3 class="box-title m-b-0">Search</h3>
@@ -8347,7 +8359,7 @@ function homepageJackett(){
 			</div>
 		</div>
 	</div>
-	`
+	`;
 	$('#homepageOrderJackett').html(html);
 }
 
