@@ -8324,10 +8324,13 @@ function homepageJackett(){
 	                    
 	                    <form onsubmit="searchJackett();return false;">
 	                        <div class="input-group m-b-30">
+	                        	<span class="input-group-btn hidden">
+									<button type="button" class="btn waves-effect waves-light btn-primary clearJackett" onclick="clearJackett();"><i class="fa fa-eraser"></i></button>
+								</span>
 	                            <input id="jackett-search-query" class="form-control" placeholder="Search for...">
-	                            <span class="input-group-btn"> 
-	                                <button class="btn btn-info" type="submit">Go!</button> 
-	                            </span>
+	                            <span class="input-group-btn">
+									<button type="submit" class="btn waves-effect waves-light btn-info"><i class="fa fa-search"></i></button>
+								</span>
 	                        </div>
 	
 	                    </form>
@@ -8362,7 +8365,12 @@ function homepageJackett(){
 	`;
 	$('#homepageOrderJackett').html(html);
 }
-
+function clearJackett(){
+	$('#jackett-search-query').val('');
+	$('.clearJackett').parent().addClass('hidden');
+	$('#jackettDataTable').DataTable().destroy();
+	$('.jackettDataTable').addClass('hidden');
+}
 function searchJackett(){
 	let query = $('#jackett-search-query').val();
 	if(query !== ''){
@@ -8372,7 +8380,7 @@ function searchJackett(){
 		return false;
 	}
 	$.fn.dataTable.ext.errMode = 'none';
-	$("#jackettDataTable").DataTable().destroy()
+	$('#jackettDataTable').DataTable().destroy();
 	let jackettTable = $("#jackettDataTable")
 		.on( 'error.dt', function ( e, settings, techNote, message ) {
 			console.log( 'An error has been reported by DataTables: ', message );
@@ -8399,7 +8407,7 @@ function searchJackett(){
 				{ data: 'Title',
 					render: function ( data, type, row ) {
 						if(row.Comments !== null){
-							return '<a href="'+row.Comments+'">'+data+'</a>';
+							return '<a href="'+row.Comments+'" target="_blank">'+data+'</a>';
 						}else{
 							return data;
 						}
@@ -8422,13 +8430,13 @@ function searchJackett(){
 					render: function ( data, type, row ) {
 						if ( type === 'display' || type === 'filter' ) {
 							if(data !== null){
-								return '<a href="'+data+'"><i class="fa fa-magnet"></i></a>';
+								return '<a href="'+data+'" target="_blank"><i class="fa fa-magnet"></i></a>';
 							}else if(row.Comments !== null){
-								return '<a href="'+row.Comments+'"><i class="fa fa-cloud-download"></i></a>';
+								return '<a href="'+row.Comments+'" target="_blank"><i class="fa fa-cloud-download"></i></a>';
 							}else if(row.Guid !== null){
-								return '<a href="'+row.Guid+'"><i class="fa fa-cloud-download"></i></a>';
+								return '<a href="'+row.Guid+'" target="_blank"><i class="fa fa-cloud-download"></i></a>';
 							}else if(row.Link !== null){
-								return '<a href="'+row.Link+'"><i class="fa fa-download"></i></a>';
+								return '<a href="'+row.Link+'" target="_blank"><i class="fa fa-download"></i></a>';
 							}else{
 								return 'No Download Link';
 							}
@@ -8440,6 +8448,7 @@ function searchJackett(){
 			"order": [[ 0, 'desc' ]],
 			"initComplete": function(settings, json) {
 				ajaxloader();
+				$('.clearJackett').parent().removeClass('hidden');
 			}
 		} );
 
