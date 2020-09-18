@@ -246,8 +246,8 @@ function get_page_wizard($Organizr)
                                     </div>
                                     <div class="panel-wrapper collapse in" aria-expanded="true">
                                         <div class="panel-body">
-                                            <p lang="en">The Hash Key will be used to decrypt all passwords etc... on the server. {User-Generated]</p>
-                                            <p lang="en">The Registration Password will lockout the registration field with this password. {User-Generated]</p>
+                                            <p lang="en">The Hash Key will be used to decrypt all passwords etc... on the server. [User-Generated]</p>
+                                            <p lang="en">The Registration Password will lockout the registration field with this password. [User-Generated]</p>
                                             <p lang="en">The API Key will be used for all calls to organizr for the UI. [Auto-Generated]</p>
                                         </div>
                                     </div>
