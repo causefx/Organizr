@@ -5593,7 +5593,7 @@ function buildDownloaderItem(array, source, type='none'){
             if(array.content.queueItems == 0){
                 queue = '<tr><td class="max-texts" lang="en">Nothing in queue</td></tr>';
             }
-            $.each(array.content.queueItems, function(i,v) {
+            $.each(array.content.queueItems.arguments.torrents, function(i,v) {
                 count = count + 1;
                 switch (v.status) {
                     case 7:
