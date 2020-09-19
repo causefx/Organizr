@@ -97,6 +97,12 @@ foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'routes' . DIRECTORY_SEPARATOR . '
 	require_once $filename;
 }
 /*
+ * Include all custom routes
+ */
+foreach (glob(__DIR__ . DIRECTORY_SEPARATOR . 'routes' . DIRECTORY_SEPARATOR . 'custom' . DIRECTORY_SEPARATOR . '*.php') as $filename) {
+	require_once $filename;
+}
+/*
  * Include all Plugin routes
  */
 foreach (glob(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . "*.php") as $filename) {

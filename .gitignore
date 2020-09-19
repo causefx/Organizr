@@ -118,6 +118,8 @@ plugins/plugin_files/*
 !plugins/plugin_files/index.html
 plugins/images/userTabs/*
 !plugins/images/userTabs/index.html
+api/v2/routes/custom/*
+!api/v2/routes/custom/index.html
 # =========================
 # Plugin files
 # =========================
