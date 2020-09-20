@@ -166,7 +166,7 @@ trait TransmissionHomepageItem
 					'method' => 'torrent-get',
 					'arguments' => array(
 						'fields' => array(
-							"id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir", "errorString"
+							"id", "name", "totalSize", "eta", "isFinished", "isStalled", "percentDone", "rateDownload", "status", "downloadDir", "errorString", "addedDate"
 						),
 					),
 					'tags' => ''
@@ -189,8 +189,11 @@ trait TransmissionHomepageItem
 							}
 						}
 					} else {
-						$torrents = json_decode($response->body, true);
+						$torrents = json_decode($response->body, true)['arguments']['torrents'];
 					}
+					usort($torrents, function ($a, $b) {
+						return $a["addedDate"] < $b["addedDate"];
+					});
 					$api['content']['queueItems'] = $torrents;
 					$api['content']['historyItems'] = false;
 				}
