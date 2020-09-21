@@ -9150,42 +9150,41 @@ function pingUpdateItem(ping){
 			return false;
 		}
 		var i = ping;
-		if (response.data !== false || response.data !== null) {
-			var v = response.data;
-			var elm = $('.menu-'+cleanClass(i)+'-ping');
-			var elmMs = $('.menu-'+cleanClass(i)+'-ping-ms');
-			var catElm = elm.parent().parent().parent().parent().children('a').find('.menu-category-ping');
-			var error = '<div class="ping"><span class="heartbit"></span><span class="point"></span></div>';
-			var success = '';
-			var badCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-bad')) : 0;
-			var goodCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-good')) : 0;
-			var previousState = (elm.attr('data-previous-state') == "") ? '' : elm.attr('data-previous-state');
-			var tabName = elm.attr('data-tab-name');
-			var status = (v == false) ? 'down' : 'up';
-			var ms = (v == false) ? 'down' : v+'ms';
-			var sendMessage = (previousState !== status && previousState !== '' && activeInfo.user.groupID <= activeInfo.settings.ping.authMessage) ? true : false;
-			var audioDown = (sendMessage) ? new Audio(activeInfo.settings.ping.offlineSound) : '';
-			var audioUp = (sendMessage) ? new Audio(activeInfo.settings.ping.onlineSound) : '';
-			elm.attr('data-previous-state', status);
-			if(activeInfo.user.groupID <= activeInfo.settings.ping.authMs && activeInfo.settings.ping.ms){ elmMs.removeClass('hidden').html(ms); }
-			switch (status){
-				case 'down':
-					if(catElm.length > 0){ badCount = badCount + 1; catElm.attr('data-bad', badCount); }
-					elm.html(error);
-					catElm.html(error);
-					elm.parent().find('img').addClass('grayscale');
-					var msg = (sendMessage) ? message(tabName,'Server Down',activeInfo.settings.notifications.position,'#FFF','error','600000') : '';
-					var audio = (sendMessage && activeInfo.settings.ping.statusSounds) ? audioDown.play() : '';
-					break;
-				default:
-					if(catElm.length > 0){ goodCount = goodCount + 1; catElm.attr('data-good', goodCount); if(badCount == 0){ catElm.html(success); } }
-					elm.html(success);
-					elm.parent().find('img').removeClass('grayscale');
-					var msg = (sendMessage) ? message(tabName,'Server Back Online',activeInfo.settings.notifications.position,'#FFF','success','600000') : '';
-					var audio = (sendMessage && activeInfo.settings.ping.statusSounds) ? audioUp.play() : '';
-			}
-
+		var v = response.data;
+		var elm = $('.menu-'+cleanClass(i)+'-ping');
+		var elmMs = $('.menu-'+cleanClass(i)+'-ping-ms');
+		var catElm = elm.parent().parent().parent().parent().children('a').find('.menu-category-ping');
+		var error = '<div class="ping"><span class="heartbit"></span><span class="point"></span></div>';
+		var success = '';
+		var badCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-bad')) : 0;
+		var goodCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-good')) : 0;
+		var previousState = (elm.attr('data-previous-state') == "") ? '' : elm.attr('data-previous-state');
+		var tabName = elm.attr('data-tab-name');
+		var status = (v == null) ? 'down' : 'up';
+		var ms = (v == null) ? 'down' : v+'ms';
+		var sendMessage = (previousState !== status && previousState !== '' && activeInfo.user.groupID <= activeInfo.settings.ping.authMessage) ? true : false;
+		var audioDown = (sendMessage) ? new Audio(activeInfo.settings.ping.offlineSound) : '';
+		var audioUp = (sendMessage) ? new Audio(activeInfo.settings.ping.onlineSound) : '';
+		elm.attr('data-previous-state', status);
+		if(activeInfo.user.groupID <= activeInfo.settings.ping.authMs && activeInfo.settings.ping.ms){ elmMs.removeClass('hidden').html(ms); }
+		switch (status){
+			case 'down':
+				if(catElm.length > 0){ badCount = badCount + 1; catElm.attr('data-bad', badCount); }
+				elm.html(error);
+				catElm.html(error);
+				elm.parent().find('img').addClass('grayscale');
+				var msg = (sendMessage) ? message(tabName,'Server Down',activeInfo.settings.notifications.position,'#FFF','error','600000') : '';
+				var audio = (sendMessage && activeInfo.settings.ping.statusSounds) ? audioDown.play() : '';
+				break;
+			default:
+				if(catElm.length > 0){ goodCount = goodCount + 1; catElm.attr('data-good', goodCount); if(badCount == 0){ catElm.html(success); } }
+				elm.html(success);
+				elm.parent().find('img').removeClass('grayscale');
+				var msg = (sendMessage) ? message(tabName,'Server Back Online',activeInfo.settings.notifications.position,'#FFF','success','600000') : '';
+				var audio = (sendMessage && activeInfo.settings.ping.statusSounds) ? audioUp.play() : '';
 		}
+
+
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
