@@ -862,10 +862,13 @@ function loadNextTab(){
 function closeCurrentTab(event){
 	let extra = '';
 	let split = '';
-	if(event.ctrlKey && event.altKey && !event.shiftKey){
-		extra = '-right';
-		split = true;
+	if(typeof event !== 'undefined'){
+		if(event.ctrlKey && event.altKey && !event.shiftKey){
+			extra = '-right';
+			split = true;
+		}
 	}
+
 	var iframe = $('.iFrame-listing'+extra).find('.show');
 	var internal = $('.internal-listing'+extra).find('.show');
 	if(iframe.length > 0){
