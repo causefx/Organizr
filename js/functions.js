@@ -362,6 +362,28 @@ function timerIncrement() {
 	    }
     }
 }
+function ajaxblocker(element = null, action = 'out', message = 'Loading...', background = '#707cd2', border = '#5761a9', colorText = '#fff'){
+	switch (action) {
+		case 'in':
+		case 'fadein':
+			$(element).block({
+				message: '<p style="margin:0;padding:8px;font-size:24px;" lang="en">'+message+'</p>',
+				css: {
+					color: colorText,
+					border: '1px solid ' + border,
+					backgroundColor: background
+				}
+			});
+			break;
+		case 'out':
+		case 'fadeout':
+			$(element).unblock();
+			break;
+		default:
+			$(element).unblock();
+	}
+
+}
 function ajaxloader(element=null, action='out'){
 	var loader = `
 	<div class="ajaxloader">
@@ -8443,7 +8465,8 @@ function searchJackett(){
 	let query = $('#jackett-search-query').val();
 	if(query !== ''){
 		$('.jackettDataTable').removeClass('hidden');
-		ajaxloader('#jackettSearch .panel-wrapper', 'in');
+		//ajaxloader('#jackettSearch .panel-wrapper', 'in');
+		ajaxblocker('.jackett-panel .white-box', 'in', 'Searching...');
 	}else{
 		return false;
 	}
@@ -8515,7 +8538,8 @@ function searchJackett(){
 			],
 			"order": [[ 0, 'desc' ]],
 			"initComplete": function(settings, json) {
-				ajaxloader();
+				//ajaxloader();
+				ajaxblocker('.jackett-panel .white-box');
 				$('.clearJackett').parent().removeClass('hidden');
 			}
 		} );
