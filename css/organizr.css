@@ -1,6 +1,9 @@
+.panel .notify {
+    margin-top: 18px !important;
+    margin-left: -11px;
+}
+
 /*JSGrid*/
-
-
 .jsgrid-grid-body {
     overflow-x: auto;
     overflow-y: auto;

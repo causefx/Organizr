@@ -3396,7 +3396,7 @@ function newsLoad(){
                 count++;
                 let alertDefined = (typeof v.important !== 'undefined' || v.important === false);
                 let alert = (alertDefined) ? '<span class="animated loop-animation flash text-danger">&nbsp; <i class="ti-alert"></i>&nbsp; Important Message</span>' : '';
-                let heartBeat = (alertDefined) ? '<div class="notify m-t-20 pull-right"><span class="heartbit"></span><span class="point"></span></div>' : '';
+                let heartBeat = (alertDefined) ? '<div class="notify pull-left"><span class="heartbit"></span><span class="point"></span></div>' : '';
                 let newBody = `
                 <h5 class="pull-left">`+moment(v.date).format('LLL')+`</h5>
                 <h5 class="pull-right">`+v.author+`</h5>
