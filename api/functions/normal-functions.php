@@ -538,6 +538,14 @@ trait NormalFunctions
 		}
 		return $isLocal;
 	}
+	
+	public function human_filesize($bytes, $dec = 2)
+	{
+		$bytes = number_format($bytes, 0, '.', '');
+		$size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+		$factor = floor((strlen($bytes) - 1) / 3);
+		return sprintf("%.{$dec}f %s", $bytes / (1024 ** $factor), $size[$factor]);
+	}
 }
 
 // Leave for deluge class

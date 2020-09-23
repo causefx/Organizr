@@ -177,6 +177,8 @@ function get_page_settings($Organizr)
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Updates\')" role="presentation" class=""><a id="update-button" href="#settings-settings-updates" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-package"></i></span> <span class="hidden-xs" lang="en">Updates</span></a>
                             </li>
+                            <li onclick="changeSettingsMenu(\'Settings::System Settings::Backup\');loadSettingsPage2(\'api/v2/page/settings_settings_backup\',\'#settings-settings-backup\',\'Backup\');" role="presentation" class=""><a id="settings-settings-backup-anchor" href="#settings-settings-backup" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-export"></i></span><span class="hidden-xs" lang="en">Backup</span></a>
+                            </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Donate\')" role="presentation" class=""><a id="settings-settings-donate-anchor" href="#settings-settings-donate" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-money"></i></span> <span class="hidden-xs" lang="en">Donate</span></a>
                             </li>
                         </ul>
@@ -191,6 +193,10 @@ function get_page_settings($Organizr)
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-logs">
+                                <h2 lang="en">Loading...</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="settings-settings-backup">
                                 <h2 lang="en">Loading...</h2>
                                 <div class="clearfix"></div>
                             </div>

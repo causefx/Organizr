@@ -1595,6 +1595,33 @@ $(document).on("click", ".purgeLog", function () {
     }
 
 });
+$(document).on("click", ".delete-backup", function () {
+	$('#settings-settings-backup').block({
+		message: '<p style="margin:0;padding:8px;font-size:24px;" lang="en">Deleting Backup...</p>',
+		css: {
+			color: '#fff',
+			border: '1px solid #5761a9',
+			backgroundColor: '#707cd2'
+		}
+	});
+	let filename = $(this).attr('data-file');
+	if(filename !== ''){
+		let post = {
+			api:'api/v2/backup/' + filename,
+			messageTitle:'',
+			messageBody:window.lang.translate('Deleted Backup')+': '+filename,
+			error:'Organizr Function: Backup API Connection Failed'
+		};
+		organizrAPI2('DELETE',post.api,'',true).success(function(data) {
+			message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
+			getOrganizrBackups();
+			$('#settings-settings-backup').unblock();
+		}).fail(function(xhr) {
+			console.error(post.error);
+			$('#settings-settings-backup').unblock();
+		});
+	}
+});
 //Show Password
 $(document).on("click", ".showPassword", function () {
     var toggle = $(this).parent().parent().find('.password-alt');

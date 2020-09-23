@@ -3660,6 +3660,71 @@ function themeAnalytics(theme_name){
         }
     });
 }
+function getOrganizrBackups(){
+	organizrAPI2('GET','api/v2/backup').success(function(data) {
+		try {
+			let json = data.response;
+			$('#backup-file-list').html(buildOrganizrBackups(json.data));
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+}
+function createOrganizrBackup(){
+	$('#settings-settings-backup').block({
+		message: '<p style="margin:0;padding:8px;font-size:24px;" lang="en">Backing up...</p>',
+		css: {
+			color: '#fff',
+			border: '1px solid #5761a9',
+			backgroundColor: '#707cd2'
+		}
+	});
+	organizrAPI2('POST','api/v2/backup',{}).success(function(data) {
+		try {
+			let response = data.response;
+			if(response){
+				getOrganizrBackups();
+			}
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+		$('#settings-settings-backup').unblock();
+	}).fail(function(xhr) {
+		$('#settings-settings-backup').unblock();
+		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	});
+}
+function buildOrganizrBackups(array){
+	let list =  '';
+	if(array.total_files > 0) {
+		$.each(array.files, function (i, v) {
+			i++;
+			let pattern = /\[[^\]]*\]/mg;
+			let version = (typeof v.name.match(pattern)[1] !== 'undefined') ?  v.name.match(pattern)[1] : 'N/A';
+			list += `
+			<tr>
+				<td>` + i + `</td>
+				<td class="txt-oflo">` + v.name + `</td>
+				<td><span class="label label-primary label-rouded">` + version + `</span> </td>
+				<td class="txt-oflo">` + v.size + `</td>
+				<td><span class="text-info tooltip-info" data-toggle="tooltip" data-placement="right" title="" data-original-title="`+moment(v.date).format('LLL')+`">`+moment.utc(v.date, "YYYY-MM-DD hh:mm[Z]").local().fromNow()+`</span></td>
+				<td><span class="text-primary"><a href="api/v2/backup/`+v.name+`"><i class="fa fa-download download-backup" data-file="` + v.name + `"></i></a> | <a href="javascript:void(0)"><i class="fa fa-trash-o delete-backup" data-file="` + v.name + `"></i></a></span></td>
+			</tr>
+			`;
+		});
+	}else{
+		list = '<tr><td class="text-center" colspan="6">No Backups made yet</td></tr>';
+	}
+	$('#backup-total-files').html(array.total_files);
+	$('#backup-total-size').html(array.total_size);
+	return list;
+}
 function updateBar(){
 	return `
 	<div class="white-box m-0">
