@@ -36,8 +36,8 @@ function get_page_settings_settings_backup($Organizr)
 					<tr>
 						<th>#</th>
 						<th lang="en">Name</th>
-						<th lang="en">Type</th>
 						<th lang="en">Version</th>
+						<th lang="en">Size</th>
 						<th lang="en">Date</th>
 						<th lang="en">Action</th>
 					</tr>
