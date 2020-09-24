@@ -9747,10 +9747,16 @@ function checkIfTabNameExists(tabName){
     }
 }
 function orgErrorAlert(error){
-    if(activeInfo.settings.misc.debugErrors) {
-        //$('#main-org-error-container').addClass('show');
-        //$('#main-org-error').html(error);
-	    var div = `
+	let showError = false;
+	if(typeof activeInfo === 'undefined'){
+		showError = true;
+	}else{
+		if(activeInfo.settings.misc.debugErrors){
+			showError = true;
+		}
+	}
+    if(showError) {
+	    let div = `
 	    <div class="panel">
             <div class="bg-org2">
                 <div class="panel-heading">ERROR</div>
@@ -10397,5 +10403,11 @@ function launch(){
             message('FATAL ERROR',data,'br','#FFF','error','60000');
             return false;
         }
+	}).fail(function(xhr) {
+		defineNotification();
+		if(xhr.status == 404){
+			orgErrorAlert('<h2>Webserver not setup for Organizr v2.1</h2><h4>Please goto <a href="https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide">Migration guide to complete the changes...</a></h4><h3>Webserver Error:</h3>' + xhr.responseText);
+			message('FATAL ERROR','You need to update webserver location block... check browser console for migration URL','br','#FFF','error','60000');
+		}
 	});
 }
