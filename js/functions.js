@@ -9248,8 +9248,8 @@ function pingUpdateItem(ping){
 		var catElm = elm.parent().parent().parent().parent().children('a').find('.menu-category-ping');
 		var error = '<div class="ping"><span class="heartbit"></span><span class="point"></span></div>';
 		var success = '';
-		var badCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-bad')) : 0;
-		var goodCount = (catElm.length !== 0) ? parseInt(catElm.attr('data-good')) : 0;
+		var badCount = 0;
+		var goodCount = 0;
 		var previousState = (elm.attr('data-previous-state') == "") ? '' : elm.attr('data-previous-state');
 		var tabName = elm.attr('data-tab-name');
 		var status = (v == null) ? 'down' : 'up';
@@ -9258,10 +9258,25 @@ function pingUpdateItem(ping){
 		var audioDown = (sendMessage) ? new Audio(activeInfo.settings.ping.offlineSound) : '';
 		var audioUp = (sendMessage) ? new Audio(activeInfo.settings.ping.onlineSound) : '';
 		elm.attr('data-previous-state', status);
+		let listing = elm.parent().parent().parent().parent().children('a').find('.menu-category-ping').parent().parent().find('li').find("div[class$='-ping']");
+		$.each(listing, function(i,v) {
+			let state = $(v).attr('data-previous-state');
+			if(state == 'up'){
+				goodCount = goodCount + 1
+			}else if(state == 'down'){
+				badCount = badCount + 1;
+			}
+		})
+		if(catElm.length > 0){
+			catElm.attr('data-bad', badCount);
+			catElm.attr('data-good', goodCount);
+			if(badCount == 0){
+				catElm.html(success);
+			}
+		}
 		if(activeInfo.user.groupID <= activeInfo.settings.ping.authMs && activeInfo.settings.ping.ms){ elmMs.removeClass('hidden').html(ms); }
 		switch (status){
 			case 'down':
-				if(catElm.length > 0){ badCount = badCount + 1; catElm.attr('data-bad', badCount); }
 				elm.html(error);
 				catElm.html(error);
 				elm.parent().find('img').addClass('grayscale');
@@ -9269,7 +9284,6 @@ function pingUpdateItem(ping){
 				var audio = (sendMessage && activeInfo.settings.ping.statusSounds) ? audioDown.play() : '';
 				break;
 			default:
-				if(catElm.length > 0){ goodCount = goodCount + 1; catElm.attr('data-good', goodCount); if(badCount == 0){ catElm.html(success); } }
 				elm.html(success);
 				elm.parent().find('img').removeClass('grayscale');
 				var msg = (sendMessage) ? message(tabName,'Server Back Online',activeInfo.settings.notifications.position,'#FFF','success','600000') : '';
