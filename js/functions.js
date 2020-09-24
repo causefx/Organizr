@@ -10408,6 +10408,8 @@ function launch(){
 		if(xhr.status == 404){
 			orgErrorAlert('<h2>Webserver not setup for Organizr v2.1</h2><h4>Please goto <a href="https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide">Migration guide to complete the changes...</a></h4><h3>Webserver Error:</h3>' + xhr.responseText);
 			message('FATAL ERROR','You need to update webserver location block... check browser console for migration URL','br','#FFF','error','60000');
+		}else{
+			orgErrorAlert('<h3>Webserver Error:</h3>' + xhr.responseText);
 		}
 	});
 }
