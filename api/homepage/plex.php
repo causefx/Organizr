@@ -209,7 +209,7 @@ trait PlexHomepageItem
 	public function testConnectionPlex()
 	{
 		if (!empty($this->config['plexURL']) && !empty($this->config['plexToken'])) {
-			$url = $this->qualifyURL($this->config['plexURL']) . "/?X-Plex-Token=" . $this->config['plexToken'];
+			$url = $this->qualifyURL($this->config['plexURL']) . "/servers?X-Plex-Token=" . $this->config['plexToken'];
 			try {
 				$options = ($this->localURL($url)) ? array('verify' => false) : array();
 				$response = Requests::get($url, array(), $options);
@@ -217,11 +217,14 @@ trait PlexHomepageItem
 				if ($response->success) {
 					$this->setAPIResponse('success', 'API Connection succeeded', 200);
 					return true;
+				} else {
+					$this->setAPIResponse('error', 'URL and/or Token not setup correctly', 422);
+					return false;
 				}
 			} catch (Requests_Exception $e) {
 				$this->setAPIResponse('error', $e->getMessage(), 500);
 				return false;
-			};
+			}
 		} else {
 			$this->setAPIResponse('error', 'URL and/or Token not setup', 422);
 			return 'URL and/or Token not setup';
