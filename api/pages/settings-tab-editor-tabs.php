@@ -74,7 +74,9 @@ function get_page_settings_tab_editor_tabs($Organizr)
 	                        <th lang="en" style="text-align:center">DELETE</th>
 	                    </tr>
 	                </thead>
-	                <tbody id="tabEditorTable"></tbody>
+	                <tbody id="tabEditorTable">
+	                	<td class="text-center" colspan="12"><i class="fa fa-spin fa-spinner"></i></td>
+					</tbody>
 	            </table>
 	        </form>
 	    </div>

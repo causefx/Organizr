@@ -43,7 +43,7 @@ $( \'#categoryEditorTable\' ).sortable({
                         <th lang="en" style="text-align:center">DELETE</th>
                     </tr>
                 </thead>
-                <tbody id="categoryEditorTable"></tbody>
+                <tbody id="categoryEditorTable"><td class="text-center" colspan="6"><i class="fa fa-spin fa-spinner"></i></td></tbody>
             </table>
         </form>
     </div>
