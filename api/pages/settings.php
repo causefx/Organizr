@@ -385,5 +385,6 @@ function get_page_settings($Organizr)
     <div class="clearfix"></div>
     <div id="about-theme-body" class=""></div>
 </form>
+<div id="editHomepageItemDiv"><div id="editHomepageItem" class=""></div></div>
 ';
 }

@@ -221,6 +221,7 @@ $Organizr = new Organizr();
 <script src="plugins/bower_components/bootstrap-treeview-master/dist/bootstrap-treeview.min.js"></script>
 <script src="plugins/bower_components/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
 <script src="plugins/bower_components/jsgrid/dist/jsgrid.min.js"></script>
+<script src="plugins/bower_components/animatedModal/animatedModal.min.js"></script>
 <script src="js/gauge.min.js"></script>
 <script src="js/jquery.mousewheel.min.js"></script>
 <script src="js/ua-parser.min.js"></script>

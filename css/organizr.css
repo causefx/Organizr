@@ -2,8 +2,15 @@
     margin-top: 18px !important;
     margin-left: -11px;
 }
-
-/*JSGrid*/
+.editHomepageItemDiv-on {
+    z-index: 9999 !important;
+    opacity: 1 !important;
+    background: #000000eb !important;
+}
+#editHomepageItem {
+    margin-top: 40px;
+}
+    /*JSGrid*/
 .jsgrid-grid-body {
     overflow-x: auto;
     overflow-y: auto;
@@ -4324,9 +4331,12 @@ html {
 
 @keyframes spinner-grow {
     0% {
-        transform: scale(0); }
+        transform: scale(0);
+    }
     50% {
-        opacity: 1; } }
+        opacity: 1;
+    }
+}
 
 .spinner-grow {
     display: inline-block;

@@ -1669,6 +1669,81 @@ function themeStatus(name=null,version=null){
         return 'Not Installed';
     }
 }
+function homepageItemFormHTML(v){
+	return `
+	<a id="editHomepageItemCall" href="#editHomepageItemDiv" class="hidden">homepage item</a>
+	<form id="homepage-`+v.name+`-form" class="white-popup mfp-with-anim homepageForm addFormTick">
+		<fieldset style="border:0;" class="col-md-10 col-md-offset-1">
+            <div class="panel bg-org panel-info">
+                <div class="panel-heading">
+                    <span lang="en">`+v.name+`</span>
+                    <button type="button" class="btn bg-org btn-circle close-popup pull-right close-editHomepageItemDiv"><i class="fa fa-times"></i> </button>
+                    <button id="homepage-`+v.name+`-form-save" onclick="submitSettingsForm('homepage-`+v.name+`-form')" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right hidden animated loop-animation rubberBand m-r-20" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save</span></button>
+                </div>
+                <div class="panel-wrapper collapse in" aria-expanded="true">
+                    <div class="panel-body bg-org">
+                        `+buildFormGroup(v.settings)+`
+                    </div>
+                </div>
+            </div>
+		</fieldset>
+		<div class="clearfix"></div>
+	</form>
+	`;
+}
+function editHomepageItem(item){
+	organizrAPI2('GET','api/v2/settings/homepage/'+item).success(function(data) {
+		try {
+			let response = data.response;
+			let html = homepageItemFormHTML(response.data);
+			$('#editHomepageItem').html(html);
+			$("#editHomepageItemCall").animatedModal({
+				top: '40px',
+				left: '0px',
+				zIndexIn: '9999',
+				zIndexOut: '-9999',
+				color: '#000000eb',
+				opacityIn: '1',
+				opacityOut: '0',
+				animatedIn: 'bounceInUp',
+				animatedOut: 'bounceOutDown',
+				afterClose: function() {
+					$('body, html').css({'overflow':'hidden'});
+				}
+			});
+			$('#editHomepageItemCall').click();
+			if(item == 'CustomHTML-1'){
+				customHTMLoneEditor = ace.edit("customHTMLoneEditor");
+				let HTMLMode = ace.require("ace/mode/html").Mode;
+				customHTMLoneEditor.session.setMode(new HTMLMode());
+				customHTMLoneEditor.setTheme("ace/theme/idle_fingers");
+				customHTMLoneEditor.setShowPrintMargin(false);
+				customHTMLoneEditor.session.on('change', function(delta) {
+					$('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue());
+					$('#homepage-CustomHTML-1-form-save').removeClass('hidden');
+				});
+			}
+			if(item == 'CustomHTML-2'){
+				customHTMLtwoEditor = ace.edit("customHTMLtwoEditor");
+				let HTMLMode = ace.require("ace/mode/html").Mode;
+				customHTMLtwoEditor.session.setMode(new HTMLMode());
+				customHTMLtwoEditor.setTheme("ace/theme/idle_fingers");
+				customHTMLtwoEditor.setShowPrintMargin(false);
+				customHTMLtwoEditor.session.on('change', function(delta) {
+					$('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue());
+					$('#homepage-CustomHTML-2-form-save').removeClass('hidden');
+				});
+			}
+		}catch(e) {
+			console.log(e + ' error: ' + data);
+			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+			return false;
+		}
+
+	}).fail(function(xhr) {
+		console.error("Organizr Function: API Connection Failed");
+	});
+}
 function buildHomepageItem(array){
 	var listing = '';
 	if (Array.isArray(array)) {
@@ -1679,7 +1754,7 @@ function buildHomepageItem(array){
 					<div class="white-box bg-org m-0">
 						<div class="el-card-item p-0">
 							<div class="el-card-avatar el-overlay-1">
-								<a class="popup-with-form" href="#homepage-`+v.name+`-form" data-effect="mfp-3d-unfold"><img class="lazyload tabImages" data-src="`+v.image+`"></a>
+								<a onclick="editHomepageItem('`+v.name+`')"><img class="lazyload tabImages mouse" data-src="`+v.image+`"></a>
 							</div>
 							<div class="el-card-content">
 								<h3 class="box-title">`+v.name+`</h3>
@@ -1688,6 +1763,7 @@ function buildHomepageItem(array){
 						</div>
 					</div>
 				</div>
+				<!--
 				<form id="homepage-`+v.name+`-form" class="mfp-hide white-popup mfp-with-anim homepageForm addFormTick">
 				    <fieldset style="border:0;" class="col-md-10 col-md-offset-1">
                         <div class="panel bg-org panel-info">
@@ -1698,13 +1774,14 @@ function buildHomepageItem(array){
                             </div>
                             <div class="panel-wrapper collapse in" aria-expanded="true">
                                 <div class="panel-body bg-org">
-                                    `+buildFormGroup(v.settings)+`
+                                    +buildFormGroup(v.settings)+
                                 </div>
                             </div>
                         </div>
 					</fieldset>
 				    <div class="clearfix"></div>
 				</form>
+				-->
 				`;
 			}
 		});
@@ -1735,23 +1812,6 @@ function buildHomepage(){
             return false;
         }
 		$('#settings-homepage-list').html(buildHomepageItem(response.data));
-		customHTMLoneEditor = ace.edit("customHTMLoneEditor");
-		var HTMLMode = ace.require("ace/mode/html").Mode;
-		customHTMLoneEditor.session.setMode(new HTMLMode());
-		customHTMLoneEditor.setTheme("ace/theme/idle_fingers");
-		customHTMLoneEditor.setShowPrintMargin(false);
-		customHTMLoneEditor.session.on('change', function(delta) {
-            $('.customHTMLoneTextarea').val(customHTMLoneEditor.getValue());
-            $('#homepage-CustomHTML-1-form-save').removeClass('hidden');
-		});
-		customHTMLtwoEditor = ace.edit("customHTMLtwoEditor");
-		customHTMLtwoEditor.session.setMode(new HTMLMode());
-		customHTMLtwoEditor.setTheme("ace/theme/idle_fingers");
-		customHTMLtwoEditor.setShowPrintMargin(false);
-		customHTMLtwoEditor.session.on('change', function(delta) {
-            $('.customHTMLtwoTextarea').val(customHTMLtwoEditor.getValue());
-            $('#homepage-CustomHTML-2-form-save').removeClass('hidden');
-		});
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
@@ -2005,11 +2065,7 @@ function buildTabEditor(){
             return false;
         }
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
-        loadSettingsPage2('api/v2/page/settings_tab_editor_homepage','#settings-tab-editor-homepage','Homepage Items');
-        setTimeout(function(){ sortHomepageItemHrefs() }, 1000);
-        setTimeout(function(){ checkTabHomepageItems(); }, 1500);
-
-
+        checkTabHomepageItems();
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
@@ -2084,18 +2140,9 @@ function checkTabHomepageItem(id, name, url, urlLocal){
     }
 }
 function addEditHomepageItem(id, type){
-    var html = '';
-    var process = false;
-    if(type in window.hrefList){
-        html = '<i class="ti-home"></i>';
-        process = true;
-    }
-    if(html !== ''){
-        $('#'+id).html(html);
-    }
-    if(process){
-        $('#'+id).attr('onclick', "$('.popup-with-form').magnificPopup('open',"+window.hrefList[type]+")");
-    }
+    let html = '<i class="ti-home"></i>';
+    $('#'+id).html(html);
+    $('#'+id).attr('onclick', 'editHomepageItem("'+type+'")');
     return false;
 }
 function buildCategoryEditor(){

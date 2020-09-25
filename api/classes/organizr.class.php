@@ -4240,6 +4240,18 @@ class Organizr
 		$this->groupOptions = $this->groupSelect();
 	}
 	
+	public function getSettingsHomepageItem($item)
+	{
+		$items = $this->getSettingsHomepage();
+		foreach ($items as $k => $v) {
+			if ($v['name'] === $item) {
+				return $v;
+			}
+		}
+		$this->setAPIResponse('error', 'Homepage item was not found', 404);
+		return null;
+	}
+	
 	public function getSettingsHomepage()
 	{
 		$this->setGroupOptionsVariable();
