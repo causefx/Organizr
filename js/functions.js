@@ -1898,6 +1898,32 @@ function buildFormGroup(array){
 	});
 	return uList+'</ul>'+group;
 }
+function createImageSwal(attr){
+	let title = attr.attr('data-title');
+	let fullPath = attr.attr('data-image-path');
+	let clipboardText = attr.attr('data-clipboard-text');
+	let name = attr.attr('data-image-name');
+	let extension = attr.attr('data-image-name-ext');
+	let div = `
+		<div class="panel panel-default">
+            <div class="panel-heading"><h1><img class="center" src="`+fullPath+`" style="height: 50px; width: 50px">`+title+`</h1></div>
+            <div class="panel-wrapper collapse in">
+                <div class="panel-body">
+                	<h5 lang="en">Choose action:</h5>
+					<div class="button-box">
+                        <button class="btn btn-info waves-effect waves-light clipboard" type="button" data-clipboard-text="`+clipboardText+`"><span class="btn-label"><i class="ti-clipboard"></i></span>Copy to Clipboard</button>
+                        <button class="btn btn-danger waves-effect waves-light deleteImage" type="button" data-image-path="`+fullPath+`" data-image-name="`+name+`" data-image-name-ext="`+extension+`"><span class="btn-label"><i class="fa fa-trash"></i></span>Delete</button>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+	swal({
+		content: createElementFromHTML(div),
+		buttons: false,
+		className: 'bg-org'
+	})
+}
 function buildImageManagerViewItem(array){
 	var imageListing = '';
 	if (Array.isArray(array)) {
@@ -1906,23 +1932,7 @@ function buildImageManagerViewItem(array){
 			var name = filepath[3].split(".");
 			var clipboardText = v.replace(/ /g,"%20");
 			imageListing += `
-			<div class="col-lg-1 col-md-1 col-sm-2 col-xs-4">
-				<div class="white-box bg-org m-0">
-					<div class="el-card-item p-0">
-						<div class="el-card-avatar el-overlay-1"> <img class="lazyload tabImages" data-src="`+v+`" width="22" height="22">
-							<div class="el-overlay">
-								<ul class="el-info">
-									<li><a class="btn default btn-outline clipboard p-a-5" data-clipboard-text="`+clipboardText+`" href="javascript:void(0);"><i class="ti-clipboard"></i></a></li>
-									<li><a class="btn default btn-outline deleteImage p-a-5" href="javascript:void(0);" data-image-path="`+v+`" data-image-name="`+name[0]+`" data-image-name-ext="`+filepath[3]+`"><i class="icon-trash"></i></a></li>
-								</ul>
-							</div>
-						</div>
-						<div class="el-card-content">
-							<small class="elip text-uppercase">`+name[0]+`</small><br>
-						</div>
-					</div>
-				</div>
-			</div>
+			<a class="imageManagerItem" href="javascript:void(0);" data-toggle="lightbox" data-gallery="multiimages" data-title="`+name[0]+`" data-clipboard-text="`+clipboardText+`" data-image-path="`+v+`" data-image-name="`+name[0]+`" data-image-name-ext="`+filepath[3]+`"><img data-src="`+v+`" alt="gallery" class="all studio lazyload" /> </a>
 			`;
 		});
 	}
@@ -1937,7 +1947,12 @@ function buildImageManagerView(){
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		$('#settings-image-manager-list').html(buildImageManagerViewItem(response.data));
+		$('.settings-image-manager-list').html(buildImageManagerViewItem(response.data));
+		if(typeof $container == 'object'){
+			$container.isotope('destroy')
+		}
+		$container = $("#gallery-content-center");
+		$container.isotope({itemSelector : "img"});
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
@@ -10372,6 +10387,7 @@ function organizrConsole(subject,msg,type = 'info'){
 
 	console.info("%c "+subject+" %c ".concat(msg, " "), "color: white; background: "+color+"; font-weight: 700;", "color: "+color+"; background: white; font-weight: 700;");
 }
+
 function launch(){
 	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
 	organizrConsole('API V2 API','If you see a 404 Error below this line, you have not setup the new location block... See URL above this line', 'error');

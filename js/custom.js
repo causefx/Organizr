@@ -1938,3 +1938,6 @@ $(document).on('click', 'li a[aria-controls="Custom data"]', function() {
         $('#customize-appearance-form-save').removeClass('hidden');
     });
 });
+$(document).on('click', '.imageManagerItem', function() {
+	createImageSwal($(this));
+});

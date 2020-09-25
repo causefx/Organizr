@@ -36,6 +36,7 @@ $Organizr = new Organizr();
     <link href="plugins/bower_components/hover/hover-min.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/jsgrid/dist/jsgrid.min.css" rel="stylesheet" type="text/css"/>
     <link href="plugins/bower_components/jsgrid/dist/jsgrid-theme.min.css" rel="stylesheet" type="text/css"/>
+    <link href="plugins/bower_components/gallery/css/animated-masonry-gallery.css" rel="stylesheet" type="text/css"/>
     <link href="css/animate.css" rel="stylesheet">
     <link href="css/simplebar.css" rel="stylesheet">
     <link href="css/plyr.css" rel="stylesheet">
@@ -222,6 +223,8 @@ $Organizr = new Organizr();
 <script src="plugins/bower_components/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
 <script src="plugins/bower_components/jsgrid/dist/jsgrid.min.js"></script>
 <script src="plugins/bower_components/animatedModal/animatedModal.min.js"></script>
+<script src="plugins/bower_components/gallery/js/animated-masonry-gallery.js"></script>
+<script src="plugins/bower_components/gallery/js/jquery.isotope.min.js"></script>
 <script src="js/gauge.min.js"></script>
 <script src="js/jquery.mousewheel.min.js"></script>
 <script src="js/ua-parser.min.js"></script>
