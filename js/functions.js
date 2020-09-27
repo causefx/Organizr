@@ -1948,8 +1948,11 @@ function buildImageManagerView(){
             return false;
         }
 		$('.settings-image-manager-list').html(buildImageManagerViewItem(response.data));
+
 		if(typeof $container == 'object'){
-			$container.isotope('destroy')
+			if(typeof $container.isotope() == 'object'){
+				$container.isotope('destroy');
+			}
 		}
 		$container = $("#gallery-content-center");
 		$container.isotope({itemSelector : "img"});
@@ -10186,49 +10189,42 @@ function oAuthLoginNeededCheck() {
     }
     message('OAuth', ' Proceeding to login', activeInfo.settings.notifications.position, '#FFF', 'info', '10000');
     organizrAPI2('POST', 'api/v2/login', '').success(function (data) {
-        var html = JSON.parse(data);
-        if (html.data == true) {
-            local('set', 'message', 'Welcome|Login Successful|success');
-            location.reload();
-        } else if (html.data == 'mismatch') {
-            $('div.login-box').unblock({});
-            message('Login Error', ' Wrong username/email/password combo', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
-            console.error('Organizr Function: Login failed - wrong username/email/password');
-        } else if (html.data == 'lockout') {
-            $('div.login-box').block({
-                message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
-                css: {
-                    color: '#fff',
-                    border: '1px solid #e91e63',
-                    backgroundColor: '#f44336'
-                }
-            });
-            message('Login Error', ' You have been Locked out', activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-            console.error('Organizr Function: Login failed - User has been locked out');
-            setTimeout(function () {
-                local('r', 'loggingIn');
-                location.reload()
-            }, 10000);
-        } else if (html.data == '2FA') {
-            $('div.login-box').unblock({});
-            $('#tfa-div').removeClass('hidden');
-            $('#loginform [name=tfaCode]').focus();
-        } else if (html.data == '2FA-incorrect') {
-            $('div.login-box').unblock({});
-            $('#tfa-div').removeClass('hidden');
-            $('#loginform [name=tfaCode]').focus();
-            message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
-        } else {
-            $('div.login-box').unblock({});
-            message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
-            console.error('Organizr Function: Login failed');
-        }
-        local('r', 'loggingIn');
+	    local('set','message','Welcome|Login Successful|success');
+	    local('r','loggingIn');
+	    location.reload();
     }).fail(function (xhr) {
-        $('div.login-box').unblock({});
-        message('Login Error', 'API Connection Failed', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
-        console.error("Organizr Function: API Connection Failed");
-        local('r', 'loggingIn');
+	    $('div.login-box').unblock({});
+	    switch (xhr.status){
+		    case 401:
+			    if(xhr.responseJSON.response.message == '2FA Code incorrect'){
+				    $('div.login-box').unblock({});
+				    $('#tfa-div').removeClass('hidden');
+				    $('#loginform [name=tfaCode]').focus();
+			    }
+			    break;
+		    case 403:
+			    $('div.login-box').block({
+				    message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
+				    css: {
+					    color: '#fff',
+					    border: '1px solid #e91e63',
+					    backgroundColor: '#f44336'
+				    }
+			    });
+			    setTimeout(function(){ local('r','loggingIn'); location.reload() }, 10000);
+			    break;
+		    case 422:
+			    $('div.login-box').unblock({});
+			    $('#tfa-div').removeClass('hidden');
+			    $('#loginform [name=tfaCode]').focus();
+			    break;
+		    default:
+			    message('Login Error', 'API Connection Failed', activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+			    console.error("Organizr Function: API Connection Failed");
+	    }
+	    message('Login Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+	    console.error("Organizr Function: " + xhr.responseJSON.response.message);
+	    local('r','loggingIn');
     });
 }
 function ipInfoSpan(ip){
