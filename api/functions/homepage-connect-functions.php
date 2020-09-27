@@ -2731,7 +2731,8 @@ function getSpeedtest()
 				$api['data'] = [
 					'current' => $json['data'],
 					'average' => $json['average'],
-					'max' => $json['max'],
+					'max' => isset($json['max'])?$json['max']:$json['maximum'],
+					'min' => isset($json['min'])?$json['min']:$json['minimum']
 				];
 				$api['options'] = [
 					'title' => $GLOBALS['speedtestHeader'],
