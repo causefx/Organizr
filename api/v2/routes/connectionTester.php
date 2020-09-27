@@ -5,6 +5,52 @@
  *     description="Test Connections"
  * )
  */
+$app->post('/test/ldap', function ($request, $response, $args) {
+	/**
+	 * @OA\Post(
+	 *     security={{ "api_key":{} }},
+	 *     tags={"test connection"},
+	 *     path="/api/v2/test/ldap",
+	 *     summary="Test LDAP connection",
+	 *     @OA\Response(response="200",description="Success",@OA\JsonContent(ref="#/components/schemas/success-message")),
+	 *     @OA\Response(response="401",description="Unauthorized",@OA\JsonContent(ref="#/components/schemas/unauthorized-message")),
+	 *     @OA\Response(response="404",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 *     @OA\Response(response="409",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 * )
+	 */
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	if ($Organizr->qualifyRequest(1, true)) {
+		$Organizr->testConnectionLdap();
+	}
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+	
+});
+$app->post('/test/ldap/login', function ($request, $response, $args) {
+	/**
+	 * @OA\Post(
+	 *     security={{ "api_key":{} }},
+	 *     tags={"test connection"},
+	 *     path="/api/v2/test/ldap/login",
+	 *     summary="Test LDAP connection using account login",
+	 *     @OA\Response(response="200",description="Success",@OA\JsonContent(ref="#/components/schemas/success-message")),
+	 *     @OA\Response(response="401",description="Unauthorized",@OA\JsonContent(ref="#/components/schemas/unauthorized-message")),
+	 *     @OA\Response(response="404",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 *     @OA\Response(response="409",description="Error",@OA\JsonContent(ref="#/components/schemas/error-message")),
+	 * )
+	 */
+	$Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+	if ($Organizr->qualifyRequest(1, true)) {
+		$Organizr->testConnectionLdapLogin($Organizr->apiData($request));
+	}
+	$response->getBody()->write(jsonE($GLOBALS['api']));
+	return $response
+		->withHeader('Content-Type', 'application/json;charset=UTF-8')
+		->withStatus($GLOBALS['responseCode']);
+	
+});
 $app->post('/test/iframe', function ($request, $response, $args) {
 	/**
 	 * @OA\Post(

@@ -6976,7 +6976,7 @@ function testAPIConnection(service, data = ''){
             return false;
         }
     }).fail(function(xhr) {
-	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	    messageSingle('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
 	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
     });
 }
@@ -10048,7 +10048,7 @@ function showLDAPLoginTest(){
                                 </div>
                             </div>
                             <div class="form-group mb-0 p-r-10 text-right">
-                                <button type="submit" onclick="testAPIConnection('ldap_login', {'username':$('#ldapUsernameTest').val(),'password':$('#ldapPasswordTest').val()})" class="btn btn-info waves-effect waves-light">Test Login</button>
+                                <button type="submit" onclick="testAPIConnection('ldap/login', {'username':$('#ldapUsernameTest').val(),'password':$('#ldapPasswordTest').val()})" class="btn btn-info waves-effect waves-light">Test Login</button>
                             </div>
                         </div>
                     </div>
