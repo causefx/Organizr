@@ -1089,7 +1089,7 @@ class Organizr
 				);
 			}
 		}
-		ksort($allIconsPrep);
+		uksort($allIconsPrep, 'strcasecmp');
 		foreach ($allIconsPrep as $item) {
 			$allIcons[] = $item['path'] . $item['name'];
 		}
