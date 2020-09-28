@@ -11,7 +11,7 @@ function get_page_settings_tab_editor_tabs($Organizr)
 	if (!$Organizr->qualifyRequest(1, true)) {
 		return false;
 	}
-	$pageSettingsTabEditorTabsPerformanceIcon = $Organizr->config['performanceDisableIconDropdown'] ? '' : '
+	$iconSelectors = '
 
 	    $(".tabIconIconList").select2({
 	        ajax: {
@@ -36,21 +36,34 @@ function get_page_settings_tab_editor_tabs($Organizr)
 			},
 			placeholder: \'Search for an icon\',
 			templateResult: formatIcon,
-			templateSelection: formatIcon,
-			allowClear: true
+			templateSelection: formatIcon
 		});
-	
-	
-	$(".tabIconImageList").select2({
-		templateResult: formatImage,
-		templateSelection: formatImage,
-	});
-	';
-	$pageSettingsTabEditorTabsPerformanceImage = $Organizr->config['performanceDisableImageDropdown'] ? '' : '
-	$(".tabIconImageList").select2({
-		templateResult: formatImage,
-		templateSelection: formatImage,
-	});
+		
+		$(".tabIconImageList").select2({
+			 ajax: {
+			    url: \'api/v2/image/select\',
+			    data: function (params) {
+					var query = {
+						search: params.term,
+						page: params.page || 1
+					}
+					return query;
+			    },
+				processResults: function (data, params) {
+					params.page = params.page || 1;
+					return {
+						results: data.response.data.results,
+						pagination: {
+							more: (params.page * 20) < data.response.data.total
+						}
+					};
+				},
+			    //cache: true
+			},
+			placeholder: \'Search for an image\',
+			templateResult: formatImage,
+			templateSelection: formatImage
+		});
 	';
 	return '
 	<script>
@@ -68,7 +81,7 @@ function get_page_settings_tab_editor_tabs($Organizr)
 	    }
 	});
 	$( \'#tabEditorTable\' ).disableSelection();
-	' . $pageSettingsTabEditorTabsPerformanceImage . $pageSettingsTabEditorTabsPerformanceIcon . '
+	' . $iconSelectors . '
 	</script>
 	<div class="panel bg-org panel-info">
 	    <div class="panel-heading">
@@ -147,7 +160,7 @@ function get_page_settings_tab_editor_tabs($Organizr)
 	        <div class="row">
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="new-tab-form-chooseImage" lang="en">Choose Image</label>
-		            ' . $Organizr->imageSelect("new-tab-form") . '
+		            <select class="form-control tabIconImageList" id="new-tab-form-chooseImage" name="chooseImage"><option lang="en">Select or type Image</option></select>
 		        </div>
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="new-tab-form-chooseIcon" lang="en">Choose Icon</label>
@@ -209,7 +222,7 @@ function get_page_settings_tab_editor_tabs($Organizr)
 	        <div class="row">
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="edit-tab-form-chooseImage" lang="en">Choose Image</label>
-		            ' . $Organizr->imageSelect("edit-tab-form") . '
+		            <select class="form-control tabIconImageList" id="edit-tab-form-chooseImage" name="chooseImage"><option lang="en">Select or type Image</option></select>
 		        </div>
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="edit-tab-form-chooseIcon" lang="en">Choose Icon</label>

@@ -1096,6 +1096,36 @@ class Organizr
 		return $allIcons;
 	}
 	
+	public function getImagesSelect()
+	{
+		$term = $_GET['search'] ?? null;
+		$page = $_GET['page'] ?? 1;
+		$limit = $_GET['limit'] ?? 20;
+		$offset = ($page * $limit) - $limit;
+		$goodIcons['results'] = [];
+		$goodIcons['limit'] = $limit;
+		$goodIcons['page'] = $page;
+		$goodIcons['term'] = $term;
+		$imageListing = $this->getImages();
+		$newImageListing = [];
+		foreach ($imageListing as $image) {
+			$newImageListing[] = [
+				'id' => $image,
+				'text' => basename($image)
+			];
+		}
+		foreach ($newImageListing as $k => $v) {
+			if (stripos($v['text'], $term) !== false || !$term) {
+				$goodIcons['results'][] = $v;
+			}
+		}
+		$total = count($goodIcons['results']);
+		$goodIcons['total'] = $total;
+		$goodIcons['results'] = array_slice($goodIcons['results'], $offset, $limit);
+		$goodIcons['pagination']['more'] = $page < (ceil($total / $limit));
+		return $goodIcons;
+	}
+	
 	public function removeImage($image = null)
 	{
 		if (!$image) {

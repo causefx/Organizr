@@ -516,12 +516,12 @@ function noTabs(arrayItems){
 	}
 }
 function formatImage (icon) {
-    if (!icon.id || icon.text == 'Select or type Icon') {
+    if (!icon.id || icon.text == 'Select or type Image') {
         return icon.text;
     }
     var baseUrl = "/user/pages/images/flags";
     var $icon = $(
-        '<span><img src="' + icon.element.value + '" class="img-chooser" /> ' + icon.text + '</span>'
+        '<span><img src="' + icon.id + '" class="img-chooser" /> ' + icon.text + '</span>'
     );
     return $icon;
 }
@@ -1700,11 +1700,7 @@ function editHomepageItem(item){
 			$("#editHomepageItemCall").animatedModal({
 				top: '40px',
 				left: '0px',
-				zIndexIn: '9999',
-				zIndexOut: '-9999',
 				color: '#000000eb',
-				opacityIn: '1',
-				opacityOut: '0',
 				animatedIn: 'bounceInUp',
 				animatedOut: 'bounceOutDown',
 				afterClose: function() {
