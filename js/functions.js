@@ -1928,7 +1928,7 @@ function buildImageManagerViewItem(array){
 			var name = filepath[3].split(".");
 			var clipboardText = v.replace(/ /g,"%20");
 			imageListing += `
-			<a class="imageManagerItem" href="javascript:void(0);" data-toggle="lightbox" data-gallery="multiimages" data-title="`+name[0]+`" data-clipboard-text="`+clipboardText+`" data-image-path="`+v+`" data-image-name="`+name[0]+`" data-image-name-ext="`+filepath[3]+`"><img data-src="`+v+`" alt="gallery" class="all studio lazyload" /> </a>
+			<a class="imageManagerItem" href="javascript:void(0);" data-toggle="lightbox" data-gallery="multiimages" data-title="`+name[0]+`" data-clipboard-text="`+clipboardText+`" data-image-path="`+v+`" data-image-name="`+name[0]+`" data-image-name-ext="`+filepath[3]+`"><img data-src="`+v+`" alt="tabImage" class="all studio lazyload" /> </a>
 			`;
 		});
 	}
@@ -1937,21 +1937,24 @@ function buildImageManagerViewItem(array){
 function buildImageManagerView(){
 	organizrAPI2('GET','api/v2/image').success(function(data) {
         try {
-            var response = data.response;
+            let response = data.response;
+	        $('.settings-image-manager-list').html(buildImageManagerViewItem(response.data));
+	        $container = $("#gallery-content-center");
+	        try{
+	        	if(typeof $container.isotope == 'undefined'){
+			        $container.isotope({itemSelector : "img"});
+		        }else{
+			        $container.isotope({itemSelector : "img"});
+		        }
+	        }catch{
+		        $container.isotope('destroy');
+		        $container.isotope({itemSelector : "img"});
+	        }
         }catch(e) {
             console.log(e + ' error: ' + data);
             orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
             return false;
         }
-		$('.settings-image-manager-list').html(buildImageManagerViewItem(response.data));
-
-		if(typeof $container == 'object'){
-			if(typeof $container.isotope() == 'object'){
-				$container.isotope('destroy');
-			}
-		}
-		$container = $("#gallery-content-center");
-		$container.isotope({itemSelector : "img"});
 	}).fail(function(xhr) {
 		console.error("Organizr Function: API Connection Failed");
 	});
