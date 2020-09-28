@@ -84,6 +84,7 @@ config/users
 config/users*.db
 config/users*.bak.db
 config/tmp/*
+docs/api.json
 images/cache/*
 backups/*
 backups/
