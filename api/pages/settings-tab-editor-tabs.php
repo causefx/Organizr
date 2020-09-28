@@ -35,7 +35,6 @@ function get_page_settings_tab_editor_tabs($Organizr)
 			    //cache: true
 			},
 			placeholder: \'Search for an icon\',
-			minimumInputLength: 1,
 			templateResult: formatIcon,
 			templateSelection: formatIcon,
 			allowClear: true

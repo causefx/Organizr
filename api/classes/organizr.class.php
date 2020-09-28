@@ -6383,11 +6383,12 @@ class Organizr
 		$goodIcons['results'] = [];
 		$goodIcons['limit'] = $limit;
 		$goodIcons['page'] = $page;
+		$goodIcons['term'] = $term;
 		$allIcons = file_get_contents($this->root . '/js/icons.json');
 		$iconListing = json_decode($allIcons, true);
 		foreach ($iconListing as $setKey => $set) {
 			foreach ($set['children'] as $k => $v) {
-				if (stripos($v['text'], $term) !== false) {
+				if (stripos($v['text'], $term) !== false || !$term) {
 					$goodIcons['results'][] = $v;
 				}
 			}
