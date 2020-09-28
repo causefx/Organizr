@@ -12,13 +12,36 @@ function get_page_settings_tab_editor_tabs($Organizr)
 		return false;
 	}
 	$pageSettingsTabEditorTabsPerformanceIcon = $Organizr->config['performanceDisableIconDropdown'] ? '' : '
-	allIcons().success(function(data) {
+
 	    $(".tabIconIconList").select2({
-			data: data,
+	        ajax: {
+			    url: \'api/v2/icon\',
+			    data: function (params) {
+					var query = {
+						search: params.term,
+						page: params.page || 1
+					}
+					return query;
+			    },
+				processResults: function (data, params) {
+					params.page = params.page || 1;
+					return {
+						results: data.response.data.results,
+						pagination: {
+							more: (params.page * 20) < data.response.data.total
+						}
+					};
+				},
+			    //cache: true
+			},
+			placeholder: \'Search for an icon\',
+			minimumInputLength: 1,
 			templateResult: formatIcon,
 			templateSelection: formatIcon,
+			allowClear: true
 		});
-	});
+	
+	
 	$(".tabIconImageList").select2({
 		templateResult: formatImage,
 		templateSelection: formatImage,

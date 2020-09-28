@@ -6374,6 +6374,31 @@ class Organizr
 		
 	}
 	
+	public function getIcons()
+	{
+		$term = $_GET['search'] ?? null;
+		$page = $_GET['page'] ?? 1;
+		$limit = $_GET['limit'] ?? 20;
+		$offset = ($page * $limit) - $limit;
+		$goodIcons['results'] = [];
+		$goodIcons['limit'] = $limit;
+		$goodIcons['page'] = $page;
+		$allIcons = file_get_contents($this->root . '/js/icons.json');
+		$iconListing = json_decode($allIcons, true);
+		foreach ($iconListing as $setKey => $set) {
+			foreach ($set['children'] as $k => $v) {
+				if (stripos($v['text'], $term) !== false) {
+					$goodIcons['results'][] = $v;
+				}
+			}
+		}
+		$total = count($goodIcons['results']);
+		$goodIcons['total'] = $total;
+		$goodIcons['results'] = array_slice($goodIcons['results'], $offset, $limit);
+		$goodIcons['pagination']['more'] = $page < (ceil($total / $limit));
+		return $goodIcons;
+	}
+	
 	protected function processQueries(array $request, $migration = false)
 	{
 		$results = array();
