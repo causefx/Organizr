@@ -96,7 +96,7 @@ function($) {
     "use strict";
     $.CalendarApp.init()
 }(window.jQuery);
-$(".homepage-loading-box").fadeOut(1000);
+$(".homepage-loading-box").fadeOut(5000);
 </script>
 <div class="container-fluid p-t-30" id="homepage-items">
     ' . $Organizr->buildHomepage() . '
