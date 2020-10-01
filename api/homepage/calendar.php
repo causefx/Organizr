@@ -94,6 +94,53 @@ trait CalendarHomepageItem
 		);
 	}
 	
+	public function calendarHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageCalendarEnabled'
+				],
+				'auth' => [
+					'homepageCalendarAuth'
+				],
+				'not_empty' => [
+					'calendariCal'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrdercalendar()
+	{
+		if (
+			$this->homepageItemPermissions($this->sonarrHomepagePermissions('calendar')) ||
+			$this->homepageItemPermissions($this->radarrHomepagePermissions('calendar')) ||
+			$this->homepageItemPermissions($this->lidarrHomepagePermissions('calendar')) ||
+			$this->homepageItemPermissions($this->sickrageHomepagePermissions('calendar')) ||
+			$this->homepageItemPermissions($this->couchPotatoHomepagePermissions('calendar')) ||
+			$this->homepageItemPermissions($this->calendarHomepagePermissions('calendar'))
+		) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div id="calendar" class="fc fc-ltr m-b-30"></div>
+					<script>
+						// Calendar
+						homepageCalendar("' . $this->config['calendarRefresh'] . '");
+						// End Calendar
+					</script>
+					</div>
+				';
+		}
+	}
+	
 	public function loadCalendarJS()
 	{
 		$locale = ($this->config['calendarLocale'] !== 'en') ?? false;

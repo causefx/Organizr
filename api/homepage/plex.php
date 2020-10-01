@@ -231,6 +231,321 @@ trait PlexHomepageItem
 		}
 	}
 	
+	public function plexHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'streams' => [
+				'enabled' => [
+					'homepagePlexEnabled',
+					'homepagePlexStreams'
+				],
+				'auth' => [
+					'homepagePlexAuth',
+					'homepagePlexStreamsAuth'
+				],
+				'not_empty' => [
+					'plexURL',
+					'plexToken',
+					'plexID'
+				]
+			],
+			'recent' => [
+				'enabled' => [
+					'homepagePlexEnabled',
+					'homepagePlexRecent'
+				],
+				'auth' => [
+					'homepagePlexAuth',
+					'homepagePlexRecentAuth'
+				],
+				'not_empty' => [
+					'plexURL',
+					'plexToken',
+					'plexID'
+				]
+			],
+			'playlists' => [
+				'enabled' => [
+					'homepagePlexEnabled',
+					'homepagePlexPlaylist'
+				],
+				'auth' => [
+					'homepagePlexAuth',
+					'homepagePlexPlaylistAuth'
+				],
+				'not_empty' => [
+					'plexURL',
+					'plexToken',
+					'plexID'
+				]
+			],
+			'metadata' => [
+				'enabled' => [
+					'homepagePlexEnabled'
+				],
+				'auth' => [
+					'homepagePlexAuth'
+				],
+				'not_empty' => [
+					'plexURL',
+					'plexToken',
+					'plexID'
+				]
+			],
+			'search' => [
+				'enabled' => [
+					'homepagePlexEnabled',
+					'mediaSearch'
+				],
+				'auth' => [
+					'homepagePlexAuth',
+					'mediaSearchAuth'
+				],
+				'not_empty' => [
+					'plexURL',
+					'plexToken',
+					'plexID'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderplexnowplaying()
+	{
+		if ($this->homepageItemPermissions($this->plexHomepagePermissions('streams'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Now Playing...</h2></div>
+					<script>
+						// Plex Stream
+						homepageStream("plex", "' . $this->config['homepageStreamRefresh'] . '");
+						// End Plex Stream
+					</script>
+				</div>
+				';
+		}
+	}
+	
+	public function homepageOrderplexrecent()
+	{
+		if ($this->homepageItemPermissions($this->plexHomepagePermissions('recent'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Recent...</h2></div>
+					<script>
+						// Plex Recent
+						homepageRecent("plex", "' . $this->config['homepageRecentRefresh'] . '");
+						// End Plex Recent
+					</script>
+				</div>
+				';
+		}
+	}
+	
+	public function homepageOrderplexplaylist()
+	{
+		if ($this->homepageItemPermissions($this->plexHomepagePermissions('playlists'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Playlists...</h2></div>
+					<script>
+						// Plex Playlist
+						homepagePlaylist("plex");
+						// End Plex Playlist
+					</script>
+				</div>
+				';
+		}
+	}
+	
+	public function getPlexHomepageStreams()
+	{
+		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('streams'), true)) {
+			return false;
+		}
+		$ignore = array();
+		$resolve = true;
+		$url = $this->qualifyURL($this->config['plexURL']);
+		$url = $url . "/status/sessions?X-Plex-Token=" . $this->config['plexToken'];
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$response = Requests::get($url, array(), $options);
+		libxml_use_internal_errors(true);
+		if ($response->success) {
+			$items = array();
+			$plex = simplexml_load_string($response->body);
+			foreach ($plex as $child) {
+				if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
+					$items[] = $this->resolvePlexItem($child);
+				}
+			}
+			$api['content'] = ($resolve) ? $items : $plex;
+			$api['plexID'] = $this->config['plexID'];
+			$api['showNames'] = true;
+			$api['group'] = '1';
+			$this->setAPIResponse('success', null, 200, $api);
+			return $api;
+		}
+	}
+	
+	public function getPlexHomepageRecent()
+	{
+		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('recent'), true)) {
+			return false;
+		}
+		$ignore = array();
+		$resolve = true;
+		$url = $this->qualifyURL($this->config['plexURL']);
+		$urls['movie'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=1";
+		$urls['tv'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=2";
+		$urls['music'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=8";
+		foreach ($urls as $k => $v) {
+			$options = ($this->localURL($v)) ? array('verify' => false) : array();
+			$response = Requests::get($v, array(), $options);
+			libxml_use_internal_errors(true);
+			if ($response->success) {
+				$items = array();
+				$plex = simplexml_load_string($response->body);
+				foreach ($plex as $child) {
+					if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
+						$items[] = $this->resolvePlexItem($child);
+					}
+				}
+				if (isset($api)) {
+					$api['content'] = array_merge($api['content'], ($resolve) ? $items : $plex);
+				} else {
+					$api['content'] = ($resolve) ? $items : $plex;
+				}
+			}
+		}
+		if (isset($api['content'])) {
+			usort($api['content'], function ($a, $b) {
+				return $b['addedAt'] <=> $a['addedAt'];
+			});
+		}
+		$api['plexID'] = $this->config['plexID'];
+		$api['showNames'] = true;
+		$api['group'] = '1';
+		$this->setAPIResponse('success', null, 200, $api);
+		return $api;
+	}
+	
+	public function getPlexHomepagePlaylists()
+	{
+		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('playlists'), true)) {
+			return false;
+		}
+		$url = $this->qualifyURL($this->config['plexURL']);
+		$url = $url . "/playlists?X-Plex-Token=" . $this->config['plexToken'];
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$response = Requests::get($url, array(), $options);
+		libxml_use_internal_errors(true);
+		if ($response->success) {
+			$items = array();
+			$plex = simplexml_load_string($response->body);
+			foreach ($plex as $child) {
+				if ($child['playlistType'] == "video" && strpos(strtolower($child['title']), 'private') === false) {
+					$playlistTitleClean = preg_replace("/(\W)+/", "", (string)$child['title']);
+					$playlistURL = $this->qualifyURL($this->config['plexURL']);
+					$playlistURL = $playlistURL . $child['key'] . "?X-Plex-Token=" . $this->config['plexToken'];
+					$options = ($this->localURL($url)) ? array('verify' => false) : array();
+					$playlistResponse = Requests::get($playlistURL, array(), $options);
+					if ($playlistResponse->success) {
+						$playlistResponse = simplexml_load_string($playlistResponse->body);
+						$items[$playlistTitleClean]['title'] = (string)$child['title'];
+						foreach ($playlistResponse->Video as $playlistItem) {
+							$items[$playlistTitleClean][] = $this->resolvePlexItem($playlistItem);
+						}
+					}
+				}
+			}
+			$api['content'] = $items;
+			$api['plexID'] = $this->config['plexID'];
+			$api['showNames'] = true;
+			$api['group'] = '1';
+			$this->setAPIResponse('success', null, 200, $api);
+			return $api;
+		} else {
+			$this->setAPIResponse('error', 'Plex API error', 500);
+			return false;
+		}
+		
+	}
+	
+	public function getPlexHomepageMetadata($array)
+	{
+		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('metadata'), true)) {
+			return false;
+		}
+		$key = $array['key'] ?? null;
+		if (!$key) {
+			$this->setAPIResponse('error', 'Plex Metadata key is not defined', 422);
+			return false;
+		}
+		$ignore = array();
+		$resolve = true;
+		$url = $this->qualifyURL($this->config['plexURL']);
+		$url = $url . "/library/metadata/" . $key . "?X-Plex-Token=" . $this->config['plexToken'];
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$response = Requests::get($url, array(), $options);
+		libxml_use_internal_errors(true);
+		if ($response->success) {
+			$items = array();
+			$plex = simplexml_load_string($response->body);
+			foreach ($plex as $child) {
+				if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
+					$items[] = $this->resolvePlexItem($child);
+				}
+			}
+			$api['content'] = ($resolve) ? $items : $plex;
+			$api['plexID'] = $this->config['plexID'];
+			$api['showNames'] = true;
+			$api['group'] = '1';
+			$this->setAPIResponse('success', null, 200, $api);
+			return $api;
+		}
+	}
+	
+	public function getPlexHomepageSearch($query)
+	{
+		if (!$this->homepageItemPermissions($this->plexHomepagePermissions('search'), true)) {
+			return false;
+		}
+		$query = $query ?? null;
+		if (!$query) {
+			$this->setAPIResponse('error', 'Plex Metadata key is not defined', 422);
+			return false;
+		}
+		$ignore = array('artist', 'episode');
+		$resolve = true;
+		$url = $this->qualifyURL($this->config['plexURL']);
+		$url = $url . "/search?query=" . rawurlencode($query) . "&X-Plex-Token=" . $this->config['plexToken'];
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$response = Requests::get($url, array(), $options);
+		libxml_use_internal_errors(true);
+		if ($response->success) {
+			$items = array();
+			$plex = simplexml_load_string($response->body);
+			foreach ($plex as $child) {
+				if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
+					$items[] = $this->resolvePlexItem($child);
+				}
+			}
+			$api['content'] = ($resolve) ? $items : $plex;
+			$api['plexID'] = $this->config['plexID'];
+			$api['showNames'] = true;
+			$api['group'] = '1';
+			$this->setAPIResponse('success', null, 200, $api);
+			return $api;
+		}
+	}
+	
 	public function resolvePlexItem($item)
 	{
 		// Static Height & Width
@@ -422,303 +737,5 @@ trait PlexHomepageItem
 			$plexItem['useImage'] = $useImage;
 		}
 		return $plexItem;
-	}
-	
-	public function getPlexHomepageStreams()
-	{
-		if (!$this->config['homepagePlexEnabled']) {
-			$this->setAPIResponse('error', 'Plex homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepagePlexStreams']) {
-			$this->setAPIResponse('error', 'Plex homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepagePlexAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepagePlexStreamsAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['plexURL'])) {
-			$this->setAPIResponse('error', 'Plex URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['plexToken'])) {
-			$this->setAPIResponse('error', 'Plex Token is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['plexID'])) {
-			$this->setAPIResponse('error', 'Plex Id is not defined', 422);
-			return false;
-		}
-		$ignore = array();
-		$resolve = true;
-		$url = $this->qualifyURL($this->config['plexURL']);
-		$url = $url . "/status/sessions?X-Plex-Token=" . $this->config['plexToken'];
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
-		libxml_use_internal_errors(true);
-		if ($response->success) {
-			$items = array();
-			$plex = simplexml_load_string($response->body);
-			foreach ($plex as $child) {
-				if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
-					$items[] = $this->resolvePlexItem($child);
-				}
-			}
-			$api['content'] = ($resolve) ? $items : $plex;
-			$api['plexID'] = $this->config['plexID'];
-			$api['showNames'] = true;
-			$api['group'] = '1';
-			$this->setAPIResponse('success', null, 200, $api);
-			return $api;
-		}
-	}
-	
-	public function getPlexHomepageRecent()
-	{
-		if (!$this->config['homepagePlexEnabled']) {
-			$this->setAPIResponse('error', 'Plex homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepagePlexRecent']) {
-			$this->setAPIResponse('error', 'Plex homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepagePlexAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepagePlexRecentAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['plexURL'])) {
-			$this->setAPIResponse('error', 'Plex URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['plexToken'])) {
-			$this->setAPIResponse('error', 'Plex Token is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['plexID'])) {
-			$this->setAPIResponse('error', 'Plex Id is not defined', 422);
-			return false;
-		}
-		$ignore = array();
-		$resolve = true;
-		$url = $this->qualifyURL($this->config['plexURL']);
-		$urls['movie'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=1";
-		$urls['tv'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=2";
-		$urls['music'] = $url . "/hubs/home/recentlyAdded?X-Plex-Token=" . $this->config['plexToken'] . "&X-Plex-Container-Start=0&X-Plex-Container-Size=" . $this->config['homepageRecentLimit'] . "&type=8";
-		foreach ($urls as $k => $v) {
-			$options = ($this->localURL($v)) ? array('verify' => false) : array();
-			$response = Requests::get($v, array(), $options);
-			libxml_use_internal_errors(true);
-			if ($response->success) {
-				$items = array();
-				$plex = simplexml_load_string($response->body);
-				foreach ($plex as $child) {
-					if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
-						$items[] = $this->resolvePlexItem($child);
-					}
-				}
-				if (isset($api)) {
-					$api['content'] = array_merge($api['content'], ($resolve) ? $items : $plex);
-				} else {
-					$api['content'] = ($resolve) ? $items : $plex;
-				}
-			}
-		}
-		if (isset($api['content'])) {
-			usort($api['content'], function ($a, $b) {
-				return $b['addedAt'] <=> $a['addedAt'];
-			});
-		}
-		$api['plexID'] = $this->config['plexID'];
-		$api['showNames'] = true;
-		$api['group'] = '1';
-		$this->setAPIResponse('success', null, 200, $api);
-		return $api;
-	}
-	
-	public function getPlexHomepageMetadata($array)
-	{
-		if (!$this->config['homepagePlexEnabled']) {
-			$this->setAPIResponse('error', 'Plex homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepagePlexStreams']) {
-			$this->setAPIResponse('error', 'Plex homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepagePlexAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepagePlexStreamsAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['plexURL'])) {
-			$this->setAPIResponse('error', 'Plex URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['plexToken'])) {
-			$this->setAPIResponse('error', 'Plex Token is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['plexID'])) {
-			$this->setAPIResponse('error', 'Plex Id is not defined', 422);
-			return false;
-		}
-		$key = $array['key'] ?? null;
-		if (!$key) {
-			$this->setAPIResponse('error', 'Plex Metadata key is not defined', 422);
-			return false;
-		}
-		$ignore = array();
-		$resolve = true;
-		$url = $this->qualifyURL($this->config['plexURL']);
-		$url = $url . "/library/metadata/" . $key . "?X-Plex-Token=" . $this->config['plexToken'];
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
-		libxml_use_internal_errors(true);
-		if ($response->success) {
-			$items = array();
-			$plex = simplexml_load_string($response->body);
-			foreach ($plex as $child) {
-				if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
-					$items[] = $this->resolvePlexItem($child);
-				}
-			}
-			$api['content'] = ($resolve) ? $items : $plex;
-			$api['plexID'] = $this->config['plexID'];
-			$api['showNames'] = true;
-			$api['group'] = '1';
-			$this->setAPIResponse('success', null, 200, $api);
-			return $api;
-		}
-	}
-	
-	public function getPlexHomepagePlaylists()
-	{
-		if (!$this->config['homepagePlexEnabled']) {
-			$this->setAPIResponse('error', 'Plex homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepagePlexPlaylist']) {
-			$this->setAPIResponse('error', 'Plex homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepagePlexAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepagePlexPlaylistAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['plexURL'])) {
-			$this->setAPIResponse('error', 'Plex URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['plexToken'])) {
-			$this->setAPIResponse('error', 'Plex Token is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['plexID'])) {
-			$this->setAPIResponse('error', 'Plex Id is not defined', 422);
-			return false;
-		}
-		$url = $this->qualifyURL($this->config['plexURL']);
-		$url = $url . "/playlists?X-Plex-Token=" . $this->config['plexToken'];
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
-		libxml_use_internal_errors(true);
-		if ($response->success) {
-			$items = array();
-			$plex = simplexml_load_string($response->body);
-			foreach ($plex as $child) {
-				if ($child['playlistType'] == "video" && strpos(strtolower($child['title']), 'private') === false) {
-					$playlistTitleClean = preg_replace("/(\W)+/", "", (string)$child['title']);
-					$playlistURL = $this->qualifyURL($this->config['plexURL']);
-					$playlistURL = $playlistURL . $child['key'] . "?X-Plex-Token=" . $this->config['plexToken'];
-					$options = ($this->localURL($url)) ? array('verify' => false) : array();
-					$playlistResponse = Requests::get($playlistURL, array(), $options);
-					if ($playlistResponse->success) {
-						$playlistResponse = simplexml_load_string($playlistResponse->body);
-						$items[$playlistTitleClean]['title'] = (string)$child['title'];
-						foreach ($playlistResponse->Video as $playlistItem) {
-							$items[$playlistTitleClean][] = $this->resolvePlexItem($playlistItem);
-						}
-					}
-				}
-			}
-			$api['content'] = $items;
-			$api['plexID'] = $this->config['plexID'];
-			$api['showNames'] = true;
-			$api['group'] = '1';
-			$this->setAPIResponse('success', null, 200, $api);
-			return $api;
-		} else {
-			$this->setAPIResponse('error', 'Plex API error', 500);
-			return false;
-		}
-		
-	}
-	
-	public function getPlexHomepageSearch($query)
-	{
-		if (!$this->config['homepagePlexEnabled']) {
-			$this->setAPIResponse('error', 'Plex homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepagePlexAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['plexURL'])) {
-			$this->setAPIResponse('error', 'Plex URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['plexToken'])) {
-			$this->setAPIResponse('error', 'Plex Token is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['plexID'])) {
-			$this->setAPIResponse('error', 'Plex Id is not defined', 422);
-			return false;
-		}
-		$query = $query ?? null;
-		if (!$query) {
-			$this->setAPIResponse('error', 'Plex Metadata key is not defined', 422);
-			return false;
-		}
-		$ignore = array('artist', 'episode');
-		$resolve = true;
-		$url = $this->qualifyURL($this->config['plexURL']);
-		$url = $url . "/search?query=" . rawurlencode($query) . "&X-Plex-Token=" . $this->config['plexToken'];
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$response = Requests::get($url, array(), $options);
-		libxml_use_internal_errors(true);
-		if ($response->success) {
-			$items = array();
-			$plex = simplexml_load_string($response->body);
-			foreach ($plex as $child) {
-				if (!in_array($child['type'], $ignore) && isset($child['librarySectionID'])) {
-					$items[] = $this->resolvePlexItem($child);
-				}
-			}
-			$api['content'] = ($resolve) ? $items : $plex;
-			$api['plexID'] = $this->config['plexID'];
-			$api['showNames'] = true;
-			$api['group'] = '1';
-			$this->setAPIResponse('success', null, 200, $api);
-			return $api;
-		}
 	}
 }

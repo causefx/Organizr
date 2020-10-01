@@ -93,6 +93,48 @@ trait UnifiHomepageItem
 		);
 	}
 	
+	public function unifiHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageUnifiEnabled'
+				],
+				'auth' => [
+					'homepageUnifiAuth'
+				],
+				'not_empty' => [
+					'unifiURL',
+					'unifiUsername',
+					'unifiPassword'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderunifi()
+	{
+		if ($this->homepageItemPermissions($this->unifiHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Unifi...</h2></div>
+					<script>
+						// Unifi
+						homepageUnifi("' . $this->config['homepageHealthChecksRefresh'] . '");
+						// End Unifi
+					</script>
+				</div>
+				';
+		}
+	}
+	
 	public function getUnifiSiteName()
 	{
 		if (empty($this->config['unifiURL'])) {
@@ -212,24 +254,7 @@ trait UnifiHomepageItem
 	
 	public function getUnifiHomepageData()
 	{
-		if (!$this->config['homepageUnifiEnabled']) {
-			$this->setAPIResponse('error', 'Unifi homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageUnifiAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['unifiURL'])) {
-			$this->setAPIResponse('error', 'Unifi URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['unifiUsername'])) {
-			$this->setAPIResponse('error', 'Unifi Username is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['unifiPassword'])) {
-			$this->setAPIResponse('error', 'Unifi Password is not defined', 422);
+		if (!$this->homepageItemPermissions($this->unifiHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$api['content']['unifi'] = array();

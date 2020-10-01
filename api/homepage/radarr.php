@@ -222,30 +222,67 @@ trait RadarrHomepageItem
 		}
 	}
 	
+	public function radarrHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'calendar' => [
+				'enabled' => [
+					'homepageRadarrEnabled'
+				],
+				'auth' => [
+					'homepageRadarrAuth'
+				],
+				'not_empty' => [
+					'radarrURL',
+					'lidarrToken'
+				]
+			],
+			'queue' => [
+				'enabled' => [
+					'homepageRadarrEnabled',
+					'homepageRadarrQueueEnabled'
+				],
+				'auth' => [
+					'homepageRadarrAuth',
+					'homepageRadarrQueueAuth'
+				],
+				'not_empty' => [
+					'radarrURL',
+					'radarrToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderRadarrQueue()
+	{
+		if ($this->homepageItemPermissions($this->radarrHomepagePermissions('queue'))) {
+			$loadingBox = ($this->config['homepageRadarrQueueCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['homepageRadarrQueueCombine']) ? 'buildDownloaderCombined(\'radarr\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("radarr"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrderRadarrQueue
+		                ' . $builder . '
+		                homepageDownloader("radarr", "' . $this->config['homepageRadarrQueueRefresh'] . '");
+		                // End homepageOrderRadarrQueue
+	                </script>
+				</div>
+				';
+		}
+	}
+	
 	public function getRadarrQueue()
 	{
-		if (!$this->config['homepageRadarrEnabled']) {
-			$this->setAPIResponse('error', 'Radarr homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepageRadarrQueueEnabled']) {
-			$this->setAPIResponse('error', 'Radarr homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageRadarrAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageRadarrQueueAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['radarrURL'])) {
-			$this->setAPIResponse('error', 'Radarr URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['radarrToken'])) {
-			$this->setAPIResponse('error', 'Radarr Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->radarrHomepagePermissions('queue'), true)) {
 			return false;
 		}
 		$queueItems = array();
@@ -278,20 +315,7 @@ trait RadarrHomepageItem
 	{
 		$startDate = ($startDate) ?? $_GET['start'];
 		$endDate = ($endDate) ?? $_GET['end'];
-		if (!$this->config['homepageRadarrEnabled']) {
-			$this->setAPIResponse('error', 'Radarr homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageRadarrAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['radarrURL'])) {
-			$this->setAPIResponse('error', 'Radarr URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['radarrToken'])) {
-			$this->setAPIResponse('error', 'Radarr Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->radarrHomepagePermissions('calendar'), true)) {
 			return false;
 		}
 		$calendarItems = array();

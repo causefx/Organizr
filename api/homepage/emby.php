@@ -190,6 +190,244 @@ trait EmbyHomepageItem
 		}
 	}
 	
+	public function embyHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'streams' => [
+				'enabled' => [
+					'homepageEmbyEnabled',
+					'homepageEmbyStreams'
+				],
+				'auth' => [
+					'homepageEmbyAuth',
+					'homepageEmbyStreamsAuth'
+				],
+				'not_empty' => [
+					'embyURL',
+					'embyToken'
+				]
+			],
+			'recent' => [
+				'enabled' => [
+					'homepageEmbyEnabled',
+					'homepageEmbyRecent'
+				],
+				'auth' => [
+					'homepageEmbyAuth',
+					'homepageEmbyRecentAuth'
+				],
+				'not_empty' => [
+					'embyURL',
+					'embyToken'
+				]
+			],
+			'metadata' => [
+				'enabled' => [
+					'homepageEmbyEnabled'
+				],
+				'auth' => [
+					'homepageEmbyAuth'
+				],
+				'not_empty' => [
+					'embyURL',
+					'embyToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderembynowplaying()
+	{
+		if ($this->homepageItemPermissions($this->embyHomepagePermissions('streams'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Now Playing...</h2></div>
+					<script>
+						// Emby Stream
+						homepageStream("emby", "' . $this->config['homepageStreamRefresh'] . '");
+						// End Emby Stream
+					</script>
+				</div>
+				';
+		}
+	}
+	
+	public function homepageOrderembyrecent()
+	{
+		if ($this->homepageItemPermissions($this->embyHomepagePermissions('recent'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Recent...</h2></div>
+					<script>
+						// Emby Recent
+						homepageRecent("emby", "' . $this->config['homepageRecentRefresh'] . '");
+						// End Emby Recent
+					</script>
+				</div>
+				';
+		}
+	}
+	
+	public function getEmbyHomepageStreams()
+	{
+		if (!$this->homepageItemPermissions($this->embyHomepagePermissions('streams'), true)) {
+			return false;
+		}
+		$url = $this->qualifyURL($this->config['embyURL']);
+		$url = $url . '/Sessions?api_key=' . $this->config['embyToken'] . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		try {
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				$items = array();
+				$emby = json_decode($response->body, true);
+				foreach ($emby as $child) {
+					if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
+						$items[] = $this->resolveEmbyItem($child);
+					}
+				}
+				$api['content'] = array_filter($items);
+				$this->setAPIResponse('success', null, 200, $api);
+				return $api;
+			} else {
+				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
+				return false;
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
+		}
+	}
+	
+	public function getEmbyHomepageRecent()
+	{
+		if (!$this->homepageItemPermissions($this->embyHomepagePermissions('recent'), true)) {
+			return false;
+		}
+		$url = $this->qualifyURL($this->config['embyURL']);
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$username = false;
+		$showPlayed = false;
+		$userId = 0;
+		try {
+			
+			
+			if (isset($this->user['username'])) {
+				$username = strtolower($this->user['username']);
+			}
+			// Get A User
+			$userIds = $url . "/Users?api_key=" . $this->config['embyToken'];
+			$response = Requests::get($userIds, array(), $options);
+			if ($response->success) {
+				$emby = json_decode($response->body, true);
+				foreach ($emby as $value) { // Scan for admin user
+					if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+						$userId = $value['Id'];
+					}
+					if ($username && strtolower($value['Name']) == $username) {
+						$userId = $value['Id'];
+						$showPlayed = false;
+						break;
+					}
+				}
+				$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=true&Limit=' . $this->config['homepageRecentLimit'] . '&api_key=' . $this->config['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
+			} else {
+				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
+				return false;
+			}
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				$items = array();
+				$emby = json_decode($response->body, true);
+				foreach ($emby as $child) {
+					if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
+						$items[] = $this->resolveEmbyItem($child);
+					}
+				}
+				$api['content'] = array_filter($items);
+				$this->setAPIResponse('success', null, 200, $api);
+				return $api;
+			} else {
+				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
+				return false;
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
+		}
+	}
+	
+	public function getEmbyHomepageMetadata($array)
+	{
+		if (!$this->homepageItemPermissions($this->embyHomepagePermissions('metadata'), true)) {
+			return false;
+		}
+		$key = $array['key'] ?? null;
+		if (!$key) {
+			$this->setAPIResponse('error', 'Emby Metadata key is not defined', 422);
+			return false;
+		}
+		$url = $this->qualifyURL($this->config['embyURL']);
+		$options = ($this->localURL($url)) ? array('verify' => false) : array();
+		$username = false;
+		$showPlayed = false;
+		$userId = 0;
+		try {
+			
+			
+			if (isset($this->user['username'])) {
+				$username = strtolower($this->user['username']);
+			}
+			// Get A User
+			$userIds = $url . "/Users?api_key=" . $this->config['embyToken'];
+			$response = Requests::get($userIds, array(), $options);
+			if ($response->success) {
+				$emby = json_decode($response->body, true);
+				foreach ($emby as $value) { // Scan for admin user
+					if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
+						$userId = $value['Id'];
+					}
+					if ($username && strtolower($value['Name']) == $username) {
+						$userId = $value['Id'];
+						$showPlayed = false;
+						break;
+					}
+				}
+				$url = $url . '/Users/' . $userId . '/Items/' . $key . '?EnableImages=true&Limit=' . $this->config['homepageRecentLimit'] . '&api_key=' . $this->config['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
+			} else {
+				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
+				return false;
+			}
+			$response = Requests::get($url, array(), $options);
+			if ($response->success) {
+				$items = array();
+				$emby = json_decode($response->body, true);
+				if (isset($emby['NowPlayingItem']) || isset($emby['Name'])) {
+					$items[] = $this->resolveEmbyItem($emby);
+				}
+				$api['content'] = array_filter($items);
+				$this->setAPIResponse('success', null, 200, $api);
+				return $api;
+			} else {
+				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
+				return false;
+			}
+		} catch (Requests_Exception $e) {
+			$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
+			$this->setAPIResponse('error', $e->getMessage(), 500);
+			return false;
+		}
+	}
+	
 	public function resolveEmbyItem($itemDetails)
 	{
 		$item = isset($itemDetails['NowPlayingItem']['Id']) ? $itemDetails['NowPlayingItem'] : $itemDetails;
@@ -386,214 +624,6 @@ trait EmbyHomepageItem
 			$embyItem['useImage'] = $useImage;
 		}
 		return $embyItem;
-	}
-	
-	public function getEmbyHomepageStreams()
-	{
-		if (!$this->config['homepageEmbyEnabled']) {
-			$this->setAPIResponse('error', 'Emby homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepageEmbyStreams']) {
-			$this->setAPIResponse('error', 'Emby homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageEmbyAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageEmbyStreamsAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['embyURL'])) {
-			$this->setAPIResponse('error', 'Emby URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['embyToken'])) {
-			$this->setAPIResponse('error', 'Emby Token is not defined', 422);
-			return false;
-		}
-		$url = $this->qualifyURL($this->config['embyURL']);
-		$url = $url . '/Sessions?api_key=' . $this->config['embyToken'] . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		try {
-			$response = Requests::get($url, array(), $options);
-			if ($response->success) {
-				$items = array();
-				$emby = json_decode($response->body, true);
-				foreach ($emby as $child) {
-					if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
-						$items[] = $this->resolveEmbyItem($child);
-					}
-				}
-				$api['content'] = array_filter($items);
-				$this->setAPIResponse('success', null, 200, $api);
-				return $api;
-			} else {
-				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
-				return false;
-			}
-		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
-			return false;
-		}
-	}
-	
-	public function getEmbyHomepageRecent()
-	{
-		if (!$this->config['homepageEmbyEnabled']) {
-			$this->setAPIResponse('error', 'Emby homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepageEmbyRecent']) {
-			$this->setAPIResponse('error', 'Emby homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageEmbyAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageEmbyRecentAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['embyURL'])) {
-			$this->setAPIResponse('error', 'Emby URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['embyToken'])) {
-			$this->setAPIResponse('error', 'Emby Token is not defined', 422);
-			return false;
-		}
-		$url = $this->qualifyURL($this->config['embyURL']);
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$username = false;
-		$showPlayed = false;
-		$userId = 0;
-		try {
-			
-			
-			if (isset($this->user['username'])) {
-				$username = strtolower($this->user['username']);
-			}
-			// Get A User
-			$userIds = $url . "/Users?api_key=" . $this->config['embyToken'];
-			$response = Requests::get($userIds, array(), $options);
-			if ($response->success) {
-				$emby = json_decode($response->body, true);
-				foreach ($emby as $value) { // Scan for admin user
-					if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
-						$userId = $value['Id'];
-					}
-					if ($username && strtolower($value['Name']) == $username) {
-						$userId = $value['Id'];
-						$showPlayed = false;
-						break;
-					}
-				}
-				$url = $url . '/Users/' . $userId . '/Items/Latest?EnableImages=true&Limit=' . $this->config['homepageRecentLimit'] . '&api_key=' . $this->config['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
-			} else {
-				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
-				return false;
-			}
-			$response = Requests::get($url, array(), $options);
-			if ($response->success) {
-				$items = array();
-				$emby = json_decode($response->body, true);
-				foreach ($emby as $child) {
-					if (isset($child['NowPlayingItem']) || isset($child['Name'])) {
-						$items[] = $this->resolveEmbyItem($child);
-					}
-				}
-				$api['content'] = array_filter($items);
-				$this->setAPIResponse('success', null, 200, $api);
-				return $api;
-			} else {
-				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
-				return false;
-			}
-		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
-			return false;
-		}
-	}
-	
-	public function getEmbyHomepageMetadata($array)
-	{
-		if (!$this->config['homepageEmbyEnabled']) {
-			$this->setAPIResponse('error', 'Emby homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageEmbyAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['embyURL'])) {
-			$this->setAPIResponse('error', 'Emby URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['embyToken'])) {
-			$this->setAPIResponse('error', 'Emby Token is not defined', 422);
-			return false;
-		}
-		$key = $array['key'] ?? null;
-		if (!$key) {
-			$this->setAPIResponse('error', 'Emby Metadata key is not defined', 422);
-			return false;
-		}
-		$url = $this->qualifyURL($this->config['embyURL']);
-		$options = ($this->localURL($url)) ? array('verify' => false) : array();
-		$username = false;
-		$showPlayed = false;
-		$userId = 0;
-		try {
-			
-			
-			if (isset($this->user['username'])) {
-				$username = strtolower($this->user['username']);
-			}
-			// Get A User
-			$userIds = $url . "/Users?api_key=" . $this->config['embyToken'];
-			$response = Requests::get($userIds, array(), $options);
-			if ($response->success) {
-				$emby = json_decode($response->body, true);
-				foreach ($emby as $value) { // Scan for admin user
-					if (isset($value['Policy']) && isset($value['Policy']['IsAdministrator']) && $value['Policy']['IsAdministrator']) {
-						$userId = $value['Id'];
-					}
-					if ($username && strtolower($value['Name']) == $username) {
-						$userId = $value['Id'];
-						$showPlayed = false;
-						break;
-					}
-				}
-				$url = $url . '/Users/' . $userId . '/Items/' . $key . '?EnableImages=true&Limit=' . $this->config['homepageRecentLimit'] . '&api_key=' . $this->config['embyToken'] . ($showPlayed ? '' : '&IsPlayed=false') . '&Fields=Overview,People,Genres,CriticRating,Studios,Taglines';
-			} else {
-				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
-				return false;
-			}
-			$response = Requests::get($url, array(), $options);
-			if ($response->success) {
-				$items = array();
-				$emby = json_decode($response->body, true);
-				if (isset($emby['NowPlayingItem']) || isset($emby['Name'])) {
-					$items[] = $this->resolveEmbyItem($emby);
-				}
-				$api['content'] = array_filter($items);
-				$this->setAPIResponse('success', null, 200, $api);
-				return $api;
-			} else {
-				$this->setAPIResponse('error', 'Emby Error Occurred', 500);
-				return false;
-			}
-		} catch (Requests_Exception $e) {
-			$this->writeLog('error', 'Emby Connect Function - Error: ' . $e->getMessage(), 'SYSTEM');
-			$this->setAPIResponse('error', $e->getMessage(), 500);
-			return false;
-		}
 	}
 	
 }

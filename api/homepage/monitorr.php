@@ -69,18 +69,49 @@ trait MonitorrHomepageItem
 		);
 	}
 	
+	public function monitorrHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageMonitorrEnabled'
+				],
+				'auth' => [
+					'homepageMonitorrAuth'
+				],
+				'not_empty' => [
+					'monitorrURL'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderMonitorr()
+	{
+		if ($this->homepageItemPermissions($this->monitorrHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Monitorr...</h2></div>
+					<script>
+						// Monitorr
+						homepageMonitorr("' . $this->config['homepageMonitorrRefresh'] . '");
+						// End Monitorr
+					</script>
+				</div>
+				';
+		}
+	}
+	
 	public function getMonitorrHomepageData()
 	{
-		if (!$this->config['homepageMonitorrEnabled']) {
-			$this->setAPIResponse('error', 'Monitorr homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageMonitorrAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['monitorrURL'])) {
-			$this->setAPIResponse('error', 'Monitorr URL is not defined', 422);
+		if (!$this->homepageItemPermissions($this->monitorrHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$api = [];

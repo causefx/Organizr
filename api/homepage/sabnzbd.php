@@ -97,22 +97,53 @@ trait SabNZBdHomepageItem
 		}
 	}
 	
+	public function sabNZBdHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageSabnzbdEnabled'
+				],
+				'auth' => [
+					'homepageSabnzbdAuth'
+				],
+				'not_empty' => [
+					'sabnzbdURL',
+					'sabnzbdToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrdersabnzbd()
+	{
+		if ($this->homepageItemPermissions($this->sabNZBdHomepagePermissions('main'))) {
+			$loadingBox = ($this->config['sabnzbdCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['sabnzbdCombine']) ? 'buildDownloaderCombined(\'sabnzbd\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("sabnzbd"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrdersabnzbd
+		                ' . $builder . '
+		                homepageDownloader("sabnzbd", "' . $this->config['homepageDownloadRefresh'] . '");
+		                // End homepageOrdersabnzbd
+	                </script>
+				</div>
+				';
+		}
+	}
+	
 	public function getSabNZBdHomepageQueue()
 	{
-		if (!$this->config['homepageSabnzbdEnabled']) {
-			$this->setAPIResponse('error', 'SabNZBd homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSabnzbdAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['sabnzbdURL'])) {
-			$this->setAPIResponse('error', 'Plex URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['sabnzbdToken'])) {
-			$this->setAPIResponse('error', 'Plex Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->sabNZBdHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['sabnzbdURL']);
@@ -148,20 +179,7 @@ trait SabNZBdHomepageItem
 	
 	public function pauseSabNZBdQueue($target = null)
 	{
-		if (!$this->config['homepageSabnzbdEnabled']) {
-			$this->setAPIResponse('error', 'SabNZBd homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSabnzbdAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['sabnzbdURL'])) {
-			$this->setAPIResponse('error', 'Plex URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['sabnzbdToken'])) {
-			$this->setAPIResponse('error', 'Plex Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->sabNZBdHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['sabnzbdURL']);
@@ -185,20 +203,7 @@ trait SabNZBdHomepageItem
 	
 	public function resumeSabNZBdQueue($target = null)
 	{
-		if (!$this->config['homepageSabnzbdEnabled']) {
-			$this->setAPIResponse('error', 'SabNZBd homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSabnzbdAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['sabnzbdURL'])) {
-			$this->setAPIResponse('error', 'Plex URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['sabnzbdToken'])) {
-			$this->setAPIResponse('error', 'Plex Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->sabNZBdHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$url = $this->qualifyURL($this->config['sabnzbdURL']);

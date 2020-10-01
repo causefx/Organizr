@@ -112,18 +112,49 @@ trait PiHoleHomepageItem
 		}
 	}
 	
+	public function piholeHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepagePiholeEnabled'
+				],
+				'auth' => [
+					'homepagePiholeAuth'
+				],
+				'not_empty' => [
+					'piholeURL'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderPihole()
+	{
+		if ($this->homepageItemPermissions($this->piholeHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Pihole...</h2></div>
+					<script>
+						// Pi-hole Stats
+						homepagePihole("' . $this->config['homepagePiholeRefresh'] . '");
+						// End Pi-hole Stats
+					</script>
+				</div>
+				';
+		}
+	}
+	
 	public function getPiholeHomepageStats()
 	{
-		if (!$this->config['homepagePiholeEnabled']) {
-			$this->setAPIResponse('error', 'Pihole homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepagePiholeAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['piholeURL'])) {
-			$this->setAPIResponse('error', 'Pihole URL is not defined', 422);
+		if (!$this->homepageItemPermissions($this->piholeHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$api = array();

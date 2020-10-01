@@ -137,18 +137,52 @@ trait TransmissionHomepageItem
 		}
 	}
 	
+	public function transmissionHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageTransmissionEnabled'
+				],
+				'auth' => [
+					'homepageTransmissionAuth'
+				],
+				'not_empty' => [
+					'transmissionURL'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrdertransmission()
+	{
+		if ($this->homepageItemPermissions($this->transmissionHomepagePermissions('main'))) {
+			$loadingBox = ($this->config['transmissionCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['transmissionCombine']) ? 'buildDownloaderCombined(\'transmission\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("transmission"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrdertransmission
+		                ' . $builder . '
+		                homepageDownloader("transmission", "' . $this->config['homepageDownloadRefresh'] . '");
+		                // End homepageOrdertransmission
+	                </script>
+				</div>
+				';
+		}
+	}
+	
 	public function getTransmissionHomepageQueue()
 	{
-		if (!$this->config['homepageTransmissionEnabled']) {
-			$this->setAPIResponse('error', 'Transmission homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageTransmissionAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['transmissionURL'])) {
-			$this->setAPIResponse('error', 'Transmission URL is not defined', 422);
+		if (!$this->homepageItemPermissions($this->transmissionHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$digest = $this->qualifyURL($this->config['transmissionURL'], true);

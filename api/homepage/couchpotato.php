@@ -90,22 +90,34 @@ trait CouchPotatoHomepageItem
 		);
 	}
 	
+	public function couchPotatoHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'calendar' => [
+				'enabled' => [
+					'homepageCouchpotatoEnabled'
+				],
+				'auth' => [
+					'homepageCouchpotatoAuth'
+				],
+				'not_empty' => [
+					'couchpotatoURL',
+					'couchpotatoToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
 	public function getCouchPotatoCalendar()
 	{
-		if (!$this->config['homepageCouchpotatoEnabled']) {
-			$this->setAPIResponse('error', 'CouchPotato homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageCouchpotatoAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['couchpotatoURL'])) {
-			$this->setAPIResponse('error', 'Radarr URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['couchpotatoToken'])) {
-			$this->setAPIResponse('error', 'Radarr Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->couchPotatoHomepagePermissions('calendar'), true)) {
 			return false;
 		}
 		$calendarItems = array();

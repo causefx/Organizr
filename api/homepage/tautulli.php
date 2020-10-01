@@ -187,22 +187,50 @@ trait TautulliHomepageItem
 		}
 	}
 	
+	public function tautulliHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageTautulliEnabled'
+				],
+				'auth' => [
+					'homepageTautulliAuth'
+				],
+				'not_empty' => [
+					'tautulliURL',
+					'tautulliApikey'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrdertautulli()
+	{
+		if ($this->homepageItemPermissions($this->tautulliHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Tautulli...</h2></div>
+					<script>
+						// Tautulli
+						homepageTautulli("' . $this->config['homepageTautulliRefresh'] . '");
+						// End Tautulli
+					</script>
+				</div>
+				';
+		}
+	}
+	
 	public function getTautulliHomepageData()
 	{
-		if (!$this->config['homepageTautulliEnabled']) {
-			$this->setAPIResponse('error', 'Tautulli homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageTautulliAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['tautulliURL'])) {
-			$this->setAPIResponse('error', 'Tautulli URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['tautulliApikey'])) {
-			$this->setAPIResponse('error', 'Tautulli Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->tautulliHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$api = [];

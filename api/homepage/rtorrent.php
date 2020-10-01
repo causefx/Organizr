@@ -188,6 +188,47 @@ trait RTorrentHomepageItem
 		}
 	}
 	
+	public function rTorrentHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepagerTorrentEnabled'
+				],
+				'auth' => [
+					'homepagerTorrentAuth'
+				],
+				'not_empty' => []
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderrTorrent()
+	{
+		if ($this->homepageItemPermissions($this->rTorrentHomepagePermissions('main'))) {
+			$loadingBox = ($this->config['rTorrentCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['rTorrentCombine']) ? 'buildDownloaderCombined(\'rTorrent\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("rTorrent"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrderrTorrent
+		                ' . $builder . '
+		                homepageDownloader("rTorrent", "' . $this->config['homepageDownloadRefresh'] . '");
+		                // End homepageOrderrTorrent
+	                </script>
+				</div>
+				';
+		}
+	}
+	
 	public function checkOverrideURL($url, $override)
 	{
 		if (strpos($override, $url) !== false) {
@@ -213,16 +254,11 @@ trait RTorrentHomepageItem
 	
 	public function getRTorrentHomepageQueue()
 	{
-		if (!$this->config['homepagerTorrentEnabled']) {
-			$this->setAPIResponse('error', 'rTorrent homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepagerTorrentAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
 		if (empty($this->config['rTorrentURL']) && empty($this->config['rTorrentURLOverride'])) {
 			$this->setAPIResponse('error', 'rTorrent URL is not defined', 422);
+			return false;
+		}
+		if (!$this->homepageItemPermissions($this->rTorrentHomepagePermissions('main'), true)) {
 			return false;
 		}
 		try {

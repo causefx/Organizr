@@ -128,34 +128,53 @@ trait DelugeHomepageItem
 		
 	}
 	
-	public function delugeStatus($queued, $status, $state)
+	public function delugeHomepagePermissions($key = null)
 	{
-		if ($queued == '-1' && $state == '100' && ($status == 'Seeding' || $status == 'Queued' || $status == 'Paused')) {
-			$state = 'Seeding';
-		} elseif ($state !== '100') {
-			$state = 'Downloading';
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageDelugeEnabled'
+				],
+				'auth' => [
+					'homepageDelugeAuth'
+				],
+				'not_empty' => [
+					'delugeURL',
+					'delugePassword'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
 		} else {
-			$state = 'Finished';
+			return [];
 		}
-		return ($state) ? $state : $status;
+	}
+	
+	public function homepageOrderdeluge()
+	{
+		if ($this->homepageItemPermissions($this->delugeHomepagePermissions('main'))) {
+			$loadingBox = ($this->config['delugeCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['delugeCombine']) ? 'buildDownloaderCombined(\'deluge\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("deluge"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrderdeluge
+		                ' . $builder . '
+		                homepageDownloader("deluge", "' . $this->config['homepageDownloadRefresh'] . '");
+		                // End homepageOrderdeluge
+	                </script>
+				</div>
+				';
+		}
 	}
 	
 	public function getDelugeHomepageQueue()
 	{
-		if (!$this->config['homepageDelugeEnabled']) {
-			$this->setAPIResponse('error', 'Deluge homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageDelugeAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['delugeURL'])) {
-			$this->setAPIResponse('error', 'Deluge URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['delugePassword'])) {
-			$this->setAPIResponse('error', 'Deluge Password is not defined', 422);
+		if (!$this->homepageItemPermissions($this->delugeHomepagePermissions('main'), true)) {
 			return false;
 		}
 		try {
@@ -181,5 +200,17 @@ trait DelugeHomepageItem
 		$api['content'] = isset($api['content']) ? $api['content'] : false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
+	}
+	
+	public function delugeStatus($queued, $status, $state)
+	{
+		if ($queued == '-1' && $state == '100' && ($status == 'Seeding' || $status == 'Queued' || $status == 'Paused')) {
+			$state = 'Seeding';
+		} elseif ($state !== '100') {
+			$state = 'Downloading';
+		} else {
+			$state = 'Finished';
+		}
+		return ($state) ? $state : $status;
 	}
 }

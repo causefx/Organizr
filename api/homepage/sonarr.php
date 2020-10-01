@@ -228,30 +228,67 @@ trait SonarrHomepageItem
 		}
 	}
 	
+	public function sonarrHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'calendar' => [
+				'enabled' => [
+					'homepageSonarrEnabled'
+				],
+				'auth' => [
+					'homepageSonarrAuth'
+				],
+				'not_empty' => [
+					'sonarrURL',
+					'sonarrToken'
+				]
+			],
+			'queue' => [
+				'enabled' => [
+					'homepageSonarrEnabled',
+					'homepageSonarrQueueEnabled'
+				],
+				'auth' => [
+					'homepageSonarrAuth',
+					'homepageSonarrQueueAuth'
+				],
+				'not_empty' => [
+					'sonarrURL',
+					'sonarrToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderSonarrQueue()
+	{
+		if ($this->homepageItemPermissions($this->sonarrHomepagePermissions('queue'))) {
+			$loadingBox = ($this->config['homepageSonarrQueueCombine']) ? '' : '<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Download Queue...</h2></div>';
+			$builder = ($this->config['homepageSonarrQueueCombine']) ? 'buildDownloaderCombined(\'sonarr\');' : '$("#' . __FUNCTION__ . '").html(buildDownloader("sonarr"));';
+			return '
+				<div id="' . __FUNCTION__ . '">
+					' . $loadingBox . '
+					<script>
+		                // homepageOrderSonarrQueue
+		                ' . $builder . '
+		                homepageDownloader("sonarr", "' . $this->config['homepageSonarrQueueRefresh'] . '");
+		                // End homepageOrderSonarrQueue
+	                </script>
+				</div>
+				';
+		}
+	}
+	
 	public function getSonarrQueue()
 	{
-		if (!$this->config['homepageSonarrEnabled']) {
-			$this->setAPIResponse('error', 'Sonarr homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->config['homepageSonarrQueueEnabled']) {
-			$this->setAPIResponse('error', 'Sonarr homepage module is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSonarrAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSonarrQueueAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage module', 401);
-			return false;
-		}
-		if (empty($this->config['sonarrURL'])) {
-			$this->setAPIResponse('error', 'Sonarr URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['sonarrToken'])) {
-			$this->setAPIResponse('error', 'Sonarr Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->sonarrHomepagePermissions('queue'), true)) {
 			return false;
 		}
 		$queueItems = array();
@@ -284,20 +321,7 @@ trait SonarrHomepageItem
 	{
 		$startDate = ($startDate) ?? $_GET['start'];
 		$endDate = ($endDate) ?? $_GET['end'];
-		if (!$this->config['homepageSonarrEnabled']) {
-			$this->setAPIResponse('error', 'Sonarr homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageSonarrAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['sonarrURL'])) {
-			$this->setAPIResponse('error', 'Sonarr URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['sonarrToken'])) {
-			$this->setAPIResponse('error', 'Sonarr Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->sonarrHomepagePermissions('calendar'), true)) {
 			return false;
 		}
 		$calendarItems = array();

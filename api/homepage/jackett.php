@@ -46,18 +46,50 @@ trait JackettHomepageItem
 		);
 	}
 	
+	public function jackettHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageJackettEnabled'
+				],
+				'auth' => [
+					'homepageJackettAuth'
+				],
+				'not_empty' => [
+					'jackettURL',
+					'jackettToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderJackett()
+	{
+		if ($this->homepageItemPermissions($this->jackettHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Jackett...</h2></div>
+					<script>
+						// Jackett
+						homepageJackett();
+						// End Jackett
+					</script>
+				</div>
+				';
+		}
+	}
+	
 	public function searchJackettIndexers($query = null)
 	{
-		if (!$this->config['homepageJackettEnabled']) {
-			$this->setAPIResponse('error', 'Jackett homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageJackettAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['jackettURL']) || empty($this->config['jackettToken'])) {
-			$this->setAPIResponse('error', 'Jackett URL and/or Token were not defined', 422);
+		if (!$this->homepageItemPermissions($this->jackettHomepagePermissions('main'), true)) {
 			return false;
 		}
 		if (!$query) {

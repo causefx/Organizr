@@ -61,22 +61,50 @@ trait OctoPrintHomepageItem
 		);
 	}
 	
+	public function octoprintHomepagePermissions($key = null)
+	{
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageOctoprintEnabled'
+				],
+				'auth' => [
+					'homepageOctoprintAuth'
+				],
+				'not_empty' => [
+					'octoprintURL',
+					'octoprintToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
+		} else {
+			return [];
+		}
+	}
+	
+	public function homepageOrderOctoprint()
+	{
+		if ($this->homepageItemPermissions($this->octoprintHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading OctoPrint...</h2></div>
+					<script>
+						// Octoprint
+						homepageOctoprint("' . $this->config['homepageOctoprintRefresh'] . '");
+						// End Octoprint
+					</script>
+				</div>
+				';
+		}
+	}
+	
 	public function getOctoprintHomepageData()
 	{
-		if (!$this->config['homepageOctoprintEnabled']) {
-			$this->setAPIResponse('error', 'OctoPrint homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageOctoprintAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['octoprintURL'])) {
-			$this->setAPIResponse('error', 'OctoPrint URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['octoprintToken'])) {
-			$this->setAPIResponse('error', 'OctoPrint Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->octoprintHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$api = [];

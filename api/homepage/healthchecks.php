@@ -62,39 +62,50 @@ trait HealthChecksHomepageItem
 		);
 	}
 	
-	public function healthChecksTags($tags)
+	public function healthChecksHomepagePermissions($key = null)
 	{
-		$return = '?tag=';
-		if (!$tags) {
-			return '';
-		} elseif ($tags == '*') {
-			return '';
+		$permissions = [
+			'main' => [
+				'enabled' => [
+					'homepageHealthChecksEnabled'
+				],
+				'auth' => [
+					'homepageHealthChecksAuth'
+				],
+				'not_empty' => [
+					'healthChecksURL',
+					'healthChecksToken'
+				]
+			]
+		];
+		if (array_key_exists($key, $permissions)) {
+			return $permissions[$key];
+		} elseif ($key == 'all') {
+			return $permissions;
 		} else {
-			if (strpos($tags, ',') !== false) {
-				$list = explode(',', $tags);
-				return $return . implode("&tag=", $list);
-			} else {
-				return $return . $tags;
-			}
+			return [];
+		}
+	}
+	
+	public function homepageOrderhealthchecks()
+	{
+		if ($this->homepageItemPermissions($this->healthChecksHomepagePermissions('main'))) {
+			return '
+				<div id="' . __FUNCTION__ . '">
+					<div class="white-box homepage-loading-box"><h2 class="text-center" lang="en">Loading Health Checks...</h2></div>
+					<script>
+						// Health Checks
+						homepageHealthChecks("' . $this->config['healthChecksTags'] . '","' . $this->config['homepageHealthChecksRefresh'] . '");
+						// End Health Checks
+					</script>
+				</div>
+				';
 		}
 	}
 	
 	public function getHealthChecks($tags = null)
 	{
-		if (!$this->config['homepageHealthChecksEnabled']) {
-			$this->setAPIResponse('error', 'HealthChecks homepage item is not enabled', 409);
-			return false;
-		}
-		if (!$this->qualifyRequest($this->config['homepageHealthChecksAuth'])) {
-			$this->setAPIResponse('error', 'User not approved to view this homepage item', 401);
-			return false;
-		}
-		if (empty($this->config['healthChecksURL'])) {
-			$this->setAPIResponse('error', 'HealthChecks URL is not defined', 422);
-			return false;
-		}
-		if (empty($this->config['healthChecksToken'])) {
-			$this->setAPIResponse('error', 'HealthChecks Token is not defined', 422);
+		if (!$this->homepageItemPermissions($this->healthChecksHomepagePermissions('main'), true)) {
 			return false;
 		}
 		$api['content']['checks'] = array();
@@ -120,5 +131,22 @@ trait HealthChecksHomepageItem
 		$api['content']['checks'] = isset($api['content']['checks']) ? $api['content']['checks'] : false;
 		$this->setAPIResponse('success', null, 200, $api);
 		return $api;
+	}
+	
+	public function healthChecksTags($tags)
+	{
+		$return = '?tag=';
+		if (!$tags) {
+			return '';
+		} elseif ($tags == '*') {
+			return '';
+		} else {
+			if (strpos($tags, ',') !== false) {
+				$list = explode(',', $tags);
+				return $return . implode("&tag=", $list);
+			} else {
+				return $return . $tags;
+			}
+		}
 	}
 }
