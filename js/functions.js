@@ -9297,6 +9297,9 @@ function getPingList(arrayItems){
     return (pingList.length > 0) ? pingUpdate(pingList,timeout): false;
 }
 function pingUpdateItem(ping){
+	if(activeInfo.user.groupID > activeInfo.settings.ping.auth){
+		return false;
+	}
 	organizrAPI2('GET','api/v2/ping/' + ping,).success(function(data) {
 		try {
 			var response = data.response;
