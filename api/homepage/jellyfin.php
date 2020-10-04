@@ -207,7 +207,7 @@ trait JellyfinHomepageItem
 				],
 				'auth' => [
 					'homepageJellyfinAuth',
-					'homepageJellyfinStreamsAuth'
+					'homepageJellyStreamsAuth'
 				],
 				'not_empty' => [
 					'jellyfinURL',
