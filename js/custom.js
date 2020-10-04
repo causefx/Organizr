@@ -333,12 +333,10 @@ function doneTypingMediaSearch () {
 			    });
 		    }
 	    }catch(e) {
-		    console.log(e + ' error: ' + data);
-		    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-		    return false;
+		    organizrCatchError(e,data);
 	    }
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'API Error');
     })
 }
 $(document).on("click", ".login-button", function(e) {
@@ -417,8 +415,7 @@ $(document).on("click", ".unlockButton", function(e) {
         let html = data.response;
         location.reload();
     }).fail(function(xhr) {
-	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'API Error');
     });
 });
 $(document).on("click", ".register-button", function(e) {
@@ -429,8 +426,7 @@ $(document).on("click", ".register-button", function(e) {
         let html = data.response;
 		location.reload();
     }).fail(function(xhr) {
-	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'API Error');
     });
 });
 $(document).on("click", ".reset-button", function(e) {
@@ -446,8 +442,7 @@ $(document).on("click", ".reset-button", function(e) {
             message('Recover Password',html.message,activeInfo.settings.notifications.position,'#FFF','success','10000');
             $('#leave-recover').trigger('click');
         }).fail(function(xhr) {
-	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	        OrganizrApiError(xhr, 'API Error');
         });
     }else{
         message('Recover Error','Enter Email',activeInfo.settings.notifications.position,'#FFF','warning','10000');
@@ -483,17 +478,14 @@ $(document).on("click", ".editGroup", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 		clearForm('#edit-group-form');
 		$.magnificPopup.close();
 	}).fail(function(xhr) {
-		message('Group Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 //CHANGE DEFAULT GROUP
@@ -507,13 +499,10 @@ $(document).on("click", ".changeDefaultGroup", function () {
 			message(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 //DELETE GROUP
@@ -538,13 +527,10 @@ $(document).on("click", ".deleteUserGroup", function () {
 			        message('Group Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			        if(callbacks){ callbacks.fire(); }
 		        }catch(e) {
-			        console.log(e + ' error: ' + data);
-			        orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			        return false;
+			        organizrCatchError(e,data);
 		        }
 	        }).fail(function(xhr) {
-		        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		        OrganizrApiError(xhr, 'API Error');
 	        });
         }
     });
@@ -572,13 +558,10 @@ $(document).on("click", ".addNewGroup", function () {
 			clearForm('#new-group-form');
 			$.magnificPopup.close();
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 // ADD USER
@@ -596,17 +579,14 @@ $(document).on("click", ".addNewUser", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('User Created',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 		clearForm('#new-user-form');
 		$.magnificPopup.close();
 	}).fail(function(xhr) {
-		message('User Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 //EDIT GROUP GET ID
@@ -637,17 +617,14 @@ $(document).on("click", ".editUserAdmin", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('User Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 		clearForm('#edit-user-form');
 		$.magnificPopup.close();
 	}).fail(function(xhr) {
-		message('User Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 // CHANGE USER GROUP
@@ -661,15 +638,12 @@ $(document).on("change", ".userGroupSelect", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('User Group Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('User Group Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'API Error');
 	});
 });
 // DELETE USER
@@ -694,8 +668,7 @@ $(document).on("click", ".deleteUser", function () {
 		        message('User Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		        if(callbacks){ callbacks.fire(); }
 	        }).fail(function(xhr) {
-		        message('User Deleted Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		        console.error("Organizr Function: API Connection Failed");
+		        OrganizrApiError(xhr, 'User Delete Error');
 	        });
         }
     });
@@ -709,15 +682,12 @@ $(document).on("change", ".tabGroupSelect", function (event) {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Group Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Group Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Group Error');
 	});
 });
 // CHANGE TAB CATEGORY
@@ -729,15 +699,12 @@ $(document).on("change", ".tabCategorySelect", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Category Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Category Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Category Error');
 	});
 });
 // CHANGE TAB TYPE
@@ -749,15 +716,12 @@ $(document).on("change", ".tabTypeSelect", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Type Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Type Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Type Error');
 	});
 });
 // CHANGE ENABLED TAB
@@ -769,15 +733,12 @@ $(document).on("change", ".enabledSwitch", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Enable Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Enable Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Enable Error');
 	});
 });
 // CHANGE SPLASH TAB
@@ -789,15 +750,12 @@ $(document).on("change", ".splashSwitch", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Splash Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Splash Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Splash Error');
 	});
 });
 // CHANGE SPLASH TAB
@@ -809,15 +767,12 @@ $(document).on("change", ".pingSwitch", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Ping Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Ping Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Ping Error');
 	});
 });
 // CHANGE PRELOAD TAB
@@ -829,15 +784,12 @@ $(document).on("change", ".preloadSwitch", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Preload Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Tab Preload Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Tab Preload Error');
 	});
 });
 // CHANGE DEFAULT TAB
@@ -848,15 +800,12 @@ $(document).on("change", ".defaultSwitch", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Default Tab Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Default Tab Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Default Tab Error');
 	});
 });
 //DELETE TAB
@@ -880,8 +829,7 @@ $(document).on("click", ".deleteTab", function () {
 		        message('Tab Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		        if(callbacks){ callbacks.fire(); }
 	        }).fail(function(xhr) {
-		        message('Tab Deleted Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		        console.error("Organizr Function: API Connection Failed");
+		        OrganizrApiError(xhr, 'Tab Deleted Error');
 	        });
         }
     });
@@ -954,17 +902,14 @@ $(document).on("click", ".editTab", function () {
 			    var response = data.response;
 			    console.log(response);
 		    }catch(e) {
-			    console.log(e + ' error: ' + data);
-			    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			    return false;
+			    organizrCatchError(e,data);
 		    }
 		    message('Tab Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		    if(callbacks){ callbacks.fire(); }
 		    clearForm('#edit-tab-form');
 		    $.magnificPopup.close();
 	    }).fail(function(xhr) {
-		    message('Tab Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		    console.error("Organizr Function: API Connection Failed");
+		    OrganizrApiError(xhr, 'Tab Error');
 	    });
     }
 });
@@ -1000,17 +945,14 @@ $(document).on("click", ".addNewTab", function () {
 			    var response = data.response;
 			    console.log(response);
 		    }catch(e) {
-			    console.log(e + ' error: ' + data);
-			    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			    return false;
+			    organizrCatchError(e,data);
 		    }
 		    message('Tab Created',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		    if(callbacks){ callbacks.fire(); }
 		    clearForm('#new-tab-form');
 		    $.magnificPopup.close();
 	    }).fail(function(xhr) {
-		    message('Tab Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		    console.error("Organizr Function: API Connection Failed");
+		    OrganizrApiError(xhr, 'Tab Error');
 	    });
     }
 });
@@ -1035,17 +977,14 @@ $(document).on("click", ".addNewCategory", function () {
 				var response = data.response;
 				console.log(response);
 			}catch(e) {
-				console.log(e + ' error: ' + data);
-				orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-				return false;
+				organizrCatchError(e,data);
 			}
 			message('Category Added',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 			clearForm('#new-category-form');
 			$.magnificPopup.close();
 		}).fail(function(xhr) {
-			message('Category Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-			console.error("Organizr Function: API Connection Failed");
+			OrganizrApiError(xhr, 'Category Error');
 		});
 	}
 });
@@ -1070,8 +1009,7 @@ $(document).on("click", ".deleteCategory", function () {
 		        message('Category Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 		        if(callbacks){ callbacks.fire(); }
 	        }).fail(function(xhr) {
-		        message('Category Deleted Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		        console.error("Organizr Function: API Connection Failed");
+		        OrganizrApiError(xhr, 'Category Deleted Error');
 	        });
         }
     });
@@ -1105,17 +1043,14 @@ $(document).on("click", ".editCategory", function () {
 				var response = data.response;
 				console.log(response);
 			}catch(e) {
-				console.log(e + ' error: ' + data);
-				orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-				return false;
+				organizrCatchError(e,data);
 			}
 			message('Category Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 			clearForm('#edit-category-form');
 			$.magnificPopup.close();
 		}).fail(function(xhr) {
-			message('Category Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-			console.error("Organizr Function: API Connection Failed");
+			OrganizrApiError(xhr, 'Category Error');
 		});
 	}
 });
@@ -1128,15 +1063,12 @@ $(document).on("click", ".changeDefaultCategory", function () {
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Default Category Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 	}).fail(function(xhr) {
-		message('Default Category Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Default Cateogry Error');
 	});
 });
 // CHANGE CUSTOMIZE Options and CSS Save
@@ -1225,14 +1157,12 @@ $(document).on("click", ".deleteImage", function () {
 		        try {
 			        var response = data.response;
 		        }catch(e) {
-			        console.log(e + ' error: ' + data);
-			        orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			        return false;
+			        organizrCatchError(e,data);
 		        }
 		        message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		        if(callbacks){ callbacks.fire(); }
 	        }).fail(function(xhr) {
-		        console.error(post.error);
+		        OrganizrApiError(xhr, 'Image Error');
 	        });
         }
     });
@@ -1255,13 +1185,10 @@ $(document).on('click', '.enablePlugin', function() {
 			message('Plugin Enabled','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr, 'Plugin Error');
 		ajaxloader();
 	});
 });
@@ -1291,13 +1218,10 @@ $(document).on('click', '.disablePlugin', function() {
 			        message('Plugin Disabled','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 			        if(callbacks){ callbacks.fire(); }
 		        }catch(e) {
-			        console.log(e + ' error: ' + data);
-			        orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			        return false;
+			        organizrCatchError(e,data);
 		        }
 	        }).fail(function(xhr) {
-		        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		        OrganizrApiError(xhr, 'Plugin Error');
 		        ajaxloader();
 	        });
         }
@@ -1327,8 +1251,7 @@ $(document).on("click", ".testPath", function () {
             var html = data.response;
             message('Path',' Path is good to go',activeInfo.settings.notifications.position,'#FFF','success','10000');
         }).fail(function(xhr) {
-	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	        OrganizrApiError(xhr, 'API Error');
         });
     }
 });
@@ -1468,7 +1391,7 @@ $(document).on("click", ".metadata-get", function(e) {
 	    ajaxloader();
 	    $("#preloader").fadeOut();
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'API Error');
 	    ajaxloader();
 	    $("#preloader").fadeOut();
     });
@@ -1493,7 +1416,7 @@ $(document).on("click", ".downloader", function(e) {
         homepageDownloader(source);
 	    messageSingle('Successful', '', activeInfo.settings.notifications.position, '#FFF', 'success', '2500');
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr, 'API Error');
     });
 });
 // test tab
@@ -1514,8 +1437,7 @@ $(document).on("click", ".testTab", function () {
 		        $('.tabTestMessage.alert-success').addClass('hidden');
 	        	}, 5000);
         }).fail(function(xhr) {
-	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	        OrganizrApiError(xhr, 'API Error');
 	        $('.tabTestMessage.alert-danger').removeClass('hidden');
 	        $('.tabTestMessage.alert-success').addClass('hidden');
 	        setTimeout(function(){
@@ -1543,8 +1465,7 @@ $(document).on("click", ".testEditTab", function () {
 		        $('.tabEditTestMessage.alert-success').addClass('hidden');
 	        }, 5000);
         }).fail(function(xhr) {
-	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	        OrganizrApiError(xhr, 'API Error');
 	        $('.tabEditTestMessage.alert-danger').removeClass('hidden');
 	        $('.tabEditTestMessage.alert-success').addClass('hidden');
 	        setTimeout(function(){
@@ -1573,9 +1494,7 @@ $(document).on("click", ".purgeLog", function () {
 		    try {
 			    var response = data.response;
 		    }catch(e) {
-			    console.log(e + ' error: ' + data);
-			    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			    return false;
+			    organizrCatchError(e,data);
 		    }
 		    message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		    var callbacks = $.Callbacks();
@@ -1590,7 +1509,7 @@ $(document).on("click", ".purgeLog", function () {
 		    }
 		    if(callbacks){ callbacks.fire(); }
 	    }).fail(function(xhr) {
-		    console.error(post.error);
+		    OrganizrApiError(xhr, 'API Error');
 	    });
     }
 
@@ -1617,7 +1536,7 @@ $(document).on("click", ".delete-backup", function () {
 			getOrganizrBackups();
 			$('#settings-settings-backup').unblock();
 		}).fail(function(xhr) {
-			console.error(post.error);
+			OrganizrApiError(xhr, 'API Error');
 			$('#settings-settings-backup').unblock();
 		});
 	}

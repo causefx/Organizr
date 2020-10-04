@@ -54,7 +54,7 @@ function sendMail(){
                 messageSingle('',response.message,activeInfo.settings.notifications.position,'#FFF','error','5000');
             }
         }).fail(function(xhr) {
-            console.error("Organizr Function: API Connection Failed");
+	        OrganizrApiError(xhr);
         });
         ajaxloader();
     }
@@ -198,7 +198,7 @@ $(document).on('click', '.loadUserList', function() {
         $('#user-list-div').html(buildUserList(response.data));
         $('#email-user-list').multiSelect();
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr);
     });
     ajaxloader();
 });
@@ -237,7 +237,7 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
         var response = data.response;
         $('#PHPMAILER-settings-items').html(buildFormGroup(response.data));
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr);
     });
     ajaxloader();
 });

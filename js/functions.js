@@ -502,14 +502,12 @@ function noTabs(arrayItems){
             try {
                 var response = JSON.parse(data);
             }catch(e) {
-                console.log(e + ' error: ' + data);
-                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                return false;
+	            organizrCatchError(e,data);
             }
 			console.log("Organizr Function: No Tabs Available");
 			$(response.data).appendTo($('.organizr-area'));
 		}).fail(function(xhr) {
-			console.error("Organizr Function: API Connection Failed");
+			OrganizrApiError(xhr);
 		});
 	}else {
 		$('.show-login').trigger('click');
@@ -540,9 +538,7 @@ function logout(){
         try {
             var html = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 
             local('set','message','Goodbye|Logout Successful|success');
@@ -550,7 +546,7 @@ function logout(){
 			location.reload();
 
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Logout Failed");
+		OrganizrApiError(xhr, 'Logout Failed');
 	});
 }
 function reloadOrganizr(){
@@ -1259,9 +1255,7 @@ function loadMarketplace(type){
         try {
             var response = JSON.parse(data);
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
         switch (type) {
             case 'plugins':
@@ -1273,7 +1267,7 @@ function loadMarketplace(type){
             default:
         }
     }).fail(function(xhr) {
-        console.error("Organizr Function: Github Connection Failed");
+	    OrganizrApiError(xhr);
     });
 }
 function loadMarketplacePluginsItems(plugins){
@@ -1546,17 +1540,14 @@ function removePlugin(plugin=null){
 		try {
 			var html = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		activeInfo.settings.misc.installedPlugins = (html.data == null) ? '' : html.data;
 		loadMarketplace('plugins');
 		message(plugin+' Removed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 
 	}).fail(function(xhr) {
-		message('Removal Failed',xhr.responseJSON.response.message,activeInfo.settings.notifications.position,"#FFF","warning","5000");
-		console.error("Organizr Function: Connection Failed");
+		OrganizrApiError(xhr, 'Removal Failed');
 	});
 }
 function removeTheme(theme=null){
@@ -1568,17 +1559,14 @@ function removeTheme(theme=null){
 		try {
 			var html = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		activeInfo.settings.misc.installedThemes = (html.data == null) ? '' : html.data;
 		loadMarketplace('themes');
 		message(theme+' Removed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 
 	}).fail(function(xhr) {
-		message('Removal Failed',xhr.responseJSON.response.message,activeInfo.settings.notifications.position,"#FFF","warning","5000");
-		console.error("Organizr Function: Connection Failed");
+		OrganizrApiError(xhr, 'Removal Failed');
 	});
 }
 function installPlugin(plugin=null){
@@ -1590,17 +1578,14 @@ function installPlugin(plugin=null){
 		try {
 			var html = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		activeInfo.settings.misc.installedPlugins = html.data;
 		loadMarketplace('plugins');
 		message(plugin+' Installed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 
 	}).fail(function(xhr) {
-		message('Install Failed',xhr.responseJSON.response.message,activeInfo.settings.notifications.position,"#FFF","warning","5000");
-		console.error("Organizr Function: Connection Failed");
+		OrganizrApiError(xhr, 'Install Failed');
 	});
 }
 function installTheme(theme=null){
@@ -1612,17 +1597,14 @@ function installTheme(theme=null){
         try {
             var html = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
         activeInfo.settings.misc.installedThemes = html.data;
         loadMarketplace('themes');
         message(theme+' Installed','',activeInfo.settings.notifications.position,"#FFF","success","5000");
 
     }).fail(function(xhr) {
-        message('Install Failed',xhr.responseJSON.response.message,activeInfo.settings.notifications.position,"#FFF","warning","5000");
-        console.error("Organizr Function: Connection Failed");
+	    OrganizrApiError(xhr, 'Install Failed');
     });
 }
 function pluginStatus(name=null,version=null){
@@ -1731,13 +1713,11 @@ function editHomepageItem(item){
 				});
 			}
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Edit Homepage Failed');
 	});
 }
 function buildHomepageItem(array){
@@ -1789,13 +1769,11 @@ function buildPlugins(){
         try {
             var response = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		$('#main-plugin-area').html(buildPluginsItem(response.data));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function buildHomepage(){
@@ -1803,13 +1781,11 @@ function buildHomepage(){
         try {
             var response = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		$('#settings-homepage-list').html(buildHomepageItem(response.data));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function buildFormGroup(array){
@@ -1951,12 +1927,10 @@ function buildImageManagerView(){
 		        $container.isotope({itemSelector : "img"});
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function buildCustomizeAppearance(){
@@ -1964,9 +1938,7 @@ function buildCustomizeAppearance(){
         try {
             var response = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		$('#customize-appearance-form').html(buildFormGroup(response.data));
 		cssEditor = ace.edit("customCSSEditor");
@@ -2012,7 +1984,7 @@ function buildCustomizeAppearance(){
 			previewformat: 'hex',
 		});
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function buildSSO(){
@@ -2020,9 +1992,7 @@ function buildSSO(){
         try {
             var response = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		$('#sso-form').html(buildFormGroup(response.data));
     }).fail(function (xhr) {
@@ -2034,14 +2004,12 @@ function buildSettingsMain(){
         try {
             var response = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		$('#settings-main-form').html(buildFormGroup(response.data));
 		changeAuth();
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function buildUserManagement(){
@@ -2049,13 +2017,11 @@ function buildUserManagement(){
         try {
             var response = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		$('#manageUserTable').html(buildUserManagementItem(response.data));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function buildGroupManagement(){
@@ -2063,13 +2029,11 @@ function buildGroupManagement(){
         try {
             var response = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		$('#manageGroupTable').html(buildGroupManagementItem(response.data));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function buildTabEditor(){
@@ -2077,14 +2041,12 @@ function buildTabEditor(){
         try {
             var response = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		$('#tabEditorTable').html(buildTabEditorItem(response.data));
         checkTabHomepageItems();
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function checkTabHomepageItems(){
@@ -2167,13 +2129,11 @@ function buildCategoryEditor(){
         try {
             var response = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		$('#categoryEditorTable').html(buildCategoryEditorItem(response.data));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 /* END ORGANIZR API FUNCTIONS */
@@ -2243,14 +2203,11 @@ function updateUserInformation(){
 	            $.magnificPopup.close();
 	            messageSingle('',window.lang.translate('User Info Updated'),activeInfo.settings.notifications.position,'#FFF','success','5000');
             }catch(e) {
-                console.log(e + ' error: ' + data);
-                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                return false;
+	            organizrCatchError(e,data);
             }
 			ajaxloader();
 		}).fail(function(xhr) {
-			message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-			console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+			OrganizrApiError(xhr, 'Update User');
 			ajaxloader();
 		});
 
@@ -2263,9 +2220,7 @@ function twoFA(action, type, secret = null){
                 try {
                     var html = data.response;
                 }catch(e) {
-                    console.log(e + ' error: ' + data);
-                    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                    return false;
+	                organizrCatchError(e,data);
                 }
                 let div = `
 				<div class="panel panel-default">
@@ -2293,8 +2248,7 @@ function twoFA(action, type, secret = null){
 		            className: 'bg-org'
 	            })
             }).fail(function(xhr) {
-	            message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	            console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	            OrganizrApiError(xhr, '2FA');
             });
             break;
         case 'deactivate':
@@ -2303,13 +2257,10 @@ function twoFA(action, type, secret = null){
 	                message('2FA Removed','',activeInfo.settings.notifications.position,'#FFF','success','5000');
 	                $('.2fa-list').replaceWith(buildTwoFA('internal'));
                 }catch(e) {
-                    console.log(e + ' error: ' + data);
-                    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                    return false;
+	                organizrCatchError(e,data);
                 }
             }).fail(function(xhr) {
-	            message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	            console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	            OrganizrApiError(xhr, '2FA');
             });
             break;
         case 'verify':
@@ -2323,13 +2274,10 @@ function twoFA(action, type, secret = null){
 	                    swal.close();
 	                    twoFA('save', type, secret);
                     }catch(e) {
-                        console.log(e + ' error: ' + data);
-                        orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                        return false;
+	                    organizrCatchError(e,data);
                     }
                 }).fail(function(xhr) {
-	                message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	                console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	                OrganizrApiError(xhr, '2FA');
                 });
             }else{
                 message('2FA Failed','Input Code',activeInfo.settings.notifications.position,"#FFF","warning","5000");
@@ -2342,13 +2290,10 @@ function twoFA(action, type, secret = null){
 	                message('2FA Success','2FA Saved',activeInfo.settings.notifications.position,"#FFF","success","5000");
 	                $('.2fa-list').replaceWith(buildTwoFA(type));
                 }catch(e) {
-                    console.log(e + ' error: ' + data);
-                    orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                    return false;
+	                organizrCatchError(e,data);
                 }
             }).fail(function(xhr) {
-	            message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	            console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	            OrganizrApiError(xhr, '2FA');
             });
             break;
     }
@@ -2438,12 +2383,10 @@ function scrapeAPI(url, callbacks = null, type = null){
 		        if(callbacks){ callbacks.fire(response); }
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'Scrape');
     });
 }
 function revokeToken(id){
@@ -2452,14 +2395,11 @@ function revokeToken(id){
 	        $('#token-'+id).fadeOut();
 	        message(window.lang.translate('Removed Token'),"",activeInfo.settings.notifications.position,"#FFF","success","3500");
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
         ajaxloader();
-	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'Revoke Token');
     });
 }
 function buildActiveTokens(array) {
@@ -2887,12 +2827,10 @@ function buildLogin(){
 	        organizrConsole('Organizr Function','Opening Login Page');
 	        $('.login-area').html(response.data);
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Login Connection Failed");
+		OrganizrApiError(xhr, 'Login Error');
 	});
 	$("#preloader").fadeOut();
 }
@@ -2905,12 +2843,10 @@ function buildLockscreen(){
 	        organizrConsole('Organizr Function','Adding Lockscreen');
 	        $(response.data).appendTo($('body'));
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Lockscreen Connection Failed");
+		OrganizrApiError(xhr);
 	});
 	$("#preloader").fadeOut();
 }
@@ -3260,15 +3196,12 @@ function submitSettingsForm(form){
 			try {
 				var response = data.response;
 			}catch(e) {
-				console.log(e + ' error: ' + data);
-				orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-				return false;
+				organizrCatchError(e,data);
 			}
 			message('Updated Items',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 		}).fail(function(xhr) {
-			message('Item Update Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-			console.error("Organizr Function: API Connection Failed");
+			OrganizrApiError(xhr, 'Update Error');
 		});
 		$("#"+form+" :input").each(function(){
 			var input = $(this);
@@ -3299,15 +3232,12 @@ function submitHomepageOrder(){
 				var response = data.response;
 				$('#submitHomepageOrder-save').addClass('hidden');
 			}catch(e) {
-				console.log(e + ' error: ' + data);
-				orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-				return false;
+				organizrCatchError(e,data);
 			}
 			message('Updated Homepage Order',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 			if(callbacks){ callbacks.fire(); }
 		}).fail(function(xhr) {
-			message('Update Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-			console.error("Organizr Function: API Connection Failed");
+			OrganizrApiError(xhr, 'Update Error');
 		});
 	}else{
 	    console.log('add error');
@@ -3332,16 +3262,13 @@ function submitTabOrder(newTabs){
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Tab Order Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 		$('.saveTabOrderButton').addClass('hidden');
 	}).fail(function(xhr) {
-		message('Tab Order Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Update Error');
 	});
 }
 function submitCategoryOrder(){
@@ -3364,16 +3291,13 @@ function submitCategoryOrder(){
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message('Category Order Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
 		$('.saveTabOrderButton').addClass('hidden');
 	}).fail(function(xhr) {
-		message('Category Order Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr, 'Update Error');
 	});
 }
 function buildTR(array,type,badge){
@@ -3452,9 +3376,7 @@ function updateCheck(){
         try {
             var response = JSON.parse(data);
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		for (var a in reverseObject(response)){
 			var latest = a;
@@ -3468,7 +3390,7 @@ function updateCheck(){
         }
 		$('#githubVersions').html(buildVersion(reverseObject(response)));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Github Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function newsLoad(){
@@ -3500,12 +3422,10 @@ function newsLoad(){
             var body = buildAccordion(items, true);
             $('#organizrNewsPanel').html(body);
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-        console.error("Organizr Function: Github Connection Failed");
+	    OrganizrApiError(xhr);
     });
 }
 function checkCommitLoad(){
@@ -3521,9 +3441,7 @@ function checkCommitLoad(){
 	                organizrConsole('Update Function','Organizr Docker - Up to date');
                 }
             } catch (e) {
-                console.log(e + ' error: ' + data);
-                orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-                return false;
+	            organizrCatchError(e,data);
             }
         }).fail(function (xhr) {
             console.error("Organizr Function: Github Connection Failed");
@@ -3535,9 +3453,7 @@ function sponsorLoad(){
         try {
             var response = JSON.parse(data);
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
         $('#sponsorList').html(buildSponsor(response));
         $('#sponsorListModals').html(buildSponsorModal(response));
@@ -3550,7 +3466,7 @@ function sponsorLoad(){
             items:4
         });
     }).fail(function(xhr) {
-        console.error("Organizr Function: Github Connection Failed");
+	    OrganizrApiError(xhr);
     });
 }
 function backersLoad(){
@@ -3559,12 +3475,10 @@ function backersLoad(){
 			let json = data.response;
 			$('.backers-list').html(buildBackers(json.data));
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function buildBackers(array){
@@ -3616,12 +3530,10 @@ function sponsorDetails(id){
 			})
 
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Github Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function sponsorAbout(id,array){
@@ -3752,12 +3664,10 @@ function getOrganizrBackups(){
 			let json = data.response;
 			$('#backup-file-list').html(buildOrganizrBackups(json.data));
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function createOrganizrBackup(){
@@ -3776,14 +3686,12 @@ function createOrganizrBackup(){
 				getOrganizrBackups();
 			}
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		$('#settings-settings-backup').unblock();
 	}).fail(function(xhr) {
 		$('#settings-settings-backup').unblock();
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr, 'Backup Error');
 	});
 }
 function buildOrganizrBackups(array){
@@ -3862,8 +3770,7 @@ function dockerUpdate(){
             updateUpdateBar('Restarting Organizr in', '100%', true);
             messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),'Update complete',activeInfo.settings.notifications.position,'#FFF','success','60000');
         }).fail(function(xhr) {
-	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	        OrganizrApiError(xhr, 'Update Error');
         });
     }
 }
@@ -3877,8 +3784,7 @@ function windowsUpdate(){
             updateUpdateBar('Restarting Organizr in', '100%', true);
             messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'),'Update complete',activeInfo.settings.notifications.position,'#FFF','success','60000');
         }).fail(function(xhr) {
-	        message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	        console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	        OrganizrApiError(xhr, 'Update Error');
         });
     }
 }
@@ -3910,20 +3816,16 @@ function updateNow(){
                     updateUpdateBar('Restarting Organizr in', '100%', true);
                     messageSingle(window.lang.translate('[DO NOT CLOSE WINDOW]'), window.lang.translate('Update Cleanup Finished'), activeInfo.settings.notifications.position, '#FFF', 'success', '60000');
                 }).fail(function (xhr) {
-					message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-					console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+					OrganizrApiError(xhr, 'Update Error');
                 });
             }).fail(function (xhr) {
-				message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-				console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+				OrganizrApiError(xhr, 'Update Error');
             });
         }).fail(function (xhr) {
-			message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-			console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+			OrganizrApiError(xhr, 'Update Error');
         });
 	}).fail(function(xhr) {
-		message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr, 'Update Error');
 	});
 }
 function settingsAPI2(post, callbacks=null, asyncValue=true){
@@ -3931,9 +3833,7 @@ function settingsAPI2(post, callbacks=null, asyncValue=true){
 		try {
 			var response = JSON.parse(data);
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
@@ -4013,14 +3913,12 @@ function loadSettingsPage2(api,element,organizrFn){
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		organizrConsole('Organizr Function','Loading '+organizrFn);
 		$(element).html(response.data);
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function loadInternal(url,tabName, split = null){
@@ -4029,13 +3927,11 @@ function loadInternal(url,tabName, split = null){
 		try {
 			var html = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		$('#internal-'+extra+tabName).html(html.data);
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function loadInternalOriginal(url,tabName){
@@ -4043,13 +3939,11 @@ function loadInternalOriginal(url,tabName){
 		try {
 			var html = JSON.parse(data);
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		$('#internal-'+tabName).html(html.data);
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function loadSettingsPage(api,element,organizrFn){
@@ -4057,14 +3951,12 @@ function loadSettingsPage(api,element,organizrFn){
 		try {
 			var response = JSON.parse(data);
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		organizrConsole('Organizr Function','Loading '+organizrFn);
 		$(element).html(response.data);
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function settingsAPI(post, callbacks=null, asyncValue=true){
@@ -4072,9 +3964,7 @@ function settingsAPI(post, callbacks=null, asyncValue=true){
 		try {
 			var response = JSON.parse(data);
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
 		if(callbacks){ callbacks.fire(); }
@@ -4176,14 +4066,12 @@ function buildWizard(){
         try {
             var json = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		organizrConsole('Organizr Function','Starting Install Wizard');
 		$(json.data).appendTo($('.organizr-area'));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Wizard Connection Failed");
+		OrganizrApiError(xhr, 'Wiizard Error');
 	});
 	$("#preloader").fadeOut();
 }
@@ -4192,9 +4080,7 @@ function buildDependencyCheck(orgdata){
         try {
             var json = data.response;
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 		organizrConsole('Organizr Function','Starting Dependencies Check');
 		$(json.data).appendTo($('.organizr-area'));
@@ -4203,7 +4089,7 @@ function buildDependencyCheck(orgdata){
 		$('#php-version-check').html(buildPHPCheck(orgdata));
 		$(buildDependencyInfo(orgdata)).appendTo($('#depenency-info'));
 	}).fail(function(xhr) {
-		console.error("Organizr Function: Dependencies Connection Failed");
+		OrganizrApiError(xhr, 'Dependency Error');
 	});
 	$("#preloader").fadeOut();
 }
@@ -5457,14 +5343,11 @@ function ombiActions(id,action,type){
 	        if(callbacks){ callbacks.fire(); }
 	        ajaxloader();
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 	}).fail(function(xhr) {
 		ajaxloader();
-		messageSingle('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr, 'Ombi Error');
 	});
 }
 function doneTyping () {
@@ -5493,7 +5376,7 @@ function doneTyping () {
 		}, 500);
 		ajaxloader();
 	}).fail(function(xhr) {
-		console.error("Organizr Function: TMDB Connection Failed");
+		OrganizrApiError(xhr, 'TMDB Error');
 		ajaxloader();
 	});
 }
@@ -5519,7 +5402,7 @@ function requestList (list, type, page=1) {
 		}, 500);
 		ajaxloader();
 	}).fail(function(xhr) {
-		console.error("Organizr Function: TMDB Connection Failed");
+		OrganizrApiError(xhr, 'TMDB Error');
 		ajaxloader();
 	});
 }
@@ -6719,12 +6602,10 @@ function homepagePihole(timeout){
 		        $('#homepageOrderPihole').html(buildPihole(response.data));
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr);
     });
     let timeoutTitle = 'PiHole-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -6747,12 +6628,10 @@ function homepageHealthChecks(tags, timeout){
 		        $('#homepageOrderhealthchecks').html(buildHealthChecks(response.data));
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr);
     });
     let timeoutTitle = 'HealthChecks-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -6769,13 +6648,11 @@ function homepageUnifi(timeout){
 		        $('#homepageOrderunifi').html(buildUnifi(response.data));
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr);
     });
     var timeoutTitle = 'Unifi-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -6823,12 +6700,10 @@ function homepageDownloader(type, timeout){
 		        buildDownloaderItem(response.data, type);
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr);
 	});
 	let timeoutTitle = type+'-Downloader-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -6843,12 +6718,10 @@ function homepageStream(type, timeout){
 	        document.getElementById('homepageOrder'+type+'nowplaying').innerHTML = '';
 	        $('#homepageOrder'+type+'nowplaying').html(buildStream(response.data, type));
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr);
 	});
 	let timeoutTitle = type+'-Stream-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -6882,13 +6755,11 @@ function homepageRecent(type, timeout){
 		        items:4
 	        })
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr);
 	});
 	let timeoutTitle = type+'-Recent-Homepage';
 	if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -6910,12 +6781,10 @@ function homepagePlaylist(type, timeout=30000){
 		        items:4
 	        })
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr);
 	});
 }
 function defaultOmbiFilter(){
@@ -6952,12 +6821,10 @@ function homepageRequests(timeout){
 	        // Default Ombi Filter
 	        defaultOmbiFilter();
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+		OrganizrApiError(xhr);
 	});
 	if(typeof timeouts['ombi-Homepage'] !== 'undefined'){ clearTimeout(timeouts['ombi-Homepage']); }
 	timeouts['ombi-Homepage'] = setTimeout(function(){ homepageRequests(timeout); }, timeout);
@@ -6970,13 +6837,10 @@ function testAPIConnection(service, data = ''){
             let response = data.response;
 	        messageSingle('',' API Connection Success',activeInfo.settings.notifications.position,'#FFF','success','10000');
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    messageSingle('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'API Error');
     });
 }
 function getUnifiSite(){
@@ -7016,13 +6880,10 @@ function getUnifiSite(){
 		        messageSingle('API Connection Failed',response.data,activeInfo.settings.notifications.position,'#FFF','error','10000');
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'API Error');
     });
 }
 function unifiSiteApply(name){
@@ -7044,12 +6905,10 @@ function homepageCalendar(timeout){
 	        $('#calendar').fullCalendar('addEventSource', response.data.ical);
 	        $('#calendar').fullCalendar('today');
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 	if(typeof timeouts['calendar-Homepage'] !== 'undefined'){ clearTimeout(timeouts['calendar-Homepage']); }
 	timeouts['calendar-Homepage'] = setTimeout(function(){ homepageCalendar(timeout); }, timeout);
@@ -7276,12 +7135,10 @@ function homepageTautulli(timeout){
 		        $('#homepageOrdertautulli').html(buildTautulli(response.data));
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr);
     });
     let timeoutTitle = 'Tautulli-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -7620,12 +7477,10 @@ function homepageWeatherAndAir(timeout){
 		        $('#homepageOrderWeatherAndAir').html(buildWeatherAndAir(response.data));
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr);
     });
     let timeoutTitle = 'WeatherAndAir-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -7736,12 +7591,10 @@ function homepageMonitorr(timeout){
 		        $('#homepageOrderMonitorr').html(buildMonitorr(response.data));
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr);
     });
     let timeoutTitle = 'Monitorr-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -7758,12 +7611,10 @@ function homepageSpeedtest(timeout){
 		        $('#homepageOrderSpeedtest').html(buildSpeedtest(response.data));
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr);
     });
     let timeoutTitle = 'Speedtest-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -8411,12 +8262,10 @@ function homepageNetdata(timeout){
 		        }
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr);
     });
     var timeoutTitle = 'Netdata-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -8619,12 +8468,10 @@ function homepageOctoprint(timeout){
 		        $('#homepageOrderOctoprint').html(buildOctoprint(response.data));
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr);
     });
     let timeoutTitle = 'Octoprint-Homepage';
     if(typeof timeouts[timeoutTitle] !== 'undefined'){ clearTimeout(timeouts[timeoutTitle]); }
@@ -8998,8 +8845,7 @@ function youtubeCheck(title,link){
 		}
 
 	}).fail(function(xhr) {
-		messageSingle('API Limit Reached','YouTube API Error',activeInfo.settings.notifications.position,'#FFF','error','5000');
-		console.error("Organizr Function: YouTube Connection Failed");
+		OrganizrApiError(xhr, 'YouTube API Error');
 	});
 }
 //request search
@@ -9076,13 +8922,10 @@ function importUsers(type){
 	        message('User Import',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
 	        $('.importUsersButton').attr('disabled', false);
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    message('Category Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	    console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr, 'Import Error');
     });
 }
 //Settings change auth
@@ -9304,9 +9147,7 @@ function pingUpdateItem(ping){
 		try {
 			var response = data.response;
 		}catch(e) {
-			console.log(e + ' error: ' + data);
-			orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-			return false;
+			organizrCatchError(e,data);
 		}
 		var i = ping;
 		var v = response.data;
@@ -9359,7 +9200,7 @@ function pingUpdateItem(ping){
 
 
 	}).fail(function(xhr) {
-		console.error("Organizr Function: API Connection Failed");
+		OrganizrApiError(xhr);
 	});
 }
 function pingUpdate(pingList,timeout){
@@ -9731,13 +9572,10 @@ function lock(){
             let html = data.response;
 	        location.reload();
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'Lock Error');
     });
 }
 function openSettings(){
@@ -9994,13 +9832,10 @@ function searchCoordinatesAPI(query){
 		        console.error('Organizr Function: API failed');
 	        }
         }catch(e) {
-            console.log(e + ' error: ' + data);
-            orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-            return false;
+	        organizrCatchError(e,data);
         }
     }).fail(function(xhr) {
-	    message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-	    console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+	    OrganizrApiError(xhr, 'API Error');
     });
 }
 function showLookupCoordinatesModal(){
@@ -10169,13 +10004,10 @@ function showPlexMachineForm(selector = null){
 				let listing = '<select class="form-control" id="plexMachineSelector" data-selector="'+selector+'" data-type="select">'+machines+'</select>';
 				$('.plexMachineListing').html(listing);
 			}catch(e) {
-				console.log(e + ' error: ' + data);
-				orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
-				return false;
+				organizrCatchError(e,data);
 			}
 		}).fail(function(xhr) {
-			message('API Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-			console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+			OrganizrApiError(xhr, 'API Error');
 			$('.plexMachineMessage').text("Plex Token Needed First");
 			$('.plexMachineHeader').addClass('panel-warning').removeClass('panel-info').removeClass('panel-danger');
 		})
@@ -10385,7 +10217,28 @@ function organizrConsole(subject,msg,type = 'info'){
 
 	console.info("%c "+subject+" %c ".concat(msg, " "), "color: white; background: "+color+"; font-weight: 700;", "color: "+color+"; background: white; font-weight: 700;");
 }
-
+function organizrCatchError(e,data){
+	organizrConsole('Organizr API Function',data,'warning');
+	orgErrorAlert('<h4>' + e + '</h4>' + formatDebug(data));
+	return false;
+}
+function OrganizrApiError(xhr, secondaryMessage = null){
+	let msg = '';
+	if(typeof xhr.responseJson !== 'undefined'){
+		msg = xhr.responseJSON.response.message;
+	}else if(typeof xhr.statusText !== 'undefined'){
+		msg = xhr.statusText;
+	}else if(typeof xhr.responseText !== 'undefined'){
+		msg = xhr.responseText;
+	}else{
+		msg = 'Connection Error';
+	}
+	organizrConsole('Organizr API Function',msg,'error');
+	if(secondaryMessage){
+		message(secondaryMessage, msg, activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+	}
+	return false;
+}
 function launch(){
 	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
 	organizrConsole('API V2 API','If you see a 404 Error below this line, you have not setup the new location block... See URL above this line', 'error');

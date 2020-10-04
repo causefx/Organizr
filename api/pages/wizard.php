@@ -132,8 +132,7 @@ function get_page_wizard($Organizr)
             		var html = data.response;
                     location.reload();
             	}).fail(function(xhr) {
-            	    messageSingle(\'API Error\', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, \'#FFF\', \'error\', \'10000\');
-            		console.error("Organizr Function: API Connection Failed | Error: " + xhr.responseJSON.response.message);
+            	    OrganizrApiError(xhr, \'API Error\');
             	});
             }
         });
