@@ -1717,7 +1717,7 @@ class Organizr
 					'class' => 'getPlexMachineAuth plexAuth switchAuth',
 					'icon' => 'fa fa-id-badge',
 					'text' => 'Retrieve',
-					'attr' => 'onclick="showPlexTokenForm(\'#settings-main-form [name=plexID]\')"'
+					'attr' => 'onclick="showPlexMachineForm(\'#settings-main-form [name=plexID]\')"'
 				),
 				array(
 					'type' => 'input',

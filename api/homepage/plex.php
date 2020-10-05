@@ -36,17 +36,36 @@ trait PlexHomepageItem
 						'placeholder' => 'http(s)://hostname:port'
 					),
 					array(
+						'type' => 'blank',
+						'name' => '',
+						'label' => '',
+					),
+					array(
 						'type' => 'password-alt',
 						'name' => 'plexToken',
 						'label' => 'Token',
 						'value' => $this->config['plexToken']
 					),
 					array(
+						'type' => 'button',
+						'label' => 'Get Plex Token',
+						'icon' => 'fa fa-ticket',
+						'text' => 'Retrieve',
+						'attr' => 'onclick="showPlexTokenForm(\'#homepage-Plex-form [name=plexToken]\')"'
+					),
+					array(
 						'type' => 'password-alt',
 						'name' => 'plexID',
 						'label' => 'Plex Machine',
 						'value' => $this->config['plexID']
-					)
+					),
+					array(
+						'type' => 'button',
+						'label' => 'Get Plex Machine',
+						'icon' => 'fa fa-id-badge',
+						'text' => 'Retrieve',
+						'attr' => 'onclick="showPlexMachineForm(\'#homepage-Plex-form [name=plexID]\')"'
+					),
 				),
 				'Active Streams' => array(
 					array(
