@@ -7237,11 +7237,11 @@ function buildWeatherAndAir(array){
                                 <li class="text-right"><span class="counter">`+Math.round(v.temperature.value)+`<small><sup>°`+v.temperature.units+`</sup></small></span></li>
                             </ul>
                             <ul class="list-inline m-b-0">
-                                <li class="pull-left w-50"><h5 class="text-uppercase elip">`+v.weather_text+`</h5></li>
-                                <li class="pull-right" style="width:75px"><h5><i class="wi wi-strong-wind m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Wind"></i>`+Math.round(v.wind.speed.value)+` `+v.wind.speed.units+`</h5></li>
-                                <li class="pull-right" style="width:75px"><h5><i class="wi wi-barometer m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pressure"></i>`+Math.round(v.pressure.value)+` `+v.pressure.units+`</h5></li>
-                                <li class="pull-right" style="width:45px"><h5><i class="wi wi-humidity m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Humidity"></i>`+Math.round(v.relative_humidity)+`</h5></li>
-                                <li class="pull-right" style="width:45px"><h5><i class="wi wi-raindrop m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Dew Point"></i>`+Math.round(v.dew_point.value)+`°</h5></li>
+                                <li class="pull-left w-50 hidden-xs"><small class="text-uppercase elip">`+v.weather_text+`</small></li>
+                                <li class="pull-right" style="width:75px"><small><i class="wi wi-strong-wind m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Wind"></i>`+Math.round(v.wind.speed.value)+` `+v.wind.speed.units+`</small></li>
+                                <li class="pull-right" style="width:75px"><small><i class="wi wi-barometer m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pressure"></i>`+Math.round(v.pressure.value)+` `+v.pressure.units+`</small></li>
+                                <li class="pull-right" style="width:45px"><small><i class="wi wi-humidity m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Humidity"></i>`+Math.round(v.relative_humidity)+`</small></li>
+                                <li class="pull-right" style="width:45px"><small><i class="wi wi-raindrop m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Dew Point"></i>`+Math.round(v.dew_point.value)+`°</small></li>
                                 <div class="clearfix"></div>
                             </ul>
                         </div>
@@ -7257,7 +7257,7 @@ function buildWeatherAndAir(array){
                                 <li class="text-right"><span class="counter">`+Math.round(v.temps.high)+`<small><sup>°`+v.temperature.units+`</sup></small></span></li>
                             </ul>
                             <ul class="list-inline m-b-0">
-                                <li class="pull-left w-100"><h6 class="text-uppercase elip">`+v.weather_text+`</h6></li>
+                                <li class="pull-left w-100"><small class="text-uppercase elip">`+v.weather_text+`</small></li>
                                 <div class="clearfix"></div>
                             </ul>
                         </div>
