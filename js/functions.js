@@ -2932,7 +2932,7 @@ function buildTabTypeSelect(tabID, typeID, disabled){
 	var array = [
 		{
 			'type_id':0,
-			'type':'Internal'
+			'type':'Organizr'
 		},
 		{
 			'type_id':1,
@@ -5300,7 +5300,8 @@ function processRequest(id,type){
 //Ombi actions
 function ombiActions(id,action,type){
 	var msg = (activeInfo.user.groupID <= 1) ? '<a href="https://github.com/tidusjar/Ombi/issues/2176" target="_blank">Not Org Fault - Ask Ombi</a>' : 'Connection Error to Request Server';
-	ajaxloader('.request-' + id + '-div', 'in')
+	ajaxloader('.request-' + id + '-div', 'in');
+	ajaxloader('.preloader-' + id, 'in');
     //$.magnificPopup.close();
     messageSingle(window.lang.translate('Submitting Action to Ombi'),'',activeInfo.settings.notifications.position,"#FFF",'success',"10000");
 	var callbacks = $.Callbacks();
@@ -10224,7 +10225,7 @@ function organizrCatchError(e,data){
 }
 function OrganizrApiError(xhr, secondaryMessage = null){
 	let msg = '';
-	if(typeof xhr.responseJson !== 'undefined'){
+	if(typeof xhr.responseJSON !== 'undefined'){
 		msg = xhr.responseJSON.response.message;
 	}else if(typeof xhr.statusText !== 'undefined'){
 		msg = xhr.statusText;
