@@ -260,7 +260,7 @@ trait OmbiHomepageItem
 					$movie = json_decode($movie->body, true);
 					//$movie = array_reverse($movie);
 					foreach ($movie as $key => $value) {
-						$proceed = (($this->config['ombiLimitUser']) && strtolower($this->user['username']) == strtolower($value['requestedUser']['userName'])) || (!$this->config['ombiLimitUser']) || $this->qualifyRequest(1);
+						$proceed = (($this->config['ombiLimitUser']) && strtolower($this->user['username']) == strtolower($value['requestedUser']['userName'])) || (strtolower($value['requestedUser']['userName']) == strtolower($this->config['ombiFallbackUser'])) || (!$this->config['ombiLimitUser']) || $this->qualifyRequest(1);
 						if ($proceed) {
 							$api['count']['movie']++;
 							$requests[] = array(
