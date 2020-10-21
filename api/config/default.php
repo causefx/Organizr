@@ -51,6 +51,8 @@ return array(
 	'ombiURL' => '',
 	'ombiToken' => '',
 	'ombiAlias' => false,
+	'ombiFallbackUser' => '',
+	'ombiFallbackPassword' => '',
 	'ssoPlex' => false,
 	'ssoOmbi' => false,
 	'ssoTautulli' => false,

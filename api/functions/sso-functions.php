@@ -9,7 +9,8 @@ trait SSOFunctions
 			$this->coookie('set', 'mpt', $token, $this->config['rememberMeDays'], false);
 		}
 		if ($this->config['ssoOmbi']) {
-			$ombiToken = $this->getOmbiToken($username, $password, $token);
+			$fallback = ($this->config['ombiFallbackUser'] !== '' && $this->config['ombiFallbackPassword'] !== '');
+			$ombiToken = $this->getOmbiToken($username, $password, $token, $fallback);
 			if ($ombiToken) {
 				$this->coookie('set', 'Auth', $ombiToken, $this->config['rememberMeDays'], false);
 			}
@@ -25,7 +26,7 @@ trait SSOFunctions
 		return true;
 	}
 	
-	public function getOmbiToken($username, $password, $oAuthToken = null)
+	public function getOmbiToken($username, $password, $oAuthToken = null, $fallback = false)
 	{
 		$token = null;
 		try {
@@ -47,12 +48,22 @@ trait SSOFunctions
 				$token = json_decode($response->body, true)['access_token'];
 				$this->writeLog('success', 'Ombi Token Function - Grabbed token.', $username);
 			} else {
-				$this->writeLog('error', 'Ombi Token Function - Ombi did not return Token', $username);
+				if ($fallback) {
+					$this->writeLog('error', 'Ombi Token Function - Ombi did not return Token - Will retry using fallback credentials', $username);
+				} else {
+					$this->writeLog('error', 'Ombi Token Function - Ombi did not return Token', $username);
+				}
 			}
 		} catch (Requests_Exception $e) {
 			$this->writeLog('error', 'Ombi Token Function - Error: ' . $e->getMessage(), $username);
 		}
-		return ($token) ? $token : false;
+		if ($token) {
+			return $token;
+		} elseif ($fallback) {
+			return $this->getOmbiToken($this->config['ombiFallbackUser'], $this->decrypt($this->config['ombiFallbackPassword']), null, false);
+		} else {
+			return false;
+		}
 	}
 	
 	public function getTautulliToken($username, $password, $plexToken = null)

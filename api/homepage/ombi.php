@@ -40,7 +40,20 @@ trait OmbiHomepageItem
 						'name' => 'ombiToken',
 						'label' => 'Token',
 						'value' => $this->config['ombiToken']
-					)
+					),
+					array(
+						'type' => 'input',
+						'name' => 'ombiFallbackUser',
+						'label' => 'Ombi Fallback User',
+						'value' => $this->config['ombiFallbackUser'],
+						'help' => 'Organizr will request an Ombi User Token based off of this user credentials'
+					),
+					array(
+						'type' => 'password-alt',
+						'name' => 'ombiFallbackPassword',
+						'label' => 'Ombi Fallback Password',
+						'value' => $this->config['ombiFallbackPassword']
+					),
 				),
 				'Misc Options' => array(
 					array(
