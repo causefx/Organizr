@@ -1,8 +1,30 @@
 <?php
-if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
-    $pageSettingsSettingsLogs = '
+$GLOBALS['organizrPages'][] = 'settings_settings_logs';
+function get_page_settings_settings_logs($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	return '
     <script>
     $(document).on("click", ".swapLog", function(e) {
+    	switch ($(this).attr(\'data-name\')){
+    	case \'loginLog\':
+    		loginLogTable.ajax.reload(null, false);
+    	break;
+    	case \'orgLog\':
+    		organizrLogTable.ajax.reload(null, false);
+    	break;
+    	default:
+    		//nada
+    		//loginLogTable
+    	}
         var log = $(this).attr(\'data-name\')+\'Div\';
         $(\'.logTable\').addClass(\'hidden\');
         $(\'.\'+log).addClass(\'show\').removeClass(\'hidden\');
@@ -11,8 +33,8 @@ if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
     });
     </script>
     <div class="btn-group m-b-20 pull-left">
-        <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog active" data-name="loginLog" data-path="'.$GLOBALS['organizrLoginLog'].'" lang="en">Login Log</button>
-        <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog" data-name="orgLog" data-path="'.$GLOBALS['organizrLog'].'" lang="en">Organizr Log</button>
+        <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog active" data-name="loginLog" data-path="' . $Organizr->organizrLoginLog . '" lang="en">Login Log</button>
+        <button type="button" class="btn btn-default btn-outline waves-effect bg-org swapLog" data-name="orgLog" data-path="' . $Organizr->organizrLog . '" lang="en">Organizr Log</button>
     </div>
     <button class="btn btn-danger btn-sm waves-effect waves-light pull-right purgeLog" type="button"><span class="btn-label"><i class="fa fa-trash"></i></span>Purge Log</button>
     <div class="clearfix"></div>
@@ -69,8 +91,19 @@ if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
     <!-- /.container-fluid -->
     <script>
     //$.fn.dataTable.moment(\'DD-MMM-Y HH:mm:ss\');
-    $("#loginLogTable").DataTable( {
-            "ajax": "api/?v1/login_log",
+    $.fn.dataTable.ext.errMode = \'none\';
+    var loginLogTable = $("#loginLogTable")
+    .on( \'error.dt\', function ( e, settings, techNote, message ) {
+        console.log( \'An error has been reported by DataTables: \', message );
+        loginLogTable.draw();
+    } )
+    .DataTable( {
+    		"ajax": {
+				"url": "api/v2/log/login",
+				"dataSrc": function ( json ) {
+					return json.response.data;
+				}
+			},
             "columns": [
                 { data: \'utc_date\',
                     render: function ( data, type, row ) {
@@ -98,8 +131,18 @@ if(file_exists('config'.DIRECTORY_SEPARATOR.'config.php')){
             ],
             "order": [[ 0, \'desc\' ]],
     } );
-    $("#organizrLogTable").DataTable( {
-            "ajax": "api/?v1/organizr_log",
+    var organizrLogTable = $("#organizrLogTable")
+    .on( \'error.dt\', function ( e, settings, techNote, message ) {
+        console.log( \'An error has been reported by DataTables: \', message );
+        organizrLogTable.draw();
+    } )
+    .DataTable( {
+            "ajax": {
+				"url": "api/v2/log/organizr",
+				"dataSrc": function ( json ) {
+					return json.response.data;
+				}
+			},
                 "columns": [
                 { data: \'utc_date\',
                     render: function ( data, type, row ) {

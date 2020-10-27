@@ -9,5 +9,6 @@ return array(
 	'CHAT-messageLoadLimit' => '200',
 	'CHAT-userRefreshTimeout' => '60000',
 	'CHAT-newMessageSound-include' => 'plugins/sounds/default/newmessage.mp3',
+	'CHAT-newMessageSoundz-include' => 'plugins/sounds/default/newmessage.mp3',
 	'CHAT-useSSL' => false
 );

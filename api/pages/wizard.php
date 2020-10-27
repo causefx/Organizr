@@ -1,5 +1,11 @@
 <?php
-$pageWizard = '
+$GLOBALS['organizrPages'][] = 'settings_wizard';
+function get_page_wizard($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	return '
 <script>
     (function() {
         $(\'#adminValidator\').wizard({
@@ -53,7 +59,7 @@ $pageWizard = '
                                 }
                             }
                         },
-                        location: {
+                        dbPath: {
                             validators: {
                                 notEmpty: {
                                     message: \'The database location is required\'
@@ -121,31 +127,12 @@ $pageWizard = '
                 return true;
             },
             onFinish: function() {
-                //$(\'#validation\').submit();
-                var post = $( \'#validation\' ).serializeArray();
-                console.log( post );
-                organizrAPI(\'POST\',\'api/?v1/wizard_config\',post).success(function(data) {
-            		var html = JSON.parse(data);
-                    if(html.data == true){
-                        location.reload();
-                    }else if(html.data == \'token\'){
-                        message("",window.lang.translate(\'Could not create Token\'),activeInfo.settings.notifications.position,"#FFF","error","3500");
-						console.error(\'Organizr Function: Could not create Token\');
-					}else if(html.data == \'db\'){
-						message("",window.lang.translate(\'Could not create DB - check permissions\'),activeInfo.settings.notifications.position,"#FFF","error","3500");
-						console.error(\'Organizr Function: Could not create DB - check permissions\');
-					}else if(html.data == \'admin\'){
-						message("",window.lang.translate(\'Could not create admin acct\'),activeInfo.settings.notifications.position,"#FFF","error","3500");
-						console.error(\'Organizr Function: Could not create admin acct\');
-					}else if(html.data == \'config\'){
-						message("",window.lang.translate(\'Could not create config files - check permissions\'),activeInfo.settings.notifications.position,"#FFF","error","3500");
-						console.error(\'Organizr Function: Could not create config files - check permissions\');
-					}else{
-						message("",window.lang.translate(\'Sign-up Error Occurred\'),activeInfo.settings.notifications.position,"#FFF","error","3500");
-                        console.error(\'Organizr Function: Sign-up Error Occurred\');
-                    }
+                var post = $( \'#validation\' ).serializeToJSON();
+                organizrAPI2(\'POST\',\'api/v2/wizard\',post).success(function(data) {
+            		var html = data.response;
+                    location.reload();
             	}).fail(function(xhr) {
-            		console.error("Organizr Function: Connection Failed");
+            	    OrganizrApiError(xhr, \'API Error\');
             	});
             }
         });
@@ -258,8 +245,8 @@ $pageWizard = '
                                     </div>
                                     <div class="panel-wrapper collapse in" aria-expanded="true">
                                         <div class="panel-body">
-                                            <p lang="en">The Hash Key will be used to decrypt all passwords etc... on the server. {User-Generated]</p>
-                                            <p lang="en">The Registration Password will lockout the registration field with this password. {User-Generated]</p>
+                                            <p lang="en">The Hash Key will be used to decrypt all passwords etc... on the server. [User-Generated]</p>
+                                            <p lang="en">The Registration Password will lockout the registration field with this password. [User-Generated]</p>
                                             <p lang="en">The API Key will be used for all calls to organizr for the UI. [Auto-Generated]</p>
                                         </div>
                                     </div>
@@ -309,10 +296,10 @@ $pageWizard = '
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="location" lang="en">Database Location</label>
+                                    <label for="dbPath" lang="en">Database Location</label>
                                     <div class="input-group">
                                         <div class="input-group-addon"><i class="ti-server"></i></div>
-                                        <input type="text" class="form-control wizardInput" name="location" id="form-location" placeholder="Enter path or copy from above">
+                                        <input type="text" class="form-control wizardInput" name="dbPath" id="form-dbPath" placeholder="Enter path or copy from above">
                                         <span class="input-group-btn"><button class="btn btn-info testPath" lang="en" type="button">Test / Create Path</button></span>
                                     </div>
                                 </div>
@@ -375,7 +362,7 @@ $pageWizard = '
                                         <div class="form-group">
                                             <label class="control-label col-md-3" lang="en">Database Location:</label>
                                             <div class="col-md-9">
-                                                <p class="form-control-static" id="verify-location">  </p>
+                                                <p class="form-control-static" id="verify-dbPath">  </p>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -399,3 +386,4 @@ $pageWizard = '
 </div>
 <!-- /.container-fluid -->
 ';
+}

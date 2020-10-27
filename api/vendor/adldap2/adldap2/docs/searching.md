@@ -76,7 +76,7 @@ found, use the `findOrFail()` method:
 try {
 
     $record = $search->findOrFail('John Doe');
-    
+
 } catch (Adldap\Models\ModelNotFoundException $e) {
     // Record wasn't found!
 }
@@ -100,7 +100,7 @@ an exception when it cannot be found, use the `findByOrFail()` method:
 try {
 
     $record = $search->findByOrFail('samaccountname', 'jdoe');
-    
+
 } catch (Adldap\Models\ModelNotFoundException $e) {
     // Record wasn't found!
 }
@@ -123,7 +123,7 @@ an exception when it hasn't been found, use the `findByDnOrFail()` method:
 try {
 
     $record = $search->findByDnOrFail('cn=John Doe,dc=corp,dc=org');
-    
+
 } catch (Adldap\Models\ModelNotFoundException $e) {
     // Record wasn't found!
 }
@@ -163,7 +163,7 @@ To retrieve the first record of a search or throw an exception when one isn't fo
 try {
 
     $record = $search->firstOrFail();
-    
+
 } catch (Adldap\Models\ModelNotFoundException $e) {
     // Record wasn't found!
 }
@@ -228,7 +228,7 @@ $results = $provider->search()->whereStartsWith('cn', 'John')->get();
 ```
 
 #### Where Ends With
-    
+
 We can also search for all objects that end with the common name of `Doe` using the `ends_with` operator:
 
 ```php
@@ -318,7 +318,7 @@ $results = $search
             ->orWhere('cn', '=', 'Suzy Doe')
             ->get();
 ```
-    
+
 This query would return no results. Since we're already defining that the common name (`cn`) must equal `John Doe`, applying
 the `orWhere()` does not amount to 'Look for an object with the common name as "John Doe" OR "Suzy Doe"'. This query would
 actually amount to 'Look for an object with the common name that <b>equals</b> "John Doe" OR "Suzy Doe"
@@ -395,7 +395,7 @@ $results = $query->andFilter(function (Adldap\Query\Builder $q) {
 
     $q->where('givenname', '=', 'John')
       ->where('sn', '=', 'Doe');
-      
+
 })->get();
 ```
 
@@ -414,7 +414,7 @@ $results = $query->orFilter(function (Adldap\Query\Builder $q) {
 
     $q->where('givenname', '=', 'John')
       ->where('sn', '=', 'Doe');
-      
+
 })->get();
 ```
 
@@ -432,7 +432,7 @@ $results = $query->notFilter(function (Adldap\Query\Builder $q) {
 
     $q->where('givenname', '=', 'John')
       ->where('sn', '=', 'Doe');
-      
+
 })->get();
 ```
 
@@ -568,6 +568,9 @@ $results = $search->printers()->get();
 // Retrieve all organizational units (Adldap\Models\OrganizationalUnit).
 $results = $search->ous()->get();
 
+// Retrieve all organizational units (Adldap\Models\OrganizationalUnit).
+$results = $search->organizations()->get();
+
 // Retrieve all groups (Adldap\Models\Group).
 $results = $search->groups()->get();
 
@@ -588,9 +591,13 @@ To set the base DN of your search you can use one of two methods:
 ```php
 // Using the `in()` method:
 $results = $provider->search()->in('ou=Accounting,dc=acme,dc=org')->get();
-    
+
 // Using the `setDn()` method:
 $results = $provider->search()->setDn('ou=Accounting,dc=acme,dc=org')->get();
+
+// You can also include `in()` with the scope
+$results = $provider->search()->organizations()->in('ou=Accounting,dc=acme,dc=org')->get()
+
 ```
 
 Either option will return the same results. Use which ever method you prefer to be more readable.

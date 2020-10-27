@@ -1,44 +1,94 @@
 <?php
-if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
-	$pageSettingsTabEditorTabsPerformanceIcon = $GLOBALS['performanceDisableIconDropdown'] ? '' : '
-	allIcons().success(function(data) {
+$GLOBALS['organizrPages'][] = 'settings_tab_editor_tabs';
+function get_page_settings_tab_editor_tabs($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	$iconSelectors = '
+
 	    $(".tabIconIconList").select2({
-			data: data,
+	        ajax: {
+			    url: \'api/v2/icon\',
+			    data: function (params) {
+					var query = {
+						search: params.term,
+						page: params.page || 1
+					}
+					return query;
+			    },
+				processResults: function (data, params) {
+					params.page = params.page || 1;
+					return {
+						results: data.response.data.results,
+						pagination: {
+							more: (params.page * 20) < data.response.data.total
+						}
+					};
+				},
+			    //cache: true
+			},
+			placeholder: \'Search for an icon\',
 			templateResult: formatIcon,
-			templateSelection: formatIcon,
+			templateSelection: formatIcon
 		});
-	});
-	$(".tabIconImageList").select2({
-		templateResult: formatImage,
-		templateSelection: formatImage,
-	});
+		
+		$(".tabIconImageList").select2({
+			 ajax: {
+			    url: \'api/v2/image/select\',
+			    data: function (params) {
+					var query = {
+						search: params.term,
+						page: params.page || 1
+					}
+					return query;
+			    },
+				processResults: function (data, params) {
+					params.page = params.page || 1;
+					return {
+						results: data.response.data.results,
+						pagination: {
+							more: (params.page * 20) < data.response.data.total
+						}
+					};
+				},
+			    //cache: true
+			},
+			placeholder: \'Search for an image\',
+			templateResult: formatImage,
+			templateSelection: formatImage
+		});
 	';
-	$pageSettingsTabEditorTabsPerformanceImage = $GLOBALS['performanceDisableImageDropdown'] ? '' : '
-	$(".tabIconImageList").select2({
-		templateResult: formatImage,
-		templateSelection: formatImage,
-	});
-	';
-	$pageSettingsTabEditorTabs = '
+	return '
 	<script>
 	buildTabEditor();
+	!function(a){function f(a,b){if(!(a.originalEvent.touches.length>1)){a.preventDefault();var c=a.originalEvent.changedTouches[0],d=document.createEvent("MouseEvents");d.initMouseEvent(b,!0,!0,window,1,c.screenX,c.screenY,c.clientX,c.clientY,!1,!1,!1,!1,0,null),a.target.dispatchEvent(d)}}if(a.support.touch="ontouchend"in document,a.support.touch){var e,b=a.ui.mouse.prototype,c=b._mouseInit,d=b._mouseDestroy;b._touchStart=function(a){var b=this;!e&&b._mouseCapture(a.originalEvent.changedTouches[0])&&(e=!0,b._touchMoved=!1,f(a,"mouseover"),f(a,"mousemove"),f(a,"mousedown"))},b._touchMove=function(a){e&&(this._touchMoved=!0,f(a,"mousemove"))},b._touchEnd=function(a){e&&(f(a,"mouseup"),f(a,"mouseout"),this._touchMoved||f(a,"click"),e=!1)},b._mouseInit=function(){var b=this;b.element.bind({touchstart:a.proxy(b,"_touchStart"),touchmove:a.proxy(b,"_touchMove"),touchend:a.proxy(b,"_touchEnd")}),c.call(b)},b._mouseDestroy=function(){var b=this;b.element.unbind({touchstart:a.proxy(b,"_touchStart"),touchmove:a.proxy(b,"_touchMove"),touchend:a.proxy(b,"_touchEnd")}),d.call(b)}}}(jQuery);
 	$( \'#tabEditorTable\' ).sortable({
 	    stop: function () {
 	        $(\'input.order\').each(function(idx) {
 	            $(this).val(idx + 1);
 	        });
 	        var newTabs = $( "#submit-tabs-form" ).serializeToJSON();
-	        submitTabOrder(newTabs);
+	        newTabsGlobal = newTabs;
+	        $(\'.saveTabOrderButton\').removeClass(\'hidden\');
+	        //submitTabOrder(newTabs);
 	    }
 	});
-	'.$pageSettingsTabEditorTabsPerformanceImage.$pageSettingsTabEditorTabsPerformanceIcon.'
-	
+	$( \'#tabEditorTable\' ).disableSelection();
+	' . $iconSelectors . '
 	</script>
 	<div class="panel bg-org panel-info">
 	    <div class="panel-heading">
 	        <span lang="en">Tab Editor</span>
 	        <button type="button" class="btn btn-info btn-circle pull-right popup-with-form m-r-5" href="#new-tab-form" data-effect="mfp-3d-unfold"><i class="fa fa-plus"></i> </button>
 	        <button type="button" class="btn btn-info btn-circle pull-right m-r-5 help-modal" data-modal="tabs"><i class="fa fa-question-circle"></i> </button>
+	    	<button onclick="submitTabOrder(newTabsGlobal)" class="btn btn-sm btn-info btn-rounded waves-effect waves-light pull-right animated loop-animation rubberBand m-r-20 saveTabOrderButton hidden" type="button"><span class="btn-label"><i class="fa fa-save"></i></span><span lang="en">Save Tab Order</span></button>
 	    </div>
 	    <div class="table-responsive">
 	        <form id="submit-tabs-form" onsubmit="return false;">
@@ -59,7 +109,9 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	                        <th lang="en" style="text-align:center">DELETE</th>
 	                    </tr>
 	                </thead>
-	                <tbody id="tabEditorTable"></tbody>
+	                <tbody id="tabEditorTable">
+	                	<td class="text-center" colspan="12"><i class="fa fa-spin fa-spinner"></i></td>
+					</tbody>
 	            </table>
 	        </form>
 	    </div>
@@ -77,24 +129,24 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	        </div>
 	        <div class="form-group">
 	            <label class="control-label" for="new-tab-form-inputNameNew" lang="en">Tab Name</label>
-	            <input type="text" class="form-control" id="new-tab-form-inputNameNew" name="tabName" required="" autofocus>
+	            <input type="text" class="form-control" id="new-tab-form-inputNameNew" name="name" required="" autofocus>
 	        </div>
 	        <div class="form-group">
 	            <label class="control-label" for="new-tab-form-inputURLNew" lang="en">Tab URL</label>
-	            <input type="text" class="form-control" id="new-tab-form-inputURLNew" name="tabURL"  required="">
+	            <input type="text" class="form-control" id="new-tab-form-inputURLNew" name="url"  required="">
 	        </div>
 	        <div class="form-group">
 	            <label class="control-label" for="new-tab-form-inputURLLocalNew" lang="en">Tab Local URL</label>
-	            <input type="text" class="form-control" id="new-tab-form-inputURLLocalNew" name="tabLocalURL">
+	            <input type="text" class="form-control" id="new-tab-form-inputURLLocalNew" name="url_local">
 	        </div>
 	        <div class="form-group">
 	            <label class="control-label" for="new-tab-form-inputPingURLNew" lang="en">Ping URL</label>
-	            <input type="text" class="form-control" id="new-tab-form-inputPingURLNew" name="pingURL"  placeholder="host/ip:port">
+	            <input type="text" class="form-control" id="new-tab-form-inputPingURLNew" name="ping_url"  placeholder="host/ip:port">
 	        </div>
 	        <div class="row">
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="new-tab-form-inputTabActionTypeNew" lang="en">Tab Auto Action</label>
-		                <select class="form-control" id="new-tab-form-inputTabActionTypeNew" name="tabActionType">
+		                <select class="form-control" id="new-tab-form-inputTabActionTypeNew" name="timeout">
 		                    <option value="null">None</option>
 		                    <option value="1">Auto Close</option>
 		                    <option value="2">Auto Reload</option>
@@ -102,13 +154,13 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 		        </div>
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="new-tab-form-inputTabActionTimeNew" lang="en">Tab Auto Action Minutes</label>
-		                <input type="number" class="form-control" id="new-tab-form-inputTabActionTimeNew" name="tabActionTime"  placeholder="0">
+		                <input type="number" class="form-control" id="new-tab-form-inputTabActionTimeNew" name="timeout_ms"  placeholder="0">
 		        </div>
 		    </div>
 	        <div class="row">
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="new-tab-form-chooseImage" lang="en">Choose Image</label>
-		            ' . imageSelect("new-tab-form") . '
+		            <select class="form-control tabIconImageList" id="new-tab-form-chooseImage" name="chooseImage"><option lang="en">Select or type Image</option></select>
 		        </div>
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="new-tab-form-chooseIcon" lang="en">Choose Icon</label>
@@ -117,7 +169,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 		    </div>
 	        <div class="form-group">
 	            <label class="control-label" for="new-tab-form-inputImageNew" lang="en">Tab Image</label>
-	            <input type="text" class="form-control" id="new-tab-form-inputImageNew" name="tabImage"  required="">
+	            <input type="text" class="form-control" id="new-tab-form-inputImageNew" name="image"  required="">
 	        </div>
 	    </fieldset>
 	    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light row b-none testTab" type="button"><span class="btn-label"><i class="fa fa-flask"></i></span><span lang="en">Test Tab</span></button>
@@ -139,24 +191,24 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	        </div>
 	        <div class="form-group">
 	            <label class="control-label" for="edit-tab-form-inputName" lang="en">Tab Name</label>
-	            <input type="text" class="form-control" id="edit-tab-form-inputName" name="tabName" required="" autofocus>
+	            <input type="text" class="form-control" id="edit-tab-form-inputName" name="name" required="" autofocus>
 	        </div>
 	        <div class="form-group">
 	            <label class="control-label" for="edit-tab-form-inputURL" lang="en">Tab URL</label>
-	            <input type="text" class="form-control" id="edit-tab-form-inputURL" name="tabURL"  required="">
+	            <input type="text" class="form-control" id="edit-tab-form-inputURL" name="url"  required="">
 	        </div>
 	        <div class="form-group">
 	            <label class="control-label" for="edit-tab-form-inputLocalURL" lang="en">Tab Local URL</label>
-	            <input type="text" class="form-control" id="edit-tab-form-inputLocalURL" name="tabLocalURL">
+	            <input type="text" class="form-control" id="edit-tab-form-inputLocalURL" name="url_local">
 	        </div>
 	        <div class="form-group">
 	            <label class="control-label" for="edit-tab-form-pingURL" lang="en">Ping URL</label>
-	            <input type="text" class="form-control" id="edit-tab-form-pingURL" name="pingURL" placeholder="host/ip:port">
+	            <input type="text" class="form-control" id="edit-tab-form-pingURL" name="ping_url" placeholder="host/ip:port">
 	        </div>
 	        <div class="row">
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="edit-tab-form-inputTabActionTypeNew" lang="en">Tab Auto Action</label>
-		                <select class="form-control" id="edit-tab-form-inputTabActionTypeNew" name="tabActionType">
+		                <select class="form-control" id="edit-tab-form-inputTabActionTypeNew" name="timeout">
 		                    <option value="null">None</option>
 		                    <option value="1">Auto Close</option>
 		                    <option value="2">Auto Reload</option>
@@ -164,13 +216,13 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 		        </div>
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="edit-tab-form-inputTabActionTimeNew" lang="en">Tab Auto Action Minutes</label>
-		                <input type="number" class="form-control" id="edit-tab-form-inputTabActionTimeNew" name="tabActionTime">
+		                <input type="number" class="form-control" id="edit-tab-form-inputTabActionTimeNew" name="timeout_ms">
 		        </div>
 		    </div>
 	        <div class="row">
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="edit-tab-form-chooseImage" lang="en">Choose Image</label>
-		            ' . imageSelect("edit-tab-form") . '
+		            <select class="form-control tabIconImageList" id="edit-tab-form-chooseImage" name="chooseImage"><option lang="en">Select or type Image</option></select>
 		        </div>
 		        <div class="form-group col-lg-6">
 		            <label class="control-label" for="edit-tab-form-chooseIcon" lang="en">Choose Icon</label>
@@ -179,7 +231,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 		    </div>
 	        <div class="form-group">
 	            <label class="control-label" for="edit-tab-form-inputImage" lang="en">Tab Image</label>
-	            <input type="text" class="form-control" id="edit-tab-form-inputImage" name="tabImage"  required="">
+	            <input type="text" class="form-control" id="edit-tab-form-inputImage" name="image"  required="">
 	        </div>
 	    </fieldset>
 	    <button class="btn btn-sm btn-info btn-rounded waves-effect waves-light row b-none testEditTab" type="button"><span class="btn-label"><i class="fa fa-flask"></i></span><span lang="en">Test Tab</span></button>

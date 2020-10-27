@@ -1,5 +1,17 @@
 <?php
-$pageSettingsCustomizeAppearance = '
+$GLOBALS['organizrPages'][] = 'settings_customize_appearance';
+function get_page_settings_customize_appearance($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	return '
 <script>
 	buildCustomizeAppearance();
 </script>
@@ -11,8 +23,9 @@ $pageSettingsCustomizeAppearance = '
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org">
-            <form id="customize-appearance-form" class="addFormTick" onsbumit="return false;"></form>
+            <form id="customize-appearance-form" class="addFormTick" onsubmit="return false;"></form>
         </div>
     </div>
 </div>
 ';
+}

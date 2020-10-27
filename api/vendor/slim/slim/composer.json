@@ -1,0 +1,78 @@
+{
+    "name": "slim/slim",
+    "type": "library",
+    "description": "Slim is a PHP micro framework that helps you quickly write simple yet powerful web applications and APIs",
+    "keywords": ["framework","micro","api","router"],
+    "homepage": "https://slimframework.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Josh Lockhart",
+            "email": "hello@joshlockhart.com",
+            "homepage": "https://joshlockhart.com"
+        },
+        {
+            "name": "Andrew Smith",
+            "email": "a.smith@silentworks.co.uk",
+            "homepage": "http://silentworks.co.uk"
+        },
+        {
+            "name": "Rob Allen",
+            "email": "rob@akrabat.com",
+            "homepage": "http://akrabat.com"
+        },
+        {
+            "name": "Pierre Berube",
+            "email": "pierre@lgse.com",
+            "homepage": "http://www.lgse.com"
+        },
+        {
+            "name": "Gabriel Manricks",
+            "email": "gmanricks@me.com",
+            "homepage": "http://gabrielmanricks.com"
+        }
+    ],
+    "require": {
+        "ext-json": "*",
+        "nikic/fast-route": "^1.3",
+        "php": "^7.1",
+        "psr/container": "^1.0",
+        "psr/http-factory": "^1.0",
+        "psr/http-message": "^1.0",
+        "psr/http-server-handler": "^1.0",
+        "psr/http-server-middleware": "^1.0"
+    },
+    "require-dev": {
+        "ext-simplexml": "*",
+        "guzzlehttp/psr7": "^1.5",
+        "http-interop/http-factory-guzzle": "^1.0",
+        "nyholm/psr7": "^1.1",
+        "nyholm/psr7-server": "^0.3.0",
+        "phpunit/phpunit": "^7.5",
+        "phpspec/prophecy": "^1.8",
+        "phpstan/phpstan": "^0.11.5",
+        "slim/http": "^0.7",
+        "slim/psr7": "^0.3",
+        "squizlabs/php_codesniffer": "^3.4.2",
+        "zendframework/zend-diactoros": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Slim\\": "Slim",
+            "Slim\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": [
+            "@phpunit",
+            "@phpcs",
+            "@phpstan"
+        ],
+        "phpunit": "php vendor/bin/phpunit",
+        "phpcs": "php vendor/bin/phpcs",
+        "phpstan": "php -d memory_limit=-1 vendor/bin/phpstan analyse Slim"
+    },
+    "suggest": {
+        "slim/psr7": "Slim PSR-7 implementation. See http://www.slimframework.com/docs/v4/start/installation.html for more information."
+    }
+}

@@ -1,6 +1,14 @@
 <?php
-if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
-	$pageLockScreen = '
+$GLOBALS['organizrPages'][] = 'lockscreen';
+function get_page_lockscreen($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	return '
 <script>
 </script>
 <section id="lockScreen" class="lock-screen" onkeydown="blockDev">
@@ -9,8 +17,8 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
       <form class="form-horizontal form-material" id="form-lockscreen" onsubmit="return false;">
         <div class="form-group">
           <div class="col-xs-12 text-center">
-            <div class="user-thumb text-center"> <img alt="thumbnail" class="img-circle" width="100" src="' . $GLOBALS['organizrUser']['image'] . '">
-              <h3>' . $GLOBALS['organizrUser']['username'] . '</h3>
+            <div class="user-thumb text-center"> <img alt="thumbnail" class="img-circle" width="100" src="' . $Organizr->user['image'] . '">
+              <h3>' . $Organizr->user['username'] . '</h3>
             </div>
           </div>
         </div>

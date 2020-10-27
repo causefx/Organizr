@@ -6,9 +6,6 @@ $GLOBALS['plugins'][]['chat'] = array( // Plugin Name
 	'category' => 'Utilities', // One to Two Word Description
 	'link' => '', // Link to plugin info
 	'license' => 'personal,business', // License Type use , for multiple
-	//'fileName'=>'php-mailer.php',
-	//'configFile'=>'php-mailer.php',
-	//'apiFile'=>'php-mailer.php',
 	'idPrefix' => 'CHAT', // html element id prefix
 	'configPrefix' => 'CHAT', // config file prefix for array items without the hypen
 	'version' => '1.0.0', // SemVer of plugin
@@ -16,13 +13,13 @@ $GLOBALS['plugins'][]['chat'] = array( // Plugin Name
 	'settings' => true, // does plugin need a settings page? true or false
 	'homepage' => false // Is plugin for use on homepage? true or false
 );
-// INCLUDE/REQUIRE FILES
-// PLUGIN FUNCTIONS
-/* GET CHAT SETTINGS */
-function chatGetSettings()
+
+class Chat extends Organizr
 {
-	return array(
-		'custom' => '
+	public function _chatPluginGetSettings()
+	{
+		return array(
+			'custom' => '
 				<div class="row">
                     <div class="col-lg-12">
                         <div class="panel panel-info">
@@ -45,120 +42,130 @@ function chatGetSettings()
                     </div>
 				</div>
 				',
-		'Options' => array(
-			array(
-				'type' => 'select',
-				'name' => 'CHAT-Auth-include',
-				'label' => 'Minimum Authentication',
-				'value' => $GLOBALS['CHAT-Auth-include'],
-				'options' => groupSelect()
+			'Options' => array(
+				array(
+					'type' => 'select',
+					'name' => 'CHAT-Auth-include',
+					'label' => 'Minimum Authentication',
+					'value' => $this->config['CHAT-Auth-include'],
+					'options' => $this->groupSelect()
+				),
+				array(
+					'type' => 'number',
+					'name' => 'CHAT-messageLoadLimit',
+					'label' => '# of Previous Messages',
+					'value' => $this->config['CHAT-messageLoadLimit'],
+					'placeholder' => ''
+				),
+				array(
+					'type' => 'select',
+					'name' => 'CHAT-userRefreshTimeout',
+					'label' => 'Refresh Seconds',
+					'value' => $this->config['CHAT-userRefreshTimeout'],
+					'options' => $this->timeOptions()
+				),
+				array(
+					'type' => 'select',
+					'name' => 'CHAT-newMessageSound-include',
+					'label' => 'Message Sound',
+					'value' => $this->config['CHAT-newMessageSound-include'],
+					'options' => $this->getSounds()
+				),
+				array(
+					'type' => 'switch',
+					'name' => 'CHAT-useSSL',
+					'label' => 'Use Pusher SSL',
+					'help' => 'If messages get stuck sending, please turn this option off.',
+					'value' => $this->config['CHAT-useSSL']
+				)
 			),
-			array(
-				'type' => 'number',
-				'name' => 'CHAT-messageLoadLimit',
-				'label' => '# of Previous Messages',
-				'value' => $GLOBALS['CHAT-messageLoadLimit'],
-				'placeholder' => ''
-			),
-			array(
-				'type' => 'select',
-				'name' => 'CHAT-userRefreshTimeout',
-				'label' => 'Refresh Seconds',
-				'value' => $GLOBALS['CHAT-userRefreshTimeout'],
-				'options' => optionTime()
-			),
-			array(
-				'type' => 'select',
-				'name' => 'CHAT-newMessageSound-include',
-				'label' => 'Message Sound',
-				'value' => $GLOBALS['CHAT-newMessageSound-include'],
-				'options' => getSounds()
-			),
-			array(
-				'type' => 'switch',
-				'name' => 'CHAT-useSSL',
-				'label' => 'Use Pusher SSL',
-				'help' => 'If messages get stuck sending, please turn this option off.',
-				'value' => $GLOBALS['CHAT-useSSL']
+			'Connection' => array(
+				array(
+					'type' => 'password-alt',
+					'name' => 'CHAT-authKey-include',
+					'label' => 'Auth Key',
+					'value' => $this->config['CHAT-authKey-include']
+				),
+				array(
+					'type' => 'password-alt',
+					'name' => 'CHAT-secret',
+					'label' => 'API Secret',
+					'value' => $this->config['CHAT-secret']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'CHAT-appID-include',
+					'label' => 'App ID',
+					'value' => $this->config['CHAT-appID-include']
+				),
+				array(
+					'type' => 'input',
+					'name' => 'CHAT-cluster-include',
+					'label' => 'App Cluster',
+					'value' => $this->config['CHAT-cluster-include']
+				),
 			)
-		),
-		'Connection' => array(
-			array(
-				'type' => 'password-alt',
-				'name' => 'CHAT-authKey-include',
-				'label' => 'Auth Key',
-				'value' => $GLOBALS['CHAT-authKey-include']
-			),
-			array(
-				'type' => 'password-alt',
-				'name' => 'CHAT-secret',
-				'label' => 'API Secret',
-				'value' => $GLOBALS['CHAT-secret']
-			),
-			array(
-				'type' => 'input',
-				'name' => 'CHAT-appID-include',
-				'label' => 'App ID',
-				'value' => $GLOBALS['CHAT-appID-include']
-			),
-			array(
-				'type' => 'input',
-				'name' => 'CHAT-cluster-include',
-				'label' => 'App Cluster',
-				'value' => $GLOBALS['CHAT-cluster-include']
-			),
-		)
-	);
-}
-
-function sendChatMessage($array)
-{
-	$message = isset($array['data']['message']) ? $array['data']['message'] : null;
-	$message = htmlspecialchars($message, ENT_QUOTES);
-	$now = date("Y-m-d H:i:s");
-	$currentIP = userIP();
-	try {
-		$connect = new Dibi\Connection([
-			'driver' => 'sqlite3',
-			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
-		]);
+		);
+	}
+	
+	public function _chatPluginSendChatMessage($array)
+	{
+		$message = isset($array['message']) ? $array['message'] : null;
+		if (!$message) {
+			$this->setAPIResponse('error', 'No message supplied', 409);
+			return false;
+		}
+		$message = htmlspecialchars($message, ENT_QUOTES);
+		$now = date("Y-m-d H:i:s");
+		$currentIP = $this->userIP();
 		$newMessage = [
-			'username' => $GLOBALS['organizrUser']['username'],
-			'gravatar' => $GLOBALS['organizrUser']['image'],
-			'uid' => $GLOBALS['organizrUser']['uid'],
+			'username' => $this->user['username'],
+			'gravatar' => $this->user['image'],
+			'uid' => $this->user['uid'],
 			'date' => $now,
 			'ip' => $currentIP,
 			'message' => $message
 		];
-		$connect->query('INSERT INTO [chatroom]', $newMessage);
-		$options = array(
-			'cluster' => $GLOBALS['CHAT-cluster-include'],
-			'useTLS' => $GLOBALS['CHAT-useSSL']
-		);
-		$pusher = new Pusher\Pusher(
-			$GLOBALS['CHAT-authKey-include'],
-			$GLOBALS['CHAT-secret'],
-			$GLOBALS['CHAT-appID-include'],
-			$options
-		);
-		$pusher->trigger('org_channel', 'my-event', $newMessage);
-		return true;
-	} catch (Dibi\Exception $e) {
-		return $e;
-	}
-}
-
-function getChatMessage()
-{
-	try {
-		$connect = new Dibi\Connection([
-			'driver' => 'sqlite3',
-			'database' => $GLOBALS['dbLocation'] . $GLOBALS['dbName'],
-		]);
-		$all = $connect->fetchAll('SELECT `username`, `gravatar`, `uid`, `date`, `message` FROM chatroom LIMIT ' . $GLOBALS['CHAT-messageLoadLimit']);
-		return $all;
-	} catch (Dibi\Exception $e) {
+		$response = [
+			array(
+				'function' => 'query',
+				'query' => array(
+					'INSERT INTO [chatroom]',
+					$newMessage
+				)
+			),
+		];
+		$query = $this->processQueries($response);
+		if ($query) {
+			$options = array(
+				'cluster' => $GLOBALS['CHAT-cluster-include'],
+				'useTLS' => $GLOBALS['CHAT-useSSL']
+			);
+			$pusher = new Pusher\Pusher(
+				$GLOBALS['CHAT-authKey-include'],
+				$GLOBALS['CHAT-secret'],
+				$GLOBALS['CHAT-appID-include'],
+				$options
+			);
+			$pusher->trigger('org_channel', 'my-event', $newMessage);
+			$this->setAPIResponse('success', 'Chat message accepted', 200);
+			return true;
+		}
+		$this->setAPIResponse('error', 'Chat error occurred', 409);
 		return false;
 	}
 	
+	public function _chatPluginGetChatMessages()
+	{
+		$response = [
+			array(
+				'function' => 'fetchAll',
+				'query' => array(
+					'SELECT `username`, `gravatar`, `uid`, `date`, `message` FROM (SELECT `username`, `gravatar`, `uid`, `date`, `message` FROM chatroom ORDER BY date DESC LIMIT ?) ORDER BY date ASC',
+					$this->config['CHAT-messageLoadLimit']
+				)
+			),
+		];
+		return $this->processQueries($response);
+	}
 }

@@ -9,6 +9,6 @@ namespace Adldap\Models;
  */
 class Contact extends Entry
 {
-    use Concerns\HasMemberOf,
-        Concerns\HasUserProperties;
+    use Concerns\HasMemberOf;
+    use Concerns\HasUserProperties;
 }

@@ -1,5 +1,6 @@
 /*!
  * FullCalendar v3.2.0
+ *
  * Docs & License: https://fullcalendar.io/
  * (c) 2017 Adam Shaw
  */
@@ -6649,11 +6650,7 @@ DayGrid.mixin({
 		var timeText;
 		var titleHtml;
 		var urlMeta = event.id ? htmlEscape(event.id) : 'none';
-		var metadata = `
-		<div id="`+urlMeta+`" class="white-popup mfp-with-anim mfp-hide">
-	        <div class="col-md-8 col-md-offset-2 `+urlMeta+`-metadata-info"></div>
-	    </div>
-		`;
+		var metadata = '<div id="'+urlMeta+'" class="white-popup mfp-with-anim mfp-hide"><div class="col-md-8 col-md-offset-2 '+urlMeta+'-metadata-info"></div></div>';
 		var detailsJSON = JSON.stringify(event.details);
 		classes.unshift('fc-day-grid-event', 'fc-h-event');
 
@@ -14545,11 +14542,7 @@ var ListViewGrid = Grid.extend({
 		var timeText;
 		var titleHtml;
 		var urlMeta = event.id ? htmlEscape(event.id) : 'none';
-		var metadata = `
-		<div id="`+urlMeta+`" class="white-popup mfp-with-anim mfp-hide">
-	        <div class="col-md-8 col-md-offset-2 `+urlMeta+`-metadata-info"></div>
-	    </div>
-		`;
+		var metadata = '<div id="'+urlMeta+'" class="white-popup mfp-with-anim mfp-hide"><div class="col-md-8 col-md-offset-2 '+urlMeta+'-metadata-info"></div></div>';
 		var detailsJSON = JSON.stringify(event.details);
 		classes.unshift('fc-day-grid-event', 'fc-h-event');
 

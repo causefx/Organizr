@@ -1,6 +1,14 @@
 <?php
-if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
-	$pageHomepage = '
+$GLOBALS['organizrPages'][] = 'homepage';
+function get_page_homepage($Organizr = null)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	return '
 <script>
 !function($) {
     "use strict";
@@ -26,6 +34,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 
         var $this = this;
         $this.$calendarObj = $this.$calendar.fullCalendar({
+        	locale: "' . $Organizr->config['calendarLocale'] . '",
         	customButtons: {
 			    filterCalendar: {
 			      text: \'Filter\',
@@ -41,9 +50,9 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 			      }
 			    }
 			  },
-            defaultView: (activeInfo.mobile) ? "list" : "' . $GLOBALS['calendarDefault'] . '",
-            firstDay: "' . $GLOBALS['calendarFirstDay'] . '",
-            timeFormat: "' . $GLOBALS['calendarTimeFormat'] . '",
+            defaultView: (activeInfo.mobile) ? "list" : "' . $Organizr->config['calendarDefault'] . '",
+            firstDay: "' . $Organizr->config['calendarFirstDay'] . '",
+            timeFormat: "' . $Organizr->config['calendarTimeFormat'] . '",
             handleWindowResize: true,
             header: {
                left: "prev,next,today",
@@ -51,9 +60,9 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                right: (activeInfo.mobile) ? "refreshCalendar,filterCalendar" : "refreshCalendar,filterCalendar,month,basicWeek,basicDay,list",
             },
             views: {
-               basicDay: { buttonText: window.lang.translate("Day"), eventLimit: ' . $GLOBALS['calendarLimit'] . ' },
-               basicWeek: { buttonText: window.lang.translate("Week"), eventLimit: ' . $GLOBALS['calendarLimit'] . ' },
-               month: { buttonText: window.lang.translate("Month"), eventLimit: ' . $GLOBALS['calendarLimit'] . ' },
+               basicDay: { buttonText: window.lang.translate("Day"), eventLimit: ' . $Organizr->config['calendarLimit'] . ' },
+               basicWeek: { buttonText: window.lang.translate("Week"), eventLimit: ' . $Organizr->config['calendarLimit'] . ' },
+               month: { buttonText: window.lang.translate("Month"), eventLimit: ' . $Organizr->config['calendarLimit'] . ' },
                list: { buttonText: window.lang.translate("List"), duration: {days: 15} },
             },
             timezone: "local",
@@ -87,9 +96,10 @@ function($) {
     "use strict";
     $.CalendarApp.init()
 }(window.jQuery);
+$(".homepage-loading-box").fadeOut(5000);
 </script>
 <div class="container-fluid p-t-30" id="homepage-items">
-    ' . buildHomepage() . '
+    ' . $Organizr->buildHomepage() . '
 </div>
 <div id="open-youtube" class="white-popup mfp-with-anim mfp-hide">
     <div class="col-md-8 col-md-offset-2 youtube-div">  </div>

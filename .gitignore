@@ -75,6 +75,7 @@ chatpack.db
 Docker.txt
 Github.txt
 Demo.txt
+Dev.txt
 config/cacert.pem
 config/config.php
 config/config*.bak.php
@@ -83,6 +84,7 @@ config/users
 config/users*.db
 config/users*.bak.db
 config/tmp/*
+docs/api.json
 images/cache/*
 backups/*
 backups/
@@ -117,6 +119,8 @@ plugins/plugin_files/*
 !plugins/plugin_files/index.html
 plugins/images/userTabs/*
 !plugins/images/userTabs/index.html
+api/v2/routes/custom/*
+!api/v2/routes/custom/index.html
 # =========================
 # Plugin files
 # =========================
@@ -144,6 +148,7 @@ api/plugins/*
 !api/plugins/misc/emailTemplates/default.php
 !api/plugins/misc/emailTemplates/gray.php
 !api/plugins/misc/emailTemplates/light.php
+!api/plugins/misc/emailTemplates/dark.php
 !api/plugins/misc/emailTemplates/plehex.php
 !api/plugins/misc/speedTest/empty.php
 !api/plugins/misc/speedTest/garbage.php

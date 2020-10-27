@@ -271,5 +271,19 @@
     "new": "Added Jellyfin Auth function to log into Organizr|Re-Enable EmbyConnect backend option|Option to disable logout/login button on sidebar",
     "fixed": "Plex oAuth login enabled after switching to a different backend (#1416)|losing access to settings (#1418)|Youtube Error catch and added another API Key(#1419)|Update coookie function to include path|Update Tautulli cookie to include path|News.json fixes|homepage sort issue on right side|add uuid on wizard path",
     "notes": "Please report bugs in GitHub issues page"
+  },
+  "2.0.740": {
+    "date": "2020-08-07 17:05",
+    "title": "Update before Breaking Changes",
+    "new": "added sonarr queue to homepage|added radarr queue to homepage|Add octoprint homepage item|Added LDAP user email on account creation (#1244)|Emby and Jellyfin import users|New Tab Images for Requestrr - xBackBone|add asyncValue option to api calls|jellyfin text css class|Added limit to rTorrent|added some js files to fix Minify Organizr's JavaScript files (#1149)|add dev and demo globals|added tv and movie lookup for ombi before submit - might take a while…|added serializeObject js function",
+    "fixed": "Added toggle for jellyfin on emby settings|Unable to rearrange tabs on iPad (#1333)|redid function for homepageOrder - no longer need to add key to array|Monitorr links open in tab if Org URL|Monitorr sorting|encrypt and decrypt functions|json header check|add Lidarr to calendar check|fix jellyfin hp refresh on click|disable tvdbid lookup on js part|edit login form to use serializeObject|edited api v1 login endpoint function",
+    "notes": "API V2 is coming with breaking changes - please check news items|Updated Language Items|Updated frameworks|Please report bugs in GitHub issues page"
+  },
+  "2.1.0": {
+    "date": "2020-10-27 16:20",
+    "title": "Organizr API v2 included - PLEASE READ NOTES BEFORE CONTINUING",
+    "new": "API v2 endpoints - Please make sure to update nginx auth_request location block if being used|Update Organizr alert errors|Redid Debug area|Jellyfin homepage item|SOCKS support for sonarr - radarr - lidarr|Redid plex token and machine methods|Redid user management area|Jackett homepage item|redid homepage items settings pages",
+    "fixed": "Lots of little misc fixes",
+    "notes": "CHECK MIGRATION LINK IN NEWS SECTION!!!!!!!|API v2 is here|If using built-in updater in Organizr and not on Windows - it will fail on cleaning up install - reloading should fix|If using Docker - Please switch to organizr/organizr|Remove any plugins that were downloaded from marketplace prior to upgrade|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
   }
 }

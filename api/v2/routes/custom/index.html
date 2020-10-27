@@ -1,0 +1,27 @@
+Place all custom route files here in this directory....
+
+Name file something anything you like...
+<pre>
+&lt;?php
+
+    /*
+     * The first thing you need to edit it the <code>get</code> part - options are get/post/delete/put/options
+     * The second thing you need to edit is the </code>/something</code>
+     * This will be the endpoints name and will be accessible from: http://organizr/api/v2/custom/something
+     */
+
+    $app->get('/custom/something', function ($request, $response, $args) {
+        // Let's define the Organizr Class to the $Organizr variable
+        $Organizr = ($request->getAttribute('Organizr')) ?? new Organizr();
+        // Now let's set auth on our function, 1 is for co-admin and upto 999 is for Guest
+        if ($Organizr->qualifyRequest(1, true)) {
+            // Let's assign the api response with our function that holds our data...
+            $GLOBALS['api']['response']['data'] = $Organizr->getAllUsers();
+        }
+        // You do not need to change anything else below this line
+        $response->getBody()->write(jsonE($GLOBALS['api']));
+        return $response
+            ->withHeader('Content-Type', 'application/json;charset=UTF-8')
+            ->withStatus($GLOBALS['responseCode']);
+    });
+</pre>
