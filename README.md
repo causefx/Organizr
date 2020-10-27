@@ -4,7 +4,7 @@
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/causefx/Organizr.svg)](http://isitmaintained.com/project/causefx/Organizr "Average time to resolve an issue")
 [![GitHub stars](https://img.shields.io/github/stars/causefx/Organizr.svg)](https://github.com/causefx/Organizr/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/causefx/Organizr.svg)](https://github.com/causefx/Organizr/network)
-[![Docker pulls](https://img.shields.io/docker/pulls/organizrtools/organizr-v2.svg)](https://hub.docker.com/r/organizrtools/organizr-v2)
+[![Docker pulls](https://img.shields.io/docker/pulls/organizr/organizr.svg)](https://hub.docker.com/r/organizr/organizr)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/causefx)
 [![Beerpay](https://beerpay.io/causefx/Organizr/badge.svg?style=beer-square)](https://beerpay.io/causefx/Organizr)
 [![Beerpay](https://beerpay.io/causefx/Organizr/make-wish.svg?style=flat-square)](https://beerpay.io/causefx/Organizr?focus=wish)
@@ -18,8 +18,9 @@ Do you have quite a bit of services running on your computer or server? Do you h
 - PHP 7.2+
 - [Official Site](https://organizr.app) - Will be refreshed soon!
 - [Official Discord](https://organizr.app/discord)
+
 - [See Wiki](https://docs.organizr.app/) - Will be updated soon!
-- [Docker](https://github.com/Organizr/docker-organizr)
+- [Docker](https://hub.docker.com/r/organizr/organizr)
 
 ![OrganizrGallery](https://user-images.githubusercontent.com/16184466/53614284-a9b73480-3b96-11e9-9bea-d7a30b294267.png)
 
