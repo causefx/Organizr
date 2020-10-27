@@ -1,4 +1,18 @@
-<!-- readme.md -->
+<p align="center">
+<strong>:wave: Hey there! Looking for something even easier to use for LDAP integration in your PHP applications?</strong>
+</br>
+<h3 align="center">
+ 🎉 Introducing <a href="https://github.com/DirectoryTree/LdapRecord" target="_blank" title="LdapRecord GitHub Repository">LdapRecord</a> 🎉
+</h3>
+</p>
+
+<p align="center">
+    <strong>
+        <a href="https://ldaprecord.com">LdapRecord</a> is the successor to Adldap2 - and comes with a ton of new features.
+    </strong> </br> Adldap2 will continue to be supported with bug fixes, but will not receive new features.
+</p>
+
+<hr/>
 
 <h1 align="center">Adldap2</h1>
 
@@ -8,10 +22,6 @@
     <a href="https://packagist.org/packages/adldap2/adldap2"><img src="https://img.shields.io/packagist/dt/adldap2/adldap2.svg?style=flat-square"/></a>
     <a href="https://packagist.org/packages/adldap2/adldap2"><img src="https://img.shields.io/packagist/v/adldap2/adldap2.svg?style=flat-square"/></a>
     <a href="https://packagist.org/packages/adldap2/adldap2"><img src="https://img.shields.io/packagist/l/adldap2/adldap2.svg?style=flat-square"/></a>
-</p>
-
-<p align="center">
-    Working with LDAP doesn't need to be hard.
 </p>
 
 <p align="center">

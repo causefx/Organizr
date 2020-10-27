@@ -1384,7 +1384,7 @@ interface SchemaInterface
      *
      * @return array
      */
-    public function userObjectClasses() : array;
+    public function userObjectClasses(): array;
 
     /**
      * This attribute contains the UPN that is an Internet-style login name for

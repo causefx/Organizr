@@ -1,6 +1,18 @@
 <?php
-if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
-	$pageSettings = '
+$GLOBALS['organizrPages'][] = 'settings';
+function get_page_settings($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	$Organizr->writeLog('success', 'Admin Function -  Accessed Settings Page', $Organizr->user['username']);
+	return '
 <script>
     (function() {
         updateCheck();
@@ -8,6 +20,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
         sponsorLoad();
         newsLoad();
         checkCommitLoad();
+        backersLoad();
         [].slice.call(document.querySelectorAll(\'.sttabs-main-settings-div\')).forEach(function(el) {
             new CBPFWTabs(el);
         });
@@ -36,8 +49,8 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                         <li onclick="changeSettingsMenu(\'Settings::Tab Editor\')" id="settings-main-tab-editor-anchor"><a href="#settings-main-tab-editor" class="sticon ti-layout-tab-v"><span lang="en">Tab Editor</span></a></li>
                         <li onclick="changeSettingsMenu(\'Settings::Customize\')" id="settings-main-customize-anchor"><a href="#settings-main-customize" class="sticon ti-paint-bucket"><span lang="en">Customize</span></a></li>
                         <li onclick="changeSettingsMenu(\'Settings::User Management\')" id="settings-main-user-management-anchor"><a href="#settings-main-user-management" class="sticon ti-user"><span lang="en">User Management</span></a></li>
-                        <li onclick="changeSettingsMenu(\'Settings::Image Manager\');loadSettingsPage(\'api/?v1/settings/image/manager/view\',\'#settings-image-manager-view\',\'Image Viewer\');" id="settings-main-image-manager-anchor"><a href="#settings-main-image-manager" class="sticon ti-image"><span lang="en">Image Manager</span></a></li>
-    					<li onclick="changeSettingsMenu(\'Settings::Plugins\');loadSettingsPage(\'api/?v1/settings/plugins\',\'#settings-main-plugins\',\'Plugins\');" id="settings-main-plugins-anchor"><a href="#settings-main-plugins" class="sticon ti-plug"><span lang="en">Plugins</span></a></li>
+                        <li onclick="changeSettingsMenu(\'Settings::Image Manager\');loadSettingsPage2(\'api/v2/page/settings_image_manager\',\'#settings-image-manager-view\',\'Image Viewer\');" id="settings-main-image-manager-anchor"><a href="#settings-main-image-manager" class="sticon ti-image"><span lang="en">Image Manager</span></a></li>
+    					<li onclick="changeSettingsMenu(\'Settings::Plugins\');loadSettingsPage2(\'api/v2/page/settings_plugins\',\'#settings-main-plugins\',\'Plugins\');" id="settings-main-plugins-anchor"><a href="#settings-main-plugins" class="sticon ti-plug"><span lang="en">Plugins</span></a></li>
                         <li onclick="changeSettingsMenu(\'Settings::System Settings\');authDebugCheck();" id="settings-main-system-settings-anchor"><a href="#settings-main-system-settings" class="sticon ti-settings"><span lang="en">System Settings</span></a></li>
                     </ul>
                 </nav>
@@ -45,13 +58,13 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                     <! -- TAB EDITOR -->
                     <section id="settings-main-tab-editor">
                         <ul class="nav customtab2 nav-tabs" role="tablist">
-                            <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Tabs\');loadSettingsPage(\'api/?v1/settings/tab/editor/tabs\',\'#settings-tab-editor-tabs\',\'Tab Editor\');" role="presentation" class=""><a id="settings-tab-editor-tabs-anchor" href="#settings-tab-editor-tabs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en">Tabs</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Tabs\');loadSettingsPage2(\'api/v2/page/settings_tab_editor_tabs\',\'#settings-tab-editor-tabs\',\'Tab Editor\');" role="presentation" class=""><a id="settings-tab-editor-tabs-anchor" href="#settings-tab-editor-tabs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-tab-v"></i></span><span class="hidden-xs" lang="en">Tabs</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Categories\');loadSettingsPage(\'api/?v1/settings/tab/editor/categories\',\'#settings-tab-editor-categories\',\'Category Editor\');" role="presentation" class=""><a id="settings-tab-editor-categories-anchor" href="#settings-tab-editor-categories" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Categories</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Categories\');loadSettingsPage2(\'api/v2/page/settings_tab_editor_categories\',\'#settings-tab-editor-categories\',\'Category Editor\');" role="presentation" class=""><a id="settings-tab-editor-categories-anchor" href="#settings-tab-editor-categories" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-layout-list-thumb"></i></span><span class="hidden-xs" lang="en">Categories</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Homepage Items\');loadSettingsPage(\'api/?v1/settings/tab/editor/homepage\',\'#settings-tab-editor-homepage\',\'Homepage Items\');" role="presentation" class=""><a id="settings-tab-editor-homepage-anchor" href="#settings-tab-editor-homepage" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs" lang="en">Homepage Items</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Homepage Items\');loadSettingsPage2(\'api/v2/page/settings_tab_editor_homepage\',\'#settings-tab-editor-homepage\',\'Homepage Items\');" role="presentation" class=""><a id="settings-tab-editor-homepage-anchor" href="#settings-tab-editor-homepage" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs" lang="en">Homepage Items</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Homepage Order\');loadSettingsPage(\'api/?v1/settings/tab/editor/homepage/order\',\'#settings-tab-editor-homepage-order\',\'Homepage Order\');" role="presentation" class=""><a id="settings-tab-editor-homepage-order-anchor" href="#settings-tab-editor-homepage-order" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-exchange-vertical"></i></span><span class="hidden-xs" lang="en">Homepage Order</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::Tab Editor::Homepage Order\');loadSettingsPage2(\'api/v2/page/settings_tab_editor_homepage_order\',\'#settings-tab-editor-homepage-order\',\'Homepage Order\');" role="presentation" class=""><a id="settings-tab-editor-homepage-order-anchor" href="#settings-tab-editor-homepage-order" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-exchange-vertical"></i></span><span class="hidden-xs" lang="en">Homepage Order</span></a>
                             </li>
                         </ul>
                         <!-- Tab panes -->
@@ -74,7 +87,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                     <! -- Customize -->
                     <section id="settings-main-customize">
                         <ul class="nav customtab2 nav-tabs" role="tablist">
-                            <li onclick="changeSettingsMenu(\'Settings::Customize::Appearance\');loadSettingsPage(\'api/?v1/settings/customize/appearance\',\'#settings-customize-appearance\',\'Customize Appearance\');" role="presentation" class=""><a id="settings-customize-appearance-anchor" href="#settings-customize-appearance" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-eye"></i></span><span class="hidden-xs" lang="en">Appearance</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::Customize::Appearance\');loadSettingsPage2(\'api/v2/page/settings_customize_appearance\',\'#settings-customize-appearance\',\'Customize Appearance\');" role="presentation" class=""><a id="settings-customize-appearance-anchor" href="#settings-customize-appearance" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-eye"></i></span><span class="hidden-xs" lang="en">Appearance</span></a>
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::Customize::Marketplace\');loadMarketplace(\'themes\');" role="presentation" class=""><a id="settings-customize-marketplace-anchor" href="#settings-customize-marketplace" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-shopping-cart-full"></i></span><span class="hidden-xs" lang="en">Marketplace</span></a></li>
                         </ul>
@@ -114,9 +127,9 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                     <! -- USER MANAGEMENT -->
                     <section id="settings-main-user-management">
                         <ul class="nav customtab2 nav-tabs" role="tablist">
-                            <li onclick="changeSettingsMenu(\'Settings::User Management::Manage Users\');loadSettingsPage(\'api/?v1/settings/user/manage/users\',\'#settings-user-manage-users\',\'User Management\');" role="presentation" class=""><a id="settings-user-manage-users-anchor" href="#settings-user-manage-users" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-id-badge"></i></span><span class="hidden-xs" lang="en">Users</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::User Management::Manage Users\');loadSettingsPage2(\'api/v2/page/settings_user_manage_users\',\'#settings-user-manage-users\',\'User Management\');" role="presentation" class=""><a id="settings-user-manage-users-anchor" href="#settings-user-manage-users" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-id-badge"></i></span><span class="hidden-xs" lang="en">Users</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::User Management::Manage Groups\');loadSettingsPage(\'api/?v1/settings/user/manage/groups\',\'#settings-user-manage-groups\',\'Group Management\');" role="presentation" class=""><a id="settings-user-manage-groups-anchor" href="#settings-user-manage-groups" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-briefcase"></i></span><span class="hidden-xs" lang="en">Groups</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::User Management::Manage Groups\');loadSettingsPage2(\'api/v2/page/settings_user_manage_groups\',\'#settings-user-manage-groups\',\'Group Management\');" role="presentation" class=""><a id="settings-user-manage-groups-anchor" href="#settings-user-manage-groups" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-briefcase"></i></span><span class="hidden-xs" lang="en">Groups</span></a>
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::User Management::Import Users\');" role="presentation" class=""><a id="settings-user-import-users-anchor" href="#settings-user-import-users" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-import"></i></span><span class="hidden-xs" lang="en">Import</span></a>
                             </li>
@@ -132,7 +145,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-user-import-users">
-                                ' . importUserButtons() . '
+                                ' . $Organizr->importUserButtons() . '
                                 <div class="clearfix"></div>
                             </div>
                         </div>
@@ -156,13 +169,15 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                         <ul class="nav customtab2 nav-tabs" role="tablist">
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::About\')" role="presentation" class="active"><a id="settings-settings-about-anchor" href="#settings-settings-about" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-info-alt"></i></span><span class="hidden-xs" lang="en">About</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::System Settings::Main\');loadSettingsPage(\'api/?v1/settings/settings/main\',\'#settings-settings-main\',\'Main Settings\');" role="presentation" class=""><a id="settings-settings-main-anchor" href="#settings-settings-main" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-settings"></i></span><span class="hidden-xs" lang="en">Main</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::System Settings::Main\');loadSettingsPage2(\'api/v2/page/settings_settings_main\',\'#settings-settings-main\',\'Main Settings\');" role="presentation" class=""><a id="settings-settings-main-anchor" href="#settings-settings-main" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-settings"></i></span><span class="hidden-xs" lang="en">Main</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::System Settings::SSO\');loadSettingsPage(\'api/?v1/settings/settings/sso\',\'#settings-settings-sso\',\'SSO\');" role="presentation" class=""><a id="settings-settings-sso-anchor" href="#settings-settings-sso" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-key"></i></span><span class="hidden-xs" lang="en">Single Sign-On</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::System Settings::SSO\');loadSettingsPage2(\'api/v2/page/settings_settings_sso\',\'#settings-settings-sso\',\'SSO\');" role="presentation" class=""><a id="settings-settings-sso-anchor" href="#settings-settings-sso" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-key"></i></span><span class="hidden-xs" lang="en">Single Sign-On</span></a>
                             </li>
-                            <li onclick="changeSettingsMenu(\'Settings::System Settings::Logs\');loadSettingsPage(\'api/?v1/settings/settings/logs\',\'#settings-settings-logs\',\'Log Viewer\');" role="presentation" class=""><a id="settings-settings-logs-anchor" href="#settings-settings-logs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-receipt"></i></span><span class="hidden-xs" lang="en">Logs</span></a>
+                            <li onclick="changeSettingsMenu(\'Settings::System Settings::Logs\');loadSettingsPage2(\'api/v2/page/settings_settings_logs\',\'#settings-settings-logs\',\'Log Viewer\');" role="presentation" class=""><a id="settings-settings-logs-anchor" href="#settings-settings-logs" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-receipt"></i></span><span class="hidden-xs" lang="en">Logs</span></a>
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Updates\')" role="presentation" class=""><a id="update-button" href="#settings-settings-updates" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-package"></i></span> <span class="hidden-xs" lang="en">Updates</span></a>
+                            </li>
+                            <li onclick="changeSettingsMenu(\'Settings::System Settings::Backup\');loadSettingsPage2(\'api/v2/page/settings_settings_backup\',\'#settings-settings-backup\',\'Backup\');" role="presentation" class=""><a id="settings-settings-backup-anchor" href="#settings-settings-backup" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-export"></i></span><span class="hidden-xs" lang="en">Backup</span></a>
                             </li>
                             <li onclick="changeSettingsMenu(\'Settings::System Settings::Donate\')" role="presentation" class=""><a id="settings-settings-donate-anchor" href="#settings-settings-donate" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-money"></i></span> <span class="hidden-xs" lang="en">Donate</span></a>
                             </li>
@@ -178,6 +193,10 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-logs">
+                                <h2 lang="en">Loading...</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="settings-settings-backup">
                                 <h2 lang="en">Loading...</h2>
                                 <div class="clearfix"></div>
                             </div>
@@ -217,28 +236,30 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
     											<li><a href="https://organizr.app/discord" target="_blank"><i class="mdi mdi-discord mdi-24px"></i></a></li>
     											<li><a href="https://github.com/causefx/organizr" target="_blank"><i class="mdi mdi-github-box mdi-24px"></i></a></li>
     										</ul>
+    										<hr>
+    										<a href="https://poeditor.com/join/project/T6l68hksTE" target="_blank">
+		                                        <div class="white-box bg-org">
+		                                            <h4 lang="en">Want to help translate?</h4>
+		                                            <p lang="en">Head on over to POEditor and help us translate Organizr into your language</p>
+		                                            <p lang="en">I will try and import new strings every Friday</p>
+		                                        </div>
+		                                    </a>
+    										
     									</div>
-    									<a href="https://poeditor.com/join/project/T6l68hksTE" target="_blank">
-	                                        <div class="white-box bg-org">
-	                                            <h4 lang="en">Want to help translate?</h4>
-	                                            <p lang="en">Head on over to POEditor and help us translate Organizr into your language</p>
-	                                            <p lang="en">I will try and import new strings every Friday</p>
-	                                        </div>
-	                                    </a>
     								</div>
                                     <div class="col-lg-6 col-sm-12 col-md-6">
                                         <div class="white-box bg-org">
                                             <h3 class="box-title" lang="en">Information</h3>
                                             <ul class="feeds">
-                                                <li><div class="bg-info"><i class="mdi mdi-webpack mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Version</span> ' . $GLOBALS['installedVersion'] . '</li>
-                                                <li><div class="bg-info"><i class="mdi mdi-github-box mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Branch</span><a href="https://github.com/causefx/Organizr/commits/' . $GLOBALS['branch'] . '" target="_blank"> ' . $GLOBALS['branch'] . '</a></li>
-                                                <li><div class="bg-info"><i class="mdi mdi-database mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Database Location</span> ' . $GLOBALS['dbLocation'] . $GLOBALS['dbName'] . '</li>
-                                                ' . settingsDocker() . settingsPathChecks() . '
+                                                <li><div class="bg-info"><i class="mdi mdi-webpack mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Version</span> ' . $Organizr->version . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-github-box mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Organizr Branch</span><a href="https://github.com/causefx/Organizr/commits/' . $Organizr->config['branch'] . '" target="_blank"> ' . $Organizr->config['branch'] . '</a></li>
+                                                <li><div class="bg-info"><i class="mdi mdi-database mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Database Location</span> ' . $Organizr->config['dbLocation'] . $Organizr->config['dbName'] . '</li>
+                                                ' . $Organizr->settingsDocker() . $Organizr->settingsPathChecks() . '
                                                 <hr class="m-t-10">
                                                 <li><div class="bg-info"><i class="mdi mdi-language-php mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">PHP Version</span> ' . phpversion() . '</li>
                                                 <li><div class="bg-info"><i class="mdi mdi-package-variant-closed mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">Webserver Version</span> ' . $_SERVER['SERVER_SOFTWARE'] . '</li>
                                                 <hr class="m-t-10">
-                                                <li><div class="bg-info"><i class="mdi mdi-account-card-details mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">License</span> ' . ucwords($GLOBALS['license']) . '</li>
+                                                <li><div class="bg-info"><i class="mdi mdi-account-card-details mdi-24px text-white"></i></div><span class="text-muted hidden-xs m-t-10" lang="en">License</span> ' . ucwords($Organizr->config['license']) . '</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -257,6 +278,16 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 							            </div>
 							        </div>
     							</div>
+    							<div class="row">
+    							    <div class="col-lg-12">
+                                        <div class="white-box bg-org">
+	                                        <div class="p-20 p-t-0 text-center">
+							                    <h4 class="font-medium">Backers</h4>
+							                    <ul class="dp-table m-t-30 backers-list"></ul>
+							                </div>
+						                </div>
+                                    </div>
+    							</div>
                                 <div class="clearfix"></div>
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="settings-settings-donate">
@@ -264,7 +295,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                     <div class="white-box bg-org">
                                         <ul class="nav nav-tabs tabs customtab">
                                             <li class="tab active">
-                                                <a href="#donate-beer" data-toggle="tab" aria-expanded="true"> <span class=""><i class="fa fa-beer text-warning"></i></span> <span class="hidden-xs" lang="en">Beerpay.io</span> </a>
+                                                <a href="#donate-github" data-toggle="tab" aria-expanded="true"> <span class=""><i class="fa fa-github text-warning"></i></span> <span class="hidden-xs" lang="en">Github Sponsor</span> </a>
                                             </li>
                                             <li class="tab">
                                                 <a href="#donate-paypal" data-toggle="tab" aria-expanded="true"> <span class=""><i class="fa fa-paypal text-info"></i></span> <span class="hidden-xs" lang="en">PayPal</span> </a>
@@ -279,13 +310,16 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                                 <a href="#donate-patreon" data-toggle="tab" aria-expanded="false"> <span class=""><i class="fa mdi mdi-account-multiple mdi-18px text-danger"></i></span> <span class="hidden-xs" lang="en">Patreon</span> </a>
                                             </li>
                                             <li class="tab">
+                                                <a href="#donate-open-collective" data-toggle="tab" aria-expanded="false"> <span class=""><i class="fa fa-circle-o-notch text-primary"></i></span> <span class="hidden-xs" lang="en">Open Collective</span> </a>
+                                            </li>
+                                            <li class="tab">
                                                 <a href="#donate-ads" data-toggle="tab" aria-expanded="false"> <span class=""><i class="fa mdi mdi-google mdi-18px text-danger"></i></span> <span class="hidden-xs" lang="en">Google Ads</span> </a>
                                             </li>
                                         </ul>
                                         <div class="tab-content">
-                                        	<div class="tab-pane active" id="donate-beer">
-                                                <blockquote>Want to show support on Beerpay.io?  Send me a beer :)<br/>Please click the button to continue.</blockquote>
-                                                <button onclick="window.open(\'https://beerpay.io/causefx/Organizr\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
+                                        	<div class="tab-pane active" id="donate-github">
+                                                <blockquote>Want to show support on Github?  Sponsor me :)<br/>Please click the button to continue.</blockquote>
+                                                <button onclick="window.open(\'https://github.com/sponsors/causefx\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
                                             </div>
                                             <div class="tab-pane" id="donate-paypal">
                                                 <blockquote>I have chosen to go with PayPal Pools so everyone can see how much people have donated.<br/>Please click the button to continue.</blockquote>
@@ -318,6 +352,10 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
                                                 <blockquote>Need specialized support or just want to support Organizr?  If so head to Patreon...<br/>Please click the button to continue.</blockquote>
                                                 <button onclick="window.open(\'https://www.patreon.com/join/organizr?\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
                                             </div>
+                                            <div class="tab-pane" id="donate-open-collective">
+                                                <blockquote>Need specialized support or just want to support Organizr?  If so head to Open Collective...<br/>Please click the button to continue.</blockquote>
+                                                <button onclick="window.open(\'https://opencollective.com/organizr\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
+                                            </div>
                                             <div class="tab-pane" id="donate-ads">
                                                 <blockquote>Money not an option?  No problem.  Show some love to this Google Ad below:</blockquote>
                                                  <button onclick="window.open(\'https://organizr.app/ads/google.html\', \'_blank\')" class="btn btn-primary btn-rounded waves-effect waves-light" type="button"><span class="btn-label"><i class="fa fa-link"></i></span><span lang="en">Continue To Website</span></button>
@@ -347,5 +385,6 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
     <div class="clearfix"></div>
     <div id="about-theme-body" class=""></div>
 </form>
+<div id="editHomepageItemDiv"><div id="editHomepageItem" class=""></div></div>
 ';
 }

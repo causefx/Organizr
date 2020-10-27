@@ -26,8 +26,8 @@ use Adldap\Models\Attributes\DistinguishedName;
  */
 abstract class Model implements ArrayAccess, JsonSerializable
 {
-    use Concerns\HasEvents,
-        Concerns\HasAttributes;
+    use Concerns\HasEvents;
+    use Concerns\HasAttributes;
 
     /**
      * Indicates if the model exists.

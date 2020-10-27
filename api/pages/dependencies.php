@@ -1,6 +1,11 @@
 <?php
-
-$pageDependencies = '
+$GLOBALS['organizrPages'][] = 'dependencies';
+function get_page_dependencies($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	return '
 <script>
 </script>
 <div class="container-fluid">
@@ -49,7 +54,7 @@ $pageDependencies = '
                     <table class="table table-hover">
                         <tbody>
                             <tr>
-                                <td>'.dirname(__DIR__,2).'</td>
+                                <td>' . dirname(__DIR__, 2) . '</td>
                             </tr>
                             <tr>
                                 <td id="web-folder" lang="en">Loading...</td>
@@ -73,3 +78,4 @@ $pageDependencies = '
 </div>
 <!-- /.container-fluid -->
 ';
+}

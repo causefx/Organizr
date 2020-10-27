@@ -1,14 +1,43 @@
-Place all custom page files here....
+Place all custom page files here in this directory....
 
-make sure to start page contents like so:
+Name file something like "custom_code_presentation.php" and make sure to start page contents like so:
 <pre>
 &lt;?php
-// This is a check to make sure organizr is setup already...
-if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
-    // All variables need to start with $customPage .... Make sure to change Simple to any word (First Letter needs to be capital)... i.e. $customPageNewish
-	// Also make sure to escape single quotes
-	$customPageSimple = '
-        &lt;h1&gt;THIS IS JUST A TEST&lt;/h1&gt;
-    ';
-}
+    /*
+     * Make sure to edit "name_here" with your page name - i.e. custom_code_presentation
+     * You will edit on both "$GLOBALS['organizrPages'][] = 'name_here';" and "function get_page_name_here($Organizr)"
+     */
+    $GLOBALS['organizrPages'][] = 'name_here';
+    function get_page_name_here($Organizr)
+    {
+        if (!$Organizr) {
+            $Organizr = new Organizr();
+        }
+        /*
+         * Take this out if you dont care if DB has been created
+         */
+        if ((!$Organizr->hasDB())) {
+            return false;
+        }
+        /*
+         * Take this out if you dont want to be for admin only
+         */
+        if (!$Organizr->qualifyRequest(1, true)) {
+            return false;
+        }
+        return '
+            &#x3C;script&#x3E;
+                // Custom JS here
+            &#x3C;/script&#x3E;
+            &#x3C;div class=&#x22;panel bg-org panel-info&#x22;&#x3E;
+                &#x3C;div class=&#x22;panel-heading&#x22;&#x3E;
+                    &#x3C;span lang=&#x22;en&#x22;&#x3E;Template&#x3C;/span&#x3E;
+                &#x3C;/div&#x3E;
+                &#x3C;div class=&#x22;panel-wrapper collapse in&#x22; aria-expanded=&#x22;true&#x22;&#x3E;
+                    &#x3C;div class=&#x22;panel-body bg-org&#x22;&#x3E;
+                    &#x3C;/div&#x3E;
+                &#x3C;/div&#x3E;
+            &#x3C;/div&#x3E;
+        ';
+    }
 </pre>

@@ -5,7 +5,6 @@ var hasCookie = false;
 var loginAttempts = 0;
 $(document).ajaxComplete(function () {
     pageLoad();
-    //new SimpleBar($('.internal-listing')[0]);
 });
 $(document).ready(function () {
     pageLoad();
@@ -144,7 +143,7 @@ function pageLoad(){
         }
         myLazyLoad.update();
     });
-
+	new SimpleBar($('#page-wrapper')[0]);
 
     /* ===== Tooltip Initialization ===== */
 
@@ -160,7 +159,7 @@ function pageLoad(){
     /* ===== Popover Initialization ===== */
 
     $(function () {
-        $('[data-toggle="popover"]').popover();
+        $('[data-toggle="popover"]').popover({trigger: "hover",});
     });
 
     $(function () {
@@ -321,19 +320,23 @@ function doneTypingMediaSearch () {
             break;
         default:
     }
-    organizrAPI('POST','api/?v1/homepage/connect',{action:action, query:query}).success(function(data) {
-        var response = JSON.parse(data);
-        $('.mediaSearch-div').html(buildMediaResults(response.data,server,query));
-        if(bowser.mobile !== true){
-            $('.resultBox-inside').slimScroll({
-                height: '100%',
-                position: 'right',
-                size: "5px",
-                color: '#dcdcdc'
-            });
-        }
+    organizrAPI2('GET','api/v2/homepage/'+server+'/search/' + query).success(function(data) {
+	    try {
+		    let response = data.response;
+		    $('.mediaSearch-div').html(buildMediaResults(response.data,server,query));
+		    if(bowser.mobile !== true){
+			    $('.resultBox-inside').slimScroll({
+				    height: '100%',
+				    position: 'right',
+				    size: "5px",
+				    color: '#dcdcdc'
+			    });
+		    }
+	    }catch(e) {
+		    organizrCatchError(e,data);
+	    }
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr, 'API Error');
     })
 }
 $(document).on("click", ".login-button", function(e) {
@@ -358,47 +361,43 @@ $(document).on("click", ".login-button", function(e) {
                 backgroundColor: '#2cabe3'
             }
         });
-        var post = $('#loginform').serializeArray();
-        organizrAPI('POST', 'api/?v1/login', post).success(function (data) {
-            var html = JSON.parse(data);
-            if (html.data == true) {
-                local('set','message','Welcome|Login Successful|success');
-                location.reload();
-            } else if (html.data == 'mismatch') {
-                $('div.login-box').unblock({});
-                message('Login Error', ' Wrong username/email/password combo', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
-                console.error('Organizr Function: Login failed - wrong username/email/password');
-            } else if (html.data == 'lockout') {
-                $('div.login-box').block({
-                    message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
-                    css: {
-                        color: '#fff',
-                        border: '1px solid #e91e63',
-                        backgroundColor: '#f44336'
-                    }
-                });
-                message('Login Error', ' You have been Locked out', activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
-                console.error('Organizr Function: Login failed - User has been locked out');
-                setTimeout(function(){ local('r','loggingIn'); location.reload() }, 10000);
-            } else if (html.data == '2FA') {
-                $('div.login-box').unblock({});
-                $('#tfa-div').removeClass('hidden');
-                $('#loginform [name=tfaCode]').focus();
-            } else if (html.data == '2FA-incorrect') {
-                $('div.login-box').unblock({});
-                $('#tfa-div').removeClass('hidden');
-                $('#loginform [name=tfaCode]').focus();
-                message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
-            } else {
-                $('div.login-box').unblock({});
-                message('Login Error', html.data, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
-                console.error('Organizr Function: Login failed');
-            }
-            local('r','loggingIn');
+        var post = $('#loginform').serializeToJSON();
+        organizrAPI2('POST', 'api/v2/login', post).success(function (data) {
+            local('set','message','Welcome|Login Successful|success');
+	        local('r','loggingIn');
+	        location.reload();
         }).fail(function (xhr) {
             $('div.login-box').unblock({});
-            message('Login Error', 'API Connection Failed', activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
-            console.error("Organizr Function: API Connection Failed");
+            switch (xhr.status){
+	            case 401:
+					if(xhr.responseJSON.response.message == '2FA Code incorrect'){
+						$('div.login-box').unblock({});
+						$('#tfa-div').removeClass('hidden');
+						$('#loginform [name=tfaCode]').focus();
+					}
+	            	break;
+	            case 403:
+		            $('div.login-box').block({
+			            message: '<h5><i class="fa fa-close"></i> Locked Out!</h4>',
+			            css: {
+				            color: '#fff',
+				            border: '1px solid #e91e63',
+				            backgroundColor: '#f44336'
+			            }
+		            });
+		            setTimeout(function(){ local('r','loggingIn'); location.reload() }, 10000);
+	            	break;
+	            case 422:
+		            $('div.login-box').unblock({});
+		            $('#tfa-div').removeClass('hidden');
+		            $('#loginform [name=tfaCode]').focus();
+	            	break;
+	            default:
+		            message('Login Error', 'API Connection Failed', activeInfo.settings.notifications.position, '#FFF', 'error', '10000');
+		            console.error("Organizr Function: API Connection Failed");
+            }
+	        message('Login Error', xhr.responseJSON.response.message, activeInfo.settings.notifications.position, '#FFF', 'warning', '10000');
+	        console.error("Organizr Function: " + xhr.responseJSON.response.message);
             local('r','loggingIn');
         });
     }
@@ -408,39 +407,26 @@ $(document).on("click", ".unlockButton", function(e) {
     var post = {
         password:$('#unlockPassword').val()
     };
-    organizrAPI('POST','api/?v1/unlock',post).success(function(data) {
-        var html = JSON.parse(data);
-        console.log(html);
-        if(html.data == true){
-            location.reload();
-        }else if(html.data == 'Password Incorrect'){
-            message('Login Error',' Wrong password',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-            console.error('Organizr Function: Login failed - wrong password');
-        }else{
-            message('Login Error',html.data,activeInfo.settings.notifications.position,'#FFF','warning','10000');
-            console.error('Organizr Function: Login failed');
-        }
+    if(post == ''){
+	    message('Password cannot be blank', '', activeInfo.settings.notifications.position, '#FFF', 'error', '5000');
+    	return false;
+    }
+    organizrAPI2('POST','api/v2/users/unlock',post).success(function(data) {
+        let html = data.response;
+        location.reload();
     }).fail(function(xhr) {
-        console.error("Organizr Function: Login Failed");
+	    OrganizrApiError(xhr, 'API Error');
     });
 });
 $(document).on("click", ".register-button", function(e) {
     e.preventDefault;
-    var post = $( '#registerForm' ).serializeArray();
-    organizrAPI('POST','api/?v1/register',post).success(function(data) {
-        var html = JSON.parse(data);
-        console.log(html);
-        if(html.data == true){
-            location.reload();
-        }else if(html.data == 'mismatch'){
-            message('Registration Error',' Wrong Registration Password',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-            console.error('Organizr Function: Registration failed - Wrong Registration Password');
-        }else if(html.data == 'username taken'){
-            message('Registration Error',' Registration Error - Username/Email Taken',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-            console.error('Organizr Function: Registration Failed - Username/Email Taken');
-        }
+    var post = $( '#registerForm' ).serializeToJSON();
+    console.log(post)
+    organizrAPI2('POST','api/v2/users/register',post).success(function(data) {
+        let html = data.response;
+		location.reload();
     }).fail(function(xhr) {
-        console.error("Organizr Function: Login Failed");
+	    OrganizrApiError(xhr, 'API Error');
     });
 });
 $(document).on("click", ".reset-button", function(e) {
@@ -450,20 +436,13 @@ $(document).on("click", ".reset-button", function(e) {
 		var post = {
 	        email:email
         };
-        organizrAPI('POST','api/?v1/recover',post).success(function(data) {
-            var html = JSON.parse(data);
-            if(html.data == true){
-                message('Recover Password',' Email Sent',activeInfo.settings.notifications.position,'#FFF','success','10000');
-                $('#leave-recover').trigger('click');
-            }else if(html.data == 'an error occured'){
-                message('Recover Error',' User Error',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-                console.error('Organizr Function: Recover failed - Wrong Registration Password');
-            }else if(html.data == 'username taken'){
-                message('Recover Error',' Registration Error - Username/Email Taken',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-                console.error('Organizr Function: Recover Failed - Username/Email Taken');
-            }
+	    message('Submitting request...',html.message,activeInfo.settings.notifications.position,'#FFF','info','10000');
+        organizrAPI2('POST','api/v2/users/recover',post).success(function(data) {
+            var html = data.response;
+            message('Recover Password',html.message,activeInfo.settings.notifications.position,'#FFF','success','10000');
+            $('#leave-recover').trigger('click');
         }).fail(function(xhr) {
-            console.error("Organizr Function: Login Failed");
+	        OrganizrApiError(xhr, 'API Error');
         });
     }else{
         message('Recover Error','Enter Email',activeInfo.settings.notifications.position,'#FFF','warning','10000');
@@ -474,66 +453,63 @@ $(document).on("click", ".open-close", function () {
 });
 //EDIT GROUP GET ID
 $(document).on("click", ".editGroupButton", function () {
-    $('#edit-group-form [name=groupName]').val($(this).parent().parent().attr("data-group"));
+    $('#edit-group-form [name=group]').val($(this).parent().parent().attr("data-group"));
     $('#edit-group-form [name=id]').val($(this).parent().parent().attr("data-id"));
-    $('#edit-group-form [name=groupImage]').val($(this).parent().parent().attr("data-image"));
-    $('#edit-group-form [name=oldGroupName]').val($(this).parent().parent().attr("data-group"));
+    $('#edit-group-form [name=image]').val($(this).parent().parent().attr("data-image"));
 });
 //EDIT GROUP
 $(document).on("click", ".editGroup", function () {
-    //Create POST Array
-    var post = {
-        action:'editUserGroup',
-        api:'api/?v1/settings/user/manage/groups',
-        id:$('#edit-group-form [name=id]').val(),
-        groupName:$('#edit-group-form [name=groupName]').val(),
-        groupImage:$('#edit-group-form [name=groupImage]').val(),
-        oldGroupName:$('#edit-group-form [name=oldGroupName]').val(),
-        messageTitle:'',
-        messageBody:'Edited User Group '+$('#edit-group-form [name=groupName]').val(),
-        error:'Organizr Function: User Group API Connection Failed'
-    };
-    if (typeof post.id == 'undefined' || post.id == '') {
-        message('New Group Error',' Could not get Group ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
-    }
-    if (typeof post.groupName == 'undefined' || post.groupName == '') {
-        message('New Group Error',' Please set a Group Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if (typeof post.groupImage == 'undefined' || post.groupImage == '') {
-        message('New Group Error',' Please set a Group Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if(post.id !== '' && post.groupName !== '' && post.groupImage !== '' ){
-        var callbacks = $.Callbacks();
-        callbacks.add( buildGroupManagement );
-        settingsAPI(post,callbacks);
-        clearForm('#edit-group-form');
-        $.magnificPopup.close();
-    }
+	var info = $('#edit-group-form').serializeToJSON();
+	var callbacks = $.Callbacks();
+	if (typeof info.id == 'undefined' || info.id == '') {
+		message('Edit Tab Error',' Could not get ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
+		return false;
+	}
+	if (typeof info.group == 'undefined' || info.group == '') {
+		message('Edit Tab Error',' Please set a Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	if (typeof info.image == 'undefined' || info.image == '') {
+		message('Edit Tab Error',' Please set an Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	callbacks.add( buildGroupManagement );
+	organizrAPI2('PUT','api/v2/groups/' + info.id,info,true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+		clearForm('#edit-group-form');
+		$.magnificPopup.close();
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'API Error');
+	});
 });
 //CHANGE DEFAULT GROUP
 $(document).on("click", ".changeDefaultGroup", function () {
-    //Create POST Array
-    var post = {
-        action:'changeDefaultGroup',
-        api:'api/?v1/settings/user/manage/groups',
-        id:$(this).parent().parent().attr("data-id"),
-        oldGroupID:$('#manageGroupTable').find('tr[data-default=true]').attr("data-group-id"),
-        oldGroupName:$('#manageGroupTable').find('tr[data-default=true]').attr("data-group"),
-        newGroupID:$(this).parent().parent().attr("data-group-id"),
-        newGroupName:$(this).parent().parent().attr("data-group"),
-        messageTitle:'',
-        messageBody:'Changed Default Group to '+$(this).parent().parent().attr("data-group"),
-        error:'Organizr Function: User Group API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildGroupManagement );
-    settingsAPI(post,callbacks);
+	var id = $(this).parent().parent().attr("data-id");
+	var callbacks = $.Callbacks();
+	callbacks.add( buildGroupManagement );
+	organizrAPI2('PUT','api/v2/groups/' + id, {"default":1},true).success(function(data) {
+		try {
+			var response = data.response;
+			message(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
+			if(callbacks){ callbacks.fire(); }
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'API Error');
+	});
 });
 //DELETE GROUP
 $(document).on("click", ".deleteUserGroup", function () {
-    var group = $(this);
+	var el = $(this);
     swal({
-        title: window.lang.translate('Delete ')+group.parent().parent().attr("data-group")+'?',
+        title: window.lang.translate('Delete ')+el.parent().parent().attr("data-group")+'?',
         icon: "warning",
         buttons: {
             cancel: window.lang.translate('No'),
@@ -543,81 +519,75 @@ $(document).on("click", ".deleteUserGroup", function () {
         confirmButtonColor: "#DD6B55"
     }).then(function(willDelete) {
         if (willDelete) {
-            var post = {
-                action:'deleteUserGroup',
-                api:'api/?v1/settings/user/manage/groups',
-                id:group.parent().parent().attr("data-id"),
-                groupID:group.parent().parent().attr("data-group-id"),
-                groupName:group.parent().parent().attr("data-group"),
-                messageTitle:'',
-                messageBody:'Deleted User Group '+group.parent().parent().attr("data-group"),
-                error:'Organizr Function: User Group API Connection Failed'
-            };
-            var callbacks = $.Callbacks();
-            callbacks.add( buildGroupManagement );
-            settingsAPI(post,callbacks);
+	        var id = el.parent().parent().attr("data-id");
+	        var callbacks = $.Callbacks();
+	        callbacks.add( buildGroupManagement );
+	        organizrAPI2('DELETE','api/v2/groups/' + id, null,true).success(function(data) {
+		        try {
+			        message('Group Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+			        if(callbacks){ callbacks.fire(); }
+		        }catch(e) {
+			        organizrCatchError(e,data);
+		        }
+	        }).fail(function(xhr) {
+		        OrganizrApiError(xhr, 'API Error');
+	        });
         }
     });
 });
 //ADD GROUP
 $(document).on("click", ".addNewGroup", function () {
-    //Create POST Array
-    var post = {
-        action:'addUserGroup',
-        api:'api/?v1/settings/user/manage/groups',
-        newGroupID:parseInt($('#manageGroupTable').find('tr[data-group-id]:nth-last-child(2)').attr('data-group-id')) + 1,
-        newGroupName:$('#new-group-form [name=groupName]').val(),
-        newGroupImage:$('#new-group-form [name=groupImage]').val(),
-        messageTitle:'',
-        messageBody:'Created User Group '+$('#new-group-form [name=groupName]').val(),
-        error:'Organizr Function: User Group API Connection Failed'
-    };
-    if (typeof post.newGroupID == 'undefined' || post.newGroupID == '') {
-        message('New Group Error',' Could not get next Group ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
-    }
-    if (typeof post.newGroupName == 'undefined' || post.newGroupName == '') {
-        message('New Group Error',' Please set a Group Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if (typeof post.newGroupImage == 'undefined' || post.newGroupImage == '') {
-        message('New Group Error',' Please set a Group Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if(post.newGroupID !== '' && post.newGroupName !== '' && post.newGroupImage !== '' ){
-        var callbacks = $.Callbacks();
-        callbacks.add( buildGroupManagement );
-        settingsAPI(post,callbacks);
-        clearForm('#new-group-form');
-        $.magnificPopup.close();
-    }
+
+	var info = $('#new-group-form').serializeToJSON();
+	console.log(info);
+	if (typeof info.group == 'undefined' || info.group == '') {
+		message('New Group Error',' Please set a Group Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	if (typeof info.image == 'undefined' || info.image == '') {
+		message('New Group Error',' Please set a Group Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	var callbacks = $.Callbacks();
+	callbacks.add( buildGroupManagement );
+	organizrAPI2('POST','api/v2/groups',info,true).success(function(data) {
+		try {
+			var response = data.response;
+			message(response.message,'',activeInfo.settings.notifications.position,"#FFF","success","5000");
+			if(callbacks){ callbacks.fire(); }
+			clearForm('#new-group-form');
+			$.magnificPopup.close();
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'API Error');
+	});
 });
 // ADD USER
 $(document).on("click", ".addNewUser", function () {
-    //Create POST Array
-    var post = {
-        action:'addNewUser',
-        api:'api/?v1/settings/user/manage/users',
-        username:$('#new-user-form [name=username]').val(),
-        email:$('#new-user-form [name=email]').val(),
-        password:$('#new-user-form [name=password]').val(),
-        messageTitle:'',
-        messageBody:'Added New User: '+$('#new-user-form [name=username]').val(),
-        error:'Organizr Function: User API Connection Failed'
-    };
-    if (typeof post.username == 'undefined' || post.username == '') {
-        message('New User Error',' Please set a Username',activeInfo.settings.notifications.position,'#FFF','error','5000');
-    }
-    if (typeof post.email == 'undefined' || post.email == '') {
-        message('New User Error',' Please set an Email',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if (typeof post.password == 'undefined' || post.password == '') {
-        message('New User Error',' Please set a Password',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if(post.username !== '' && post.email !== '' && post.password !== '' ){
-        var callbacks = $.Callbacks();
-        callbacks.add( buildUserManagement );
-        settingsAPI(post,callbacks);
-        clearForm('#new-user-form');
-        $.magnificPopup.close();
-    }
+	var userInfo = $('#new-user-form').serializeToJSON();
+	$.each(userInfo, function(i,v) {
+		if(v == ''){
+			delete userInfo[i];
+		}
+	})
+	console.log(userInfo)
+	var callbacks = $.Callbacks();
+	callbacks.add( buildUserManagement );
+	organizrAPI2('POST','api/v2/users', userInfo,true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('User Created',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+		clearForm('#new-user-form');
+		$.magnificPopup.close();
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'API Error');
+	});
 });
 //EDIT GROUP GET ID
 $(document).on("click", ".editUserButton", function () {
@@ -627,56 +597,54 @@ $(document).on("click", ".editUserButton", function () {
 });
 //EDIT GROUP
 $(document).on("click", ".editUserAdmin", function () {
-    //Create POST Array
-    var post = {
-        action:'editUser',
-        api:'api/?v1/settings/user/manage/users',
-        id:$('#edit-user-form [name=id]').val(),
-        username:$('#edit-user-form [name=username]').val(),
-        email:$('#edit-user-form [name=email]').val(),
-        password:$('#edit-user-form [name=password]').val(),
-        messageTitle:'',
-        messageBody:'Edited User '+$('#edit-user-form [name=username]').val(),
-        error:'Organizr Function: API Connection Failed'
-    };
-    if (typeof post.id == 'undefined' || post.id == '') {
-        message('Edit User Error',' Could not get User ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
-    }
-    if (typeof post.username == 'undefined' || post.username == '') {
-        message('Edit User Error',' Please set a Username',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if (typeof post.email == 'undefined' || post.email == '') {
-        message('Edit User Error',' Please set a User Email',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if (post.password !== '' && post.password !== $('#edit-user-form [name=password2]').val()){
-        message('Edit User Error',' Passwords do not match!',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if(post.id !== '' && post.username !== '' && post.email !== '' ){
-        var callbacks = $.Callbacks();
-        callbacks.add( buildUserManagement );
-        settingsAPI(post,callbacks);
-        clearForm('#edit-user-form');
-        $.magnificPopup.close();
-    }
+	var userInfo = $('#edit-user-form').serializeToJSON();
+	$.each(userInfo, function(i,v) {
+		if(v == ''){
+			delete userInfo[i];
+		}
+	})
+	if (typeof userInfo.id == 'undefined' || userInfo.id == '') {
+		message('Edit User Error',' Could not get User ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
+		return false;
+	}
+	if (userInfo.password !== '' && userInfo.password !== userInfo.password2){
+		message('Edit User Error',' Passwords do not match!',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	var callbacks = $.Callbacks();
+	callbacks.add( buildUserManagement );
+	organizrAPI2('PUT','api/v2/users/' + userInfo.id, userInfo,true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('User Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+		clearForm('#edit-user-form');
+		$.magnificPopup.close();
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'API Error');
+	});
 });
 // CHANGE USER GROUP
 $(document).on("change", ".userGroupSelect", function () {
-    //Create POST Array
-    var post = {
-        action:'changeGroup',
-        api:'api/?v1/settings/user/manage/users',
-        id:$(this).parent().parent().attr("data-id"),
-        username:$(this).parent().parent().attr("data-username"),
-        oldGroup:$(this).parent().parent().attr("data-group"),
-        newGroupID:$(this).find("option:selected").val(),
-        newGroupName:$(this).find("option:selected").text(),
-        messageTitle:'',
-        messageBody:'User Info updated for '+$(this).parent().parent().attr("data-username"),
-        error:'Organizr Function: User API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildUserManagement );
-    settingsAPI(post,callbacks);
+
+	var id = $(this).parent().parent().attr("data-id");
+	var groupId = $(this).find("option:selected").val();
+	var callbacks = $.Callbacks();
+	callbacks.add( buildUserManagement );
+	organizrAPI2('PUT','api/v2/users/' + id, {"group_id":groupId},true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('User Group Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'API Error');
+	});
 });
 // DELETE USER
 //DELETE GROUP
@@ -693,169 +661,158 @@ $(document).on("click", ".deleteUser", function () {
         confirmButtonColor: "#DD6B55"
     }).then(function(willDelete) {
         if (willDelete) {
-            var post = {
-                action:'deleteUser',
-                api:'api/?v1/settings/user/manage/users',
-                id:user.parent().parent().attr("data-id"),
-                username:user.parent().parent().attr("data-username"),
-                messageTitle:'',
-                messageBody:window.lang.translate('Deleted User')+': '+user.parent().parent().attr("data-username"),
-                error:'Organizr Function: User API Connection Failed'
-            };
-            var callbacks = $.Callbacks();
-            callbacks.add( buildUserManagement );
-            settingsAPI(post,callbacks);
+	        var id = user.parent().parent().attr("data-id");
+	        var callbacks = $.Callbacks();
+	        callbacks.add( buildUserManagement );
+	        organizrAPI2('DELETE','api/v2/users/' + id, null,true).success(function(data) {
+		        message('User Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+		        if(callbacks){ callbacks.fire(); }
+	        }).fail(function(xhr) {
+		        OrganizrApiError(xhr, 'User Delete Error');
+	        });
         }
     });
 });
 // CHANGE TAB GROUP
-$(document).on("change", ".tabGroupSelect", function () {
-    //Create POST Array
-    var post = {
-        action:'changeGroup',
-        api:'api/?v1/settings/tab/editor/tabs',
-        id:$(this).parent().parent().attr("data-id"),
-        tab:$(this).parent().parent().attr("data-name"),
-        oldGroupID:$(this).parent().parent().attr("data-group-id"),
-        newGroupID:$(this).find("option:selected").val(),
-        newGroupName:$(this).find("option:selected").text(),
-        messageTitle:'',
-        messageBody:'Tab Info updated for '+$(this).parent().parent().attr("data-name"),
-        error:'Organizr Function: Tab API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
-    settingsAPI(post,callbacks);
+$(document).on("change", ".tabGroupSelect", function (event) {
+	var id = $(this).parent().parent().attr("data-id");
+	var groupID = $(this).find("option:selected").val();
+	var callbacks = $.Callbacks();
+	organizrAPI2('PUT','api/v2/tabs/' + id, {"group_id":groupID},true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('Tab Group Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Tab Group Error');
+	});
 });
 // CHANGE TAB CATEGORY
 $(document).on("change", ".tabCategorySelect", function () {
-    //Create POST Array
-    var post = {
-        action:'changeCategory',
-        api:'api/?v1/settings/tab/editor/tabs',
-        id:$(this).parent().parent().attr("data-id"),
-        tab:$(this).parent().parent().attr("data-name"),
-        newCategoryID:$(this).find("option:selected").val(),
-        newCategoryName:$(this).find("option:selected").text(),
-        messageTitle:'',
-        messageBody:'Tab Info updated for '+$(this).parent().parent().attr("data-name"),
-        error:'Organizr Function: Tab API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
-    settingsAPI(post,callbacks);
+	var id = $(this).parent().parent().attr("data-id");
+	var categoryID = $(this).find("option:selected").val();
+	var callbacks = $.Callbacks();
+	organizrAPI2('PUT','api/v2/tabs/' + id, {"category_id":categoryID},true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('Tab Category Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Tab Category Error');
+	});
 });
 // CHANGE TAB TYPE
 $(document).on("change", ".tabTypeSelect", function () {
-    //Create POST Array
-    var post = {
-        action:'changeType',
-        api:'api/?v1/settings/tab/editor/tabs',
-        id:$(this).parent().parent().attr("data-id"),
-        tab:$(this).parent().parent().attr("data-name"),
-        newTypeID:$(this).find("option:selected").val(),
-        newTypeName:$(this).find("option:selected").text(),
-        messageTitle:'',
-        messageBody:'Tab Info updated for '+$(this).parent().parent().attr("data-name"),
-        error:'Organizr Function: Tab API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
-    settingsAPI(post,callbacks);
+	var id = $(this).parent().parent().attr("data-id");
+	var type = $(this).find("option:selected").val();
+	var callbacks = $.Callbacks();
+	organizrAPI2('PUT','api/v2/tabs/' + id, {"type":type},true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('Tab Type Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Tab Type Error');
+	});
 });
 // CHANGE ENABLED TAB
 $(document).on("change", ".enabledSwitch", function () {
-    //Create POST Array
-    var post = {
-        action:'changeEnabled',
-        api:'api/?v1/settings/tab/editor/tabs',
-        id:$(this).parent().parent().attr("data-id"),
-        tab:$(this).parent().parent().attr("data-name"),
-        tabEnabled:$(this).prop("checked") ? 1 : 0,
-        tabEnabledWord:$(this).prop("checked") ? "On" : "Off",
-        messageTitle:'',
-        messageBody:'Tab Info updated for '+$(this).parent().parent().attr("data-name"),
-        error:'Organizr Function: Tab API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
-    settingsAPI(post,callbacks);
+	var id = $(this).parent().parent().attr("data-id");
+	var enabled = $(this).prop("checked") ? 1 : 0;
+	var callbacks = $.Callbacks();
+	organizrAPI2('PUT','api/v2/tabs/' + id, {"enabled":enabled},true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('Tab Enable Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Tab Enable Error');
+	});
 });
 // CHANGE SPLASH TAB
 $(document).on("change", ".splashSwitch", function () {
-    //Create POST Array
-    var post = {
-        action:'changeSplash',
-        api:'api/?v1/settings/tab/editor/tabs',
-        id:$(this).parent().parent().attr("data-id"),
-        tab:$(this).parent().parent().attr("data-name"),
-        tabSplash:$(this).prop("checked") ? 1 : 0,
-        tabSplashWord:$(this).prop("checked") ? "On" : "Off",
-        messageTitle:'',
-        messageBody:'Tab Info updated for '+$(this).parent().parent().attr("data-name"),
-        error:'Organizr Function: Tab API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
-    settingsAPI(post,callbacks);
+	var id = $(this).parent().parent().attr("data-id");
+	var splash = $(this).prop("checked") ? 1 : 0;
+	var callbacks = $.Callbacks();
+	organizrAPI2('PUT','api/v2/tabs/' + id, {"splash":splash},true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('Tab Splash Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Tab Splash Error');
+	});
 });
 // CHANGE SPLASH TAB
 $(document).on("change", ".pingSwitch", function () {
-    //Create POST Array
-    var post = {
-        action:'changePing',
-        api:'api/?v1/settings/tab/editor/tabs',
-        id:$(this).parent().parent().attr("data-id"),
-        tab:$(this).parent().parent().attr("data-name"),
-        tabPing:$(this).prop("checked") ? 1 : 0,
-        tabPingWord:$(this).prop("checked") ? "On" : "Off",
-        messageTitle:'',
-        messageBody:'Tab Info updated for '+$(this).parent().parent().attr("data-name"),
-        error:'Organizr Function: Tab API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
-    settingsAPI(post,callbacks);
+	var id = $(this).parent().parent().attr("data-id");
+	var ping = $(this).prop("checked") ? 1 : 0;
+	var callbacks = $.Callbacks();
+	organizrAPI2('PUT','api/v2/tabs/' + id, {"ping":ping},true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('Tab Ping Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Tab Ping Error');
+	});
 });
 // CHANGE PRELOAD TAB
 $(document).on("change", ".preloadSwitch", function () {
-    //Create POST Array
-    var post = {
-        action:'changePreload',
-        api:'api/?v1/settings/tab/editor/tabs',
-        id:$(this).parent().parent().attr("data-id"),
-        tab:$(this).parent().parent().attr("data-name"),
-        tabPreload:$(this).prop("checked") ? 1 : 0,
-        tabPreloadWord:$(this).prop("checked") ? "On" : "Off",
-        messageTitle:'',
-        messageBody:'Tab Info updated for '+$(this).parent().parent().attr("data-name"),
-        error:'Organizr Function: Tab API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
-    settingsAPI(post,callbacks);
+	var id = $(this).parent().parent().attr("data-id");
+	var preload = $(this).prop("checked") ? 1 : 0;
+	var callbacks = $.Callbacks();
+	organizrAPI2('PUT','api/v2/tabs/' + id, {"preload":preload},true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('Tab Preload Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Tab Preload Error');
+	});
 });
 // CHANGE DEFAULT TAB
 $(document).on("change", ".defaultSwitch", function () {
-    //Create POST Array
-    var post = {
-        action:'changeDefault',
-        api:'api/?v1/settings/tab/editor/tabs',
-        id:$(this).parent().parent().parent().attr("data-id"),
-        tab:$(this).parent().parent().parent().attr("data-name"),
-        messageTitle:'',
-        messageBody:'Changed Default Tab to: '+$(this).parent().parent().parent().attr("data-name"),
-        error:'Organizr Function: Tab API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildTabEditor );
-    settingsAPI(post,callbacks);
+	var id = $(this).parent().parent().parent().attr("data-id");
+	var callbacks = $.Callbacks();
+	organizrAPI2('PUT','api/v2/tabs/' + id, {"default":1},true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('Default Tab Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Default Tab Error');
+	});
 });
 //DELETE TAB
 $(document).on("click", ".deleteTab", function () {
-    var user = $(this);
+    var tab = $(this);
     swal({
-        title: window.lang.translate('Delete ') + user.parent().parent().attr("data-name") + '?',
+        title: window.lang.translate('Delete ') + tab.parent().parent().attr("data-name") + '?',
         icon: "warning",
         buttons: {
             cancel: window.lang.translate('No'),
@@ -865,18 +822,15 @@ $(document).on("click", ".deleteTab", function () {
         confirmButtonColor: "#DD6B55"
     }).then(function(willDelete) {
         if (willDelete) {
-            var post = {
-                action:'deleteTab',
-                api:'api/?v1/settings/tab/editor/tabs',
-                id:user.parent().parent().attr("data-id"),
-                tab:user.parent().parent().attr("data-name"),
-                messageTitle:'',
-                messageBody:window.lang.translate('Deleted Tab')+': '+user.parent().parent().attr("data-name"),
-                error:'Organizr Function: Tab Editor API Connection Failed'
-            };
-            var callbacks = $.Callbacks();
-            callbacks.add( buildTabEditor );
-            settingsAPI(post,callbacks);
+	        var id = tab.parent().parent().attr("data-id");
+	        var callbacks = $.Callbacks();
+	        callbacks.add( buildTabEditor );
+	        organizrAPI2('DELETE','api/v2/tabs/' + id, null,true).success(function(data) {
+		        message('Tab Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+		        if(callbacks){ callbacks.fire(); }
+	        }).fail(function(xhr) {
+		        OrganizrApiError(xhr, 'Tab Deleted Error');
+	        });
         }
     });
 });
@@ -898,149 +852,141 @@ function convertMinutesToMs(minutes){
 $(document).on("click", ".editTabButton", function () {
     //tabActionTime
     //tabActionType
-    $('#edit-tab-form [name=tabName]').val($(this).parent().parent().attr("data-name"));
+    $('#edit-tab-form [name=name]').val($(this).parent().parent().attr("data-name"));
     $('#originalTabName').html($(this).parent().parent().attr("data-name"));
-    $('#edit-tab-form [name=tabURL]').val($(this).parent().parent().attr("data-url"));
-    $('#edit-tab-form [name=tabLocalURL]').val($(this).parent().parent().attr("data-local-url"));
-    $('#edit-tab-form [name=pingURL]').val($(this).parent().parent().attr("data-ping-url"));
-    $('#edit-tab-form [name=tabImage]').val($(this).parent().parent().attr("data-image"));
+    $('#edit-tab-form [name=url]').val($(this).parent().parent().attr("data-url"));
+    $('#edit-tab-form [name=url_local]').val($(this).parent().parent().attr("data-local-url"));
+    $('#edit-tab-form [name=ping_url]').val($(this).parent().parent().attr("data-ping-url"));
+    $('#edit-tab-form [name=image]').val($(this).parent().parent().attr("data-image"));
     $('#edit-tab-form [name=id]').val($(this).parent().parent().attr("data-id"));
-    $('#edit-tab-form [name=tabActionTime]').val(convertMsToMinutes($(this).parent().parent().attr("data-tab-action-time")));
-    $('#edit-tab-form [name=tabActionType]').val($(this).parent().parent().attr("data-tab-action-type"));
+    $('#edit-tab-form [name=timeout_ms]').val(convertMsToMinutes($(this).parent().parent().attr("data-tab-action-time")));
+    $('#edit-tab-form [name=timeout]').val($(this).parent().parent().attr("data-tab-action-type"));
     if( $(this).parent().parent().attr("data-url").indexOf('/?v') > 0){
-        $('#edit-tab-form [name=tabURL]').prop('disabled', 'true');
+        $('#edit-tab-form [name=url]').prop('disabled', 'true');
     }else{
-        $('#edit-tab-form [name=tabURL]').prop('disabled', null);
+        $('#edit-tab-form [name=url]').prop('disabled', null);
     }
 });
 //EDIT TAB
 $(document).on("click", ".editTab", function () {
     var originalTabName = $('#originalTabName').html();
-    //Create POST Array
-    var post = {
-        action:'editTab',
-        api:'api/?v1/settings/tab/editor/tabs',
-        id:$('#edit-tab-form [name=id]').val(),
-        tabName:$('#edit-tab-form [name=tabName]').val(),
-        tabImage:$('#edit-tab-form [name=tabImage]').val(),
-        tabURL:$('#edit-tab-form [name=tabURL]').val(),
-        tabLocalURL:$('#edit-tab-form [name=tabLocalURL]').val(),
-        pingURL:$('#edit-tab-form [name=pingURL]').val(),
-        tabActionTime:convertMinutesToMs($('#edit-tab-form [name=tabActionTime]').val()),
-        tabActionType:$('#edit-tab-form [name=tabActionType]').val(),
-        messageTitle:'',
-        messageBody:'Edited Tab '+$('#edit-tab-form [name=tabName]').val(),
-        error:'Organizr Function: Tab Editor API Connection Failed'
-    };
-    if (typeof post.id == 'undefined' || post.id == '') {
+    var tabInfo = $('#edit-tab-form').serializeToJSON();
+    if (typeof tabInfo.id == 'undefined' || tabInfo.id == '') {
         message('Edit Tab Error',' Could not get Tab ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
+	    return false;
     }
-    if (typeof post.tabName == 'undefined' || post.tabName == '') {
+    if (typeof tabInfo.name == 'undefined' || tabInfo.name == '') {
         message('Edit Tab Error',' Please set a Tab Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+	    return false;
     }
-    if (typeof post.tabImage == 'undefined' || post.tabImage == '') {
+    if (typeof tabInfo.image == 'undefined' || tabInfo.image == '') {
         message('Edit Tab Error',' Please set a Tab Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+	    return false;
     }
-    if ((typeof post.tabURL == 'undefined' || post.tabURL == '') && (typeof post.tabLocalURL == 'undefined' || post.tabLocalURL == '')) {
+    if ((typeof tabInfo.url == 'undefined' || tabInfo.url == '') && (typeof tabInfo.url_local == 'undefined' || tabInfo.url_local == '')) {
         message('Edit Tab Error',' Please set a Tab URL or Local URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+	    return false;
     }
-    if(checkIfTabNameExists(post.tabName) && originalTabName !== post.tabName){
+    if(checkIfTabNameExists(tabInfo.name) && originalTabName !== tabInfo.name){
         message('Edit Tab Error',' Tab name already used',activeInfo.settings.notifications.position,'#FFF','warning','5000');
         return false;
     }
-    if(post.id !== '' && post.tabName !== '' && post.tabImage !== ''){
-        var callbacks = $.Callbacks();
-        callbacks.add( buildTabEditor );
-        settingsAPI(post,callbacks);
-        clearForm('#edit-tab-form');
-        $.magnificPopup.close();
+    if(tabInfo.timeout_ms !== '' || typeof tabInfo.timeout_ms !== 'undefined'){
+    	tabInfo.timeout_ms = convertMinutesToMs(tabInfo.timeout_ms);
+    }
+    if(tabInfo.id !== '' && tabInfo.tabName !== '' && tabInfo.tabImage !== ''){
+	    var callbacks = $.Callbacks();
+	    callbacks.add( buildTabEditor );
+	    organizrAPI2('PUT','api/v2/tabs/' + tabInfo.id,tabInfo,true).success(function(data) {
+		    try {
+			    var response = data.response;
+			    console.log(response);
+		    }catch(e) {
+			    organizrCatchError(e,data);
+		    }
+		    message('Tab Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		    if(callbacks){ callbacks.fire(); }
+		    clearForm('#edit-tab-form');
+		    $.magnificPopup.close();
+	    }).fail(function(xhr) {
+		    OrganizrApiError(xhr, 'Tab Error');
+	    });
     }
 });
 //ADD NEW TAB
 $(document).on("click", ".addNewTab", function () {
-    //Create POST Array
-    var post = {
-        action:'addNewTab',
-        api:'api/?v1/settings/tab/editor/tabs',
-        tabOrder:parseInt($('#tabEditorTable').find('tr[data-order]').last().attr('data-order')) + 1,
-        tabName:$('#new-tab-form [name=tabName]').val(),
-        tabImage:$('#new-tab-form [name=tabImage]').val(),
-        tabURL:$('#new-tab-form [name=tabURL]').val(),
-        tabLocalURL:$('#new-tab-form [name=tabLocalURL]').val(),
-        pingURL:$('#new-tab-form [name=pingURL]').val(),
-        tabActionTime:convertMinutesToMs($('#new-tab-form [name=tabActionTime]').val()),
-        tabActionType:$('#new-tab-form [name=tabActionType]').val(),
-        tabGroupID:1,
-        tabEnabled:0,
-        tabDefault:0,
-        tabType:1,
-        messageTitle:'Created Tab '+$('#new-tab-form [name=tabName]').val(),
-        messageBody:'Please <a href="javascript:void(0)" onclick="window.location.reload(false);">RELOAD</a> page to update',
-        error:'Organizr Function: Tab API Connection Failed'
-    };
-    if (typeof post.tabOrder == 'undefined' || post.tabOrder == '') {
-        message('New Tab Error',' Could not get next Group ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
-    }
-    if (typeof post.tabName == 'undefined' || post.tabName == '') {
-        message('New Tab Error',' Please set a Tab Name',activeInfo.settings.notifications.position,'#FFF','error','5000');
-    }
-    if ((typeof post.tabURL == 'undefined' || post.tabURL == '') && (typeof post.tabLocalURL == 'undefined' || post.tabLocalURL == '')) {
-        message('New Tab Error',' Please set a Tab URL or Local URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if (typeof post.tabImage == 'undefined' || post.tabImage == '') {
-        message('New Tab Error',' Please set a Tab Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if(checkIfTabNameExists(post.tabName)){
-        message('New Tab Error',' Tab name already used',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-        return false;
-    }
-    if(post.tabOrder !== '' && post.tabName !== '' && (post.tabURL !== '' || post.tabLocalURL !== '') && post.tabImage !== '' ){
-        var callbacks = $.Callbacks();
-        callbacks.add( buildTabEditor );
-        settingsAPI(post,callbacks);
-        clearForm('#new-tab-form');
-        $.magnificPopup.close();
+	var tabInfo = $('#new-tab-form').serializeToJSON();
+	tabInfo['order'] = parseInt($('#tabEditorTable').find('tr[data-order]').last().attr('data-order')) + 1;
+
+	if (typeof tabInfo.name == 'undefined' || tabInfo.name == '') {
+		message('Edit Tab Error',' Please set a Tab Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	if (typeof tabInfo.image == 'undefined' || tabInfo.image == '') {
+		message('Edit Tab Error',' Please set a Tab Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	if ((typeof tabInfo.url == 'undefined' || tabInfo.url == '') && (typeof tabInfo.url_local == 'undefined' || tabInfo.url_local == '')) {
+		message('Edit Tab Error',' Please set a Tab URL or Local URL',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	if(checkIfTabNameExists(tabInfo.name)){
+		message('Edit Tab Error',' Tab name already used',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	if(tabInfo.timeout_ms !== '' || typeof tabInfo.timeout_ms !== 'undefined'){
+		tabInfo.timeout_ms = convertMinutesToMs(tabInfo.timeout_ms);
+	}
+    if(tabInfo.order !== '' && tabInfo.name !== '' && (tabInfo.url !== '' || tabInfo.url_local !== '') && tabInfo.image !== '' ){
+	    var callbacks = $.Callbacks();
+	    callbacks.add( buildTabEditor );
+	    organizrAPI2('POST','api/v2/tabs',tabInfo,true).success(function(data) {
+		    try {
+			    var response = data.response;
+			    console.log(response);
+		    }catch(e) {
+			    organizrCatchError(e,data);
+		    }
+		    message('Tab Created',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		    if(callbacks){ callbacks.fire(); }
+		    clearForm('#new-tab-form');
+		    $.magnificPopup.close();
+	    }).fail(function(xhr) {
+		    OrganizrApiError(xhr, 'Tab Error');
+	    });
     }
 });
 //ADD NEW CATEGORY
 $(document).on("click", ".addNewCategory", function () {
-    //Create POST
-    var nextID = [];
-    $($('#categoryEditorTable').find('tr[data-category-id]')).each(function () {
-        nextID.push($(this).attr('data-category-id'));
-    });
-    var post = {
-        action:'addNewCategory',
-        api:'api/?v1/settings/tab/editor/categories',
-        categoryOrder:parseInt($('#categoryEditorTable').find('tr[data-order]').last().attr('data-order')) + 1,
-        categoryName:$('#new-category-form [name=name]').val(),
-        categoryImage:$('#new-category-form [name=image]').val(),
-        categoryID:Math.max.apply( null, nextID ) + 1,
-        categoryDefault:0,
-        messageTitle:'',
-        messageBody:'Created Category '+$('#new-category-form [name=name]').val(),
-        error:'Organizr Function: API Connection Failed'
-    };
-    console.log(post);
-    if (typeof post.categoryID == 'undefined' || post.categoryID == '') {
-        message('New Category Error',' Could not get next Category ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
-    }
-    if (typeof post.categoryName == 'undefined' || post.categoryName == '') {
-        message('New Category Error',' Please set a Category Name',activeInfo.settings.notifications.position,'#FFF','error','5000');
-    }
-    if (typeof post.categoryOrder == 'undefined' || post.categoryOrder == '') {
-        message('New Category Error',' Could not get Category Order',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if (typeof post.categoryImage == 'undefined' || post.categoryImage == '') {
-        message('New Category Error',' Please set a Category Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if(post.categoryID !== '' && post.categoryName !== '' && post.categoryOrder !== '' && post.categoryImage !== '' ){
-        var callbacks = $.Callbacks();
-        callbacks.add( buildCategoryEditor );
-        settingsAPI(post,callbacks);
-        clearForm('#new-category-form');
-        $.magnificPopup.close();
-    }
+    var categoryInfo = $('#new-category-form').serializeToJSON();
+	categoryInfo['order'] = parseInt($('#categoryEditorTable').find('tr[data-order]').last().attr('data-order')) + 1;
+
+	if (typeof categoryInfo.category == 'undefined' || categoryInfo.category == '') {
+		message('Edit Tab Error',' Please set a Category Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	if (typeof categoryInfo.image == 'undefined' || categoryInfo.image == '') {
+		message('Edit Tab Error',' Please set a Category Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	if(categoryInfo.category !== '' && categoryInfo.image !== ''){
+		var callbacks = $.Callbacks();
+		callbacks.add( buildCategoryEditor );
+		organizrAPI2('POST','api/v2/categories',categoryInfo,true).success(function(data) {
+			try {
+				var response = data.response;
+				console.log(response);
+			}catch(e) {
+				organizrCatchError(e,data);
+			}
+			message('Category Added',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+			if(callbacks){ callbacks.fire(); }
+			clearForm('#new-category-form');
+			$.magnificPopup.close();
+		}).fail(function(xhr) {
+			OrganizrApiError(xhr, 'Category Error');
+		});
+	}
 });
 //DELETE CATEGORY
 $(document).on("click", ".deleteCategory", function () {
@@ -1056,74 +1002,74 @@ $(document).on("click", ".deleteCategory", function () {
         confirmButtonColor: "#DD6B55"
     }).then(function(willDelete) {
         if (willDelete) {
-            var post = {
-                action:'deleteCategory',
-                api:'api/?v1/settings/tab/editor/categories',
-                id:category.parent().parent().attr("data-id"),
-                category:category.parent().parent().attr("data-name"),
-                messageTitle:'',
-                messageBody:window.lang.translate('Deleted Category')+': '+category.parent().parent().attr("data-name"),
-                error:'Organizr Function: API Connection Failed'
-            };
-            var callbacks = $.Callbacks();
-            callbacks.add( buildCategoryEditor );
-            settingsAPI(post,callbacks);
+	        var id = category.parent().parent().attr("data-id");
+	        var callbacks = $.Callbacks();
+	        callbacks.add( buildCategoryEditor );
+	        organizrAPI2('DELETE','api/v2/categories/' + id, null,true).success(function(data) {
+		        message('Category Deleted','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+		        if(callbacks){ callbacks.fire(); }
+	        }).fail(function(xhr) {
+		        OrganizrApiError(xhr, 'Category Deleted Error');
+	        });
         }
     });
 });
 //EDIT CATEGORY GET ID
 $(document).on("click", ".editCategoryButton", function () {
-    $('#edit-category-form [name=name]').val($(this).parent().parent().attr("data-name"));
+    $('#edit-category-form [name=category]').val($(this).parent().parent().attr("data-name"));
     $('#edit-category-form [name=image]').val($(this).parent().parent().attr("data-image"));
     $('#edit-category-form [name=id]').val($(this).parent().parent().attr("data-id"));
 });
 //EDIT CATEGORY
 $(document).on("click", ".editCategory", function () {
-    //Create POST Array
-    var post = {
-        action:'editCategory',
-        api:'api/?v1/settings/tab/editor/categories',
-        id:$('#edit-category-form [name=id]').val(),
-        name:$('#edit-category-form [name=name]').val(),
-        image:$('#edit-category-form [name=image]').val(),
-        messageTitle:'',
-        messageBody:'Edited Category '+$('#edit-category-form [name=name]').val(),
-        error:'Organizr Function: API Connection Failed'
-    };
-    console.log(post);
-    if (typeof post.id == 'undefined' || post.id == '') {
-        message('Edit Tab Error',' Could not get Tab ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
-    }
-    if (typeof post.name == 'undefined' || post.name == '') {
-        message('Edit Tab Error',' Please set a Tab Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if (typeof post.image == 'undefined' || post.image == '') {
-        message('Edit Tab Error',' Please set a Tab Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
-    }
-    if(post.id !== '' && post.name !== '' && post.image !== ''){
-        var callbacks = $.Callbacks();
-        callbacks.add( buildCategoryEditor );
-        settingsAPI(post,callbacks);
-        clearForm('#edit-category-form');
-        $.magnificPopup.close();
-    }
+	var categoryInfo = $('#edit-category-form').serializeToJSON();
+	if (typeof categoryInfo.id == 'undefined' || categoryInfo.id == '') {
+		message('Edit Tab Error',' Could not get Category ID',activeInfo.settings.notifications.position,'#FFF','error','5000');
+		return false;
+	}
+	if (typeof categoryInfo.category == 'undefined' || categoryInfo.category == '') {
+		message('Edit Tab Error',' Please set a Category Name',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	if (typeof categoryInfo.image == 'undefined' || categoryInfo.image == '') {
+		message('Edit Tab Error',' Please set a Category Image',activeInfo.settings.notifications.position,'#FFF','warning','5000');
+		return false;
+	}
+	if(categoryInfo.id !== '' && categoryInfo.category !== '' && categoryInfo.image !== ''){
+		var callbacks = $.Callbacks();
+		callbacks.add( buildCategoryEditor );
+		organizrAPI2('PUT','api/v2/categories/' + categoryInfo.id,categoryInfo,true).success(function(data) {
+			try {
+				var response = data.response;
+				console.log(response);
+			}catch(e) {
+				organizrCatchError(e,data);
+			}
+			message('Category Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+			if(callbacks){ callbacks.fire(); }
+			clearForm('#edit-category-form');
+			$.magnificPopup.close();
+		}).fail(function(xhr) {
+			OrganizrApiError(xhr, 'Category Error');
+		});
+	}
 });
 //CHANGE DEFAULT CATEGORY
 $(document).on("click", ".changeDefaultCategory", function () {
-    //Create POST Array
-    var post = {
-        action:'changeDefault',
-        api:'api/?v1/settings/tab/editor/categories',
-        id:$(this).parent().parent().attr("data-id"),
-        oldCategoryName:$('#categoryEditorTable').find('tr[data-default=true]').attr("data-name"),
-        newCategoryName:$(this).parent().parent().attr("data-name"),
-        messageTitle:'',
-        messageBody:'Changed Default Category to '+$(this).parent().parent().attr("data-name"),
-        error:'Organizr Function: API Connection Failed'
-    };
-    var callbacks = $.Callbacks();
-    callbacks.add( buildCategoryEditor );
-    settingsAPI(post,callbacks);
+	var id = $(this).parent().parent().attr("data-id");
+	var callbacks = $.Callbacks();
+	callbacks.add( buildCategoryEditor );
+	organizrAPI2('PUT','api/v2/categories/' + id, {"default":1},true).success(function(data) {
+		try {
+			var response = data.response;
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+		message('Default Category Updated',response.message,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		if(callbacks){ callbacks.fire(); }
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Default Cateogry Error');
+	});
 });
 // CHANGE CUSTOMIZE Options and CSS Save
 $(document).on("click", ".saveCss", function () {
@@ -1200,17 +1146,24 @@ $(document).on("click", ".deleteImage", function () {
     }).then(function(willDelete) {
         if (willDelete) {
             var post = {
-                action:'deleteImage',
-                api:'api/?v1/settings/image/manager/view',
-                imageName:image.attr("data-image-name"),
-                imagePath:image.attr("data-image-path"),
+                api:'api/v2/image/' + image.attr("data-image-name-ext"),
                 messageTitle:'',
                 messageBody:window.lang.translate('Deleted Image')+': '+image.attr("data-image-name"),
                 error:'Organizr Function: User API Connection Failed'
             };
             var callbacks = $.Callbacks();
             callbacks.add( buildImageManagerView );
-            settingsAPI(post,callbacks);
+	        organizrAPI2('DELETE',post.api,'',true).success(function(data) {
+		        try {
+			        var response = data.response;
+		        }catch(e) {
+			        organizrCatchError(e,data);
+		        }
+		        message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		        if(callbacks){ callbacks.fire(); }
+	        }).fail(function(xhr) {
+		        OrganizrApiError(xhr, 'Image Error');
+	        });
         }
     });
 });
@@ -1220,22 +1173,24 @@ $(document).on("click", ".reload", function () {
 });
 // ENABLE PLUGIN
 $(document).on('click', '.enablePlugin', function() {
-    var post = {
-        action:'enable',
-        api:'api/?v1/settings/plugins/list',
-        name:$(this).attr('data-plugin-name'),
-        configName:$(this).attr('data-config-name'),
-        messageTitle:'',
-        messageBody:'Enabling '+$(this).attr('data-plugin-name'),
-        error:'Organizr Function: API Connection Failed'
-    };
-    //$('#customize-appearance-reload').removeClass('hidden');
-    var callbacks = $.Callbacks();
-    //callbacks.add( buildCustomizeAppearance );
-    settingsAPI(post,callbacks);
-    ajaxloader(".content-wrap","in");
-    setTimeout(function(){ buildPlugins();ajaxloader(); }, 3000);
-
+	ajaxloader(".content-wrap","in");
+	let pluginConfigValue = $(this).attr('data-config-name');
+	let callbacks = $.Callbacks();
+	callbacks.add( buildPlugins );
+	callbacks.add( ajaxloader );
+	let data = {};
+	data[pluginConfigValue] = 'true';
+	organizrAPI2('PUT','api/v2/config', data,true).success(function(data) {
+		try {
+			message('Plugin Enabled','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+			if(callbacks){ callbacks.fire(); }
+		}catch(e) {
+			organizrCatchError(e,data);
+		}
+	}).fail(function(xhr) {
+		OrganizrApiError(xhr, 'Plugin Error');
+		ajaxloader();
+	});
 });
 // DISABLE PLUGIN
 $(document).on('click', '.disablePlugin', function() {
@@ -1251,21 +1206,24 @@ $(document).on('click', '.disablePlugin', function() {
         confirmButtonColor: "#DD6B55"
     }).then(function(willDelete) {
         if (willDelete) {
-            var post = {
-                action:'disable',
-                api:'api/?v1/settings/plugins/list',
-                name:plugin.attr('data-plugin-name'),
-                configName:plugin.attr('data-config-name'),
-                messageTitle:'',
-                messageBody:'Disabling '+plugin.attr('data-plugin-name'),
-                error:'Organizr Function: API Connection Failed'
-            };
-            //$('#customize-appearance-reload').removeClass('hidden');
-            var callbacks = $.Callbacks();
-            //callbacks.add( buildCustomizeAppearance );
-            settingsAPI(post,callbacks);
-            ajaxloader(".content-wrap","in");
-            setTimeout(function(){ buildPlugins();ajaxloader(); }, 3000);
+	        ajaxloader(".content-wrap","in");
+			let pluginConfigValue = plugin.attr('data-config-name');
+	        var callbacks = $.Callbacks();
+	        callbacks.add( buildPlugins );
+	        callbacks.add( ajaxloader );
+	        var data = {};
+	        data[pluginConfigValue] = 'false';
+	        organizrAPI2('PUT','api/v2/config', data,true).success(function(data) {
+		        try {
+			        message('Plugin Disabled','',activeInfo.settings.notifications.position,"#FFF","success","5000");
+			        if(callbacks){ callbacks.fire(); }
+		        }catch(e) {
+			        organizrCatchError(e,data);
+		        }
+	        }).fail(function(xhr) {
+		        OrganizrApiError(xhr, 'Plugin Error');
+		        ajaxloader();
+	        });
         }
     });
 });
@@ -1273,177 +1231,11 @@ $(document).on('click', '.disablePlugin', function() {
 $(document).on('change', '#authSelect, #authBackendSelect', function(e) {
     changeAuth();
 });
-$(document).on("click", ".getSSOPlexToken", function () {
-    $('.ssoPlexTokenMessage').text("Grabbing Token");
-    $('.ssoPlexTokenHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
-    var plex_username = $('#sso-plex-token-form [name=username]').val().trim();
-    var plex_password = $('#sso-plex-token-form [name=password]').val().trim();
-    if ((plex_password !== '') && (plex_password !== '')) {
-        $.ajax({
-            type: 'POST',
-            headers: {
-                'X-Plex-Product':'Organizr',
-                'X-Plex-Version':'2.0',
-                'X-Plex-Client-Identifier':'01010101-10101010'
-            },
-            url: 'https://plex.tv/users/sign_in.json',
-            data: {
-                'user[login]': plex_username,
-                'user[password]': plex_password,
-                force: true
-            },
-            cache: false,
-            async: true,
-            complete: function(xhr, status) {
-                var result = $.parseJSON(xhr.responseText);
-                if (xhr.status === 201) {
-                    $('.ssoPlexTokenMessage').text(xhr.statusText);
-                    $('.ssoPlexTokenHeader').addClass('panel-success').removeClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
-                    $('#sso-form [name=plexToken]').val(result.user.authToken);
-                    $('#sso-form [name=plexToken]').change();
-                } else {
-                    $('.ssoPlexTokenMessage').text(xhr.statusText);
-                    $('.ssoPlexTokenHeader').addClass('panel-danger').removeClass('panel-info').removeClass('panel-warning');
-                }
-            }
-        });
-    } else {
-        $('.ssoPlexTokenMessage').text("Enter Username and Password");
-        $('.ssoPlexTokenHeader').addClass('panel-warning').removeClass('panel-info').removeClass('panel-danger');
-    }
-});
-$(document).on("click", ".getPlexMachineSSO", function () {
-    var plex_token = $('#sso-form [name=plexToken]').val().trim();
-    if (plex_token !== '') {
-        $('.ssoPlexMachineMessage').text("Grabbing List");
-        $('.ssoPlexMachineHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
-        $.ajax({
-            type: 'GET',
-            headers: {
-                'X-Plex-Product':'Organizr',
-                'X-Plex-Version':'2.0',
-                'X-Plex-Client-Identifier':'01010101-10101010',
-                'X-Plex-Token':plex_token,
-            },
-            url: 'https://plex.tv/pms/servers.xml',
-            cache: false,
-            async: true,
-            complete: function(xhr, status) {
-                var result = $.parseXML(xhr.responseText);
-                if (xhr.status === 200) {
-                    $('.ssoPlexMachineMessage').text('Choose Plex Server');
-                    $('.ssoPlexMachineHeader').addClass('panel-success').removeClass('panel-info').removeClass('panel-warning');
-                    var machines = '<option lang="en">Choose Plex Machine</option>';
-                    $('Server', result).each(function(){
-                        if($(this).attr('owned') == 1){
-                            var name = $(this).attr('name');
-                            var machine = $(this).attr('machineIdentifier');
-                            name = name + ' [' + machine + ']';
-                            machines += '<option value="'+machine+'">'+name+'</option>';
-                        }
-                    });
-                    var listing = '<select class="form-control" id="ssoPlexMachineSelector" data-type="select">'+machines+'</select>';
-                    $('.ssoPlexMachineListing').html(listing);
-                } else {
-                    $('.ssoPlexTokenMessage').text(xhr.statusText);
-                    $('.ssoPlexTokenHeader').addClass('panel-danger').removeClass('panel-info').removeClass('panel-warning');
-                }
-            }
-        });
-    } else {
-        $('.ssoPlexMachineMessage').text("Plex Token Needed");
-        $('.ssoPlexMachineHeader').addClass('panel-warning').removeClass('panel-info').removeClass('panel-danger');
-    }
-});
-$(document).on('change', '#ssoPlexMachineSelector', function(e) {
-    $('#sso-form [name=plexID]').val($(this).val());
-    $('#sso-form [name=plexID]').change();
-});
-$(document).on("click", ".getauthPlexToken", function () {
-    $('.authPlexTokenMessage').text("Grabbing Token");
-    $('.authPlexTokenHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
-    var plex_username = $('#auth-plex-token-form [name=username]').val().trim();
-    var plex_password = $('#auth-plex-token-form [name=password]').val().trim();
-    if ((plex_password !== '') && (plex_password !== '')) {
-        $.ajax({
-            type: 'POST',
-            headers: {
-                'X-Plex-Product':'Organizr',
-                'X-Plex-Version':'2.0',
-                'X-Plex-Client-Identifier':'01010101-10101010'
-            },
-            url: 'https://plex.tv/users/sign_in.json',
-            data: {
-                'user[login]': plex_username,
-                'user[password]': plex_password,
-                force: true
-            },
-            cache: false,
-            async: true,
-            complete: function(xhr, status) {
-                var result = $.parseJSON(xhr.responseText);
-                if (xhr.status === 201) {
-                    $('.authPlexTokenMessage').text(xhr.statusText);
-                    $('.authPlexTokenHeader').addClass('panel-success').removeClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
-                    $('#settings-main-form [name=plexToken]').val(result.user.authToken);
-                    $('#settings-main-form [name=plexToken]').change();
-                } else {
-                    $('.authPlexTokenMessage').text(xhr.statusText);
-                    $('.authPlexTokenHeader').addClass('panel-danger').removeClass('panel-info').removeClass('panel-warning');
-                }
-            }
-        });
-    } else {
-        $('.authPlexTokenMessage').text("Enter Username and Password");
-        $('.authPlexTokenHeader').addClass('panel-warning').removeClass('panel-info').removeClass('panel-danger');
-    }
-});
-$(document).on("click", ".getPlexMachineAuth", function () {
-    var plex_token = $('#settings-main-form [name=plexToken]').val().trim();
-    if (plex_token !== '') {
-        $('.authPlexMachineMessage').text("Grabbing List");
-        $('.authPlexMachineHeader').addClass('panel-info').removeClass('panel-warning').removeClass('panel-danger');
-        $.ajax({
-            type: 'GET',
-            headers: {
-                'X-Plex-Product':'Organizr',
-                'X-Plex-Version':'2.0',
-                'X-Plex-Client-Identifier':'01010101-10101010',
-                'X-Plex-Token':plex_token,
-            },
-            url: 'https://plex.tv/pms/servers.xml',
-            cache: false,
-            async: true,
-            complete: function(xhr, status) {
-                var result = $.parseXML(xhr.responseText);
-                if (xhr.status === 200) {
-                    $('.authPlexMachineMessage').text('Choose Plex Server');
-                    $('.authPlexMachineHeader').addClass('panel-success').removeClass('panel-info').removeClass('panel-warning');
-                    var machines = '<option lang="en">Choose Plex Machine</option>';
-                    $('Server', result).each(function(){
-                        if($(this).attr('owned') == 1){
-                            var name = $(this).attr('name');
-                            var machine = $(this).attr('machineIdentifier');
-                            name = name + ' [' + machine + ']';
-                            machines += '<option value="'+machine+'">'+name+'</option>';
-                        }
-                    });
-                    var listing = '<select class="form-control" id="authPlexMachineSelector" data-type="select">'+machines+'</select>';
-                    $('.authPlexMachineListing').html(listing);
-                } else {
-                    $('.authPlexTokenMessage').text(xhr.statusText);
-                    $('.authPlexTokenHeader').addClass('panel-danger').removeClass('panel-info').removeClass('panel-warning');
-                }
-            }
-        });
-    } else {
-        $('.authPlexMachineMessage').text("Plex Token Needed");
-        $('.authPlexMachineHeader').addClass('panel-warning').removeClass('panel-info').removeClass('panel-danger');
-    }
-});
-$(document).on('change', '#authPlexMachineSelector', function(e) {
-    $('#settings-main-form [name=plexID]').val($(this).val());
-    $('#settings-main-form [name=plexID]').change();
+$(document).on('change', '#plexMachineSelector', function(e) {
+	let selector = $(this).attr('data-selector');
+	$(selector).val($(this).val());
+	$(selector).change();
+	messageSingle('Machine ID selected','Please save...',activeInfo.settings.notifications.position,'#FFF','success','5000');
 });
 $(document).on("click", ".closeErrorPage", function () {
     $('.error-page').html('');
@@ -1451,20 +1243,15 @@ $(document).on("click", ".closeErrorPage", function () {
 });
 // test Location
 $(document).on("click", ".testPath", function () {
-    var path = $("#form-location").val();
+    var path = $("#form-dbPath").val();
     if (typeof path == 'undefined' || path == '') {
         message('Path Error',' Please enter a path for DB',activeInfo.settings.notifications.position,'#FFF','warning','10000');
     }else{
-        organizrAPI('POST','api/?v1/wizard_path',{path:path}).success(function(data) {
-            var html = JSON.parse(data);
-            console.log(html);
-            if(html.data == true){
-                message('Path',' Path is good to go',activeInfo.settings.notifications.position,'#FFF','success','10000');
-            }else{
-                message('Path Error',' Path is not writable',activeInfo.settings.notifications.position,'#FFF','warning','10000');
-            }
+        organizrAPI2('POST','api/v2/test/path',{path:path}).success(function(data) {
+            var html = data.response;
+            message('Path',' Path is good to go',activeInfo.settings.notifications.position,'#FFF','success','10000');
         }).fail(function(xhr) {
-            console.error("Organizr Function: Connection Failed");
+	        OrganizrApiError(xhr, 'API Error');
         });
     }
 });
@@ -1586,8 +1373,8 @@ $(document).on("click", ".metadata-get", function(e) {
 
     }
     ajaxloader(".content-wrap","in");
-    organizrAPI('POST','api/?v1/homepage/connect',{action:action, key:key}).success(function(data) {
-        var response = JSON.parse(data);
+    organizrAPI2('POST','api/v2/homepage/'+source+'/metadata',{key:key}).success(function(data) {
+        let response = data.response;
         $('.'+uid+'-metadata-info').html('');
         $('.'+uid+'-metadata-info').html(buildMetadata(response.data, source));
         $('.'+uid).trigger('click');
@@ -1601,31 +1388,36 @@ $(document).on("click", ".metadata-get", function(e) {
 			autoWidth:true,
 			items:4
         });
+	    ajaxloader();
+	    $("#preloader").fadeOut();
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr, 'API Error');
+	    ajaxloader();
+	    $("#preloader").fadeOut();
     });
-    ajaxloader();
-    $("#preloader").fadeOut();
+
 
 });
 // sab play/resume
 $(document).on("click", ".downloader", function(e) {
-    var action = $(this).attr('data-action');
-    var source = $(this).attr('data-source');
-    var target = $(this).attr('data-target');
-    //console.log(action);
-    //console.log(source);
-    //console.log(target);
-    ajaxloader(".content-wrap","in");
-    organizrAPI('POST','api/?v1/downloader',{action:action, source:source, target:target}).success(function(data) {
-        var response = JSON.parse(data);
-        //console.log(response);
+    let action = $(this).attr('data-action');
+	let source = $(this).attr('data-source');
+	let target = $(this).attr('data-target');
+	let api = null;
+	switch (source){
+		case 'sabnzbd':
+			api = 'api/v2/homepage/sabnzbd/queue/' + action;
+			break;
+		default:
+			return false;
+	}
+	messageSingle('Sending command to downloader', '', activeInfo.settings.notifications.position, '#FFF', 'info', '2500');
+    organizrAPI2('POST',api,{target:target}).success(function(data) {
         homepageDownloader(source);
+	    messageSingle('Successful', '', activeInfo.settings.notifications.position, '#FFF', 'success', '2500');
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr, 'API Error');
     });
-    ajaxloader();
-
 });
 // test tab
 $(document).on("click", ".testTab", function () {
@@ -1637,18 +1429,21 @@ $(document).on("click", ".testTab", function () {
         var post = {
             url:input.val()
         };
-        organizrAPI('POST','api/?v1/test/iframe',post).success(function(data) {
-            var html = JSON.parse(data);
-            if(html.data == true){
-                $('.tabTestMessage.alert-success').removeClass('hidden');
-                $('.tabTestMessage.alert-danger').addClass('hidden');
-            }else{
-                $('.tabTestMessage.alert-danger').removeClass('hidden');
-                $('.tabTestMessage.alert-success').addClass('hidden');
-            }
-
+        organizrAPI2('POST','api/v2/test/iframe',post).success(function(data) {
+            let html = data.response;
+            $('.tabTestMessage.alert-success').removeClass('hidden');
+            $('.tabTestMessage.alert-danger').addClass('hidden');
+	        setTimeout(function(){
+		        $('.tabTestMessage.alert-success').addClass('hidden');
+	        	}, 5000);
         }).fail(function(xhr) {
-            console.error("Organizr Function: Check Failed");
+	        OrganizrApiError(xhr, 'API Error');
+	        $('.tabTestMessage.alert-danger').removeClass('hidden');
+	        $('.tabTestMessage.alert-success').addClass('hidden');
+	        setTimeout(function(){
+
+		        $('.tabTestMessage.alert-danger').addClass('hidden');
+	        }, 5000);
         });
     }
 });
@@ -1661,18 +1456,21 @@ $(document).on("click", ".testEditTab", function () {
         var post = {
             url:input.val()
         };
-        organizrAPI('POST','api/?v1/test/iframe',post).success(function(data) {
-            var html = JSON.parse(data);
-            if(html.data == true){
-                $('.tabEditTestMessage.alert-success').removeClass('hidden');
-                $('.tabEditTestMessage.alert-danger').addClass('hidden');
-            }else{
-                $('.tabEditTestMessage.alert-danger').removeClass('hidden');
-                $('.tabEditTestMessage.alert-success').addClass('hidden');
-            }
-
+	    message('Checking URL now...','',activeInfo.settings.notifications.position,'#FFF','info','5000');
+        organizrAPI2('POST','api/v2/test/iframe',post).success(function(data) {
+            let html = data.response;
+            $('.tabEditTestMessage.alert-success').removeClass('hidden');
+            $('.tabEditTestMessage.alert-danger').addClass('hidden');
+	        setTimeout(function(){
+		        $('.tabEditTestMessage.alert-success').addClass('hidden');
+	        }, 5000);
         }).fail(function(xhr) {
-            console.error("Organizr Function: Check Failed");
+	        OrganizrApiError(xhr, 'API Error');
+	        $('.tabEditTestMessage.alert-danger').removeClass('hidden');
+	        $('.tabEditTestMessage.alert-success').addClass('hidden');
+	        setTimeout(function(){
+		        $('.tabEditTestMessage.alert-danger').addClass('hidden');
+	        }, 5000);
         });
     }
 });
@@ -1681,15 +1479,67 @@ $(document).on("click", ".newAPIKey", function () {
     $('#settings-main-form [name=organizrAPI]').val(generateCode());
     $('#settings-main-form [name=organizrAPI]').change();
 });
-// purge logvcfdD\o8i 8
+// purge log
 $(document).on("click", ".purgeLog", function () {
     var name = $('.swapLog.active').attr('data-name');
-    var path = $('.swapLog.active').attr('data-path');
-    if(name !== '' && path !== ''){
-        removeFile(path,name);
-        setTimeout(function(){ loadSettingsPage('api/?v1/settings/settings/logs','#settings-settings-logs','Log Viewer'); }, 1500);
+    if(name !== ''){
+	    var post = {
+		    api:'api/v2/log/' + name,
+		    messageTitle:'',
+		    messageBody:window.lang.translate('Deleted Log')+': '+name,
+		    error:'Organizr Function: User API Connection Failed'
+	    };
+	    organizrAPI2('DELETE',post.api,'',true).success(function(data) {
+		    loadSettingsPage2('api/v2/page/settings_settings_logs','#settings-settings-logs','Log Viewer');
+		    try {
+			    var response = data.response;
+		    }catch(e) {
+			    organizrCatchError(e,data);
+		    }
+		    message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
+		    var callbacks = $.Callbacks();
+		    switch ($(this).attr('data-name')){
+			    case 'loginLog':
+				    loginLogTable.ajax.reload(null, false);
+				    break;
+			    case 'orgLog':
+				    organizrLogTable.ajax.reload(null, false);
+				    break;
+			    default:
+		    }
+		    if(callbacks){ callbacks.fire(); }
+	    }).fail(function(xhr) {
+		    OrganizrApiError(xhr, 'API Error');
+	    });
     }
 
+});
+$(document).on("click", ".delete-backup", function () {
+	$('#settings-settings-backup').block({
+		message: '<p style="margin:0;padding:8px;font-size:24px;" lang="en">Deleting Backup...</p>',
+		css: {
+			color: '#fff',
+			border: '1px solid #5761a9',
+			backgroundColor: '#707cd2'
+		}
+	});
+	let filename = $(this).attr('data-file');
+	if(filename !== ''){
+		let post = {
+			api:'api/v2/backup/' + filename,
+			messageTitle:'',
+			messageBody:window.lang.translate('Deleted Backup')+': '+filename,
+			error:'Organizr Function: Backup API Connection Failed'
+		};
+		organizrAPI2('DELETE',post.api,'',true).success(function(data) {
+			message(post.messageTitle,post.messageBody,activeInfo.settings.notifications.position,"#FFF","success","5000");
+			getOrganizrBackups();
+			$('#settings-settings-backup').unblock();
+		}).fail(function(xhr) {
+			OrganizrApiError(xhr, 'API Error');
+			$('#settings-settings-backup').unblock();
+		});
+	}
 });
 //Show Password
 $(document).on("click", ".showPassword", function () {
@@ -1815,7 +1665,7 @@ $(document).on('mousewheel', '.request-items .owl-stage', function (e) {
     }
 });
 Mousetrap.bind('r r', function() { reloadCurrentTab() });
-Mousetrap.bind("c c", function() { closeCurrentTab() });
+Mousetrap.bind("c c", function() { closeCurrentTab(event) });
 Mousetrap.bind("s s", function() { openSettings() });
 Mousetrap.bind("h h", function() { openHomepage() });
 Mousetrap.bind("f f", function() { toggleFullScreen() });
@@ -1869,7 +1719,8 @@ $(document).on('change', "#choose-calender-filter, #choose-calender-filter-statu
     $('#calendar').fullCalendar('rerenderEvents');
     new SimpleBar($('.fc-scroller')[0]);
 });
-$('#debug-input').keyup(function(e){
+$(document).on('keyup', "#debug-input", function(e  ){
+	console.log(this);
     if(e.keyCode == 13) {
         orgDebug();
     }
@@ -1985,7 +1836,6 @@ $(document).on('click', ".ipInfo", function(){
 });
 // set active for group list
 $(document).on('click', '.allGroupsList', function() {
-    console.log($(this));
     $(this).toggleClass('active');
 });
 // Control init of custom netdata JSON editor
@@ -2006,4 +1856,7 @@ $(document).on('click', 'li a[aria-controls="Custom data"]', function() {
         $('#netdataCustomText').val(jsonEditor.getValue());
         $('#customize-appearance-form-save').removeClass('hidden');
     });
+});
+$(document).on('click', '.imageManagerItem', function() {
+	createImageSwal($(this));
 });

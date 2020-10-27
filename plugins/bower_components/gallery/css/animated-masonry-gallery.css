@@ -156,7 +156,10 @@
 	width: 100%;
 }
 #gallery-content-center img {
-	width: 300px;
+    min-width: 65px;
+    max-width: 65px;
+    max-height: 65px;
+    min-height: 65px;
 	margin-bottom: 10px;
 	-webkit-transition: all 0.5s;
 	-moz-transition: all 0.5s;

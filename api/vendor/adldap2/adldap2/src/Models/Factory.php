@@ -116,6 +116,24 @@ class Factory
     }
 
     /**
+     * Creates a new organizational unit instance.
+     *
+     * @param array $attributes
+     *
+     * @return Organization
+     */
+    public function organization(array $attributes = [])
+    {
+        $model = $this->schema->organizationModel();
+
+        return (new $model($attributes, $this->query))
+            ->setAttribute($this->schema->objectClass(), [
+                $this->schema->top(),
+                $this->schema->organization(),
+            ]);
+    }
+
+    /**
      * Creates a new group instance.
      *
      * @param array $attributes

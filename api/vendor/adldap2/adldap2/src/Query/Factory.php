@@ -182,6 +182,18 @@ class Factory
     }
 
     /**
+     * Returns a query builder scoped to organizations.
+     *
+     * @return Builder
+     */
+    public function organizations()
+    {
+        return $this->where([
+            $this->schema->objectClass() => $this->schema->objectClassOrganization(),
+        ]);
+    }
+
+    /**
      * Returns a query builder scoped to groups.
      *
      * @return Builder

@@ -5,7 +5,7 @@ switch ($extra) {
 		<tr>
 			<td align="center" valign="top">
 				<div>
-					<a href="' . getServerPath(true) . '?invite=' . $email['inviteCode'] . '" rel="noopener noreferrer" style="background-color: #e5a00d; border: 2px solid #E5A00D; border-radius: 100px; color: #ffffff; display: inline-block; font-family: \'Roboto\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: bold; line-height: 44px; text-align: center; text-decoration: none; width: 260px; -webkit-text-size-adjust: none; mso-hide: all;">Use Invite Code</a>
+					<a href="' . $this->getServerPath(true) . '?invite=' . $email['inviteCode'] . '" rel="noopener noreferrer" style="background-color: #e5a00d; border: 2px solid #E5A00D; border-radius: 100px; color: #ffffff; display: inline-block; font-family: \'Roboto\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: bold; line-height: 44px; text-align: center; text-decoration: none; width: 260px; -webkit-text-size-adjust: none; mso-hide: all;">Use Invite Code</a>
 				</div>
 			</td>
 		</tr>
@@ -19,7 +19,7 @@ switch ($extra) {
 		<tr>
 			<td align="center" valign="top">
 				<div>
-					<a href="' . getServerPath(true) . '" rel="noopener noreferrer" style="background-color: #e5a00d; border: 2px solid #E5A00D; border-radius: 100px; color: #ffffff; display: inline-block; font-family: \'Roboto\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: bold; line-height: 44px; text-align: center; text-decoration: none; width: 260px; -webkit-text-size-adjust: none; mso-hide: all;">Goto My Site</a>
+					<a href="' . $this->getServerPath(true) . '" rel="noopener noreferrer" style="background-color: #e5a00d; border: 2px solid #E5A00D; border-radius: 100px; color: #ffffff; display: inline-block; font-family: \'Roboto\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: bold; line-height: 44px; text-align: center; text-decoration: none; width: 260px; -webkit-text-size-adjust: none; mso-hide: all;">Goto My Site</a>
 				</div>
 			</td>
 		</tr>
@@ -127,7 +127,7 @@ $email = '
 						<tbody>
 							<tr>
 								<td align="center" class="header" valign="top">
-									<a href="' . getServerPath(true) . '" rel="noopener noreferrer"><img border="0" src="' . $GLOBALS['PHPMAILER-logo'] . '" style="display: block;" width="50%"></a>
+									<a href="' . $this->getServerPath(true) . '" rel="noopener noreferrer"><img border="0" src="' . $this->config['PHPMAILER-logo'] . '" style="display: block;" width="50%"></a>
 								</td>
 							</tr>
 						</tbody>

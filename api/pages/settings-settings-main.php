@@ -1,5 +1,17 @@
 <?php
-$pageSettingsSettingsMain = '
+$GLOBALS['organizrPages'][] = 'settings_settings_main';
+function get_page_settings_settings_main($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	return '
 <script>
 	buildSettingsMain();
 </script>
@@ -10,7 +22,7 @@ $pageSettingsSettingsMain = '
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org">
-            <form id="settings-main-form" class="addFormTick" onsbumit="return false;"></form>
+            <form id="settings-main-form" class="addFormTick" onsubmit="return false;"></form>
         </div>
     </div>
 </div>
@@ -46,3 +58,4 @@ $pageSettingsSettingsMain = '
     <div class="clearfix"></div>
 </form>
 ';
+}

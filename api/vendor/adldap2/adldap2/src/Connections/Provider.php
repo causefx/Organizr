@@ -17,7 +17,7 @@ use Adldap\Configuration\DomainConfiguration;
 /**
  * Class Provider.
  *
- * Contains the LPAP connection and domain configuration to
+ * Contains the LDAP connection and domain configuration to
  * instantiate factories for retrieving and creating
  * LDAP records as well as authentication (binding).
  */
@@ -68,18 +68,13 @@ class Provider implements ProviderInterface
     }
 
     /**
-     * Close the LDAP connection (if bound) upon destruction.
+     * Does nothing. Implemented in order to remain backwards compatible.
      *
-     * @return void
+     * @deprecated since v10.3.0
      */
     public function __destruct()
     {
-        if (
-            $this->connection instanceof ConnectionInterface &&
-            $this->connection->isBound()
-        ) {
-            $this->connection->close();
-        }
+        //
     }
 
     /**

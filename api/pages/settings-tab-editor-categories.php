@@ -1,13 +1,24 @@
 <?php
-
-$pageSettingsTabEditorCategories = '
+$GLOBALS['organizrPages'][] = 'settings_tab_editor_categories';
+function get_page_settings_tab_editor_categories($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	return '
 <script>
 buildCategoryEditor();
 $( \'#categoryEditorTable\' ).sortable({
     stop: function () {
         var inputs = $(\'input.order\');
         var nbElems = inputs.length;
-        $(\'input.order\').each(function(idx) {
+        inputs.each(function(idx) {
             $(this).val(idx + 1);
         });
         submitCategoryOrder();
@@ -32,7 +43,7 @@ $( \'#categoryEditorTable\' ).sortable({
                         <th lang="en" style="text-align:center">DELETE</th>
                     </tr>
                 </thead>
-                <tbody id="categoryEditorTable"></tbody>
+                <tbody id="categoryEditorTable"><td class="text-center" colspan="6"><i class="fa fa-spin fa-spinner"></i></td></tbody>
             </table>
         </form>
     </div>
@@ -42,7 +53,7 @@ $( \'#categoryEditorTable\' ).sortable({
     <fieldset style="border:0;">
         <div class="form-group">
             <label class="control-label" for="new-category-form-inputNameNew" lang="en">Category Name</label>
-            <input type="text" class="form-control" id="new-category-form-inputNameNew" name="name" required="" autofocus>
+            <input type="text" class="form-control" id="new-category-form-inputNameNew" name="category" required="" autofocus>
         </div>
         <div class="form-group">
             <label class="control-label" for="new-category-form-inputImageNew" lang="en">Category Image</label>
@@ -58,7 +69,7 @@ $( \'#categoryEditorTable\' ).sortable({
     <fieldset style="border:0;">
         <div class="form-group">
             <label class="control-label" for="edit-category-form-inputName" lang="en">Category Name</label>
-            <input type="text" class="form-control" id="edit-category-form-inputName" name="name" required="" autofocus>
+            <input type="text" class="form-control" id="edit-category-form-inputName" name="category" required="" autofocus>
         </div>
         <div class="form-group">
             <label class="control-label" for="edit-category-form-inputImage" lang="en">Category Image</label>
@@ -82,3 +93,4 @@ $( \'#categoryEditorTable\' ).sortable({
     <div class="clearfix"></div>
 </form>
 ';
+}

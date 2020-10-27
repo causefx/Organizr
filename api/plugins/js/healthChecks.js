@@ -1,22 +1,4 @@
-/* PHP MAILER JS FILE */
-/*
-$(document).on('click', '#PHPMAILER-settings-button', function() {
-	var post = {
-        plugin:'PHPMailer/settings/get', // used for switch case in your API call
-        api:'api/?v1/plugin', // API Endpoint will always be this for custom plugin API calls
-        name:$(this).attr('data-plugin-name'),
-        configName:$(this).attr('data-config-name'),
-        messageTitle:'', // Send succees message title (top line)
-        messageBody:'Disabled '+$(this).attr('data-plugin-name'), // Send succees message body (bottom line)
-        error:'Organizr Function: API Connection Failed' // conole error message
-    };
-	var callbacks = $.Callbacks(); // init callbacks var
-    //callbacks.add(  ); // add function to callback to be fired after API call
-    //settingsAPI(post,callbacks); // exec API call
-    //ajaxloader(".content-wrap","in");
-    //setTimeout(function(){ buildPlugins();ajaxloader(); }, 3000);
-});
-*/
+/* HEALTHCHECKS.IO JS FILE */
 
 // FUNCTIONS
 
@@ -25,12 +7,9 @@ $(document).on('click', '#PHPMAILER-settings-button', function() {
 // CHANGE CUSTOMIZE Options
 //
 $(document).on('click', '#HEALTHCHECKS-settings-button', function() {
-    var post = {
-        plugin:'HealthChecks/settings/get', // used for switch case in your API call
-    };
     ajaxloader(".content-wrap","in");
-    organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-        var response = JSON.parse(data);
+    organizrAPI2('GET','api/v2/plugins/healthchecks/settings').success(function(data) {
+        var response = data.response;
         $('#HEALTHCHECKS-settings-items').html(buildFormGroup(response.data));
         var elAddButtonStart = $('#HEALTHCHECKS-settings-page [id*="Services"] .row.start');
         var testone = $('#HEALTHCHECKS-settings-page [id*="Services"] .row.m-b-40').first('span')

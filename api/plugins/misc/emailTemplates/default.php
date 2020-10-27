@@ -10,7 +10,7 @@ switch ($extra) {
                             <tbody>
                                 <tr>
                                     <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Helvetica; font-size: 18px; padding: 18px;">
-                                        <a class="mcnButton " title="Button Text" href="' . getServerPath(true) . '?invite=' . $email['inviteCode'] . '" target="_self" style="font-weight: bold;letter-spacing: -0.5px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Use Invite Code</a>
+                                        <a class="mcnButton " title="Button Text" href="' . $this->getServerPath(true) . '?invite=' . $email['inviteCode'] . '" target="_self" style="font-weight: bold;letter-spacing: -0.5px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Use Invite Code</a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -31,7 +31,7 @@ switch ($extra) {
                             <tbody>
                                 <tr>
                                     <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Helvetica; font-size: 18px; padding: 18px;">
-                                        <a class="mcnButton " title="Reset Password" href="' . getServerPath(true) . '" target="_self" style="font-weight: bold;letter-spacing: -0.5px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Goto My Site</a>
+                                        <a class="mcnButton " title="Reset Password" href="' . $this->getServerPath(true) . '" target="_self" style="font-weight: bold;letter-spacing: -0.5px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Goto My Site</a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -68,7 +68,7 @@ $info = '
                                     <tbody>
                                         <tr>
                                             <td valign="top" class="mcnTextContent" style="padding: 18px;">
-                                                <h3 style="text-align:center;">' . getServerPath(true) . '</h3>
+                                                <h3 style="text-align:center;">' . $this->getServerPath(true) . '</h3>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -850,7 +850,7 @@ $email = '
                                                                     <tr>
                                                                         <td class="mcnImageContent" valign="top" style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0; text-align:center;">
 
-                                                                            <img align="center" alt="" src="' . $GLOBALS['PHPMAILER-logo'] . '" width="564" style="max-width:700px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
+                                                                            <img align="center" alt="" src="' . $this->config['PHPMAILER-logo'] . '" width="564" style="max-width:700px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
 
                                                                         </td>
                                                                     </tr>

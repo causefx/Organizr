@@ -1,6 +1,17 @@
 <?php
-if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
-	$pageSettingsTabEditorHomepageOrder = '
+$GLOBALS['organizrPages'][] = 'settings_tab_editor_homepage_order';
+function get_page_settings_tab_editor_homepage_order($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	return '
 <script>
     $("#homepage-items-sort").sortable({
 	    placeholder:    "sort-placeholder col-md-3 col-xs-12 m-t-10 clearfix",
@@ -41,7 +52,7 @@ if (file_exists('config' . DIRECTORY_SEPARATOR . 'config.php')) {
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org" >
-        <div class="row el-element-overlay m-b-40" id="settings-homepage-order">' . buildHomepageSettings() . '</div>
+        <div class="row el-element-overlay m-b-40" id="settings-homepage-order">' . $Organizr->buildHomepageSettings() . '</div>
         </div>
     </div>
 </div>

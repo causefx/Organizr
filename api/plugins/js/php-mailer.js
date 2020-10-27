@@ -1,22 +1,4 @@
 /* PHP MAILER JS FILE */
-/*
-$(document).on('click', '#PHPMAILER-settings-button', function() {
-	var post = {
-        plugin:'PHPMailer/settings/get', // used for switch case in your API call
-        api:'api/?v1/plugin', // API Endpoint will always be this for custom plugin API calls
-        name:$(this).attr('data-plugin-name'),
-        configName:$(this).attr('data-config-name'),
-        messageTitle:'', // Send succees message title (top line)
-        messageBody:'Disabled '+$(this).attr('data-plugin-name'), // Send succees message body (bottom line)
-        error:'Organizr Function: API Connection Failed' // conole error message
-    };
-	var callbacks = $.Callbacks(); // init callbacks var
-    //callbacks.add(  ); // add function to callback to be fired after API call
-    //settingsAPI(post,callbacks); // exec API call
-    //ajaxloader(".content-wrap","in");
-    //setTimeout(function(){ buildPlugins();ajaxloader(); }, 3000);
-});
-*/
 
 // FUNCTIONS
 phpmLaunch();
@@ -53,25 +35,26 @@ function sendMail(){
         messageSingle('','Please Enter Subject',activeInfo.settings.notifications.position,'#FFF','error','5000');
     }else if(body == ''){
         messageSingle('','Please Enter Body',activeInfo.settings.notifications.position,'#FFF','error','5000');
+    }else{
+	    messageSingle('','Sending Message',activeInfo.settings.notifications.position,'#FFF','success','5000');
     }
     if(to !== '' && subject !== '' && body !== ''){
         var post = {
-            plugin:'PHPMailer/send/email', // used for switch case in your API call
             bcc:to,
             subject:subject,
             body:body
         };
         ajaxloader(".content-wrap","in");
-        organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-            var response = JSON.parse(data);
-            if(response.data == true){
+        organizrAPI2('POST','api/v2/plugins/php-mailer/email/send',post).success(function(data) {
+            var response = data.response;
+            if(response.result == 'success'){
                 $.magnificPopup.close();
                 messageSingle('',window.lang.translate('Email Sent Successful'),activeInfo.settings.notifications.position,'#FFF','success','5000');
             }else{
-                messageSingle('',response.data,activeInfo.settings.notifications.position,'#FFF','error','5000');
+                messageSingle('',response.message,activeInfo.settings.notifications.position,'#FFF','error','5000');
             }
         }).fail(function(xhr) {
-            console.error("Organizr Function: API Connection Failed");
+	        OrganizrApiError(xhr);
         });
         ajaxloader();
     }
@@ -209,16 +192,13 @@ $(document).on("change", "#email-user-list", function () {
     $('#sendEmailToInput').val($('#email-user-list').val());
 });
 $(document).on('click', '.loadUserList', function() {
-    var post = {
-        plugin:'PHPMailer/users/get', // used for switch case in your API call
-    };
     ajaxloader(".content-wrap","in");
-    organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-        var response = JSON.parse(data);
+    organizrAPI2('GET','api/v2/plugins/php-mailer/email/list').success(function(data) {
+        var response = data.response;
         $('#user-list-div').html(buildUserList(response.data));
         $('#email-user-list').multiSelect();
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr);
     });
     ajaxloader();
 });
@@ -251,71 +231,32 @@ function addForgotPassword(){
         }
     }
 }
-// CHANGE CUSTOMIZE Options
-$(document).on('change asColorPicker::close', '#PHPMAILER-settings-page1 :input', function(e) {
-    var input = $(this);
-    switch ($(this).attr('type')) {
-        case 'switch':
-        case 'checkbox':
-            var value = $(this).prop("checked") ? true : false;
-            break;
-        default:
-            var value = $(this).val();
-    }
-	var post = {
-        api:'api/?v1/update/config',
-        name:$(this).attr("name"),
-        type:$(this).attr("data-type"),
-        value:value,
-        messageTitle:'',
-        messageBody:'Updated Value for '+$(this).parent().parent().find('label').text(),
-        error:'Organizr Function: API Connection Failed'
-    };
-	var callbacks = $.Callbacks();
-    //callbacks.add( buildCustomizeAppearance );
-    settingsAPI(post,callbacks);
-    //disable button then renable
-    $('#PHPMAILER-settings-page :input').prop('disabled', 'true');
-    setTimeout(
-        function(){
-            $('#PHPMAILER-settings-page :input').prop('disabled', null);
-            input.emulateTab();
-        },
-        2000
-    );
-
-});
 $(document).on('click', '#PHPMAILER-settings-button', function() {
-    var post = {
-        plugin:'PHPMailer/settings/get', // used for switch case in your API call
-    };
     ajaxloader(".content-wrap","in");
-    organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-        var response = JSON.parse(data);
+    organizrAPI2('GET','api/v2/plugins/php-mailer/settings').success(function(data) {
+        var response = data.response;
         $('#PHPMAILER-settings-items').html(buildFormGroup(response.data));
     }).fail(function(xhr) {
-        console.error("Organizr Function: API Connection Failed");
+	    OrganizrApiError(xhr);
     });
     ajaxloader();
 });
 // SEND TEST EMAIL
 $(document).on('click', '.phpmSendTestEmail', function() {
     messageSingle('',window.lang.translate('Sending Test E-Mail'),activeInfo.settings.notifications.position,'#FFF','info','5000');
-    var post = {
-        plugin:'PHPMailer/send/test', // used for switch case in your API call
-    };
     ajaxloader(".content-wrap","in");
-    organizrAPI('POST','api/?v1/plugin',post).success(function(data) {
-        var response = JSON.parse(data);
-        if(response.data == true){
-            messageSingle('',window.lang.translate('Email Test Successful'),activeInfo.settings.notifications.position,'#FFF','success','5000');
-        }else if(response.data.indexOf('|||DEBUG|||') == 0) {
-            messageSingle('',window.lang.translate('Press F11 to check Console for output'),activeInfo.settings.notifications.position,'#FFF','warning','20000');
-            console.warn(response.data);
+    organizrAPI2('GET','api/v2/plugins/php-mailer/email/test').success(function(data) {
+        var response = data.response;
+        if(response.message !== null && response.message.indexOf('|||DEBUG|||') == 0){
+            messageSingle('',window.lang.translate('Press F11 to check Console for output'),activeInfo.settings.notifications.position,'#FFF','warning','5000');
+	        console.warn(response.message);
+        }else if(response.result == 'success') {
+            messageSingle('',window.lang.translate('Email Test Successful'),activeInfo.settings.notifications.position,'#FFF','success','20000');
         }else{
-            messageSingle('',response.data,activeInfo.settings.notifications.position,'#FFF','error','5000');
+            messageSingle('',response.message,activeInfo.settings.notifications.position,'#FFF','error','5000');
         }
-    }).fail(function(xhr) {
+    }).fail(function(xhr, data) {
+    	console.log(data)
         console.error("Organizr Function: API Connection Failed");
     });
     ajaxloader();

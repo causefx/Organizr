@@ -1,9 +1,21 @@
 <?php
-$pageSettingsImageManager = '
+$GLOBALS['organizrPages'][] = 'settings_image_manager';
+function get_page_settings_image_manager($Organizr)
+{
+	if (!$Organizr) {
+		$Organizr = new Organizr();
+	}
+	if ((!$Organizr->hasDB())) {
+		return false;
+	}
+	if (!$Organizr->qualifyRequest(1, true)) {
+		return false;
+	}
+	return '
 <script>
 	buildImageManagerView();
     var myDropzone = new Dropzone("#new-image-form", {
-      url: "api/?v1/settings/image/manager/view",
+      url: "api/v2/image",
       headers:{ "formKey": local("g","formKey") },
       init: function() {
         this.on("complete", function(file) {
@@ -20,7 +32,9 @@ $pageSettingsImageManager = '
 	</div>
     <div class="panel-wrapper collapse in" aria-expanded="true">
         <div class="panel-body bg-org" >
-        <div class="row el-element-overlay m-b-40" id="settings-image-manager-list"></div>
+        	<div id="gallery-content">
+                <div id="gallery-content-center" class="settings-image-manager-list"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -32,3 +46,4 @@ $pageSettingsImageManager = '
     <div class="clearfix"></div>
 </form>
 ';
+}

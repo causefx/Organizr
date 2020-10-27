@@ -14,8 +14,8 @@ use Adldap\Configuration\DomainConfiguration;
 
 class Adldap implements AdldapInterface
 {
-    use DispatchesEvents, LogsInformation;
-
+    use DispatchesEvents;
+    use LogsInformation;
     /**
      * The default provider name.
      *
