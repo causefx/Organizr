@@ -280,10 +280,10 @@
     "notes": "API V2 is coming with breaking changes - please check news items|Updated Language Items|Updated frameworks|Please report bugs in GitHub issues page"
   },
   "2.1.0": {
-    "date": "2020-08-26 16:20",
-    "title": "Organizr API v2 included - Please remove any downloaded plugins",
-    "new": "API v2 endpoint - Please make sure to update nginx auth_request location block",
-    "fixed": "",
-    "notes": "API v2 is here|If using built-in updater in Organizr and not on Windows - it will fail on cleaning up install - reloading should fix|If using Docker - Please switch to organizr/organizr|Remove any plugins that were downloaded from marketplace|Pleae join our discord if you have any issues|Please report bugs in GitHub issues page"
+    "date": "2020-10-27 16:20",
+    "title": "Organizr API v2 included - PLEASE READ NOTES BEFORE CONTINUING",
+    "new": "API v2 endpoints - Please make sure to update nginx auth_request location block if being used|Update Organizr alert errors|Redid Debug area|Jellyfin homepage item|SOCKS support for sonarr - radarr - lidarr|Redid plex token and machine methods|Redid user management area|Jackett homepage item|redid homepage items settings pages",
+    "fixed": "Lots of little misc fixes",
+    "notes": "CHECK MIGRATION LINK IN NEWS SECTION!!!!!!!|API v2 is here|If using built-in updater in Organizr and not on Windows - it will fail on cleaning up install - reloading should fix|If using Docker - Please switch to organizr/organizr|Remove any plugins that were downloaded from marketplace prior to upgrade|Please join our discord if you have any issues|Please report bugs in GitHub issues page"
   }
 }
