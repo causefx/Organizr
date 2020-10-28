@@ -298,7 +298,7 @@ a.mytooltip {
   height: 100%;
   position: fixed;
   display: none;
-  z-index: 10;
+  z-index: 11;
 }
 .error-body h1 {
   font-size: 210px;

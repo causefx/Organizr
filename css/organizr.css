@@ -252,7 +252,7 @@ body.stop-scrolling {
     height: 100%;
     position: fixed;
     display: none;
-    z-index: 10;
+    z-index: 11;
 }
 
 img.lazyload.tabImages {
