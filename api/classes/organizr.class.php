@@ -1012,7 +1012,7 @@ class Organizr
 	
 	public function reverseCleanClassName($name)
 	{
-		return ($name) ? (str_replace(array('%20', '-', '_'), ' ', $name)) : '';
+		return ($name) ? (str_replace(array('%20', '-', '_'), ' ', strtolower($name))) : '';
 	}
 	
 	public function getPageList()
