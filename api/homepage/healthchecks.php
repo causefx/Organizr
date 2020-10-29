@@ -115,7 +115,7 @@ trait HealthChecksHomepageItem
 			$url = $this->qualifyURL($this->config['healthChecksURL']) . '/' . $tags;
 			try {
 				$headers = array('X-Api-Key' => $token);
-				$options = ($this->localURL($url)) ? array('verify' => false) : array();
+				$options = ($this->localURL($url)) ? array('verify' => false) : array('verify' => $this->getCert());
 				$response = Requests::get($url, $headers, $options);
 				if ($response->success) {
 					$healthResults = json_decode($response->body, true);
