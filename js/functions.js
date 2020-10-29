@@ -3486,8 +3486,12 @@ function buildBackers(array){
 	$.each(array, function(i,v) {
 		if(v.type == 'USER' && v.role == 'BACKER' && v.isActive){
 			v.name = v.name ? v.name : 'User';
-			v.image = v.image ? v.image : 'image here';
-			backers += '<li><img src="'+v.image+'" alt="user" height="60" width="60" data-toggle="tooltip" title="" class="img-circle" data-original-title="'+v.name+'"></li>';
+			v.image = v.image ? v.image : null;
+			if(v.image == null){
+				backers += '<li><span alt="user" data-toggle="tooltip" title="" class="circle circle-md bg-info di" data-original-title="'+v.name+'" href="image here"><i class="fa fa-user"></i></span></li>';
+			}else{
+				backers += '<li><img src="'+v.image+'" alt="user" height="60" width="60" data-toggle="tooltip" title="" class="img-circle" data-original-title="'+v.name+'"></li>';
+			}
 		}
 	});
 	backers += '<li><a href="https://opencollective.com/organizr" target="_blank" class="circle circle-md bg-info di" data-toggle="tooltip" title="" data-original-title="Join">You</a></li>';
