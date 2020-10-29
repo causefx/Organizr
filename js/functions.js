@@ -7232,13 +7232,13 @@ function buildWeatherAndAir(array){
                     weatherItems += `
                     <div class="col-lg-4 col-sm-12 col-xs-12">
                         <div class="white-box">
-                            <h3 class="box-title">`+moment(v.datetime).format('dddd')+`<small class="pull-right m-t-10">Feels Like `+Math.round(v.feels_like_temperature.value)+`°</small></h3>
-                            <ul class="list-inline two-part">
+                            <h3 class="box-title"><small class="pull-right m-t-10">Feels Like `+Math.round(v.feels_like_temperature.value)+`°</small>`+moment(v.datetime).format('dddd')+`<br/><small class="text-uppercase elip">`+v.weather_text+`</small></h3>
+                            <ul class="list-inline two-part" style="margin-top: -13px;">
                                 <li><i class="wi `+weatherIcon(v.icon_code, v.is_day_time)+` text-info"></i></li>
                                 <li class="text-right"><span class="counter">`+Math.round(v.temperature.value)+`<small><sup>°`+v.temperature.units+`</sup></small></span></li>
                             </ul>
                             <ul class="list-inline m-b-0">
-                                <li class="pull-left w-50 hidden-xs"><small class="text-uppercase elip">`+v.weather_text+`</small></li>
+                                <li class="pull-left w-50 hidden-xs"></li>
                                 <li class="pull-right" style="width:75px"><small><i class="wi wi-strong-wind m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Wind"></i>`+Math.round(v.wind.speed.value)+` `+v.wind.speed.units+`</small></li>
                                 <li class="pull-right" style="width:75px"><small><i class="wi wi-barometer m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Pressure"></i>`+Math.round(v.pressure.value)+` `+v.pressure.units+`</small></li>
                                 <li class="pull-right" style="width:45px"><small><i class="wi wi-humidity m-r-5 text-primary tooltip-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Humidity"></i>`+Math.round(v.relative_humidity)+`</small></li>
