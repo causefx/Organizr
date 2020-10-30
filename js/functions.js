@@ -10246,7 +10246,7 @@ function OrganizrApiError(xhr, secondaryMessage = null){
 }
 function launch(){
 	console.info('https://docs.organizr.app/books/setup-features/page/organizr-20--%3E-21-migration-guide');
-	organizrConsole('API V2 API','If you see a 404 Error below this line, you have not setup the new location block... See URL above this line', 'error');
+	organizrConsole('API V2 API','If you see a 404 Error for api/v2/launch below this line, you have not setup the new location block... See URL above this line', 'error');
 	organizrConnect('api/v2/launch').success(function (data) {
         try {
             let json = data.response;
