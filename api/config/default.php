@@ -69,6 +69,8 @@ return array(
 	'radarrToken' => '',
 	'radarrSocksEnabled' => false,
 	'radarrSocksAuth' => '999',
+	'radarrUnmonitored' => false,
+	'radarrCinemaRelease' => false,
 	'couchpotatoURL' => '',
 	'couchpotatoToken' => '',
 	'sickrageURL' => '',

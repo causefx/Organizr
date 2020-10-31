@@ -155,6 +155,18 @@ trait RadarrHomepageItem
 						'label' => 'Refresh Seconds',
 						'value' => $this->config['calendarRefresh'],
 						'options' => $this->timeOptions()
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'radarrUnmonitored',
+						'label' => 'Show Unmonitored',
+						'value' => $this->config['radarrUnmonitored']
+					),
+					array(
+						'type' => 'switch',
+						'name' => 'radarrCinemaRelease',
+						'label' => 'Show Cinema Releases',
+						'value' => $this->config['radarrCinemaRelease']
 					)
 				),
 				'Test Connection' => array(
@@ -323,7 +335,7 @@ trait RadarrHomepageItem
 		foreach ($list as $key => $value) {
 			try {
 				$downloader = new Kryptonit3\Sonarr\Sonarr($value['url'], $value['token']);
-				$results = $downloader->getCalendar($startDate, $endDate);
+				$results = $downloader->getCalendar($startDate, $endDate, $this->config['radarrUnmonitored']);
 				$result = json_decode($results, true);
 				if (is_array($result) || is_object($result)) {
 					$calendar = (array_key_exists('error', $result)) ? '' : $this->formatRadarrCalendar($results, $key, $value['url']);
@@ -349,17 +361,21 @@ trait RadarrHomepageItem
 		$gotCalendar = array();
 		$i = 0;
 		foreach ($array as $child) {
-			if (isset($child['physicalRelease'])) {
+			if (isset($child['physicalRelease']) || $this->config['radarrCinemaRelease']) {
 				$i++;
 				$movieName = $child['title'];
 				$movieID = $child['tmdbId'];
 				if (!isset($movieID)) {
 					$movieID = "";
 				}
-				$physicalRelease = $child['physicalRelease'];
-				$physicalRelease = strtotime($physicalRelease);
-				$physicalRelease = date("Y-m-d", $physicalRelease);
-				if (new DateTime() < new DateTime($physicalRelease)) {
+				if (isset($child['physicalRelease'])) {
+					$releaseDate = $child['physicalRelease'];
+				} elseif (isset($child['inCinemas'])) {
+					$releaseDate = $child['inCinemas'];
+				}	
+				$releaseDate = strtotime($releaseDate);
+				$releaseDate = date("Y-m-d", $releaseDate);
+				if (new DateTime() < new DateTime($releaseDate)) {
 					$notReleased = "true";
 				} else {
 					$notReleased = "false";
@@ -426,7 +442,7 @@ trait RadarrHomepageItem
 				array_push($gotCalendar, array(
 					"id" => "Radarr-" . $number . "-" . $i,
 					"title" => $movieName,
-					"start" => $physicalRelease,
+					"start" => $releaseDate,
 					"className" => "inline-popups bg-calendar movieID--" . $movieID,
 					"imagetype" => "film " . $downloaded,
 					"imagetypeFilter" => "film",
