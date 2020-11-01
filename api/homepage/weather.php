@@ -190,7 +190,7 @@ trait WeatherHomepageItem
 			'pollen' => false
 		);
 		$apiURL = $this->qualifyURL('https://api.breezometer.com/');
-		$info = '&lat=' . $this->config['homepageWeatherAndAirLatitude'] . '&lon=' . $this->config['homepageWeatherAndAirLongitude'] . '&units=' . $this->config['homepageWeatherAndAirUnits'] . '&key=b7401295888443538a7ebe04719c8394';
+		$info = '&lat=' . $this->config['homepageWeatherAndAirLatitude'] . '&lon=' . $this->config['homepageWeatherAndAirLongitude'] . '&units=' . $this->config['homepageWeatherAndAirUnits'] . '&key=' . $this->config['breezometerToken'];
 		try {
 			$headers = array();
 			$options = array();
